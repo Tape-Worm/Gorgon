@@ -73,6 +73,11 @@ namespace Gorgon.Editor.Services
         T GetData<T>();
 
         /// <summary>
+        /// Function to clear the clipboard contents.
+        /// </summary>
+        void Clear();
+
+        /// <summary>
         /// Function to place an item on the clipboard for copying.
         /// </summary>
         /// <param name="item">The item to copy.</param>

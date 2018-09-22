@@ -88,6 +88,7 @@
     <Compile Include="EditorSettings.cs" />
     <Compile Include="Services\WorkspaceTester.cs" />
     <Compile Include="Services\_Interfaces\IWorkspaceTester.cs" />
+    <Compile Include="ViewModels\CopyNodeArgs.cs" />
     <Compile Include="ViewModels\CreateNodeArgs.cs" />
     <Compile Include="ViewModels\FileExplorerFileNodeVm.cs" />
     <Compile Include="ViewModels\FileExplorerDirectoryNodeVm.cs" />

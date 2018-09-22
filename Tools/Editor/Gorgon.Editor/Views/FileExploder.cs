@@ -32,14 +32,13 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using ComponentFactory.Krypton.Toolkit;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Editor.ViewModels;
 using System.Diagnostics;
+using Gorgon.Collections;
 
 namespace Gorgon.Editor.Views
 {
@@ -69,6 +68,8 @@ namespace Gorgon.Editor.Views
         private IFileExplorerNodeVm _renameNode;
         // Font used for excluded items.
         private Font _excludedFont;
+        // The context handler for clipboard operations.
+        private IClipboardHandler _clipboardContext;
         #endregion
 
         #region Properties.
@@ -271,6 +272,20 @@ namespace Gorgon.Editor.Views
 
             switch (e.PropertyName)
             {
+                case nameof(IFileExplorerNodeVm.IsExpanded):
+                    if (treeNode != null)
+                    {
+                        if (node.IsExpanded)
+                        {
+                            treeNode.Expand();
+                        }
+                        else
+                        {
+                            treeNode.Collapse();
+                        }
+                    }
+                    break;
+                case nameof(IFileExplorerNodeVm.IsCut):
                 case nameof(IFileExplorerNodeVm.Included):
                     if (treeNode != null)
                     {
@@ -323,6 +338,51 @@ namespace Gorgon.Editor.Views
         }
 
         /// <summary>
+        /// Handles the Click event of the MenuItemCut control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void MenuItemCut_Click(object sender, EventArgs e)
+        {
+            if (_clipboardContext == null)
+            {
+                return;
+            }
+
+            _clipboardContext.Cut();
+        }
+
+        /// <summary>
+        /// Handles the Click event of the MenuItemCopy control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void MenuItemCopy_Click(object sender, EventArgs e)
+        {
+            if (_clipboardContext == null)
+            {
+                return;
+            }
+
+            _clipboardContext.Copy();
+        }
+
+        /// <summary>
+        /// Handles the Click event of the MenuItemPaste control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void MenuItemPaste_Click(object sender, EventArgs e)
+        {
+            if (_clipboardContext == null)
+            {
+                return;
+            }
+
+            _clipboardContext.Paste();
+        }
+
+        /// <summary>
         /// Handles the Click event of the ItemCreateDirectory control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -360,10 +420,25 @@ namespace Gorgon.Editor.Views
         /// <param name="dataContext">The current data context.</param>
         private void ValidateMenuItems(IFileExplorerVm dataContext)
         {
-            if (dataContext?.SelectedNode == null)
+            if (dataContext == null)
             {
-                MenuSep1.Available = false;
-                MenuSep2.Available = false;
+                foreach (ToolStripMenuItem item in MenuOptions.Items.OfType<ToolStripMenuItem>())
+                {
+                    item.Available = false;
+                }
+
+                return;
+            }
+
+            if (dataContext.SelectedNode == null)
+            {
+                MenuSepEdit.Available = _clipboardContext?.CanPaste() ?? false;
+                MenuItemCopy.Available = false;
+                MenuItemCut.Available = false;
+                MenuItemPaste.Available = MenuSepEdit.Visible;
+                MenuItemPaste.Enabled = MenuSepEdit.Visible;
+                MenuSepOrganize.Available = false;
+                MenuSepNew.Available = MenuSepEdit.Available;
                 MenuItemCreateDirectory.Available = true;
                 MenuItemDelete.Available = false;
                 MenuItemRename.Available = false;
@@ -371,15 +446,21 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            MenuSep1.Available = true;
+            MenuSepEdit.Available = (_clipboardContext != null) && ((_clipboardContext.CanPaste()) || (_clipboardContext.CanCut()) || (_clipboardContext.CanCopy()));
+            MenuSepOrganize.Available = true;
             MenuItemRename.Available = true;
             MenuItemIncludeInProject.Available = true;
+
+            MenuItemCopy.Available = _clipboardContext?.CanCopy() ?? false;
+            MenuItemCut.Available = _clipboardContext?.CanCut() ?? false;
+            MenuItemPaste.Available = _clipboardContext != null;
+            MenuItemPaste.Enabled = _clipboardContext?.CanPaste() ?? false;
 
             MenuItemCreateDirectory.Available = dataContext.CreateNodeCommand?.CanExecute(null) ?? false;
             MenuItemDelete.Available = dataContext.DeleteNodeCommand?.CanExecute(null) ?? false;
             MenuItemIncludeInProject.Checked = dataContext.SelectedNode.Included;
 
-            MenuSep2.Visible = MenuItemCreateDirectory.Available;
+            MenuSepNew.Visible = MenuItemCreateDirectory.Available;
         }
 
         /// <summary>
@@ -537,6 +618,65 @@ namespace Gorgon.Editor.Views
         }
 
         /// <summary>
+        /// Handles the AfterExpand event of the TreeFileSystem control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="TreeViewEventArgs"/> instance containing the event data.</param>
+        private void TreeFileSystem_AfterExpand(object sender, TreeViewEventArgs e)
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            // Turn off notification so we don't get a doubling up effect.
+            // Turn off notification so we don't get a doubling up effect.
+            if (!_nodeLinks.TryGetValue((KryptonTreeNode)e.Node, out IFileExplorerNodeVm node))
+            {
+                return;
+            }
+
+            node.PropertyChanged -= Node_PropertyChanged;
+            try
+            {
+                node.IsExpanded = true;
+            }
+            finally
+            {
+                node.PropertyChanged += Node_PropertyChanged;
+            }
+        }
+
+        /// <summary>
+        /// Handles the BeforeCollapse event of the TreeFileSystem control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="TreeViewCancelEventArgs"/> instance containing the event data.</param>
+        private void TreeFileSystem_BeforeCollapse(object sender, TreeViewCancelEventArgs e)
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            // Turn off notification so we don't get a doubling up effect.
+            if (!_nodeLinks.TryGetValue((KryptonTreeNode)e.Node, out IFileExplorerNodeVm node))
+            {
+                return;
+            }
+
+            node.PropertyChanged -= Node_PropertyChanged;
+            try
+            {
+                node.IsExpanded = false;
+            }
+            finally
+            {
+                node.PropertyChanged += Node_PropertyChanged;
+            }
+        }
+
+        /// <summary>
         /// Handles the AfterCollapse event of the TreeFileSystem control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -669,6 +809,12 @@ namespace Gorgon.Editor.Views
             treeNode.NodeFont = node.Included ? null : _excludedFont;
             treeNode.ForeColor = node.Included ? Color.Empty : Color.DimGray;
 
+            if (node.IsCut)
+            {
+                // Make the text translucent if we're in cut mode.
+                treeNode.ForeColor = Color.FromArgb(128, treeNode.ForeColor);
+            }
+
             if ((node.Children.Count > 0) && (!treeNode.IsExpanded))
             {
                 treeNode.Nodes.Add(new KryptonTreeNode("DummyNode_Should_Not_See"));
@@ -768,6 +914,8 @@ namespace Gorgon.Editor.Views
         /// </summary>
         private void ResetDataContext()
         {
+            _clipboardContext = null;
+
             _nodeLinks.Clear();
             _revNodeLinks.Clear();
             TreeFileSystem.Nodes.Clear();
@@ -784,13 +932,10 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            for (int i = 0; i < nodes.Count; ++i)
+            foreach (IFileExplorerNodeVm node in nodes.Traverse(n => n.Children))
             {
-                IFileExplorerNodeVm node = nodes[i];
-
-                AssignNodeEvents(node.Children);
-
                 node.PropertyChanged += Node_PropertyChanged;
+                node.Children.CollectionChanged += Nodes_CollectionChanged;
             }            
 
             nodes.CollectionChanged += Nodes_CollectionChanged;
@@ -809,13 +954,10 @@ namespace Gorgon.Editor.Views
 
             nodes.CollectionChanged -= Nodes_CollectionChanged;
 
-            for (int i = 0; i < nodes.Count; ++i)
+            foreach (IFileExplorerNodeVm node in nodes.Traverse(n => n.Children))            
             {
-                IFileExplorerNodeVm node = nodes[i];
-
-                node.PropertyChanged -= Node_PropertyChanged;
-
-                UnassignNodeEvents(node.Children);
+                node.Children.CollectionChanged -= Nodes_CollectionChanged;
+                node.PropertyChanged -= Node_PropertyChanged;                
             }
         }
         
@@ -852,6 +994,8 @@ namespace Gorgon.Editor.Views
                     ResetDataContext();
                     return;
                 }
+
+                _clipboardContext = dataContext as IClipboardHandler;
 
                 // We do not add the root node (really no point).
                 FillTree(TreeFileSystem.Nodes, dataContext.RootNode.Children);

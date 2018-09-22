@@ -76,6 +76,11 @@ namespace Gorgon.Editor.Services
         }
 
         /// <summary>
+        /// Function to clear the clipboard contents.
+        /// </summary>
+        public void Clear() => Clipboard.Clear();
+
+        /// <summary>
         /// Function to return whether or not the data on the clipboard is of the type specified.
         /// </summary>
         /// <typeparam name="T">The type to check.</typeparam>

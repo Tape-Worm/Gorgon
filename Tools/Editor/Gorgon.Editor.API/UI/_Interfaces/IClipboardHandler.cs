@@ -46,9 +46,19 @@ namespace Gorgon.Editor.UI
 
         #region Methods.
         /// <summary>
+        /// Function to store an item to copy onto the clipboard for cutting.
+        /// </summary>
+        void Cut();
+
+        /// <summary>
         /// Function to store an item to copy onto the clipboard.
         /// </summary>
         void Copy();
+
+        /// <summary>
+        /// Function to paste an item from the clipboard.
+        /// </summary>
+        void Paste();
 
         /// <summary>
         /// Function to return whether or not the item can use the cut functionality for the clipboard.

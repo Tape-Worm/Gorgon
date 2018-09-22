@@ -30,6 +30,7 @@ using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Editor.Services;
 using System.Threading;
+using Gorgon.Editor.Properties;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -67,6 +68,42 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function called when there is a conflict when copying or moving files.
+        /// </summary>
+        /// <param name="sourceItem">The file being copied/moved.</param>
+        /// <param name="destItem">The destination file that is conflicting.</param>
+        /// <param name="allowCancel"><b>true</b> to allow cancel support, or <b>false</b> to only use yes/no prompts.</param>
+        /// <returns>A resolution for the conflict.</returns>
+        private FileSystemConflictResolution FileSystemConflictHandler(string sourceItem, string destItem, bool allowCancel)
+        {
+            bool isBusy = BusyService.IsBusy;
+
+            // Reset the busy state.  The dialog will disrupt it anyway.
+            BusyService.SetIdle();
+
+            MessageResponse response = MessageDisplay.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_FILE_EXISTS,
+                                                                                    sourceItem, destItem), allowCancel: allowCancel);
+
+            try
+            {
+                if (response == MessageResponse.Cancel)
+                {
+                    return FileSystemConflictResolution.Cancel;
+                }
+
+                return response == MessageResponse.Yes ? FileSystemConflictResolution.Overwrite : FileSystemConflictResolution.Rename;
+            }
+            finally
+            {
+                // Restore the busy state if we originally had it active.
+                if (isBusy)
+                {
+                    BusyService.SetBusy();
+                }
+            }
+        }
+
         /// <summary>
         /// Function to rename the node.
         /// </summary>
@@ -129,9 +166,154 @@ namespace Gorgon.Editor.ViewModels
 
             return tcs.Task;
         }
+
+        /// <summary>
+        /// Function to copy this node to another node.
+        /// </summary>
+        /// <param name="fileSystemService">The file system service to use when copying.</param>
+        /// <param name="newPath">The node that will receive the the copy of this node.</param>
+        /// <returns>The new node for the copied node.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileSystemService"/>, or the <paramref name="destNode"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="destNode"/> is unable to create child nodes.</exception>
+        public override IFileExplorerNodeVm CopyNode(IFileSystemService fileSystemService, IFileExplorerNodeVm destNode)
+        {
+            if (fileSystemService == null)
+            {
+                throw new ArgumentNullException(nameof(fileSystemService));
+            }
+
+            if (destNode == null)
+            {
+                throw new ArgumentNullException(nameof(destNode));
+            }
+
+            if (destNode == null)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GOREDIT_ERR_NODE_CANNOT_CREATE_CHILDREN, destNode.Name));
+            }
+
+            FileSystemConflictResolution resolution = FileSystemConflictResolution.Exception;
+            string newPath = Path.Combine(destNode.PhysicalPath, Name);
+
+            var result = new FileExplorerFileNodeVm(this)
+            {                
+                IsExpanded = false,
+                Name = Name,
+                Parent = destNode,
+                PhysicalPath = newPath,
+                Included = Included
+            };
+
+            // Renames a node that is in conflict when the file is the same in the source and dest, or if the user chooses to not overwrite.
+            void RenameNodeInConflict()
+            {
+                string newName = fileSystemService.GenerateFileName(result.PhysicalPath);
+                newPath = Path.Combine(destNode.PhysicalPath, newName);
+                result.Name = newName;
+                result.PhysicalPath = newPath;
+            }
+
+            // If we're trying to copy over ourselves (which is not possible obviously), then just auto-rename.
+            if (string.Equals(FullPath, result.FullPath, StringComparison.OrdinalIgnoreCase))
+            {
+                RenameNodeInConflict();
+            }
+
+            if (fileSystemService.FileExists(newPath))
+            {
+                resolution = FileSystemConflictHandler(FullPath, result.FullPath, true);
+
+                switch (resolution)
+                {
+                    case FileSystemConflictResolution.Rename:
+                    case FileSystemConflictResolution.RenameAll:
+                        RenameNodeInConflict();
+                        break;
+                    case FileSystemConflictResolution.Cancel:
+                        return null;
+                    case FileSystemConflictResolution.Exception:
+                        throw new IOException(string.Format(Resources.GOREDIT_ERR_NODE_EXISTS, Name));
+                }
+            }
+
+            fileSystemService.CopyFile(PhysicalPath, result.PhysicalPath);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Function to move this node to another node.
+        /// </summary>
+        /// <param name="fileSystemService">The file system service to use when copying.</param>
+        /// <param name="newPath">The node that will receive the the copy of this node.</param>
+        /// <returns>The new node for the copied node.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileSystemService"/>, or the <paramref name="destNode"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="destNode"/> is unable to create child nodes.</exception>
+        public override IFileExplorerNodeVm MoveNode(IFileSystemService fileSystemService, IFileExplorerNodeVm destNode)
+        {
+            if (fileSystemService == null)
+            {
+                throw new ArgumentNullException(nameof(fileSystemService));
+            }
+
+            if (destNode == null)
+            {
+                throw new ArgumentNullException(nameof(destNode));
+            }
+
+            if (destNode == null)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GOREDIT_ERR_NODE_CANNOT_CREATE_CHILDREN, destNode.Name));
+            }
+
+            if (string.Equals(Parent.FullPath, destNode.FullPath, StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
+
+            FileSystemConflictResolution resolution = FileSystemConflictResolution.Exception;
+            string newPath = Path.Combine(destNode.PhysicalPath, Name);
+
+            var result = new FileExplorerFileNodeVm(this)
+            {
+                IsExpanded = false,
+                Name = Name,
+                Parent = destNode,
+                PhysicalPath = newPath,
+                Included = Included
+            };
+
+            if (fileSystemService.FileExists(newPath))
+            {
+                resolution = FileSystemConflictHandler(FullPath, result.FullPath, false);
+
+                switch (resolution)
+                {
+                    case FileSystemConflictResolution.Rename:
+                    case FileSystemConflictResolution.RenameAll:
+                    case FileSystemConflictResolution.Cancel:
+                        return null;
+                    case FileSystemConflictResolution.Exception:
+                        throw new IOException(string.Format(Resources.GOREDIT_ERR_NODE_EXISTS, Name));
+                }
+            }
+
+            fileSystemService.MoveFile(PhysicalPath, result.PhysicalPath);
+
+            return result;
+        }
         #endregion
 
         #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileExplorerFileNodeVm"/> class.
+        /// </summary>
+        /// <param name="copy">The node to copy.</param>
+        internal FileExplorerFileNodeVm(FileExplorerFileNodeVm copy)
+            : base(copy)
+        {            
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="FileExplorerFileNodeVm" /> class.
         /// </summary>

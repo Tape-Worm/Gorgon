@@ -35,6 +35,38 @@ using System.Threading.Tasks;
 namespace Gorgon.Editor.Services
 {
     /// <summary>
+    /// A value indicating how to handle a conflict in the file system.
+    /// </summary>
+    public enum FileSystemConflictResolution
+    {
+        /// <summary>
+        /// The operation should be canceled.
+        /// </summary>
+        Cancel = 0,
+        /// <summary>
+        /// The operation should overwrite the destination.
+        /// </summary>
+        Overwrite = 1,
+        /// <summary>
+        /// The operation should rename the destination.
+        /// </summary>
+        Rename = 2,
+        /// <summary>
+        /// The operation should overwrite the destination, and this should be the default for all conflicts from this point forward.
+        /// </summary>
+        OverwriteAll = 3,
+        /// <summary>
+        /// The operation should rename the destination, and this should be the default for all conflicts from this point forward.
+        /// </summary>
+        RenameAll = 4,
+        /// <summary>
+        /// An exception should be thrown.
+        /// </summary>
+        Exception = 5
+    }
+
+
+    /// <summary>
     /// A service used to interact with the file system of the project.
     /// </summary>
     public interface IFileSystemService
@@ -53,6 +85,20 @@ namespace Gorgon.Editor.Services
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to generate a file name for the destination directory, based on whether or not it already exists.
+        /// </summary>
+        /// <param name="path">The path to the desired file name.</param>
+        /// <returns>The new file name, or the original file name if it did not exist.</returns>
+        string GenerateFileName(string path);
+
+        /// <summary>
+        /// Function to determine if a file exists or not.
+        /// </summary>
+        /// <param name="path">The path to the file.</param>
+        /// <returns><b>true</b> if the file exists, <b>false</b> if not.</returns>
+        bool FileExists(string path);
+
         /// <summary>
         /// Function to create a new directory.
         /// </summary>
@@ -95,6 +141,20 @@ namespace Gorgon.Editor.Services
         /// </summary>
         /// <param name="filePath">The path to the file on the physical file system to delete.</param>
         void DeleteFile(string filePath);
+
+        /// <summary>
+        /// Function to copy a file to another location.
+        /// </summary>
+        /// <param name="filePath">The path to the file.</param>
+        /// <param name="destFileNamePath">The destination file name and path.</param>        
+        void CopyFile(string filePath, string destFileNamePath);
+
+        /// <summary>
+        /// Function to move a file to another location.
+        /// </summary>
+        /// <param name="filePath">The path to the file.</param>
+        /// <param name="destFileNamePath">The destination file name and path.</param>        
+        void MoveFile(string filePath, string destFileNamePath);
         #endregion
     }
 }

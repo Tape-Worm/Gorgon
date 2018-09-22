@@ -64,6 +64,15 @@ namespace Gorgon.Editor.ViewModels
     {
         #region Properties.
         /// <summary>
+        /// Property to set or return whether to mark this node as "cut" or not.
+        /// </summary>
+        bool IsCut
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to set or return whether or not the node is included in the project.
         /// </summary>
         bool Included
@@ -143,6 +152,15 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
         }
+
+        /// <summary>
+        /// Property to set or return whether the node is in an expanded state or not (if it has children).
+        /// </summary>
+        bool IsExpanded
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Methods.
@@ -173,6 +191,22 @@ namespace Gorgon.Editor.ViewModels
         /// </para>
         /// </remarks>
         Task DeleteNodeAsync(IFileSystemService fileSystemService, Action<FileSystemInfo> onDeleted = null, CancellationToken? cancelToken = null);
+
+        /// <summary>
+        /// Function to copy this node to another node.
+        /// </summary>
+        /// <param name="fileSystemService">The file system service to use when copying.</param>
+        /// <param name="newPath">The node that will receive the the copy of this node.</param>
+        /// <returns>The new node for the copied node.</returns>
+        IFileExplorerNodeVm CopyNode(IFileSystemService fileSystemService, IFileExplorerNodeVm destNode);
+
+        /// <summary>
+        /// Function to move this node to another node.
+        /// </summary>
+        /// <param name="fileSystemService">The file system service to use when copying.</param>
+        /// <param name="newPath">The node that will receive the the copy of this node.</param>
+        /// <returns>The new node for the copied node.</returns>
+        IFileExplorerNodeVm MoveNode(IFileSystemService fileSystemService, IFileExplorerNodeVm destNode);
         #endregion
     }
 }

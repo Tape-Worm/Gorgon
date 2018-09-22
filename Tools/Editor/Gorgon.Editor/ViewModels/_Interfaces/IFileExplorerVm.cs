@@ -106,6 +106,14 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Property to return the command used to copy a single node.
+        /// </summary>
+        IEditorCommand<CopyNodeArgs> CopyNodeCommand
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the command used to refresh the specified node children.
         /// </summary>
         IEditorCommand<IFileExplorerNodeVm> RefreshNodeCommand

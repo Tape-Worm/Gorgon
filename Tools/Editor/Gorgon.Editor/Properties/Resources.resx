@@ -339,8 +339,35 @@ Please try again.</value>
   <data name="paste_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\paste_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GOREDIT_ERR_COPYING_FILE_OR_DIR" xml:space="preserve">
+  <data name="GOREDIT_ERR_COPYING_FILE_OR_DIR_CLIPBOARD" xml:space="preserve">
     <value>There was an error copying '{0}' to the clipboard.
+Please try again.</value>
+  </data>
+  <data name="GOREDIT_CONFIRM_FILE_EXISTS" xml:space="preserve">
+    <value>The file '{0}' already exists in '{1}'.
+
+Would you like to overrwrite it?</value>
+  </data>
+  <data name="GOREDIT_ERR_CANNOT_COPY" xml:space="preserve">
+    <value>There was an error copying '{0}'. 
+
+An item with the same name exists in the destination.</value>
+  </data>
+  <data name="GOREDIT_ERR_DIRECTORY_NOT_FOUND" xml:space="preserve">
+    <value>The directory '{0}' was not found.</value>
+  </data>
+  <data name="GOREDIT_ERR_FILE_NOT_FOUND" xml:space="preserve">
+    <value>The file '{0}' was not found.</value>
+  </data>
+  <data name="GOREDIT_ERR_NODE_CANNOT_CREATE_CHILDREN" xml:space="preserve">
+    <value>The node '{0}' is unable to create child nodes.
+Please try again.</value>
+  </data>
+  <data name="GOREDIT_ERR_NODE_NOT_EXIST" xml:space="preserve">
+    <value>Could not find '{0}'.</value>
+  </data>
+  <data name="GOREDIT_ERR_PASTE_FILE_OR_DIR" xml:space="preserve">
+    <value>There was an error pasting the data from the clipboard into the file system.
 Please try again.</value>
   </data>
 </root>

@@ -182,7 +182,10 @@ namespace Gorgon.Editor.ViewModels
             var result = new FileExplorerVm();
             var nodes = new ObservableCollection<IFileExplorerNodeVm>();
 
-            var root = new FileExplorerDirectoryNodeVm();
+            var root = new FileExplorerDirectoryNodeVm
+            {
+                IsExpanded = true
+            };
 
             foreach (DirectoryInfo rootDir in metadataManager.GetIncludedDirectories(project.ProjectWorkSpace.FullName))
             {
@@ -197,7 +200,7 @@ namespace Gorgon.Editor.ViewModels
             // This is a special node, used internally.
             root.Initialize(new FileExplorerNodeParameters(project, project.ProjectWorkSpace, this, _messageBoxService, _waitCursorService)
             {                
-                Children = nodes
+                Children = nodes                
             });
 
             result.Initialize(new FileExplorerParameters(project,

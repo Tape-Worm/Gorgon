@@ -301,6 +301,17 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; already exists in &apos;{1}&apos;.
+        ///
+        ///Would you like to overrwrite it?.
+        /// </summary>
+        internal static string GOREDIT_CONFIRM_FILE_EXISTS {
+            get {
+                return ResourceManager.GetString("GOREDIT_CONFIRM_FILE_EXISTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The editor was unable to locate a workspace location that is accessible to the current user.
         ///
         ///The application will now close..
@@ -308,6 +319,17 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_CANNOT_AUTO_FIND_WORKSPACE_LOCATION {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_CANNOT_AUTO_FIND_WORKSPACE_LOCATION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error copying &apos;{0}&apos;. 
+        ///
+        ///An item with the same name exists in the destination..
+        /// </summary>
+        internal static string GOREDIT_ERR_CANNOT_COPY {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CANNOT_COPY", resourceCulture);
             }
         }
         
@@ -325,9 +347,9 @@ namespace Gorgon.Editor.Properties {
         ///   Looks up a localized string similar to There was an error copying &apos;{0}&apos; to the clipboard.
         ///Please try again..
         /// </summary>
-        internal static string GOREDIT_ERR_COPYING_FILE_OR_DIR {
+        internal static string GOREDIT_ERR_COPYING_FILE_OR_DIR_CLIPBOARD {
             get {
-                return ResourceManager.GetString("GOREDIT_ERR_COPYING_FILE_OR_DIR", resourceCulture);
+                return ResourceManager.GetString("GOREDIT_ERR_COPYING_FILE_OR_DIR_CLIPBOARD", resourceCulture);
             }
         }
         
@@ -352,11 +374,29 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The directory &apos;{0}&apos; was not found..
+        /// </summary>
+        internal static string GOREDIT_ERR_DIRECTORY_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_DIRECTORY_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error.
         /// </summary>
         internal static string GOREDIT_ERR_ERROR {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_ERROR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; was not found..
+        /// </summary>
+        internal static string GOREDIT_ERR_FILE_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_FILE_NOT_FOUND", resourceCulture);
             }
         }
         
@@ -402,6 +442,16 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The node &apos;{0}&apos; is unable to create child nodes.
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_NODE_CANNOT_CREATE_CHILDREN {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_NODE_CANNOT_CREATE_CHILDREN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There is already a file or directory with the name &apos;{0}&apos; in this directory.
         ///Please choose a new name..
         /// </summary>
@@ -423,12 +473,31 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not find &apos;{0}&apos;..
+        /// </summary>
+        internal static string GOREDIT_ERR_NODE_NOT_EXIST {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_NODE_NOT_EXIST", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error selecting the item named &apos;{0}&apos; on the tree.
         ///Please try again..
         /// </summary>
         internal static string GOREDIT_ERR_NODE_SELECTION {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_NODE_SELECTION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error pasting the data from the clipboard into the file system.
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_PASTE_FILE_OR_DIR {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_PASTE_FILE_OR_DIR", resourceCulture);
             }
         }
         

@@ -781,6 +781,7 @@ namespace Gorgon.Editor
             this.RibbonMain.RibbonAppButton.AppButtonShowRecentDocs = false;
             this.RibbonMain.RibbonTabs.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab[] {
             this.TabFileSystem});
+            this.RibbonMain.SelectedContext = null;
             this.RibbonMain.SelectedTab = this.TabFileSystem;
             this.RibbonMain.ShowMinimizeButton = false;
             this.RibbonMain.Size = new System.Drawing.Size(1264, 115);
@@ -842,6 +843,7 @@ namespace Gorgon.Editor
             this.ButtonFileSystemPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
             this.ButtonFileSystemPaste.TextLine1 = "Paste";
             this.ButtonFileSystemPaste.ToolTipBody = "Paste the copied or cut file or directory from the editor.";
+            this.ButtonFileSystemPaste.Click += new System.EventHandler(this.ButtonFileSystemPaste_Click);
             // 
             // kryptonRibbonGroupLines2
             // 
@@ -869,6 +871,7 @@ namespace Gorgon.Editor
             this.ButtonFileSystemCut.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
             this.ButtonFileSystemCut.TextLine1 = "Cut";
             this.ButtonFileSystemCut.ToolTipBody = "Cut the selected file or directory into the clipboard.";
+            this.ButtonFileSystemCut.Click += new System.EventHandler(this.ButtonFileSystemCut_Click);
             // 
             // RibbonGroupFileSystemOrganize
             // 
@@ -970,6 +973,7 @@ namespace Gorgon.Editor
             this.Name = "FormMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Gorgon Editor";
+            this.Activated += new System.EventHandler(this.FormMain_Activated);
             ((System.ComponentModel.ISupportInitialize)(this.PanelWorkSpace)).EndInit();
             this.PanelWorkSpace.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.RibbonMain)).EndInit();

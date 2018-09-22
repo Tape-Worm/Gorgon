@@ -132,6 +132,26 @@ namespace Gorgon.Editor.ViewModels
             Name = newName;
             NotifyPropertyChanged(nameof(FullPath));
         }
+
+        /// <summary>
+        /// Function to copy this node to another node.
+        /// </summary>
+        /// <param name="fileSystemService">The file system service to use when copying.</param>
+        /// <param name="newPath">The node that will receive the the copy of this node.</param>
+        /// <returns>The new node for the copied node.</returns>
+        public override IFileExplorerNodeVm CopyNode(IFileSystemService fileSystemService, IFileExplorerNodeVm destNode)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Function to move this node to another node.
+        /// </summary>
+        /// <param name="fileSystemService">The file system service to use when copying.</param>
+        /// <param name="destNode">The dest node.</param>
+        /// <returns>The new node for the copied node.</returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public override IFileExplorerNodeVm MoveNode(IFileSystemService fileSystemService, IFileExplorerNodeVm destNode) => throw new NotImplementedException();
         #endregion
 
         #region Constructor/Finalizer.

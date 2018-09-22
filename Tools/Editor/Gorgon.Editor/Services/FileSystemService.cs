@@ -43,10 +43,6 @@ namespace Gorgon.Editor.Services
     internal class FileSystemService
         : IFileSystemService
     {
-        #region Variables.
-
-        #endregion
-
         #region Properties.
         /// <summary>
         /// Property to return the root directory for the file system.
@@ -60,6 +56,60 @@ namespace Gorgon.Editor.Services
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to generate a file name for the destination directory, based on whether or not it already exists.
+        /// </summary>
+        /// <param name="path">The path to the desired file name.</param>
+        /// <returns>The new file name, or the original file name if it did not exist.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+        public string GenerateFileName(string path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentEmptyException(nameof(path));
+            }
+
+            var file = new FileInfo(path);
+            string fileDirectory = file.Directory.FullName;
+            string fileNameNoExtension = Path.GetFileNameWithoutExtension(file.Name);
+            int count = 0;
+
+            while (file.Exists)
+            {
+                file = new FileInfo(Path.ChangeExtension(Path.Combine(fileDirectory, $"{fileNameNoExtension} ({++count})"), file.Extension));
+            }
+
+            return file.Name;
+        }
+
+        /// <summary>
+        /// Function to determine if a file exists or not.
+        /// </summary>
+        /// <param name="path">The path to the file.</param>
+        /// <returns><b>true</b> if the file exists, <b>false</b> if not.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+        public bool FileExists(string path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentEmptyException(nameof(path));
+            }
+
+            return File.Exists(path);
+        }
+
         /// <summary>
         /// Function to create a new directory.
         /// </summary>
@@ -256,6 +306,112 @@ namespace Gorgon.Editor.Services
             directory.Delete(true);
 
             return true;
+        }
+
+        /// <summary>
+        /// Function to copy a file to another location.
+        /// </summary>
+        /// <param name="filePath">The path to the file.</param>
+        /// <param name="destFileNamePath">The destination file name and path.</param>        
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/>, or the <paramref name="destFileNamePath"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/>, or the <paramref name="destFileNamePath"/> parameter is empty.</exception>
+        /// <exception cref="FileNotFoundException">Thrown when the file specified by <paramref name="filePath"/> was not found.</exception>
+        /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by <paramref name="destFileNamePath"/> was not found.</exception>
+        public void CopyFile(string filePath, string destFileNamePath)
+        {
+            if (filePath == null)
+            {
+                throw new ArgumentNullException(nameof(filePath));
+            }
+
+            if (destFileNamePath == null)
+            {
+                throw new ArgumentNullException(nameof(destFileNamePath));
+            }
+
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                throw new ArgumentEmptyException(nameof(filePath));
+            }
+
+            if (string.IsNullOrWhiteSpace(destFileNamePath))
+            {
+                throw new ArgumentEmptyException(nameof(destFileNamePath));
+            }
+
+            var sourceFile = new FileInfo(filePath);
+            var destFile = new FileInfo(destFileNamePath);
+
+            if (!sourceFile.Exists)
+            {
+                throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, filePath));
+            }
+
+            if (!destFile.Directory.Exists)
+            {
+                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, destFileNamePath));
+            }
+
+            sourceFile.CopyTo(destFile.FullName, true);
+        }
+
+        /// <summary>
+        /// Function to move a file to another location.
+        /// </summary>
+        /// <param name="filePath">The path to the file.</param>
+        /// <param name="destFileNamePath">The destination file name and path.</param>        
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/>, or the <paramref name="destFileNamePath"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/>, or the <paramref name="destFileNamePath"/> parameter is empty.</exception>
+        /// <exception cref="FileNotFoundException">Thrown when the file specified by <paramref name="filePath"/> was not found.</exception>
+        /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by <paramref name="destFileNamePath"/> was not found.</exception>
+        public void MoveFile(string filePath, string destFileNamePath)
+        {
+            if (filePath == null)
+            {
+                throw new ArgumentNullException(nameof(filePath));
+            }
+
+            if (destFileNamePath == null)
+            {
+                throw new ArgumentNullException(nameof(destFileNamePath));
+            }
+
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                throw new ArgumentEmptyException(nameof(filePath));
+            }
+
+            if (string.IsNullOrWhiteSpace(destFileNamePath))
+            {
+                throw new ArgumentEmptyException(nameof(destFileNamePath));
+            }
+
+            var sourceFile = new FileInfo(filePath);
+            var destFile = new FileInfo(destFileNamePath);
+
+            if (!sourceFile.Exists)
+            {
+                throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, filePath));
+            }
+
+            if (!destFile.Directory.Exists)
+            {
+                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, destFileNamePath));
+            }
+
+            // If we're moving to the same place, then we don't need to do anything.
+            if (string.Equals(sourceFile.FullName, destFile.FullName, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+            
+            // For some incredibly stupid reason, we have to delete an existing file (why can't we overwrite??)
+            if (destFile.Exists)
+            {
+                destFile.Delete();
+            }
+
+            sourceFile.MoveTo(destFile.FullName);
         }
         #endregion
 

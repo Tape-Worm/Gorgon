@@ -34,6 +34,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Gorgon.Collections;
 using Gorgon.Editor.Data;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
@@ -172,6 +173,14 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the command used to copy a single node.
+        /// </summary>
+        public IEditorCommand<CopyNodeArgs> CopyNodeCommand
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
@@ -204,9 +213,8 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="removeSelf"><b>true</b> to remove the specified node along with its children, or <b>false</b> to only remove children.</param>
         private void RemoveFromCache(IFileExplorerNodeVm node, bool removeSelf)
         {
-            IFileExplorerNodeVm[] children = _nodePathLookup.Where(item => (item.Key.StartsWith(node.FullPath, StringComparison.OrdinalIgnoreCase)) && (item.Value != node))
-                                                            .Select(item => item.Value)
-                                                            .ToArray();
+            IFileExplorerNodeVm[] children = node.Children.Traverse(n => n.Children)
+                                                          .ToArray();
 
             foreach (IFileExplorerNodeVm child in children)
             {
@@ -243,7 +251,12 @@ namespace Gorgon.Editor.ViewModels
 
                 if (!hasChildren)
                 {
-                    _metaDataManager.DeleteFromIncludeMetadata(SelectedNode.FullPath);
+                    if (_metaDataManager.PathInProject(SelectedNode.FullPath))
+                    {
+                        _metaDataManager.DeleteFromIncludeMetadata(SelectedNode.FullPath);
+                        OnFileSystemChanged();
+                    }
+
                     await SelectedNode.DeleteNodeAsync(_fileSystemService);
                     return;
                 }
@@ -340,21 +353,6 @@ namespace Gorgon.Editor.ViewModels
             _busyService.SetBusy();
             try
             {
-                // Function to set the include/exclude flag recursively.
-                void SetIncludeExclude(IReadOnlyList<IFileExplorerNodeVm> children)
-                {
-                    foreach (IFileExplorerNodeVm child in children)
-                    {                       
-                        child.Included = include;
-                        paths.Add(child.FullPath);
-
-                        if (child.Children.Count > 0)
-                        {
-                            SetIncludeExclude(child.Children);
-                        }
-                    }
-                }
-
                 paths.Add(SelectedNode.FullPath);
                 node.Included = include;
 
@@ -367,8 +365,12 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 // Add child nodes.
-                SetIncludeExclude(node.Children);
-
+                foreach (IFileExplorerNodeVm child in node.Children.Traverse(n => n.Children))
+                {
+                    child.Included = include;
+                    paths.Add(child.FullPath);
+                }
+                
                 if (include)
                 {
                     _metaDataManager.IncludePaths(paths);
@@ -498,26 +500,147 @@ namespace Gorgon.Editor.ViewModels
                 _busyService.SetIdle();
             }
         }
-               
+
+        /// <summary>
+        /// Function to determine if a node can be copied.
+        /// </summary>
+        /// <param name="args">The arguments for the command.</param>
+        /// <returns><b>true</b> if the node can be copied, <b>false</b> if not.</returns>
+        private bool CanCopyNode(CopyNodeArgs args) => args?.Source != null;
+
+        /// <summary>
+        /// Function to copy a node.
+        /// </summary>
+        /// <param name="args">The arguments for the command.</param>
+        private void DoCopyNode(CopyNodeArgs args)
+        {
+            _busyService.SetBusy();
+
+            try
+            {
+                CopySingleNode(args.Source, args.Dest);
+            }
+            catch (Exception ex)
+            {
+                _messageService.ShowError(ex, Resources.GOREDIT_ERR_REFRESH);
+            }
+            finally
+            {
+                _busyService.SetIdle();
+            }
+        }
+
+        /// <summary>
+        /// Function to copy a node to another node.
+        /// </summary>
+        /// <param name="source">The source node to copy.</param>
+        /// <param name="dest">The destination that will receive the copy.</param>
+        /// <returns><b>true</b> if the node was moved, <b>false</b> if not.</returns>
+        private bool MoveSingleNode(IFileExplorerNodeVm source, IFileExplorerNodeVm dest)
+        {
+            IFileExplorerNodeVm newNode = null;
+
+            // Locate the next level that allows child creation if this one cannot.
+            while (!dest.AllowChildCreation)
+            {
+                dest = dest.Parent;
+            }
+
+            // If we move to the same location, then we are done. No sense in doing extra for no reason.
+            if (string.Equals(source.Parent.FullPath, dest.FullPath, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            newNode = source.MoveNode(_fileSystemService, dest);
+
+            if (newNode == null)
+            {
+                return false;
+            }
+
+            if ((newNode.Included) && (!_metaDataManager.PathInProject(newNode.FullPath)))
+            {
+                _metaDataManager.IncludePaths(new[] { newNode.FullPath });                
+                _metaDataManager.ExcludePaths(new[] { source.FullPath });
+                OnFileSystemChanged();
+            }
+                       
+            SelectedNode = dest;
+
+            // This will refresh the nodes under the destination.
+            if (!dest.IsExpanded)
+            {
+                newNode.Parent.IsExpanded = true;
+            }
+
+            // If this node is not registered, then add it now.
+            if (!_nodePathLookup.TryGetValue(newNode.FullPath, out IFileExplorerNodeVm prevNode))
+            {
+                dest.Children.Add(newNode);
+                prevNode = newNode;
+            }
+            
+            // Delete this node now that we've got our item moved.
+            source.Parent.Children.Remove(source);
+
+            SelectedNode = prevNode;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Function to copy a node to another node.
+        /// </summary>
+        /// <param name="source">The source node to copy.</param>
+        /// <param name="dest">The destination that will receive the copy.</param>
+        private void CopySingleNode(IFileExplorerNodeVm source, IFileExplorerNodeVm dest)
+        {
+            IFileExplorerNodeVm newNode = null;
+
+            // Locate the next level that allows child creation if this one cannot.
+            while (!dest.AllowChildCreation)
+            {
+                dest = dest.Parent;
+            }
+
+            newNode = source.CopyNode(_fileSystemService, dest);
+
+            if (newNode == null)
+            {
+                return;
+            }
+
+            if ((newNode.Included) && (!_metaDataManager.PathInProject(newNode.FullPath)))
+            {
+                _metaDataManager.IncludePaths(new[] { newNode.FullPath });
+                OnFileSystemChanged();
+            }
+
+            SelectedNode = dest;
+
+            // This will refresh the nodes under the destination.
+            if (!dest.IsExpanded)
+            {
+                newNode.Parent.IsExpanded = true;
+            }
+
+            // If this node is not registered, then add it now.
+            if (!_nodePathLookup.TryGetValue(newNode.FullPath, out IFileExplorerNodeVm prevNode))
+            {                
+                dest.Children.Add(newNode);
+                prevNode = newNode;
+            }
+
+            SelectedNode = prevNode;
+        }
+
         /// <summary>
         /// Function to enumerate all child nodes and cache them in a look up for quick access.
         /// </summary>
         /// <param name="parent">The parent node to start enumerating from.</param>
         private void EnumerateChildren(IFileExplorerNodeVm parent)
         {
-            void EnumerateChildren(ObservableCollection<IFileExplorerNodeVm> children)
-            {
-                children.CollectionChanged += Children_CollectionChanged;
-
-                for (int i = 0; i < children.Count; ++i)
-                {
-                    IFileExplorerNodeVm child = children[i];
-
-                    _nodePathLookup[child.FullPath] = child;
-                    EnumerateChildren(child.Children);
-                }
-            }
-
             if (parent == RootNode)
             {
                 _nodePathLookup["/"] = RootNode;
@@ -526,8 +649,14 @@ namespace Gorgon.Editor.ViewModels
             {
                 _nodePathLookup[parent.FullPath] = parent;
             }
-            
-            EnumerateChildren(parent.Children);
+
+            foreach (IFileExplorerNodeVm node in parent.Children.Traverse(n => n.Children))
+            {
+                _nodePathLookup[node.FullPath] = node;
+                node.Children.CollectionChanged += Children_CollectionChanged;
+            }
+
+            parent.Children.CollectionChanged += Children_CollectionChanged;
         }
 
         /// <summary>
@@ -592,22 +721,39 @@ namespace Gorgon.Editor.ViewModels
         /// <returns><b>true</b> if the clipboard handler can paste an item, <b>false</b> if not.</returns>
         bool IClipboardHandler.CanPaste()
         {
-            // TODO: We need a little more sophisticated means of determining if we can paste or not.
-            if ((!_clipboard.IsType<FileSystemClipboardData>()) || 
-                ((SelectedNode != null) && (!SelectedNode.AllowChildCreation)))
+            if (!_clipboard.IsType<FileSystemClipboardData>())
             {
                 return false;
             }
 
             FileSystemClipboardData data = _clipboard.GetData<FileSystemClipboardData>();
 
-            if (string.IsNullOrWhiteSpace(data.FullPath))
-            {
-                return false;
-            }
+            return !string.IsNullOrWhiteSpace(data.FullPath);            
+        }
 
-            // Do not allow us to cut and paste into ourselves.  That way lies madness.
-            return ((SelectedNode == null) || ((!string.Equals(SelectedNode.FullPath, data.FullPath, StringComparison.OrdinalIgnoreCase))));
+        /// <summary>
+        /// Function to store an item to copy onto the clipboard for cutting.
+        /// </summary>
+        void IClipboardHandler.Cut()
+        {
+            EventHandler handler = _clipboardUpdated;
+
+            try
+            {
+                _clipboard.CopyItem(new FileSystemClipboardData
+                {
+                    Copy = false,
+                    FullPath = SelectedNode.FullPath
+                });
+
+                SelectedNode.IsCut = true;
+
+                handler?.Invoke(this, EventArgs.Empty);
+            }
+            catch (Exception ex)
+            {
+                _messageService.ShowError(ex, string.Format(Resources.GOREDIT_ERR_COPYING_FILE_OR_DIR_CLIPBOARD, SelectedNode.Name));
+            }
         }
 
         /// <summary>
@@ -625,11 +771,62 @@ namespace Gorgon.Editor.ViewModels
                     FullPath = SelectedNode.FullPath
                 });
 
+                SelectedNode.IsCut = false;
+
                 handler?.Invoke(this, EventArgs.Empty);
             }
             catch (Exception ex)
             {
-                _messageService.ShowError(ex, string.Format(Resources.GOREDIT_ERR_COPYING_FILE_OR_DIR, SelectedNode.Name));
+                _messageService.ShowError(ex, string.Format(Resources.GOREDIT_ERR_COPYING_FILE_OR_DIR_CLIPBOARD, SelectedNode.Name));
+            }
+        }
+
+        /// <summary>
+        /// Function to paste an item from the clipboard.
+        /// </summary>
+        void IClipboardHandler.Paste()
+        {
+            EventHandler handler = _clipboardUpdated;
+
+            try
+            {
+                if (!_clipboard.IsType<FileSystemClipboardData>())
+                {
+                    return;
+                }
+
+                _busyService.SetBusy();
+                
+                FileSystemClipboardData data = _clipboard.GetData<FileSystemClipboardData>();                
+                IFileExplorerNodeVm destNode = SelectedNode ?? RootNode;
+
+                if (!_nodePathLookup.TryGetValue(data.FullPath, out IFileExplorerNodeVm sourceNode))
+                {
+                    _messageService.ShowError(string.Format(Resources.GOREDIT_ERR_NODE_NOT_EXIST, data.FullPath));
+                    return;
+                }
+
+                if (data.Copy)
+                {
+                    CopySingleNode(sourceNode, destNode);
+                }
+                else
+                {
+                    if (MoveSingleNode(sourceNode, destNode))
+                    {
+                        sourceNode.IsCut = false;
+                        _clipboard.Clear();
+                        handler?.Invoke(this, EventArgs.Empty);
+                    }                    
+                }
+            }
+            catch (Exception ex)
+            {
+                _messageService.ShowError(ex, Resources.GOREDIT_ERR_PASTE_FILE_OR_DIR);
+            }
+            finally
+            {
+                _busyService.SetIdle();
             }
         }
 
@@ -651,6 +848,7 @@ namespace Gorgon.Editor.ViewModels
             DeleteNodeCommand = new EditorCommand<object>(DoDeleteNode, CanDeleteNode);
             IncludeExcludeCommand = new EditorCommand<bool>(DoIncludeExcludeNode);
             RefreshNodeCommand = new EditorCommand<IFileExplorerNodeVm>(DoRefreshSelectedNode);
+            CopyNodeCommand = new EditorCommand<CopyNodeArgs>(DoCopyNode, CanCopyNode);
         }
         #endregion
     }

@@ -45,8 +45,6 @@ namespace Gorgon.Editor
         : KryptonForm, IDataContext<IMain>
     {
         #region Variables.
-        // A registry of actions to execute for a ribbon button.
-        private readonly Dictionary<KryptonRibbonGroupButton, Action> _ribbonButtonRegistry = new Dictionary<KryptonRibbonGroupButton, Action>();
         // The current action to use when cancelling an operation in progress.
         private Action _progressCancelAction;
         // The timer used to indicate how fast messages can be sent to the progress meter.
@@ -70,6 +68,21 @@ namespace Gorgon.Editor
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Handles the Activated event of the FormMain control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void FormMain_Activated(object sender, EventArgs e)
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            ValidateRibbonButtons();
+        }
+
         /// <summary>
         /// Handles the RenameBegin event of the PanelProject control.
         /// </summary>
@@ -180,7 +193,15 @@ namespace Gorgon.Editor
             PanelWorkSpace.BringToFront();
             KeepWaitPanelOnTop();
 
-            PanelProject.SetDataContext(dataContext?.CurrentProject);
+            if (PanelProject.DataContext == null)
+            {
+                PanelProject.SetDataContext(dataContext?.CurrentProject);
+            }
+            else
+            {
+                PanelProject.Focus();
+                ValidateRibbonButtons();
+            }
         }
 
         /// <summary>
@@ -188,6 +209,7 @@ namespace Gorgon.Editor
         /// </summary>
         private void NavigateToStagingView()
         {
+            _clipboardContext = null;
             StageLauncher.Visible = true;
             RibbonMain.Visible = false;
             PanelWorkSpace.Visible = false;
@@ -534,6 +556,37 @@ namespace Gorgon.Editor
             {
                 ValidateRibbonButtons();
             }
+        }
+
+        /// <summary>
+        /// Handles the Click event of the ButtonFileSystemCut control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonFileSystemCut_Click(object sender, EventArgs e)
+        {
+            if (_clipboardContext == null)
+            {
+                return;
+            }
+
+            _clipboardContext.Cut();
+        }
+
+
+        /// <summary>
+        /// Handles the Click event of the ButtonFileSystemPaste control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonFileSystemPaste_Click(object sender, EventArgs e)
+        {
+            if (_clipboardContext == null)
+            {
+                return;
+            }
+
+            _clipboardContext.Paste();
         }
 
         /// <summary>

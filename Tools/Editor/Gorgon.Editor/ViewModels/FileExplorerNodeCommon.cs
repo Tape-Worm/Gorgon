@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -32,6 +33,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Gorgon.Collections;
+using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.IO;
@@ -42,24 +45,61 @@ namespace Gorgon.Editor.ViewModels
     /// Common functionality for file system node view models.
     /// </summary>
     internal abstract class FileExplorerNodeCommon
-        : ViewModelBase<FileExplorerNodeParameters>, IFileExplorerNodeVm        
+        : ViewModelBase<FileExplorerNodeParameters>, IFileExplorerNodeVm
     {
         #region Variables.
         // The parent for this node.
         private IFileExplorerNodeVm _parent;
-        // The message display service.
-        private IMessageDisplayService _messageService;
-        // The busy state service.
-        private IBusyStateService _busyService;
         // Flag to indicate that this node is included in the project.
         private bool _included;
         // The name of the file.
         private string _name;
         // The physical file system path to the node.
         private string _physicalPath;
+        // Flag to indicate whether this node is expanded or not.
+        private bool _isExpanded;
+        // Flag to indicate that the node is cut.
+        private bool _isCut;
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return the busy state service.
+        /// </summary>
+        protected IBusyStateService BusyService
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the message display service.
+        /// </summary>
+        protected IMessageDisplayService MessageDisplay
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to set or return whether to mark this node as "cut" or not.
+        /// </summary>
+        public bool IsCut
+        {
+            get => _isCut;
+            set
+            {
+                if (_isCut == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _isCut = value;
+                OnPropertyChanged();
+            }
+        }
+
         /// <summary>
         /// Property to return whether to allow child node creation for this node.
         /// </summary>
@@ -94,7 +134,7 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
             private set;
-        }
+        } = new ObservableCollection<IFileExplorerNodeVm>();
 
         /// <summary>
         /// Property to return the parent node for this node.
@@ -184,6 +224,25 @@ namespace Gorgon.Editor.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        /// <summary>
+        /// Property to set or return whether the node is in an expanded state or not (if it has children).
+        /// </summary>
+        public bool IsExpanded
+        {
+            get => _isExpanded;
+            set
+            {
+                if (_isExpanded == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _isExpanded = value;
+                OnPropertyChanged();
+            }
+        }
         #endregion
 
         #region Methods.
@@ -203,8 +262,8 @@ namespace Gorgon.Editor.ViewModels
 
             // This is the root node if we have no parent.
             _name = injectionParameters.Parent == null ? "/" : injectionParameters.FileSystemObject.Name;
-            _messageService = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.MessageDisplay), nameof(injectionParameters));
-            _busyService = injectionParameters.BusyState ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.BusyState), nameof(injectionParameters));
+            MessageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.MessageDisplay), nameof(injectionParameters));
+            BusyService = injectionParameters.BusyState ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.BusyState), nameof(injectionParameters));
 
             // Optional.
             _parent = injectionParameters.Parent;
@@ -259,6 +318,52 @@ namespace Gorgon.Editor.ViewModels
             }
 
             return parentOfMe != null;
+        }
+
+        /// <summary>
+        /// Function to copy this node to another node.
+        /// </summary>
+        /// <param name="fileSystemService">The file system service to use when copying.</param>
+        /// <param name="destNode">The dest node.</param>
+        /// <returns>The new node for the copied node.</returns>
+        public abstract IFileExplorerNodeVm CopyNode(IFileSystemService fileSystemService, IFileExplorerNodeVm destNode);
+
+        /// <summary>
+        /// Function to move this node to another node.
+        /// </summary>
+        /// <param name="fileSystemService">The file system service to use when copying.</param>
+        /// <param name="newPath">The node that will receive the the copy of this node.</param>
+        /// <returns>The new node for the copied node.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileSystemService"/>, or the <paramref name="destNode"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="destNode"/> is unable to create child nodes.</exception>
+        public abstract IFileExplorerNodeVm MoveNode(IFileSystemService fileSystemService, IFileExplorerNodeVm destNode);
+        #endregion
+
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileExplorerNodeCommon"/> class.
+        /// </summary>
+        /// <param name="copy">The node to copy.</param>
+        internal FileExplorerNodeCommon(FileExplorerNodeCommon copy)
+        {
+            this.BusyService = copy.BusyService;
+            this.MessageDisplay = copy.MessageDisplay;
+            this.Name = copy.Name;
+            this.IsExpanded = copy.IsExpanded;
+            this.Included = copy.Included;
+            this.PhysicalPath = copy.PhysicalPath;
+            this.Parent = copy.Parent;
+            
+            // TODO: Not sure what to do here.
+            //this.Children = new ObservableCollection<IFileExplorerNodeVm>()
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileExplorerNodeCommon"/> class.
+        /// </summary>
+        protected FileExplorerNodeCommon()
+        {
+
         }
         #endregion
     }

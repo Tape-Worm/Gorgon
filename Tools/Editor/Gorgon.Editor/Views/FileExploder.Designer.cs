@@ -58,10 +58,14 @@
             this.TreeFileSystem = new ComponentFactory.Krypton.Toolkit.KryptonTreeView();
             this.MenuOptions = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.MenuItemIncludeInProject = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuSep1 = new System.Windows.Forms.ToolStripSeparator();
+            this.MenuSepEdit = new System.Windows.Forms.ToolStripSeparator();
+            this.MenuItemCut = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItemCopy = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItemPaste = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuSepOrganize = new System.Windows.Forms.ToolStripSeparator();
             this.MenuItemDelete = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItemRename = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuSep2 = new System.Windows.Forms.ToolStripSeparator();
+            this.MenuSepNew = new System.Windows.Forms.ToolStripSeparator();
             this.MenuItemCreateDirectory = new System.Windows.Forms.ToolStripMenuItem();
             this.TreeImages = new System.Windows.Forms.ImageList(this.components);
             this.panel3 = new System.Windows.Forms.Panel();
@@ -116,8 +120,10 @@
             this.TreeFileSystem.Size = new System.Drawing.Size(600, 442);
             this.TreeFileSystem.TabIndex = 0;
             this.TreeFileSystem.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.TreeFileSystem_AfterCollapse);
+            this.TreeFileSystem.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.TreeFileSystem_AfterExpand);
             this.TreeFileSystem.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.TreeFileSystem_AfterLabelEdit);
             this.TreeFileSystem.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeFileSystem_AfterSelect);
+            this.TreeFileSystem.BeforeCollapse += new System.Windows.Forms.TreeViewCancelEventHandler(this.TreeFileSystem_BeforeCollapse);
             this.TreeFileSystem.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.TreeFileSystem_BeforeExpand);
             this.TreeFileSystem.BeforeLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.TreeFileSystem_BeforeLabelEdit);
             this.TreeFileSystem.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TreeFileSystem_KeyUp);
@@ -127,54 +133,87 @@
             this.MenuOptions.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.MenuOptions.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MenuItemIncludeInProject,
-            this.MenuSep1,
+            this.MenuSepEdit,
+            this.MenuItemCut,
+            this.MenuItemCopy,
+            this.MenuItemPaste,
+            this.MenuSepOrganize,
             this.MenuItemDelete,
             this.MenuItemRename,
-            this.MenuSep2,
+            this.MenuSepNew,
             this.MenuItemCreateDirectory});
             this.MenuOptions.Name = "MenuOptions";
-            this.MenuOptions.Size = new System.Drawing.Size(181, 126);
+            this.MenuOptions.Size = new System.Drawing.Size(168, 176);
             this.MenuOptions.Opening += new System.ComponentModel.CancelEventHandler(this.MenuOperations_Opening);
             // 
             // MenuItemIncludeInProject
             // 
             this.MenuItemIncludeInProject.CheckOnClick = true;
             this.MenuItemIncludeInProject.Name = "MenuItemIncludeInProject";
-            this.MenuItemIncludeInProject.Size = new System.Drawing.Size(180, 22);
+            this.MenuItemIncludeInProject.Size = new System.Drawing.Size(167, 22);
             this.MenuItemIncludeInProject.Text = "In project?";
             this.MenuItemIncludeInProject.Click += new System.EventHandler(this.ItemIncludeInProject_Click);
             // 
-            // MenuSep1
+            // MenuSepEdit
             // 
-            this.MenuSep1.Name = "MenuSep1";
-            this.MenuSep1.Size = new System.Drawing.Size(177, 6);
+            this.MenuSepEdit.Name = "MenuSepEdit";
+            this.MenuSepEdit.Size = new System.Drawing.Size(164, 6);
+            // 
+            // MenuItemCut
+            // 
+            this.MenuItemCut.Name = "MenuItemCut";
+            this.MenuItemCut.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
+            this.MenuItemCut.Size = new System.Drawing.Size(167, 22);
+            this.MenuItemCut.Text = "Cut";
+            this.MenuItemCut.Click += new System.EventHandler(this.MenuItemCut_Click);
+            // 
+            // MenuItemCopy
+            // 
+            this.MenuItemCopy.Name = "MenuItemCopy";
+            this.MenuItemCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+            this.MenuItemCopy.Size = new System.Drawing.Size(167, 22);
+            this.MenuItemCopy.Text = "Copy";
+            this.MenuItemCopy.Click += new System.EventHandler(this.MenuItemCopy_Click);
+            // 
+            // MenuItemPaste
+            // 
+            this.MenuItemPaste.Name = "MenuItemPaste";
+            this.MenuItemPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
+            this.MenuItemPaste.Size = new System.Drawing.Size(167, 22);
+            this.MenuItemPaste.Text = "Paste";
+            this.MenuItemPaste.Click += new System.EventHandler(this.MenuItemPaste_Click);
+            // 
+            // MenuSepOrganize
+            // 
+            this.MenuSepOrganize.Name = "MenuSepOrganize";
+            this.MenuSepOrganize.Size = new System.Drawing.Size(164, 6);
             // 
             // MenuItemDelete
             // 
             this.MenuItemDelete.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.MenuItemDelete.Name = "MenuItemDelete";
             this.MenuItemDelete.ShortcutKeyDisplayString = "Del";
-            this.MenuItemDelete.Size = new System.Drawing.Size(180, 22);
-            this.MenuItemDelete.Text = "Delete...";
+            this.MenuItemDelete.Size = new System.Drawing.Size(167, 22);
+            this.MenuItemDelete.Text = "&Delete...";
             this.MenuItemDelete.Click += new System.EventHandler(this.ItemDelete_Click);
             // 
             // MenuItemRename
             // 
             this.MenuItemRename.Name = "MenuItemRename";
             this.MenuItemRename.ShortcutKeys = System.Windows.Forms.Keys.F2;
-            this.MenuItemRename.Size = new System.Drawing.Size(180, 22);
-            this.MenuItemRename.Text = "Rename...";
+            this.MenuItemRename.Size = new System.Drawing.Size(167, 22);
+            this.MenuItemRename.Text = "&Rename...";
             this.MenuItemRename.Click += new System.EventHandler(this.ItemRename_Click);
             // 
-            // MenuSep2
+            // MenuSepNew
             // 
-            this.MenuSep2.Name = "MenuSep2";
-            this.MenuSep2.Size = new System.Drawing.Size(177, 6);
+            this.MenuSepNew.Name = "MenuSepNew";
+            this.MenuSepNew.Size = new System.Drawing.Size(164, 6);
             // 
             // MenuItemCreateDirectory
             // 
             this.MenuItemCreateDirectory.Name = "MenuItemCreateDirectory";
-            this.MenuItemCreateDirectory.Size = new System.Drawing.Size(180, 22);
+            this.MenuItemCreateDirectory.Size = new System.Drawing.Size(167, 22);
             this.MenuItemCreateDirectory.Text = "Create directory...";
             this.MenuItemCreateDirectory.Click += new System.EventHandler(this.ItemCreateDirectory_Click);
             // 
@@ -244,10 +283,14 @@
         private ComponentFactory.Krypton.Toolkit.KryptonLabel LabelHeader;
         private System.Windows.Forms.ContextMenuStrip MenuOptions;
         private System.Windows.Forms.ToolStripMenuItem MenuItemDelete;
-        private System.Windows.Forms.ToolStripSeparator MenuSep1;
+        private System.Windows.Forms.ToolStripSeparator MenuSepOrganize;
         private System.Windows.Forms.ToolStripMenuItem MenuItemRename;
         private System.Windows.Forms.ToolStripMenuItem MenuItemIncludeInProject;
         private System.Windows.Forms.ToolStripMenuItem MenuItemCreateDirectory;
-        private System.Windows.Forms.ToolStripSeparator MenuSep2;
+        private System.Windows.Forms.ToolStripSeparator MenuSepNew;
+        private System.Windows.Forms.ToolStripSeparator MenuSepEdit;
+        private System.Windows.Forms.ToolStripMenuItem MenuItemCut;
+        private System.Windows.Forms.ToolStripMenuItem MenuItemCopy;
+        private System.Windows.Forms.ToolStripMenuItem MenuItemPaste;
     }
 }

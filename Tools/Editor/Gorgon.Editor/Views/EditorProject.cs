@@ -160,7 +160,14 @@ namespace Gorgon.Editor.Views
         {
             if (DataContext != null)
             {
-                DataContext.ClipboardContext = DataContext.FileExplorer as IClipboardHandler;
+                if ((ActiveControl == this) || (ActiveControl == FileExplorer))
+                {
+                    DataContext.ClipboardContext = DataContext.FileExplorer as IClipboardHandler;
+                }
+                else
+                {
+                    DataContext.ClipboardContext = null;
+                }
             }
         }
 
