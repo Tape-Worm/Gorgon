@@ -30,7 +30,7 @@ using Gorgon.Editor.ProjectData;
 namespace Gorgon.Editor.ViewModels
 {
     /// <summary>
-    /// Arguments for the <see cref="NewProject.CreateProjectCommand"/>.
+    /// Arguments for the <see cref="StageNewVm.CreateProjectCommand"/>.
     /// </summary>
     internal class ProjectCreateArgs
         : EventArgs

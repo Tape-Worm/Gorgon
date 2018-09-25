@@ -43,7 +43,7 @@ namespace Gorgon.Editor
     /// </summary>
     static class Program
     {
-        #region Variables.
+        #region Properties.
         /// <summary>
         /// Property to return the directory used by the application for settings and other functionality.
         /// </summary>
@@ -205,6 +205,7 @@ namespace Gorgon.Editor
             }
             finally
             {
+                Log?.LogEnd();
                 booter?.Dispose();
             }
         }

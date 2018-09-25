@@ -56,7 +56,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the view model for the new project child view.
         /// </summary>
-        INewProject NewProject
+        IStageNewVm NewProject
         {
             get;
         }

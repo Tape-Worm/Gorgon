@@ -99,8 +99,8 @@
     <Compile Include="ViewModels\FileExplorerVm.cs" />
     <Compile Include="ViewModels\Main.cs" />
     <Compile Include="ViewModels\MainParameters.cs" />
-    <Compile Include="ViewModels\NewProject.cs" />
-    <Compile Include="ViewModels\NewProjectParameters.cs" />
+    <Compile Include="ViewModels\StageNewVm.cs" />
+    <Compile Include="ViewModels\StageNewVmParameters.cs" />
     <Compile Include="ViewModels\ProjectCreateArgs.cs" />
     <Compile Include="ViewModels\ProjectVm.cs" />
     <Compile Include="ViewModels\ProjectVmParameters.cs" />
@@ -110,7 +110,7 @@
     <Compile Include="ViewModels\_Interfaces\IFileExplorerNodeVm.cs" />
     <Compile Include="ViewModels\_Interfaces\IFileExplorerVm.cs" />
     <Compile Include="ViewModels\_Interfaces\IMain.cs" />
-    <Compile Include="ViewModels\_Interfaces\INewProject.cs" />
+    <Compile Include="ViewModels\_Interfaces\IStageNewVm.cs" />
     <Compile Include="ViewModels\_Interfaces\IProjectVm.cs" />
     <Compile Include="Views\EditorProject.cs">
       <SubType>UserControl</SubType>
@@ -142,6 +142,12 @@
     <Compile Include="Views\StageRecent.Designer.cs">
       <DependentUpon>StageRecent.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormWorkspaceLocator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormWorkspaceLocator.Designer.cs">
+      <DependentUpon>FormWorkspaceLocator.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="FormMain.resx">
       <DependentUpon>FormMain.cs</DependentUpon>
     </EmbeddedResource>
@@ -172,6 +178,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\StageRecent.resx">
       <DependentUpon>StageRecent.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormWorkspaceLocator.resx">
+      <DependentUpon>FormWorkspaceLocator.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="..\..\..\Examples\app.manifest">
       <Link>app.manifest</Link>

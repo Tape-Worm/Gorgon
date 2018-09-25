@@ -38,11 +38,12 @@ namespace Gorgon.Editor.Services
         /// </summary>
         /// <param name="path">The path to the workspace.</param>
         /// <returns>A tuple containing a <see cref="bool"/> flag to indicate whether the <b>true</b> if the area is accessible or not, and a string containing the reason why it is not acceptable.</returns>
-        /// <remarks>
-        /// <para>
-        /// A workspace path is only accessible if it can be written to, deleted by the current user and is empty. If either of these conditions are not met, then this method will return <b>false</b>.
-        /// </para>
-        /// </remarks>
         (bool isAcceptable, string reason) TestForAccessibility(DirectoryInfo path);
+
+        /// <summary>
+        /// Function to find the most suitable location for the workspace directory.
+        /// </summary>
+        /// <returns>The directory that is most suitable to use for a workspace.</returns>
+        DirectoryInfo FindBestDirectory();
     }
 }

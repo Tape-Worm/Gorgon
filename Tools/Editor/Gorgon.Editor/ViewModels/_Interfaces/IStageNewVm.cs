@@ -32,7 +32,7 @@ namespace Gorgon.Editor.ViewModels
     /// <summary>
     /// A new project view model.
     /// </summary>
-    internal interface INewProject    
+    internal interface IStageNewVm    
         : IViewModel
     {
         #region Properties.
@@ -46,14 +46,6 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the reason why a workspace directory is not suitable.
-        /// </summary>
-        string WorkspaceNotSuitableReason
-        {
-            get;
-        }
-
-        /// <summary>
         /// Property to return the workspace path.
         /// </summary>
         DirectoryInfo WorkspacePath
@@ -62,11 +54,28 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the command to execute when a folder is selected for a workspace.
+        /// Property to return the available RAM, in bytes.
         /// </summary>
-        IEditorCommand<WorkspaceSelectedArgs> WorkspaceSelectedCommand
+        ulong AvailableRam
         {
             get;
+        }
+
+        /// <summary>
+        /// Property to return the available drive space on the drive that hosts the working folder.
+        /// </summary>
+        ulong AvailableDriveSpace
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to set or return the active GPU name.
+        /// </summary>
+        string GPUName
+        {
+            get;
+            set;
         }
 
         /// <summary>

@@ -26,6 +26,8 @@
 
 using System;
 using System.IO;
+using System.Linq;
+using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
@@ -55,7 +57,7 @@ namespace Gorgon.Editor.Services
         /// <returns>A tuple containing a <see cref="bool"/> flag to indicate whether the <b>true</b> if the area is accessible or not, and a string containing the reason why it is not acceptable.</returns>
         /// <remarks>
         /// <para>
-        /// A workspace path is only accessible if it can be written to, deleted by the current user and is empty. If either of these conditions are not met, then this method will return <b>false</b>.
+        /// A workspace path is only accessible if it can be written to, deleted by the current user, and not a root directory. If either of these conditions are not met, then this method will return <b>false</b>.
         /// </para>
         /// </remarks>
         public (bool isAcceptable, string reason) TestForAccessibility(DirectoryInfo path)
@@ -86,29 +88,6 @@ namespace Gorgon.Editor.Services
                 {
                     Program.Log.Print("The path is the root of the file system on the drive. For security, this directory is unsuitable as a workspace", LoggingLevel.Verbose);
                     return (false, Resources.GOREDIT_ERR_WORKSPACE_DIRECTORY_IS_ROOT);
-                }
-
-                Program.Log.Print("Checking for files and subdirectories...", LoggingLevel.Verbose);
-
-                (bool hasProject, string existingProjectName) = _projectManager.HasProject(path);
-
-                // If we have a project in this directory already, then we are allowed to overwrite it.
-                if (hasProject)
-                {
-                    Program.Log.Print($"A project with the name '{existingProjectName}' already exists in this path. This is OK since we can overwrite the project.",
-                                      LoggingLevel.Intermediate);
-                    Program.Log.Print($"The path '{path.FullName}' will be used as the default workspace path.", LoggingLevel.Simple);
-                }
-                else
-                {
-                    FileSystemInfo[] files = path.GetFileSystemInfos();
-
-                    if (files.Length != 0)
-                    {
-                        Program.Log.Print($"The path '{path.FullName}' is not suitable as a workspace because it is not empty ({files.Length} items found).",
-                                          LoggingLevel.Simple);
-                        return (false, Resources.GOREDIT_ERR_WORKSPACE_NOT_EMPTY);
-                    }
                 }
 
                 Program.Log.Print("Checking for security permission retrieval...", LoggingLevel.Verbose);
@@ -153,6 +132,49 @@ namespace Gorgon.Editor.Services
             {
                 stream?.Dispose();
             }
+        }
+
+        /// <summary>
+        /// Function to find the most suitable location for the workspace directory.
+        /// </summary>
+        /// <returns>The directory that is most suitable to use for a workspace.</returns>
+        public DirectoryInfo FindBestDirectory()
+        {
+            DirectoryInfo result = null;
+            var osdir = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.Windows));
+            DriveInfo[] drives = DriveInfo.GetDrives().Where(item => (item.IsReady)
+                                                                    && ((item.DriveType == DriveType.Fixed) || (item.DriveType == DriveType.Network))
+                                                                    && (!string.Equals(osdir.Root.FullName, item.Name, StringComparison.OrdinalIgnoreCase)))
+                                                    .OrderByDescending(item => item.AvailableFreeSpace)
+                                                    .ToArray();
+
+            string testDir = Guid.NewGuid().ToString("N");
+
+            foreach (DriveInfo drive in drives)
+            {
+                var dir = new DirectoryInfo(Path.Combine(drive.Name, testDir));
+                (bool acceptable, _) = TestForAccessibility(dir);
+
+                if (acceptable)
+                {
+                    result = drive.RootDirectory;
+                    break;
+                }
+            }
+
+            if (result == null)
+            {
+                result = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Tape_Worm", "EditorWorkSpace"));
+
+                (bool acceptable, string reason) = TestForAccessibility(result);
+
+                if (!acceptable)
+                {
+                    throw new GorgonException(GorgonResult.CannotRead, reason);
+                }
+            }
+
+            return result;
         }
         #endregion
 

@@ -59,6 +59,8 @@ namespace Gorgon.Editor.ViewModels
         private IFileExplorerVm _fileExplorer;
         // The current clipboard handler context.
         private IClipboardHandler _clipboardContext;
+        // The application project manager.
+        private IProjectManager _projectManager;
         #endregion
 
         #region Properties.
@@ -259,9 +261,10 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="projectData">The project backing data store.</param>
         /// <param name="messageService">The message display service.</param>
         /// <param name="busyService">The busy state indicator service.</param>
-        /// <exception cref="ArgumentNullException">Thrown if any argument is <b>null</b>.</exception>
+        /// <exception cref="ArgumentMissingException">Thrown if any argument is <b>null</b>.</exception>
         protected override void OnInitialize(ProjectVmParameters injectionParameters)
         {
+            _projectManager = injectionParameters.ProjectManager ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.ProjectManager), nameof(injectionParameters));
             _projectData = injectionParameters.Project ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.Project), nameof(injectionParameters));
             _messageService = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.MessageDisplay), nameof(injectionParameters));
             _busyService = injectionParameters.BusyState ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.BusyState), nameof(injectionParameters));
@@ -297,6 +300,12 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         public override void OnUnload()
         {
+            // TODO: This should probably be placed in a command.
+            if (_projectData != null)
+            {
+                _projectManager.CloseProject(_projectData);
+            }
+
             HideWaitPanel();
             HideProgress();
             UnassignEvents();

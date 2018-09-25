@@ -664,7 +664,7 @@ namespace Gorgon.UI
         {
             try
             {
-                DirectoryInfo parent = CurrentDirectory?.Parent;
+                DirectoryInfo parent = _activeDirectory?.Parent;
 
                 if (parent == null)
                 {

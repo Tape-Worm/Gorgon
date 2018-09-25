@@ -57,5 +57,11 @@ namespace Gorgon.Editor.ProjectData
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="workspace"/>, or the <paramref name="projectName"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the<paramref name="projectName"/> parameter is empty.</exception>
         IProject CreateProject(DirectoryInfo workspace, string projectName);
+
+        /// <summary>
+        /// Function to close the project and clean up its working data.
+        /// </summary>
+        /// <param name="project">The project to close.</param>        
+        void CloseProject(IProject project);
     }
 }

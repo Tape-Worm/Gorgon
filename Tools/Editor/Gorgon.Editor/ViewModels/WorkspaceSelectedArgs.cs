@@ -30,7 +30,7 @@ using System.IO;
 namespace Gorgon.Editor.ViewModels
 {
     /// <summary>
-    /// Arguments for the <see cref="INewProject.WorkspaceSelectedCommand"/>.
+    /// Arguments for the <see cref="IStageNewVm.WorkspaceSelectedCommand"/>.
     /// </summary>
     internal class WorkspaceSelectedArgs
         : CancelEventArgs
