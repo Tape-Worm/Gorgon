@@ -87,12 +87,9 @@ namespace Gorgon.Editor.ViewModels
 
             try
             {
-                if (response == MessageResponse.Cancel)
-                {
-                    return FileSystemConflictResolution.Cancel;
-                }
-
-                return response == MessageResponse.Yes ? FileSystemConflictResolution.Overwrite : FileSystemConflictResolution.Rename;
+                return response == MessageResponse.Cancel
+                    ? FileSystemConflictResolution.Cancel
+                    : response == MessageResponse.Yes ? FileSystemConflictResolution.Overwrite : FileSystemConflictResolution.Rename;
             }
             finally
             {

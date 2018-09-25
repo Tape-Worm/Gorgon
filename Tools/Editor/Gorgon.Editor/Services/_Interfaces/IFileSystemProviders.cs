@@ -20,86 +20,63 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: August 26, 2018 9:34:44 PM
+// Created: September 24, 2018 11:14:09 AM
 // 
 #endregion
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Gorgon.Editor.ProjectData;
-using Gorgon.Editor.UI;
+using Gorgon.IO;
+using Gorgon.IO.Providers;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.Services
 {
     /// <summary>
-    /// The view model for the main window.
+    /// Functionality to capture and load file system providers from plugins.
     /// </summary>
-    internal interface IMain
-        : IViewModel
+    internal interface IFileSystemProviders
     {
-        #region Variables.
-
-        #endregion
-
         #region Properties.
         /// <summary>
-        /// Property to return the current clipboard context.
+        /// Property to return a list of available reader provider extensions.
         /// </summary>
-        IClipboardHandler ClipboardContext
+        IReadOnlyList<GorgonFileExtension> ReaderExtensions
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the view model for the new project child view.
+        /// Property to return all loaded file system reader providers.
         /// </summary>
-        INewProject NewProject
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the view model for the current project.
-        /// </summary>
-        IProjectVm CurrentProject
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the text for the caption.
-        /// </summary>
-        string Text
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command used to assign a project to the application.
-        /// </summary>
-        IEditorCommand<IProject> AssignProjectCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command used to open a project.
-        /// </summary>
-        IEditorCommand<object> OpenProjectCommand
+        IReadOnlyDictionary<string, IGorgonFileSystemProvider> Readers
         {
             get;
         }
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to build a file system reader filter string for file dialogs.
+        /// </summary>
+        /// <returns>The string containing the file dialog filter.</returns>
+        string GetReaderDialogFilterString();
 
-        #endregion
+        /// <summary>
+        /// Function to add file system reader providers.
+        /// </summary>
+        /// <param name="providers">The list of providers to add.</param>
+        void AddReaders(IEnumerable<IGorgonFileSystemProvider> providers);
 
-        #region Constructor/Finalizer.
-
+        /// <summary>
+        /// Function to find the most suitable provider for the file specified in the path.
+        /// </summary>
+        /// <param name="file">The file to evaluate.</param>
+        /// <returns>The best suitable provider, or <b>null</b> if none could be located.</returns>
+        IGorgonFileSystemProvider GetBestProvider(FileInfo file);
         #endregion
     }
 }

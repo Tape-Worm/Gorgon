@@ -20,63 +20,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: August 26, 2018 8:19:04 PM
+// Created: September 24, 2018 1:02:38 PM
 // 
 #endregion
 
-using System.Windows.Forms;
-using DX = SharpDX;
-
-namespace Gorgon.Editor
+namespace Gorgon.Editor.Services
 {
     /// <summary>
-    /// The settings used by the editor.
+    /// Provides a service for showing a dialog used to open or save editor files.
     /// </summary>
-    internal class EditorSettings
+    internal interface IEditorFileDialogService
+        : IFileDialogService
     {
         /// <summary>
-        /// Property to set or return the window boundaries.
+        /// Property to return the available file system providers.
         /// </summary>
-        public DX.Rectangle? WindowBounds
+        IFileSystemProviders Providers
         {
             get;
-            set;
         }
 
         /// <summary>
-        /// Property to set or return the last path used for a workspace.
+        /// Property to return the settings for the application.
         /// </summary>
-        public string LastWorkSpacePath
+        EditorSettings Settings
         {
             get;
-            set;
         }
-
-        /// <summary>
-        /// Property to set or return the path used for the application plug ins.
-        /// </summary>
-        public string PluginPath
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the last file open/save path.
-        /// </summary>
-        public string LastOpenSavePath
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the last window state.
-        /// </summary>
-        public FormWindowState WindowState
-        {
-            get;
-            set;
-        } = FormWindowState.Maximized;
     }
 }

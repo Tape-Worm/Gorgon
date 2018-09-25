@@ -29,34 +29,35 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.CheckOpenProject = new ComponentFactory.Krypton.Toolkit.KryptonCheckButton();
+            this.ButtonOpenProject = new ComponentFactory.Krypton.Toolkit.KryptonButton();
             this.CheckNewProject = new ComponentFactory.Krypton.Toolkit.KryptonCheckButton();
             this.CheckRecent = new ComponentFactory.Krypton.Toolkit.KryptonCheckButton();
             this.ButtonGroup = new ComponentFactory.Krypton.Toolkit.KryptonCheckSet(this.components);
             this.panel2 = new System.Windows.Forms.Panel();
             this.PanelButtons = new System.Windows.Forms.Panel();
             this.PanelBack = new System.Windows.Forms.Panel();
+            this.kryptonBorderEdge1 = new ComponentFactory.Krypton.Toolkit.KryptonBorderEdge();
             this.ButtonBack = new ComponentFactory.Krypton.Toolkit.KryptonButton();
             this.StageNewProject = new Gorgon.Editor.Views.StageNew();
             this.StageRecent = new Gorgon.Editor.Views.StageRecent();
-            this.kryptonBorderEdge1 = new ComponentFactory.Krypton.Toolkit.KryptonBorderEdge();
             ((System.ComponentModel.ISupportInitialize)(this.ButtonGroup)).BeginInit();
             this.panel2.SuspendLayout();
             this.PanelButtons.SuspendLayout();
             this.PanelBack.SuspendLayout();
             this.SuspendLayout();
             // 
-            // CheckOpenProject
+            // ButtonOpenProject
             // 
-            this.CheckOpenProject.AutoSize = true;
-            this.CheckOpenProject.ButtonStyle = ComponentFactory.Krypton.Toolkit.ButtonStyle.Custom1;
-            this.CheckOpenProject.Location = new System.Drawing.Point(0, 202);
-            this.CheckOpenProject.Margin = new System.Windows.Forms.Padding(0);
-            this.CheckOpenProject.Name = "CheckOpenProject";
-            this.CheckOpenProject.Size = new System.Drawing.Size(148, 100);
-            this.CheckOpenProject.TabIndex = 2;
-            this.CheckOpenProject.Values.Image = global::Gorgon.Editor.Properties.Resources.openproject_48x48;
-            this.CheckOpenProject.Values.Text = "Open";
+            this.ButtonOpenProject.AutoSize = true;
+            this.ButtonOpenProject.ButtonStyle = ComponentFactory.Krypton.Toolkit.ButtonStyle.Custom1;
+            this.ButtonOpenProject.Location = new System.Drawing.Point(0, 202);
+            this.ButtonOpenProject.Margin = new System.Windows.Forms.Padding(0);
+            this.ButtonOpenProject.Name = "ButtonOpenProject";
+            this.ButtonOpenProject.Size = new System.Drawing.Size(148, 100);
+            this.ButtonOpenProject.TabIndex = 2;
+            this.ButtonOpenProject.Values.Image = global::Gorgon.Editor.Properties.Resources.openproject_48x48;
+            this.ButtonOpenProject.Values.Text = "Open";
+            this.ButtonOpenProject.Click += new System.EventHandler(this.ButtonOpenProject_Click);
             // 
             // CheckNewProject
             // 
@@ -85,7 +86,6 @@
             // 
             // ButtonGroup
             // 
-            this.ButtonGroup.CheckButtons.Add(this.CheckOpenProject);
             this.ButtonGroup.CheckButtons.Add(this.CheckNewProject);
             this.ButtonGroup.CheckButtons.Add(this.CheckRecent);
             this.ButtonGroup.CheckedButton = this.CheckNewProject;
@@ -110,7 +110,7 @@
             this.PanelButtons.AutoSize = true;
             this.PanelButtons.Controls.Add(this.CheckRecent);
             this.PanelButtons.Controls.Add(this.CheckNewProject);
-            this.PanelButtons.Controls.Add(this.CheckOpenProject);
+            this.PanelButtons.Controls.Add(this.ButtonOpenProject);
             this.PanelButtons.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PanelButtons.Location = new System.Drawing.Point(0, 47);
             this.PanelButtons.Name = "PanelButtons";
@@ -130,6 +130,16 @@
             this.PanelBack.Size = new System.Drawing.Size(148, 47);
             this.PanelBack.TabIndex = 0;
             this.PanelBack.Visible = false;
+            // 
+            // kryptonBorderEdge1
+            // 
+            this.kryptonBorderEdge1.BorderStyle = ComponentFactory.Krypton.Toolkit.PaletteBorderStyle.ContextMenuSeparator;
+            this.kryptonBorderEdge1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.kryptonBorderEdge1.Location = new System.Drawing.Point(3, 40);
+            this.kryptonBorderEdge1.Name = "kryptonBorderEdge1";
+            this.kryptonBorderEdge1.Size = new System.Drawing.Size(142, 1);
+            this.kryptonBorderEdge1.StateCommon.Width = 1;
+            this.kryptonBorderEdge1.Text = "kryptonBorderEdge1";
             // 
             // ButtonBack
             // 
@@ -169,16 +179,6 @@
             this.StageRecent.TabIndex = 1;
             this.StageRecent.Visible = false;
             // 
-            // kryptonBorderEdge1
-            // 
-            this.kryptonBorderEdge1.BorderStyle = ComponentFactory.Krypton.Toolkit.PaletteBorderStyle.ContextMenuSeparator;
-            this.kryptonBorderEdge1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.kryptonBorderEdge1.Location = new System.Drawing.Point(3, 40);
-            this.kryptonBorderEdge1.Name = "kryptonBorderEdge1";
-            this.kryptonBorderEdge1.Size = new System.Drawing.Size(142, 1);
-            this.kryptonBorderEdge1.StateCommon.Width = 1;
-            this.kryptonBorderEdge1.Text = "kryptonBorderEdge1";
-            // 
             // StageLaunch
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -202,7 +202,7 @@
         }
 
         #endregion
-        private ComponentFactory.Krypton.Toolkit.KryptonCheckButton CheckOpenProject;
+        private ComponentFactory.Krypton.Toolkit.KryptonButton ButtonOpenProject;
         private ComponentFactory.Krypton.Toolkit.KryptonCheckButton CheckNewProject;
         private ComponentFactory.Krypton.Toolkit.KryptonCheckButton CheckRecent;
         private ComponentFactory.Krypton.Toolkit.KryptonCheckSet ButtonGroup;

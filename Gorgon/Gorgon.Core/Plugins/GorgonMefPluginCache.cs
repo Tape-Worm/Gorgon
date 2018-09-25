@@ -158,10 +158,10 @@ namespace Gorgon.Plugins
 				return AssemblySigningResult.NotSigned;
 			}
 
-			Guid clrStrongNameClsId = new Guid("B79B0ACD-F5CD-409b-B5A5-A16244610B92");
-			Guid clrStrongNameriid = new Guid("9FD93CCF-3280-4391-B3A9-96E1CDE77C8D");
+			var clrStrongNameClsId = new Guid("B79B0ACD-F5CD-409b-B5A5-A16244610B92");
+			var clrStrongNameriid = new Guid("9FD93CCF-3280-4391-B3A9-96E1CDE77C8D");
 
-			IClrStrongName strongName = (IClrStrongName)RuntimeEnvironment.GetRuntimeInterfaceAsObject(clrStrongNameClsId, clrStrongNameriid);
+			var strongName = (IClrStrongName)RuntimeEnvironment.GetRuntimeInterfaceAsObject(clrStrongNameClsId, clrStrongNameriid);
 
 			int result = strongName.StrongNameSignatureVerificationEx(assemblyPath, true, out bool wasVerified);
 
@@ -175,35 +175,27 @@ namespace Gorgon.Plugins
 				return AssemblySigningResult.Signed;
 			}
 
-			AssemblyName assemblyName = AssemblyName.GetAssemblyName(assemblyPath);
+			var assemblyName = AssemblyName.GetAssemblyName(assemblyPath);
 			byte[] compareToken = assemblyName.GetPublicKey();
 
-			if ((compareToken == null) || (publicKey.Length != compareToken.Length) || (!publicKey.SequenceEqual(compareToken)))
-			{
-				return AssemblySigningResult.Signed | AssemblySigningResult.KeyMismatch;
-			}
+            return (compareToken == null) || (publicKey.Length != compareToken.Length) || (!publicKey.SequenceEqual(compareToken))
+                ? AssemblySigningResult.Signed | AssemblySigningResult.KeyMismatch
+                : AssemblySigningResult.Signed;
+        }
 
-			return AssemblySigningResult.Signed;
-		}
-
-		/// <summary>
-		/// Function to enumerate all the plugin names from the assemblies loaded into the cache.
-		/// </summary>
-		/// <returns>A composition container containing the plugins from the assemblies.</returns>
-		public IEnumerable<Lazy<GorgonPlugin, IDictionary<string, object>>> EnumeratePlugins()
+        /// <summary>
+        /// Function to enumerate all the plugin names from the assemblies loaded into the cache.
+        /// </summary>
+        /// <returns>A composition container containing the plugins from the assemblies.</returns>
+        public IEnumerable<Lazy<GorgonPlugin, IDictionary<string, object>>> EnumeratePlugins()
 		{
 		    lock (_syncLock)
 		    {
-                if (_container == null)
-                {
-                    return new Lazy<GorgonPlugin, IDictionary<string, object>>[0];
-                }
-
-                var items = _container.GetExports<GorgonPlugin, IDictionary<string, object>>(_contractName);
-
-		        return items;
-		    }
-		}
+                return _container == null
+                    ? (new Lazy<GorgonPlugin, IDictionary<string, object>>[0])
+                    : _container.GetExports<GorgonPlugin, IDictionary<string, object>>(_contractName);
+            }
+        }
 
 	    /// <summary>
 	    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.

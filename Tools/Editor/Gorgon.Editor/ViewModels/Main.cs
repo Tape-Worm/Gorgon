@@ -26,10 +26,13 @@
 
 using System;
 using System.ComponentModel;
+using System.IO;
+using Gorgon.Core;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
+using Gorgon.IO;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -50,6 +53,10 @@ namespace Gorgon.Editor.ViewModels
         private IBusyStateService _busyService;
         // The currently active project.
         private IProjectVm _currentProject;
+        // The project open dialog service.
+        private IEditorFileDialogService _openDialog;
+        // The settings for the project.
+        private EditorSettings _settings;
         #endregion
 
         #region Properties.
@@ -124,6 +131,14 @@ namespace Gorgon.Editor.ViewModels
         /// Property to return the current clipboard context.
         /// </summary>
         public IClipboardHandler ClipboardContext => CurrentProject?.ClipboardContext;
+
+        /// <summary>
+        /// Property to return the command used to open a project.
+        /// </summary>        
+        public IEditorCommand<object> OpenProjectCommand
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
@@ -134,8 +149,10 @@ namespace Gorgon.Editor.ViewModels
         /// <remarks>Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.</remarks>
         protected override void OnInitialize(MainParameters injectionParameters)
         {
+            _settings = injectionParameters.Settings ?? throw new ArgumentNullException(nameof(MainParameters.Settings), nameof(injectionParameters));
             _projectManager = injectionParameters.ProjectManager ?? throw new ArgumentMissingException(nameof(MainParameters.ProjectManager), nameof(injectionParameters));
             _viewModelFactory = injectionParameters.ViewModelFactory ?? throw new ArgumentMissingException(nameof(MainParameters.ViewModelFactory), nameof(injectionParameters));
+            _openDialog = injectionParameters.OpenDialog ?? throw new ArgumentMissingException(nameof(MainParameters.OpenDialog), nameof(injectionParameters));
             _messageService = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(MainParameters.MessageDisplay), nameof(injectionParameters));
             _busyService = injectionParameters.BusyState ?? throw new ArgumentMissingException(nameof(MainParameters.BusyState), nameof(injectionParameters));
             NewProject = injectionParameters.NewProject ?? throw new ArgumentMissingException(nameof(MainParameters.NewProject), nameof(injectionParameters));
@@ -225,6 +242,35 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Function called to open a project.
+        /// </summary>
+        private void DoOpenProject()
+        {
+            try
+            {
+                string path = _openDialog.GetFilename();
+
+                if (string.IsNullOrWhiteSpace(path))
+                {
+                    return;
+                }
+
+                ShowWaitPanel(new WaitPanelActivateArgs(string.Format(Resources.GOREDIT_TEXT_OPENING_PROJECT, path.Ellipses(65, true)), null));
+                // TODO: Open file. Probably use async as it'll take a bit for a large file.
+
+                _settings.LastOpenSavePath = Path.GetDirectoryName(path).FormatDirectory(Path.DirectorySeparatorChar);
+            }
+            catch (Exception ex)
+            {
+                _messageService.ShowError(ex, Resources.GOREDIT_ERR_OPENING_PROJECT);
+            }
+            finally
+            {
+                HideWaitPanel();
+            }
+        }
+
+        /// <summary>
         /// Function called when the associated view is loaded.
         /// </summary>
         public override void OnLoad()
@@ -253,7 +299,11 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Initializes a new instance of the <see cref="Main"/> class.
         /// </summary>
-        public Main() => AssignProjectCommand = new EditorCommand<IProject>(DoAssignProject, args => args != null);
+        public Main()
+        {
+            AssignProjectCommand = new EditorCommand<IProject>(DoAssignProject, args => args != null);
+            OpenProjectCommand = new EditorCommand<object>(DoOpenProject);
+        }
         #endregion
     }
 }

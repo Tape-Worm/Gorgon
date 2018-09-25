@@ -123,4 +123,10 @@
   <data name="GOREDIT_ERR_PROPERTY_DOES_NOT_EXIST" xml:space="preserve">
     <value>The property '{0}' is not a member of this object.</value>
   </data>
+  <data name="GOREDIT_TITLE_OPEN_FILE" xml:space="preserve">
+    <value>Open a file...</value>
+  </data>
+  <data name="GOREDIT_TITLE_SAVE_FILE" xml:space="preserve">
+    <value>Save the file as...</value>
+  </data>
 </root>

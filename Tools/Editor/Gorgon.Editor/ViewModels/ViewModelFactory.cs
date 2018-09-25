@@ -27,7 +27,6 @@
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Services;
@@ -42,6 +41,8 @@ namespace Gorgon.Editor.ViewModels
         #region Variables.
         // The settings for the application.
         private readonly EditorSettings _settings;
+        // The providers used to open/save files.
+        private readonly IFileSystemProviders _providers;
         // The service for displaying message boxes.
         private readonly MessageBoxService _messageBoxService;
         // The service for setting busy state by setting a wait cursor.
@@ -69,9 +70,11 @@ namespace Gorgon.Editor.ViewModels
                                                             _messageBoxService, 
                                                             _waitCursorService));
 
-            mainVm.Initialize(new MainParameters(_projectManager, 
+            mainVm.Initialize(new MainParameters(_settings, 
+                                                _projectManager, 
                                                 newProjectVm, 
                                                 this, 
+                                                new EditorFileOpenDialogService(_settings, _providers),                                                
                                                 _messageBoxService, 
                                                 _waitCursorService));
 
@@ -249,14 +252,16 @@ namespace Gorgon.Editor.ViewModels
         /// Initializes a new instance of the <see cref="ViewModelFactory"/> class.
         /// </summary>
         /// <param name="settings">The settings for the application.</param>
+        /// <param name="providers">The providers used to open/save files.</param>
         /// <param name="projectManager">The application project manager.</param>
         /// <param name="messages">The message dialog service.</param>
         /// <param name="waitState">The wait state service.</param>
         /// <param name="clipboardService">The application clipboard service.</param>
         /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
-        public ViewModelFactory(EditorSettings settings, ProjectManager projectManager, MessageBoxService messages, WaitCursorBusyState waitState, ClipboardService clipboardService)
+        public ViewModelFactory(EditorSettings settings, FileSystemProviders providers, ProjectManager projectManager, MessageBoxService messages, WaitCursorBusyState waitState, ClipboardService clipboardService)
         {
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            _providers = providers ?? throw new ArgumentNullException(nameof(providers));
             _projectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
             _messageBoxService = messages ?? throw new ArgumentNullException(nameof(messages));
             _waitCursorService = waitState ?? throw new ArgumentNullException(nameof(waitState));

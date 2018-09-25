@@ -29,8 +29,12 @@ using System.Data;
 using System.Data.SQLite;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
+using Gorgon.Editor.Services;
+using Gorgon.IO;
+using Gorgon.IO.Providers;
 
 namespace Gorgon.Editor.ProjectData
 {
@@ -166,6 +170,30 @@ namespace Gorgon.Editor.ProjectData
         }
 
         /// <summary>
+        /// Function to load a project from a file on disk using the supplied provider.
+        /// </summary>
+        /// <param name="file">The file to load.</param>
+        /// <param name="provider">The provider to use.</param>
+        /// <returns>A new project file.</returns>
+        private IProject OpenProject(FileInfo file, IGorgonFileSystemProvider provider)
+        {
+            IGorgonFileSystem fileSystem = new GorgonFileSystem(provider, Program.Log);
+
+            fileSystem.Mount(file.FullName);
+
+            IGorgonVirtualFile metaData = fileSystem.GetFile(Path.Combine("/", CommonEditorConstants.EditorMetadataFileName));
+
+            if (metaData == null)
+            {
+                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_NOT_A_PROJECT_FILE, file.Name));
+            }
+
+
+
+            return null;
+        }
+
+        /// <summary>
         /// Function to close the project and clean up its working data.
         /// </summary>
         /// <param name="workspace">The workspace directory for the project.</param>
@@ -290,10 +318,56 @@ namespace Gorgon.Editor.ProjectData
 
             return result;
         }
+
+        /// <summary>
+        /// Function to open a project from a file on the disk.
+        /// </summary>
+        /// <param name="path">The path to the project file.</param>
+        /// <param name="providers">The providers used to read the project file.</param>
+        /// <returns>A new project.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/>, or the <paramref name="providers"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+        /// <exception cref="FileNotFoundException">Thrown if the file specified by the <paramref name="path"/> does not exist.</exception>
+        /// <exception cref="GorgonException">Thrown if no provider could be found to load the file.</exception>
+        public async Task<IProject> OpenProjectAsync(string path, IFileSystemProviders providers)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            if (providers == null)
+            {
+                throw new ArgumentNullException(nameof(providers));
+            }
+
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentEmptyException(nameof(path));
+            }
+
+            var file = new FileInfo(path);
+
+            if (!file.Exists)
+            {
+                throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_PROJECT_NOT_FOUND, file.FullName));
+            }
+
+            IGorgonFileSystemProvider provider = await Task.Run(() => providers.GetBestProvider(file));
+            
+            if (provider == null)
+            {
+                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_NO_PROVIDER, file.Name));
+            }
+            
+            IProject result = await Task.Run(() => OpenProject(file, provider));
+
+            return result;
+        }
         #endregion
 
         #region Constructor/Finalizer.
-        
+
         #endregion
     }
 }

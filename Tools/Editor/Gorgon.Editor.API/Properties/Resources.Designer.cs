@@ -77,5 +77,23 @@ namespace Gorgon.Editor.Properties {
                 return ResourceManager.GetString("GOREDIT_ERR_PROPERTY_DOES_NOT_EXIST", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open a file....
+        /// </summary>
+        internal static string GOREDIT_TITLE_OPEN_FILE {
+            get {
+                return ResourceManager.GetString("GOREDIT_TITLE_OPEN_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save the file as....
+        /// </summary>
+        internal static string GOREDIT_TITLE_SAVE_FILE {
+            get {
+                return ResourceManager.GetString("GOREDIT_TITLE_SAVE_FILE", resourceCulture);
+            }
+        }
     }
 }

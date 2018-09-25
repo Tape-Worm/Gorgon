@@ -59,17 +59,29 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Property to return the dialog for opening projects.
+        /// </summary>
+        public IEditorFileDialogService OpenDialog
+        {
+            get;
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="MainParameters"/> class.
         /// </summary>
+        /// <param name="settings">The settings for the application.</param>
         /// <param name="projectManager">The project manager for the application.</param>
         /// <param name="newProject">The new project view model.</param>
         /// <param name="viewModelFactory">The view model factory for creating view models.</param>
+        /// <param name="openDialog">A dialog service used for opening files.</param>
         /// <param name="messageDisplay">The message display service to use.</param>
         /// <param name="busyService">The busy state service to use.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public MainParameters(IProjectManager projectManager, INewProject newProject, ViewModelFactory viewModelFactory, IMessageDisplayService messageDisplay, IBusyStateService busyService)
+        public MainParameters(EditorSettings settings, IProjectManager projectManager, INewProject newProject, ViewModelFactory viewModelFactory, IEditorFileDialogService openDialog, IMessageDisplayService messageDisplay, IBusyStateService busyService)
             : base(viewModelFactory, messageDisplay, busyService)
         {
+            Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            OpenDialog = openDialog ?? throw new ArgumentNullException(nameof(openDialog));
             ProjectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
             NewProject = newProject ?? throw new ArgumentNullException(nameof(newProject));
         }

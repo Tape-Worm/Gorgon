@@ -32,6 +32,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Gorgon.Plugins;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Rendering;
@@ -43,6 +44,9 @@ using Gorgon.UI;
 using Newtonsoft.Json;
 using DX = SharpDX;
 using Exception = System.Exception;
+using Gorgon.Editor.Properties;
+using Gorgon.IO.Providers;
+using System.Collections.Generic;
 
 namespace Gorgon.Editor
 {
@@ -63,6 +67,8 @@ namespace Gorgon.Editor
         private EditorSettings _settings;
         // The project manager for the application.
         private ProjectManager _projectManager;
+        // The cache for plugin assemblies.
+        private GorgonMefPluginCache _pluginCache;        
         #endregion
 
         #region Properties.
@@ -76,10 +82,12 @@ namespace Gorgon.Editor
         protected override void Dispose(bool disposing)
         {
             GraphicsContext context = Interlocked.Exchange(ref _graphicsContext, null);
+            GorgonMefPluginCache pluginCache = Interlocked.Exchange(ref _pluginCache, null);
             FormMain mainForm = Interlocked.Exchange(ref _mainForm, null);
             FormSplash splash = Interlocked.Exchange(ref _splash, null);
 
             context?.Dispose();
+            pluginCache?.Dispose();
             mainForm?.Dispose();
             splash?.Dispose();
 
@@ -134,13 +142,15 @@ namespace Gorgon.Editor
             EditorSettings CreateEditorSettings()
             {
                 return new EditorSettings
-                       {
-                           WindowBounds = new DX.Rectangle(defaultLocation.X,
+                {
+                    WindowBounds = new DX.Rectangle(defaultLocation.X,
                                                            defaultLocation.Y,
                                                            defaultSize.Width,
                                                            defaultSize.Height),
-                           WindowState = FormWindowState.Maximized
-                       };
+                    WindowState = FormWindowState.Maximized,
+                    PluginPath = Path.Combine(GorgonApplication.StartupPath.FullName, "Plugins").FormatDirectory(Path.DirectorySeparatorChar),
+                    LastOpenSavePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).FormatDirectory(Path.DirectorySeparatorChar)
+                };
             }
 
             if (!settingsFile.Exists)
@@ -173,6 +183,30 @@ namespace Gorgon.Editor
             if (result == null)
             {
                 result = CreateEditorSettings();
+            }
+
+            if (string.IsNullOrWhiteSpace(result.PluginPath))
+            {
+                result.PluginPath = Path.Combine(GorgonApplication.StartupPath.FullName, "Plugins").FormatDirectory(Path.DirectorySeparatorChar);
+            }
+
+            var pluginPath = new DirectoryInfo(result.PluginPath);
+
+            if (!pluginPath.Exists)
+            {
+                pluginPath.Create();
+            }
+
+            if (string.IsNullOrWhiteSpace(result.LastOpenSavePath))
+            {
+                result.LastOpenSavePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).FormatDirectory(Path.DirectorySeparatorChar);
+            }
+
+            var lastOpenSavePath = new DirectoryInfo(result.LastOpenSavePath);
+
+            if (!lastOpenSavePath.Exists)
+            {
+                result.LastOpenSavePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).FormatDirectory(Path.DirectorySeparatorChar);
             }
 
             // If we're not on one of the screens, then default to the main screen.
@@ -258,6 +292,45 @@ namespace Gorgon.Editor
         }
 
         /// <summary>
+        /// Function to load any plugins used to import or export files.
+        /// </summary>
+        /// <returns>A file system provider management interface.</returns>
+        private FileSystemProviders LoadFileSystemPlugins()
+        {
+            var fileSystemPlugInsDir = new DirectoryInfo(Path.Combine(_settings.PluginPath, "Filesystem"));
+            IGorgonPluginService plugins = null;
+            var result = new FileSystemProviders();
+
+            try
+            {
+                _splash.InfoText = Resources.GOREDIT_TEXT_LOADING_FILESYSTEM_PLUGINS;
+
+                // If the directory does not exist, then we have no plugins to load.
+                if (!fileSystemPlugInsDir.Exists)
+                {
+                    fileSystemPlugInsDir.Create();
+                    return result;
+                }
+
+                _pluginCache.LoadPluginAssemblies(fileSystemPlugInsDir.FullName, "*.dll");
+                plugins = new GorgonMefPluginService(_pluginCache, Program.Log);
+
+                IReadOnlyList<GorgonFileSystemProvider> providers = plugins.GetPlugins<GorgonFileSystemProvider>();
+                                
+                result.AddReaders(providers);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Program.Log.LogException(ex);
+                GorgonDialogs.ErrorBox(_splash, Resources.GOREDIT_ERR_LOADING_PLUGINS, Resources.GOREDIT_ERR_ERROR, ex);
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Function to perform the boot strapping operation.
         /// </summary>
         /// <returns>The main application window.</returns>
@@ -274,10 +347,14 @@ namespace Gorgon.Editor
 
                 await ShowSplashAsync();
 
+                _pluginCache = new GorgonMefPluginCache(Program.Log);
                 _graphicsContext = GraphicsContext.Create(Program.Log);
 
                 // Get any application settings we might have.
                 _settings = LoadSettings();
+
+                // Load our file system import/export plugins.
+                FileSystemProviders fileSystemProviders = LoadFileSystemPlugins();
 
                 // Create the project manager for the application
                 _projectManager = new ProjectManager();
@@ -299,6 +376,7 @@ namespace Gorgon.Editor
                 MainForm = _mainForm;
 
                 var factory = new ViewModelFactory(_settings,
+                                                   fileSystemProviders,
                                                    _projectManager,
                                                    new MessageBoxService(),
                                                    new WaitCursorBusyState(),
@@ -306,8 +384,7 @@ namespace Gorgon.Editor
 
                 _mainForm.SetDataContext(factory.CreateMainViewModel());
                 _mainForm.Show();
-                _mainForm.WindowState = _settings.WindowState;
-                
+                _mainForm.WindowState = _settings.WindowState;                
             }
             finally
             {

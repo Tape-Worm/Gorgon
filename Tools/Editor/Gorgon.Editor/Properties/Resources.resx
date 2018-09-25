@@ -214,8 +214,8 @@ Please note that only empty directories, that are not the root of a drive can be
 
 '{0}' are not allowed in node names.</value>
   </data>
-  <data name="GOREDIT_TEXT_LOADING_PLUGINS" xml:space="preserve">
-    <value>Loading plug-ins...</value>
+  <data name="GOREDIT_TEXT_LOADING_FILESYSTEM_PLUGINS" xml:space="preserve">
+    <value>Loading file system plug ins...</value>
   </data>
   <data name="GOREDIT_ERR_WORKSPACE_NOT_EMPTY" xml:space="preserve">
     <value>Unsuitable workspace location: There are files or subdirectories in this directory.</value>
@@ -369,5 +369,39 @@ Please try again.</value>
   <data name="GOREDIT_ERR_PASTE_FILE_OR_DIR" xml:space="preserve">
     <value>There was an error pasting the data from the clipboard into the file system.
 Please try again.</value>
+  </data>
+  <data name="GOREDIT_ERR_LOADING_PLUGINS" xml:space="preserve">
+    <value>There was an error loading the plugins.
+
+The application will continue, but some functionality will be unavailable.</value>
+  </data>
+  <data name="GOREDIT_TEXT_ALL_FILES" xml:space="preserve">
+    <value>All files (*.*)|*.*</value>
+  </data>
+  <data name="GOREDIT_TEXT_OPEN_EDITOR_FILE" xml:space="preserve">
+    <value>Select an editor file to open...</value>
+  </data>
+  <data name="GOREDIT_TEXT_SAVE_EDITOR_FILE" xml:space="preserve">
+    <value>Save editor file as...</value>
+  </data>
+  <data name="GOREDIT_TEXT_SUPPORTED_FILES" xml:space="preserve">
+    <value>All supported files|{0}</value>
+  </data>
+  <data name="GOREDIT_ERR_NOT_A_PROJECT_FILE" xml:space="preserve">
+    <value>The file '{0}' is not a Gorgon Editor project file.</value>
+  </data>
+  <data name="GOREDIT_ERR_NO_PROVIDER" xml:space="preserve">
+    <value>There is no provider loaded that can read the file '{0}'.</value>
+  </data>
+  <data name="GOREDIT_ERR_OPENING_PROJECT" xml:space="preserve">
+    <value>There was an error opening the project.
+Please try again.</value>
+  </data>
+  <data name="GOREDIT_ERR_PROJECT_NOT_FOUND" xml:space="preserve">
+    <value>Could not find the project on the path '{0}'.
+Please try again.</value>
+  </data>
+  <data name="GOREDIT_TEXT_OPENING_PROJECT" xml:space="preserve">
+    <value>Opening '{0}'...</value>
   </data>
 </root>

@@ -26,7 +26,9 @@
 
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Gorgon.Core;
+using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.ProjectData
 {
@@ -54,8 +56,14 @@ namespace Gorgon.Editor.ProjectData
         /// <param name="workspace">The directory used as a work space location.</param>
         /// <param name="projectName">The name of the project.</param>
         /// <returns>A new project.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="workspace"/>, or the <paramref name="projectName"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the<paramref name="projectName"/> parameter is empty.</exception>
         IProject CreateProject(DirectoryInfo workspace, string projectName);
+
+        /// <summary>
+        /// Function to open a project from a file on the disk.
+        /// </summary>
+        /// <param name="path">The path to the project file.</param>
+        /// <param name="providers">The providers used to read the project file.</param>
+        /// <returns>A new project.</returns>
+        Task<IProject> OpenProjectAsync(string path, IFileSystemProviders providers);
     }
 }

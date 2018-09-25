@@ -20,86 +20,65 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: August 26, 2018 9:34:44 PM
+// Created: September 24, 2018 12:45:12 PM
 // 
 #endregion
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Gorgon.Editor.ProjectData;
-using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.Services
 {
     /// <summary>
-    /// The view model for the main window.
+    /// Provides a service that displays a file open or save dialog.
     /// </summary>
-    internal interface IMain
-        : IViewModel
+    public interface IFileDialogService
     {
-        #region Variables.
-
-        #endregion
-
         #region Properties.
         /// <summary>
-        /// Property to return the current clipboard context.
+        /// Property to set or return a file filter.
         /// </summary>
-        IClipboardHandler ClipboardContext
+        string FileFilter
         {
             get;
+            set;
         }
 
         /// <summary>
-        /// Property to return the view model for the new project child view.
+        /// Property to set or return the initial directory.
         /// </summary>
-        INewProject NewProject
+        DirectoryInfo InitialDirectory
         {
             get;
+            set;
         }
 
         /// <summary>
-        /// Property to return the view model for the current project.
+        /// Property to set or return the title for the dialog.
         /// </summary>
-        IProjectVm CurrentProject
+        string DialogTitle
         {
             get;
-        }
-
-        /// <summary>
-        /// Property to return the text for the caption.
-        /// </summary>
-        string Text
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command used to assign a project to the application.
-        /// </summary>
-        IEditorCommand<IProject> AssignProjectCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command used to open a project.
-        /// </summary>
-        IEditorCommand<object> OpenProjectCommand
-        {
-            get;
+            set;
         }
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to retrieve a single file name.
+        /// </summary>
+        /// <returns>The selected file path, or <b>null</b> if cancelled.</returns>
+        string GetFilename();
 
-        #endregion
-
-        #region Constructor/Finalizer.
-
+        /// <summary>
+        /// Function to retrieve multiple file names.
+        /// </summary>
+        /// <returns>The list of file paths, or <b>null</b> if cancelled.</returns>
+        IReadOnlyList<string> GetFilenames();
         #endregion
     }
 }

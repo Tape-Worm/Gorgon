@@ -40,20 +40,7 @@ namespace Gorgon.Editor.Services
         /// Function to retrieve the parent form for the message box.
         /// </summary>
         /// <returns>The form to use as the owner.</returns>
-        private static Form GetParentForm()
-        {
-            if (Form.ActiveForm != null)
-            {
-                return Form.ActiveForm;
-            }
-
-            if (Application.OpenForms.Count > 1)
-            {
-                return Application.OpenForms[Application.OpenForms.Count - 1];
-            }
-
-            return GorgonApplication.MainForm;
-        }
+        private static Form GetParentForm() => Form.ActiveForm ?? (Application.OpenForms.Count > 1 ? Application.OpenForms[Application.OpenForms.Count - 1] : GorgonApplication.MainForm);
 
         /// <summary>
         /// Function to show a confirmation message.

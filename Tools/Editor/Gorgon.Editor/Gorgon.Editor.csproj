@@ -76,7 +76,10 @@
     <Compile Include="FormSplash.designer.cs">
       <DependentUpon>FormSplash.cs</DependentUpon>
     </Compile>
+    <Compile Include="ProjectData\IFileSystemProvider.cs" />
     <Compile Include="ProjectData\MetadataManager.cs" />
+    <Compile Include="Services\EditorFileOpenDialogService.cs" />
+    <Compile Include="Services\FileSystemProviders.cs" />
     <Compile Include="Services\FileSystemService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProjectData\Project.cs" />
@@ -87,6 +90,8 @@
     <Compile Include="Rendering\GraphicsContext.cs" />
     <Compile Include="EditorSettings.cs" />
     <Compile Include="Services\WorkspaceTester.cs" />
+    <Compile Include="Services\_Interfaces\IEditorFileDialogService.cs" />
+    <Compile Include="Services\_Interfaces\IFileSystemProviders.cs" />
     <Compile Include="Services\_Interfaces\IWorkspaceTester.cs" />
     <Compile Include="ViewModels\CopyNodeArgs.cs" />
     <Compile Include="ViewModels\CreateNodeArgs.cs" />
@@ -191,6 +196,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Plugins\Content\Readme.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Plugins\Filesystem\Readme.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\paste_16x16.png" />
     <None Include="Resources\copy_16x16.png" />
     <None Include="Resources\copy_48x48.png" />
@@ -296,4 +307,10 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy $(SolutionDir)PlugIns\Bin\$(ConfigurationName)\Gorgon.FileSystem.*.dll $(TargetDir)\Plugins\Filesystem\
+copy $(SolutionDir)PlugIns\Bin\$(ConfigurationName)\Gorgon.FileSystem.*.pdb $(TargetDir)\Plugins\Filesystem\
+copy $(SolutionDir)PlugIns\Bin\$(ConfigurationName)\ICSharpCode.SharpZipLib.dll $(TargetDir)\Plugins\Filesystem\
+</PostBuildEvent>
+  </PropertyGroup>
 </Project>
