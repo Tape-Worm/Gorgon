@@ -29,6 +29,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
+using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.ViewModels
@@ -51,23 +52,30 @@ namespace Gorgon.Editor.ViewModels
         private readonly ProjectManager _projectManager;
         // The clip board service to use.
         private readonly ClipboardService _clipboard;
+        // The graphics context to use.
+        private readonly GraphicsContext _graphicsContext;
         #endregion
         
         #region Methods.
         /// <summary>
         /// Function to create the main view model and any child view models.
         /// </summary>
+        /// <param name="workspace">The directory to use for the workspace.</param>
         /// <returns>A new instance of the main view model.</returns>
-        public IMain CreateMainViewModel()
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="workspace"/> parameter is <b>null</b>.</exception>
+        public IMain CreateMainViewModel(DirectoryInfo workspace)
         {
-            var newProjectVm = new NewProject();
+            var newProjectVm = new StageNewVm
+            {
+                GPUName = _graphicsContext.Graphics.VideoAdapter.Name
+            };
             var mainVm = new Main();
 
-            newProjectVm.Initialize(new NewProjectParameters(_projectManager, 
-                                                            new WorkspaceTester(_projectManager), 
-                                                            _settings, 
-                                                            this, 
-                                                            _messageBoxService, 
+            newProjectVm.Initialize(new StageNewVmParameters(_projectManager,
+                                                            workspace,
+                                                            _settings,
+                                                            this,
+                                                            _messageBoxService,
                                                             _waitCursorService));
 
             mainVm.Initialize(new MainParameters(_settings, 
@@ -237,7 +245,8 @@ namespace Gorgon.Editor.ViewModels
             var metaDataManager = new MetadataManager(projectData, new SqliteMetadataProvider(projectData.MetadataFile));
 
             result.FileExplorer = CreateFileExplorerViewModel(projectData, metaDataManager, fileSystemService);
-            result.Initialize(new ProjectVmParameters(projectData,
+            result.Initialize(new ProjectVmParameters(_projectManager,
+                                                    projectData,
                                                     metaDataManager,
                                                     this,
                                                     _messageBoxService,
@@ -252,15 +261,17 @@ namespace Gorgon.Editor.ViewModels
         /// Initializes a new instance of the <see cref="ViewModelFactory"/> class.
         /// </summary>
         /// <param name="settings">The settings for the application.</param>
+        /// <param name="graphics">The graphics context for the application.</param>
         /// <param name="providers">The providers used to open/save files.</param>
         /// <param name="projectManager">The application project manager.</param>
         /// <param name="messages">The message dialog service.</param>
         /// <param name="waitState">The wait state service.</param>
         /// <param name="clipboardService">The application clipboard service.</param>
         /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
-        public ViewModelFactory(EditorSettings settings, FileSystemProviders providers, ProjectManager projectManager, MessageBoxService messages, WaitCursorBusyState waitState, ClipboardService clipboardService)
+        public ViewModelFactory(EditorSettings settings, GraphicsContext graphics, FileSystemProviders providers, ProjectManager projectManager, MessageBoxService messages, WaitCursorBusyState waitState, ClipboardService clipboardService)
         {
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            _graphicsContext = graphics ?? throw new ArgumentNullException(nameof(graphics));
             _providers = providers ?? throw new ArgumentNullException(nameof(providers));
             _projectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
             _messageBoxService = messages ?? throw new ArgumentNullException(nameof(messages));

@@ -190,11 +190,6 @@ Please try again.</value>
   <data name="drive_network_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\drive_network_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GOREDIT_NEW_NAME_INFO" xml:space="preserve">
-    <value>Enter the name of the project here.
-
-This will serve as the name of the project, and as the file name for the project.</value>
-  </data>
   <data name="GOREDIT_TEXT_INITIALIZING" xml:space="preserve">
     <value>Initializing...</value>
   </data>
@@ -203,11 +198,6 @@ This will serve as the name of the project, and as the file name for the project
   </data>
   <data name="show_external_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\show_external_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GOREDIT_NEW_WORKSPACE_INFO" xml:space="preserve">
-    <value>A workspace is the temporary directory on your hard drive that is used to work on the content in your project file. And since this is a temporary directory, it will be cleaned up and removed when the application closes, or if the file is opened again.
-
-Please note that only empty directories, that are not the root of a drive can be used as a workspace directory.</value>
   </data>
   <data name="GOREDIT_ERR_NODE_ILLEGAL_CHARS" xml:space="preserve">
     <value>The node contains illegal characters.
@@ -369,6 +359,29 @@ Please try again.</value>
   <data name="GOREDIT_ERR_PASTE_FILE_OR_DIR" xml:space="preserve">
     <value>There was an error pasting the data from the clipboard into the file system.
 Please try again.</value>
+  </data>
+  <data name="GOREDIT_TEXT_CONFIGURE_WORKSPACE" xml:space="preserve">
+    <value>Configuring workspace...</value>
+  </data>
+  <data name="GOREDIT_ERR_CANNOT_USE_WORKSPACE" xml:space="preserve">
+    <value>Could not use '{0}' as the work space directory:
+{1}
+
+You will be prompted to select a new work space directory. If no directory is selected, then the application will close.</value>
+  </data>
+  <data name="GOREDIT_CONFIRM_NEED_WORKSPACE" xml:space="preserve">
+    <value>The editor uses a special directory for storing working copies of the files for a project. This is known as the project work space.
+
+Currently, no work space directory has been set up. Would you like to select your workspace directory now? 
+
+If you select "No", the application will exit.
+
+Note: Workspaces must be accessible by the current user, and inside of an existing directory on the drive. Root directories are not valid due to security concerns.
+
+</value>
+  </data>
+  <data name="GOREDIT_TEXT_UNKNOWN" xml:space="preserve">
+    <value>(Unknown)</value>
   </data>
   <data name="GOREDIT_ERR_LOADING_PLUGINS" xml:space="preserve">
     <value>There was an error loading the plugins.

@@ -65,5 +65,11 @@ namespace Gorgon.Editor.ProjectData
         /// <param name="providers">The providers used to read the project file.</param>
         /// <returns>A new project.</returns>
         Task<IProject> OpenProjectAsync(string path, IFileSystemProviders providers);
+
+        /// <summary>
+        /// Function to close the project and clean up its working data.
+        /// </summary>
+        /// <param name="project">The project to close.</param>        
+        void CloseProject(IProject project);
     }
 }

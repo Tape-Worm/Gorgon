@@ -312,6 +312,23 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The editor uses a special directory for storing working copies of the files for a project. This is known as the project work space.
+        ///
+        ///Currently, no work space directory has been set up. Would you like to select your workspace directory now? 
+        ///
+        ///If you select &quot;No&quot;, the application will exit.
+        ///
+        ///Note: Workspaces must be accessible by the current user, and inside of an existing directory on the drive. Root directories are not valid due to security concerns.
+        ///
+        ///.
+        /// </summary>
+        internal static string GOREDIT_CONFIRM_NEED_WORKSPACE {
+            get {
+                return ResourceManager.GetString("GOREDIT_CONFIRM_NEED_WORKSPACE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The editor was unable to locate a workspace location that is accessible to the current user.
         ///
         ///The application will now close..
@@ -340,6 +357,18 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_CANNOT_CREATE_DIR {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_CANNOT_CREATE_DIR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not use &apos;{0}&apos; as the work space directory:
+        ///{1}
+        ///
+        ///You will be prompted to select a new work space directory. If no directory is selected, then the application will close..
+        /// </summary>
+        internal static string GOREDIT_ERR_CANNOT_USE_WORKSPACE {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CANNOT_USE_WORKSPACE", resourceCulture);
             }
         }
         
@@ -644,17 +673,6 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enter the name of the project here.
-        ///
-        ///This will serve as the name of the project, and as the file name for the project..
-        /// </summary>
-        internal static string GOREDIT_NEW_NAME_INFO {
-            get {
-                return ResourceManager.GetString("GOREDIT_NEW_NAME_INFO", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Untitled.
         /// </summary>
         internal static string GOREDIT_NEW_PROJECT {
@@ -664,13 +682,11 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A workspace is the temporary directory on your hard drive that is used to work on the content in your project file. And since this is a temporary directory, it will be cleaned up and removed when the application closes, or if the file is opened again.
-        ///
-        ///Please note that only empty directories, that are not the root of a drive can be used as a workspace directory..
+        ///   Looks up a localized string similar to Configuring workspace....
         /// </summary>
-        internal static string GOREDIT_NEW_WORKSPACE_INFO {
+        internal static string GOREDIT_TEXT_CONFIGURE_WORKSPACE {
             get {
-                return ResourceManager.GetString("GOREDIT_NEW_WORKSPACE_INFO", resourceCulture);
+                return ResourceManager.GetString("GOREDIT_TEXT_CONFIGURE_WORKSPACE", resourceCulture);
             }
         }
         
@@ -743,6 +759,15 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_TEXT_SUPPORTED_FILES {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_SUPPORTED_FILES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (Unknown).
+        /// </summary>
+        internal static string GOREDIT_TEXT_UNKNOWN {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_UNKNOWN", resourceCulture);
             }
         }
         

@@ -43,23 +43,28 @@ namespace Gorgon.Editor.ProjectData
     /// </summary>
     internal class ProjectManager : IProjectManager
     {
+        #region Constant
+        // The extension applied to editor project directories.
+        private const string EditorProjectDirectoryExtension = ".gorEditProj";
+        #endregion
+
         #region Queries.
         // The query used to create a table for our base metadata.
         private const string ProjectMetadataCreate = @"CREATE TABLE IF NOT EXISTS ProjectMetadata (
                                                             ProjectName TEXT NOT NULL,
                                                             Version TEXT NOT NULL,
-                                                            WorkspaceLocation TEXT NOT NULL,
+                                                            WriterName TEXT,
                                                             ShowExternalObjects INT NOT NULL
                                                        ) ";
 
-        // The query used to create a table for file/folder exclusions in the project.
-        private const string ExclusionMetadataCreate = @"CREATE TABLE IF NOT EXISTS IncludedPathMetadata (
+        // The query used to create a table for file/folder inclusions in the project.
+        private const string IncludeMetadataCreate = @"CREATE TABLE IF NOT EXISTS IncludedPathMetadata (
                                                             FullPath TEXT NOT NULL,
                                                             PRIMARY KEY (FullPath)
                                                        ) ";
 
         // The query used to create the inital project metadata.
-        private const string AddProjectMetadata = @"INSERT INTO ProjectMetadata (ProjectName, Version, WorkspaceLocation, ShowExternalObjects) VALUES (@PName, @PVersion, @PWorkspace, @PShowExtern)";
+        private const string AddProjectMetadata = @"INSERT INTO ProjectMetadata (ProjectName, Version, ShowExternalObjects) VALUES (@PName, @PVersion, @PShowExtern)";
 
         // The query used to retrieve the name of the project from the metadata.
         private const string GetProjectNameFromMetadata = @"SELECT ProjectName FROM ProjectMetadata";
@@ -89,7 +94,7 @@ namespace Gorgon.Editor.ProjectData
                     command.ExecuteNonQuery();
                 }
 
-                using (var command = new SQLiteCommand(ExclusionMetadataCreate, conn))
+                using (var command = new SQLiteCommand(IncludeMetadataCreate, conn))
                 {
                     command.ExecuteNonQuery();
                 }
@@ -98,7 +103,6 @@ namespace Gorgon.Editor.ProjectData
                 {
                     command.Parameters.AddWithValue("PName", project.ProjectName);
                     command.Parameters.AddWithValue("PVersion", CommonEditorConstants.EditorCurrentProjectVersion);
-                    command.Parameters.AddWithValue("PWorkspace", project.ProjectWorkSpace.FullName);
                     command.Parameters.AddWithValue("PShowExtern", Convert.ToInt32(project.ShowExternalItems));
 
                     command.ExecuteNonQuery();
@@ -110,47 +114,35 @@ namespace Gorgon.Editor.ProjectData
         }
 
         /// <summary>
-        /// Function to destroy the project directory.
+        /// Function to purge old workspace directories if they were left over (e.g. debug break, crash, etc...)
         /// </summary>
-        /// <param name="directory">The directory to destroy.</param>
-        /// <remarks>
-        /// <para>
-        /// This method will destroy any and all files and/or subdirectories contained within the <paramref name="directory"/> path. Use with caution.
-        /// </para>
-        /// </remarks>
-        private static void DestroyProjectDirectory(DirectoryInfo directory)
+        /// <param name="workspace">The work space directory containing the project directories.</param>
+        private void PurgeStaleDirectories(DirectoryInfo workspace)
         {
-            directory.Refresh();
+            DirectoryInfo[] projDirs = workspace.GetDirectories("*" + EditorProjectDirectoryExtension);
 
-            if (!directory.Exists)
+            foreach (DirectoryInfo directory in projDirs)
             {
-                return;
+                int count = 0;
+
+                // Attempt to delete multiple times if the directory is locked (explorer is a jerk sometimes).
+                while (count < 3)
+                {
+                    try
+                    {
+                        directory.Delete(true);
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        Program.Log.LogException(ex);
+                        ++count;
+
+                        // Give the system some time. Sometimes explorer will release its lock.
+                        System.Threading.Thread.Sleep(250);
+                    }
+                }
             }
-
-            DirectoryInfo[] subDirs = directory.GetDirectories("*", SearchOption.AllDirectories)
-                                               .OrderByDescending(item => item.FullName.Length)
-                                               .ToArray();
-            FileInfo[] files = directory.GetFiles("*", SearchOption.AllDirectories);
-
-            // If we have nothing in this directory, then there's no need to continue.
-            if ((files.Length == 0) && (subDirs.Length == 0))
-            {
-                return;
-            }
-
-            // Delete every file in the directories first.
-            foreach (FileInfo file in files)
-            {
-                file.Delete();
-            }
-
-            // Go through each of the subdirectories repeat the process.
-            foreach (DirectoryInfo subDir in subDirs)
-            {
-                subDir.Delete();
-            }
-
-            directory.Refresh();
         }
 
         /// <summary>
@@ -196,28 +188,34 @@ namespace Gorgon.Editor.ProjectData
         /// <summary>
         /// Function to close the project and clean up its working data.
         /// </summary>
-        /// <param name="workspace">The workspace directory for the project.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="workspace"/> parameter is <b>null</b>.</exception>
-        public void CloseProject(DirectoryInfo workspace)
+        /// <param name="project">The project to close.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="workspace" /> parameter is <b>null</b>.</exception>
+        public void CloseProject(IProject project)
         {
-            if (workspace == null)
+            if (project == null)
             {
-                throw new ArgumentNullException(nameof(workspace));
+                throw new ArgumentNullException(nameof(project));
             }
 
-            try
+            int count = 0;
+
+            // Try multiple times if explorer is being a jerk.
+            while (count < 3)
             {
-                // TODO: Actually, do we really want to blow away the directory all the time?  Doesn't really make sense and 
-                // TODO: could serve as a backup should something go wrong in the saved file.
-                // TODO: Instead, whenever we open a file, we should blow away the directory contents and unpack accordingly.
-                // TODO: Same with creating a new file.  
-                // TODO: We'll leave this here for now, but we'll pull it off of the interface. If we need it, we can use it.
-                // TODO: Otherwise we'll drop it.
-                //DestroyProjectDirectory(workspace);
-            }
-            catch (Exception ex)
-            {
-                Program.Log.LogException(ex);
+                try
+                {
+                    // Blow away the directory containing the project data.
+                    project.ProjectWorkSpace.Delete(true);
+                    project.ProjectWorkSpace.Refresh();
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    Program.Log.LogException(ex);
+                    ++count;
+
+                    System.Threading.Thread.Sleep(250);
+                }
             }
         }
 
@@ -301,13 +299,17 @@ namespace Gorgon.Editor.ProjectData
             {
                 throw new ArgumentEmptyException(nameof(workspace));
             }
-
-            // TODO: Disabled for testing.
             // Remove the previously built directory structure.
-            //DestroyProjectDirectory(workspace);
+            PurgeStaleDirectories(workspace);
+
+            workspace = new DirectoryInfo(Path.ChangeExtension(Path.Combine(workspace.FullName, Guid.NewGuid().ToString("N")), EditorProjectDirectoryExtension));
 
             // Build the root of our work space.
-            //workspace.Create();
+            if (!workspace.Exists)
+            {
+                workspace.Create();
+            }
+
             workspace.Refresh();
 
             var metadataFile = new FileInfo(Path.Combine(workspace.FullName, CommonEditorConstants.EditorMetadataFileName));

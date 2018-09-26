@@ -27,6 +27,7 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
@@ -38,8 +39,8 @@ namespace Gorgon.Editor.Views
     /// <summary>
     /// The view for a new project.
     /// </summary>
-    internal partial class StageNew 
-        : EditorBaseControl, IDataContext<INewProject>
+    internal partial class StageNew
+        : EditorBaseControl, IDataContext<IStageNewVm>
     {
         #region Events.
         /// <summary>
@@ -53,7 +54,7 @@ namespace Gorgon.Editor.Views
         /// Property to return the data context assigned to this view.
         /// </summary>
         [Browsable(false)]
-        public INewProject DataContext
+        public IStageNewVm DataContext
         {
             get;
             private set;
@@ -68,7 +69,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void ButtonCreate_Click(object sender, EventArgs e)
         {
-            if (DataContext?.CreateProjectCommand == null) 
+            if (DataContext?.CreateProjectCommand == null)
             {
                 return;
             }
@@ -85,13 +86,6 @@ namespace Gorgon.Editor.Views
             EventHandler<ProjectCreateArgs> handler = ProjectCreated;
             handler?.Invoke(this, args);
         }
-
-        /// <summary>
-        /// Handles the Resize event of the PanelInfo control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void PanelInfo_Resize(object sender, EventArgs e) => LabelInfo.MaximumSize = new Size(PanelInfo.ClientSize.Width - 16, ClientSize.Height);
 
         /// <summary>
         /// Handles the TextChanged event of the TextName control.
@@ -116,49 +110,6 @@ namespace Gorgon.Editor.Views
         }
 
         /// <summary>
-        /// Handles the Enter event of the TextName control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void TextName_Enter(object sender, EventArgs e) => LabelInfo.Text = Resources.GOREDIT_NEW_NAME_INFO;
-
-        /// <summary>
-        /// Handles the Enter event of the TextWorkSpaceLocation control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void FolderBrowser_Enter(object sender, EventArgs e) => LabelInfo.Text = string.Format(Resources.GOREDIT_NEW_WORKSPACE_INFO, Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
-
-        /// <summary>
-        /// Function called when a folder is selected in the folder browser.
-        /// </summary>
-        /// <param name="sender">The sender of the event.</param>
-        /// <param name="e">The event arguments.</param>
-        private void WorkspaceBrowser_FolderSelected(object sender, FolderSelectedArgs e)
-        {
-            try
-            {
-                if (DataContext?.WorkspaceSelectedCommand == null)
-                {
-                    return;
-                }
-
-                var args = new WorkspaceSelectedArgs(WorkspaceBrowser.CurrentDirectory);
-
-                if (!DataContext.WorkspaceSelectedCommand.CanExecute(args))
-                {
-                    return;
-                }
-
-                DataContext.WorkspaceSelectedCommand.Execute(args);
-            }
-            finally
-            {
-                ValidateControls();
-            }
-        }
-
-        /// <summary>
         /// Handles the PropertyChanged event of the DataContext control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -167,14 +118,8 @@ namespace Gorgon.Editor.Views
         {
             switch (e.PropertyName)
             {
-                case nameof(INewProject.Title):
+                case nameof(IStageNewVm.Title):
                     TextName.Text = DataContext.Title;
-                    break;
-                case nameof(INewProject.WorkspacePath):
-                    WorkspaceBrowser.AssignInitialDirectory(DataContext.WorkspacePath);
-                    break;
-                case nameof(INewProject.WorkspaceNotSuitableReason):
-                    WorkspaceBrowser.SetErrorMessage(DataContext.WorkspaceNotSuitableReason);
                     break;
             }
 
@@ -188,7 +133,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="PropertyChangingEventArgs"/> instance containing the event data.</param>
         private void DataContext_PropertyChanging(object sender, PropertyChangingEventArgs e)
         {
-            
+
         }
 
         /// <summary>
@@ -197,14 +142,17 @@ namespace Gorgon.Editor.Views
         private void ResetDataContext()
         {
             TextName.Text = Resources.GOREDIT_NEW_PROJECT;
-            WorkspaceBrowser.AssignInitialDirectory(null);
+            LabelWorkspaceLocation.Text = string.Empty;
+            LabelRam.Text = $"0 bytes";
+            LabelDriveSpace.Text = $"0 bytes";
+            LabelActiveGpu.Text = Resources.GOREDIT_TEXT_UNKNOWN;
         }
 
         /// <summary>
         /// Function to initialize the control from a data context.
         /// </summary>
         /// <param name="dataContext">The data context to assign.</param>
-        private void InitializeFromDataContext(INewProject dataContext)
+        private void InitializeFromDataContext(IStageNewVm dataContext)
         {
             if (dataContext == null)
             {
@@ -212,8 +160,11 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            TextName.Text = dataContext?.Title ?? string.Empty;
-            WorkspaceBrowser.AssignInitialDirectory(dataContext?.WorkspacePath);
+            TextName.Text = dataContext.Title ?? string.Empty;
+            LabelWorkspaceLocation.Text = dataContext.WorkspacePath?.FullName ?? Resources.GOREDIT_ERR_ERROR;
+            LabelRam.Text = $"{dataContext.AvailableRam.FormatMemory()} ({dataContext.AvailableRam:###,##0} bytes)";
+            LabelDriveSpace.Text = $"{dataContext.AvailableDriveSpace.FormatMemory()} ({dataContext.AvailableDriveSpace:###,##0} bytes)";
+            LabelActiveGpu.Text = dataContext.GPUName;
         }
 
         /// <summary>
@@ -233,7 +184,7 @@ namespace Gorgon.Editor.Views
         /// <summary>
         /// Function to validate control state.
         /// </summary>
-        private void ValidateControls() => ButtonCreate.Enabled = (DataContext?.CreateProjectCommand?.CanExecute(null) ?? false) && (!WorkspaceBrowser.IsErrorPaneOpen);
+        private void ValidateControls() => ButtonCreate.Enabled = (DataContext?.CreateProjectCommand?.CanExecute(null) ?? false);
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load" /> event.</summary>
         /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data. </param>
@@ -248,7 +199,7 @@ namespace Gorgon.Editor.Views
         /// Function to assign a data context to the view.
         /// </summary>
         /// <param name="dataContext">The data context to assign.</param>
-        public void SetDataContext(INewProject dataContext)
+        public void SetDataContext(IStageNewVm dataContext)
         {
             try
             {

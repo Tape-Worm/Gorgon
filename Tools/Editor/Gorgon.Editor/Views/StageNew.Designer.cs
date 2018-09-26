@@ -42,11 +42,19 @@ namespace Gorgon.Editor.Views
             this.PanelNew = new ComponentFactory.Krypton.Toolkit.KryptonPanel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.PanelsControls = new ComponentFactory.Krypton.Toolkit.KryptonPanel();
-            this.PanelInfo = new System.Windows.Forms.Panel();
-            this.LabelInfo = new ComponentFactory.Krypton.Toolkit.KryptonWrapLabel();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.ButtonCreate = new ComponentFactory.Krypton.Toolkit.KryptonButton();
-            this.WorkspaceBrowser = new Gorgon.UI.GorgonFolderBrowser();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.TextName = new ComponentFactory.Krypton.Toolkit.KryptonTextBox();
+            this.PanelWorkspace = new System.Windows.Forms.FlowLayoutPanel();
+            this.LabelWorkspaceLocation = new ComponentFactory.Krypton.Toolkit.KryptonLabel();
+            this.LabelWorkspace = new ComponentFactory.Krypton.Toolkit.KryptonLabel();
+            this.kryptonLabel1 = new ComponentFactory.Krypton.Toolkit.KryptonLabel();
+            this.LabelDriveSpace = new ComponentFactory.Krypton.Toolkit.KryptonLabel();
+            this.kryptonLabel2 = new ComponentFactory.Krypton.Toolkit.KryptonLabel();
+            this.LabelActiveGpu = new ComponentFactory.Krypton.Toolkit.KryptonLabel();
+            this.kryptonLabel4 = new ComponentFactory.Krypton.Toolkit.KryptonLabel();
+            this.LabelRam = new ComponentFactory.Krypton.Toolkit.KryptonLabel();
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
             this.LabelHeader = new ComponentFactory.Krypton.Toolkit.KryptonLabel();
@@ -56,7 +64,9 @@ namespace Gorgon.Editor.Views
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PanelsControls)).BeginInit();
             this.PanelsControls.SuspendLayout();
-            this.PanelInfo.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
+            this.PanelWorkspace.SuspendLayout();
             this.panel3.SuspendLayout();
             this.panel4.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -85,76 +95,62 @@ namespace Gorgon.Editor.Views
             // 
             // PanelsControls
             // 
-            this.PanelsControls.Controls.Add(this.PanelInfo);
-            this.PanelsControls.Controls.Add(this.ButtonCreate);
-            this.PanelsControls.Controls.Add(this.WorkspaceBrowser);
-            this.PanelsControls.Controls.Add(this.TextName);
+            this.PanelsControls.Controls.Add(this.tableLayoutPanel1);
             this.PanelsControls.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PanelsControls.Location = new System.Drawing.Point(0, 1);
             this.PanelsControls.Name = "PanelsControls";
             this.PanelsControls.Size = new System.Drawing.Size(706, 540);
             this.PanelsControls.TabIndex = 0;
             // 
-            // PanelInfo
+            // tableLayoutPanel1
             // 
-            this.PanelInfo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.PanelInfo.AutoScroll = true;
-            this.PanelInfo.BackColor = System.Drawing.Color.Transparent;
-            this.PanelInfo.Controls.Add(this.LabelInfo);
-            this.PanelInfo.Location = new System.Drawing.Point(10, 415);
-            this.PanelInfo.Name = "PanelInfo";
-            this.PanelInfo.Size = new System.Drawing.Size(683, 69);
-            this.PanelInfo.TabIndex = 7;
-            this.PanelInfo.Resize += new System.EventHandler(this.PanelInfo_Resize);
-            // 
-            // LabelInfo
-            // 
-            this.LabelInfo.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.LabelInfo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(57)))), ((int)(((byte)(91)))));
-            this.LabelInfo.Location = new System.Drawing.Point(0, 0);
-            this.LabelInfo.MaximumSize = new System.Drawing.Size(683, 69);
-            this.LabelInfo.Name = "LabelInfo";
-            this.LabelInfo.Size = new System.Drawing.Size(0, 15);
+            this.tableLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Controls.Add(this.ButtonCreate, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.PanelWorkspace, 0, 1);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 3;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(706, 540);
+            this.tableLayoutPanel1.TabIndex = 9;
             // 
             // ButtonCreate
             // 
-            this.ButtonCreate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.ButtonCreate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ButtonCreate.ButtonStyle = ComponentFactory.Krypton.Toolkit.ButtonStyle.Custom2;
-            this.ButtonCreate.Location = new System.Drawing.Point(10, 487);
+            this.ButtonCreate.Location = new System.Drawing.Point(64, 230);
+            this.ButtonCreate.Margin = new System.Windows.Forms.Padding(64, 64, 64, 0);
             this.ButtonCreate.Name = "ButtonCreate";
-            this.ButtonCreate.Size = new System.Drawing.Size(683, 39);
+            this.ButtonCreate.Size = new System.Drawing.Size(578, 28);
             this.ButtonCreate.TabIndex = 5;
             this.ButtonCreate.Values.Text = "Create Project";
             this.ButtonCreate.Click += new System.EventHandler(this.ButtonCreate_Click);
             // 
-            // WorkspaceBrowser
+            // tableLayoutPanel2
             // 
-            this.WorkspaceBrowser.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.tableLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.WorkspaceBrowser.BackColor = System.Drawing.Color.Transparent;
-            this.WorkspaceBrowser.CaptionFont = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.WorkspaceBrowser.CdRomImage = global::Gorgon.Editor.Properties.Resources.drive_cdrom_48x48;
-            this.WorkspaceBrowser.DirectoryImage = global::Gorgon.Editor.Properties.Resources.folder_48x48;
-            this.WorkspaceBrowser.DirectoryListFont = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.WorkspaceBrowser.DirectoryNameFont = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.WorkspaceBrowser.FileImage = global::Gorgon.Editor.Properties.Resources.file_48x48;
-            this.WorkspaceBrowser.ForeColor = System.Drawing.Color.White;
-            this.WorkspaceBrowser.HardDriveImage = global::Gorgon.Editor.Properties.Resources.drive_48x48;
-            this.WorkspaceBrowser.Location = new System.Drawing.Point(10, 40);
-            this.WorkspaceBrowser.Margin = new System.Windows.Forms.Padding(4);
-            this.WorkspaceBrowser.Name = "WorkspaceBrowser";
-            this.WorkspaceBrowser.NetworkDriveImage = global::Gorgon.Editor.Properties.Resources.drive_network_48x48;
-            this.WorkspaceBrowser.RamDriveImage = global::Gorgon.Editor.Properties.Resources.drive_ram_48x48;
-            this.WorkspaceBrowser.RemovableDriveImage = global::Gorgon.Editor.Properties.Resources.drive_remove_48x48;
-            this.WorkspaceBrowser.Size = new System.Drawing.Size(683, 371);
-            this.WorkspaceBrowser.TabIndex = 3;
-            this.WorkspaceBrowser.Text = "Select a workspace directory";
-            this.WorkspaceBrowser.FolderSelected += new System.EventHandler<Gorgon.UI.FolderSelectedArgs>(this.WorkspaceBrowser_FolderSelected);
-            this.WorkspaceBrowser.FolderEntered += new System.EventHandler<Gorgon.UI.FolderSelectedArgs>(this.WorkspaceBrowser_FolderSelected);
-            this.WorkspaceBrowser.Enter += new System.EventHandler(this.FolderBrowser_Enter);
+            this.tableLayoutPanel2.AutoSize = true;
+            this.tableLayoutPanel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.tableLayoutPanel2.ColumnCount = 1;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.Controls.Add(this.TextName, 0, 1);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 16);
+            this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(0, 16, 0, 3);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 2;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(706, 28);
+            this.tableLayoutPanel2.TabIndex = 6;
             // 
             // TextName
             // 
@@ -162,13 +158,119 @@ namespace Gorgon.Editor.Views
             this.TextName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TextName.InputControlStyle = ComponentFactory.Krypton.Toolkit.InputControlStyle.Custom1;
-            this.TextName.Location = new System.Drawing.Point(10, 5);
+            this.TextName.Location = new System.Drawing.Point(3, 0);
+            this.TextName.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
             this.TextName.Name = "TextName";
-            this.TextName.Size = new System.Drawing.Size(683, 28);
+            this.TextName.Size = new System.Drawing.Size(700, 28);
             this.TextName.TabIndex = 0;
             this.TextName.Text = "Untitled";
             this.TextName.TextChanged += new System.EventHandler(this.TextName_TextChanged);
-            this.TextName.Enter += new System.EventHandler(this.TextName_Enter);
+            // 
+            // PanelWorkspace
+            // 
+            this.PanelWorkspace.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.PanelWorkspace.AutoSize = true;
+            this.PanelWorkspace.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.PanelWorkspace.Controls.Add(this.LabelWorkspace);
+            this.PanelWorkspace.Controls.Add(this.LabelWorkspaceLocation);
+            this.PanelWorkspace.Controls.Add(this.kryptonLabel1);
+            this.PanelWorkspace.Controls.Add(this.LabelDriveSpace);
+            this.PanelWorkspace.Controls.Add(this.kryptonLabel2);
+            this.PanelWorkspace.Controls.Add(this.LabelActiveGpu);
+            this.PanelWorkspace.Controls.Add(this.kryptonLabel4);
+            this.PanelWorkspace.Controls.Add(this.LabelRam);
+            this.PanelWorkspace.Location = new System.Drawing.Point(3, 50);
+            this.PanelWorkspace.Name = "PanelWorkspace";
+            this.PanelWorkspace.Size = new System.Drawing.Size(700, 113);
+            this.PanelWorkspace.TabIndex = 8;
+            // 
+            // LabelWorkspaceLocation
+            // 
+            this.LabelWorkspaceLocation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.PanelWorkspace.SetFlowBreak(this.LabelWorkspaceLocation, true);
+            this.LabelWorkspaceLocation.LabelStyle = ComponentFactory.Krypton.Toolkit.LabelStyle.TitlePanel;
+            this.LabelWorkspaceLocation.Location = new System.Drawing.Point(114, 12);
+            this.LabelWorkspaceLocation.Margin = new System.Windows.Forms.Padding(0, 12, 0, 3);
+            this.LabelWorkspaceLocation.Name = "LabelWorkspaceLocation";
+            this.LabelWorkspaceLocation.Size = new System.Drawing.Size(96, 20);
+            this.LabelWorkspaceLocation.TabIndex = 7;
+            this.LabelWorkspaceLocation.Values.Text = "c:\\temp\\sample";
+            // 
+            // LabelWorkspace
+            // 
+            this.LabelWorkspace.Location = new System.Drawing.Point(0, 12);
+            this.LabelWorkspace.Margin = new System.Windows.Forms.Padding(0, 12, 0, 3);
+            this.LabelWorkspace.Name = "LabelWorkspace";
+            this.LabelWorkspace.Size = new System.Drawing.Size(114, 18);
+            this.LabelWorkspace.TabIndex = 6;
+            this.LabelWorkspace.Values.Text = "Workspace location:";
+            // 
+            // kryptonLabel1
+            // 
+            this.kryptonLabel1.Location = new System.Drawing.Point(0, 38);
+            this.kryptonLabel1.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
+            this.kryptonLabel1.Name = "kryptonLabel1";
+            this.kryptonLabel1.Size = new System.Drawing.Size(156, 18);
+            this.kryptonLabel1.TabIndex = 8;
+            this.kryptonLabel1.Values.Text = "Free workspace drive space:";
+            // 
+            // LabelDriveSpace
+            // 
+            this.LabelDriveSpace.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.PanelWorkspace.SetFlowBreak(this.LabelDriveSpace, true);
+            this.LabelDriveSpace.LabelStyle = ComponentFactory.Krypton.Toolkit.LabelStyle.TitlePanel;
+            this.LabelDriveSpace.Location = new System.Drawing.Point(156, 38);
+            this.LabelDriveSpace.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
+            this.LabelDriveSpace.Name = "LabelDriveSpace";
+            this.LabelDriveSpace.Size = new System.Drawing.Size(227, 20);
+            this.LabelDriveSpace.TabIndex = 9;
+            this.LabelDriveSpace.Values.Text = "8GB (8,000,000,000 bytes or something)";
+            // 
+            // kryptonLabel2
+            // 
+            this.kryptonLabel2.Location = new System.Drawing.Point(0, 64);
+            this.kryptonLabel2.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
+            this.kryptonLabel2.Name = "kryptonLabel2";
+            this.kryptonLabel2.Size = new System.Drawing.Size(68, 18);
+            this.kryptonLabel2.TabIndex = 10;
+            this.kryptonLabel2.Values.Text = "Active GPU:";
+            // 
+            // LabelActiveGpu
+            // 
+            this.LabelActiveGpu.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.PanelWorkspace.SetFlowBreak(this.LabelActiveGpu, true);
+            this.LabelActiveGpu.LabelStyle = ComponentFactory.Krypton.Toolkit.LabelStyle.TitlePanel;
+            this.LabelActiveGpu.Location = new System.Drawing.Point(68, 64);
+            this.LabelActiveGpu.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
+            this.LabelActiveGpu.Name = "LabelActiveGpu";
+            this.LabelActiveGpu.Size = new System.Drawing.Size(142, 20);
+            this.LabelActiveGpu.TabIndex = 11;
+            this.LabelActiveGpu.Values.Text = "Nvidia bitchin\' fast 2000";
+            // 
+            // kryptonLabel4
+            // 
+            this.kryptonLabel4.Location = new System.Drawing.Point(0, 90);
+            this.kryptonLabel4.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
+            this.kryptonLabel4.Name = "kryptonLabel4";
+            this.kryptonLabel4.Size = new System.Drawing.Size(86, 18);
+            this.kryptonLabel4.TabIndex = 12;
+            this.kryptonLabel4.Values.Text = "Available RAM:";
+            // 
+            // LabelRam
+            // 
+            this.LabelRam.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.LabelRam.LabelStyle = ComponentFactory.Krypton.Toolkit.LabelStyle.TitlePanel;
+            this.LabelRam.Location = new System.Drawing.Point(86, 90);
+            this.LabelRam.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
+            this.LabelRam.Name = "LabelRam";
+            this.LabelRam.Size = new System.Drawing.Size(107, 20);
+            this.LabelRam.TabIndex = 13;
+            this.LabelRam.Values.Text = "64k (65536 bytes)";
             // 
             // panel3
             // 
@@ -223,9 +325,12 @@ namespace Gorgon.Editor.Views
             this.panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.PanelsControls)).EndInit();
             this.PanelsControls.ResumeLayout(false);
-            this.PanelsControls.PerformLayout();
-            this.PanelInfo.ResumeLayout(false);
-            this.PanelInfo.PerformLayout();
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel1.PerformLayout();
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel2.PerformLayout();
+            this.PanelWorkspace.ResumeLayout(false);
+            this.PanelWorkspace.PerformLayout();
             this.panel3.ResumeLayout(false);
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
@@ -242,11 +347,19 @@ namespace Gorgon.Editor.Views
         private System.Windows.Forms.Panel panel2;
         private ComponentFactory.Krypton.Toolkit.KryptonPanel PanelsControls;
         private ComponentFactory.Krypton.Toolkit.KryptonTextBox TextName;
-        private ComponentFactory.Krypton.Toolkit.KryptonWrapLabel LabelInfo;
-        private Gorgon.UI.GorgonFolderBrowser WorkspaceBrowser;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Panel panel4;
         private ComponentFactory.Krypton.Toolkit.KryptonButton ButtonCreate;
-        private System.Windows.Forms.Panel PanelInfo;
+        private ComponentFactory.Krypton.Toolkit.KryptonLabel LabelWorkspace;
+        private ComponentFactory.Krypton.Toolkit.KryptonLabel LabelWorkspaceLocation;
+        private TableLayoutPanel tableLayoutPanel1;
+        private FlowLayoutPanel PanelWorkspace;
+        private TableLayoutPanel tableLayoutPanel2;
+        private ComponentFactory.Krypton.Toolkit.KryptonLabel kryptonLabel1;
+        private ComponentFactory.Krypton.Toolkit.KryptonLabel LabelDriveSpace;
+        private ComponentFactory.Krypton.Toolkit.KryptonLabel kryptonLabel2;
+        private ComponentFactory.Krypton.Toolkit.KryptonLabel LabelActiveGpu;
+        private ComponentFactory.Krypton.Toolkit.KryptonLabel kryptonLabel4;
+        private ComponentFactory.Krypton.Toolkit.KryptonLabel LabelRam;
     }
 }

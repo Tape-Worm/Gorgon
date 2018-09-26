@@ -42,7 +42,7 @@ namespace Gorgon.Editor.ViewModels
         : ViewModelCommonParameters
     {
         /// <summary>
-        /// Property to set or return the metadata manager for the project.
+        /// Property to return the metadata manager for the project.
         /// </summary>
         public IMetadataManager MetadataManager
         {
@@ -50,13 +50,27 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ProjectVmParameters"/> class.
+        /// Property to to return the application project manager.
         /// </summary>
-        /// <param name="viewModelFactory">The view model factory for creating view models.</param>
+        public IProjectManager ProjectManager
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProjectVmParameters" /> class.
+        /// </summary>
+        /// <param name="projectManager">The project manager for the application.</param>
+        /// <param name="project">The current project data.</param>
+        /// <param name="metadataManager">The metadata manager.</param>
+        /// <param name="viewModelFactory">The view model factory.</param>
+        /// <param name="messageDisplay">The message display service.</param>
+        /// <param name="busyService">The busy state service.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public ProjectVmParameters(IProject project, IMetadataManager metadataManager, ViewModelFactory viewModelFactory, IMessageDisplayService messageDisplay, IBusyStateService busyService)
+        public ProjectVmParameters(IProjectManager projectManager, IProject project, IMetadataManager metadataManager, ViewModelFactory viewModelFactory, IMessageDisplayService messageDisplay, IBusyStateService busyService)
             : base(viewModelFactory, messageDisplay, busyService)
         {
+            ProjectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
             Project = project ?? throw new ArgumentNullException(nameof(project));
             MetadataManager = metadataManager ?? throw new ArgumentNullException(nameof(metadataManager));
         }

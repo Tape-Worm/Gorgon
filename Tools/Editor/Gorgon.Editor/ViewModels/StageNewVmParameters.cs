@@ -25,25 +25,22 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.ViewModels
 {
     /// <summary>
-    /// Parameters for the <see cref="INewProject"/> view model.
+    /// Parameters for the <see cref="IStageNewVm"/> view model.
     /// </summary>
-    internal class NewProjectParameters
+    internal class StageNewVmParameters
         : ViewModelCommonParameters
     {
         /// <summary>
-        /// Property to return the work space testing functionality to use.
+        /// Property to return the work space directory to use.
         /// </summary>
-        public IWorkspaceTester WorkspaceTester
+        public DirectoryInfo WorkspaceDirectory
         {
             get;
         }
@@ -65,20 +62,20 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NewProjectParameters"/> class.
+        /// Initializes a new instance of the <see cref="StageNewVmParameters"/> class.
         /// </summary>
         /// <param name="projectManager">The project manager for the application.</param>
-        /// <param name="workspaceTester">The workspace testing functionality.</param>
+        /// <param name="workspaceDirectory">The workspace to directory to use.</param>
         /// <param name="viewModelFactory">The view model factory for creating view models.</param>
         /// <param name="settings">The settings for the editor.</param>
         /// <param name="messageDisplay">The message display service to use.</param>
         /// <param name="busyService">The busy state service to use.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public NewProjectParameters(IProjectManager projectManager, IWorkspaceTester workspaceTester, EditorSettings settings, ViewModelFactory viewModelFactory, IMessageDisplayService messageDisplay, IBusyStateService busyService)
+        public StageNewVmParameters(IProjectManager projectManager, DirectoryInfo workspaceDirectory, EditorSettings settings, ViewModelFactory viewModelFactory, IMessageDisplayService messageDisplay, IBusyStateService busyService)
             : base(viewModelFactory, messageDisplay, busyService)
         {
             ProjectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
-            WorkspaceTester = workspaceTester ?? throw new ArgumentNullException(nameof(workspaceTester));
+            WorkspaceDirectory = workspaceDirectory ?? throw new ArgumentNullException(nameof(workspaceDirectory));
             EditorSettings = settings ?? throw new ArgumentNullException(nameof(settings));
         }
     }

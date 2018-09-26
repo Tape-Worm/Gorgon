@@ -35,6 +35,7 @@ using System.Windows.Forms;
 using Gorgon.Plugins;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.ProjectData;
+using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.ViewModels;
@@ -331,6 +332,118 @@ namespace Gorgon.Editor
         }
 
         /// <summary>
+        /// Function to bring up a dialog to allow the user to select a workspace location directory.
+        /// </summary>
+        /// <param name="initialDirectory">The initial directory.</param>
+        /// <param name="tester">The tester for the work space directory.</param>
+        /// <returns>The directory if selected, or <b>null</b> if canceled.</returns>
+        private DirectoryInfo LocateWorkspaceDirectory(DirectoryInfo initialDirectory, IWorkspaceTester tester)
+        {
+            using (var locator = new FormWorkspaceLocator
+            {
+                CurrentDirectory = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)),
+                Size = new Size(1000, 600)
+            })
+            {
+                DirectoryInfo result = null;
+
+                Cursor.Current = Cursors.Default;
+
+                do
+                {
+                    if (locator.ShowDialog(_splash) == DialogResult.Cancel)
+                    {
+                        return null;
+                    }
+
+                    Cursor.Current = Cursors.WaitCursor;
+                    (bool acceptable, string reason) = tester.TestForAccessibility(locator.CurrentDirectory);
+
+                    if (!acceptable)
+                    {
+                        GorgonDialogs.ErrorBox(_splash, reason);
+                        locator.CurrentDirectory = locator.CurrentDirectory;
+                    }
+                    else
+                    {
+                        result = locator.CurrentDirectory;
+                    }
+                } while (result == null);
+
+                return result;
+            }            
+        }
+
+        /// <summary>
+        /// Function to retrieve the workspace directory.
+        /// </summary>
+        /// <returns>The directory for the work space.</returns>
+        private DirectoryInfo GetWorkspaceDirectory()
+        {
+            // Get the workspace directory.
+            _splash.InfoText = Resources.GOREDIT_TEXT_CONFIGURE_WORKSPACE;
+
+            IWorkspaceTester workspaceTest = new WorkspaceTester(_projectManager);
+            DirectoryInfo workspaceDir = null;
+
+            // If we haven't configured yet, then prompt and let the user pick a new place.
+            if (string.IsNullOrWhiteSpace(_settings.LastWorkSpacePath))
+            {
+                Program.Log.Print($"No workspace is present. Prompting user to select a new one.", LoggingLevel.Simple);
+                if (GorgonDialogs.ConfirmBox(_splash, Resources.GOREDIT_CONFIRM_NEED_WORKSPACE) == ConfirmationResult.No)
+                {
+                    return null;
+                }
+
+                workspaceDir = LocateWorkspaceDirectory(new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)), workspaceTest);
+
+                // User canceled, exit the app.
+                if (workspaceDir == null)
+                {
+                    Program.Log.Print($"User canceled workspace selection.", LoggingLevel.Verbose);
+                    return null;
+                }
+
+                Cursor.Current = Cursors.WaitCursor;
+
+                Program.Log.Print($"The directory '{workspaceDir.FullName}' is now the application workspace directory.", LoggingLevel.Simple);
+                _settings.LastWorkSpacePath = workspaceDir.FullName.FormatDirectory(Path.DirectorySeparatorChar);
+                return workspaceDir;
+            }
+
+            // Test the last known workspace, and prompt the user if there's a problem.
+            workspaceDir = new DirectoryInfo(_settings.LastWorkSpacePath);
+            (bool acceptable, string reason) = workspaceTest.TestForAccessibility(workspaceDir);
+
+            if (!acceptable)
+            {
+                Program.Log.Print($"ERROR: The previously selected work space '{workspaceDir.FullName}' is not acceptable because: '{reason}'.", LoggingLevel.Simple);
+
+                GorgonDialogs.ErrorBox(_splash, string.Format(Resources.GOREDIT_ERR_CANNOT_USE_WORKSPACE, workspaceDir.FullName, reason));
+
+                workspaceDir = LocateWorkspaceDirectory(workspaceDir, workspaceTest);
+
+                if (workspaceDir == null)
+                {
+                    Program.Log.Print($"User canceled workspace selection.", LoggingLevel.Verbose);
+                    return null;
+                }
+            }
+
+            Cursor.Current = Cursors.WaitCursor;
+
+            Program.Log.Print($"The path '{workspaceDir.FullName}' will be used as the default workspace path.", LoggingLevel.Simple);
+
+            if (!workspaceDir.Exists)
+            {
+                workspaceDir.Create();
+                workspaceDir.Refresh();
+            }            
+
+            return workspaceDir;
+        }
+
+        /// <summary>
         /// Function to perform the boot strapping operation.
         /// </summary>
         /// <returns>The main application window.</returns>
@@ -360,6 +473,15 @@ namespace Gorgon.Editor
                 _projectManager = new ProjectManager();
 
                 Debug.Assert(_settings.WindowBounds != null, "Window bounds should not be null.");
+
+                DirectoryInfo workspaceDir = GetWorkspaceDirectory();
+
+                // If we didn't get a workspace directory, then leave.
+                if (workspaceDir == null)
+                {
+                    GorgonApplication.Quit();
+                    return;
+                }
                 
                 _mainForm = new FormMain
                             {
@@ -376,13 +498,14 @@ namespace Gorgon.Editor
                 MainForm = _mainForm;
 
                 var factory = new ViewModelFactory(_settings,
+                                                   _graphicsContext,
                                                    fileSystemProviders,
                                                    _projectManager,
                                                    new MessageBoxService(),
                                                    new WaitCursorBusyState(),
                                                    new ClipboardService());
 
-                _mainForm.SetDataContext(factory.CreateMainViewModel());
+                _mainForm.SetDataContext(factory.CreateMainViewModel(workspaceDir));
                 _mainForm.Show();
                 _mainForm.WindowState = _settings.WindowState;                
             }

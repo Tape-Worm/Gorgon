@@ -63,7 +63,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the view model for the new project child view.
         /// </summary>
-        public INewProject NewProject
+        public IStageNewVm NewProject
         {
             get;
             private set;
@@ -291,7 +291,7 @@ namespace Gorgon.Editor.ViewModels
             CurrentProject = null;
 
             NewProject.WaitPanelActivated -= NewProject_WaitPanelActivated;
-            NewProject.WaitPanelDeactivated -= NewProject_WaitPanelDeactivated;
+            NewProject.WaitPanelDeactivated -= NewProject_WaitPanelDeactivated;           
         }
         #endregion
 

@@ -45,7 +45,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the new project view model.
         /// </summary>
-        public INewProject NewProject
+        public IStageNewVm NewProject
         {
             get;
         }
@@ -77,7 +77,7 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="messageDisplay">The message display service to use.</param>
         /// <param name="busyService">The busy state service to use.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public MainParameters(EditorSettings settings, IProjectManager projectManager, INewProject newProject, ViewModelFactory viewModelFactory, IEditorFileDialogService openDialog, IMessageDisplayService messageDisplay, IBusyStateService busyService)
+        public MainParameters(EditorSettings settings, IProjectManager projectManager, IStageNewVm newProject, ViewModelFactory viewModelFactory, IEditorFileDialogService openDialog, IMessageDisplayService messageDisplay, IBusyStateService busyService)
             : base(viewModelFactory, messageDisplay, busyService)
         {
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
