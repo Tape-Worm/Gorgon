@@ -229,7 +229,7 @@ namespace Gorgon.Editor.ViewModels
 
             try
             {
-                CurrentProject = _viewModelFactory.CreateProjectViewModel(project);
+                CurrentProject = _viewModelFactory.CreateProjectViewModel(project, false);
             }
             catch (Exception ex)
             {
@@ -244,7 +244,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function called to open a project.
         /// </summary>
-        private void DoOpenProject()
+        private async void DoOpenProjectAsync()
         {
             try
             {
@@ -256,9 +256,22 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 ShowWaitPanel(new WaitPanelActivateArgs(string.Format(Resources.GOREDIT_TEXT_OPENING_PROJECT, path.Ellipses(65, true)), null));
-                // TODO: Open file. Probably use async as it'll take a bit for a large file.
 
-                _settings.LastOpenSavePath = Path.GetDirectoryName(path).FormatDirectory(Path.DirectorySeparatorChar);
+                (IProject project, bool hasMetadata, bool isUpgraded) = await _projectManager.OpenProjectAsync(path, NewProject.WorkspacePath);
+
+                if (project == null)
+                {
+                    return;
+                }
+
+                IProjectVm projectVm = _viewModelFactory.CreateProjectViewModel(project, !hasMetadata);
+
+                // The project should not be in a modified state.
+                projectVm.ProjectState = ProjectState.Unmodified;
+
+                CurrentProject = projectVm;
+
+                _settings.LastOpenSavePath = Path.GetDirectoryName(path).FormatDirectory(Path.DirectorySeparatorChar);                
             }
             catch (Exception ex)
             {
@@ -302,7 +315,7 @@ namespace Gorgon.Editor.ViewModels
         public Main()
         {
             AssignProjectCommand = new EditorCommand<IProject>(DoAssignProject, args => args != null);
-            OpenProjectCommand = new EditorCommand<object>(DoOpenProject);
+            OpenProjectCommand = new EditorCommand<object>(DoOpenProjectAsync);
         }
         #endregion
     }

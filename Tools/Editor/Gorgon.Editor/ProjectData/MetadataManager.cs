@@ -58,6 +58,11 @@ namespace Gorgon.Editor.ProjectData
         {
             _project.Metadata.IncludedPaths.Clear();
 
+            if (!_metadataProvider.MetadataFile.Exists)
+            {
+                return;
+            }
+
             IList<IncludedFileSystemPathMetadata> paths = _metadataProvider.GetIncludedPaths();
 
             foreach (IncludedFileSystemPathMetadata path in paths)

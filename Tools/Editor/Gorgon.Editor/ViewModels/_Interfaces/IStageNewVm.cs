@@ -46,11 +46,12 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the workspace path.
+        /// Property to set or return the workspace path.
         /// </summary>
         DirectoryInfo WorkspacePath
         {
             get;
+            set;
         }
 
         /// <summary>

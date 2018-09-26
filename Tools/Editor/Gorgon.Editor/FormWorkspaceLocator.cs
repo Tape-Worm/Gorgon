@@ -102,10 +102,7 @@ namespace Gorgon.Editor
         /// <summary>
         /// Initializes a new instance of the <see cref="FormWorkspaceLocator"/> class.
         /// </summary>
-        public FormWorkspaceLocator()
-        {
-            InitializeComponent();
-        }
+        public FormWorkspaceLocator() => InitializeComponent();
         #endregion
     }
 }

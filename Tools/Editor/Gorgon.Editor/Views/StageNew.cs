@@ -121,6 +121,9 @@ namespace Gorgon.Editor.Views
                 case nameof(IStageNewVm.Title):
                     TextName.Text = DataContext.Title;
                     break;
+                case nameof(IStageNewVm.WorkspacePath):
+                    LabelWorkspaceLocation.Text = DataContext.WorkspacePath?.FullName ?? Resources.GOREDIT_ERR_ERROR;
+                    break;
             }
 
             ValidateControls();

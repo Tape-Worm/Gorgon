@@ -27,6 +27,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using Gorgon.Collections;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Rendering;
@@ -181,8 +182,9 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="project">The project data.</param>
         /// <param name="metadataManager">The metadata manager to use.</param>
         /// <param name="fileSystemService">The file system service for the project.</param>
+        /// <param name="autoInclude"><b>true</b> to automatically include any and all file system objects in the project, or <b>false</b> to only use what is in the metadata.</param>
         /// <returns>The file explorer view model.</returns>
-        private IFileExplorerVm CreateFileExplorerViewModel(IProject project, IMetadataManager metadataManager, IFileSystemService fileSystemService)
+        private IFileExplorerVm CreateFileExplorerViewModel(IProject project, IMetadataManager metadataManager, IFileSystemService fileSystemService, bool autoInclude)
         {
             project.ProjectWorkSpace.Refresh();
             if (!project.ProjectWorkSpace.Exists)
@@ -195,8 +197,12 @@ namespace Gorgon.Editor.ViewModels
 
             var root = new FileExplorerDirectoryNodeVm
             {
-                IsExpanded = true
+                IsExpanded = true,
+                Included = true
             };
+
+            bool showExternal = project.ShowExternalItems;
+            project.ShowExternalItems = autoInclude;
 
             foreach (DirectoryInfo rootDir in metadataManager.GetIncludedDirectories(project.ProjectWorkSpace.FullName))
             {
@@ -208,10 +214,21 @@ namespace Gorgon.Editor.ViewModels
                 nodes.Add(CreateFileExplorerFileNodeVm(project, root, file));
             }
 
+            if (autoInclude)
+            {
+                foreach (IFileExplorerNodeVm node in nodes.Traverse(p => p.Children))
+                {
+                    node.Included = true;
+                    project.Metadata.IncludedPaths.Add(new IncludedFileSystemPathMetadata(node.FullPath));
+                }
+            }
+
+            project.ShowExternalItems = showExternal;                        
+
             // This is a special node, used internally.
             root.Initialize(new FileExplorerNodeParameters(project, project.ProjectWorkSpace, this, _messageBoxService, _waitCursorService)
             {                
-                Children = nodes                
+                Children = nodes
             });
 
             result.Initialize(new FileExplorerParameters(project,
@@ -230,9 +247,10 @@ namespace Gorgon.Editor.ViewModels
         /// Function to create a project view model.
         /// </summary>
         /// <param name="projectData">The project data to assign to the project view model.</param>
+        /// <param name="autoInclude"><b>true</b> to automatically include any and all file system objects in the project, or <b>false</b> to only use what is in the metadata.</param>
         /// <returns>The project view model.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="projectData"/> parameter is <b>null</b>.</exception>
-        public IProjectVm CreateProjectViewModel(IProject projectData)
+        public IProjectVm CreateProjectViewModel(IProject projectData, bool autoInclude)
         {
             if (projectData == null)
             {
@@ -243,8 +261,9 @@ namespace Gorgon.Editor.ViewModels
             var fileSystemService = new FileSystemService(projectData.ProjectWorkSpace);
 
             var metaDataManager = new MetadataManager(projectData, new SqliteMetadataProvider(projectData.MetadataFile));
+            metaDataManager.Load();
 
-            result.FileExplorer = CreateFileExplorerViewModel(projectData, metaDataManager, fileSystemService);
+            result.FileExplorer = CreateFileExplorerViewModel(projectData, metaDataManager, fileSystemService, autoInclude);
             result.Initialize(new ProjectVmParameters(_projectManager,
                                                     projectData,
                                                     metaDataManager,

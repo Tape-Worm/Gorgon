@@ -25,12 +25,14 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Gorgon.Core;
+using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.IO;
@@ -41,7 +43,8 @@ namespace Gorgon.Editor.ProjectData
     /// <summary>
     /// A project manager used to create, destroy, load and save a project.
     /// </summary>
-    internal class ProjectManager : IProjectManager
+    internal class ProjectManager 
+        : IProjectManager
     {
         #region Constant
         // The extension applied to editor project directories.
@@ -68,13 +71,40 @@ namespace Gorgon.Editor.ProjectData
 
         // The query used to retrieve the name of the project from the metadata.
         private const string GetProjectNameFromMetadata = @"SELECT ProjectName FROM ProjectMetadata";
+
+        // The query used to retrieve the metadata for a project.
+        private const string GetProjectMetadata = @"SELECT ProjectName, Version, WriterName, ShowExternalObjects FROM ProjectMetadata";
         #endregion
 
         #region Properties.
-
+        /// <summary>
+        /// Property to return the provider service for handling reading and writing project files.
+        /// </summary>
+        public IFileSystemProviders Providers
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to return a new project workspace directory.
+        /// </summary>
+        /// <param name="workspace">The base workspace directory.</param>
+        /// <returns>The project workspace directory.</returns>
+        private static DirectoryInfo GetProjectWorkspace(DirectoryInfo workspace)
+        {
+            var result = new DirectoryInfo(Path.ChangeExtension(Path.Combine(workspace.FullName, Guid.NewGuid().ToString("N")), EditorProjectDirectoryExtension));
+
+            if (!result.Exists)
+            {
+                result.Create();
+                result.Refresh();
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// Function to build the metadata database for our project.
         /// </summary>
@@ -162,27 +192,129 @@ namespace Gorgon.Editor.ProjectData
         }
 
         /// <summary>
-        /// Function to load a project from a file on disk using the supplied provider.
+        /// Function to copy the file system data from a file system file.
         /// </summary>
-        /// <param name="file">The file to load.</param>
+        /// <param name="fileSystemFile">The file system file to copy.</param>
         /// <param name="provider">The provider to use.</param>
-        /// <returns>A new project file.</returns>
-        private IProject OpenProject(FileInfo file, IGorgonFileSystemProvider provider)
+        /// <param name="projectWorkspace">The workspace directory to copy the files into.</param>
+        /// <returns>The path to the metadata file.</returns>
+        private FileInfo CopyFileSystem(FileInfo fileSystemFile, IGorgonFileSystemProvider provider, DirectoryInfo projectWorkspace)
         {
             IGorgonFileSystem fileSystem = new GorgonFileSystem(provider, Program.Log);
 
-            fileSystem.Mount(file.FullName);
+            fileSystem.Mount(fileSystemFile.FullName);
 
             IGorgonVirtualFile metaData = fileSystem.GetFile(Path.Combine("/", CommonEditorConstants.EditorMetadataFileName));
 
-            if (metaData == null)
+            // Get all directories and replicate them.
+            IEnumerable<IGorgonVirtualDirectory> directories = fileSystem.FindDirectories("/", "*")
+                                                            .OrderBy(item => item.FullPath.Length);
+
+            foreach (IGorgonVirtualDirectory directory in directories)
             {
-                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_NOT_A_PROJECT_FILE, file.Name));
+                var dirInfo = new DirectoryInfo(Path.Combine(projectWorkspace.FullName, directory.FullPath.FormatDirectory(Path.DirectorySeparatorChar).Substring(1)));
+
+                if (dirInfo.Exists)
+                {
+                    continue;
+                }
+
+                dirInfo.Create();
             }
 
+            // Copy all files into the directories we just created.
+            IEnumerable<IGorgonVirtualFile> files = fileSystem.FindFiles("/", "*")
+                                                    .Where(item => item != metaData);
 
+            foreach (IGorgonVirtualFile file in files)
+            {
+                var fileInfo = new FileInfo(Path.Combine(projectWorkspace.FullName, file.Directory.FullPath.FormatDirectory(Path.DirectorySeparatorChar).Substring(1), file.Name));
 
-            return null;
+                using (Stream readStream = file.OpenStream())
+                using (Stream writeStream = fileInfo.OpenWrite())
+                {
+                    readStream.CopyTo(writeStream);
+                }
+            }
+
+            var metaDataOutput = new FileInfo(Path.Combine(projectWorkspace.FullName, CommonEditorConstants.EditorMetadataFileName));
+
+            if (metaData == null)
+            {                
+                return metaDataOutput;
+            }
+                        
+            using (Stream readStream = metaData.OpenStream())
+            using (Stream writeStream = metaDataOutput.OpenWrite())
+            {
+                readStream.CopyTo(writeStream);
+            }
+
+            metaDataOutput.Attributes = FileAttributes.Hidden | FileAttributes.Archive | FileAttributes.Normal;
+            metaDataOutput.Refresh();
+
+            return metaDataOutput;
+        }
+
+        /// <summary>
+        /// Function to build the project information from the metadata.
+        /// </summary>
+        /// <param name="metaDataFile">The metadata file to use.</param>
+        /// <returns>A new project object.</returns>
+        private Project CreateFromMetadata(FileInfo metaDataFile)
+        {
+            Project result = null;
+
+            using (SQLiteConnection conn = GetConnection(metaDataFile.Directory))
+            using (var command = new SQLiteCommand(GetProjectMetadata, conn))
+            using (IDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection | CommandBehavior.SingleRow))
+            {
+                while (reader.Read())
+                {
+                    string projectName = reader["ProjectName"].ToString();
+                    string version = reader["Version"].ToString();
+                    string writer = reader["WriterName"].IfNull(string.Empty);
+                    int showExternal = Convert.ToInt32(reader["ShowExternalObjects"]);
+
+                    // TODO: Version checking.
+
+                    result = new Project(projectName, metaDataFile)
+                    {
+                        ShowExternalItems = showExternal != 0
+                    };
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Function to load a project from a file on disk using the supplied provider.
+        /// </summary>
+        /// <param name="fileSystemFile">The file to load.</param>
+        /// <param name="provider">The provider to use.</param>
+        /// <param name="workspace">The workspace directory to copy the files into.</param>
+        /// <returns>A new project file.</returns>
+        private (IProject project, bool hasMetadata, bool isUpgraded) OpenProject(FileInfo fileSystemFile, IGorgonFileSystemProvider provider, DirectoryInfo workspace)
+        {
+            // Ensure that stale project workspaces are removed.
+            PurgeStaleDirectories(workspace);
+
+            DirectoryInfo projectWorkspace = GetProjectWorkspace(workspace);
+
+            FileInfo metaData = CopyFileSystem(fileSystemFile, provider, projectWorkspace);
+
+            // Create the project using the metadata (if we have any).
+            Project result = null;
+
+            if (!metaData.Exists)
+            {
+                result = new Project(Path.GetFileNameWithoutExtension(fileSystemFile.Name), metaData);
+                BuildMetadataDatabase(result);
+                return (result, false, true);
+            }
+
+            return (CreateFromMetadata(metaData), true, false);
         }
 
         /// <summary>
@@ -302,15 +434,7 @@ namespace Gorgon.Editor.ProjectData
             // Remove the previously built directory structure.
             PurgeStaleDirectories(workspace);
 
-            workspace = new DirectoryInfo(Path.ChangeExtension(Path.Combine(workspace.FullName, Guid.NewGuid().ToString("N")), EditorProjectDirectoryExtension));
-
-            // Build the root of our work space.
-            if (!workspace.Exists)
-            {
-                workspace.Create();
-            }
-
-            workspace.Refresh();
+            workspace = GetProjectWorkspace(workspace);
 
             var metadataFile = new FileInfo(Path.Combine(workspace.FullName, CommonEditorConstants.EditorMetadataFileName));
 
@@ -326,21 +450,22 @@ namespace Gorgon.Editor.ProjectData
         /// </summary>
         /// <param name="path">The path to the project file.</param>
         /// <param name="providers">The providers used to read the project file.</param>
-        /// <returns>A new project.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/>, or the <paramref name="providers"/> parameter is <b>null</b>.</exception>
+        /// <param name="workspace">The workspace directory that will receive the files from the project file.</param>
+        /// <returns>A new project based on the file that was read.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/>, or the <paramref name="workspace"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
         /// <exception cref="FileNotFoundException">Thrown if the file specified by the <paramref name="path"/> does not exist.</exception>
         /// <exception cref="GorgonException">Thrown if no provider could be found to load the file.</exception>
-        public async Task<IProject> OpenProjectAsync(string path, IFileSystemProviders providers)
+        public async Task<(IProject project, bool hasMetadata, bool isUpgraded)> OpenProjectAsync(string path, DirectoryInfo workspace)
         {
             if (path == null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
 
-            if (providers == null)
+            if (workspace == null)
             {
-                throw new ArgumentNullException(nameof(providers));
+                throw new ArgumentNullException(nameof(workspace));
             }
 
             if (string.IsNullOrWhiteSpace(path))
@@ -354,22 +479,25 @@ namespace Gorgon.Editor.ProjectData
             {
                 throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_PROJECT_NOT_FOUND, file.FullName));
             }
-
-            IGorgonFileSystemProvider provider = await Task.Run(() => providers.GetBestProvider(file));
+                       
+            IGorgonFileSystemProvider provider = Providers.GetBestProvider(file);
             
             if (provider == null)
             {
                 throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_NO_PROVIDER, file.Name));
             }
-            
-            IProject result = await Task.Run(() => OpenProject(file, provider));
 
-            return result;
+            return await Task.Run(() => OpenProject(file, provider, workspace));
         }
         #endregion
 
         #region Constructor/Finalizer.
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProjectManager"/> class.
+        /// </summary>
+        /// <param name="providers">The file system providers used to read and write project files.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="providers"/> parameter is <b>null</b>.</exception>
+        public ProjectManager(IFileSystemProviders providers) => Providers = providers ?? throw new ArgumentNullException(nameof(providers));
         #endregion
     }
 }

@@ -37,6 +37,17 @@ namespace Gorgon.Editor.ProjectData
     /// </summary>
     internal interface IProjectManager
     {
+        #region Properties.
+        /// <summary>
+        /// Property to return the provider service for handling reading and writing project files.
+        /// </summary>
+        IFileSystemProviders Providers
+        {
+            get;
+        }
+        #endregion
+
+        #region Methods.
         /// <summary>
         /// Function to indicate that the selected directory already contains a project.
         /// </summary>
@@ -63,13 +74,16 @@ namespace Gorgon.Editor.ProjectData
         /// </summary>
         /// <param name="path">The path to the project file.</param>
         /// <param name="providers">The providers used to read the project file.</param>
-        /// <returns>A new project.</returns>
-        Task<IProject> OpenProjectAsync(string path, IFileSystemProviders providers);
+        /// <param name="workspace">The workspace directory that will receive the files from the project file.</param>
+        /// <param name="metadataManager">The metadata manager to use for accessing project metadata.</param>
+        /// <returns>A new project based on the file that was read.</returns>
+        Task<(IProject project, bool hasMetadata, bool isUpgraded)> OpenProjectAsync(string path, DirectoryInfo workspace);
 
         /// <summary>
         /// Function to close the project and clean up its working data.
         /// </summary>
         /// <param name="project">The project to close.</param>        
         void CloseProject(IProject project);
+        #endregion
     }
 }

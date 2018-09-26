@@ -45,7 +45,6 @@ using Gorgon.UI;
 using Newtonsoft.Json;
 using DX = SharpDX;
 using Exception = System.Exception;
-using Gorgon.Editor.Properties;
 using Gorgon.IO.Providers;
 using System.Collections.Generic;
 
@@ -470,7 +469,7 @@ namespace Gorgon.Editor
                 FileSystemProviders fileSystemProviders = LoadFileSystemPlugins();
 
                 // Create the project manager for the application
-                _projectManager = new ProjectManager();
+                _projectManager = new ProjectManager(fileSystemProviders);
 
                 Debug.Assert(_settings.WindowBounds != null, "Window bounds should not be null.");
 
