@@ -417,4 +417,10 @@ Please try again.</value>
   <data name="GOREDIT_TEXT_OPENING_PROJECT" xml:space="preserve">
     <value>Opening '{0}'...</value>
   </data>
+  <data name="GOREDIT_ERR_SOURCE_IS_ANCESTOR" xml:space="preserve">
+    <value>Cannot copy </value>
+  </data>
+  <data name="GOREDIT_TEXT_COPYING" xml:space="preserve">
+    <value>Copying...</value>
+  </data>
 </root>

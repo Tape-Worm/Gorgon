@@ -206,6 +206,9 @@ namespace Gorgon.UI
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonCancel_Click(object sender, EventArgs e)
         {
+            _messagePanel.ButtonCancel.Enabled = false;
+            _messagePanel.ButtonCancel.Click -= ButtonCancel_Click;
+
             EventHandler handler = OperationCancelled;
             OperationCancelled?.Invoke(this, EventArgs.Empty);
         }
@@ -225,6 +228,7 @@ namespace Gorgon.UI
             }
 
             _messagePanel.ProgressMeter.Value = (int)(_progress * 100.0f);
+            _messagePanel.ProgressMeter.Refresh();
         }
 
         /// <summary>Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.Control" /> and its child controls and optionally releases the managed resources.</summary>

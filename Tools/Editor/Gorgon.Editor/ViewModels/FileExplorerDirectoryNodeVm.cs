@@ -25,9 +25,12 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Editor.Services;
 using Gorgon.IO;
@@ -71,26 +74,19 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to delete the node.
         /// </summary>
-        /// <param name="fileSystemService">The file system service to use when deleting.</param>
         /// <param name="onDeleted">[Optional] A function to call when a node or a child node is deleted.</param>
         /// <param name="cancelToken">[Optional] A cancellation token used to cancel the operation.</param>
         /// <returns>A task for asynchronous operation.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileSystemService" /> parameter is <b>null</b>.</exception>        
         /// <remarks>
         /// <para>
         /// The <paramref name="onDeleted"/> parameter passes a file system information that contains name of the node being deleted, so callers can use that information for their own purposes.
         /// </para>
         /// </remarks>
-        public override async Task DeleteNodeAsync(IFileSystemService fileSystemService, Action<FileSystemInfo> onDeleted = null, CancellationToken? cancelToken = null)
+        public override async Task DeleteNodeAsync(Action<FileSystemInfo> onDeleted = null, CancellationToken? cancelToken = null)
         {
-            if (fileSystemService == null)
-            {
-                throw new ArgumentNullException(nameof(fileSystemService));
-            }
-
             // Delete the physical objects first. If we fail here, our node will survive.
             // We do this asynchronously because deleting a directory with a lot of files may take a while.
-            bool dirDeleted = await Task.Run(() => fileSystemService.DeleteDirectory(PhysicalPath, onDeleted, cancelToken ?? CancellationToken.None));
+            bool dirDeleted = await Task.Run(() => FileSystemService.DeleteDirectory(PhysicalPath, onDeleted, cancelToken ?? CancellationToken.None));
 
             // If, for some reason, our directory was not deleted, then do not remove the node.
             if (!dirDeleted)
@@ -107,17 +103,11 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to rename the node.
         /// </summary>
-        /// <param name="fileSystemService">The file system service to use when renaming.</param>
         /// <param name="newName">The new name for the node.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileSystemService"/>, or the <paramref name="newName"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="newName"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="newName"/> parameter is empty.</exception>
-        public override void RenameNode(IFileSystemService fileSystemService, string newName)
+        public override void RenameNode(string newName)
         {
-            if (fileSystemService == null)
-            {
-                throw new ArgumentNullException(nameof(newName));
-            }
-
             if (newName == null)
             {
                 throw new ArgumentNullException(nameof(newName));
@@ -128,7 +118,7 @@ namespace Gorgon.Editor.ViewModels
                 throw new ArgumentEmptyException(nameof(newName));
             }
 
-            PhysicalPath = fileSystemService.RenameDirectory(PhysicalPath, newName);
+            PhysicalPath = FileSystemService.RenameDirectory(PhysicalPath, newName);
             Name = newName;
             NotifyPropertyChanged(nameof(FullPath));
         }
@@ -136,26 +126,92 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to copy this node to another node.
         /// </summary>
-        /// <param name="fileSystemService">The file system service to use when copying.</param>
         /// <param name="newPath">The node that will receive the the copy of this node.</param>
+        /// <param name="onCopy">[Optional] The method to call when a file is about to be copied.</param>
+        /// <param name="cancelToken">[Optional] A token used to cancel the operation.</param>
         /// <returns>The new node for the copied node.</returns>
-        public override IFileExplorerNodeVm CopyNode(IFileSystemService fileSystemService, IFileExplorerNodeVm destNode)
+        /// <exception cref="ArgumentNullException">Thrown when the the <paramref name="destNode"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="destNode"/> is unable to create child nodes.</exception>
+        /// <remarks>
+        /// <para>
+        /// The <paramref name="onCopy" /> callback method sends the file system item being copied, the destination file system item, the current item #, and the total number of items to copy.
+        /// </para>
+        /// </remarks>
+        public override async Task<IFileExplorerNodeVm> CopyNodeAsync(IFileExplorerNodeVm destNode, Action<FileSystemInfo, FileSystemInfo, int, int> onCopy, CancellationToken? cancelToken = null)
         {
-            throw new NotImplementedException();
+            if (destNode == null)
+            {
+                throw new ArgumentNullException(nameof(destNode));
+            }
+
+            string name = Name;
+            string newPath = Path.Combine(destNode.PhysicalPath, name).FormatDirectory(Path.DirectorySeparatorChar);
+
+            // If this directory already exists, then just rename it.
+            while (destNode.Children.Any(item => string.Equals(newPath, item.PhysicalPath, StringComparison.OrdinalIgnoreCase)))
+            {
+                name = FileSystemService.GenerateDirectoryName(newPath);
+                newPath = Path.Combine(destNode.PhysicalPath, name);
+            }
+
+            bool copied;
+            try
+            {
+                copied = await FileSystemService.CopyDirectoryAsync(PhysicalPath, newPath, onCopy, cancelToken ?? CancellationToken.None);
+
+                if (!copied)
+                {
+                    // Destroy the directory if we cancelled, no sense in keeping it around.
+                    FileSystemService.DeleteDirectory(newPath, null, CancellationToken.None);
+                    return null;
+                }
+
+                var result = new FileExplorerDirectoryNodeVm(this)
+                {
+                    IsExpanded = false,
+                    Name = name,
+                    Parent = destNode,
+                    PhysicalPath = newPath,
+                    Included = Included
+                };
+
+                // TODO: How do we handle including any included child nodes?
+
+                return result;
+            }
+            catch
+            {
+                // Destroy the directory if we errored out, no sense in keeping it around.
+                FileSystemService.DeleteDirectory(newPath, null, CancellationToken.None);
+                throw;
+            }
         }
 
         /// <summary>
         /// Function to move this node to another node.
         /// </summary>
-        /// <param name="fileSystemService">The file system service to use when copying.</param>
         /// <param name="destNode">The dest node.</param>
         /// <returns>The new node for the copied node.</returns>
         /// <exception cref="NotImplementedException"></exception>
-        public override IFileExplorerNodeVm MoveNode(IFileSystemService fileSystemService, IFileExplorerNodeVm destNode) => throw new NotImplementedException();
+        public override IFileExplorerNodeVm MoveNode(IFileExplorerNodeVm destNode) => throw new NotImplementedException();
         #endregion
 
         #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileExplorerDirectoryNodeVm"/> class.
+        /// </summary>
+        /// <param name="copy">The node to copy.</param>
+        internal FileExplorerDirectoryNodeVm(FileExplorerDirectoryNodeVm copy)
+            : base(copy)
+        {
+        }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileExplorerDirectoryNodeVm" /> class.
+        /// </summary>
+        public FileExplorerDirectoryNodeVm()
+        {
+        }
         #endregion
     }
 }

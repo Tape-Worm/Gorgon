@@ -619,6 +619,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot copy .
+        /// </summary>
+        internal static string GOREDIT_ERR_SOURCE_IS_ANCESTOR {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_SOURCE_IS_ANCESTOR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unsuitable workspace location: The directory is the root of a disk file system..
         /// </summary>
         internal static string GOREDIT_ERR_WORKSPACE_DIRECTORY_IS_ROOT {
@@ -682,6 +691,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to All files (*.*)|*.*.
+        /// </summary>
+        internal static string GOREDIT_TEXT_ALL_FILES {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_ALL_FILES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Configuring workspace....
         /// </summary>
         internal static string GOREDIT_TEXT_CONFIGURE_WORKSPACE {
@@ -691,11 +709,11 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to All files (*.*)|*.*.
+        ///   Looks up a localized string similar to Copying....
         /// </summary>
-        internal static string GOREDIT_TEXT_ALL_FILES {
+        internal static string GOREDIT_TEXT_COPYING {
             get {
-                return ResourceManager.GetString("GOREDIT_TEXT_ALL_FILES", resourceCulture);
+                return ResourceManager.GetString("GOREDIT_TEXT_COPYING", resourceCulture);
             }
         }
         

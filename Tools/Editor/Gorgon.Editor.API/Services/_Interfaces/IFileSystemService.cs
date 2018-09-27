@@ -86,11 +86,34 @@ namespace Gorgon.Editor.Services
 
         #region Methods.
         /// <summary>
-        /// Function to generate a file name for the destination directory, based on whether or not it already exists.
+        /// Function to retrieve a list of sub directories under the specified directory.
+        /// </summary>
+        /// <param name="path">The path to the directory that contains the sub directories.</param>
+        /// <param name="recursive">[Optional] <b>true</b> to retrieve all directories nested in sub directories, or <b>false</b> to just retrieve all directories in the top level.</param>
+        /// <returns>A list of directories in the directory.</returns>
+        IReadOnlyList<DirectoryInfo> GetDirectories(string path, bool recursive = true);
+
+        /// <summary>
+        /// Function to retrieve a list of files under the specified directory.
+        /// </summary>
+        /// <param name="path">The path to the directory that contains the files.</param>
+        /// <param name="recursive">[Optional] <b>true</b> to retrieve all files nested in sub directories, or <b>false</b> to just retrieve all files in the top level.</param>
+        /// <returns>A list of files in the directory.</returns>
+        IReadOnlyList<FileInfo> GetFiles(string path, bool recursive = true);
+
+        /// <summary>
+        /// Function to generate a file name for a destination directory, based on whether or not it already exists.
         /// </summary>
         /// <param name="path">The path to the desired file name.</param>
         /// <returns>The new file name, or the original file name if it did not exist.</returns>
         string GenerateFileName(string path);
+
+        /// <summary>
+        /// Function to generate a directory name for a destination directory, based on whether or not it already exists.
+        /// </summary>
+        /// <param name="path">The path to the desired directory name.</param>
+        /// <returns>The new file name, or the original directory name if it did not exist.</returns>
+        string GenerateDirectoryName(string path);
 
         /// <summary>
         /// Function to determine if a file exists or not.
@@ -135,6 +158,22 @@ namespace Gorgon.Editor.Services
         /// </para>
         /// </remarks>
         bool DeleteDirectory(string directoryPath, Action<FileSystemInfo> onDelete, CancellationToken cancelToken);
+
+        /// <summary>
+        /// Function to copy a directory, and all of its child items to the specified path.
+        /// </summary>
+        /// <param name="directoryPath">The path to the directory to copy.</param>
+        /// <param name="destDirectoryPath">The path to the destination directory for the copy.</param>
+        /// <param name="onCopy">The method to call when a file is about to be copied.</param>
+        /// <param name="cancelToken">The token used to cancel the process.</param>
+        /// <param name="conflictResolver">[Optional] A callback method used to resolve a file copy conflict.</param>
+        /// <returns><b>true</b> if the copy was successful, <b>false</b> if it was canceled.</returns>
+        /// <remarks>
+        /// <para>
+        /// THe <paramref name="onCopy"/> callback method sends the file system item being copied, the destination file system item, the current item #, and the total number of items to copy.
+        /// </para>
+        /// </remarks>
+        Task<bool> CopyDirectoryAsync(string directoryPath, string destDirectoryPath, Action<FileSystemInfo, FileSystemInfo, int, int> onCopy, CancellationToken cancelToken, Func<string, string, FileSystemConflictResolution> conflictResolver = null);
 
         /// <summary>
         /// Function to delete a file.

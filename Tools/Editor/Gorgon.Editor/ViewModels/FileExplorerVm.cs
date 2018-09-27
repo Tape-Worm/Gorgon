@@ -35,6 +35,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Collections;
+using Gorgon.Core;
 using Gorgon.Editor.Data;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
@@ -257,7 +258,7 @@ namespace Gorgon.Editor.ViewModels
                         OnFileSystemChanged();
                     }
 
-                    await SelectedNode.DeleteNodeAsync(_fileSystemService);
+                    await SelectedNode.DeleteNodeAsync();
                     return;
                 }
 
@@ -278,7 +279,7 @@ namespace Gorgon.Editor.ViewModels
                     Task.Delay(16).Wait();
                 }
 
-                await SelectedNode.DeleteNodeAsync(_fileSystemService, UpdateDeleteProgress, cancelSource.Token);
+                await SelectedNode.DeleteNodeAsync(UpdateDeleteProgress, cancelSource.Token);
             }
             catch (Exception ex)
             {
@@ -308,7 +309,7 @@ namespace Gorgon.Editor.ViewModels
                 _project.Metadata.IncludedPaths[metaData.Path] = metaData;
 
                 // Create the node for the directory.
-                IFileExplorerNodeVm newNode = _factory.CreateFileExplorerDirectoryNodeVm(_project, node, _metaDataManager, newDir);
+                IFileExplorerNodeVm newNode = _factory.CreateFileExplorerDirectoryNodeVm(_project, _fileSystemService, node, _metaDataManager, newDir);
 
                 node.Children.Add(newNode);
             }
@@ -436,7 +437,7 @@ namespace Gorgon.Editor.ViewModels
 
                 string oldPath = SelectedNode.FullPath;
                 
-                SelectedNode.RenameNode(_fileSystemService, args.NewName);
+                SelectedNode.RenameNode(args.NewName);
                 
                 string newPath = SelectedNode.FullPath;
 
@@ -461,6 +462,34 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Function to perform a refresh of a node.
+        /// </summary>
+        /// <param name="node">The node to refresh.</param>
+        private void RefreshNode(IFileExplorerNodeVm node)
+        {
+            IFileExplorerNodeVm nodeToRefresh = node ?? RootNode;
+
+            nodeToRefresh.Children.Clear();
+
+            var parent = new DirectoryInfo(nodeToRefresh == RootNode ? _project.ProjectWorkSpace.FullName : nodeToRefresh.PhysicalPath);
+
+            if (!parent.Exists)
+            {
+                return;
+            }
+
+            foreach (DirectoryInfo rootDir in _metaDataManager.GetIncludedDirectories(parent.FullName))
+            {
+                nodeToRefresh.Children.Add(_factory.CreateFileExplorerDirectoryNodeVm(_project, _fileSystemService, nodeToRefresh, _metaDataManager, rootDir));
+            }
+
+            foreach (FileInfo file in _metaDataManager.GetIncludedFiles(parent.FullName))
+            {
+                nodeToRefresh.Children.Add(_factory.CreateFileExplorerFileNodeVm(_project, _fileSystemService, nodeToRefresh, file));
+            }
+        }
+
+        /// <summary>
         /// Function to refresh the nodes under the specified node, or for the entire tree.
         /// </summary>
         /// <param name="node">The node to refresh.</param>
@@ -470,26 +499,7 @@ namespace Gorgon.Editor.ViewModels
 
             try
             {
-                IFileExplorerNodeVm nodeToRefresh = node ?? RootNode;
-
-                nodeToRefresh.Children.Clear();
-
-                var parent = new DirectoryInfo(nodeToRefresh == RootNode ? _project.ProjectWorkSpace.FullName : nodeToRefresh.PhysicalPath);
-
-                if (!parent.Exists)
-                {
-                    return;
-                }
-
-                foreach (DirectoryInfo rootDir in _metaDataManager.GetIncludedDirectories(parent.FullName))
-                {
-                    nodeToRefresh.Children.Add(_factory.CreateFileExplorerDirectoryNodeVm(_project, nodeToRefresh, _metaDataManager, rootDir));
-                }
-
-                foreach (FileInfo file in _metaDataManager.GetIncludedFiles(parent.FullName))
-                {
-                    nodeToRefresh.Children.Add(_factory.CreateFileExplorerFileNodeVm(_project, nodeToRefresh, file));
-                }
+                RefreshNode(node);
             }
             catch (Exception ex)
             {
@@ -512,21 +522,15 @@ namespace Gorgon.Editor.ViewModels
         /// Function to copy a node.
         /// </summary>
         /// <param name="args">The arguments for the command.</param>
-        private void DoCopyNode(CopyNodeArgs args)
+        private async void DoCopyNode(CopyNodeArgs args)
         {
-            _busyService.SetBusy();
-
             try
             {
-                CopySingleNode(args.Source, args.Dest);
+                await CopySingleNodeAsync(args.Source, args.Dest);
             }
             catch (Exception ex)
             {
                 _messageService.ShowError(ex, Resources.GOREDIT_ERR_REFRESH);
-            }
-            finally
-            {
-                _busyService.SetIdle();
             }
         }
 
@@ -552,7 +556,7 @@ namespace Gorgon.Editor.ViewModels
                 return true;
             }
 
-            newNode = source.MoveNode(_fileSystemService, dest);
+            newNode = source.MoveNode(dest);
 
             if (newNode == null)
             {
@@ -594,45 +598,103 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="source">The source node to copy.</param>
         /// <param name="dest">The destination that will receive the copy.</param>
-        private void CopySingleNode(IFileExplorerNodeVm source, IFileExplorerNodeVm dest)
+        /// <returns>A task for async operation.</returns>
+        private async Task CopySingleNodeAsync(IFileExplorerNodeVm source, IFileExplorerNodeVm dest)
         {
-            IFileExplorerNodeVm newNode = null;
+            var cancelSource = new CancellationTokenSource();
 
-            // Locate the next level that allows child creation if this one cannot.
-            while (!dest.AllowChildCreation)
+            try
+            {   
+                IFileExplorerNodeVm newNode = null;
+
+                // Locate the next level that allows child creation if this one cannot.
+                while (!dest.AllowChildCreation)
+                {
+                    dest = dest.Parent;
+
+                    Debug.Assert(dest != null, "No container node found.");
+                }
+
+                var includedDestItems = new HashSet<string>();
+
+                void CancelAction() => cancelSource.Cancel();
+
+                UpdateProgress(new ProgressPanelUpdateArgs
+                {
+                    CancelAction = CancelAction,
+                    Title = Resources.GOREDIT_TEXT_COPYING,
+                    PercentageComplete = 0,
+                    Message = string.Empty
+                });
+
+                // Function to update our progress meter and provide updates to our caching (and inclusion functionality).
+                void UpdateCopyProgress(FileSystemInfo sourceItem, FileSystemInfo destItem, int currentItemNumber, int totalItemNumber)
+                {
+                    string sourceItemPath = sourceItem.ToFileSystemPath(_project.ProjectWorkSpace);
+                    string destItemPath = destItem.ToFileSystemPath(_project.ProjectWorkSpace);
+
+                    IFileExplorerNodeVm sourceNode = _nodePathLookup[sourceItemPath];
+                    if ((sourceNode.Included) && (!_metaDataManager.PathInProject(destItemPath)))
+                    {
+                        includedDestItems.Add(destItemPath);
+                    }
+
+                    float percent = currentItemNumber / (float)totalItemNumber;
+                    UpdateProgress(new ProgressPanelUpdateArgs
+                    {
+                        Title = Resources.GOREDIT_TEXT_COPYING,
+                        CancelAction = CancelAction,
+                        Message = sourceItemPath.Ellipses(65, true),
+                        PercentageComplete = percent
+                    });
+                }
+
+                newNode = await source.CopyNodeAsync(dest, UpdateCopyProgress, cancelSource.Token);
+
+                if (newNode == null)
+                {                    
+                    return;
+                }
+
+                if ((newNode.Included) && (!_metaDataManager.PathInProject(newNode.FullPath)))
+                {
+                    includedDestItems.Add(newNode.FullPath);
+                }
+
+                if (includedDestItems.Count > 0)
+                {
+                    _metaDataManager.IncludePaths(includedDestItems.ToArray());
+                    OnFileSystemChanged();
+                }
+
+                // If the source has children, then rescan our new node to pick up any children that were copied.
+                if (source.Children.Count > 0)
+                {
+                    RefreshNode(newNode);
+                }
+
+                SelectedNode = dest;
+
+                // This will refresh the nodes under the destination.
+                if ((!dest.IsExpanded) && (dest.Children.Count > 0))
+                {
+                    dest.IsExpanded = true;
+                }
+
+                // If this node is not registered, then add it now.
+                if (!_nodePathLookup.TryGetValue(newNode.FullPath, out IFileExplorerNodeVm prevNode))
+                {
+                    dest.Children.Add(newNode);
+                    prevNode = newNode;
+                }
+
+                SelectedNode = prevNode;
+            }
+            finally
             {
-                dest = dest.Parent;
+                cancelSource.Dispose();
+                HideProgress();
             }
-
-            newNode = source.CopyNode(_fileSystemService, dest);
-
-            if (newNode == null)
-            {
-                return;
-            }
-
-            if ((newNode.Included) && (!_metaDataManager.PathInProject(newNode.FullPath)))
-            {
-                _metaDataManager.IncludePaths(new[] { newNode.FullPath });
-                OnFileSystemChanged();
-            }
-
-            SelectedNode = dest;
-
-            // This will refresh the nodes under the destination.
-            if (!dest.IsExpanded)
-            {
-                newNode.Parent.IsExpanded = true;
-            }
-
-            // If this node is not registered, then add it now.
-            if (!_nodePathLookup.TryGetValue(newNode.FullPath, out IFileExplorerNodeVm prevNode))
-            {                
-                dest.Children.Add(newNode);
-                prevNode = newNode;
-            }
-
-            SelectedNode = prevNode;
         }
 
         /// <summary>
@@ -784,7 +846,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to paste an item from the clipboard.
         /// </summary>
-        void IClipboardHandler.Paste()
+        async void IClipboardHandler.Paste()
         {
             EventHandler handler = _clipboardUpdated;
 
@@ -795,8 +857,6 @@ namespace Gorgon.Editor.ViewModels
                     return;
                 }
 
-                _busyService.SetBusy();
-                
                 FileSystemClipboardData data = _clipboard.GetData<FileSystemClipboardData>();                
                 IFileExplorerNodeVm destNode = SelectedNode ?? RootNode;
 
@@ -808,7 +868,7 @@ namespace Gorgon.Editor.ViewModels
 
                 if (data.Copy)
                 {
-                    CopySingleNode(sourceNode, destNode);
+                    await CopySingleNodeAsync(sourceNode, destNode);
                 }
                 else
                 {
@@ -823,10 +883,6 @@ namespace Gorgon.Editor.ViewModels
             catch (Exception ex)
             {
                 _messageService.ShowError(ex, Resources.GOREDIT_ERR_PASTE_FILE_OR_DIR);
-            }
-            finally
-            {
-                _busyService.SetIdle();
             }
         }
 
