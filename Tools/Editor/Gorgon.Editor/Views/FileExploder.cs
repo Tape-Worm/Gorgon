@@ -76,8 +76,6 @@ namespace Gorgon.Editor.Views
         private Color _dragBackColor;
         // The drag hilight foreground color.
         private Color _dragForeColor;
-        // Flag to indicate that a node is being dragged.
-        private bool _isDragging;
         #endregion
 
         #region Properties.
@@ -746,7 +744,6 @@ namespace Gorgon.Editor.Views
                 return;
             }
             
-            _isDragging = true;
             var dragData = new TreeNodeDragData(treeNode, node, e.Button == MouseButtons.Right ? (DragOperation.Copy | DragOperation.Move) : DragOperation.Move);
             TreeFileSystem.DoDragDrop(dragData, DragDropEffects.Move | DragDropEffects.Copy);
 
