@@ -70,13 +70,13 @@
     <Compile Include="FormMain.Designer.cs">
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormSplash.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="FormSplash.cs" />
     <Compile Include="FormSplash.designer.cs">
       <DependentUpon>FormSplash.cs</DependentUpon>
     </Compile>
     <Compile Include="ProjectData\MetadataManager.cs" />
+    <Compile Include="Services\EditorFileOpenDialogService.cs" />
+    <Compile Include="Services\FileSystemProviders.cs" />
     <Compile Include="Services\FileSystemService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProjectData\Project.cs" />
@@ -87,6 +87,8 @@
     <Compile Include="Rendering\GraphicsContext.cs" />
     <Compile Include="EditorSettings.cs" />
     <Compile Include="Services\WorkspaceTester.cs" />
+    <Compile Include="Services\_Interfaces\IEditorFileDialogService.cs" />
+    <Compile Include="Services\_Interfaces\IFileSystemProviders.cs" />
     <Compile Include="Services\_Interfaces\IWorkspaceTester.cs" />
     <Compile Include="ViewModels\CopyNodeArgs.cs" />
     <Compile Include="ViewModels\CreateNodeArgs.cs" />
@@ -107,6 +109,8 @@
     <Compile Include="ViewModels\ViewModelCommonParameters.cs" />
     <Compile Include="ViewModels\ViewModelFactory.cs" />
     <Compile Include="ViewModels\WorkspaceSelectedArgs.cs" />
+    <Compile Include="ViewModels\_Interfaces\IDragDropHandler.cs" />
+    <Compile Include="ViewModels\_Interfaces\IFileExplorerNodeDragData.cs" />
     <Compile Include="ViewModels\_Interfaces\IFileExplorerNodeVm.cs" />
     <Compile Include="ViewModels\_Interfaces\IFileExplorerVm.cs" />
     <Compile Include="ViewModels\_Interfaces\IMain.cs" />
@@ -124,9 +128,7 @@
     <Compile Include="Views\FileExploder.Designer.cs">
       <DependentUpon>FileExploder.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\StageLaunch.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="Views\StageLaunch.cs" />
     <Compile Include="Views\StageLaunch.Designer.cs">
       <DependentUpon>StageLaunch.cs</DependentUpon>
     </Compile>
@@ -136,18 +138,15 @@
     <Compile Include="Views\StageNew.Designer.cs">
       <DependentUpon>StageNew.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\StageRecent.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="Views\StageRecent.cs" />
     <Compile Include="Views\StageRecent.Designer.cs">
       <DependentUpon>StageRecent.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormWorkspaceLocator.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="FormWorkspaceLocator.cs" />
     <Compile Include="FormWorkspaceLocator.Designer.cs">
       <DependentUpon>FormWorkspaceLocator.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\TreeNodeDragData.cs" />
     <EmbeddedResource Include="FormMain.resx">
       <DependentUpon>FormMain.cs</DependentUpon>
     </EmbeddedResource>
@@ -200,6 +199,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Plugins\Content\Readme.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Plugins\Filesystem\Readme.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\paste_16x16.png" />
     <None Include="Resources\copy_16x16.png" />
     <None Include="Resources\copy_48x48.png" />
@@ -305,4 +310,10 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy $(SolutionDir)PlugIns\Bin\$(ConfigurationName)\Gorgon.FileSystem.*.dll $(TargetDir)\Plugins\Filesystem\
+copy $(SolutionDir)PlugIns\Bin\$(ConfigurationName)\Gorgon.FileSystem.*.pdb $(TargetDir)\Plugins\Filesystem\
+copy $(SolutionDir)PlugIns\Bin\$(ConfigurationName)\ICSharpCode.SharpZipLib.dll $(TargetDir)\Plugins\Filesystem\
+</PostBuildEvent>
+  </PropertyGroup>
 </Project>
