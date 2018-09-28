@@ -266,6 +266,27 @@ namespace Gorgon.Editor.ViewModels
 
         #region Methods.
         /// <summary>
+        /// Function to return the root parent node for this node.
+        /// </summary>
+        /// <returns>The root parent node.</returns>
+        protected IFileExplorerNodeVm GetRoot()
+        {
+            if (Parent == null)
+            {
+                return this;
+            }
+
+            IFileExplorerNodeVm parent = this;
+
+            while (parent.Parent != null)
+            {
+                parent = parent.Parent;                
+            }
+
+            return parent;
+        }
+
+        /// <summary>
         /// Function to inject dependencies for the view model.
         /// </summary>
         /// <param name="injectionParameters">The parameters to inject.</param>

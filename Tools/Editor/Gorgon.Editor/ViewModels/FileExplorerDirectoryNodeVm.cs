@@ -26,12 +26,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Collections;
 using Gorgon.Core;
+using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.IO;
 
@@ -71,6 +73,37 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to allow a user to resolve a confict between files with the same name.
+        /// </summary>
+        /// <param name="sourceItem">The file being copied.</param>
+        /// <param name="destItem">The destination file.</param>
+        /// <returns>A <see cref="FileSystemConflictResolution"/> value that indicates how to proceed.</returns>
+        private FileSystemConflictResolution ResolveConflict(FileSystemInfo sourceItem, FileSystemInfo destItem)
+        {
+            IFileExplorerNodeVm root = GetRoot();
+
+            Debug.Assert(root != null, "Root is null");
+
+            var rootDir = new DirectoryInfo(root.PhysicalPath);
+
+            MessageResponse response = MessageDisplay.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_FILE_EXISTS, sourceItem.Name, destItem.ToFileSystemPath(rootDir)), toAll: true, allowCancel: true);
+            
+            switch (response)
+            {
+                case MessageResponse.Yes:
+                    return FileSystemConflictResolution.Overwrite;
+                case MessageResponse.YesToAll:
+                    return FileSystemConflictResolution.OverwriteAll;
+                case MessageResponse.No:
+                    return FileSystemConflictResolution.Rename;
+                case MessageResponse.NoToAll:
+                    return FileSystemConflictResolution.RenameAll;
+                default:
+                    return FileSystemConflictResolution.Cancel;
+            }
+        }
+
         /// <summary>
         /// Function to delete the node.
         /// </summary>
@@ -146,45 +179,45 @@ namespace Gorgon.Editor.ViewModels
 
             string name = Name;
             string newPath = Path.Combine(destNode.PhysicalPath, name).FormatDirectory(Path.DirectorySeparatorChar);
+            IFileExplorerNodeVm dupeNode = null;
 
-            // If this directory already exists, then just rename it.
-            while (destNode.Children.Any(item => string.Equals(newPath, item.PhysicalPath, StringComparison.OrdinalIgnoreCase)))
-            {
-                name = FileSystemService.GenerateDirectoryName(newPath);
-                newPath = Path.Combine(destNode.PhysicalPath, name);
-            }
+            // Find out if this node already exists. This will change our behavior.
+            dupeNode = destNode.Children.FirstOrDefault(item => string.Equals(newPath, item.PhysicalPath, StringComparison.OrdinalIgnoreCase));
 
-            bool copied;
             try
             {
-                copied = await FileSystemService.CopyDirectoryAsync(PhysicalPath, newPath, onCopy, cancelToken ?? CancellationToken.None);
+                bool copied;
+                copied = await FileSystemService.CopyDirectoryAsync(PhysicalPath, newPath, onCopy, cancelToken ?? CancellationToken.None, ResolveConflict);
 
                 if (!copied)
                 {
-                    // Destroy the directory if we cancelled, no sense in keeping it around.
-                    FileSystemService.DeleteDirectory(newPath, null, CancellationToken.None);
                     return null;
                 }
-
-                var result = new FileExplorerDirectoryNodeVm(this)
-                {
-                    IsExpanded = false,
-                    Name = name,
-                    Parent = destNode,
-                    PhysicalPath = newPath,
-                    Included = Included
-                };
-
-                // TODO: How do we handle including any included child nodes?
-
-                return result;
             }
-            catch
+            catch (Exception ex)
             {
-                // Destroy the directory if we errored out, no sense in keeping it around.
-                FileSystemService.DeleteDirectory(newPath, null, CancellationToken.None);
-                throw;
+                MessageDisplay.ShowError(ex);
             }
+
+            if (!Directory.Exists(newPath))
+            {
+                return null;
+            }
+
+            if (dupeNode != null)
+            {
+                dupeNode.Parent.Children.Remove(dupeNode);
+                dupeNode = null;
+            }
+
+            return new FileExplorerDirectoryNodeVm(this)
+            {
+                IsExpanded = false,
+                Name = name,
+                Parent = destNode,
+                PhysicalPath = newPath,
+                Included = Included
+            };
         }
 
         /// <summary>

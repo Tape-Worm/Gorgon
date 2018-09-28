@@ -170,10 +170,14 @@ namespace Gorgon.Editor.Services
         /// <returns><b>true</b> if the copy was successful, <b>false</b> if it was canceled.</returns>
         /// <remarks>
         /// <para>
-        /// THe <paramref name="onCopy"/> callback method sends the file system item being copied, the destination file system item, the current item #, and the total number of items to copy.
+        /// The <paramref name="onCopy"/> callback method sends the file system item being copied, the destination file system item, the current item #, and the total number of items to copy.
+        /// </para>
+        /// <para>
+        /// The <paramref name="conflictResolver"/> callback function sends the file system item being copied, the destination file system item, and returns a <see cref="FileSystemConflictResolution"/> 
+        /// value.
         /// </para>
         /// </remarks>
-        Task<bool> CopyDirectoryAsync(string directoryPath, string destDirectoryPath, Action<FileSystemInfo, FileSystemInfo, int, int> onCopy, CancellationToken cancelToken, Func<string, string, FileSystemConflictResolution> conflictResolver = null);
+        Task<bool> CopyDirectoryAsync(string directoryPath, string destDirectoryPath, Action<FileSystemInfo, FileSystemInfo, int, int> onCopy, CancellationToken cancelToken, Func<FileSystemInfo, FileSystemInfo, FileSystemConflictResolution> conflictResolver = null);
 
         /// <summary>
         /// Function to delete a file.

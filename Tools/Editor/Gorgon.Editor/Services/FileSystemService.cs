@@ -164,12 +164,19 @@ namespace Gorgon.Editor.Services
 
             var file = new FileInfo(path);
             string fileDirectory = file.Directory.FullName;
-            string fileNameNoExtension = Path.GetFileNameWithoutExtension(file.Name);
+            string fileNameNoExtension = Path.GetFileNameWithoutExtension(file.Name);            
             int count = 0;
 
             while (file.Exists)
             {
-                file = new FileInfo(Path.ChangeExtension(Path.Combine(fileDirectory, $"{fileNameNoExtension} ({++count})"), file.Extension));
+                string newPath = Path.Combine(fileDirectory, $"{fileNameNoExtension} ({++count})");
+
+                if (!string.IsNullOrWhiteSpace(file.Extension))
+                {
+                    newPath = Path.ChangeExtension(newPath, file.Extension);
+                }
+                
+                file = new FileInfo(newPath);
             }
 
             return file.Name;
@@ -455,8 +462,12 @@ namespace Gorgon.Editor.Services
         /// <para>
         /// THe <paramref name="onCopy"/> callback method sends the file system item being copied, the destination file system item, the current item #, and the total number of items to copy.
         /// </para>
+        /// <para>
+        /// The <paramref name="conflictResolver"/> callback function sends the file system item being copied, the destination file system item, and returns a <see cref="FileSystemConflictResolution"/> 
+        /// value.
+        /// </para>
         /// </remarks>
-        public async Task<bool> CopyDirectoryAsync(string directoryPath, string destDirectoryPath, Action<FileSystemInfo, FileSystemInfo, int, int> onCopy, CancellationToken cancelToken, Func<string, string, FileSystemConflictResolution> conflictResolver = null)
+        public async Task<bool> CopyDirectoryAsync(string directoryPath, string destDirectoryPath, Action<FileSystemInfo, FileSystemInfo, int, int> onCopy, CancellationToken cancelToken, Func<FileSystemInfo, FileSystemInfo, FileSystemConflictResolution> conflictResolver = null)
         {
             if (directoryPath == null)
             {
@@ -522,6 +533,14 @@ namespace Gorgon.Editor.Services
                     subDir.Create();
                     subDir.Refresh();
                 }
+                else
+                {
+                    // If there's a file in our way, then rename our directory.
+                    if ((subDir.Attributes & FileAttributes.Directory) != FileAttributes.Directory)
+                    {
+                        subDir = new DirectoryInfo(Path.Combine(subDir.Parent.FullName, GenerateDirectoryName(subDir.FullName)));
+                    }
+                }
 
                 ++items;
 
@@ -542,9 +561,17 @@ namespace Gorgon.Editor.Services
                     // If the file exists, then we need to resolve this conflict.
                     if (newFile.Exists)
                     {
-                        if ((resolution != FileSystemConflictResolution.OverwriteAll) && (resolution != FileSystemConflictResolution.RenameAll))
+                        if ((newFile.Attributes & FileAttributes.Directory) == FileAttributes.Directory)
                         {
-                            resolution = conflictResolver?.Invoke(file.ToFileSystemPath(RootDirectory), newFile.ToFileSystemPath(RootDirectory)) ?? FileSystemConflictResolution.Exception;
+                            // Automatically rename if we have the same path as a directory. We cannot overwrite a directory with a file.
+                            resolution = FileSystemConflictResolution.Rename;
+                        }
+                        else
+                        {
+                            if ((resolution != FileSystemConflictResolution.OverwriteAll) && (resolution != FileSystemConflictResolution.RenameAll))
+                            {
+                                resolution = conflictResolver?.Invoke(file, newFile.Directory) ?? FileSystemConflictResolution.Exception;
+                            }
                         }
 
                         switch (resolution)
@@ -554,7 +581,7 @@ namespace Gorgon.Editor.Services
                                 break;
                             case FileSystemConflictResolution.Rename:
                             case FileSystemConflictResolution.RenameAll:
-                                newFile = new FileInfo(GenerateFileName(newFile.FullName));
+                                newFile = new FileInfo(Path.Combine(newFile.DirectoryName, GenerateFileName(newFile.FullName)));
                                 break;
                             case FileSystemConflictResolution.Cancel:
                                 return false;

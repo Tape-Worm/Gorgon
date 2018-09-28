@@ -70,7 +70,7 @@ namespace Gorgon.Editor
             }
             else
             {
-                dirPath = filesystemObject.FullName.Replace(filesystemObject.Name, string.Empty).FormatDirectory(Path.DirectorySeparatorChar);
+                dirPath = Path.GetDirectoryName(filesystemObject.FullName).FormatDirectory(Path.DirectorySeparatorChar);
                 fileName = filesystemObject.Name;
             }
 

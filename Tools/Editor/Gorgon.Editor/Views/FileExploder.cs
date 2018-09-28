@@ -227,6 +227,47 @@ namespace Gorgon.Editor.Views
         }
 
         /// <summary>
+        /// Function to remove the nodes from the tree.
+        /// </summary>
+        /// <param name="nodes">The node collection being cleared.</param>
+        private void ClearNodeBranch(ObservableCollection<IFileExplorerNodeVm> nodes)
+        {
+            // Find the owner of the collection.
+            IFileExplorerNodeVm node = _revNodeLinks.FirstOrDefault(item => item.Key.Children == nodes).Key;
+
+            if (node == null)
+            {
+                return;
+            }
+
+            TreeNodeCollection nodeList = null;
+
+            if (_revNodeLinks.TryGetValue(node, out KryptonTreeNode treeNode))
+            {
+                SelectNode(treeNode);
+
+                if (treeNode.IsExpanded)
+                {
+                    treeNode.Collapse();
+                }
+                
+                nodeList = treeNode.Nodes;
+            }
+            else
+            {
+                UnassignNodeEvents(DataContext.RootNode.Children);
+                AssignNodeEvents(DataContext.RootNode.Children);
+                _revNodeLinks.Clear();
+                _nodeLinks.Clear();
+                nodeList = TreeFileSystem.Nodes;
+            }
+
+            nodeList.Clear();
+
+            ValidateMenuItems(DataContext);
+        }
+
+        /// <summary>
         /// Handles the CollectionChanged event of the Nodes control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -242,17 +283,7 @@ namespace Gorgon.Editor.Views
                     RemoveNode(e.OldItems.OfType<IFileExplorerNodeVm>().First());
                     break;
                 case NotifyCollectionChangedAction.Reset:
-                    // Ensure all of our events are removed. Minimizes the off chance of an event leak.
-                    foreach (IFileExplorerNodeVm node in _revNodeLinks.Keys)
-                    {
-                        UnassignNodeEvents(node.Children);
-                    }
-
-                    // All items are gone so the node linkages can go too.
-                    _revNodeLinks.Clear();
-                    _nodeLinks.Clear();
-
-                    ValidateMenuItems(DataContext);
+                    ClearNodeBranch((ObservableCollection<IFileExplorerNodeVm>)sender);                                        
                     break;
             }
         }
