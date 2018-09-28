@@ -70,11 +70,14 @@
     <Compile Include="FormMain.Designer.cs">
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormSplash.cs" />
+    <Compile Include="FormSplash.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="FormSplash.designer.cs">
       <DependentUpon>FormSplash.cs</DependentUpon>
     </Compile>
     <Compile Include="ProjectData\MetadataManager.cs" />
+    <Compile Include="RibbonMerger.cs" />
     <Compile Include="Services\EditorFileOpenDialogService.cs" />
     <Compile Include="Services\FileSystemProviders.cs" />
     <Compile Include="Services\FileSystemService.cs" />
@@ -89,6 +92,7 @@
     <Compile Include="Services\WorkspaceTester.cs" />
     <Compile Include="Services\_Interfaces\IEditorFileDialogService.cs" />
     <Compile Include="Services\_Interfaces\IFileSystemProviders.cs" />
+    <Compile Include="Services\_Interfaces\IFileSystemService.cs" />
     <Compile Include="Services\_Interfaces\IWorkspaceTester.cs" />
     <Compile Include="ViewModels\CopyNodeArgs.cs" />
     <Compile Include="ViewModels\CreateNodeArgs.cs" />
@@ -128,9 +132,17 @@
     <Compile Include="Views\FileExploder.Designer.cs">
       <DependentUpon>FileExploder.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\StageLaunch.cs" />
+    <Compile Include="Views\StageLaunch.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Views\StageLaunch.Designer.cs">
       <DependentUpon>StageLaunch.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StageLive.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\StageLive.Designer.cs">
+      <DependentUpon>StageLive.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\StageNew.cs">
       <SubType>UserControl</SubType>
@@ -138,13 +150,11 @@
     <Compile Include="Views\StageNew.Designer.cs">
       <DependentUpon>StageNew.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\StageRecent.cs" />
+    <Compile Include="Views\StageRecent.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Views\StageRecent.Designer.cs">
       <DependentUpon>StageRecent.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FormWorkspaceLocator.cs" />
-    <Compile Include="FormWorkspaceLocator.Designer.cs">
-      <DependentUpon>FormWorkspaceLocator.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\TreeNodeDragData.cs" />
     <EmbeddedResource Include="FormMain.resx">
@@ -172,14 +182,14 @@
     <EmbeddedResource Include="Views\StageLaunch.resx">
       <DependentUpon>StageLaunch.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Views\StageLive.resx">
+      <DependentUpon>StageLive.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\StageNew.resx">
       <DependentUpon>StageNew.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\StageRecent.resx">
       <DependentUpon>StageRecent.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormWorkspaceLocator.resx">
-      <DependentUpon>FormWorkspaceLocator.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="..\..\..\Examples\app.manifest">
       <Link>app.manifest</Link>
@@ -199,6 +209,20 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\openproject_24x24.png" />
+    <None Include="Resources\recent_24x24.png" />
+    <None Include="Resources\newproject_24x24.png" />
+    <None Include="Resources\save_as_48x48.png" />
+    <None Include="Resources\save_as_16x16.png" />
+    <None Include="Resources\save_48x48.png" />
+    <None Include="Resources\save_16x16.png" />
+    <None Include="Resources\import_48x48.png" />
+    <None Include="Resources\import_16x16.png" />
+    <None Include="Resources\export_48x48.png" />
+    <None Include="Resources\export_16x16.png" />
+    <None Include="Resources\include_48x48.png" />
+    <None Include="Resources\clear_fs_16x16.png" />
+    <None Include="Resources\clear_fs_48x48.png" />
     <None Include="Plugins\Content\Readme.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -289,8 +313,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Krypton.Components.Suite">
-      <Version>4.5.9</Version>
+    <PackageReference Include="KryptonToolkitSuite5470">
+      <Version>5.470.700</Version>
     </PackageReference>
     <PackageReference Include="SharpDX">
       <Version>4.2.0</Version>
@@ -302,7 +326,7 @@
       <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="System.Data.SQLite.Core">
-      <Version>1.0.109.1</Version>
+      <Version>1.0.109.2</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
       <Version>4.5.1</Version>

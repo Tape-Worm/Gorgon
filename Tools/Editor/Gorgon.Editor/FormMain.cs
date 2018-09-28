@@ -25,11 +25,9 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading;
 using System.Windows.Forms;
-using ComponentFactory.Krypton.Ribbon;
 using ComponentFactory.Krypton.Toolkit;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI;
@@ -65,9 +63,42 @@ namespace Gorgon.Editor
             get;
             private set;
         }
+
+        /// <summary>
+        /// Property to return the ribbon merger for the main ribbon.
+        /// </summary>
+        [Browsable(false)]
+        public IRibbonMerger RibbonMerger
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Handles the Click event of the ButtonFileSystemDeleteAll control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonFileSystemDeleteAll_Click(object sender, EventArgs e)
+        {
+            IFileExplorerVm fileExplorer = DataContext?.CurrentProject?.FileExplorer;
+
+            try
+            {
+                if ((fileExplorer?.DeleteFileSystemCommand == null) || (!fileExplorer.DeleteFileSystemCommand.CanExecute(null)))
+                {
+                    return;
+                }
+
+                fileExplorer.DeleteFileSystemCommand.Execute(null);
+            }
+            finally
+            {
+                ValidateRibbonButtons();
+            }            
+        }
+
         /// <summary>
         /// Handles the OpenClicked event of the StageLauncher control.
         /// </summary>
@@ -75,7 +106,7 @@ namespace Gorgon.Editor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void StageLauncher_OpenClicked(object sender, EventArgs e)
         {
-            if ((DataContext == null) || (!DataContext.OpenProjectCommand.CanExecute(null)))
+            if ((DataContext?.OpenProjectCommand == null) || (!DataContext.OpenProjectCommand.CanExecute(null)))
             {
                 return;
             }
@@ -113,11 +144,11 @@ namespace Gorgon.Editor
         private void PanelProject_RenameEnd(object sender, EventArgs e) => ValidateRibbonButtons();
 
         /// <summary>
-        /// Handles the BackClicked event of the StageLauncher control.
+        /// Handles the BackClicked event of the StageLive control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void StageLauncher_BackClicked(object sender, EventArgs e) => NavigateToProjectView(DataContext);
+        private void StageLive_BackClicked(object sender, EventArgs e) => NavigateToProjectView(DataContext);
 
         /// <summary>
         /// Handles the AppButtonMenuOpening event of the RibbonMain control.
@@ -170,9 +201,16 @@ namespace Gorgon.Editor
 
             ButtonExpand.Enabled = (fileExplorer.SelectedNode != null) && (fileExplorer.SelectedNode.Children.Count > 0);
             ButtonCollapse.Enabled = (fileExplorer.SelectedNode != null) && (fileExplorer.SelectedNode.Children.Count > 0);
-
+                        
+            ButtonFileSystemDelete.Visible = fileExplorer.SelectedNode != null;
             ButtonFileSystemDelete.Enabled = (fileExplorer.DeleteNodeCommand != null)
                                             && (fileExplorer.DeleteNodeCommand.CanExecute(null));
+            ButtonFileSystemDeleteAll.Visible = fileExplorer.SelectedNode == null;
+            ButtonFileSystemDeleteAll.Enabled = fileExplorer.DeleteFileSystemCommand?.CanExecute(null) ?? false;
+
+            ButtonExport.Enabled = fileExplorer.ExportNodeToCommand?.CanExecute(fileExplorer.SelectedNode ?? fileExplorer.RootNode) ?? false;
+            
+            // TODO: Enabled functionality (need commands).
 
             CheckShowAllFiles.Enabled = true;
             CheckShowAllFiles.Checked = project.ShowExternalItems;
@@ -201,6 +239,7 @@ namespace Gorgon.Editor
         /// <param name="dataContext">The data context to use.</param>
         private void NavigateToProjectView(IMain dataContext)
         {
+            StageLive.Visible = false;
             StageLauncher.Visible = false;
             RibbonMain.Visible = true;
             PanelWorkSpace.Visible = true;
@@ -220,12 +259,29 @@ namespace Gorgon.Editor
         }
 
         /// <summary>
-        /// Function to navigate to the project view control.
+        /// Function to navigate to the staging control.
         /// </summary>
         private void NavigateToStagingView()
         {
+            StageLive.Visible = true;
+            StageLauncher.Visible = false;
             _clipboardContext = null;
+            RibbonMain.Visible = false;
+            PanelWorkSpace.Visible = false;
+
+            StageLive.BringToFront();
+
+            KeepWaitPanelOnTop();
+        }
+
+        /// <summary>
+        /// Function to navigate to the launch view control.
+        /// </summary>
+        private void NavigateToLaunchView()
+        {
+            StageLive.Visible = false;
             StageLauncher.Visible = true;
+            _clipboardContext = null;
             RibbonMain.Visible = false;
             PanelWorkSpace.Visible = false;
 
@@ -397,7 +453,6 @@ namespace Gorgon.Editor
                     break;
                 case nameof(IMain.CurrentProject):
                     NavigateToProjectView(DataContext);
-                    StageLauncher.ShowBackButton = DataContext.CurrentProject != null;
 
                     if (DataContext.CurrentProject?.FileExplorer != null)
                     {
@@ -420,12 +475,10 @@ namespace Gorgon.Editor
             {
                 _clipboardContext = null;
                 Text = Resources.GOREDIT_CAPTION_NO_FILE;
-                StageLauncher.ShowBackButton = false;
                 return;
             }
 
             Text = dataContext.Text;
-            StageLauncher.ShowBackButton = dataContext.CurrentProject != null;
             _clipboardContext = dataContext.CurrentProject?.ClipboardContext;
 
             if (_clipboardContext != null)
@@ -699,6 +752,8 @@ namespace Gorgon.Editor
 
             StageLauncher.StageNewProject.ProjectCreated += StageNewProject_ProjectCreated;
             _syncContext = SynchronizationContext.Current;
+            RibbonMerger = new RibbonMerger(RibbonMain);
+            this.RibbonMain.AllowFormIntegrate = false;
         }
         #endregion
     }

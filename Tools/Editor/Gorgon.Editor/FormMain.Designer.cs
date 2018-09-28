@@ -46,10 +46,15 @@ namespace Gorgon.Editor
             this.ProgressScreen = new Gorgon.UI.GorgonProgressScreenPanel();
             this.WaitScreen = new Gorgon.UI.GorgonWaitScreenPanel();
             this.RibbonMain = new ComponentFactory.Krypton.Ribbon.KryptonRibbon();
+            this.ButtonSave = new ComponentFactory.Krypton.Ribbon.KryptonRibbonQATButton();
             this.TabFileSystem = new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab();
             this.RibbonGroupFileSystemNew = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
             this.kryptonRibbonGroupTriple1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
             this.ButtonFileSystemNewDirectory = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.kryptonRibbonGroupSeparator3 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
+            this.kryptonRibbonGroupLines3 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
+            this.ButtonImport = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonExport = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.GroupFileSystemEdit = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
             this.kryptonRibbonGroupTriple3 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
             this.ButtonFileSystemPaste = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
@@ -59,16 +64,27 @@ namespace Gorgon.Editor
             this.RibbonGroupFileSystemOrganize = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
             this.kryptonRibbonGroupTriple2 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
             this.ButtonFileSystemDelete = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonFileSystemDeleteAll = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.kryptonRibbonGroupSeparator1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
+            this.kryptonRibbonGroupTriple4 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
+            this.ButtonInclude = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.MenuInclude = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.MenuItemInclude = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuSepAll = new System.Windows.Forms.ToolStripSeparator();
+            this.MenuItemIncludeAll = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItemExcludeAll = new System.Windows.Forms.ToolStripMenuItem();
+            this.kryptonRibbonGroupSeparator2 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
             this.kryptonRibbonGroupLines1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
             this.ButtonFileSystemRename = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.CheckShowAllFiles = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.ButtonExpand = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.ButtonCollapse = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.StageLauncher = new Gorgon.Editor.Views.StageLaunch();
+            this.StageLive = new Gorgon.Editor.Views.StageLive();
             ((System.ComponentModel.ISupportInitialize)(this.PanelWorkSpace)).BeginInit();
             this.PanelWorkSpace.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RibbonMain)).BeginInit();
+            this.MenuInclude.SuspendLayout();
             this.SuspendLayout();
             // 
             // AppThemeManager
@@ -379,6 +395,7 @@ namespace Gorgon.Editor
             this.AppPalette.ButtonStyles.ButtonCustom3.StateCommon.Border.DrawBorders = ((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders)((((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Top | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Bottom) 
             | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Left) 
             | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Right)));
+            this.AppPalette.ButtonStyles.ButtonCustom3.StateCommon.Border.GraphicsHint = ComponentFactory.Krypton.Toolkit.PaletteGraphicsHint.None;
             this.AppPalette.ButtonStyles.ButtonCustom3.StateCommon.Border.Rounding = 2;
             this.AppPalette.ButtonStyles.ButtonCustom3.StateCommon.Border.Width = 0;
             this.AppPalette.ButtonStyles.ButtonCustom3.StateCommon.Content.Image.ImageH = ComponentFactory.Krypton.Toolkit.PaletteRelativeAlign.Near;
@@ -400,6 +417,10 @@ namespace Gorgon.Editor
             this.AppPalette.ButtonStyles.ButtonCustom3.StatePressed.Content.ShortText.Color2 = System.Drawing.Color.White;
             this.AppPalette.ButtonStyles.ButtonCustom3.StateTracking.Back.Color1 = System.Drawing.Color.SteelBlue;
             this.AppPalette.ButtonStyles.ButtonCustom3.StateTracking.Back.Color2 = System.Drawing.Color.SteelBlue;
+            this.AppPalette.ButtonStyles.ButtonCustom3.StateTracking.Border.DrawBorders = ((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders)((((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Top | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Bottom) 
+            | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Left) 
+            | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Right)));
+            this.AppPalette.ButtonStyles.ButtonCustom3.StateTracking.Border.Rounding = 3;
             this.AppPalette.ButtonStyles.ButtonCustom3.StateTracking.Content.ShortText.Color1 = System.Drawing.Color.Silver;
             this.AppPalette.ButtonStyles.ButtonCustom3.StateTracking.Content.ShortText.Color2 = System.Drawing.Color.Silver;
             this.AppPalette.ButtonStyles.ButtonListItem.OverrideDefault.Back.Color1 = System.Drawing.Color.Gray;
@@ -550,6 +571,7 @@ namespace Gorgon.Editor
             this.AppPalette.ControlStyles.ControlCustom1.StateDisabled.Border.Color1 = System.Drawing.Color.DimGray;
             this.AppPalette.ControlStyles.ControlCustom1.StateDisabled.Border.Color2 = System.Drawing.Color.DimGray;
             this.AppPalette.ControlStyles.ControlCustom1.StateDisabled.Border.DrawBorders = ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Right;
+            this.AppPalette.FilePath = "";
             this.AppPalette.FormStyles.FormCommon.StateCommon.Back.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.AppPalette.FormStyles.FormCommon.StateCommon.Back.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.AppPalette.FormStyles.FormCommon.StateCommon.Border.Color1 = System.Drawing.Color.SteelBlue;
@@ -609,7 +631,7 @@ namespace Gorgon.Editor
             this.AppPalette.LabelStyles.LabelBoldControl.StateCommon.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.AppPalette.LabelStyles.LabelCommon.StateCommon.ShortText.Color1 = System.Drawing.Color.White;
             this.AppPalette.LabelStyles.LabelCommon.StateCommon.ShortText.Color2 = System.Drawing.Color.White;
-            this.AppPalette.LabelStyles.LabelCommon.StateCommon.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.AppPalette.LabelStyles.LabelCommon.StateCommon.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.AppPalette.LabelStyles.LabelCustom1.StateCommon.ShortText.Color1 = System.Drawing.Color.Black;
             this.AppPalette.LabelStyles.LabelCustom1.StateCommon.ShortText.Color2 = System.Drawing.Color.Black;
             this.AppPalette.LabelStyles.LabelCustom1.StateCommon.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F);
@@ -620,7 +642,7 @@ namespace Gorgon.Editor
             this.AppPalette.LabelStyles.LabelCustom3.StateCommon.ShortText.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.AppPalette.LabelStyles.LabelCustom3.StateCommon.ShortText.Font = new System.Drawing.Font("Segoe UI", 12F);
             this.AppPalette.LabelStyles.LabelNormalControl.StateCommon.Padding = new System.Windows.Forms.Padding(0);
-            this.AppPalette.LabelStyles.LabelNormalControl.StateCommon.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.AppPalette.LabelStyles.LabelNormalControl.StateCommon.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.AppPalette.LabelStyles.LabelTitleControl.StateCommon.DrawFocus = ComponentFactory.Krypton.Toolkit.InheritBool.False;
             this.AppPalette.LabelStyles.LabelTitleControl.StateCommon.ShortText.Font = new System.Drawing.Font("Segoe UI", 18F);
             this.AppPalette.LabelStyles.LabelTitlePanel.StateCommon.ShortText.Color1 = System.Drawing.Color.Silver;
@@ -767,7 +789,7 @@ namespace Gorgon.Editor
             // 
             // WaitScreen
             // 
-            this.WaitScreen.Location = new System.Drawing.Point(971, 604);
+            this.WaitScreen.Location = new System.Drawing.Point(320, 240);
             this.WaitScreen.Name = "WaitScreen";
             this.WaitScreen.Size = new System.Drawing.Size(281, 145);
             this.WaitScreen.TabIndex = 0;
@@ -778,11 +800,12 @@ namespace Gorgon.Editor
             // 
             // RibbonMain
             // 
-            this.RibbonMain.AllowFormIntegrate = false;
+            this.RibbonMain.AllowFormIntegrate = true;
             this.RibbonMain.AllowMinimizedChange = false;
             this.RibbonMain.InDesignHelperMode = true;
             this.RibbonMain.Name = "RibbonMain";
-            this.RibbonMain.QATLocation = ComponentFactory.Krypton.Ribbon.QATLocation.Hidden;
+            this.RibbonMain.QATButtons.AddRange(new System.ComponentModel.Component[] {
+            this.ButtonSave});
             this.RibbonMain.QATUserChange = false;
             this.RibbonMain.RibbonAppButton.AppButtonShowRecentDocs = false;
             this.RibbonMain.RibbonTabs.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab[] {
@@ -794,13 +817,20 @@ namespace Gorgon.Editor
             this.RibbonMain.Visible = false;
             this.RibbonMain.AppButtonMenuOpening += new System.ComponentModel.CancelEventHandler(this.RibbonMain_AppButtonMenuOpening);
             // 
+            // ButtonSave
+            // 
+            this.ButtonSave.Enabled = false;
+            this.ButtonSave.Image = global::Gorgon.Editor.Properties.Resources.save_16x16;
+            this.ButtonSave.Text = "Save";
+            this.ButtonSave.ToolTipBody = "Saves the current project.";
+            // 
             // TabFileSystem
             // 
             this.TabFileSystem.Groups.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup[] {
             this.RibbonGroupFileSystemNew,
             this.GroupFileSystemEdit,
             this.RibbonGroupFileSystemOrganize});
-            this.TabFileSystem.KeyTip = "F";
+            this.TabFileSystem.KeyTip = "Y";
             this.TabFileSystem.Text = "File System";
             // 
             // RibbonGroupFileSystemNew
@@ -808,8 +838,11 @@ namespace Gorgon.Editor
             this.RibbonGroupFileSystemNew.AllowCollapsed = false;
             this.RibbonGroupFileSystemNew.DialogBoxLauncher = false;
             this.RibbonGroupFileSystemNew.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupContainer[] {
-            this.kryptonRibbonGroupTriple1});
-            this.RibbonGroupFileSystemNew.TextLine1 = "New";
+            this.kryptonRibbonGroupTriple1,
+            this.kryptonRibbonGroupSeparator3,
+            this.kryptonRibbonGroupLines3});
+            this.RibbonGroupFileSystemNew.KeyTipGroup = "F";
+            this.RibbonGroupFileSystemNew.TextLine1 = "File";
             // 
             // kryptonRibbonGroupTriple1
             // 
@@ -821,8 +854,34 @@ namespace Gorgon.Editor
             this.ButtonFileSystemNewDirectory.Enabled = false;
             this.ButtonFileSystemNewDirectory.ImageLarge = global::Gorgon.Editor.Properties.Resources.add_directory_48x48;
             this.ButtonFileSystemNewDirectory.ImageSmall = global::Gorgon.Editor.Properties.Resources.add_directory_16x16;
-            this.ButtonFileSystemNewDirectory.TextLine1 = "Directory";
+            this.ButtonFileSystemNewDirectory.KeyTip = "D";
+            this.ButtonFileSystemNewDirectory.TextLine1 = "Create";
+            this.ButtonFileSystemNewDirectory.TextLine2 = "Directory";
+            this.ButtonFileSystemNewDirectory.ToolTipBody = "Create a new directory";
             this.ButtonFileSystemNewDirectory.Click += new System.EventHandler(this.ButtonFileSystemNewDirectory_Click);
+            // 
+            // kryptonRibbonGroupLines3
+            // 
+            this.kryptonRibbonGroupLines3.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.ButtonImport,
+            this.ButtonExport});
+            // 
+            // ButtonImport
+            // 
+            this.ButtonImport.ImageLarge = global::Gorgon.Editor.Properties.Resources.import_48x48;
+            this.ButtonImport.ImageSmall = global::Gorgon.Editor.Properties.Resources.import_16x16;
+            this.ButtonImport.KeyTip = "I";
+            this.ButtonImport.TextLine1 = "Import";
+            this.ButtonImport.ToolTipBody = "Import a directory into the selected directory or root directory.";
+            // 
+            // ButtonExport
+            // 
+            this.ButtonExport.Enabled = false;
+            this.ButtonExport.ImageLarge = global::Gorgon.Editor.Properties.Resources.export_48x48;
+            this.ButtonExport.ImageSmall = global::Gorgon.Editor.Properties.Resources.export_16x16;
+            this.ButtonExport.KeyTip = "E";
+            this.ButtonExport.TextLine1 = "Export";
+            this.ButtonExport.ToolTipBody = "Export the selected directory or file system.";
             // 
             // GroupFileSystemEdit
             // 
@@ -844,7 +903,7 @@ namespace Gorgon.Editor
             this.ButtonFileSystemPaste.Enabled = false;
             this.ButtonFileSystemPaste.ImageLarge = global::Gorgon.Editor.Properties.Resources.paste_48x48;
             this.ButtonFileSystemPaste.ImageSmall = global::Gorgon.Editor.Properties.Resources.paste_16x16;
-            this.ButtonFileSystemPaste.KeyTip = "P";
+            this.ButtonFileSystemPaste.KeyTip = "V";
             this.ButtonFileSystemPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
             this.ButtonFileSystemPaste.TextLine1 = "Paste";
             this.ButtonFileSystemPaste.ToolTipBody = "Paste the copied or cut file or directory from the editor.";
@@ -885,6 +944,8 @@ namespace Gorgon.Editor
             this.RibbonGroupFileSystemOrganize.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupContainer[] {
             this.kryptonRibbonGroupTriple2,
             this.kryptonRibbonGroupSeparator1,
+            this.kryptonRibbonGroupTriple4,
+            this.kryptonRibbonGroupSeparator2,
             this.kryptonRibbonGroupLines1});
             this.RibbonGroupFileSystemOrganize.KeyTipGroup = "O";
             this.RibbonGroupFileSystemOrganize.TextLine1 = "Organize";
@@ -892,16 +953,79 @@ namespace Gorgon.Editor
             // kryptonRibbonGroupTriple2
             // 
             this.kryptonRibbonGroupTriple2.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
-            this.ButtonFileSystemDelete});
+            this.ButtonFileSystemDelete,
+            this.ButtonFileSystemDeleteAll});
             // 
             // ButtonFileSystemDelete
             // 
             this.ButtonFileSystemDelete.Enabled = false;
             this.ButtonFileSystemDelete.ImageLarge = global::Gorgon.Editor.Properties.Resources.icons8_48x48;
             this.ButtonFileSystemDelete.ImageSmall = global::Gorgon.Editor.Properties.Resources.icons8_16x16;
-            this.ButtonFileSystemDelete.KeyTip = "D";
+            this.ButtonFileSystemDelete.KeyTip = "L";
             this.ButtonFileSystemDelete.TextLine1 = "Delete";
+            this.ButtonFileSystemDelete.ToolTipBody = "Delete the selected file or directory.";
             this.ButtonFileSystemDelete.Click += new System.EventHandler(this.ButtonFileSystemDelete_Click);
+            // 
+            // ButtonFileSystemDeleteAll
+            // 
+            this.ButtonFileSystemDeleteAll.Enabled = false;
+            this.ButtonFileSystemDeleteAll.ImageLarge = global::Gorgon.Editor.Properties.Resources.clear_fs_48x48;
+            this.ButtonFileSystemDeleteAll.ImageSmall = global::Gorgon.Editor.Properties.Resources.clear_fs_16x16;
+            this.ButtonFileSystemDeleteAll.KeyTip = "L";
+            this.ButtonFileSystemDeleteAll.TextLine1 = "Delete all";
+            this.ButtonFileSystemDeleteAll.ToolTipBody = "Delete all files and directories from the file system.";
+            this.ButtonFileSystemDeleteAll.Visible = false;
+            this.ButtonFileSystemDeleteAll.Click += new System.EventHandler(this.ButtonFileSystemDeleteAll_Click);
+            // 
+            // kryptonRibbonGroupTriple4
+            // 
+            this.kryptonRibbonGroupTriple4.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.ButtonInclude});
+            // 
+            // ButtonInclude
+            // 
+            this.ButtonInclude.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.Split;
+            this.ButtonInclude.ContextMenuStrip = this.MenuInclude;
+            this.ButtonInclude.Enabled = false;
+            this.ButtonInclude.ImageLarge = global::Gorgon.Editor.Properties.Resources.include_48x48;
+            this.ButtonInclude.KeyTip = "U";
+            this.ButtonInclude.TextLine1 = "Include";
+            this.ButtonInclude.ToolTipBody = "Include files and directories into the project";
+            // 
+            // MenuInclude
+            // 
+            this.MenuInclude.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.MenuInclude.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuItemInclude,
+            this.MenuSepAll,
+            this.MenuItemIncludeAll,
+            this.MenuItemExcludeAll});
+            this.MenuInclude.Name = "MenuInclude";
+            this.MenuInclude.Size = new System.Drawing.Size(130, 76);
+            // 
+            // MenuItemInclude
+            // 
+            this.MenuItemInclude.CheckOnClick = true;
+            this.MenuItemInclude.Name = "MenuItemInclude";
+            this.MenuItemInclude.Size = new System.Drawing.Size(129, 22);
+            this.MenuItemInclude.Text = "&Include";
+            // 
+            // MenuSepAll
+            // 
+            this.MenuSepAll.Name = "MenuSepAll";
+            this.MenuSepAll.Size = new System.Drawing.Size(126, 6);
+            // 
+            // MenuItemIncludeAll
+            // 
+            this.MenuItemIncludeAll.Name = "MenuItemIncludeAll";
+            this.MenuItemIncludeAll.Size = new System.Drawing.Size(129, 22);
+            this.MenuItemIncludeAll.Text = "Include &all";
+            // 
+            // MenuItemExcludeAll
+            // 
+            this.MenuItemExcludeAll.Name = "MenuItemExcludeAll";
+            this.MenuItemExcludeAll.Size = new System.Drawing.Size(129, 22);
+            this.MenuItemExcludeAll.Text = "E&xclude all";
             // 
             // kryptonRibbonGroupLines1
             // 
@@ -917,6 +1041,7 @@ namespace Gorgon.Editor
             this.ButtonFileSystemRename.ImageLarge = global::Gorgon.Editor.Properties.Resources.rename_16x16;
             this.ButtonFileSystemRename.ImageSmall = global::Gorgon.Editor.Properties.Resources.rename_16x16;
             this.ButtonFileSystemRename.KeyTip = "R";
+            this.ButtonFileSystemRename.ShortcutKeys = System.Windows.Forms.Keys.F2;
             this.ButtonFileSystemRename.TextLine1 = "Rename";
             this.ButtonFileSystemRename.ToolTipBody = "Rename the selected file system item.";
             this.ButtonFileSystemRename.Click += new System.EventHandler(this.ButtonFileSystemRename_Click);
@@ -926,8 +1051,9 @@ namespace Gorgon.Editor
             this.CheckShowAllFiles.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.Check;
             this.CheckShowAllFiles.ImageLarge = global::Gorgon.Editor.Properties.Resources.show_external_48x48;
             this.CheckShowAllFiles.ImageSmall = global::Gorgon.Editor.Properties.Resources.show_external_16x16;
+            this.CheckShowAllFiles.KeyTip = "S";
             this.CheckShowAllFiles.TextLine1 = "Show all";
-            this.CheckShowAllFiles.ToolTipBody = "Show or hide all files/directories that are not included in the project.";
+            this.CheckShowAllFiles.ToolTipBody = "Show or hide the files/directories that are not included in the project.";
             this.CheckShowAllFiles.Click += new System.EventHandler(this.CheckShowAllFiles_Click);
             // 
             // ButtonExpand
@@ -935,7 +1061,7 @@ namespace Gorgon.Editor
             this.ButtonExpand.Enabled = false;
             this.ButtonExpand.ImageLarge = global::Gorgon.Editor.Properties.Resources.expand_48x48;
             this.ButtonExpand.ImageSmall = global::Gorgon.Editor.Properties.Resources.expand_16x16;
-            this.ButtonExpand.KeyTip = "E";
+            this.ButtonExpand.KeyTip = "P";
             this.ButtonExpand.TextLine1 = "Expand";
             this.ButtonExpand.ToolTipBody = "Expand the currently selected file/directory.";
             this.ButtonExpand.Click += new System.EventHandler(this.ButtonExpand_Click);
@@ -945,7 +1071,7 @@ namespace Gorgon.Editor
             this.ButtonCollapse.Enabled = false;
             this.ButtonCollapse.ImageLarge = global::Gorgon.Editor.Properties.Resources.collapse_48x48;
             this.ButtonCollapse.ImageSmall = global::Gorgon.Editor.Properties.Resources.collapse_16x16;
-            this.ButtonCollapse.KeyTip = "C";
+            this.ButtonCollapse.KeyTip = "A";
             this.ButtonCollapse.TextLine1 = "Collapse";
             this.ButtonCollapse.ToolTipBody = "Collapse the currently selected file/directory.";
             this.ButtonCollapse.Click += new System.EventHandler(this.ButtonCollapse_Click);
@@ -957,11 +1083,20 @@ namespace Gorgon.Editor
             this.StageLauncher.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.StageLauncher.Location = new System.Drawing.Point(0, 115);
             this.StageLauncher.Name = "StageLauncher";
-            this.StageLauncher.ShowBackButton = false;
             this.StageLauncher.Size = new System.Drawing.Size(1264, 646);
             this.StageLauncher.TabIndex = 0;
-            this.StageLauncher.BackClicked += new System.EventHandler(this.StageLauncher_BackClicked);
             this.StageLauncher.OpenClicked += new System.EventHandler(this.StageLauncher_OpenClicked);
+            // 
+            // StageLive
+            // 
+            this.StageLive.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.StageLive.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.StageLive.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.StageLive.Location = new System.Drawing.Point(0, 115);
+            this.StageLive.Name = "StageLive";
+            this.StageLive.Size = new System.Drawing.Size(1264, 646);
+            this.StageLive.TabIndex = 1;
+            this.StageLive.BackClicked += new System.EventHandler(this.StageLive_BackClicked);
             // 
             // FormMain
             // 
@@ -971,18 +1106,21 @@ namespace Gorgon.Editor
             this.ClientSize = new System.Drawing.Size(1264, 761);
             this.Controls.Add(this.ProgressScreen);
             this.Controls.Add(this.StageLauncher);
+            this.Controls.Add(this.StageLive);
             this.Controls.Add(this.WaitScreen);
             this.Controls.Add(this.RibbonMain);
             this.Controls.Add(this.PanelWorkSpace);
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormMain";
+            this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Gorgon Editor";
             this.Activated += new System.EventHandler(this.FormMain_Activated);
             ((System.ComponentModel.ISupportInitialize)(this.PanelWorkSpace)).EndInit();
             this.PanelWorkSpace.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.RibbonMain)).EndInit();
+            this.MenuInclude.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1017,6 +1155,21 @@ namespace Gorgon.Editor
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines2;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemCopy;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemCut;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemDeleteAll;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple4;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonInclude;
+        private System.Windows.Forms.ContextMenuStrip MenuInclude;
+        private System.Windows.Forms.ToolStripMenuItem MenuItemInclude;
+        private System.Windows.Forms.ToolStripSeparator MenuSepAll;
+        private System.Windows.Forms.ToolStripMenuItem MenuItemIncludeAll;
+        private System.Windows.Forms.ToolStripMenuItem MenuItemExcludeAll;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator2;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines3;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonImport;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonExport;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator3;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonQATButton ButtonSave;
+        private StageLive StageLive;
     }
 }
 

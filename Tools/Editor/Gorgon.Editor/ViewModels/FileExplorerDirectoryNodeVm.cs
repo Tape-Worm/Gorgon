@@ -78,6 +78,33 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="sourceItem">The file being copied.</param>
         /// <param name="destItem">The destination file.</param>
+        /// <param name="usePhysicalPath"><b>true</b> to display the physical path for the destination, or <b>false</b> to display the virtual path.</param>
+        /// <returns>A <see cref="FileSystemConflictResolution"/> value that indicates how to proceed.</returns>
+        private FileSystemConflictResolution ResolveExportConflict(FileSystemInfo sourceItem, FileSystemInfo destItem)
+        {
+            MessageResponse response = MessageDisplay.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_FILE_EXISTS, sourceItem.Name, destItem.FullName), toAll: true, allowCancel: true);
+
+            switch (response)
+            {
+                case MessageResponse.Yes:
+                    return FileSystemConflictResolution.Overwrite;
+                case MessageResponse.YesToAll:
+                    return FileSystemConflictResolution.OverwriteAll;
+                case MessageResponse.No:
+                    return FileSystemConflictResolution.Rename;
+                case MessageResponse.NoToAll:
+                    return FileSystemConflictResolution.RenameAll;
+                default:
+                    return FileSystemConflictResolution.Cancel;
+            }
+        }
+
+        /// <summary>
+        /// Function to allow a user to resolve a confict between files with the same name.
+        /// </summary>
+        /// <param name="sourceItem">The file being copied.</param>
+        /// <param name="destItem">The destination file.</param>
+        /// <param name="usePhysicalPath"><b>true</b> to display the physical path for the destination, or <b>false</b> to display the virtual path.</param>
         /// <returns>A <see cref="FileSystemConflictResolution"/> value that indicates how to proceed.</returns>
         private FileSystemConflictResolution ResolveConflict(FileSystemInfo sourceItem, FileSystemInfo destItem)
         {
@@ -256,14 +283,38 @@ namespace Gorgon.Editor.ViewModels
                 Included = Included
             };
 
-            /*if (FileSystemService.DirectoryExists(newPath))
-            {
-                throw new IOException(string.Format(Resources.GOREDIT_ERR_NODE_EXISTS, Name));
-            }*/
-
             FileSystemService.MoveDirectory(PhysicalPath, result.PhysicalPath);
 
             return result;
+        }
+
+        /// <summary>
+        /// Function to export the contents of this node to the physical file system.
+        /// </summary>
+        /// <param name="destPath">The path to the directory on the physical file system that will receive the contents.</param>
+        /// <param name="onCopy">[Optional] The method to call when a file is about to be copied.</param>
+        /// <param name="cancelToken">[Optional] A token used to cancel the operation.</param>
+        /// <returns>A task for asynchronous operation.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the the <paramref name="destPath"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="destPath"/> is unable to create child nodes.</exception>
+        /// <remarks>
+        /// <para>
+        /// The <paramref name="onCopy" /> callback method sends the file system item being copied, the destination file system item, the current item #, and the total number of items to copy.
+        /// </para>
+        /// </remarks>
+        public override Task ExportAsync(string destPath, Action<FileSystemInfo, FileSystemInfo, int, int> onCopy, CancellationToken? cancelToken = null)
+        {
+            if (destPath == null)
+            {
+                throw new ArgumentNullException(nameof(destPath));
+            }
+
+            if (string.IsNullOrWhiteSpace(destPath))
+            {
+                throw new ArgumentEmptyException(nameof(destPath));
+            }
+
+            return FileSystemService.ExportDirectoryAsync(PhysicalPath, destPath, onCopy, cancelToken ?? CancellationToken.None, ResolveExportConflict);
         }
         #endregion
 

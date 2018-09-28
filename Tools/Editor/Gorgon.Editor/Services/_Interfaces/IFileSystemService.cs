@@ -27,8 +27,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -69,7 +67,7 @@ namespace Gorgon.Editor.Services
     /// <summary>
     /// A service used to interact with the file system of the project.
     /// </summary>
-    public interface IFileSystemService
+    internal interface IFileSystemService
     {
         #region Properties.
         /// <summary>
@@ -212,6 +210,34 @@ namespace Gorgon.Editor.Services
         /// <param name="directoryPath">The path to the directory.</param>
         /// <param name="destDirectoryPath">The destination name and path.</param>        
         void MoveDirectory(string directoryPath, string destDirectoryPath);
+
+        /// <summary>
+        /// Function to delete all files and directories in the file system.
+        /// </summary>
+        void DeleteAll();
+
+        /// <summary>
+        /// Function to export the specified directory into a physical file system location.
+        /// </summary>
+        /// <param name="sourcePath">The directory to export.</param>
+        /// <param name="destDirectoryPath">The destination directory.</param>
+        /// <param name="onExportFile">The callbackup used to notify the caller of the progress for the operation.</param>
+        /// <param name="cancelToken">A token used to cancel the operation.</param>
+        /// <param name="conflictResolver">[Optional] A method used to resolve conflicts between a source file and a destination file.</param>
+        /// <returns>A task for asynchronous operation.</returns>
+        /// <remarks>
+        /// <para>
+        /// This method copies the file (and directory) data for a file system directory to a physical file system location.
+        /// </para>
+        /// <para>
+        /// The <paramref name="onCopy"/> callback method sends the file system item being copied, the destination file system item, the current item #, and the total number of items to copy.
+        /// </para>
+        /// <para>
+        /// The <paramref name="conflictResolver"/> callback function sends the file system item being copied, the destination file system item, and returns a <see cref="FileSystemConflictResolution"/> 
+        /// value.
+        /// </para>
+        /// </remarks>
+        Task ExportDirectoryAsync(string sourcePath, string destDirectoryPath, Action<FileSystemInfo, FileSystemInfo, int, int> onExportFile, CancellationToken cancelToken, Func<FileSystemInfo, FileSystemInfo, FileSystemConflictResolution> conflictResolver = null);
         #endregion
     }
 }

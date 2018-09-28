@@ -30,12 +30,12 @@ using System.IO;
 using ComponentFactory.Krypton.Toolkit;
 using Gorgon.UI;
 
-namespace Gorgon.Editor
+namespace Gorgon.Editor.UI
 {
     /// <summary>
     /// A locator dialog to find a workspace directory.
     /// </summary>
-    public partial class FormWorkspaceLocator 
+    internal partial class FormDirectoryLocator 
         : KryptonForm
     {
         #region Events.
@@ -48,10 +48,6 @@ namespace Gorgon.Editor
         /// Event triggered when a folder is entered.
         /// </summary>
         public EventHandler<FolderSelectedArgs> FolderEntered;
-        #endregion
-
-        #region Variables.
-
         #endregion
 
         #region Properties.
@@ -100,9 +96,9 @@ namespace Gorgon.Editor
 
         #region Constructor/Finalizer.
         /// <summary>
-        /// Initializes a new instance of the <see cref="FormWorkspaceLocator"/> class.
+        /// Initializes a new instance of the <see cref="FormDirectoryLocator"/> class.
         /// </summary>
-        public FormWorkspaceLocator() => InitializeComponent();
+        public FormDirectoryLocator() => InitializeComponent();
         #endregion
     }
 }

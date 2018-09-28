@@ -76,8 +76,6 @@ namespace Gorgon.Editor.Views
         private Color _dragBackColor;
         // The drag hilight foreground color.
         private Color _dragForeColor;
-        // Flag to indicate that a node is being dragged.
-        private bool _isDragging;
         #endregion
 
         #region Properties.
@@ -243,14 +241,14 @@ namespace Gorgon.Editor.Views
             // Find the owner of the collection.
             IFileExplorerNodeVm node = _revNodeLinks.FirstOrDefault(item => item.Key.Children == nodes).Key;
 
-            if (node == null)
+            if ((node == null) && (nodes != DataContext.RootNode.Children))
             {
                 return;
             }
 
             TreeNodeCollection nodeList = null;
 
-            if (_revNodeLinks.TryGetValue(node, out KryptonTreeNode treeNode))
+            if ((node != null) && (_revNodeLinks.TryGetValue(node, out KryptonTreeNode treeNode)))
             {
                 SelectNode(treeNode);
 
@@ -332,6 +330,75 @@ namespace Gorgon.Editor.Views
                     }                    
                     break;
             }
+        }
+
+        /// <summary>
+        /// Handles the Click event of the MenuItemExportTo control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void MenuItemExportTo_Click(object sender, EventArgs e)
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            var treeNode = TreeFileSystem.SelectedNode as KryptonTreeNode;
+            IFileExplorerNodeVm selectedNode = null;
+
+            if (treeNode != null)
+            {
+                if (!_nodeLinks.TryGetValue(treeNode, out selectedNode))
+                {
+                    return;
+                }
+            }
+            else
+            {
+                selectedNode = DataContext.RootNode;
+            }
+
+            if ((DataContext?.ExportNodeToCommand == null)
+                || (!DataContext.ExportNodeToCommand.CanExecute(selectedNode)))
+            {
+                return;
+            }
+
+            DataContext.ExportNodeToCommand.Execute(selectedNode);
+
+        }
+
+        /// <summary>
+        /// Handles the Click event of the MenuItemIncludeAll control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void MenuItemIncludeAll_Click(object sender, EventArgs e)
+        {
+            if ((DataContext?.IncludeExcludeAllCommand == null)
+                || (!DataContext.IncludeExcludeAllCommand.CanExecute(true)))
+            {
+                return;
+            }
+
+            DataContext.IncludeExcludeAllCommand.Execute(true);
+        }
+
+        /// <summary>
+        /// Handles the Click event of the MenuItemExcludeAll control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void MenuItemExcludeAll_Click(object sender, EventArgs e)
+        {
+            if ((DataContext?.IncludeExcludeAllCommand == null)
+                || (!DataContext.IncludeExcludeAllCommand.CanExecute(false)))
+            {
+                return;
+            }
+
+            DataContext.IncludeExcludeAllCommand.Execute(false);
         }
 
         /// <summary>
@@ -527,15 +594,21 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
+            MenuItemExportTo.Enabled = dataContext.RootNode.Children.Count > 0;
+
             if (dataContext.SelectedNode == null)
             {
-                MenuSepEdit.Available = _clipboardContext?.CanPaste() ?? false;
+                MenuSepEdit.Available = true;
+                MenuItemIncludeAll.Available = true;
+                MenuItemIncludeAll.Enabled = dataContext.IncludeExcludeAllCommand?.CanExecute(true) ?? false;
+                MenuItemExcludeAll.Available = true;
+                MenuItemExcludeAll.Enabled = dataContext.IncludeExcludeAllCommand?.CanExecute(false) ?? false;
                 MenuItemCopy.Available = false;
                 MenuItemCut.Available = false;
-                MenuItemPaste.Available = MenuSepEdit.Visible;
-                MenuItemPaste.Enabled = MenuSepEdit.Visible;
+                MenuItemPaste.Available = _clipboardContext?.CanPaste() ?? false;
+                MenuItemPaste.Enabled = _clipboardContext?.CanPaste() ?? false;
                 MenuSepOrganize.Available = false;
-                MenuSepNew.Available = MenuSepEdit.Available;
+                MenuSepNew.Available = false;
                 MenuItemCreateDirectory.Available = true;
                 MenuItemDelete.Available = false;
                 MenuItemRename.Available = false;
@@ -543,6 +616,10 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
+            MenuItemIncludeAll.Available = false;
+            MenuItemIncludeAll.Enabled = false;
+            MenuItemExcludeAll.Available = false;
+            MenuItemExcludeAll.Enabled = false;
             MenuSepEdit.Available = (_clipboardContext != null) && ((_clipboardContext.CanPaste()) || (_clipboardContext.CanCut()) || (_clipboardContext.CanCopy()));
             MenuSepOrganize.Available = true;
             MenuItemRename.Available = true;
@@ -746,7 +823,6 @@ namespace Gorgon.Editor.Views
                 return;
             }
             
-            _isDragging = true;
             var dragData = new TreeNodeDragData(treeNode, node, e.Button == MouseButtons.Right ? (DragOperation.Copy | DragOperation.Move) : DragOperation.Move);
             TreeFileSystem.DoDragDrop(dragData, DragDropEffects.Move | DragDropEffects.Copy);
 

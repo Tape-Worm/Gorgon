@@ -42,24 +42,9 @@ namespace Gorgon.Editor.Views
 
         #region Events.
         /// <summary>
-        /// Event triggered when the back button is clicked.
-        /// </summary>
-        public event EventHandler BackClicked;
-        /// <summary>
         /// Event triggered when the open project button is clicked.
         /// </summary>
         public event EventHandler OpenClicked;
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to set or return whether to show the back button.
-        /// </summary>
-        public bool ShowBackButton
-        {
-            get => PanelBack.Visible;
-            set => PanelBack.Visible = value;
-        }
         #endregion
 
         #region Methods.
@@ -71,17 +56,6 @@ namespace Gorgon.Editor.Views
         private void ButtonOpenProject_Click(object sender, EventArgs e)
         {
             EventHandler handler = OpenClicked;
-            handler?.Invoke(this, EventArgs.Empty);
-        }
-
-        /// <summary>
-        /// Handles the Click event of the ButtonBack control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonBack_Click(object sender, EventArgs e)
-        {
-            EventHandler handler = BackClicked;
             handler?.Invoke(this, EventArgs.Empty);
         }
 

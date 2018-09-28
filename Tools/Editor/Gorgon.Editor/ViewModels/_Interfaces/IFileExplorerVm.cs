@@ -66,6 +66,14 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Property to return the command to execute when including or excluding all nodes.
+        /// </summary>
+        IEditorCommand<bool> IncludeExcludeAllCommand
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the command to execute when including or excluding a node.
         /// </summary>
         IEditorCommand<bool> IncludeExcludeCommand
@@ -125,6 +133,22 @@ namespace Gorgon.Editor.ViewModels
         /// Property to return the command used to refresh the specified node children.
         /// </summary>
         IEditorCommand<IFileExplorerNodeVm> RefreshNodeCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to delete the file system.
+        /// </summary>
+        IEditorCommand<object> DeleteFileSystemCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to export a node's contents to the physical file system
+        /// </summary>
+        IEditorCommand<IFileExplorerNodeVm> ExportNodeToCommand
         {
             get;
         }

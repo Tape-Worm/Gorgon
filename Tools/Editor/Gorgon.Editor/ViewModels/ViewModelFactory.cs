@@ -41,11 +41,8 @@ namespace Gorgon.Editor.ViewModels
     /// </summary>
     internal class ViewModelFactory
     {
+
         #region Variables.
-        // The settings for the application.
-        private readonly EditorSettings _settings;
-        // The providers used to open/save files.
-        private readonly IFileSystemProviders _providers;
         // The service for displaying message boxes.
         private readonly MessageBoxService _messageBoxService;
         // The service for setting busy state by setting a wait cursor.
@@ -56,8 +53,58 @@ namespace Gorgon.Editor.ViewModels
         private readonly ClipboardService _clipboard;
         // The graphics context to use.
         private readonly GraphicsContext _graphicsContext;
+        // The directory locator service.
+        private readonly DirectoryLocateService _dirLocator;
         #endregion
-        
+
+        #region Properties.
+        /// <summary>
+        /// Property to return the settings for the application.
+        /// </summary>
+        public EditorSettings Settings
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the file system providers used to read/write project files.
+        /// </summary>
+        public IFileSystemProviders FileSystemProviders
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the service that displays messages on the UI.
+        /// </summary>
+        public IMessageDisplayService MessageDisplay => _messageBoxService;
+
+        /// <summary>
+        /// Property to return the busy service used to indicate that the UI is locked down.
+        /// </summary>
+        public IBusyStateService BusyService => _waitCursorService;
+
+        /// <summary>
+        /// Property to return the project manager interface.
+        /// </summary>
+        public IProjectManager ProjectManager => _projectManager;
+
+        /// <summary>
+        /// Property to return the cilpboard access service.
+        /// </summary>
+        public IClipboardService Clipboard => _clipboard;
+
+        /// <summary>
+        /// Property to return the graphics context for the application.
+        /// </summary>
+        public IGraphicsContext Graphics => _graphicsContext;
+
+        /// <summary>
+        /// Property to return the directory locator service used to select directories on the physical file system.
+        /// </summary>
+        public IDirectoryLocateService DirectoryLocator => _dirLocator;
+        #endregion
+
         #region Methods.
         /// <summary>
         /// Function to create the main view model and any child view models.
@@ -73,20 +120,11 @@ namespace Gorgon.Editor.ViewModels
             };
             var mainVm = new Main();
 
-            newProjectVm.Initialize(new StageNewVmParameters(_projectManager,
-                                                            workspace,
-                                                            _settings,
-                                                            this,
-                                                            _messageBoxService,
-                                                            _waitCursorService));
+            newProjectVm.Initialize(new StageNewVmParameters(workspace, this));
 
-            mainVm.Initialize(new MainParameters(_settings, 
-                                                _projectManager, 
-                                                newProjectVm, 
+            mainVm.Initialize(new MainParameters(newProjectVm, 
                                                 this, 
-                                                new EditorFileOpenDialogService(_settings, _providers),                                                
-                                                _messageBoxService, 
-                                                _waitCursorService));
+                                                new EditorFileOpenDialogService(Settings, FileSystemProviders)));
 
             return mainVm;
         }
@@ -105,7 +143,7 @@ namespace Gorgon.Editor.ViewModels
             var result = new FileExplorerFileNodeVm();
 
             // TODO: Add links as children.
-            result.Initialize(new FileExplorerNodeParameters(project, file.Name, file.FullName, this, fileSystemService, _messageBoxService, _waitCursorService)
+            result.Initialize(new FileExplorerNodeParameters(file.Name, file.FullName, project, this, fileSystemService)
             {
                 Parent = parent
             });
@@ -140,7 +178,7 @@ namespace Gorgon.Editor.ViewModels
                 children.Add(CreateFileExplorerFileNodeVm(project, fileSystemService, result, file));
             }
 
-            result.Initialize(new FileExplorerNodeParameters(project, directory.Name, directory.FullName.FormatDirectory(Path.DirectorySeparatorChar), this, fileSystemService, _messageBoxService, _waitCursorService)
+            result.Initialize(new FileExplorerNodeParameters(directory.Name, directory.FullName.FormatDirectory(Path.DirectorySeparatorChar), project, this, fileSystemService)
             {
                 Parent = parentNode,
                 Children = children
@@ -199,19 +237,16 @@ namespace Gorgon.Editor.ViewModels
             project.ShowExternalItems = showExternal;                        
 
             // This is a special node, used internally.
-            root.Initialize(new FileExplorerNodeParameters(project, "/", project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar), this, fileSystemService, _messageBoxService, _waitCursorService)
+            root.Initialize(new FileExplorerNodeParameters("/", project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar), project, this, fileSystemService)
             {                
                 Children = nodes
             });
 
-            result.Initialize(new FileExplorerParameters(project,
-                                                        fileSystemService,
+            result.Initialize(new FileExplorerParameters(fileSystemService,
                                                         metadataManager,
                                                         root,
-                                                        this, 
-                                                        _messageBoxService, 
-                                                        _waitCursorService,
-                                                        _clipboard));
+                                                        project,
+                                                        this));
 
             return result;
         }
@@ -237,12 +272,7 @@ namespace Gorgon.Editor.ViewModels
             metaDataManager.Load();
 
             result.FileExplorer = CreateFileExplorerViewModel(projectData, metaDataManager, fileSystemService, autoInclude);
-            result.Initialize(new ProjectVmParameters(_projectManager,
-                                                    projectData,
-                                                    metaDataManager,
-                                                    this,
-                                                    _messageBoxService,
-                                                    _waitCursorService));
+            result.Initialize(new ProjectVmParameters(projectData, metaDataManager, this));
 
             return result;
         }
@@ -259,16 +289,25 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="messages">The message dialog service.</param>
         /// <param name="waitState">The wait state service.</param>
         /// <param name="clipboardService">The application clipboard service.</param>
+        ///<param name="dirLocatorService">The directory locator service.</param>
         /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
-        public ViewModelFactory(EditorSettings settings, GraphicsContext graphics, FileSystemProviders providers, ProjectManager projectManager, MessageBoxService messages, WaitCursorBusyState waitState, ClipboardService clipboardService)
+        public ViewModelFactory(EditorSettings settings, 
+                                GraphicsContext graphics, 
+                                FileSystemProviders providers, 
+                                ProjectManager projectManager, 
+                                MessageBoxService messages, 
+                                WaitCursorBusyState waitState, 
+                                ClipboardService clipboardService, 
+                                DirectoryLocateService dirLocatorService)
         {
-            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _graphicsContext = graphics ?? throw new ArgumentNullException(nameof(graphics));
-            _providers = providers ?? throw new ArgumentNullException(nameof(providers));
+            FileSystemProviders = providers ?? throw new ArgumentNullException(nameof(providers));
             _projectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
             _messageBoxService = messages ?? throw new ArgumentNullException(nameof(messages));
             _waitCursorService = waitState ?? throw new ArgumentNullException(nameof(waitState));
             _clipboard = clipboardService ?? throw new ArgumentNullException(nameof(clipboardService));
+            _dirLocator = dirLocatorService ?? throw new ArgumentNullException(nameof(dirLocatorService));
         }
         #endregion
     }

@@ -103,6 +103,26 @@ namespace Gorgon.Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap clear_fs_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("clear_fs_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap clear_fs_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("clear_fs_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap collapse_16x16 {
             get {
                 object obj = ResourceManager.GetObject("collapse_16x16", resourceCulture);
@@ -233,6 +253,26 @@ namespace Gorgon.Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap export_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("export_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap export_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("export_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap file_48x48 {
             get {
                 object obj = ResourceManager.GetObject("file_48x48", resourceCulture);
@@ -265,6 +305,17 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_CAPTION_NO_FILE {
             get {
                 return ResourceManager.GetString("GOREDIT_CAPTION_NO_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This will delete all directories and files in the file system. 
+        ///
+        ///Are you absolutely sure you want to do this?.
+        /// </summary>
+        internal static string GOREDIT_CONFIRM_DELETE_ALL {
+            get {
+                return ResourceManager.GetString("GOREDIT_CONFIRM_DELETE_ALL", resourceCulture);
             }
         }
         
@@ -371,6 +422,16 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error moving &apos;{0}&apos; to &apos;{1}&apos;.
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_CANNOT_MOVE {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CANNOT_MOVE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot move the directory because there is a directory with the same name in the destination directory..
         /// </summary>
         internal static string GOREDIT_ERR_CANNOT_MOVE_DUPE_DIR {
@@ -431,6 +492,16 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error while deleting the entire file system.
+        ///Press F5 in the file system tree to refresh and try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_DELETE_ALL {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_DELETE_ALL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The directory &apos;{0}&apos; was not found..
         /// </summary>
         internal static string GOREDIT_ERR_DIRECTORY_NOT_FOUND {
@@ -445,6 +516,16 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_ERROR {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_ERROR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error while exporting to &apos;{0}&apos;.
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_EXPORT {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_EXPORT", resourceCulture);
             }
         }
         
@@ -464,6 +545,16 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_GENERAL_ERROR {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_GENERAL_ERROR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error including/excluding the entire file system.
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_INCLUDE_ALL {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_INCLUDE_ALL", resourceCulture);
             }
         }
         
@@ -727,6 +818,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Clearing the file system....
+        /// </summary>
+        internal static string GOREDIT_TEXT_CLEARING_FILESYSTEM {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_CLEARING_FILESYSTEM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Configuring workspace....
         /// </summary>
         internal static string GOREDIT_TEXT_CONFIGURE_WORKSPACE {
@@ -750,6 +850,15 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_TEXT_DELETING {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_DELETING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select a directory to export to....
+        /// </summary>
+        internal static string GOREDIT_TEXT_EXPORT_TO {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_EXPORT_TO", resourceCulture);
             }
         }
         
@@ -795,6 +904,15 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_TEXT_SAVE_EDITOR_FILE {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_SAVE_EDITOR_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select a workspace directory....
+        /// </summary>
+        internal static string GOREDIT_TEXT_SELECT_WORKSPACE {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_SELECT_WORKSPACE", resourceCulture);
             }
         }
         
@@ -847,6 +965,36 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap import_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("import_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap import_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("import_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap include_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("include_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot;?&gt;
         ///&lt;!--Created by exporting the settings of a KryptonPalette instance.--&gt;
         ///&lt;!--For more information about Krypton visit www.ComponentFactory.com--&gt;
@@ -869,6 +1017,16 @@ namespace Gorgon.Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap newproject_24x24 {
+            get {
+                object obj = ResourceManager.GetObject("newproject_24x24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap newproject_48x48 {
             get {
                 object obj = ResourceManager.GetObject("newproject_48x48", resourceCulture);
@@ -882,6 +1040,16 @@ namespace Gorgon.Editor.Properties {
         internal static System.Drawing.Bitmap open_folder_22x22 {
             get {
                 object obj = ResourceManager.GetObject("open_folder_22x22", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap openproject_24x24 {
+            get {
+                object obj = ResourceManager.GetObject("openproject_24x24", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -919,6 +1087,16 @@ namespace Gorgon.Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap recent_24x24 {
+            get {
+                object obj = ResourceManager.GetObject("recent_24x24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap recent_48x48 {
             get {
                 object obj = ResourceManager.GetObject("recent_48x48", resourceCulture);
@@ -932,6 +1110,46 @@ namespace Gorgon.Editor.Properties {
         internal static System.Drawing.Bitmap rename_16x16 {
             get {
                 object obj = ResourceManager.GetObject("rename_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap save_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("save_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap save_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("save_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap save_as_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("save_as_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap save_as_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("save_as_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

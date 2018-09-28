@@ -68,7 +68,9 @@ namespace Gorgon.Editor
         // The project manager for the application.
         private ProjectManager _projectManager;
         // The cache for plugin assemblies.
-        private GorgonMefPluginCache _pluginCache;        
+        private GorgonMefPluginCache _pluginCache;
+        // The directory locator service.
+        private DirectoryLocateService _dirLocator;
         #endregion
 
         #region Properties.
@@ -338,39 +340,32 @@ namespace Gorgon.Editor
         /// <returns>The directory if selected, or <b>null</b> if canceled.</returns>
         private DirectoryInfo LocateWorkspaceDirectory(DirectoryInfo initialDirectory, IWorkspaceTester tester)
         {
-            using (var locator = new FormWorkspaceLocator
-            {
-                CurrentDirectory = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)),
-                Size = new Size(1000, 600)
-            })
-            {
-                DirectoryInfo result = null;
+            var result = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+            DirectoryInfo current = result;
 
-                Cursor.Current = Cursors.Default;
+            Cursor.Current = Cursors.Default;
 
-                do
+            do
+            {
+                result = _dirLocator.GetDirectory(current, Resources.GOREDIT_TEXT_SELECT_WORKSPACE);
+
+                if (result == null)
                 {
-                    if (locator.ShowDialog(_splash) == DialogResult.Cancel)
-                    {
-                        return null;
-                    }
+                    return null;
+                }
 
-                    Cursor.Current = Cursors.WaitCursor;
-                    (bool acceptable, string reason) = tester.TestForAccessibility(locator.CurrentDirectory);
+                Cursor.Current = Cursors.WaitCursor;
+                (bool acceptable, string reason) = tester.TestForAccessibility(result);
 
-                    if (!acceptable)
-                    {
-                        GorgonDialogs.ErrorBox(_splash, reason);
-                        locator.CurrentDirectory = locator.CurrentDirectory;
-                    }
-                    else
-                    {
-                        result = locator.CurrentDirectory;
-                    }
-                } while (result == null);
+                if (!acceptable)
+                {
+                    GorgonDialogs.ErrorBox(_splash, reason);
+                    current = result;
+                    result = null;
+                }
+            } while (result == null);
 
-                return result;
-            }            
+            return result;
         }
 
         /// <summary>
@@ -473,6 +468,7 @@ namespace Gorgon.Editor
 
                 Debug.Assert(_settings.WindowBounds != null, "Window bounds should not be null.");
 
+                _dirLocator = new DirectoryLocateService();
                 DirectoryInfo workspaceDir = GetWorkspaceDirectory();
 
                 // If we didn't get a workspace directory, then leave.
@@ -502,7 +498,8 @@ namespace Gorgon.Editor
                                                    _projectManager,
                                                    new MessageBoxService(),
                                                    new WaitCursorBusyState(),
-                                                   new ClipboardService());
+                                                   new ClipboardService(),
+                                                   _dirLocator);
 
                 _mainForm.SetDataContext(factory.CreateMainViewModel(workspaceDir));
                 _mainForm.Show();

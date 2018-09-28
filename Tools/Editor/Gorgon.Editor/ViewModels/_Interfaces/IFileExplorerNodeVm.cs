@@ -211,6 +211,20 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="newPath">The node that will receive the the copy of this node.</param>
         /// <returns>The new node for the copied node.</returns>
         IFileExplorerNodeVm MoveNode(IFileExplorerNodeVm destNode);
+
+        /// <summary>
+        /// Function to export the contents of this node to the physical file system.
+        /// </summary>
+        /// <param name="destPath">The path to the directory on the physical file system that will receive the contents.</param>
+        /// <param name="onCopy">[Optional] The method to call when a file is about to be copied.</param>
+        /// <param name="cancelToken">[Optional] A token used to cancel the operation.</param>
+        /// <returns>A task for asynchronous operation.</returns>
+        /// <remarks>
+        /// <para>
+        /// The <paramref name="onCopy"/> callback method sends the file system node being copied, the destination file system node, the current item #, and the total number of items to copy.
+        /// </para>
+        /// </remarks>
+        Task ExportAsync(string destPath, Action<FileSystemInfo, FileSystemInfo, int, int> onCopy = null, CancellationToken? cancelToken = null);
         #endregion
     }
 }

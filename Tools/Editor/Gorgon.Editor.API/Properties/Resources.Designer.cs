@@ -61,6 +61,76 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap drive_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("drive_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap drive_cdrom_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("drive_cdrom_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap drive_network_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("drive_network_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap drive_ram_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("drive_ram_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap drive_remove_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("drive_remove_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap file_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("file_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap folder_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("folder_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There is no data of the type &apos;{0}&apos; on the clipboard..
         /// </summary>
         internal static string GOREDIT_ERR_CLIPBOARD_NO_DATA_OF_TYPE {
@@ -75,6 +145,15 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_PROPERTY_DOES_NOT_EXIST {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_PROPERTY_DOES_NOT_EXIST", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select a directory....
+        /// </summary>
+        internal static string GOREDIT_TITLE_DEFAULT_DIR_LOCATOR {
+            get {
+                return ResourceManager.GetString("GOREDIT_TITLE_DEFAULT_DIR_LOCATOR", resourceCulture);
             }
         }
         
