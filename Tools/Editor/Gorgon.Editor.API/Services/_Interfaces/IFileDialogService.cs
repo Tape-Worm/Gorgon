@@ -20,72 +20,65 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: August 27, 2018 12:52:19 AM
+// Created: September 24, 2018 12:45:12 PM
 // 
 #endregion
 
+using System;
+using System.Collections.Generic;
 using System.IO;
-using Gorgon.Editor.UI;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.Services
 {
     /// <summary>
-    /// A new project view model.
+    /// Provides a service that displays a file open or save dialog.
     /// </summary>
-    internal interface IStageNewVm    
-        : IViewModel
+    public interface IFileDialogService
     {
         #region Properties.
         /// <summary>
-        /// Property to set or return the title for the project.
+        /// Property to set or return a file filter.
         /// </summary>
-        string Title
+        string FileFilter
         {
             get;
             set;
         }
 
         /// <summary>
-        /// Property to set or return the workspace path.
+        /// Property to set or return the initial directory.
         /// </summary>
-        DirectoryInfo WorkspacePath
+        DirectoryInfo InitialDirectory
         {
             get;
             set;
         }
 
         /// <summary>
-        /// Property to return the available RAM, in bytes.
+        /// Property to set or return the title for the dialog.
         /// </summary>
-        ulong AvailableRam
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the available drive space on the drive that hosts the working folder.
-        /// </summary>
-        ulong AvailableDriveSpace
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set or return the active GPU name.
-        /// </summary>
-        string GPUName
+        string DialogTitle
         {
             get;
             set;
         }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to retrieve a single file name.
+        /// </summary>
+        /// <returns>The selected file path, or <b>null</b> if cancelled.</returns>
+        string GetFilename();
 
         /// <summary>
-        /// Property to return the command to execute when the project should be created.
+        /// Function to retrieve multiple file names.
         /// </summary>
-        IEditorAsyncCommand<ProjectCreateArgs> CreateProjectCommand
-        {
-            get;
-        }
+        /// <returns>The list of file paths, or <b>null</b> if cancelled.</returns>
+        IReadOnlyList<string> GetFilenames();
         #endregion
     }
 }

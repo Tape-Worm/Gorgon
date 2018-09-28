@@ -32,6 +32,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Gorgon.Core;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 
@@ -174,14 +175,12 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to rename the node.
         /// </summary>
-        /// <param name="fileSystemService">The file system service to use when renaming.</param>
         /// <param name="newName">The new name for the node.</param>
-        void RenameNode(IFileSystemService fileSystemService, string newName);
+        void RenameNode(string newName);
 
         /// <summary>
         /// Function to delete the node.
         /// </summary>
-        /// <param name="fileSystemService">The file system service to use when deleting.</param>
         /// <param name="onDeleted">[Optional] A function to call when a node or a child node is deleted.</param>
         /// <param name="cancelToken">[Optional] A cancellation token used to cancel the operation.</param>
         /// <returns>A task for asynchronous operation.</returns>
@@ -190,23 +189,28 @@ namespace Gorgon.Editor.ViewModels
         /// The <paramref name="onDeleted"/> parameter passes a file system information that contains name of the node being deleted, so callers can use that information for their own purposes.
         /// </para>
         /// </remarks>
-        Task DeleteNodeAsync(IFileSystemService fileSystemService, Action<FileSystemInfo> onDeleted = null, CancellationToken? cancelToken = null);
+        Task DeleteNodeAsync(Action<FileSystemInfo> onDeleted = null, CancellationToken? cancelToken = null);
 
         /// <summary>
         /// Function to copy this node to another node.
         /// </summary>
-        /// <param name="fileSystemService">The file system service to use when copying.</param>
         /// <param name="newPath">The node that will receive the the copy of this node.</param>
+        /// <param name="onCopy">[Optional] The method to call when a file is about to be copied.</param>
+        /// <param name="cancelToken">[Optional] A token used to cancel the operation.</param>
         /// <returns>The new node for the copied node.</returns>
-        IFileExplorerNodeVm CopyNode(IFileSystemService fileSystemService, IFileExplorerNodeVm destNode);
+        /// <remarks>
+        /// <para>
+        /// The <paramref name="onCopy"/> callback method sends the file system node being copied, the destination file system node, the current item #, and the total number of items to copy.
+        /// </para>
+        /// </remarks>
+        Task<IFileExplorerNodeVm> CopyNodeAsync(IFileExplorerNodeVm destNode, Action<FileSystemInfo, FileSystemInfo, int, int> onCopy = null, CancellationToken? cancelToken = null);
 
         /// <summary>
         /// Function to move this node to another node.
         /// </summary>
-        /// <param name="fileSystemService">The file system service to use when copying.</param>
         /// <param name="newPath">The node that will receive the the copy of this node.</param>
         /// <returns>The new node for the copied node.</returns>
-        IFileExplorerNodeVm MoveNode(IFileSystemService fileSystemService, IFileExplorerNodeVm destNode);
+        IFileExplorerNodeVm MoveNode(IFileExplorerNodeVm destNode);
         #endregion
     }
 }

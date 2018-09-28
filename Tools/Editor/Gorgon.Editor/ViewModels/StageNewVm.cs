@@ -61,7 +61,7 @@ namespace Gorgon.Editor.ViewModels
         // The directory to use as the work space.
         private DirectoryInfo _workspace;
         // The active GPU name.
-        private string _gpuName = Resources.GOREDIT_TEXT_UNKNOWN;
+        private string _gpuName = Resources.GOREDIT_TEXT_UNKNOWN;        
         #endregion
 
         #region Properties.
@@ -90,7 +90,7 @@ namespace Gorgon.Editor.ViewModels
         public DirectoryInfo WorkspacePath
         {
             get => _workspace;
-            private set
+            set
             {
                 if (string.Equals(_workspace?.FullName, value?.FullName, StringComparison.OrdinalIgnoreCase))
                 {
@@ -195,10 +195,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Initializes a new instance of the <see cref="StageNewVm"/> class.
         /// </summary>
-        public StageNewVm()
-        {
-            CreateProjectCommand = new EditorAsyncCommand<ProjectCreateArgs>(DoCreateProjectCommandAsync, _ => CanCreateProject());
-        }
+        public StageNewVm() => CreateProjectCommand = new EditorAsyncCommand<ProjectCreateArgs>(DoCreateProjectCommandAsync, _ => CanCreateProject());
         #endregion
     }
 }

@@ -787,7 +787,6 @@ namespace Gorgon.Editor
             this.RibbonMain.RibbonAppButton.AppButtonShowRecentDocs = false;
             this.RibbonMain.RibbonTabs.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab[] {
             this.TabFileSystem});
-            this.RibbonMain.SelectedContext = null;
             this.RibbonMain.SelectedTab = this.TabFileSystem;
             this.RibbonMain.ShowMinimizeButton = false;
             this.RibbonMain.Size = new System.Drawing.Size(1264, 115);
@@ -962,6 +961,7 @@ namespace Gorgon.Editor
             this.StageLauncher.Size = new System.Drawing.Size(1264, 646);
             this.StageLauncher.TabIndex = 0;
             this.StageLauncher.BackClicked += new System.EventHandler(this.StageLauncher_BackClicked);
+            this.StageLauncher.OpenClicked += new System.EventHandler(this.StageLauncher_OpenClicked);
             // 
             // FormMain
             // 

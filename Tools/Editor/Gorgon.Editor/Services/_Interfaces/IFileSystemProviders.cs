@@ -20,72 +20,63 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: August 27, 2018 12:52:19 AM
+// Created: September 24, 2018 11:14:09 AM
 // 
 #endregion
 
+using System;
+using System.Collections.Generic;
 using System.IO;
-using Gorgon.Editor.UI;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Gorgon.IO;
+using Gorgon.IO.Providers;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.Services
 {
     /// <summary>
-    /// A new project view model.
+    /// Functionality to capture and load file system providers from plugins.
     /// </summary>
-    internal interface IStageNewVm    
-        : IViewModel
+    internal interface IFileSystemProviders
     {
         #region Properties.
         /// <summary>
-        /// Property to set or return the title for the project.
+        /// Property to return a list of available reader provider extensions.
         /// </summary>
-        string Title
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the workspace path.
-        /// </summary>
-        DirectoryInfo WorkspacePath
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the available RAM, in bytes.
-        /// </summary>
-        ulong AvailableRam
+        IReadOnlyList<GorgonFileExtension> ReaderExtensions
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the available drive space on the drive that hosts the working folder.
+        /// Property to return all loaded file system reader providers.
         /// </summary>
-        ulong AvailableDriveSpace
+        IReadOnlyDictionary<string, IGorgonFileSystemProvider> Readers
         {
             get;
         }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to build a file system reader filter string for file dialogs.
+        /// </summary>
+        /// <returns>The string containing the file dialog filter.</returns>
+        string GetReaderDialogFilterString();
 
         /// <summary>
-        /// Property to set or return the active GPU name.
+        /// Function to add file system reader providers.
         /// </summary>
-        string GPUName
-        {
-            get;
-            set;
-        }
+        /// <param name="providers">The list of providers to add.</param>
+        void AddReaders(IEnumerable<IGorgonFileSystemProvider> providers);
 
         /// <summary>
-        /// Property to return the command to execute when the project should be created.
+        /// Function to find the most suitable provider for the file specified in the path.
         /// </summary>
-        IEditorAsyncCommand<ProjectCreateArgs> CreateProjectCommand
-        {
-            get;
-        }
+        /// <param name="file">The file to evaluate.</param>
+        /// <returns>The best suitable provider, or <b>null</b> if none could be located.</returns>
+        IGorgonFileSystemProvider GetBestProvider(FileInfo file);
         #endregion
     }
 }

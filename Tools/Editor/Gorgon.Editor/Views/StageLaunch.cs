@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using Gorgon.Editor.Services;
 using Gorgon.Editor.UI.Views;
 
 namespace Gorgon.Editor.Views
@@ -44,6 +45,10 @@ namespace Gorgon.Editor.Views
         /// Event triggered when the back button is clicked.
         /// </summary>
         public event EventHandler BackClicked;
+        /// <summary>
+        /// Event triggered when the open project button is clicked.
+        /// </summary>
+        public event EventHandler OpenClicked;
         #endregion
 
         #region Properties.
@@ -58,6 +63,17 @@ namespace Gorgon.Editor.Views
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Handles the Click event of the ButtonOpenProject control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonOpenProject_Click(object sender, EventArgs e)
+        {
+            EventHandler handler = OpenClicked;
+            handler?.Invoke(this, EventArgs.Empty);
+        }
+
         /// <summary>
         /// Handles the Click event of the ButtonBack control.
         /// </summary>
@@ -86,9 +102,7 @@ namespace Gorgon.Editor.Views
                 StageNewProject.Visible = false;
                 StageRecent.Visible = true;
                 StageRecent.BringToFront();
-            }
-
-            // TODO: Open file button.
+            }            
         }
         #endregion
 

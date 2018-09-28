@@ -20,72 +20,61 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: August 27, 2018 12:52:19 AM
+// Created: September 27, 2018 10:19:08 PM
 // 
 #endregion
 
-using System.IO;
-using Gorgon.Editor.UI;
+using System;
 
 namespace Gorgon.Editor.ViewModels
 {
     /// <summary>
-    /// A new project view model.
+    /// The type of drag operation.
     /// </summary>
-    internal interface IStageNewVm    
-        : IViewModel
+    [Flags()]
+    internal enum DragOperation
     {
-        #region Properties.
         /// <summary>
-        /// Property to set or return the title for the project.
+        /// Unknown operation.
         /// </summary>
-        string Title
-        {
-            get;
-            set;
-        }
+        Unknown = 0,
+        /// <summary>
+        /// Copy operation.
+        /// </summary>
+        Copy = 1,
+        /// <summary>
+        /// Move operation.
+        /// </summary>
+        Move = 2
+    }
 
+    /// <summary>
+    /// Defines a node that is being dragged.
+    /// </summary>
+    internal interface IFileExplorerNodeDragData
+    {
         /// <summary>
-        /// Property to set or return the workspace path.
+        /// Property to return the file system node being dragged.
         /// </summary>
-        DirectoryInfo WorkspacePath
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the available RAM, in bytes.
-        /// </summary>
-        ulong AvailableRam
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the available drive space on the drive that hosts the working folder.
-        /// </summary>
-        ulong AvailableDriveSpace
+        IFileExplorerNodeVm Node
         {
             get;
         }
 
         /// <summary>
-        /// Property to set or return the active GPU name.
+        /// Property to return the node that is the target for the drop operation.
         /// </summary>
-        string GPUName
+        IFileExplorerNodeVm TargetNode
         {
             get;
-            set;
         }
 
         /// <summary>
-        /// Property to return the command to execute when the project should be created.
+        /// Property to return the type of operation to be performed when the drag is finished.
         /// </summary>
-        IEditorAsyncCommand<ProjectCreateArgs> CreateProjectCommand
+        DragOperation DragOperation
         {
             get;
         }
-        #endregion
     }
 }

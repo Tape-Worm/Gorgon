@@ -69,6 +69,21 @@ namespace Gorgon.Editor
 
         #region Methods.
         /// <summary>
+        /// Handles the OpenClicked event of the StageLauncher control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void StageLauncher_OpenClicked(object sender, EventArgs e)
+        {
+            if ((DataContext == null) || (!DataContext.OpenProjectCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            DataContext.OpenProjectCommand.Execute(null);
+        }
+
+        /// <summary>
         /// Handles the Activated event of the FormMain control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>

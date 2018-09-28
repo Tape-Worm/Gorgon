@@ -340,13 +340,23 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error copying &apos;{0}&apos;. 
-        ///
-        ///An item with the same name exists in the destination..
+        ///   Looks up a localized string similar to There was an error copying &apos;{0}&apos; to &apos;{1}&apos;.
+        ///Please try again..
         /// </summary>
         internal static string GOREDIT_ERR_CANNOT_COPY {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_CANNOT_COPY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error copying &apos;{0}&apos;. 
+        ///
+        ///An item with the same name exists in the destination..
+        /// </summary>
+        internal static string GOREDIT_ERR_CANNOT_COPY_DUPE {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CANNOT_COPY_DUPE", resourceCulture);
             }
         }
         
@@ -357,6 +367,24 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_CANNOT_CREATE_DIR {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_CANNOT_CREATE_DIR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot move the directory because there is a directory with the same name in the destination directory..
+        /// </summary>
+        internal static string GOREDIT_ERR_CANNOT_MOVE_DUPE_DIR {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CANNOT_MOVE_DUPE_DIR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot move the directory because there is a file with the same name in the destination directory..
+        /// </summary>
+        internal static string GOREDIT_ERR_CANNOT_MOVE_FILE_DIR {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CANNOT_MOVE_FILE_DIR", resourceCulture);
             }
         }
         
@@ -451,12 +479,32 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error loading the plugins.
+        ///
+        ///The application will continue, but some functionality will be unavailable..
+        /// </summary>
+        internal static string GOREDIT_ERR_LOADING_PLUGINS {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_LOADING_PLUGINS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error while showing the New Project screen.
         ///Please try again..
         /// </summary>
         internal static string GOREDIT_ERR_NEW_PROJECT {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_NEW_PROJECT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is no provider loaded that can read the file &apos;{0}&apos;..
+        /// </summary>
+        internal static string GOREDIT_ERR_NO_PROVIDER {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_NO_PROVIDER", resourceCulture);
             }
         }
         
@@ -481,8 +529,7 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There is already a file or directory with the name &apos;{0}&apos; in this directory.
-        ///Please choose a new name..
+        ///   Looks up a localized string similar to There is already a file or directory with the name &apos;{0}&apos; in this directory..
         /// </summary>
         internal static string GOREDIT_ERR_NODE_EXISTS {
             get {
@@ -521,6 +568,25 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; is not a Gorgon Editor project file..
+        /// </summary>
+        internal static string GOREDIT_ERR_NOT_A_PROJECT_FILE {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_NOT_A_PROJECT_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error opening the project.
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_OPENING_PROJECT {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_OPENING_PROJECT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error pasting the data from the clipboard into the file system.
         ///Please try again..
         /// </summary>
@@ -536,6 +602,16 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_PATH_IS_NOT_IN_PROJECT_FILESYSTEM {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_PATH_IS_NOT_IN_PROJECT_FILESYSTEM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find the project on the path &apos;{0}&apos;.
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_PROJECT_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_PROJECT_NOT_FOUND", resourceCulture);
             }
         }
         
@@ -566,6 +642,15 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_RENAMING_FILE {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_RENAMING_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot copy .
+        /// </summary>
+        internal static string GOREDIT_ERR_SOURCE_IS_ANCESTOR {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_SOURCE_IS_ANCESTOR", resourceCulture);
             }
         }
         
@@ -633,11 +718,29 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to All files (*.*)|*.*.
+        /// </summary>
+        internal static string GOREDIT_TEXT_ALL_FILES {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_ALL_FILES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Configuring workspace....
         /// </summary>
         internal static string GOREDIT_TEXT_CONFIGURE_WORKSPACE {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_CONFIGURE_WORKSPACE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copying....
+        /// </summary>
+        internal static string GOREDIT_TEXT_COPYING {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_COPYING", resourceCulture);
             }
         }
         
@@ -660,11 +763,47 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Loading plug-ins....
+        ///   Looks up a localized string similar to Loading file system plug ins....
         /// </summary>
-        internal static string GOREDIT_TEXT_LOADING_PLUGINS {
+        internal static string GOREDIT_TEXT_LOADING_FILESYSTEM_PLUGINS {
             get {
-                return ResourceManager.GetString("GOREDIT_TEXT_LOADING_PLUGINS", resourceCulture);
+                return ResourceManager.GetString("GOREDIT_TEXT_LOADING_FILESYSTEM_PLUGINS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select an editor file to open....
+        /// </summary>
+        internal static string GOREDIT_TEXT_OPEN_EDITOR_FILE {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_OPEN_EDITOR_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Opening &apos;{0}&apos;....
+        /// </summary>
+        internal static string GOREDIT_TEXT_OPENING_PROJECT {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_OPENING_PROJECT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save editor file as....
+        /// </summary>
+        internal static string GOREDIT_TEXT_SAVE_EDITOR_FILE {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_SAVE_EDITOR_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All supported files|{0}.
+        /// </summary>
+        internal static string GOREDIT_TEXT_SUPPORTED_FILES {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_SUPPORTED_FILES", resourceCulture);
             }
         }
         

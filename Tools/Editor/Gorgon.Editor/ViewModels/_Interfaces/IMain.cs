@@ -84,6 +84,14 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the command used to open a project.
+        /// </summary>
+        IEditorCommand<object> OpenProjectCommand
+        {
+            get;
+        }
         #endregion
 
         #region Methods.

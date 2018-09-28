@@ -27,11 +27,12 @@
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
+using Gorgon.Collections;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
+using Gorgon.IO;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -43,6 +44,8 @@ namespace Gorgon.Editor.ViewModels
         #region Variables.
         // The settings for the application.
         private readonly EditorSettings _settings;
+        // The providers used to open/save files.
+        private readonly IFileSystemProviders _providers;
         // The service for displaying message boxes.
         private readonly MessageBoxService _messageBoxService;
         // The service for setting busy state by setting a wait cursor.
@@ -77,9 +80,11 @@ namespace Gorgon.Editor.ViewModels
                                                             _messageBoxService,
                                                             _waitCursorService));
 
-            mainVm.Initialize(new MainParameters(_projectManager, 
+            mainVm.Initialize(new MainParameters(_settings, 
+                                                _projectManager, 
                                                 newProjectVm, 
                                                 this, 
+                                                new EditorFileOpenDialogService(_settings, _providers),                                                
                                                 _messageBoxService, 
                                                 _waitCursorService));
 
@@ -90,26 +95,17 @@ namespace Gorgon.Editor.ViewModels
         /// Function to create a file explorer node view model for a file.
         /// </summary>
         /// <param name="project">The project data.</param>
+        /// <param name="fileSystemService">The file system service used to manipulate the underlying physical file system.</param>
         /// <param name="parent">The parent for the node.</param>
         /// <param name="file">The file system file to wrap in the view model.</param>
         /// <returns>The new file explorer node view model.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, or the <paramref name="file"/> parameter is <b>null</b>.</exception>
-        public IFileExplorerNodeVm CreateFileExplorerFileNodeVm(IProject project, IFileExplorerNodeVm parent, FileInfo file)
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, <paramref name="fileSystemService"/> or the <paramref name="file"/> parameter is <b>null</b>.</exception>
+        public IFileExplorerNodeVm CreateFileExplorerFileNodeVm(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parent, FileInfo file)
         {
-            if (project == null)
-            {
-                throw new ArgumentNullException(nameof(project));
-            }
-
-            if (file == null)
-            {
-                throw new ArgumentNullException(nameof(file));
-            }
-
             var result = new FileExplorerFileNodeVm();
 
             // TODO: Add links as children.
-            result.Initialize(new FileExplorerNodeParameters(project, file, this, _messageBoxService, _waitCursorService)
+            result.Initialize(new FileExplorerNodeParameters(project, file.Name, file.FullName, this, fileSystemService, _messageBoxService, _waitCursorService)
             {
                 Parent = parent
             });
@@ -121,49 +117,30 @@ namespace Gorgon.Editor.ViewModels
         /// Function to create a file explorer node view model for a directory.
         /// </summary>
         /// <param name="project">The project data.</param>
+        /// <param name="fileSystemService">The file system service used to manipulate the underlying physical file system.</param>
         /// <param name="parentNode">The parent for the node.</param>
         /// <param name="metadataManager">The metadata manager to use.</param>
         /// <param name="directory">The file system directory to wrap in the view model.</param>
         /// <param name="rootDirectory">The root directory.</param>
         /// <returns>The new file explorer node view model.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, <paramref name="parentNode"/>, or the <paramref name="directory"/> parameter is <b>null</b>.</exception>
-        public IFileExplorerNodeVm CreateFileExplorerDirectoryNodeVm(IProject project, IFileExplorerNodeVm parentNode, IMetadataManager metadataManager, DirectoryInfo directory)
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, <paramref name="fileSystemService"/>, <paramref name="parentNode"/>, or the <paramref name="directory"/> parameter is <b>null</b>.</exception>
+        public IFileExplorerNodeVm CreateFileExplorerDirectoryNodeVm(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parentNode, IMetadataManager metadataManager, DirectoryInfo directory)
         {
-            if (project == null)
-            {
-                throw new ArgumentNullException(nameof(project));
-            }
-
-            if (parentNode == null)
-            {
-                throw new ArgumentNullException(nameof(parentNode));
-            }
-
-            if (directory == null)
-            {
-                throw new ArgumentNullException(nameof(directory));
-            }
-
-            if (metadataManager == null)
-            {
-                throw new ArgumentNullException(nameof(metadataManager));
-            }
-
             var result = new FileExplorerDirectoryNodeVm();
 
             var children = new ObservableCollection<IFileExplorerNodeVm>();
 
             foreach (DirectoryInfo subDir in metadataManager.GetIncludedDirectories(directory.FullName))
             {
-                children.Add(CreateFileExplorerDirectoryNodeVm(project, result, metadataManager, subDir));
+                children.Add(CreateFileExplorerDirectoryNodeVm(project, fileSystemService, result, metadataManager, subDir));
             }
 
             foreach (FileInfo file in metadataManager.GetIncludedFiles(directory.FullName))
             {
-                children.Add(CreateFileExplorerFileNodeVm(project, result, file));
+                children.Add(CreateFileExplorerFileNodeVm(project, fileSystemService, result, file));
             }
 
-            result.Initialize(new FileExplorerNodeParameters(project, directory, this, _messageBoxService, _waitCursorService)
+            result.Initialize(new FileExplorerNodeParameters(project, directory.Name, directory.FullName.FormatDirectory(Path.DirectorySeparatorChar), this, fileSystemService, _messageBoxService, _waitCursorService)
             {
                 Parent = parentNode,
                 Children = children
@@ -178,8 +155,9 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="project">The project data.</param>
         /// <param name="metadataManager">The metadata manager to use.</param>
         /// <param name="fileSystemService">The file system service for the project.</param>
+        /// <param name="autoInclude"><b>true</b> to automatically include any and all file system objects in the project, or <b>false</b> to only use what is in the metadata.</param>
         /// <returns>The file explorer view model.</returns>
-        private IFileExplorerVm CreateFileExplorerViewModel(IProject project, IMetadataManager metadataManager, IFileSystemService fileSystemService)
+        private IFileExplorerVm CreateFileExplorerViewModel(IProject project, IMetadataManager metadataManager, IFileSystemService fileSystemService, bool autoInclude)
         {
             project.ProjectWorkSpace.Refresh();
             if (!project.ProjectWorkSpace.Exists)
@@ -192,23 +170,38 @@ namespace Gorgon.Editor.ViewModels
 
             var root = new FileExplorerDirectoryNodeVm
             {
-                IsExpanded = true
+                IsExpanded = true,
+                Included = true
             };
+
+            bool showExternal = project.ShowExternalItems;
+            project.ShowExternalItems = autoInclude;
 
             foreach (DirectoryInfo rootDir in metadataManager.GetIncludedDirectories(project.ProjectWorkSpace.FullName))
             {
-                nodes.Add(CreateFileExplorerDirectoryNodeVm(project, root, metadataManager, rootDir));
+                nodes.Add(CreateFileExplorerDirectoryNodeVm(project, fileSystemService, root, metadataManager, rootDir));
             }
 
             foreach (FileInfo file in metadataManager.GetIncludedFiles(project.ProjectWorkSpace.FullName))
             {
-                nodes.Add(CreateFileExplorerFileNodeVm(project, root, file));
+                nodes.Add(CreateFileExplorerFileNodeVm(project, fileSystemService, root, file));
             }
 
+            if (autoInclude)
+            {
+                foreach (IFileExplorerNodeVm node in nodes.Traverse(p => p.Children))
+                {
+                    node.Included = true;
+                    project.Metadata.IncludedPaths.Add(new IncludedFileSystemPathMetadata(node.FullPath));
+                }
+            }
+
+            project.ShowExternalItems = showExternal;                        
+
             // This is a special node, used internally.
-            root.Initialize(new FileExplorerNodeParameters(project, project.ProjectWorkSpace, this, _messageBoxService, _waitCursorService)
+            root.Initialize(new FileExplorerNodeParameters(project, "/", project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar), this, fileSystemService, _messageBoxService, _waitCursorService)
             {                
-                Children = nodes                
+                Children = nodes
             });
 
             result.Initialize(new FileExplorerParameters(project,
@@ -227,9 +220,10 @@ namespace Gorgon.Editor.ViewModels
         /// Function to create a project view model.
         /// </summary>
         /// <param name="projectData">The project data to assign to the project view model.</param>
+        /// <param name="autoInclude"><b>true</b> to automatically include any and all file system objects in the project, or <b>false</b> to only use what is in the metadata.</param>
         /// <returns>The project view model.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="projectData"/> parameter is <b>null</b>.</exception>
-        public IProjectVm CreateProjectViewModel(IProject projectData)
+        public IProjectVm CreateProjectViewModel(IProject projectData, bool autoInclude)
         {
             if (projectData == null)
             {
@@ -240,8 +234,9 @@ namespace Gorgon.Editor.ViewModels
             var fileSystemService = new FileSystemService(projectData.ProjectWorkSpace);
 
             var metaDataManager = new MetadataManager(projectData, new SqliteMetadataProvider(projectData.MetadataFile));
+            metaDataManager.Load();
 
-            result.FileExplorer = CreateFileExplorerViewModel(projectData, metaDataManager, fileSystemService);
+            result.FileExplorer = CreateFileExplorerViewModel(projectData, metaDataManager, fileSystemService, autoInclude);
             result.Initialize(new ProjectVmParameters(_projectManager,
                                                     projectData,
                                                     metaDataManager,
@@ -259,15 +254,17 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="settings">The settings for the application.</param>
         /// <param name="graphics">The graphics context for the application.</param>
+        /// <param name="providers">The providers used to open/save files.</param>
         /// <param name="projectManager">The application project manager.</param>
         /// <param name="messages">The message dialog service.</param>
         /// <param name="waitState">The wait state service.</param>
         /// <param name="clipboardService">The application clipboard service.</param>
         /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
-        public ViewModelFactory(EditorSettings settings, GraphicsContext graphics, ProjectManager projectManager, MessageBoxService messages, WaitCursorBusyState waitState, ClipboardService clipboardService)
+        public ViewModelFactory(EditorSettings settings, GraphicsContext graphics, FileSystemProviders providers, ProjectManager projectManager, MessageBoxService messages, WaitCursorBusyState waitState, ClipboardService clipboardService)
         {
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _graphicsContext = graphics ?? throw new ArgumentNullException(nameof(graphics));
+            _providers = providers ?? throw new ArgumentNullException(nameof(providers));
             _projectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
             _messageBoxService = messages ?? throw new ArgumentNullException(nameof(messages));
             _waitCursorService = waitState ?? throw new ArgumentNullException(nameof(waitState));

@@ -33,6 +33,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Gorgon.Core;
 using Gorgon.Collections;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Services;
@@ -63,6 +64,24 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return the factory used to build view models.
+        /// </summary>
+        protected ViewModelFactory ViewModelFactory
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the file system service used to manipulate the underlying file system.
+        /// </summary>
+        protected IFileSystemService FileSystemService
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// Property to return the busy state service.
         /// </summary>
@@ -133,7 +152,7 @@ namespace Gorgon.Editor.ViewModels
         public ObservableCollection<IFileExplorerNodeVm> Children
         {
             get;
-            private set;
+            protected set;
         } = new ObservableCollection<IFileExplorerNodeVm>();
 
         /// <summary>
@@ -247,6 +266,27 @@ namespace Gorgon.Editor.ViewModels
 
         #region Methods.
         /// <summary>
+        /// Function to return the root parent node for this node.
+        /// </summary>
+        /// <returns>The root parent node.</returns>
+        protected IFileExplorerNodeVm GetRoot()
+        {
+            if (Parent == null)
+            {
+                return this;
+            }
+
+            IFileExplorerNodeVm parent = this;
+
+            while (parent.Parent != null)
+            {
+                parent = parent.Parent;                
+            }
+
+            return parent;
+        }
+
+        /// <summary>
         /// Function to inject dependencies for the view model.
         /// </summary>
         /// <param name="injectionParameters">The parameters to inject.</param>
@@ -258,10 +298,12 @@ namespace Gorgon.Editor.ViewModels
                 throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.Project), nameof(injectionParameters));
             }
 
-            _physicalPath = injectionParameters.FileSystemObject?.FullName ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.FileSystemObject), nameof(injectionParameters));
+            FileSystemService = injectionParameters.FileSystemService ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.FileSystemService), nameof(injectionParameters));
+            ViewModelFactory = injectionParameters.ViewModelFactory ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.ViewModelFactory), nameof(injectionParameters));
+            _physicalPath = injectionParameters.PhysicalPath ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.PhysicalPath), nameof(injectionParameters));
 
             // This is the root node if we have no parent.
-            _name = injectionParameters.Parent == null ? "/" : injectionParameters.FileSystemObject.Name;
+            _name = injectionParameters.Parent == null ? "/" : (injectionParameters.Name ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.Name), nameof(injectionParameters)));
             MessageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.MessageDisplay), nameof(injectionParameters));
             BusyService = injectionParameters.BusyState ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.BusyState), nameof(injectionParameters));
 
@@ -276,26 +318,23 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to delete the node.
         /// </summary>
-        /// <param name="fileSystemService">The file system service to use when deleting.</param>
         /// <param name="onDeleted">[Optional] A function to call when a node or a child node is deleted.</param>
         /// <param name="cancelToken">[Optional] A cancellation token used to cancel the operation.</param>
         /// <returns>A task for asynchronous operation.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileSystemService" /> parameter is <b>null</b>.</exception>        
         /// <remarks>
         /// <para>
         /// The <paramref name="onDeleted"/> parameter passes a file system information that contains name of the node being deleted, so callers can use that information for their own purposes.
         /// </para>
         /// </remarks>
-        public abstract Task DeleteNodeAsync(IFileSystemService fileSystemService, Action<FileSystemInfo> onDeleted = null, CancellationToken? cancelToken = null);
+        public abstract Task DeleteNodeAsync(Action<FileSystemInfo> onDeleted = null, CancellationToken? cancelToken = null);
 
         /// <summary>
         /// Function to rename the node.
         /// </summary>
-        /// <param name="fileSystemService">The file system service to use when renaming.</param>
         /// <param name="newName">The new name for the node.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileSystemService"/>, or the <paramref name="newName"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="newName"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="newName"/> parameter is empty.</exception>
-        public abstract void RenameNode(IFileSystemService fileSystemService, string newName);
+        public abstract void RenameNode(string newName);
 
         /// <summary>
         /// Function to determine if this node is an ancestor of the specified parent node.
@@ -323,20 +362,27 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to copy this node to another node.
         /// </summary>
-        /// <param name="fileSystemService">The file system service to use when copying.</param>
         /// <param name="destNode">The dest node.</param>
+        /// <param name="onCopy">[Optional] The method to call when a file is about to be copied.</param>
+        /// <param name="cancelToken">[Optional] A token used to cancel the operation.</param>
         /// <returns>The new node for the copied node.</returns>
-        public abstract IFileExplorerNodeVm CopyNode(IFileSystemService fileSystemService, IFileExplorerNodeVm destNode);
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destNode" /> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="destNode" /> is unable to create child nodes.</exception>
+        /// <remarks>
+        /// <para>
+        /// The <paramref name="onCopy" /> callback method sends the file system item being copied, the destination file system item, the current item #, and the total number of items to copy.
+        /// </para>
+        /// </remarks>
+        public abstract Task<IFileExplorerNodeVm> CopyNodeAsync(IFileExplorerNodeVm destNode, Action<FileSystemInfo, FileSystemInfo, int, int> onCopy = null, CancellationToken? cancelToken = null);
 
         /// <summary>
         /// Function to move this node to another node.
         /// </summary>
-        /// <param name="fileSystemService">The file system service to use when copying.</param>
         /// <param name="newPath">The node that will receive the the copy of this node.</param>
         /// <returns>The new node for the copied node.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileSystemService"/>, or the <paramref name="destNode"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destNode"/> parameter is <b>null</b>.</exception>
         /// <exception cref="GorgonException">Thrown if the <paramref name="destNode"/> is unable to create child nodes.</exception>
-        public abstract IFileExplorerNodeVm MoveNode(IFileSystemService fileSystemService, IFileExplorerNodeVm destNode);
+        public abstract IFileExplorerNodeVm MoveNode(IFileExplorerNodeVm destNode);
         #endregion
 
         #region Constructor.
@@ -346,13 +392,15 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="copy">The node to copy.</param>
         internal FileExplorerNodeCommon(FileExplorerNodeCommon copy)
         {
-            this.BusyService = copy.BusyService;
-            this.MessageDisplay = copy.MessageDisplay;
-            this.Name = copy.Name;
-            this.IsExpanded = copy.IsExpanded;
-            this.Included = copy.Included;
-            this.PhysicalPath = copy.PhysicalPath;
-            this.Parent = copy.Parent;
+            BusyService = copy.BusyService;
+            MessageDisplay = copy.MessageDisplay;
+            Name = copy.Name;
+            IsExpanded = copy.IsExpanded;
+            Included = copy.Included;
+            PhysicalPath = copy.PhysicalPath;
+            Parent = copy.Parent;
+            FileSystemService = copy.FileSystemService;
+            ViewModelFactory = copy.ViewModelFactory;
             
             // TODO: Not sure what to do here.
             //this.Children = new ObservableCollection<IFileExplorerNodeVm>()

@@ -204,8 +204,8 @@ Please try again.</value>
 
 '{0}' are not allowed in node names.</value>
   </data>
-  <data name="GOREDIT_TEXT_LOADING_PLUGINS" xml:space="preserve">
-    <value>Loading plug-ins...</value>
+  <data name="GOREDIT_TEXT_LOADING_FILESYSTEM_PLUGINS" xml:space="preserve">
+    <value>Loading file system plug ins...</value>
   </data>
   <data name="GOREDIT_ERR_WORKSPACE_NOT_EMPTY" xml:space="preserve">
     <value>Unsuitable workspace location: There are files or subdirectories in this directory.</value>
@@ -227,8 +227,7 @@ Please try again.</value>
     <value>..\Resources\openproject_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GOREDIT_ERR_NODE_EXISTS" xml:space="preserve">
-    <value>There is already a file or directory with the name '{0}' in this directory.
-Please choose a new name.</value>
+    <value>There is already a file or directory with the name '{0}' in this directory.</value>
   </data>
   <data name="collapse_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\collapse_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -338,7 +337,7 @@ Please try again.</value>
 
 Would you like to overrwrite it?</value>
   </data>
-  <data name="GOREDIT_ERR_CANNOT_COPY" xml:space="preserve">
+  <data name="GOREDIT_ERR_CANNOT_COPY_DUPE" xml:space="preserve">
     <value>There was an error copying '{0}'. 
 
 An item with the same name exists in the destination.</value>
@@ -382,5 +381,55 @@ Note: Workspaces must be accessible by the current user, and inside of an existi
   </data>
   <data name="GOREDIT_TEXT_UNKNOWN" xml:space="preserve">
     <value>(Unknown)</value>
+  </data>
+  <data name="GOREDIT_ERR_LOADING_PLUGINS" xml:space="preserve">
+    <value>There was an error loading the plugins.
+
+The application will continue, but some functionality will be unavailable.</value>
+  </data>
+  <data name="GOREDIT_TEXT_ALL_FILES" xml:space="preserve">
+    <value>All files (*.*)|*.*</value>
+  </data>
+  <data name="GOREDIT_TEXT_OPEN_EDITOR_FILE" xml:space="preserve">
+    <value>Select an editor file to open...</value>
+  </data>
+  <data name="GOREDIT_TEXT_SAVE_EDITOR_FILE" xml:space="preserve">
+    <value>Save editor file as...</value>
+  </data>
+  <data name="GOREDIT_TEXT_SUPPORTED_FILES" xml:space="preserve">
+    <value>All supported files|{0}</value>
+  </data>
+  <data name="GOREDIT_ERR_NOT_A_PROJECT_FILE" xml:space="preserve">
+    <value>The file '{0}' is not a Gorgon Editor project file.</value>
+  </data>
+  <data name="GOREDIT_ERR_NO_PROVIDER" xml:space="preserve">
+    <value>There is no provider loaded that can read the file '{0}'.</value>
+  </data>
+  <data name="GOREDIT_ERR_OPENING_PROJECT" xml:space="preserve">
+    <value>There was an error opening the project.
+Please try again.</value>
+  </data>
+  <data name="GOREDIT_ERR_PROJECT_NOT_FOUND" xml:space="preserve">
+    <value>Could not find the project on the path '{0}'.
+Please try again.</value>
+  </data>
+  <data name="GOREDIT_TEXT_OPENING_PROJECT" xml:space="preserve">
+    <value>Opening '{0}'...</value>
+  </data>
+  <data name="GOREDIT_ERR_SOURCE_IS_ANCESTOR" xml:space="preserve">
+    <value>Cannot copy </value>
+  </data>
+  <data name="GOREDIT_TEXT_COPYING" xml:space="preserve">
+    <value>Copying...</value>
+  </data>
+  <data name="GOREDIT_ERR_CANNOT_COPY" xml:space="preserve">
+    <value>There was an error copying '{0}' to '{1}'.
+Please try again.</value>
+  </data>
+  <data name="GOREDIT_ERR_CANNOT_MOVE_DUPE_DIR" xml:space="preserve">
+    <value>Cannot move the directory because there is a directory with the same name in the destination directory.</value>
+  </data>
+  <data name="GOREDIT_ERR_CANNOT_MOVE_FILE_DIR" xml:space="preserve">
+    <value>Cannot move the directory because there is a file with the same name in the destination directory.</value>
   </data>
 </root>

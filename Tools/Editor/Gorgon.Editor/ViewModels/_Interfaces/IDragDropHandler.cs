@@ -20,63 +20,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: August 26, 2018 8:19:04 PM
+// Created: September 27, 2018 10:58:50 PM
 // 
 #endregion
 
-using System.Windows.Forms;
-using DX = SharpDX;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Gorgon.Editor
+namespace Gorgon.Editor.ViewModels
 {
     /// <summary>
-    /// The settings used by the editor.
+    /// Defines functionality used to handle dragging and dropping.
     /// </summary>
-    internal class EditorSettings
+    public interface IDragDropHandler<in T>
     {
         /// <summary>
-        /// Property to set or return the window boundaries.
+        /// Function to determine if an object can be dropped.
         /// </summary>
-        public DX.Rectangle? WindowBounds
-        {
-            get;
-            set;
-        }
+        /// <param name="dragData">The drag/drop data.</param>
+        bool CanDrop(T dragData);
 
         /// <summary>
-        /// Property to set or return the last path used for a workspace.
+        /// Function to drop the payload for a drag drop operation.
         /// </summary>
-        public string LastWorkSpacePath
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the path used for the application plug ins.
-        /// </summary>
-        public string PluginPath
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the last file open/save path.
-        /// </summary>
-        public string LastOpenSavePath
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the last window state.
-        /// </summary>
-        public FormWindowState WindowState
-        {
-            get;
-            set;
-        } = FormWindowState.Maximized;
+        /// <param name="dragData">The drag/drop data.</param>
+        void Drop(T dragData);
     }
 }

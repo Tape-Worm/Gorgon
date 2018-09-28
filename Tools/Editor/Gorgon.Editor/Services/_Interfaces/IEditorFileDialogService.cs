@@ -20,72 +20,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: August 27, 2018 12:52:19 AM
+// Created: September 24, 2018 1:02:38 PM
 // 
 #endregion
 
-using System.IO;
-using Gorgon.Editor.UI;
-
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.Services
 {
     /// <summary>
-    /// A new project view model.
+    /// Provides a service for showing a dialog used to open or save editor files.
     /// </summary>
-    internal interface IStageNewVm    
-        : IViewModel
+    internal interface IEditorFileDialogService
+        : IFileDialogService
     {
-        #region Properties.
         /// <summary>
-        /// Property to set or return the title for the project.
+        /// Property to return the available file system providers.
         /// </summary>
-        string Title
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the workspace path.
-        /// </summary>
-        DirectoryInfo WorkspacePath
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the available RAM, in bytes.
-        /// </summary>
-        ulong AvailableRam
+        IFileSystemProviders Providers
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the available drive space on the drive that hosts the working folder.
+        /// Property to return the settings for the application.
         /// </summary>
-        ulong AvailableDriveSpace
+        EditorSettings Settings
         {
             get;
         }
-
-        /// <summary>
-        /// Property to set or return the active GPU name.
-        /// </summary>
-        string GPUName
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the command to execute when the project should be created.
-        /// </summary>
-        IEditorAsyncCommand<ProjectCreateArgs> CreateProjectCommand
-        {
-            get;
-        }
-        #endregion
     }
 }

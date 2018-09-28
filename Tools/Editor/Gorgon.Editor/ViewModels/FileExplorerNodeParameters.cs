@@ -27,6 +27,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using Gorgon.Core;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Services;
 
@@ -36,12 +37,20 @@ namespace Gorgon.Editor.ViewModels
     /// Parameters to inject into a <see cref="IFileExplorerNodeVm"/> concrete type.
     /// </summary>
     internal class FileExplorerNodeParameters
-        : ViewModelCommonParameters
+        : ViewModelCommonParameters, IGorgonNamedObject
     {
         /// <summary>
-        /// Property to set or return the file system object represented by the node.
+        /// Property to return the file system service used to manipulate the underlying file system.
         /// </summary>
-        public FileSystemInfo FileSystemObject
+        public IFileSystemService FileSystemService
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to set or return the physical path for the node.
+        /// </summary>
+        public string PhysicalPath
         {
             get;
         }
@@ -71,19 +80,43 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Property to return the name of this object.
+        /// </summary>
+        public string Name
+        {
+            get;
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="FileExplorerNodeParameters"/> class.
         /// </summary>
         /// <param name="projectData">The project data for the current project.</param>
-        /// <param name="fileSystemObject">The physical file system object that the node represents.</param>
+        /// <param name="name">The name of the node.</param>
+        /// <param name="physicalPath">The physical file system object that the node represents.</param>
         /// <param name="viewModelFactory">The view model factory for creating view models.</param>
+        /// <param name="fileSystemService">The file system service used to manipulate the underlying file system.</param>
         /// <param name="messageDisplay">The message display service to use.</param>
         /// <param name="busyService">The busy state service to use.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public FileExplorerNodeParameters(IProject projectData, FileSystemInfo fileSystemObject, ViewModelFactory viewModelFactory, IMessageDisplayService messageDisplay, IBusyStateService busyService)
+        public FileExplorerNodeParameters(IProject projectData, string name, string physicalPath, ViewModelFactory viewModelFactory, IFileSystemService fileSystemService, IMessageDisplayService messageDisplay, IBusyStateService busyService)
             : base(viewModelFactory, messageDisplay, busyService)
         {
-            Project = projectData ?? throw new ArgumentNullException(nameof(projectData));
-            FileSystemObject = fileSystemObject ?? throw new ArgumentNullException(nameof(fileSystemObject));
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+
+            if (string.IsNullOrWhiteSpace(Name))
+            {
+                throw new ArgumentEmptyException(nameof(name));
+            }
+
+            Project = projectData ?? throw new ArgumentNullException(nameof(projectData));            
+            PhysicalPath = physicalPath ?? throw new ArgumentNullException(nameof(physicalPath));
+
+            if (string.IsNullOrWhiteSpace(PhysicalPath))
+            {
+                throw new ArgumentEmptyException(nameof(physicalPath));
+            }
+
+            FileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
         }
     }
 }

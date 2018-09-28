@@ -87,12 +87,9 @@ namespace Gorgon.Editor.ViewModels
 
             try
             {
-                if (response == MessageResponse.Cancel)
-                {
-                    return FileSystemConflictResolution.Cancel;
-                }
-
-                return response == MessageResponse.Yes ? FileSystemConflictResolution.Overwrite : FileSystemConflictResolution.Rename;
+                return response == MessageResponse.Cancel
+                    ? FileSystemConflictResolution.Cancel
+                    : response == MessageResponse.Yes ? FileSystemConflictResolution.Overwrite : FileSystemConflictResolution.Rename;
             }
             finally
             {
@@ -107,17 +104,11 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to rename the node.
         /// </summary>
-        /// <param name="fileSystemService">The file system service to use when renaming.</param>
         /// <param name="newName">The new name for the node.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileSystemService"/>, or the <paramref name="newName"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="newName"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="newName"/> parameter is empty.</exception>
-        public override void RenameNode(IFileSystemService fileSystemService, string newName)
+        public override void RenameNode(string newName)
         {
-            if (fileSystemService == null)
-            {
-                throw new ArgumentNullException(nameof(newName));
-            }
-
             if (newName == null)
             {
                 throw new ArgumentNullException(nameof(newName));
@@ -128,7 +119,7 @@ namespace Gorgon.Editor.ViewModels
                 throw new ArgumentEmptyException(nameof(newName));
             }
 
-            PhysicalPath = fileSystemService.RenameFile(PhysicalPath, newName);
+            PhysicalPath = FileSystemService.RenameFile(PhysicalPath, newName);
             Name = newName;
             NotifyPropertyChanged(nameof(FullPath));
         }
@@ -136,28 +127,21 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to delete the node.
         /// </summary>
-        /// <param name="fileSystemService">The file system service to use when deleting.</param>
         /// <param name="onDeleted">[Optional] A function to call when a node or a child node is deleted.</param>
         /// <param name="cancelToken">[Optional] A cancellation token used to cancel the operation.</param>
         /// <returns>A task for asynchronous operation.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileSystemService" /> parameter is <b>null</b>.</exception>        
         /// <remarks>
         /// <para>
         /// The <paramref name="onDeleted"/> parameter is not used for this type.
         /// </para>
         /// </remarks>
-        public override Task DeleteNodeAsync(IFileSystemService fileSystemService, Action<FileSystemInfo> onDeleted = null, CancellationToken? cancelToken = null)
+        public override Task DeleteNodeAsync(Action<FileSystemInfo> onDeleted = null, CancellationToken? cancelToken = null)
         {
-            if (fileSystemService == null)
-            {
-                throw new ArgumentNullException(nameof(fileSystemService));
-            }
-
             // There's no need to make this asynchronous, nor have a status display associated with it.  
             var tcs = new TaskCompletionSource<object>();
 
             // Delete the physical object first. If we fail here, our node will survive.
-            fileSystemService.DeleteFile(PhysicalPath);
+            FileSystemService.DeleteFile(PhysicalPath);
 
             // Drop us from the parent list.
             // This will begin a chain reaction that will remove us from the UI.
@@ -170,27 +154,30 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to copy this node to another node.
         /// </summary>
-        /// <param name="fileSystemService">The file system service to use when copying.</param>
         /// <param name="newPath">The node that will receive the the copy of this node.</param>
+        /// <param name="onCopy">[Optional] The method to call when a file is about to be copied.</param>
+        /// <param name="cancelToken">[Optional] A token used to cancel the operation.</param>
         /// <returns>The new node for the copied node.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileSystemService"/>, or the <paramref name="destNode"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destNode"/> parameter is <b>null</b>.</exception>
         /// <exception cref="GorgonException">Thrown if the <paramref name="destNode"/> is unable to create child nodes.</exception>
-        public override IFileExplorerNodeVm CopyNode(IFileSystemService fileSystemService, IFileExplorerNodeVm destNode)
+        /// <remarks>
+        /// <para>
+        /// The <paramref name="onCopy" /> callback method sends the file system item being copied, the destination file system item, the current item #, and the total number of items to copy.
+        /// </para>
+        /// </remarks>
+        public override Task<IFileExplorerNodeVm> CopyNodeAsync(IFileExplorerNodeVm destNode, Action<FileSystemInfo, FileSystemInfo, int, int> onCopy = null, CancellationToken? cancelToken = null)
         {
-            if (fileSystemService == null)
-            {
-                throw new ArgumentNullException(nameof(fileSystemService));
-            }
-
             if (destNode == null)
             {
                 throw new ArgumentNullException(nameof(destNode));
             }
 
-            if (destNode == null)
+            if (!destNode.AllowChildCreation)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GOREDIT_ERR_NODE_CANNOT_CREATE_CHILDREN, destNode.Name));
             }
+
+            var tcs = new TaskCompletionSource<IFileExplorerNodeVm>();
 
             FileSystemConflictResolution resolution = FileSystemConflictResolution.Exception;
             string newPath = Path.Combine(destNode.PhysicalPath, Name);
@@ -207,7 +194,7 @@ namespace Gorgon.Editor.ViewModels
             // Renames a node that is in conflict when the file is the same in the source and dest, or if the user chooses to not overwrite.
             void RenameNodeInConflict()
             {
-                string newName = fileSystemService.GenerateFileName(result.PhysicalPath);
+                string newName = FileSystemService.GenerateFileName(result.PhysicalPath);
                 newPath = Path.Combine(destNode.PhysicalPath, newName);
                 result.Name = newName;
                 result.PhysicalPath = newPath;
@@ -219,7 +206,7 @@ namespace Gorgon.Editor.ViewModels
                 RenameNodeInConflict();
             }
 
-            if (fileSystemService.FileExists(newPath))
+            if (FileSystemService.FileExists(newPath))
             {
                 resolution = FileSystemConflictHandler(FullPath, result.FullPath, true);
 
@@ -236,26 +223,24 @@ namespace Gorgon.Editor.ViewModels
                 }
             }
 
-            fileSystemService.CopyFile(PhysicalPath, result.PhysicalPath);
+            FileSystemService.CopyFile(PhysicalPath, result.PhysicalPath);
 
-            return result;
+            // TODO: Create a copy of any links for this node.
+            // TODO: Can we make use of the onCopy method?
+            tcs.SetResult(result);
+
+            return tcs.Task;
         }
 
         /// <summary>
         /// Function to move this node to another node.
         /// </summary>
-        /// <param name="fileSystemService">The file system service to use when copying.</param>
         /// <param name="newPath">The node that will receive the the copy of this node.</param>
         /// <returns>The new node for the copied node.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileSystemService"/>, or the <paramref name="destNode"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destNode"/> parameter is <b>null</b>.</exception>
         /// <exception cref="GorgonException">Thrown if the <paramref name="destNode"/> is unable to create child nodes.</exception>
-        public override IFileExplorerNodeVm MoveNode(IFileSystemService fileSystemService, IFileExplorerNodeVm destNode)
+        public override IFileExplorerNodeVm MoveNode(IFileExplorerNodeVm destNode)
         {
-            if (fileSystemService == null)
-            {
-                throw new ArgumentNullException(nameof(fileSystemService));
-            }
-
             if (destNode == null)
             {
                 throw new ArgumentNullException(nameof(destNode));
@@ -274,7 +259,7 @@ namespace Gorgon.Editor.ViewModels
             FileSystemConflictResolution resolution = FileSystemConflictResolution.Exception;
             string newPath = Path.Combine(destNode.PhysicalPath, Name);
 
-            var result = new FileExplorerFileNodeVm(this)
+            IFileExplorerNodeVm result = new FileExplorerFileNodeVm(this)
             {
                 IsExpanded = false,
                 Name = Name,
@@ -283,7 +268,7 @@ namespace Gorgon.Editor.ViewModels
                 Included = Included
             };
 
-            if (fileSystemService.FileExists(newPath))
+            if (FileSystemService.FileExists(newPath))
             {
                 resolution = FileSystemConflictHandler(FullPath, result.FullPath, false);
 
@@ -298,7 +283,7 @@ namespace Gorgon.Editor.ViewModels
                 }
             }
 
-            fileSystemService.MoveFile(PhysicalPath, result.PhysicalPath);
+            FileSystemService.MoveFile(PhysicalPath, result.PhysicalPath);
 
             return result;
         }

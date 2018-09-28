@@ -64,13 +64,13 @@ namespace Gorgon.Editor
             string fileName = null;
             string dirPath;
 
-            if ((filesystemObject.Attributes & FileAttributes.Directory) == FileAttributes.Directory)
+            if (((filesystemObject.Attributes & FileAttributes.Directory) == FileAttributes.Directory) && (filesystemObject is DirectoryInfo))
             {
                 dirPath = filesystemObject.FullName.FormatDirectory(Path.DirectorySeparatorChar);
             }
             else
             {
-                dirPath = filesystemObject.FullName.Replace(filesystemObject.Name, string.Empty).FormatDirectory(Path.DirectorySeparatorChar);
+                dirPath = Path.GetDirectoryName(filesystemObject.FullName).FormatDirectory(Path.DirectorySeparatorChar);
                 fileName = filesystemObject.Name;
             }
 

@@ -91,12 +91,9 @@ namespace Gorgon.Editor
                     continue;
                 }
 
-                if ((i < args.Length - 1) && (!args[i + 1].StartsWith("-")) && (!args[i + 1].StartsWith("/")))
-                {
-                    return (true, args[i + 1]);
-                }
-
-                return (true, string.Empty);
+                return (i < args.Length - 1) && (!args[i + 1].StartsWith("-")) && (!args[i + 1].StartsWith("/"))
+                    ? (true, args[i + 1])
+                    : (true, string.Empty);
             }
 
             return (false, string.Empty);
@@ -109,7 +106,7 @@ namespace Gorgon.Editor
         private static void InitializeLogging(string[] args)
         {
             // Log everything.
-            var level = LoggingLevel.Simple;
+            LoggingLevel level = LoggingLevel.Simple;
 
             // Logging is always active when compiled as DEBUG.
 #if !DEBUG

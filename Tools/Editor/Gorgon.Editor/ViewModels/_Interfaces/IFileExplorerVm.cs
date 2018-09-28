@@ -39,7 +39,7 @@ namespace Gorgon.Editor.ViewModels
     /// The view model for our file explorer.
     /// </summary>
     internal interface IFileExplorerVm
-        : IViewModel
+        : IViewModel, IDragDropHandler<IFileExplorerNodeDragData>
     {
         #region Events.
         /// <summary>
@@ -109,6 +109,14 @@ namespace Gorgon.Editor.ViewModels
         /// Property to return the command used to copy a single node.
         /// </summary>
         IEditorCommand<CopyNodeArgs> CopyNodeCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to move a single node.
+        /// </summary>
+        IEditorCommand<CopyNodeArgs> MoveNodeCommand
         {
             get;
         }

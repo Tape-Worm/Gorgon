@@ -63,6 +63,15 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Property to set or return the settings for the application.
+        /// </summary>
+        public EditorSettings Settings
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to return the view model factory.
         /// </summary>
         public ViewModelFactory ViewModelFactory
