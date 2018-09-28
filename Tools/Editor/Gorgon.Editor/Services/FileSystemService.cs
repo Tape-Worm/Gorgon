@@ -213,6 +213,30 @@ namespace Gorgon.Editor.Services
             return directory.Name;
         }
 
+        /// <summary>
+        /// Function to determine if a directory exists or not.
+        /// </summary>
+        /// <param name="path">The path to the directory.</param>
+        /// <returns><b>true</b> if the directory exists, <b>false</b> if not.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+        public bool DirectoryExists(string path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentEmptyException(nameof(path));
+            }
+
+            var dir = new DirectoryInfo(path);
+            CheckRootOfPath(dir);
+
+            return dir.Exists;
+        }
 
         /// <summary>
         /// Function to determine if a file exists or not.
@@ -233,9 +257,10 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentEmptyException(nameof(path));
             }
 
-            CheckRootOfPath(new DirectoryInfo(path));
+            var file = new FileInfo(path);
+            CheckRootOfPath(file.Directory);
 
-            return File.Exists(path);
+            return file.Exists;
         }
 
         /// <summary>
@@ -447,6 +472,28 @@ namespace Gorgon.Editor.Services
         }
 
         /// <summary>
+        /// Function to remap a directory to the a new destination directory path.
+        /// </summary>
+        /// <param name="sourceDir">The source directory to remap.</param>
+        /// <param name="baseDir">The base directory used to replace.</param>
+        /// <returns>The remapped path.</returns>
+        private string RemapDirectory(DirectoryInfo sourceDir, DirectoryInfo baseDir)
+        {
+            if (string.Equals(sourceDir.FullName, baseDir.FullName, StringComparison.OrdinalIgnoreCase))
+            {
+                return sourceDir.FullName;
+            }
+
+            if ((!sourceDir.FullName.StartsWith(RootDirectory.FullName, StringComparison.OrdinalIgnoreCase))
+                || (!baseDir.FullName.StartsWith(RootDirectory.FullName, StringComparison.OrdinalIgnoreCase)))
+            {
+                return null;
+            }
+
+            return Path.Combine(baseDir.FullName, sourceDir.FullName.Substring(sourceDir.Parent.FullName.Length)).FormatDirectory(Path.DirectorySeparatorChar);
+        }
+
+        /// <summary>
         /// Function to copy a directory, and all of its child items to the specified path.
         /// </summary>
         /// <param name="directoryPath">The path to the directory to copy.</param>
@@ -492,6 +539,9 @@ namespace Gorgon.Editor.Services
             var sourceDir = new DirectoryInfo(directoryPath.FormatDirectory(Path.DirectorySeparatorChar));
             var destDir = new DirectoryInfo(destDirectoryPath.FormatDirectory(Path.DirectorySeparatorChar));
 
+            CheckRootOfPath(sourceDir);
+            CheckRootOfPath(destDir);
+
             if (!sourceDir.Exists)
             {
                 throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, sourceDir.FullName));
@@ -522,7 +572,7 @@ namespace Gorgon.Editor.Services
             foreach (DirectoryInfo directory in directories.OrderBy(item => item.FullName.Length))
             {
                 IReadOnlyList<FileInfo> files = GetFiles(directory.FullName, false);
-                string newDirPath = directory.FullName.Replace(sourceDir.FullName.FormatDirectory(Path.DirectorySeparatorChar), destDir.FullName).FormatDirectory(Path.DirectorySeparatorChar);
+                string newDirPath = RemapDirectory(directory, destDir);
 
                 var subDir = new DirectoryInfo(newDirPath);
 
@@ -672,6 +722,74 @@ namespace Gorgon.Editor.Services
 
             sourceFile.CopyTo(destFile.FullName, true);
         }
+
+        /// <summary>
+        /// Function to move a directory to another location.
+        /// </summary>
+        /// <param name="directoryPath">The path to the directory.</param>
+        /// <param name="destDirectoryPath">The destination name and path.</param>        
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryPath"/>, or the <paramref name="destDirectoryPath"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="directoryPath"/>, or the <paramref name="destDirectoryPath"/> parameter is empty.</exception>
+        /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by <paramref name="directoryPath"/>, or the parent directory for <paramref name="destDirectoryPath"/> was not found.</exception>
+        public void MoveDirectory(string directoryPath, string destDirectoryPath)
+        {
+            if (directoryPath == null)
+            {
+                throw new ArgumentNullException(nameof(directoryPath));
+            }
+
+            if (destDirectoryPath == null)
+            {
+                throw new ArgumentNullException(nameof(destDirectoryPath));
+            }
+
+            if (string.IsNullOrWhiteSpace(directoryPath))
+            {
+                throw new ArgumentEmptyException(nameof(directoryPath));
+            }
+
+            if (string.IsNullOrWhiteSpace(destDirectoryPath))
+            {
+                throw new ArgumentEmptyException(nameof(destDirectoryPath));
+            }
+
+            var source = new DirectoryInfo(directoryPath);
+            var dest = new DirectoryInfo(destDirectoryPath);
+
+            CheckRootOfPath(source);
+            CheckRootOfPath(dest);
+
+            if (!source.Exists)
+            {
+                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, directoryPath));
+            }
+
+            if (!dest.Parent.Exists)
+            {
+                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, dest.Parent.FullName));
+            }
+
+            // If we're moving to the same place, then we cannot proceed.
+            if (string.Equals(source.FullName, dest.FullName, StringComparison.OrdinalIgnoreCase))
+            {
+                if ((dest.Attributes & FileAttributes.Directory) == FileAttributes.Directory)
+                {
+                    throw new IOException(Resources.GOREDIT_ERR_CANNOT_MOVE_DUPE_DIR);
+                }
+                else
+                {
+                    throw new IOException(Resources.GOREDIT_ERR_CANNOT_MOVE_FILE_DIR);
+                }
+            }
+
+            /*if (dest.Exists)
+            {
+                throw new IOException(Resources.GOREDIT_ERR_CANNOT_MOVE_DUPE_DIR);
+            }*/
+
+            source.MoveTo(dest.FullName);
+        }
+
 
         /// <summary>
         /// Function to move a file to another location.

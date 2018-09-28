@@ -123,6 +123,13 @@ namespace Gorgon.Editor.Services
         bool FileExists(string path);
 
         /// <summary>
+        /// Function to determine if a directory exists or not.
+        /// </summary>
+        /// <param name="path">The path to the directory.</param>
+        /// <returns><b>true</b> if the directory exists, <b>false</b> if not.</returns>
+        bool DirectoryExists(string path);
+
+        /// <summary>
         /// Function to create a new directory.
         /// </summary>
         /// <param name="parentDirectory">The parent directory on the physical file system.</param>
@@ -198,6 +205,13 @@ namespace Gorgon.Editor.Services
         /// <param name="filePath">The path to the file.</param>
         /// <param name="destFileNamePath">The destination file name and path.</param>        
         void MoveFile(string filePath, string destFileNamePath);
+
+        /// <summary>
+        /// Function to move a directory to another location.
+        /// </summary>
+        /// <param name="directoryPath">The path to the directory.</param>
+        /// <param name="destDirectoryPath">The destination name and path.</param>        
+        void MoveDirectory(string directoryPath, string destDirectoryPath);
         #endregion
     }
 }

@@ -371,6 +371,24 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot move the directory because there is a directory with the same name in the destination directory..
+        /// </summary>
+        internal static string GOREDIT_ERR_CANNOT_MOVE_DUPE_DIR {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CANNOT_MOVE_DUPE_DIR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot move the directory because there is a file with the same name in the destination directory..
+        /// </summary>
+        internal static string GOREDIT_ERR_CANNOT_MOVE_FILE_DIR {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CANNOT_MOVE_FILE_DIR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not use &apos;{0}&apos; as the work space directory:
         ///{1}
         ///
@@ -511,8 +529,7 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There is already a file or directory with the name &apos;{0}&apos; in this directory.
-        ///Please choose a new name..
+        ///   Looks up a localized string similar to There is already a file or directory with the name &apos;{0}&apos; in this directory..
         /// </summary>
         internal static string GOREDIT_ERR_NODE_EXISTS {
             get {

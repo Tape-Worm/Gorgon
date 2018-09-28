@@ -422,6 +422,35 @@ namespace Gorgon.Editor.Views
         }
 
         /// <summary>
+        /// Handles the Click event of the MenuItemMoveTo control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void MenuItemMoveTo_Click(object sender, EventArgs e)
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            if (!(MenuCopyMove.Tag is IFileExplorerNodeDragData data))
+            {
+                MenuCopyMove.Tag = null;
+                return;
+            }
+
+            var args = new CopyNodeArgs(data.Node, data.TargetNode);
+
+            if (!DataContext.MoveNodeCommand.CanExecute(args))
+            {
+                return;
+            }
+            DataContext.MoveNodeCommand.Execute(args);
+
+            MenuCopyMove.Tag = null;
+        }
+
+        /// <summary>
         /// Handles the Click event of the MenuItemCopyTo control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>

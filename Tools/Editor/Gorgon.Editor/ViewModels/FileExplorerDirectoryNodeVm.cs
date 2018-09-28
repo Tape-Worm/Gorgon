@@ -226,8 +226,45 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="destNode">The dest node.</param>
         /// <returns>The new node for the copied node.</returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public override IFileExplorerNodeVm MoveNode(IFileExplorerNodeVm destNode) => throw new NotImplementedException();
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destNode"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="destNode"/> is incapable of creating child nodes.</exception>
+        public override IFileExplorerNodeVm MoveNode(IFileExplorerNodeVm destNode)
+        {
+            if (destNode == null)
+            {
+                throw new ArgumentNullException(nameof(destNode));
+            }
+
+            if (destNode == null)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GOREDIT_ERR_NODE_CANNOT_CREATE_CHILDREN, destNode.Name));
+            }
+
+            if (string.Equals(Parent.FullPath, destNode.FullPath, StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
+
+            string newPath = Path.Combine(destNode.PhysicalPath, Name);
+
+            IFileExplorerNodeVm result = new FileExplorerDirectoryNodeVm(this)
+            {
+                IsExpanded = false,
+                Name = Name,
+                Parent = destNode,
+                PhysicalPath = newPath,
+                Included = Included
+            };
+
+            /*if (FileSystemService.DirectoryExists(newPath))
+            {
+                throw new IOException(string.Format(Resources.GOREDIT_ERR_NODE_EXISTS, Name));
+            }*/
+
+            FileSystemService.MoveDirectory(PhysicalPath, result.PhysicalPath);
+
+            return result;
+        }
         #endregion
 
         #region Constructor/Finalizer.
