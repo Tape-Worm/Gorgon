@@ -111,6 +111,8 @@
     <Compile Include="ViewModels\ViewModelCommonParameters.cs" />
     <Compile Include="ViewModels\ViewModelFactory.cs" />
     <Compile Include="ViewModels\WorkspaceSelectedArgs.cs" />
+    <Compile Include="ViewModels\_Interfaces\IDragDropHandler.cs" />
+    <Compile Include="ViewModels\_Interfaces\IFileExplorerNodeDragData.cs" />
     <Compile Include="ViewModels\_Interfaces\IFileExplorerNodeVm.cs" />
     <Compile Include="ViewModels\_Interfaces\IFileExplorerVm.cs" />
     <Compile Include="ViewModels\_Interfaces\IMain.cs" />
@@ -152,6 +154,7 @@
     <Compile Include="FormWorkspaceLocator.Designer.cs">
       <DependentUpon>FormWorkspaceLocator.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\TreeNodeDragData.cs" />
     <EmbeddedResource Include="FormMain.resx">
       <DependentUpon>FormMain.cs</DependentUpon>
     </EmbeddedResource>

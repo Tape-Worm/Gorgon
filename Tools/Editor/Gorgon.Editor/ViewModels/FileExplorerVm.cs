@@ -63,6 +63,11 @@ namespace Gorgon.Editor.ViewModels
             add => _clipboardUpdated += value;
             remove => _clipboardUpdated -= value;
         }
+
+        /// <summary>
+        /// Event triggered when the file system is changed.
+        /// </summary>
+        public event EventHandler FileSystemChanged;
         #endregion
 
         #region Variables.
@@ -89,13 +94,6 @@ namespace Gorgon.Editor.ViewModels
         private IMetadataManager _metaDataManager;
         // The clipboard service to use.
         private IClipboardService _clipboard;
-        #endregion
-
-        #region Events.
-        /// <summary>
-        /// Event triggered when the file system is changed.
-        /// </summary>
-        public event EventHandler FileSystemChanged;
         #endregion
 
         #region Properties.
@@ -890,6 +888,57 @@ namespace Gorgon.Editor.ViewModels
         /// Function called when the associated view is unloaded.
         /// </summary>
         public override void OnUnload() => _clipboardUpdated = null;
+
+        /// <summary>
+        /// Function to drop the payload for a drag drop operation.
+        /// </summary>
+        /// <param name="dragData">The drag/drop data.</param>
+        async void IDragDropHandler<IFileExplorerNodeDragData>.Drop(IFileExplorerNodeDragData dragData)
+        {
+            try
+            {
+                if (dragData.DragOperation == DragOperation.Copy)
+                {
+                    await CopySingleNodeAsync(dragData.Node, dragData.TargetNode);
+                }                
+            }
+            catch (Exception ex)
+            {
+                _messageService.ShowError(ex, string.Format(Resources.GOREDIT_ERR_CANNOT_COPY, dragData.Node.Name, dragData.TargetNode.FullPath));                
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if an object can be dropped.
+        /// </summary>
+        /// <param name="dragData">The drag/drop data.</param>
+        /// <returns>System.Boolean.</returns>
+        bool IDragDropHandler<IFileExplorerNodeDragData>.CanDrop(IFileExplorerNodeDragData dragData)
+        {
+            try
+            {
+                // We cannot drop on ourselves, if we're in move mode.
+                if (!dragData.TargetNode.AllowChildCreation)
+                {
+                    return false;
+                }
+
+                if (dragData.DragOperation == DragOperation.Copy)
+                {
+                    return true;
+                }
+
+                return (dragData.TargetNode != dragData.Node)
+                    && (dragData.Node.Parent != dragData.TargetNode)
+                    && (!dragData.TargetNode.Children.Contains(dragData.Node))
+                    && (!dragData.TargetNode.IsAncestorOf(dragData.Node));
+            }
+            catch (Exception ex)
+            {
+                Program.Log.LogException(ex);
+                return false;
+            }
+        }
         #endregion
 
         #region Constructor/Finalizer.

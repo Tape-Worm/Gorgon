@@ -338,7 +338,7 @@ Please try again.</value>
 
 Would you like to overrwrite it?</value>
   </data>
-  <data name="GOREDIT_ERR_CANNOT_COPY" xml:space="preserve">
+  <data name="GOREDIT_ERR_CANNOT_COPY_DUPE" xml:space="preserve">
     <value>There was an error copying '{0}'. 
 
 An item with the same name exists in the destination.</value>
@@ -422,5 +422,9 @@ Please try again.</value>
   </data>
   <data name="GOREDIT_TEXT_COPYING" xml:space="preserve">
     <value>Copying...</value>
+  </data>
+  <data name="GOREDIT_ERR_CANNOT_COPY" xml:space="preserve">
+    <value>There was an error copying '{0}' to '{1}'.
+Please try again.</value>
   </data>
 </root>

@@ -181,7 +181,7 @@ namespace Gorgon.Editor.ViewModels
             string newPath = Path.Combine(destNode.PhysicalPath, name).FormatDirectory(Path.DirectorySeparatorChar);
             IFileExplorerNodeVm dupeNode = null;
 
-            // Find out if this node already exists. This will change our behavior.
+            // Find out if this node already exists. We'll have to get rid of it.
             dupeNode = destNode.Children.FirstOrDefault(item => string.Equals(newPath, item.PhysicalPath, StringComparison.OrdinalIgnoreCase));
 
             try
@@ -199,6 +199,7 @@ namespace Gorgon.Editor.ViewModels
                 MessageDisplay.ShowError(ex);
             }
 
+            // This can happen if an exception occurs if we fail to create any directory.
             if (!Directory.Exists(newPath))
             {
                 return null;

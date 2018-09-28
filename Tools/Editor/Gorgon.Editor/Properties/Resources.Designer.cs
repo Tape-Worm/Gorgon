@@ -340,13 +340,23 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error copying &apos;{0}&apos;. 
-        ///
-        ///An item with the same name exists in the destination..
+        ///   Looks up a localized string similar to There was an error copying &apos;{0}&apos; to &apos;{1}&apos;.
+        ///Please try again..
         /// </summary>
         internal static string GOREDIT_ERR_CANNOT_COPY {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_CANNOT_COPY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error copying &apos;{0}&apos;. 
+        ///
+        ///An item with the same name exists in the destination..
+        /// </summary>
+        internal static string GOREDIT_ERR_CANNOT_COPY_DUPE {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CANNOT_COPY_DUPE", resourceCulture);
             }
         }
         

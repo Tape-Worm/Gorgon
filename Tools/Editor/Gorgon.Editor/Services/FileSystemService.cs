@@ -586,7 +586,7 @@ namespace Gorgon.Editor.Services
                             case FileSystemConflictResolution.Cancel:
                                 return false;
                             default:
-                                throw new GorgonException(GorgonResult.CannotWrite, string.Format(Resources.GOREDIT_ERR_CANNOT_COPY, file.FullName));
+                                throw new GorgonException(GorgonResult.CannotWrite, string.Format(Resources.GOREDIT_ERR_CANNOT_COPY_DUPE, file.FullName));
                         }
                     }
 
@@ -595,6 +595,15 @@ namespace Gorgon.Editor.Services
                     int startTick = Environment.TickCount;
                     await Task.Run(() =>
                     {
+                        // This file already exists
+                        if (newFile.Exists)
+                        {
+                            // Just touch the file in this case, to make it appear as though we've overwritten it.
+                            newFile.LastWriteTime = DateTime.Now;
+                            newFile.Refresh();
+                            return;
+                        }
+
                         file.CopyTo(newFile.FullName, true);
                         newFile.Refresh();
                     }, cancelToken);

@@ -71,13 +71,20 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
             this.LabelHeader = new ComponentFactory.Krypton.Toolkit.KryptonLabel();
+            this.MenuItemCopyTo = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItemMoveTo = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.MenuItemCancel = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuCopyMove = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.MenuOptions.SuspendLayout();
             this.panel3.SuspendLayout();
             this.panel4.SuspendLayout();
+            this.MenuCopyMove.SuspendLayout();
             this.SuspendLayout();
             // 
             // TreeFileSystem
             // 
+            this.TreeFileSystem.AllowDrop = true;
             this.TreeFileSystem.AlwaysActive = false;
             this.TreeFileSystem.BackStyle = ComponentFactory.Krypton.Toolkit.PaletteBackStyle.ButtonAlternate;
             this.TreeFileSystem.BorderStyle = ComponentFactory.Krypton.Toolkit.PaletteBorderStyle.ButtonAlternate;
@@ -126,6 +133,9 @@
             this.TreeFileSystem.BeforeCollapse += new System.Windows.Forms.TreeViewCancelEventHandler(this.TreeFileSystem_BeforeCollapse);
             this.TreeFileSystem.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.TreeFileSystem_BeforeExpand);
             this.TreeFileSystem.BeforeLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.TreeFileSystem_BeforeLabelEdit);
+            this.TreeFileSystem.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.TreeFileSystem_ItemDrag);
+            this.TreeFileSystem.DragDrop += new System.Windows.Forms.DragEventHandler(this.TreeFileSystem_DragDrop);
+            this.TreeFileSystem.DragOver += new System.Windows.Forms.DragEventHandler(this.TreeFileSystem_DragOver);
             this.TreeFileSystem.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TreeFileSystem_KeyUp);
             // 
             // MenuOptions
@@ -257,6 +267,42 @@
             this.LabelHeader.TabIndex = 0;
             this.LabelHeader.Values.Text = "File system";
             // 
+            // MenuItemCopyTo
+            // 
+            this.MenuItemCopyTo.Name = "MenuItemCopyTo";
+            this.MenuItemCopyTo.Size = new System.Drawing.Size(180, 22);
+            this.MenuItemCopyTo.Text = "Copy here";
+            this.MenuItemCopyTo.Click += new System.EventHandler(this.MenuItemCopyTo_Click);
+            // 
+            // MenuItemMoveTo
+            // 
+            this.MenuItemMoveTo.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.MenuItemMoveTo.Name = "MenuItemMoveTo";
+            this.MenuItemMoveTo.Size = new System.Drawing.Size(180, 22);
+            this.MenuItemMoveTo.Text = "Move here";
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(177, 6);
+            // 
+            // MenuItemCancel
+            // 
+            this.MenuItemCancel.Name = "MenuItemCancel";
+            this.MenuItemCancel.Size = new System.Drawing.Size(180, 22);
+            this.MenuItemCancel.Text = "Cancel";
+            // 
+            // MenuCopyMove
+            // 
+            this.MenuCopyMove.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.MenuCopyMove.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuItemCopyTo,
+            this.MenuItemMoveTo,
+            this.toolStripSeparator3,
+            this.MenuItemCancel});
+            this.MenuCopyMove.Name = "MenuOptions";
+            this.MenuCopyMove.Size = new System.Drawing.Size(181, 98);
+            // 
             // FileExploder
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -269,6 +315,7 @@
             this.panel3.PerformLayout();
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
+            this.MenuCopyMove.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -292,5 +339,10 @@
         private System.Windows.Forms.ToolStripMenuItem MenuItemCut;
         private System.Windows.Forms.ToolStripMenuItem MenuItemCopy;
         private System.Windows.Forms.ToolStripMenuItem MenuItemPaste;
+        private System.Windows.Forms.ToolStripMenuItem MenuItemCopyTo;
+        private System.Windows.Forms.ToolStripMenuItem MenuItemMoveTo;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem MenuItemCancel;
+        private System.Windows.Forms.ContextMenuStrip MenuCopyMove;
     }
 }
