@@ -810,6 +810,7 @@ namespace Gorgon.Editor
             this.RibbonMain.RibbonAppButton.AppButtonShowRecentDocs = false;
             this.RibbonMain.RibbonTabs.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab[] {
             this.TabFileSystem});
+            this.RibbonMain.SelectedContext = null;
             this.RibbonMain.SelectedTab = this.TabFileSystem;
             this.RibbonMain.ShowMinimizeButton = false;
             this.RibbonMain.Size = new System.Drawing.Size(1264, 115);
@@ -873,6 +874,7 @@ namespace Gorgon.Editor
             this.ButtonImport.KeyTip = "I";
             this.ButtonImport.TextLine1 = "Import";
             this.ButtonImport.ToolTipBody = "Import a directory into the selected directory or root directory.";
+            this.ButtonImport.Click += new System.EventHandler(this.ButtonImport_Click);
             // 
             // ButtonExport
             // 
@@ -882,6 +884,7 @@ namespace Gorgon.Editor
             this.ButtonExport.KeyTip = "E";
             this.ButtonExport.TextLine1 = "Export";
             this.ButtonExport.ToolTipBody = "Export the selected directory or file system.";
+            this.ButtonExport.Click += new System.EventHandler(this.ButtonExport_Click);
             // 
             // GroupFileSystemEdit
             // 
@@ -991,6 +994,7 @@ namespace Gorgon.Editor
             this.ButtonInclude.KeyTip = "U";
             this.ButtonInclude.TextLine1 = "Include";
             this.ButtonInclude.ToolTipBody = "Include files and directories into the project";
+            this.ButtonInclude.Click += new System.EventHandler(this.ButtonInclude_Click);
             // 
             // MenuInclude
             // 
@@ -1009,6 +1013,7 @@ namespace Gorgon.Editor
             this.MenuItemInclude.Name = "MenuItemInclude";
             this.MenuItemInclude.Size = new System.Drawing.Size(129, 22);
             this.MenuItemInclude.Text = "&Include";
+            this.MenuItemInclude.Click += new System.EventHandler(this.MenuItemInclude_Click);
             // 
             // MenuSepAll
             // 
@@ -1020,12 +1025,14 @@ namespace Gorgon.Editor
             this.MenuItemIncludeAll.Name = "MenuItemIncludeAll";
             this.MenuItemIncludeAll.Size = new System.Drawing.Size(129, 22);
             this.MenuItemIncludeAll.Text = "Include &all";
+            this.MenuItemIncludeAll.Click += new System.EventHandler(this.MenuItemIncludeAll_Click);
             // 
             // MenuItemExcludeAll
             // 
             this.MenuItemExcludeAll.Name = "MenuItemExcludeAll";
             this.MenuItemExcludeAll.Size = new System.Drawing.Size(129, 22);
             this.MenuItemExcludeAll.Text = "E&xclude all";
+            this.MenuItemExcludeAll.Click += new System.EventHandler(this.MenuItemExcludeAll_Click);
             // 
             // kryptonRibbonGroupLines1
             // 

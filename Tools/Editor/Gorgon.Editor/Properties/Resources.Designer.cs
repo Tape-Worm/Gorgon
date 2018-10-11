@@ -549,6 +549,16 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error importing into &apos;{0}&apos;.
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_IMPORT {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_IMPORT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error including/excluding the entire file system.
         ///Please try again..
         /// </summary>
@@ -859,6 +869,15 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_TEXT_EXPORT_TO {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_EXPORT_TO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select a directory to import....
+        /// </summary>
+        internal static string GOREDIT_TEXT_IMPORT_FROM {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_IMPORT_FROM", resourceCulture);
             }
         }
         

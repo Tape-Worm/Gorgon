@@ -29,7 +29,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using ComponentFactory.Krypton.Toolkit;
-using Gorgon.UI;
 
 namespace Gorgon.Editor.UI.Views
 {

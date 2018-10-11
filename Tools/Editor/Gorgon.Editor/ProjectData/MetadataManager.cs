@@ -74,11 +74,9 @@ namespace Gorgon.Editor.ProjectData
         /// <summary>
         /// Function to save the metadata to the metadata store in the project.
         /// </summary>
-        public void Save()
-        {
+        public void Save() =>
             // TODO: Add more stuff.
             _metadataProvider.UpdateIncludedPaths(_project.Metadata.IncludedPaths);
-        }
 
         /// <summary>
         /// Function to rename items in meta data.
@@ -228,7 +226,7 @@ namespace Gorgon.Editor.ProjectData
                 throw new ArgumentEmptyException(nameof(path));
             }
 
-            return _project.Metadata.IncludedPaths.Any(item => item.Path.StartsWith(path, StringComparison.OrdinalIgnoreCase));
+            return _project.Metadata.IncludedPaths.Contains(path);
         }
 
         /// <summary>

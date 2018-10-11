@@ -26,7 +26,6 @@
 
 
 using System;
-using System.IO;
 using Gorgon.Core;
 
 namespace Gorgon.Editor.Metadata

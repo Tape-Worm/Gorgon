@@ -25,14 +25,9 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
-using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 

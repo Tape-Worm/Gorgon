@@ -227,8 +227,9 @@ namespace Gorgon.UI
                 return;
             }
 
-            _messagePanel.ProgressMeter.Value = (int)(_progress * 100.0f);
-            _messagePanel.ProgressMeter.Refresh();
+            int progressValue = (int)(_progress * 100.0f);
+            _messagePanel.ProgressMeter.Value = progressValue;
+            _messagePanel.ProgressMeter.Update();            
         }
 
         /// <summary>Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.Control" /> and its child controls and optionally releases the managed resources.</summary>

@@ -26,13 +26,11 @@
 
 using System;
 using System.ComponentModel;
-using System.Drawing;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Editor.ViewModels;
-using Gorgon.UI;
 
 namespace Gorgon.Editor.Views
 {

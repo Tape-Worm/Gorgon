@@ -504,4 +504,11 @@ Please try again.</value>
   <data name="GOREDIT_TEXT_EXPORT_TO" xml:space="preserve">
     <value>Select a directory to export to...</value>
   </data>
+  <data name="GOREDIT_ERR_IMPORT" xml:space="preserve">
+    <value>There was an error importing into '{0}'.
+Please try again.</value>
+  </data>
+  <data name="GOREDIT_TEXT_IMPORT_FROM" xml:space="preserve">
+    <value>Select a directory to import...</value>
+  </data>
 </root>

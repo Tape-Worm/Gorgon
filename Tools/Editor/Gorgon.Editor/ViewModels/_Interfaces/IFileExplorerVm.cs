@@ -25,13 +25,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Editor.UI;
-using Gorgon.IO;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -149,6 +143,14 @@ namespace Gorgon.Editor.ViewModels
         /// Property to return the command used to export a node's contents to the physical file system
         /// </summary>
         IEditorCommand<IFileExplorerNodeVm> ExportNodeToCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to import files and directories into the specified node.
+        /// </summary>
+        IEditorCommand<IFileExplorerNodeVm> ImportIntoNodeCommand
         {
             get;
         }

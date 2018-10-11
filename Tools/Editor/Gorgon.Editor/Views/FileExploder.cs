@@ -182,14 +182,14 @@ namespace Gorgon.Editor.Views
         /// <summary>
         /// Function to add a new node to the tree.
         /// </summary>
-        /// <param name="parent">The parent of the new node.</param>
         /// <param name="newNode">The new node to add.</param>
-        private void AddNode(IFileExplorerNodeVm parent, IFileExplorerNodeVm newNode)
+        private void AddNode(IFileExplorerNodeVm newNode)
         {
             // Locate the tree node that has our parent node.
             KryptonTreeNode parentTreeNode = null;
+            IFileExplorerNodeVm parent = newNode.Parent ?? DataContext.RootNode;
 
-            if (parent != null)
+            if (parent != DataContext.RootNode)
             {
                 _revNodeLinks.TryGetValue(parent, out parentTreeNode);
             }
@@ -283,7 +283,7 @@ namespace Gorgon.Editor.Views
             switch(e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    AddNode(DataContext.SelectedNode, e.NewItems.OfType<IFileExplorerNodeVm>().First());
+                    AddNode(e.NewItems.OfType<IFileExplorerNodeVm>().First());
                     break;
                 case NotifyCollectionChangedAction.Remove:
                     RemoveNode(e.OldItems.OfType<IFileExplorerNodeVm>().First());

@@ -25,20 +25,14 @@
 #endregion
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Core;
-using Gorgon.Collections;
-using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
-using Gorgon.IO;
 
 namespace Gorgon.Editor.ViewModels
 {

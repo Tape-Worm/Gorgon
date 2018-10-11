@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using DX =  SharpDX;
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Graphics;

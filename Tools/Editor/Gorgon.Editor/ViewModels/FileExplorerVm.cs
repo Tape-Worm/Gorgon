@@ -26,12 +26,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Collections;
@@ -206,6 +204,14 @@ namespace Gorgon.Editor.ViewModels
         /// Property to return the command used to move a single node.
         /// </summary>
         public IEditorCommand<CopyNodeArgs> MoveNodeCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to import files and directories into the specified node.
+        /// </summary>
+        public IEditorCommand<IFileExplorerNodeVm> ImportIntoNodeCommand
         {
             get;
         }
@@ -542,12 +548,6 @@ namespace Gorgon.Editor.ViewModels
                 SelectedNode.RenameNode(args.NewName);
 
                 string newPath = SelectedNode.FullPath;
-
-                if (!_metaDataManager.PathInProject(oldPath))
-                {
-                    return;
-                }
-
                 _metaDataManager.RenameIncludedPaths(oldPath, newPath);
                 OnFileSystemChanged();
             }
@@ -652,17 +652,143 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Function to determine if a node can have files and/or directories imported.
+        /// </summary>
+        /// <param name="node">The node to evaluate.</param>
+        /// <returns><b>true</b> if the node is able to import file/directory data, or <b>false</b> if not.</returns>
+        private bool CanImportIntoNode(IFileExplorerNodeVm node) => (node == null) || (node.AllowChildCreation);
+
+        /// <summary>
         /// Function to determine if a node can be exported.
         /// </summary>
         /// <param name="node">The node to evaluate.</param>
         /// <returns><b>true</b> if the node can be exported, <b>false</b> if not.</returns>
-        private bool CanExportNode(IFileExplorerNodeVm node) => (node.Children.Count > 0) || ((node != null) && (!node.AllowChildCreation));
+        private bool CanExportNode(IFileExplorerNodeVm node) => ((node == null) && (RootNode.Children.Count > 0)) 
+                                                                || (node.Children.Count > 0) 
+                                                                || ((node != null) && (!node.AllowChildCreation));
+
+        /// <summary>
+        /// Function to allow a user to resolve a confict between files with the same name.
+        /// </summary>
+        /// <param name="sourceItem">The file being copied.</param>
+        /// <param name="destItem">The destination file.</param>
+        /// <param name="usePhysicalPath"><b>true</b> to display the physical path for the destination, or <b>false</b> to display the virtual path.</param>
+        /// <returns>A <see cref="FileSystemConflictResolution"/> value that indicates how to proceed.</returns>
+        private FileSystemConflictResolution ResolveImportConflict(FileSystemInfo sourceItem, FileSystemInfo destItem)
+        {
+            MessageResponse response = _messageService.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_FILE_EXISTS, sourceItem.Name, destItem.ToFileSystemPath(_project.ProjectWorkSpace)), toAll: true, allowCancel: true);
+
+            switch (response)
+            {
+                case MessageResponse.Yes:
+                    return FileSystemConflictResolution.Overwrite;
+                case MessageResponse.YesToAll:
+                    return FileSystemConflictResolution.OverwriteAll;
+                case MessageResponse.No:
+                    return FileSystemConflictResolution.Rename;
+                case MessageResponse.NoToAll:
+                    return FileSystemConflictResolution.RenameAll;
+                default:
+                    return FileSystemConflictResolution.Cancel;
+            }
+        }
+
+        /// <summary>
+        /// Function to import a files and directories into the specified node.
+        /// </summary>
+        /// <param name="node">The node to update.</param>
+        private async void DoImportIntoNodeAsync(IFileExplorerNodeVm node)
+        {
+            var cancelSource = new CancellationTokenSource();
+            DirectoryInfo sourceDir = null;
+
+            if (node == null)
+            {
+                node = RootNode;
+            }
+
+            try
+            {
+                sourceDir = _directoryLocator.GetDirectory(new DirectoryInfo(_settings.LastOpenSavePath.FormatDirectory(Path.DirectorySeparatorChar)), Resources.GOREDIT_TEXT_IMPORT_FROM);
+
+                if (sourceDir == null)
+                {
+                    return;
+                }
+
+                void cancelAction() => cancelSource.Cancel();
+
+                UpdateProgress(new ProgressPanelUpdateArgs
+                {
+                    CancelAction = cancelAction,
+                    Title = Resources.GOREDIT_TEXT_COPYING,
+                    PercentageComplete = 0,
+                    Message = string.Empty
+                });
+
+                var includePaths = new List<string>();
+
+                // Function to update our progress meter.
+                void UpdateCopyProgress(FileSystemInfo sourceItem, FileSystemInfo destItem, int currentItemNumber, int totalItemNumber)
+                {
+                    float percent = currentItemNumber / (float)totalItemNumber;
+                    UpdateProgress(new ProgressPanelUpdateArgs
+                    {
+                        Title = Resources.GOREDIT_TEXT_COPYING,
+                        CancelAction = cancelAction,
+                        Message = sourceItem.FullName.Ellipses(65, true),
+                        PercentageComplete = percent
+                    });
+
+                    string newIncludePath = destItem.ToFileSystemPath(_project.ProjectWorkSpace);
+
+                    if (!_metaDataManager.PathInProject(newIncludePath))
+                    {
+                        includePaths.Add(newIncludePath);
+                    }                    
+                }
+
+                var importArgs = new ImportArgs(sourceDir.GetFileSystemInfos().Select(item => item.FullName).ToArray(), node.PhysicalPath)
+                {
+                    ConflictResolver = ResolveImportConflict,
+                    OnImportFile = UpdateCopyProgress,
+                };
+                               
+                await _fileSystemService.ImportIntoDirectoryAsync(importArgs, cancelSource.Token);
+
+                if (includePaths.Count > 0)
+                {
+                    _metaDataManager.IncludePaths(includePaths);
+                    OnFileSystemChanged();
+                }
+
+                // Update the node.     
+                if (node != RootNode)
+                {
+                    node.IsExpanded = false;
+                    node.IsExpanded = true;
+                }
+                else
+                {
+                    RefreshNode(null);
+                }
+            }
+            catch (Exception ex)
+            {
+                _messageService.ShowError(ex, string.Format(Resources.GOREDIT_ERR_IMPORT, node.FullPath));
+            }
+            finally
+            {
+                cancelSource.Dispose();
+                HideProgress();
+            }
+        }
 
         /// <summary>
         /// Function to export a node and its contents to the physical file system.
         /// </summary>
         /// <param name="node">The node to export.</param>
-        private async void DoExportNode(IFileExplorerNodeVm node)
+        private async void DoExportNodeAsync(IFileExplorerNodeVm node)
         {
             var cancelSource = new CancellationTokenSource();
 
@@ -696,16 +822,26 @@ namespace Gorgon.Editor.ViewModels
                 void UpdateCopyProgress(FileSystemInfo sourceItem, FileSystemInfo destItem, int currentItemNumber, int totalItemNumber)
                 {
                     float percent = currentItemNumber / (float)totalItemNumber;
-                    UpdateProgress(new ProgressPanelUpdateArgs
+
+                    if ((destItem == null) || (destItem == sourceItem))
                     {
-                        Title = Resources.GOREDIT_TEXT_COPYING,
-                        CancelAction = cancelAction,
-                        Message = sourceItem.ToFileSystemPath(_project.ProjectWorkSpace).Ellipses(65, true),
-                        PercentageComplete = percent
-                    });
+                        UpdateMarequeeProgress(sourceItem.ToFileSystemPath(_project.ProjectWorkSpace).Ellipses(65, true), Resources.GOREDIT_TEXT_COPYING);
+                    }
+                    else
+                    {
+                        UpdateProgress(new ProgressPanelUpdateArgs
+                        {
+                            Title = Resources.GOREDIT_TEXT_COPYING,
+                            CancelAction = cancelAction,
+                            Message = sourceItem.ToFileSystemPath(_project.ProjectWorkSpace).Ellipses(65, true),
+                            PercentageComplete = percent
+                        });
+                    }
                 }
 
                 await node.ExportAsync(destDir.FullName, UpdateCopyProgress, cancelSource.Token);
+
+                _settings.LastOpenSavePath = destDir.FullName.FormatDirectory(Path.DirectorySeparatorChar);
             }
             catch (Exception ex)
             {
@@ -774,10 +910,11 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="source">The source node to remap.</param>
         /// <param name="dest">The base node used to replace.</param>
+        /// <param name="root">The root of the node being remapped.</param>
         /// <returns>The remapped path.</returns>
-        private string RemapNodePath(IFileExplorerNodeVm source, IFileExplorerNodeVm dest) => string.Equals(source.FullPath, dest.FullPath, StringComparison.OrdinalIgnoreCase)
+        private string RemapNodePath(IFileExplorerNodeVm source, IFileExplorerNodeVm dest, IFileExplorerNodeVm root) => string.Equals(source.FullPath, dest.FullPath, StringComparison.OrdinalIgnoreCase)
                 ? source.FullPath
-                : source.Parent == null ? "/" : Path.Combine(dest.FullPath, source.FullPath.Substring(source.Parent.FullPath.Length));
+                : Path.Combine(dest.FullPath, source.FullPath.Substring(root.FullPath.Length));
 
         /// <summary>
         /// Function to copy a node to another node.
@@ -825,7 +962,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 includedPaths.AddRange(source.Children.Traverse(p => p.Children)
                                                       .Where(item => item.Included)
-                                                      .Select(item => RemapNodePath(item, newNode))
+                                                      .Select(item => RemapNodePath(item, newNode, source))
                                                       .Where(item => !_metaDataManager.PathInProject(item)));
                 excludedPaths.AddRange(source.Children.Traverse(p => p.Children)
                                                       .Where(item => item.Included)
@@ -1259,10 +1396,11 @@ namespace Gorgon.Editor.ViewModels
             IncludeExcludeCommand = new EditorCommand<bool>(DoIncludeExcludeNode);
             RefreshNodeCommand = new EditorCommand<IFileExplorerNodeVm>(DoRefreshSelectedNode);
             CopyNodeCommand = new EditorCommand<CopyNodeArgs>(DoCopyNode, CanCopyNode);
-            ExportNodeToCommand = new EditorCommand<IFileExplorerNodeVm>(DoExportNode, CanExportNode);
+            ExportNodeToCommand = new EditorCommand<IFileExplorerNodeVm>(DoExportNodeAsync, CanExportNode);
             MoveNodeCommand = new EditorCommand<CopyNodeArgs>(DoMoveNode, CanMoveNode);
             IncludeExcludeAllCommand = new EditorCommand<bool>(DoIncludeExcludeAll, CanIncludeExcludeAll);
             DeleteFileSystemCommand = new EditorCommand<object>(DoDeleteFileSystemAsync, CanDeleteFileSystem);
+            ImportIntoNodeCommand = new EditorCommand<IFileExplorerNodeVm>(DoImportIntoNodeAsync, CanImportIntoNode);
         }
         #endregion
     }

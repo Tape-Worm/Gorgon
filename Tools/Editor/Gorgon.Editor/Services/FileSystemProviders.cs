@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
 using Gorgon.IO.Providers;

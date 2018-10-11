@@ -86,6 +86,8 @@ namespace Gorgon.Editor.Services
                     Text = string.IsNullOrWhiteSpace(caption) ? Resources.GOREDIT_TITLE_DEFAULT_DIR_LOCATOR : caption
                 };
 
+                locatorUI.CurrentDirectory = initialDir;
+
                 if (onSelected != null)
                 {
                     locatorUI.FolderSelected += OnSelected;

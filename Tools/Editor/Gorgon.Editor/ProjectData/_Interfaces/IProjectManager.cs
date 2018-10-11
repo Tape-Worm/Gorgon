@@ -24,10 +24,8 @@
 // 
 #endregion
 
-using System;
 using System.IO;
 using System.Threading.Tasks;
-using Gorgon.Core;
 using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.ProjectData

@@ -76,6 +76,139 @@ namespace Gorgon.Editor
 
         #region Methods.
         /// <summary>
+        /// Handles the Click event of the ButtonExport control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonExport_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                IFileExplorerVm fileExplorer = DataContext?.CurrentProject?.FileExplorer;
+
+                if ((fileExplorer?.ExportNodeToCommand == null) 
+                    || (!fileExplorer.ExportNodeToCommand.CanExecute(fileExplorer.SelectedNode ?? fileExplorer.RootNode)))
+                {
+                    return;
+                }
+
+                fileExplorer.ExportNodeToCommand.Execute(fileExplorer.SelectedNode ?? fileExplorer.RootNode);
+            }
+            finally
+            {
+                ValidateRibbonButtons();
+            }
+        }
+
+        /// <summary>
+        /// Handles the Click event of the ButtonImport control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonImport_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                IFileExplorerVm fileExplorer = DataContext?.CurrentProject?.FileExplorer;
+
+                if ((fileExplorer?.ImportIntoNodeCommand == null) 
+                    || (!fileExplorer.ImportIntoNodeCommand.CanExecute(fileExplorer.SelectedNode ?? fileExplorer.RootNode)))
+                {
+                    return;
+                }
+
+                fileExplorer.ImportIntoNodeCommand.Execute(fileExplorer.SelectedNode ?? fileExplorer.RootNode);
+            }
+            finally
+            {
+                ValidateRibbonButtons();
+            }
+        }
+
+        /// <summary>
+        /// Handles the Click event of the ButtonInclude control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonInclude_Click(object sender, EventArgs e) => MenuItemInclude.PerformClick();
+
+        /// <summary>
+        /// Handles the Click event of the MenuItemIncludeAll control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void MenuItemIncludeAll_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                IFileExplorerVm fileExplorer = DataContext?.CurrentProject?.FileExplorer;
+
+                if ((fileExplorer?.IncludeExcludeAllCommand == null)
+                    || (!fileExplorer.IncludeExcludeAllCommand.CanExecute(true)))
+                {
+                    return;
+                }
+
+                fileExplorer.IncludeExcludeAllCommand.Execute(true);
+            }
+            finally
+            {
+                ValidateRibbonButtons();
+            }
+        }
+
+        /// <summary>
+        /// Handles the Click event of the MenuItemExcludeAll control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void MenuItemExcludeAll_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                IFileExplorerVm fileExplorer = DataContext?.CurrentProject?.FileExplorer;
+
+                if ((fileExplorer?.IncludeExcludeAllCommand == null)
+                    || (!fileExplorer.IncludeExcludeAllCommand.CanExecute(false)))
+                {
+                    return;
+                }
+
+                fileExplorer.IncludeExcludeAllCommand.Execute(false);
+            }
+            finally
+            {
+                ValidateRibbonButtons();
+            }
+        }
+
+        /// <summary>
+        /// Handles the Click event of the MenuItemInclude control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void MenuItemInclude_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                IFileExplorerVm fileExplorer = DataContext?.CurrentProject?.FileExplorer;
+
+                if ((fileExplorer?.SelectedNode == null)
+                    || (fileExplorer.IncludeExcludeCommand == null)
+                    || (!fileExplorer.IncludeExcludeCommand.CanExecute(MenuItemInclude.Checked)))
+                {
+                    return;
+                }
+
+                fileExplorer.IncludeExcludeCommand.Execute(MenuItemInclude.Checked);
+            }
+            finally
+            {
+                ValidateRibbonButtons();
+            }
+        }
+
+        /// <summary>
         /// Handles the Click event of the ButtonFileSystemDeleteAll control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -208,9 +341,14 @@ namespace Gorgon.Editor
             ButtonFileSystemDeleteAll.Visible = fileExplorer.SelectedNode == null;
             ButtonFileSystemDeleteAll.Enabled = fileExplorer.DeleteFileSystemCommand?.CanExecute(null) ?? false;
 
+            ButtonImport.Enabled = fileExplorer.ImportIntoNodeCommand?.CanExecute(fileExplorer.SelectedNode ?? fileExplorer.RootNode) ?? false;
             ButtonExport.Enabled = fileExplorer.ExportNodeToCommand?.CanExecute(fileExplorer.SelectedNode ?? fileExplorer.RootNode) ?? false;
-            
-            // TODO: Enabled functionality (need commands).
+
+            MenuItemInclude.Enabled = fileExplorer.IncludeExcludeCommand.CanExecute(MenuItemInclude.Checked);
+            MenuItemInclude.Checked = (fileExplorer.SelectedNode != null) && (fileExplorer.SelectedNode.Included);
+            MenuItemIncludeAll.Enabled = fileExplorer.IncludeExcludeAllCommand?.CanExecute(true) ?? false;
+            MenuItemExcludeAll.Enabled = fileExplorer.IncludeExcludeAllCommand?.CanExecute(false) ?? false;
+            ButtonInclude.Enabled = MenuItemInclude.Enabled || MenuItemIncludeAll.Enabled || MenuItemExcludeAll.Enabled;
 
             CheckShowAllFiles.Enabled = true;
             CheckShowAllFiles.Checked = project.ShowExternalItems;
@@ -311,8 +449,8 @@ namespace Gorgon.Editor
         private void DataContext_ProgressUpdated(object sender, ProgressPanelUpdateArgs e)
         {
             // Drop the message if it's been less than 10 milliseconds since our last call.
-            // This will keep us from flooding the window message queue with very fast operations.
-            if ((_progressTimer != null) && (_progressTimer.Milliseconds < 10))
+            // This will keep us from flooding the window message queue with very fast operations.            
+            if ((_progressTimer != null) && (_progressTimer.Milliseconds < 10) && (e.PercentageComplete < 1) && (e.PercentageComplete > 0))
             {
                 return;
             }
@@ -324,10 +462,18 @@ namespace Gorgon.Editor
                 ProgressScreen.ProgressMessage = e.Message ?? string.Empty;
                 ProgressScreen.CurrentValue = e.PercentageComplete;
 
+                bool isMarquee = ProgressScreen.MeterStyle == ProgressBarStyle.Marquee;
+
                 if (ProgressScreen.Visible)
                 {
-                    _progressTimer?.Reset();
-                    return;
+                    if (isMarquee == e.IsMarquee)
+                    {
+                        _progressTimer?.Reset();
+                        return;
+                    }
+
+                    // If we change to a marquee format, then hide the previous panel.
+                    DataContext_ProgressDeactivated(this, EventArgs.Empty);
                 }
 
                 _progressTimer = GorgonTimerQpc.SupportsQpc() ? (IGorgonTimer)new GorgonTimerQpc() : new GorgonTimerMultimedia();

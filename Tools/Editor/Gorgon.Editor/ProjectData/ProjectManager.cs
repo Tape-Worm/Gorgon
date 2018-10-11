@@ -32,7 +32,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Gorgon.Core;
-using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.IO;

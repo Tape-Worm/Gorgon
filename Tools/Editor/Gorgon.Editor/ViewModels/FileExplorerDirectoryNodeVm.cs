@@ -25,13 +25,11 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
@@ -205,7 +203,7 @@ namespace Gorgon.Editor.ViewModels
             }
 
             string name = Name;
-            string newPath = Path.Combine(destNode.PhysicalPath, name).FormatDirectory(Path.DirectorySeparatorChar);
+            string newPath = destNode.PhysicalPath.FormatDirectory(Path.DirectorySeparatorChar);
             IFileExplorerNodeVm dupeNode = null;
 
             // Find out if this node already exists. We'll have to get rid of it.
@@ -213,8 +211,12 @@ namespace Gorgon.Editor.ViewModels
 
             try
             {
-                bool copied;
-                copied = await FileSystemService.CopyDirectoryAsync(PhysicalPath, newPath, onCopy, cancelToken ?? CancellationToken.None, ResolveConflict);
+                var args = new CopyDirectoryArgs(PhysicalPath, newPath)
+                {
+                    OnCopyProgress = onCopy,
+                    OnResolveConflict = ResolveConflict
+                };
+                bool copied = await FileSystemService.CopyDirectoryAsync(args, cancelToken ?? CancellationToken.None);
 
                 if (!copied)
                 {
@@ -314,7 +316,13 @@ namespace Gorgon.Editor.ViewModels
                 throw new ArgumentEmptyException(nameof(destPath));
             }
 
-            return FileSystemService.ExportDirectoryAsync(PhysicalPath, destPath, onCopy, cancelToken ?? CancellationToken.None, ResolveExportConflict);
+            var args = new CopyDirectoryArgs(PhysicalPath, destPath)
+            {
+                OnCopyProgress = onCopy,
+                OnResolveConflict = ResolveExportConflict
+            };
+
+            return FileSystemService.ExportDirectoryAsync(args, cancelToken ?? CancellationToken.None);
         }
         #endregion
 

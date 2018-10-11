@@ -27,13 +27,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gorgon.Editor.Properties;
 using Gorgon.UI;
-using Microsoft.Win32;
 
 namespace Gorgon.Editor.Services
 {

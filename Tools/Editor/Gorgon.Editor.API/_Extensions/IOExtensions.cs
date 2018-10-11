@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
 using Gorgon.IO;
@@ -63,8 +62,9 @@ namespace Gorgon.Editor
 
             string fileName = null;
             string dirPath;
+            bool isDirectory = ((filesystemObject.Attributes & FileAttributes.Directory) == FileAttributes.Directory) && (filesystemObject is DirectoryInfo);
 
-            if (((filesystemObject.Attributes & FileAttributes.Directory) == FileAttributes.Directory) && (filesystemObject is DirectoryInfo))
+            if (isDirectory)
             {
                 dirPath = filesystemObject.FullName.FormatDirectory(Path.DirectorySeparatorChar);
             }
@@ -76,7 +76,7 @@ namespace Gorgon.Editor
 
             string rootDirPath = rootDirectory.FullName.FormatDirectory(Path.DirectorySeparatorChar);
 
-            if ((string.Equals(dirPath, rootDirPath, StringComparison.OrdinalIgnoreCase)) && ((filesystemObject.Attributes & FileAttributes.Directory) == FileAttributes.Directory))
+            if ((string.Equals(dirPath, rootDirPath, StringComparison.OrdinalIgnoreCase)) && (isDirectory))
             {
                 return "/";
             }

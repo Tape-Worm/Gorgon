@@ -168,6 +168,12 @@ namespace Gorgon.Editor.ViewModels
 
             var children = new ObservableCollection<IFileExplorerNodeVm>();
 
+            result.Initialize(new FileExplorerNodeParameters(directory.Name, directory.FullName.FormatDirectory(Path.DirectorySeparatorChar), project, this, fileSystemService)
+            {
+                Parent = parentNode,
+                Children = children
+            });
+
             foreach (DirectoryInfo subDir in metadataManager.GetIncludedDirectories(directory.FullName))
             {
                 children.Add(CreateFileExplorerDirectoryNodeVm(project, fileSystemService, result, metadataManager, subDir));
@@ -177,12 +183,6 @@ namespace Gorgon.Editor.ViewModels
             {
                 children.Add(CreateFileExplorerFileNodeVm(project, fileSystemService, result, file));
             }
-
-            result.Initialize(new FileExplorerNodeParameters(directory.Name, directory.FullName.FormatDirectory(Path.DirectorySeparatorChar), project, this, fileSystemService)
-            {
-                Parent = parentNode,
-                Children = children
-            });            
 
             return result;
         }

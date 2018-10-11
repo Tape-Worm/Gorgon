@@ -296,7 +296,23 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="cancelToken">[Optional] A token used to cancel the operation.</param>
         /// <returns>A task for asynchronous operation.</returns>
         /// <remarks>The <paramref name="onCopy" /> callback method sends the file system node being copied, the destination file system node, the current item #, and the total number of items to copy.</remarks>
-        public override Task ExportAsync(string destPath, Action<FileSystemInfo, FileSystemInfo, int, int> onCopy = null, CancellationToken? cancelToken = null) => throw new NotImplementedException();
+        public override Task ExportAsync(string destPath, Action<FileSystemInfo, FileSystemInfo, int, int> onCopy = null, CancellationToken? cancelToken = null)
+        {
+            if (destPath == null)
+            {
+                throw new ArgumentNullException(nameof(destPath));
+            }
+
+            if (string.IsNullOrWhiteSpace(destPath))
+            {
+                throw new ArgumentEmptyException(nameof(destPath));
+            }
+
+            // Progress update
+            void ProgressUpdate(FileSystemInfo file) => onCopy?.Invoke(file, null, 1, 1);
+
+            return FileSystemService.ExportFileAsync(PhysicalPath, destPath, ProgressUpdate);
+        }
         #endregion
 
         #region Constructor/Finalizer.
