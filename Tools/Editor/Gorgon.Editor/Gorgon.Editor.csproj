@@ -116,6 +116,7 @@
     <Compile Include="ViewModels\ViewModelFactory.cs" />
     <Compile Include="ViewModels\WorkspaceSelectedArgs.cs" />
     <Compile Include="ViewModels\_Interfaces\IDragDropHandler.cs" />
+    <Compile Include="ViewModels\_Interfaces\IExplorerFilesDragData.cs" />
     <Compile Include="ViewModels\_Interfaces\IFileExplorerNodeDragData.cs" />
     <Compile Include="ViewModels\_Interfaces\IFileExplorerNodeVm.cs" />
     <Compile Include="ViewModels\_Interfaces\IFileExplorerVm.cs" />
@@ -158,6 +159,7 @@
     <Compile Include="Views\StageRecent.Designer.cs">
       <DependentUpon>StageRecent.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\ExplorerFilesDragData.cs" />
     <Compile Include="Views\TreeNodeDragData.cs" />
     <EmbeddedResource Include="FormMain.resx">
       <DependentUpon>FormMain.cs</DependentUpon>

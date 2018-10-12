@@ -277,6 +277,11 @@ namespace Gorgon.Editor.Services
                 return false;
             }
 
+            if (args.Directories.Count == 0)
+            {
+                return true;
+            }
+
             bool result = false;
 
             foreach (DirectoryInfo directory in args.Directories.OrderBy(item => item.FullName.Length))

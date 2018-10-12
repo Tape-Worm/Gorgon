@@ -694,28 +694,17 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Function to import a files and directories into the specified node.
+        /// Function to perform the import of the directories/files into the specified node.
         /// </summary>
-        /// <param name="node">The node to update.</param>
-        private async void DoImportIntoNodeAsync(IFileExplorerNodeVm node)
+        /// <param name="node">The node that will recieve the import.</param>
+        /// <param name="items">The paths to the items to import.</param>
+        /// <returns>A task for asynchronous operation.</returns>
+        private async Task ImportAsync(IFileExplorerNodeVm node, IReadOnlyList<string> items)
         {
             var cancelSource = new CancellationTokenSource();
-            DirectoryInfo sourceDir = null;
-
-            if (node == null)
-            {
-                node = RootNode;
-            }
 
             try
             {
-                sourceDir = _directoryLocator.GetDirectory(new DirectoryInfo(_settings.LastOpenSavePath.FormatDirectory(Path.DirectorySeparatorChar)), Resources.GOREDIT_TEXT_IMPORT_FROM);
-
-                if (sourceDir == null)
-                {
-                    return;
-                }
-
                 void cancelAction() => cancelSource.Cancel();
 
                 UpdateProgress(new ProgressPanelUpdateArgs
@@ -745,15 +734,15 @@ namespace Gorgon.Editor.ViewModels
                     if (!_metaDataManager.PathInProject(newIncludePath))
                     {
                         includePaths.Add(newIncludePath);
-                    }                    
+                    }
                 }
 
-                var importArgs = new ImportArgs(sourceDir.GetFileSystemInfos().Select(item => item.FullName).ToArray(), node.PhysicalPath)
+                var importArgs = new ImportArgs(items, node.PhysicalPath)
                 {
                     ConflictResolver = ResolveImportConflict,
                     OnImportFile = UpdateCopyProgress,
                 };
-                               
+
                 await _fileSystemService.ImportIntoDirectoryAsync(importArgs, cancelSource.Token);
 
                 if (includePaths.Count > 0)
@@ -773,13 +762,42 @@ namespace Gorgon.Editor.ViewModels
                     RefreshNode(null);
                 }
             }
+            finally
+            {
+                cancelSource.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Function to import a files and directories into the specified node.
+        /// </summary>
+        /// <param name="node">The node to update.</param>
+        private async void DoImportIntoNodeAsync(IFileExplorerNodeVm node)
+        {
+            DirectoryInfo sourceDir = null;
+
+            if (node == null)
+            {
+                node = RootNode;
+            }
+
+            try
+            {
+                sourceDir = _directoryLocator.GetDirectory(new DirectoryInfo(_settings.LastOpenSavePath.FormatDirectory(Path.DirectorySeparatorChar)), Resources.GOREDIT_TEXT_IMPORT_FROM);
+
+                if (sourceDir == null)
+                {
+                    return;
+                }
+
+                await ImportAsync(node, sourceDir.GetFileSystemInfos().Select(item => item.FullName).ToArray());
+            }
             catch (Exception ex)
             {
                 _messageService.ShowError(ex, string.Format(Resources.GOREDIT_ERR_IMPORT, node.FullPath));
             }
             finally
             {
-                cancelSource.Dispose();
                 HideProgress();
             }
         }
@@ -1374,6 +1392,51 @@ namespace Gorgon.Editor.ViewModels
                     && (dragData.Node.Parent != dragData.TargetNode)
                     && (!dragData.TargetNode.Children.Contains(dragData.Node))
                     && (!dragData.TargetNode.IsAncestorOf(dragData.Node));
+            }
+            catch (Exception ex)
+            {
+                Program.Log.LogException(ex);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Function to drop the payload for a drag drop operation.
+        /// </summary>
+        /// <param name="dragData">The drag/drop data.</param>
+        async void IDragDropHandler<IExplorerFilesDragData>.Drop(IExplorerFilesDragData dragData)
+        {
+            try
+            {
+                if ((dragData.DragOperation != DragOperation.Copy)
+                    || (dragData.ExplorerPaths == null)
+                    || (dragData.ExplorerPaths.Count == 0))
+                {
+                    return;
+                }
+
+                await ImportAsync(dragData.TargetNode, dragData.ExplorerPaths);
+            }
+            catch (Exception ex)
+            {
+                _messageService.ShowError(ex, string.Format(Resources.GOREDIT_ERR_IMPORT, dragData.TargetNode.FullPath));
+            }
+            finally
+            {
+                HideProgress();
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if an object can be dropped.
+        /// </summary>
+        /// <param name="dragData">The drag/drop data.</param>
+        /// <returns>System.Boolean.</returns>
+        bool IDragDropHandler<IExplorerFilesDragData>.CanDrop(IExplorerFilesDragData dragData)
+        {
+            try
+            {
+                return !dragData.TargetNode.AllowChildCreation ? false : !dragData.ExplorerPaths.Any(item => item.StartsWith(RootNode.PhysicalPath));
             }
             catch (Exception ex)
             {

@@ -33,7 +33,7 @@ namespace Gorgon.Editor.ViewModels
     /// The view model for our file explorer.
     /// </summary>
     internal interface IFileExplorerVm
-        : IViewModel, IDragDropHandler<IFileExplorerNodeDragData>
+        : IViewModel, IDragDropHandler<IFileExplorerNodeDragData>, IDragDropHandler<IExplorerFilesDragData>
     {
         #region Events.
         /// <summary>

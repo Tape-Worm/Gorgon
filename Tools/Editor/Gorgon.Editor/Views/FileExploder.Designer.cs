@@ -100,7 +100,7 @@
             this.TreeFileSystem.ImageList = this.TreeImages;
             this.TreeFileSystem.ItemHeight = 24;
             this.TreeFileSystem.LabelEdit = true;
-            this.TreeFileSystem.Location = new System.Drawing.Point(0, 26);
+            this.TreeFileSystem.Location = new System.Drawing.Point(0, 20);
             this.TreeFileSystem.Name = "TreeFileSystem";
             treeNode1.Name = "Node4";
             treeNode1.Text = "Node4";
@@ -128,7 +128,7 @@
             this.TreeFileSystem.PathSeparator = "/";
             this.TreeFileSystem.SelectedImageIndex = 0;
             this.TreeFileSystem.ShowLines = false;
-            this.TreeFileSystem.Size = new System.Drawing.Size(600, 442);
+            this.TreeFileSystem.Size = new System.Drawing.Size(600, 448);
             this.TreeFileSystem.TabIndex = 0;
             this.TreeFileSystem.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.TreeFileSystem_AfterCollapse);
             this.TreeFileSystem.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.TreeFileSystem_AfterExpand);
@@ -139,7 +139,9 @@
             this.TreeFileSystem.BeforeLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.TreeFileSystem_BeforeLabelEdit);
             this.TreeFileSystem.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.TreeFileSystem_ItemDrag);
             this.TreeFileSystem.DragDrop += new System.Windows.Forms.DragEventHandler(this.TreeFileSystem_DragDrop);
+            this.TreeFileSystem.DragEnter += new System.Windows.Forms.DragEventHandler(this.TreeFileSystem_DragEnter);
             this.TreeFileSystem.DragOver += new System.Windows.Forms.DragEventHandler(this.TreeFileSystem_DragOver);
+            this.TreeFileSystem.DragLeave += new System.EventHandler(this.TreeFileSystem_DragLeave);
             this.TreeFileSystem.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TreeFileSystem_KeyUp);
             // 
             // MenuOptions
@@ -279,7 +281,7 @@
             this.panel3.Location = new System.Drawing.Point(0, 0);
             this.panel3.Name = "panel3";
             this.panel3.Padding = new System.Windows.Forms.Padding(6, 0, 0, 0);
-            this.panel3.Size = new System.Drawing.Size(600, 26);
+            this.panel3.Size = new System.Drawing.Size(600, 20);
             this.panel3.TabIndex = 6;
             // 
             // panel4
@@ -290,7 +292,7 @@
             this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel4.Location = new System.Drawing.Point(6, 0);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(594, 26);
+            this.panel4.Size = new System.Drawing.Size(594, 20);
             this.panel4.TabIndex = 1;
             // 
             // LabelHeader
@@ -299,7 +301,7 @@
             this.LabelHeader.LabelStyle = ComponentFactory.Krypton.Toolkit.LabelStyle.Custom3;
             this.LabelHeader.Location = new System.Drawing.Point(0, 0);
             this.LabelHeader.Name = "LabelHeader";
-            this.LabelHeader.Size = new System.Drawing.Size(594, 26);
+            this.LabelHeader.Size = new System.Drawing.Size(594, 20);
             this.LabelHeader.TabIndex = 0;
             this.LabelHeader.Values.Text = "File system";
             // 
