@@ -26,6 +26,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using Gorgon.Editor.Plugins;
 using Gorgon.IO;
 using Gorgon.IO.Providers;
 
@@ -52,6 +53,14 @@ namespace Gorgon.Editor.Services
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return all loaded file system writer plug ins.
+        /// </summary>
+        IReadOnlyDictionary<string, FileWriterPlugin> Writers
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
@@ -66,6 +75,12 @@ namespace Gorgon.Editor.Services
         /// </summary>
         /// <param name="providers">The list of providers to add.</param>
         void AddReaders(IEnumerable<IGorgonFileSystemProvider> providers);
+
+        /// <summary>
+        /// Function to add file system writer plug ins.
+        /// </summary>
+        /// <param name="writerPlugins">The list of plugins to add.</param>
+        void AddWriters(IEnumerable<FileWriterPlugin> writerPlugins);
 
         /// <summary>
         /// Function to find the most suitable provider for the file specified in the path.

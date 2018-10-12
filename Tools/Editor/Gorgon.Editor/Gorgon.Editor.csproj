@@ -333,14 +333,18 @@
       <Version>1.0.109.2</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
-      <Version>4.5.1</Version>
+      <Version>4.5.2</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Plugins\_Interfaces\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(SolutionDir)PlugIns\Bin\$(ConfigurationName)\Gorgon.FileSystem.*.dll $(TargetDir)\Plugins\Filesystem\
 copy $(SolutionDir)PlugIns\Bin\$(ConfigurationName)\Gorgon.FileSystem.*.pdb $(TargetDir)\Plugins\Filesystem\
+copy $(SolutionDir)PlugIns\Bin\$(ConfigurationName)\Gorgon.Editor.GorPackWriter.dll $(TargetDir)\Plugins\Filesystem\
+copy $(SolutionDir)PlugIns\Bin\$(ConfigurationName)\Gorgon.Editor.GorPackWriter.pdb $(TargetDir)\Plugins\Filesystem\
 copy $(SolutionDir)PlugIns\Bin\$(ConfigurationName)\ICSharpCode.SharpZipLib.dll $(TargetDir)\Plugins\Filesystem\
 </PostBuildEvent>
   </PropertyGroup>

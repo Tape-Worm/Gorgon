@@ -715,7 +715,9 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
+#pragma warning disable IDE0019 // Use pattern matching (it breaks the code)
             var data = e.Data.GetData(typeof(TreeNodeDragData)) as TreeNodeDragData;
+#pragma warning restore IDE0019 // Use pattern matching
 
             if ((data == null)
                 && (!e.Data.GetDataPresent(DataFormats.FileDrop)))
@@ -876,7 +878,9 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
+#pragma warning disable IDE0019 // Use pattern matching (it breaks the code)
             var data = e.Data.GetData(typeof(TreeNodeDragData)) as TreeNodeDragData;
+#pragma warning restore IDE0019 // Use pattern matching
 
             if ((data == null)
                 && (!e.Data.GetDataPresent(DataFormats.FileDrop)))

@@ -47,6 +47,7 @@ using DX = SharpDX;
 using Exception = System.Exception;
 using Gorgon.IO.Providers;
 using System.Collections.Generic;
+using Gorgon.Editor.Plugins;
 
 namespace Gorgon.Editor
 {
@@ -318,8 +319,10 @@ namespace Gorgon.Editor
                 plugins = new GorgonMefPluginService(_pluginCache, Program.Log);
 
                 IReadOnlyList<GorgonFileSystemProvider> providers = plugins.GetPlugins<GorgonFileSystemProvider>();
-                                
+                IReadOnlyList<FileWriterPlugin> writers = plugins.GetPlugins<FileWriterPlugin>();
+
                 result.AddReaders(providers);
+                result.AddWriters(writers);
 
                 return result;
             }

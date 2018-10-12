@@ -149,6 +149,42 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Editor content.
+        /// </summary>
+        internal static string GOREDIT_PLUGIN_TYPE_CONTENT {
+            get {
+                return ResourceManager.GetString("GOREDIT_PLUGIN_TYPE_CONTENT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Editor utility.
+        /// </summary>
+        internal static string GOREDIT_PLUGIN_TYPE_TOOL {
+            get {
+                return ResourceManager.GetString("GOREDIT_PLUGIN_TYPE_TOOL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unknown plug in type..
+        /// </summary>
+        internal static string GOREDIT_PLUGIN_TYPE_UNKNOWN {
+            get {
+                return ResourceManager.GetString("GOREDIT_PLUGIN_TYPE_UNKNOWN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Editor file writer.
+        /// </summary>
+        internal static string GOREDIT_PLUGIN_TYPE_WRITER {
+            get {
+                return ResourceManager.GetString("GOREDIT_PLUGIN_TYPE_WRITER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Select a directory....
         /// </summary>
         internal static string GOREDIT_TITLE_DEFAULT_DIR_LOCATOR {

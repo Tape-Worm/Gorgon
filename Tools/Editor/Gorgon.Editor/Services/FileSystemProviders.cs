@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
 using Gorgon.IO.Providers;
@@ -46,6 +47,8 @@ namespace Gorgon.Editor.Services
         private List<GorgonFileExtension> _readerExtensions = new List<GorgonFileExtension>();
         // A list of available file system reader providers.
         private readonly Dictionary<string, IGorgonFileSystemProvider> _readers = new Dictionary<string, IGorgonFileSystemProvider>(StringComparer.OrdinalIgnoreCase);
+        // A list of available file system writer providers.
+        private readonly Dictionary<string, FileWriterPlugin> _writers = new Dictionary<string, FileWriterPlugin>(StringComparer.OrdinalIgnoreCase);
         #endregion
 
         #region Properties.
@@ -58,6 +61,11 @@ namespace Gorgon.Editor.Services
         /// Property to return all loaded file system reader providers.
         /// </summary>
         public IReadOnlyDictionary<string, IGorgonFileSystemProvider> Readers => _readers;
+
+        /// <summary>
+        /// Property to return all loaded file system writer plug ins.
+        /// </summary>
+        public IReadOnlyDictionary<string, FileWriterPlugin> Writers => _writers;
         #endregion
 
         #region Methods.
@@ -187,6 +195,35 @@ namespace Gorgon.Editor.Services
             result.Append(Resources.GOREDIT_TEXT_ALL_FILES);
 
             return result.ToString();
+        }
+
+        /// <summary>
+        /// Function to add file system writer plug ins.
+        /// </summary>
+        /// <param name="writerPlugins">The list of plugins to add.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="writerPlugins"/> parameter is <b>null</b>.</exception>
+        public void AddWriters(IEnumerable<FileWriterPlugin> writerPlugins)
+        {
+            if (writerPlugins == null)
+            {
+                throw new ArgumentNullException(nameof(writerPlugins));
+            }
+
+            foreach (FileWriterPlugin writer in writerPlugins)
+            {
+                IReadOnlyList<string> disabled = writer.IsPluginAvailable();
+
+                if (disabled.Count != 0)
+                {
+                    Program.Log.Print($"The file system writer plug in '{writer.Name}' is disabled.", Diagnostics.LoggingLevel.Simple);
+                    Program.Log.Print($"Disable info: {string.Join("\n", disabled)}", Diagnostics.LoggingLevel.Verbose);
+
+                    // TODO: Add to disabled list.
+                    continue;
+                }
+
+                _writers[writer.GetType().FullName] = writer;
+            }
         }
 
         /// <summary>

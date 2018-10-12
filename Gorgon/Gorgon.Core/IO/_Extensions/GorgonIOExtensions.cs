@@ -303,8 +303,10 @@ namespace Gorgon.IO
 				stringLength |= (value & 0x7F) << counter;
 				counter += 7;
 				if (((value & 0x80) == 0) || (counter > 32))
-					break;
-			}
+                {
+                    break;
+                }
+            }
 
 			if (stringLength == 0)
 			{

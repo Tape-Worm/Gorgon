@@ -1,0 +1,222 @@
+﻿#region MIT
+// 
+// Gorgon.
+// Copyright (C) 2018 Michael Winsor
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+// 
+// Created: October 12, 2018 1:08:11 PM
+// 
+#endregion
+
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Gorgon.Collections;
+using Gorgon.Core;
+using Gorgon.Editor.ProjectData;
+using Gorgon.IO;
+
+namespace Gorgon.Editor.Plugins
+{
+    /// <summary>
+    /// Flags to indicate the capabilities of the writer.
+    /// </summary>
+    [Flags]
+    public enum WriterCapabilities
+    {
+        /// <summary>
+        /// No special capabilities are available.
+        /// </summary>
+        None = 0,
+        /// <summary>
+        /// Provider supports compression.
+        /// </summary>
+        Compression = 1,
+        /// <summary>
+        /// Provider supports encryption.
+        /// </summary>
+        Encryption = 2
+    }
+
+	/// <summary>
+	/// An interface for file output plug ins.
+	/// </summary>
+	public abstract class FileWriterPlugin
+		: EditorPlugin
+	{
+        #region Variables.
+        // Default compression amount.
+        private float _compressAmount = 0.05f;
+        #endregion
+
+        #region Properties.
+        /// <summary>
+        /// Property to return the capabilities of the writer.
+        /// </summary>
+        public abstract WriterCapabilities Capabilities
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to set or return the percentage for compression (if supported).
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This value is within a range of 0..1 where 0 means no compression, and 1 means use the maximum compression available by the compression provider.
+        /// </para>
+        /// <para>
+        /// Higher compression values will mean that it takes longer to write the file.
+        /// </para>
+        /// <para>
+        /// The default value is 0.5f.
+        /// </para>
+        /// </remarks>
+        public virtual float Compression
+        {
+            get => _compressAmount;
+            set
+            {
+                if (value < 0)
+                {
+                    value = 0;
+                }
+                if (value > 1.0f)
+                {
+                    value = 1.0f;
+                }
+
+                _compressAmount = value;
+            }
+        }
+
+        /// <summary>
+        /// Property to return the file extensions (and descriptions) for this content type.
+        /// </summary>
+        /// <remarks>
+        /// Plug in developers must provide common file extensions supported by the plug in type, or else this plug in cannot be used.
+        /// </remarks>
+        public IGorgonNamedObjectReadOnlyDictionary<GorgonFileExtension> FileExtensions
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the project being persisted.
+		/// </summary>
+		public IProject Project
+		{
+            get;
+		}
+
+        /// <summary>
+        /// Property to return the type of plug-in.
+        /// </summary>
+        public override PluginType PluginType => PluginType.Writer;
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to write the file to the specified path.
+        /// </summary>
+        /// <param name="path">Path to the file.</param>
+        /// <param name="token">Token used to cancel the task.</param>
+        protected abstract void WriteFile(string path, CancellationToken token);
+
+        /// <summary>
+        /// Function to determine if the type of file specified can be written by this plug in.
+        /// </summary>
+        /// <param name="file">The file to evaluate.</param>
+        /// <returns><b>true</b> if the writer can write the type of file, or <b>false</b> if it cannot.</returns>
+        /// <remarks>
+        /// <para>
+        /// The <paramref name="file"/> parameter is never <b>null</b>, and is guaranteed to exist when this method is called. If neither of these are true, then this method is not called.
+        /// </para>
+        /// </remarks>
+        protected abstract bool OnEvaluateCanWriteFile(FileInfo file);
+
+        /// <summary>
+        /// Function to determine if this writer can write the type of file specified in the path.
+        /// </summary>
+        /// <param name="path">The path to the file.</param>
+        /// <returns><b>true</b> if the writer can write the type of file, or <b>false</b> if it cannot.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+        public bool CanWriteFile(string path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentEmptyException(nameof(path));
+            }
+
+            var file = new FileInfo(path);
+
+            return ((file.Exists) && ((file.Attributes & FileAttributes.Directory) != FileAttributes.Directory)) && (OnEvaluateCanWriteFile(file));
+        }
+
+        /// <summary>
+        /// Function to save the file.
+        /// </summary>
+        /// <param name="path">Path to the file.</param>
+        /// <returns>TRUE if the file was saved successfully, FALSE if not.</returns>
+        public Task<bool> SaveAsync(string path)
+		{
+            // TODO:
+            return Task.Run(() =>
+            {
+                return true;
+            });
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FileWriterPlugin"/> class.
+		/// </summary>
+		/// <param name="description">Friendly description of the plug-in.</param>
+        /// <param name="fileExtensions">The file of common file name extensions supported by this writer.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileExtensions"/> parameter is <b>null</b>.</exception>
+		protected FileWriterPlugin(string description, IEnumerable<GorgonFileExtension> fileExtensions)
+			: base(description)
+		{
+            if (fileExtensions == null)
+            {
+                throw new ArgumentNullException(nameof(fileExtensions));
+            }
+
+			var extensions = new GorgonFileExtensionCollection();
+
+            foreach (GorgonFileExtension extension in fileExtensions)
+            {
+                extensions[extension.Extension] = extension;
+            }
+		}
+		#endregion
+	}
+}
