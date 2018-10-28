@@ -1397,6 +1397,11 @@ namespace Gorgon.Editor.Views
 
                     treeNodes.Add(treeNode);
 
+                    if (node.IsExpanded)
+                    {
+                        treeNode.Expand();
+                    }
+
                     _nodeLinks[treeNode] = node;
                     _revNodeLinks[node] = treeNode;
                 }

@@ -25,15 +25,13 @@
 #endregion
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Editor.ProjectData;
+using Gorgon.Editor.Properties;
 using Gorgon.IO;
 
 namespace Gorgon.Editor.Plugins
@@ -122,14 +120,6 @@ namespace Gorgon.Editor.Plugins
 			private set;
 		}
 
-		/// <summary>
-		/// Property to return the project being persisted.
-		/// </summary>
-		public IProject Project
-		{
-            get;
-		}
-
         /// <summary>
         /// Property to return the type of plug-in.
         /// </summary>
@@ -140,9 +130,28 @@ namespace Gorgon.Editor.Plugins
         /// <summary>
         /// Function to write the file to the specified path.
         /// </summary>
-        /// <param name="path">Path to the file.</param>
-        /// <param name="token">Token used to cancel the task.</param>
-        protected abstract void WriteFile(string path, CancellationToken token);
+        /// <param name="stream">The stream to save the data into.</param>
+        /// <param name="workspace">The directory that represents the workspace for our file system data.</param> 
+        /// <param name="progressCallback">The method used to report progress back to the application.</param>
+        /// <param name="cancelToken">The token used for cancelling the operation.</param>
+        /// <remarks>
+        /// <para>
+        /// The <paramref name="progressCallback"/> is a method that takes 3 parameters:
+        /// <list type="number">
+        /// <item>
+        ///     <description>The current item number being written.</description>
+        /// </item>
+        /// <item>
+        ///     <description>The total number of items to write.</description>
+        /// </item>
+        /// <item>
+        ///     <description><b>true</b> if the operation can be cancelled, or <b>false</b> if not.</description>
+        /// </item>
+        /// </list>
+        /// This progress method is optional, and if <b>null</b> is passed, then no progress is reported.
+        /// </para>
+        /// </remarks>
+        protected abstract void OnWrite(Stream stream, DirectoryInfo workspace, Action<int, int, bool> progressCallback, CancellationToken cancelToken);
 
         /// <summary>
         /// Function to determine if the type of file specified can be written by this plug in.
@@ -177,21 +186,59 @@ namespace Gorgon.Editor.Plugins
 
             var file = new FileInfo(path);
 
-            return ((file.Exists) && ((file.Attributes & FileAttributes.Directory) != FileAttributes.Directory)) && (OnEvaluateCanWriteFile(file));
+            return (!file.Exists) || (((file.Attributes & FileAttributes.Directory) != FileAttributes.Directory) && (OnEvaluateCanWriteFile(file)));
         }
 
         /// <summary>
-        /// Function to save the file.
+        /// Function to write the application data into a stream.
         /// </summary>
-        /// <param name="path">Path to the file.</param>
-        /// <returns>TRUE if the file was saved successfully, FALSE if not.</returns>
-        public Task<bool> SaveAsync(string path)
+        /// <param name="stream">The stream to save the data into.</param>
+        /// <param name="workspace">The directory that represents the workspace for our file system data.</param>
+        /// <param name="progressCallback">The method used to report progress back to the application.</param>
+        /// <param name="cancelToken">The token used for cancelling the operation.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="workspace"/> parameter is empty.</exception>
+        /// <exception cref="DirectoryNotFoundException">Thrown if the <paramref name="workspace"/> directory does not exist.</exception>
+        /// <exception cref="IOException">Thrown if the stream is read only.</exception>
+        /// <remarks>
+        /// <para>
+        /// The <paramref name="progressCallback"/> is a method that takes 3 parameters:
+        /// <list type="number">
+        /// <item>
+        ///     <description>The current item number being written.</description>
+        /// </item>
+        /// <item>
+        ///     <description>The total number of items to write.</description>
+        /// </item>
+        /// <item>
+        ///     <description><b>true</b> if the operation can be cancelled, or <b>false</b> if not.</description>
+        /// </item>
+        /// </list>
+        /// This progress method is optional, and if <b>null</b> is passed, then no progress is reported.
+        /// </para>
+        /// </remarks>
+        public void Write(Stream stream, DirectoryInfo workspace, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
 		{
-            // TODO:
-            return Task.Run(() =>
+            if (stream == null)
             {
-                return true;
-            });
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            if (workspace == null)
+            {
+                throw new ArgumentNullException(nameof(workspace));
+            }
+            
+            if (!workspace.Exists)
+            {
+                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIR_NOT_FOUND, workspace.FullName));
+            }
+             
+            if (!stream.CanWrite) 
+            {
+                throw new IOException(Resources.GOREDIT_ERR_STREAM_READ_ONLY);
+            }
+
+            OnWrite(stream, workspace, progressCallback, cancelToken);            
 		}
 		#endregion
 
@@ -216,6 +263,8 @@ namespace Gorgon.Editor.Plugins
             {
                 extensions[extension.Extension] = extension;
             }
+
+            FileExtensions = extensions;
 		}
 		#endregion
 	}

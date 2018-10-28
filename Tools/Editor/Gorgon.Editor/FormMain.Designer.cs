@@ -17,8 +17,6 @@ namespace Gorgon.Editor
         {
             if (disposing)
             {
-                StageLauncher.StageNewProject.ProjectCreated -= StageNewProject_ProjectCreated;
-
                 UnassignEvents();
             }
 
@@ -1086,6 +1084,7 @@ namespace Gorgon.Editor
             // StageLauncher
             // 
             this.StageLauncher.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.StageLauncher.CanOpen = true;
             this.StageLauncher.Dock = System.Windows.Forms.DockStyle.Fill;
             this.StageLauncher.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.StageLauncher.Location = new System.Drawing.Point(0, 115);
@@ -1097,6 +1096,9 @@ namespace Gorgon.Editor
             // StageLive
             // 
             this.StageLive.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.StageLive.CanOpen = true;
+            this.StageLive.CanSave = false;
+            this.StageLive.CanSaveAs = false;
             this.StageLive.Dock = System.Windows.Forms.DockStyle.Fill;
             this.StageLive.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.StageLive.Location = new System.Drawing.Point(0, 115);
@@ -1104,6 +1106,8 @@ namespace Gorgon.Editor
             this.StageLive.Size = new System.Drawing.Size(1264, 646);
             this.StageLive.TabIndex = 1;
             this.StageLive.BackClicked += new System.EventHandler(this.StageLive_BackClicked);
+            this.StageLive.OpenClicked += new System.EventHandler(this.StageLive_OpenClicked);
+            this.StageLive.Save += new System.EventHandler<Gorgon.Editor.Views.SaveEventArgs>(this.StageLive_Save);
             // 
             // FormMain
             // 

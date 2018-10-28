@@ -20,46 +20,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: September 5, 2018 12:57:32 PM
+// Created: October 15, 2018 2:51:36 PM
 // 
 #endregion
 
-using System.Collections.Generic;
-using System.IO;
-using Gorgon.Editor.ProjectData;
-
-namespace Gorgon.Editor.Metadata
+namespace Gorgon.Editor.Views
 {
     /// <summary>
-    /// The metadata access interface.
+    /// Event arguments for the <see cref="StageLive.Save"/> event.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// Plug in writers can use this to create, remove and retrieve metadata items for their plug ins, plus handle standard meta data items.
-    /// </para>
-    /// </remarks>
-    public interface IMetadataProvider
+    internal class SaveEventArgs
     {
         /// <summary>
-        /// Property to return the file pointing to the metadata database.
+        /// Property to return whether the application should prompt the user for a file type and file name.
         /// </summary>
-        FileInfo MetadataFile
+        public bool SaveAs
         {
             get;
         }
 
         /// <summary>
-        /// Function to update project data and metadata.
+        /// Initializes a new instance of the <see cref="SaveEventArgs"/> class.
         /// </summary>
-        /// <param name="project">The project data to send.</param>
-        /// <param name="title">The title of the project.</param>
-        /// <param name="writerType">The type of writer used to write the project data.</param>
-        void UpdateProjectData(string title, string writerType, IProject project);
-
-        /// <summary>
-        /// Function to retrieve the list of files included in this project.
-        /// </summary>
-        /// <returns>A list of included paths.</returns>
-        IList<IncludedFileSystemPathMetadata> GetIncludedPaths();
+        /// <param name="saveAs"><b>true</b> to prompt for file type and file name, <b>false</b> to save with current file information (if possible).</param>
+        public SaveEventArgs(bool saveAs) => SaveAs = saveAs;
     }
 }

@@ -20,46 +20,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: September 5, 2018 12:57:32 PM
+// Created: October 28, 2018 3:57:27 PM
 // 
 #endregion
 
-using System.Collections.Generic;
-using System.IO;
-using Gorgon.Editor.ProjectData;
+using System;
 
-namespace Gorgon.Editor.Metadata
+namespace Gorgon.Editor
 {
     /// <summary>
-    /// The metadata access interface.
+    /// A recent item value.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// Plug in writers can use this to create, remove and retrieve metadata items for their plug ins, plus handle standard meta data items.
-    /// </para>
-    /// </remarks>
-    public interface IMetadataProvider
+    internal class RecentItem
     {
         /// <summary>
-        /// Property to return the file pointing to the metadata database.
+        /// Property to set or return the last time the file was used.
         /// </summary>
-        FileInfo MetadataFile
+        public DateTime LastUsedDate
         {
             get;
+            set;
         }
 
         /// <summary>
-        /// Function to update project data and metadata.
+        /// Property to set or return the file path.
         /// </summary>
-        /// <param name="project">The project data to send.</param>
-        /// <param name="title">The title of the project.</param>
-        /// <param name="writerType">The type of writer used to write the project data.</param>
-        void UpdateProjectData(string title, string writerType, IProject project);
-
-        /// <summary>
-        /// Function to retrieve the list of files included in this project.
-        /// </summary>
-        /// <returns>A list of included paths.</returns>
-        IList<IncludedFileSystemPathMetadata> GetIncludedPaths();
+        public string FilePath
+        {
+            get;
+            set;
+        }
     }
 }

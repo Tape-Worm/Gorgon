@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.ComponentModel;
 using Gorgon.Editor.UI.Views;
 
 namespace Gorgon.Editor.Views
@@ -35,15 +36,23 @@ namespace Gorgon.Editor.Views
     internal partial class StageLaunch 
         : EditorBaseControl
     {
-        #region Variables.
-
-        #endregion
-
         #region Events.
         /// <summary>
         /// Event triggered when the open project button is clicked.
         /// </summary>
         public event EventHandler OpenClicked;
+        #endregion
+
+        #region Properties.
+        /// <summary>
+        /// Property to set or return whether files can be opened or not.
+        /// </summary>
+        [Browsable(false)]
+        public bool CanOpen
+        {
+            get => ButtonOpenProject.Visible;
+            set => ButtonOpenProject.Visible = value;
+        }
         #endregion
 
         #region Methods.
@@ -70,7 +79,8 @@ namespace Gorgon.Editor.Views
                 StageRecent.Visible = false;
                 StageNewProject.Visible = true;
                 StageNewProject.BringToFront();
-            } else if (CheckRecent.Checked)
+            }
+            else if (CheckRecent.Checked)
             {
                 StageNewProject.Visible = false;
                 StageRecent.Visible = true;

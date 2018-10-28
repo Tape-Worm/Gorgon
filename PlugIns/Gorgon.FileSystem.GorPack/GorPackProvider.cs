@@ -219,7 +219,7 @@ namespace Gorgon.IO.GorPack
 		/// </remarks>
 		protected override GorgonPhysicalFileSystemData OnEnumerate(string physicalLocation, IGorgonVirtualDirectory mountPoint)
         {
-            using (GorgonBinaryReader reader = new GorgonBinaryReader(File.Open(physicalLocation, FileMode.Open, FileAccess.Read, FileShare.Read)))
+            using (var reader = new GorgonBinaryReader(File.Open(physicalLocation, FileMode.Open, FileAccess.Read, FileShare.Read)))
             {
                 // Skip the header.
                 reader.ReadString();
@@ -228,7 +228,7 @@ namespace Gorgon.IO.GorPack
 
                 byte[] indexData = Decompress(reader.ReadBytes(indexLength));
                 string xmlData = Encoding.UTF8.GetString(indexData);
-	            XDocument index = XDocument.Parse(xmlData, LoadOptions.None);
+	            var index = XDocument.Parse(xmlData, LoadOptions.None);
 
 	            return new GorgonPhysicalFileSystemData(EnumerateDirectories(index, mountPoint),
 	                                                    EnumerateFiles(index, reader.BaseStream.Position, physicalLocation, mountPoint));
@@ -282,7 +282,7 @@ namespace Gorgon.IO.GorPack
 		{
 			string header;
 
-			using (GorgonBinaryReader reader = new GorgonBinaryReader(File.Open(physicalPath, FileMode.Open, FileAccess.Read, FileShare.Read)))
+			using (var reader = new GorgonBinaryReader(File.Open(physicalPath, FileMode.Open, FileAccess.Read, FileShare.Read)))
 			{
 				// If the length of the stream is less or equal to the header size, it's unlikely that we can read this file.
 				if (reader.BaseStream.Length <= GorPackHeader.Length)

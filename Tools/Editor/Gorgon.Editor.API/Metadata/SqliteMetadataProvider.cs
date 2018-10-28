@@ -29,6 +29,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
+using System.Linq;
+using Gorgon.Core;
+using Gorgon.Editor.ProjectData;
 
 namespace Gorgon.Editor.Metadata
 {
@@ -40,11 +43,13 @@ namespace Gorgon.Editor.Metadata
     {
         #region Queries.
         // Query to remove all included paths from the metadata.
-        private const string DeleteIncludedPaths = "DELETE FROM IncludedPathMetadata";
+        private const string DeleteIncludedPaths = "DELETE FROM IncludedPathMetadata WHERE FullPath = @PPath";
         // Query to add an included path to the metadata.
-        private const string InsertIncludedPath = "INSERT INTO IncludedPathMetadata (FullPath) VALUES (@PPath)";
+        private const string InsertIncludedPath = @"INSERT OR REPLACE INTO IncludedPathMetadata (FullPath) VALUES (@PPath)";
         // Query to retrieve all included paths from the metadata.
         private const string SelectIncludedPaths = "SELECT FullPath FROM IncludedPathMetadata";
+        // Query to update the project metadata header.
+        private const string UpdateProjectHeader = "UPDATE ProjectMetadata SET ProjectName=@PName, Version=@PVersion, WriterName=@PWriter, ShowExternalObjects=@PShowExtern";
         #endregion
 
         #region Properties.
@@ -73,13 +78,62 @@ namespace Gorgon.Editor.Metadata
         /// <summary>
         /// Function to update the included paths.
         /// </summary>
-        /// <param name="exclusions">The paths to update.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="exclusions" /> parameter is <b>null</b>.</exception>
-        public void UpdateIncludedPaths(IEnumerable<IncludedFileSystemPathMetadata> exclusions)
-        {
-            if (exclusions == null)
+        /// <param name="command">The command to execute against the database.</param>
+        /// <param name="updated">The list of updated paths.</param>
+        /// <param name="deleted">The list of deleted paths.</param>
+        private void UpdateIncludedPaths(SQLiteCommand command, IEnumerable<string> updated, IEnumerable<string> deleted)
+        {                               
+            command.CommandText = DeleteIncludedPaths;
+            SQLiteParameter param = command.Parameters.Add("@PPath", DbType.String);
+
+            foreach (string deletePath in deleted)
             {
-                throw new ArgumentNullException(nameof(exclusions));
+                param.Value = deletePath;
+                command.ExecuteNonQuery();
+            }
+                                               
+            command.CommandText = InsertIncludedPath;
+
+            foreach (string path in updated)
+            {
+                param.Value = path;
+                command.ExecuteNonQuery();
+            }
+        }
+
+        /// <summary>
+        /// Function to update project data and metadata.
+        /// </summary>
+        /// <param name="title">The title of the project.</param>
+        /// <param name="writerType">The type of writer used to write the project data.</param>
+        /// <param name="project">The project data to send.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="title"/>, <paramref name="writerType"/>, or the <paramref name="project"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="title"/>, or the <paramref name="writerType"/> parameter is empty.</exception>
+        public void UpdateProjectData(string title, string writerType, IProject project)
+        {
+            if (title == null)
+            {
+                throw new ArgumentNullException(nameof(title));
+            }
+
+            if (writerType == null)
+            {
+                throw new ArgumentNullException(nameof(writerType));
+            }
+
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                throw new ArgumentEmptyException(nameof(title));
+            }
+
+            if (string.IsNullOrWhiteSpace(writerType))
+            {
+                throw new ArgumentEmptyException(nameof(writerType));
+            }
+
+            if (project == null)
+            {
+                throw new ArgumentNullException(nameof(project));
             }
 
             SQLiteConnection conn = GetConnection();
@@ -88,21 +142,30 @@ namespace Gorgon.Editor.Metadata
 
             try
             {
-                trans = conn.BeginTransaction();
+                var current = new HashSet<string>(GetIncludedPaths().Select(item => item.Path), StringComparer.OrdinalIgnoreCase);
+                var updated = new HashSet<string>(project.Metadata.IncludedPaths.Select(item => item.Path), StringComparer.OrdinalIgnoreCase);
 
-                command = new SQLiteCommand(DeleteIncludedPaths, conn, trans);
+                // Get all items that are deleted from the updated list.
+                current.ExceptWith(updated);
+
+                trans = conn.BeginTransaction();
+                command = new SQLiteCommand(UpdateProjectHeader, conn, trans);
+                command.Parameters.AddWithValue("PName", title);
+                command.Parameters.AddWithValue("PVersion", CommonEditorConstants.EditorCurrentProjectVersion);
+                command.Parameters.AddWithValue("PWriter", writerType);
+                command.Parameters.AddWithValue("PShowExtern", project.ShowExternalItems ? 1 : 0);
+
                 command.ExecuteNonQuery();
 
-                SQLiteParameter param = command.Parameters.Add("@PPath", DbType.String);
-                command.CommandText = InsertIncludedPath;
+                command.Parameters.Clear();
 
-                foreach (IncludedFileSystemPathMetadata exclusion in exclusions)
-                {
-                    param.Value = exclusion.Path;
-                    command.ExecuteNonQuery();
-                }
+                UpdateIncludedPaths(command, updated, current);
 
                 trans.Commit();
+
+                command.Parameters.Clear();
+                command.CommandText = "VACUUM; ANALYZE";
+                command.ExecuteNonQuery();
             }
             catch
             {

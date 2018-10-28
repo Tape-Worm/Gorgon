@@ -78,13 +78,16 @@ namespace Gorgon.Editor
 
             if ((string.Equals(dirPath, rootDirPath, StringComparison.OrdinalIgnoreCase)) && (isDirectory))
             {
-                return "/";
+                return pathSeparator.ToString();
             }
 
             var pathBuilder = new StringBuilder();
-            pathBuilder.Append("/");
+            pathBuilder.Append(pathSeparator.ToString());
             pathBuilder.Append(dirPath, rootDirPath.Length, dirPath.Length - rootDirPath.Length);
-            pathBuilder.Replace(Path.DirectorySeparatorChar, pathSeparator);
+            if (pathSeparator != Path.DirectorySeparatorChar)
+            {
+                pathBuilder.Replace(Path.DirectorySeparatorChar, pathSeparator);
+            }            
 
             return string.IsNullOrWhiteSpace(fileName) ? pathBuilder.ToString() : Path.Combine(pathBuilder.ToString(), fileName);
         }

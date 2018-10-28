@@ -27,40 +27,41 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
+using System.Linq;
 using System.Windows.Forms;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
 using Gorgon.UI;
+using Gorgon.Editor.Plugins;
 
 namespace Gorgon.Editor.Services
 {
     /// <summary>
-    /// A service used to show a dialog for opening an editor file.
+    /// A service used to show a dialog for saving an editor file.
     /// </summary>
-    internal class EditorFileOpenDialogService
-        : IEditorFileOpenDialogService
+    internal class EditorFileSaveDialogService
+        : IEditorFileSaveAsDialogService
     {
         #region Variables.
         // The previously selected file extension filter index.
-        private int _lastSelectedFilterIndex;
+        private int _lastSelectedExtensionIndex = -1;
         #endregion
 
         #region Properties.
         /// <summary>
-        /// Property to set or return the initial file path to use.
-        /// </summary>
-        public string InitialFilePath
+        /// Property to set or return a file filter.
+        /// </summary>        
+        public string FileFilter
         {
             get;
             set;
         }
 
         /// <summary>
-        /// Property to set or return a file filter.
-        /// </summary>        
-        public string FileFilter
+        /// Property to set or return the initial file path to use.
+        /// </summary>
+        public string InitialFilePath
         {
             get;
             set;
@@ -95,32 +96,35 @@ namespace Gorgon.Editor.Services
 
         /// <summary>
         /// Property to return the settings for the application.
-        /// </summary>        
+        /// </summary>
+        /// <value>The settings.</value>
         public EditorSettings Settings
         {
             get;
+        }
+
+        /// <summary>
+        /// Property to set or return the currently active file writer plugin.
+        /// </summary>        
+        public FileWriterPlugin CurrentWriter
+        {
+            get;
+            set;
         }
         #endregion
 
         #region Methods.
         /// <summary>
-        /// Function to build a file system reader filter string for file dialogs.
+        /// Function to build a file system writer filter string for file dialogs.
         /// </summary>
+        /// <param name="extensions">The extensions used by the available file writers.</param>
         /// <returns>The string containing the file dialog filter.</returns>
-        private string GetReaderDialogFilterString()
+        private string GetWriterDialogFilterString(IReadOnlyList<(string desc, FileWriterPlugin writer, IReadOnlyList<GorgonFileExtension> extensions)> extensions)
         {
             var result = new StringBuilder();
-            var filter = new StringBuilder();
-            var allFilter = new StringBuilder();
+            var filter = new StringBuilder();            
 
-            IReadOnlyList<(string, IReadOnlyList<GorgonFileExtension>)> extensions = Providers.GetReaderFileExtensions().ToArray();
-
-            if (extensions.Count == 0)
-            {
-                return Resources.GOREDIT_TEXT_ALL_FILES;
-            }
-
-            foreach ((string desc, IReadOnlyList<GorgonFileExtension> extensions) item in extensions)
+            foreach ((string desc, FileWriterPlugin _, IReadOnlyList<GorgonFileExtension> extensions) item in extensions)
             {
                 filter.Length = 0;
 
@@ -133,11 +137,6 @@ namespace Gorgon.Editor.Services
 
                 foreach (GorgonFileExtension extension in item.extensions)
                 {
-                    if (allFilter.Length > 0)
-                    {
-                        allFilter.Append(";");
-                    }
-
                     if (filter.Length > 0)
                     {
                         filter.Append(";");
@@ -145,8 +144,6 @@ namespace Gorgon.Editor.Services
 
                     filter.Append("*.");
                     filter.Append(extension.Extension);
-                    allFilter.Append("*.");
-                    allFilter.Append(extension.Extension);
                 }
 
                 result.Append(" (");
@@ -154,23 +151,6 @@ namespace Gorgon.Editor.Services
                 result.Append(")|");
                 result.Append(filter);
             }
-
-            if (allFilter.Length > 0)
-            {
-                if (result.Length > 0)
-                {
-                    result.Append("|");
-                }
-
-                result.Append(string.Format(Resources.GOREDIT_TEXT_SUPPORTED_FILES, allFilter));
-            }
-
-            if (result.Length > 0)
-            {
-                result.Append("|");
-            }
-
-            result.Append(Resources.GOREDIT_TEXT_ALL_FILES);
 
             return result.ToString();
         }
@@ -195,11 +175,60 @@ namespace Gorgon.Editor.Services
         }
 
         /// <summary>
+        /// Function to find the extension filter index for the currently selected file writer.
+        /// </summary>
+        /// <param name="extensions">The extensions to evaluate.</param>
+        private void FindCurrentWriterExtensionIndex(IReadOnlyList<(string desc, FileWriterPlugin writer, IReadOnlyList<GorgonFileExtension> extensions)> extensions)
+        {
+            _lastSelectedExtensionIndex = -1;
+
+            for (int i = 0; i < extensions.Count; ++i)
+            {
+                if (extensions[i].writer != CurrentWriter)
+                {
+                    continue;
+                }
+
+                _lastSelectedExtensionIndex = i;
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Function to locate the nearest matching extension index based on previous file name.
+        /// </summary>
+        /// <param name="extensions">The extensions to evaluate.</param>
+        private void FindNearestExtensionIndex(IReadOnlyList<(string desc, FileWriterPlugin writer, IReadOnlyList<GorgonFileExtension> extensions)> extensions)
+        {
+            if ((_lastSelectedExtensionIndex < 0) || (_lastSelectedExtensionIndex >= extensions.Count))
+            {
+                _lastSelectedExtensionIndex = 0;
+            }
+
+            // Locate the previously selected file type by using the extension of the current file path.
+            if (!string.IsNullOrWhiteSpace(InitialFilePath))
+            {
+                var currentExtension = new GorgonFileExtension(Path.GetExtension(InitialFilePath));
+
+                for (int i = 0; i < extensions.Count; ++i)
+                {
+                    if (!extensions[i].extensions.Any(item => item.Equals(currentExtension)))
+                    {
+                        continue;
+                    }
+
+                    _lastSelectedExtensionIndex = i;
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
         /// Function to return the dialog.
         /// </summary>
-        /// <param name="allowMultiSelect"><b>true</b> to allow multiple file selection, or <b>false</b> to only allow single selection.</param>
+        /// <param name="extensions">The file extensions to evaluate.</param>
         /// <returns>The open file dialog.</returns>
-        private OpenFileDialog GetDialog(bool allowMultiSelect)
+        private SaveFileDialog GetDialog(IReadOnlyList<(string desc, FileWriterPlugin writer, IReadOnlyList<GorgonFileExtension> extensions)> extensions)
         {
             DirectoryInfo initialDirectory = InitialDirectory;
 
@@ -211,22 +240,34 @@ namespace Gorgon.Editor.Services
             if (!initialDirectory.Exists)
             {
                 initialDirectory = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+            }            
+                        
+            if (CurrentWriter != null)
+            {
+                FindCurrentWriterExtensionIndex(extensions);
             }
 
-            return new OpenFileDialog
+            if (_lastSelectedExtensionIndex < 0)
             {
-                Title = string.IsNullOrWhiteSpace(DialogTitle) ? Resources.GOREDIT_TEXT_OPEN_EDITOR_FILE : DialogTitle,
-                FileName = string.IsNullOrWhiteSpace(InitialFilePath) ? string.Empty : InitialFilePath,
+                FindNearestExtensionIndex(extensions);
+            }
+
+            return new SaveFileDialog
+            {
+                Title = string.IsNullOrWhiteSpace(DialogTitle) ? Resources.GOREDIT_TEXT_SAVE_EDITOR_FILE : DialogTitle,
+                FileName = string.IsNullOrWhiteSpace(InitialFilePath) ? string.Empty : InitialFilePath,            
                 ValidateNames = true,
                 SupportMultiDottedExtensions = true,
-                Multiselect = allowMultiSelect,
                 AutoUpgradeEnabled = true,
-                CheckFileExists = true,
-                CheckPathExists = true,
-                Filter = FileFilter ?? GetReaderDialogFilterString(),
+                Filter = FileFilter ?? GetWriterDialogFilterString(extensions),
                 InitialDirectory = initialDirectory.FullName,
                 RestoreDirectory = true,
-                FilterIndex = _lastSelectedFilterIndex
+                AddExtension = false,
+                CreatePrompt = false,
+                FilterIndex = _lastSelectedExtensionIndex + 1,
+                OverwritePrompt = true,
+                CheckPathExists = false,
+                CheckFileExists = false
             };
         }
 
@@ -236,15 +277,26 @@ namespace Gorgon.Editor.Services
         /// <returns>The selected file path, or <b>null</b> if cancelled.</returns>
         public string GetFilename()
         {
-            OpenFileDialog dialog = null;
+            SaveFileDialog dialog = null;
 
             try
             {
-                dialog = GetDialog(false);
+                IReadOnlyList<(string desc, FileWriterPlugin writer, IReadOnlyList<GorgonFileExtension> extensions)> extensions = Providers.GetWriterFileExtensions();
+
+                dialog = GetDialog(extensions);
 
                 string result = dialog.ShowDialog(GetParentForm()) == DialogResult.Cancel ? null : dialog.FileName;
 
-                _lastSelectedFilterIndex = dialog.FilterIndex;
+                _lastSelectedExtensionIndex = dialog.FilterIndex - 1;
+
+                if ((_lastSelectedExtensionIndex >= 0) && (_lastSelectedExtensionIndex <= extensions.Count))
+                {
+                    CurrentWriter = extensions[_lastSelectedExtensionIndex].writer;
+                }
+                else
+                {
+                    CurrentWriter = null;
+                }
 
                 return result;
             }
@@ -257,11 +309,11 @@ namespace Gorgon.Editor.Services
 
         #region Constructor/Finalizer.
         /// <summary>
-        /// Initializes a new instance of the <see cref="EditorFileOpenDialogService"/> class.
+        /// Initializes a new instance of the <see cref="EditorFileSaveDialogService"/> class.
         /// </summary>
         /// <param name="settings">The application settings.</param>
         /// <param name="providers">The providers used for opening/saving files.</param>
-        public EditorFileOpenDialogService(EditorSettings settings, IFileSystemProviders providers)
+        public EditorFileSaveDialogService(EditorSettings settings, IFileSystemProviders providers)
         {
             Settings = settings;
             Providers = providers;

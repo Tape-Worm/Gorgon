@@ -90,6 +90,7 @@
             this.ButtonSaveAs.StateCommon.Content.ShortText.TextV = ComponentFactory.Krypton.Toolkit.PaletteRelativeAlign.Center;
             this.ButtonSaveAs.TabIndex = 6;
             this.ButtonSaveAs.Values.Text = "Save As";
+            this.ButtonSaveAs.Click += new System.EventHandler(this.ButtonSaveAs_Click);
             // 
             // ButtonSave
             // 
@@ -106,6 +107,7 @@
             this.ButtonSave.StateCommon.Content.ShortText.TextV = ComponentFactory.Krypton.Toolkit.PaletteRelativeAlign.Center;
             this.ButtonSave.TabIndex = 5;
             this.ButtonSave.Values.Text = "Save";
+            this.ButtonSave.Click += new System.EventHandler(this.ButtonSave_Click);
             // 
             // kryptonBorderEdge1
             // 
@@ -153,6 +155,7 @@
             // 
             this.CheckNewProject.AutoSize = true;
             this.CheckNewProject.ButtonStyle = ComponentFactory.Krypton.Toolkit.ButtonStyle.Custom1;
+            this.CheckNewProject.Checked = true;
             this.CheckNewProject.Location = new System.Drawing.Point(0, 100);
             this.CheckNewProject.Margin = new System.Windows.Forms.Padding(0);
             this.CheckNewProject.Name = "CheckNewProject";
@@ -181,11 +184,14 @@
             this.ButtonOpenProject.TabIndex = 2;
             this.ButtonOpenProject.Values.Image = global::Gorgon.Editor.Properties.Resources.openproject_24x24;
             this.ButtonOpenProject.Values.Text = "Open";
+            this.ButtonOpenProject.Click += new System.EventHandler(this.ButtonOpenProject_Click);
             // 
             // ButtonGroup
             // 
             this.ButtonGroup.CheckButtons.Add(this.CheckNewProject);
             this.ButtonGroup.CheckButtons.Add(this.CheckRecent);
+            this.ButtonGroup.CheckedButton = this.CheckNewProject;
+            this.ButtonGroup.CheckedButtonChanged += new System.EventHandler(this.ButtonGroup_CheckedButtonChanged);
             // 
             // StageNewProject
             // 
@@ -207,7 +213,6 @@
             this.StageRecent.Padding = new System.Windows.Forms.Padding(6);
             this.StageRecent.Size = new System.Drawing.Size(879, 719);
             this.StageRecent.TabIndex = 3;
-            this.StageRecent.Visible = false;
             // 
             // StageLive
             // 
@@ -231,7 +236,6 @@
         #endregion
 
         public StageNew StageNewProject;
-        private StageRecent StageRecent;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel PanelButtons;
         private ComponentFactory.Krypton.Toolkit.KryptonCheckButton CheckRecent;
@@ -242,5 +246,6 @@
         private ComponentFactory.Krypton.Toolkit.KryptonBorderEdge kryptonBorderEdge1;
         private ComponentFactory.Krypton.Toolkit.KryptonButton ButtonSaveAs;
         private ComponentFactory.Krypton.Toolkit.KryptonButton ButtonSave;
+        internal StageRecent StageRecent;
     }
 }

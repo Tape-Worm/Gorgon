@@ -20,32 +20,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: September 24, 2018 1:02:38 PM
+// Created: October 28, 2018 2:52:31 PM
 // 
 #endregion
 
-namespace Gorgon.Editor.Services
+using System.ComponentModel;
+using DX = SharpDX;
+
+namespace Gorgon.Editor.ViewModels
 {
     /// <summary>
-    /// Provides a service for showing a dialog used to open or save editor files.
+    /// Arguments for the <see cref="IMain.AppClosingAsyncCommand"/>.
     /// </summary>
-    internal interface IEditorFileDialogService
-        : IFileDialogService
+    internal class AppCloseArgs
+        : CancelEventArgs
     {
         /// <summary>
-        /// Property to return the available file system providers.
+        /// Property to return the dimensions for the window when closing.
         /// </summary>
-        IFileSystemProviders Providers
+        public DX.Rectangle WindowDimensions
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the settings for the application.
+        /// Property to return the state for the window when closing.
         /// </summary>
-        EditorSettings Settings
+        public int WindowState
         {
             get;
+        }
+
+        /// <summary>Initializes a new instance of the AppCloseArgs class.</summary>
+        /// <param name="windowDimensions">  The size of the window at shutdown.</param>
+        /// <param name="windowState">  The current state of the window (e.g. maximized, normal, etc...)</param>
+        public AppCloseArgs(DX.Rectangle windowDimensions, int windowState)
+        {
+            WindowDimensions = windowDimensions;
+            WindowState = windowState;
         }
     }
 }

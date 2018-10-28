@@ -30,8 +30,11 @@ using System.Data;
 using System.Data.SQLite;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.IO;
@@ -63,7 +66,8 @@ namespace Gorgon.Editor.ProjectData
         private const string IncludeMetadataCreate = @"CREATE TABLE IF NOT EXISTS IncludedPathMetadata (
                                                             FullPath TEXT NOT NULL,
                                                             PRIMARY KEY (FullPath)
-                                                       ) ";
+                                                       );
+                                                       CREATE UNIQUE INDEX IncludeIndex ON IncludedPathMetadata (FullPath)";
 
         // The query used to create the inital project metadata.
         private const string AddProjectMetadata = @"INSERT INTO ProjectMetadata (ProjectName, Version, ShowExternalObjects) VALUES (@PName, @PVersion, @PShowExtern)";
@@ -145,31 +149,32 @@ namespace Gorgon.Editor.ProjectData
         /// <summary>
         /// Function to purge old workspace directories if they were left over (e.g. debug break, crash, etc...)
         /// </summary>
-        /// <param name="workspace">The work space directory containing the project directories.</param>
-        private void PurgeStaleDirectories(DirectoryInfo workspace)
+        /// <param name="prevDirectory">The previously used directory path for the project.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="prevDirectory"/> parameter is <b>null</b>.</exception>
+        public void PurgeStaleDirectories(DirectoryInfo prevDirectory)
         {
-            DirectoryInfo[] projDirs = workspace.GetDirectories("*" + EditorProjectDirectoryExtension);
+            int count = 0;
 
-            foreach (DirectoryInfo directory in projDirs)
+            // Attempt to delete multiple times if the directory is locked (explorer is a jerk sometimes).
+            while (count < 3)
             {
-                int count = 0;
-
-                // Attempt to delete multiple times if the directory is locked (explorer is a jerk sometimes).
-                while (count < 3)
+                try
                 {
-                    try
+                    if (!prevDirectory.Exists)
                     {
-                        directory.Delete(true);
-                        break;
+                        return;
                     }
-                    catch (Exception ex)
-                    {
-                        Program.Log.LogException(ex);
-                        ++count;
 
-                        // Give the system some time. Sometimes explorer will release its lock.
-                        System.Threading.Thread.Sleep(250);
-                    }
+                    prevDirectory.Delete(true);
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    Program.Log.LogException(ex);
+                    ++count;
+
+                    // Give the system some time. Sometimes explorer will release its lock.
+                    System.Threading.Thread.Sleep(250);
                 }
             }
         }
@@ -264,6 +269,8 @@ namespace Gorgon.Editor.ProjectData
         {
             Project result = null;
 
+            Program.Log.Print("Loading project metadata.", LoggingLevel.Verbose);
+
             using (SQLiteConnection conn = GetConnection(metaDataFile.Directory))
             using (var command = new SQLiteCommand(GetProjectMetadata, conn))
             using (IDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection | CommandBehavior.SingleRow))
@@ -275,11 +282,26 @@ namespace Gorgon.Editor.ProjectData
                     string writer = reader["WriterName"].IfNull(string.Empty);
                     int showExternal = Convert.ToInt32(reader["ShowExternalObjects"]);
 
-                    // TODO: Version checking.
+                    FileWriterPlugin writerPlugin = null;
+
+                    if (!string.IsNullOrWhiteSpace(writer))
+                    {
+                        writerPlugin = Providers.GetWriterByName(writer);
+
+                        if (writerPlugin != null)
+                        {
+                            Program.Log.Print($"WARNING: Project has a writer plug in named '{writer}', but no such plug in was loaded.", LoggingLevel.Verbose);
+                        }
+                    }
+
+                    // TODO: Version checking. We're at the first version now, so there's no need to upgrade.
+
+                    Program.Log.Print($"Project '{projectName}', version {version}, writer plugin: {writer}.", LoggingLevel.Verbose);
 
                     result = new Project(projectName, metaDataFile)
                     {
-                        ShowExternalItems = showExternal != 0
+                        ShowExternalItems = showExternal != 0,
+                        Writer = writerPlugin
                     };
                 }
             }
@@ -296,9 +318,6 @@ namespace Gorgon.Editor.ProjectData
         /// <returns>A new project file.</returns>
         private (IProject project, bool hasMetadata, bool isUpgraded) OpenProject(FileInfo fileSystemFile, IGorgonFileSystemProvider provider, DirectoryInfo workspace)
         {
-            // Ensure that stale project workspaces are removed.
-            PurgeStaleDirectories(workspace);
-
             DirectoryInfo projectWorkspace = GetProjectWorkspace(workspace);
 
             FileInfo metaData = CopyFileSystem(fileSystemFile, provider, projectWorkspace);
@@ -308,8 +327,13 @@ namespace Gorgon.Editor.ProjectData
 
             if (!metaData.Exists)
             {
+                Program.Log.Print("No metadata file exists. A new one will be created.", LoggingLevel.Verbose);
+
                 result = new Project(Path.GetFileNameWithoutExtension(fileSystemFile.Name), metaData);
                 BuildMetadataDatabase(result);
+
+                // TODO: Import v2 files.
+
                 return (result, false, true);
             }
 
@@ -345,7 +369,7 @@ namespace Gorgon.Editor.ProjectData
                     Program.Log.LogException(ex);
                     ++count;
 
-                    System.Threading.Thread.Sleep(250);
+                    Thread.Sleep(250);
                 }
             }
         }
@@ -430,8 +454,6 @@ namespace Gorgon.Editor.ProjectData
             {
                 throw new ArgumentEmptyException(nameof(workspace));
             }
-            // Remove the previously built directory structure.
-            PurgeStaleDirectories(workspace);
 
             workspace = GetProjectWorkspace(workspace);
 
@@ -442,6 +464,59 @@ namespace Gorgon.Editor.ProjectData
             BuildMetadataDatabase(result);
 
             return result;
+        }
+
+        /// <summary>
+        /// Function to save a project to a file on the disk.
+        /// </summary>
+        /// <param name="project">The project to save.</param>
+        /// <param name="path">The path to the project file.</param>
+        /// <param name="writer">The writer plug in used to write the file data.</param>
+        /// <param name="progressCallback">The callback method that reports the saving progress to the UI.</param>
+        /// <param name="cancelToken">The token used for cancellation of the operation.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, <paramref name="path"/>, or the <paramref name="writer"/> parameter is <b>null</b>.</exception>        
+        public void SaveProject(IProject project, string path, FileWriterPlugin writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
+        {
+            if (project == null)
+            {
+                throw new ArgumentNullException(nameof(project));
+            }
+
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            if (writer == null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentEmptyException(nameof(path));
+            }
+
+            var outputFile = new FileInfo(path);
+            using (FileStream stream = outputFile.Open(FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                writer.Write(stream, project.ProjectWorkSpace, progressCallback, cancelToken);
+            }
+            outputFile.Refresh();
+
+            // If we cancelled the operation, we should delete the file.
+            if ((cancelToken.IsCancellationRequested) && (outputFile.Exists))
+            {
+                try
+                {                        
+                    outputFile.Delete();
+                }
+                catch (Exception ex)
+                {
+                    Program.Log.Print($"ERROR: Could not delete the file '{outputFile.FullName}' while cancelling save operation.", LoggingLevel.Simple);
+                    Program.Log.LogException(ex);
+                }
+            }
         }
 
         /// <summary>
@@ -479,7 +554,7 @@ namespace Gorgon.Editor.ProjectData
                 throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_PROJECT_NOT_FOUND, file.FullName));
             }
                        
-            IGorgonFileSystemProvider provider = Providers.GetBestProvider(file);
+            IGorgonFileSystemProvider provider = Providers.GetBestReader(file);
             
             if (provider == null)
             {

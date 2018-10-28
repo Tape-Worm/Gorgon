@@ -291,6 +291,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Confirmation.
+        /// </summary>
+        internal static string GOREDIT_CAPTION_CONFIRM {
+            get {
+                return ResourceManager.GetString("GOREDIT_CAPTION_CONFIRM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gorgon Editor - {0}.
         /// </summary>
         internal static string GOREDIT_CAPTION_FILE {
@@ -305,6 +314,17 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_CAPTION_NO_FILE {
             get {
                 return ResourceManager.GetString("GOREDIT_CAPTION_NO_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A previous project working directory was found in the &apos;{0}&apos; workspace.  This may have been left over from an application crash. 
+        ///
+        ///Would you like to remove this project working directory now?.
+        /// </summary>
+        internal static string GOREDIT_CONFIRM_CLEAN_PREV_DIR {
+            get {
+                return ResourceManager.GetString("GOREDIT_CONFIRM_CLEAN_PREV_DIR", resourceCulture);
             }
         }
         
@@ -376,6 +396,17 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_CONFIRM_NEED_WORKSPACE {
             get {
                 return ResourceManager.GetString("GOREDIT_CONFIRM_NEED_WORKSPACE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The project &apos;{0}&apos; has unsaved changes.
+        ///
+        ///Would you like to save this project now?.
+        /// </summary>
+        internal static string GOREDIT_CONFIRM_UNSAVED_PROJ {
+            get {
+                return ResourceManager.GetString("GOREDIT_CONFIRM_UNSAVED_PROJ", resourceCulture);
             }
         }
         
@@ -458,6 +489,17 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_CANNOT_USE_WORKSPACE {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_CANNOT_USE_WORKSPACE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error while closing the application.
+        ///
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_CLOSING {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CLOSING", resourceCulture);
             }
         }
         
@@ -620,6 +662,16 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not find a suitable plug in for writing the file.
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_NO_WRITER {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_NO_WRITER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The node &apos;{0}&apos; is unable to create child nodes.
         ///Please try again..
         /// </summary>
@@ -708,7 +760,8 @@ namespace Gorgon.Editor.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to Could not find the project on the path &apos;{0}&apos;.
-        ///Please try again..
+        ///
+        ///Please select another file and try again..
         /// </summary>
         internal static string GOREDIT_ERR_PROJECT_NOT_FOUND {
             get {
@@ -743,6 +796,16 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_RENAMING_FILE {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_RENAMING_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error saving the project.
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_SAVING_PROJECT {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_SAVING_PROJECT", resourceCulture);
             }
         }
         
@@ -918,11 +981,29 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Please wait.
+        /// </summary>
+        internal static string GOREDIT_TEXT_PLEASE_WAIT {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_PLEASE_WAIT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Save editor file as....
         /// </summary>
         internal static string GOREDIT_TEXT_SAVE_EDITOR_FILE {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_SAVE_EDITOR_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Saving &apos;{0}&apos;....
+        /// </summary>
+        internal static string GOREDIT_TEXT_SAVING {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_SAVING", resourceCulture);
             }
         }
         

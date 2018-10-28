@@ -121,6 +121,6 @@
     <value>Gorgon packed file writer</value>
   </data>
   <data name="GORPKW_GORPACK_FILE_EXT_DESC" xml:space="preserve">
-    <value>Gorgon Packed File (*.gorPack)</value>
+    <value>Gorgon Packed File</value>
   </data>
 </root>

@@ -26,6 +26,7 @@
 
 using System.IO;
 using Gorgon.Editor.Metadata;
+using Gorgon.Editor.Plugins;
 
 namespace Gorgon.Editor.ProjectData
 {
@@ -63,7 +64,16 @@ namespace Gorgon.Editor.ProjectData
         }
 
         /// <summary>
-        /// Property to return the list of excluded paths.
+        /// Property to set or return the writer used to write to the project file.
+        /// </summary>
+        FileWriterPlugin Writer
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the list of metadata for the project.
         /// </summary>
         IProjectMetadata Metadata
         {

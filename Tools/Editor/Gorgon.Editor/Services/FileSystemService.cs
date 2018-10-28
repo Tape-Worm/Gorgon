@@ -33,7 +33,6 @@ using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
-using Gorgon.Math;
 
 namespace Gorgon.Editor.Services
 {
@@ -227,7 +226,6 @@ namespace Gorgon.Editor.Services
 
                 args.OnCopyProgress?.Invoke(file, newFile, args.CurrentCount, args.TotalItemCount);
 
-                int startTick = Environment.TickCount;
                 await Task.Run(() =>
                 {
                     // This file already exists
@@ -244,14 +242,6 @@ namespace Gorgon.Editor.Services
                 }, cancelToken);
 
                 args.OnCopyProgress?.Invoke(file, newFile, ++args.CurrentCount, args.TotalItemCount);
-
-                int diff = (Environment.TickCount - startTick).Max(0);
-
-                // Give the user a fighting chance to cancel the operation.
-                if (diff < 16)
-                {
-                    await Task.Delay(16 - diff);
-                }
             }
 
             return true;

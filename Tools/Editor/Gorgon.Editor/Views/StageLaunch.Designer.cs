@@ -132,7 +132,6 @@
             this.StageRecent.Padding = new System.Windows.Forms.Padding(6);
             this.StageRecent.Size = new System.Drawing.Size(675, 604);
             this.StageRecent.TabIndex = 1;
-            this.StageRecent.Visible = false;
             // 
             // StageLaunch
             // 
@@ -159,9 +158,9 @@
         private ComponentFactory.Krypton.Toolkit.KryptonCheckButton CheckNewProject;
         private ComponentFactory.Krypton.Toolkit.KryptonCheckButton CheckRecent;
         private ComponentFactory.Krypton.Toolkit.KryptonCheckSet ButtonGroup;
-        private StageRecent StageRecent;
         public StageNew StageNewProject;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel PanelButtons;
+        internal StageRecent StageRecent;
     }
 }

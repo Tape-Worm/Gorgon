@@ -77,8 +77,10 @@
       <DependentUpon>FormSplash.cs</DependentUpon>
     </Compile>
     <Compile Include="ProjectData\MetadataManager.cs" />
+    <Compile Include="RecentItem.cs" />
     <Compile Include="RibbonMerger.cs" />
     <Compile Include="Services\CopyDirectoryArgs.cs" />
+    <Compile Include="Services\EditorFileSaveDialogService.cs" />
     <Compile Include="Services\EditorFileOpenDialogService.cs" />
     <Compile Include="Services\FileSystemProviders.cs" />
     <Compile Include="Services\FileSystemService.cs" />
@@ -92,10 +94,12 @@
     <Compile Include="EditorSettings.cs" />
     <Compile Include="Services\ImportArgs.cs" />
     <Compile Include="Services\WorkspaceTester.cs" />
-    <Compile Include="Services\_Interfaces\IEditorFileDialogService.cs" />
+    <Compile Include="Services\_Interfaces\IEditorFileSaveAsDialogService.cs" />
+    <Compile Include="Services\_Interfaces\IEditorFileOpenDialogService.cs" />
     <Compile Include="Services\_Interfaces\IFileSystemProviders.cs" />
     <Compile Include="Services\_Interfaces\IFileSystemService.cs" />
     <Compile Include="Services\_Interfaces\IWorkspaceTester.cs" />
+    <Compile Include="ViewModels\AppCloseArgs.cs" />
     <Compile Include="ViewModels\CopyNodeArgs.cs" />
     <Compile Include="ViewModels\CreateNodeArgs.cs" />
     <Compile Include="ViewModels\FileExplorerFileNodeVm.cs" />
@@ -107,9 +111,11 @@
     <Compile Include="ViewModels\FileExplorerVm.cs" />
     <Compile Include="ViewModels\Main.cs" />
     <Compile Include="ViewModels\MainParameters.cs" />
+    <Compile Include="ViewModels\RecentVm.cs" />
+    <Compile Include="ViewModels\RecentVmParameters.cs" />
+    <Compile Include="ViewModels\SaveProjectArgs.cs" />
     <Compile Include="ViewModels\StageNewVm.cs" />
     <Compile Include="ViewModels\StageNewVmParameters.cs" />
-    <Compile Include="ViewModels\ProjectCreateArgs.cs" />
     <Compile Include="ViewModels\ProjectVm.cs" />
     <Compile Include="ViewModels\ProjectVmParameters.cs" />
     <Compile Include="ViewModels\ViewModelCommonParameters.cs" />
@@ -121,6 +127,7 @@
     <Compile Include="ViewModels\_Interfaces\IFileExplorerNodeVm.cs" />
     <Compile Include="ViewModels\_Interfaces\IFileExplorerVm.cs" />
     <Compile Include="ViewModels\_Interfaces\IMain.cs" />
+    <Compile Include="ViewModels\_Interfaces\IRecentVm.cs" />
     <Compile Include="ViewModels\_Interfaces\IStageNewVm.cs" />
     <Compile Include="ViewModels\_Interfaces\IProjectVm.cs" />
     <Compile Include="Views\EditorProject.cs">
@@ -135,6 +142,7 @@
     <Compile Include="Views\FileExploder.Designer.cs">
       <DependentUpon>FileExploder.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\SaveEventArgs.cs" />
     <Compile Include="Views\StageLaunch.cs">
       <SubType>UserControl</SubType>
     </Compile>

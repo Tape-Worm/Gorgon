@@ -140,11 +140,29 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The directory &apos;{0}&apos; was not found..
+        /// </summary>
+        internal static string GOREDIT_ERR_DIR_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_DIR_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The property &apos;{0}&apos; is not a member of this object..
         /// </summary>
         internal static string GOREDIT_ERR_PROPERTY_DOES_NOT_EXIST {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_PROPERTY_DOES_NOT_EXIST", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stream is read only..
+        /// </summary>
+        internal static string GOREDIT_ERR_STREAM_READ_ONLY {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_STREAM_READ_ONLY", resourceCulture);
             }
         }
         

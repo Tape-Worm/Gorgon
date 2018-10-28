@@ -70,7 +70,7 @@ namespace Gorgon.Editor.GorPackWriter.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Gorgon Packed File (*.gorPack).
+        ///   Looks up a localized string similar to Gorgon Packed File.
         /// </summary>
         internal static string GORPKW_GORPACK_FILE_EXT_DESC {
             get {

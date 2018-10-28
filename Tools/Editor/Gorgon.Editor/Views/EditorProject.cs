@@ -72,6 +72,11 @@ namespace Gorgon.Editor.Views
         }
         #endregion
 
+        #region Variables.
+        // Flag to indicate that the data context load should be deferred.
+        private bool _deferDataContextLoad = true;
+        #endregion
+
         #region Properties.
         /// <summary>
         /// Property to return the data context assigned to this view.
@@ -142,6 +147,8 @@ namespace Gorgon.Editor.Views
 
             DataContext.PropertyChanging -= DataContext_PropertyChanging;
             DataContext.PropertyChanged -= DataContext_PropertyChanged;
+
+            DataContext.OnUnload();
         }
 
         /// <summary>
@@ -170,11 +177,12 @@ namespace Gorgon.Editor.Views
         {
             base.OnLoad(e);
 
-            if (IsDesignTime)
+            if ((IsDesignTime)
+                || (!_deferDataContextLoad))
             {
                 return;
             }
-
+            
             DataContext?.OnLoad();
         }
 
@@ -191,6 +199,7 @@ namespace Gorgon.Editor.Views
         {
             UnassignEvents();
 
+            DataContext = null;
             InitializeFromDataContext(dataContext);
             DataContext = dataContext;
 
@@ -199,8 +208,14 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
+            _deferDataContextLoad = !IsHandleCreated;
+            if (!_deferDataContextLoad)
+            {
+                DataContext.OnLoad();
+            }
+
             DataContext.PropertyChanging += DataContext_PropertyChanging;
-            DataContext.PropertyChanged += DataContext_PropertyChanged;
+            DataContext.PropertyChanged += DataContext_PropertyChanged;            
         }
         #endregion
 

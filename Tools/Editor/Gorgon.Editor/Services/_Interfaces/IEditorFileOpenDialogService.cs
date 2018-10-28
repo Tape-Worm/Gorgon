@@ -20,46 +20,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: September 5, 2018 12:57:32 PM
+// Created: September 24, 2018 1:02:38 PM
 // 
 #endregion
 
-using System.Collections.Generic;
-using System.IO;
-using Gorgon.Editor.ProjectData;
-
-namespace Gorgon.Editor.Metadata
+namespace Gorgon.Editor.Services
 {
     /// <summary>
-    /// The metadata access interface.
+    /// Provides a service for showing a dialog used to open editor files.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// Plug in writers can use this to create, remove and retrieve metadata items for their plug ins, plus handle standard meta data items.
-    /// </para>
-    /// </remarks>
-    public interface IMetadataProvider
+    internal interface IEditorFileOpenDialogService
+        : IFileDialogService
     {
         /// <summary>
-        /// Property to return the file pointing to the metadata database.
+        /// Property to return the available file system providers.
         /// </summary>
-        FileInfo MetadataFile
+        IFileSystemProviders Providers
         {
             get;
         }
 
         /// <summary>
-        /// Function to update project data and metadata.
+        /// Property to return the settings for the application.
         /// </summary>
-        /// <param name="project">The project data to send.</param>
-        /// <param name="title">The title of the project.</param>
-        /// <param name="writerType">The type of writer used to write the project data.</param>
-        void UpdateProjectData(string title, string writerType, IProject project);
-
-        /// <summary>
-        /// Function to retrieve the list of files included in this project.
-        /// </summary>
-        /// <returns>A list of included paths.</returns>
-        IList<IncludedFileSystemPathMetadata> GetIncludedPaths();
+        EditorSettings Settings
+        {
+            get;
+        }        
     }
 }

@@ -74,9 +74,34 @@ namespace Gorgon.Editor.ProjectData
         /// <summary>
         /// Function to save the metadata to the metadata store in the project.
         /// </summary>
-        public void Save() =>
-            // TODO: Add more stuff.
-            _metadataProvider.UpdateIncludedPaths(_project.Metadata.IncludedPaths);
+        /// <param name="title">The title of the project.</param>
+        /// <param name="writerType">The type of writer used to write the project data.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="title"/>, or the <paramref name="writerType"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="title"/>, or the <paramref name="writerType"/> parameter is empty.</exception>
+        public void Save(string title, string writerType)
+        {
+            if (title == null)
+            {
+                throw new ArgumentNullException(nameof(title));
+            }
+
+            if (writerType == null)
+            {
+                throw new ArgumentNullException(nameof(writerType));
+            }
+
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                throw new ArgumentEmptyException(nameof(title));
+            }
+
+            if (string.IsNullOrWhiteSpace(writerType))
+            {
+                throw new ArgumentEmptyException(nameof(writerType));
+            }
+
+            _metadataProvider.UpdateProjectData(title, writerType, _project);
+        }
 
         /// <summary>
         /// Function to rename items in meta data.

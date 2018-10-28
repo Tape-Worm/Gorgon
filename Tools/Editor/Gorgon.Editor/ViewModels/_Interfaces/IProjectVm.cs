@@ -24,7 +24,12 @@
 // 
 #endregion
 
+using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using Gorgon.Editor.Metadata;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ViewModels
@@ -54,11 +59,16 @@ namespace Gorgon.Editor.ViewModels
     internal interface IProjectVm
         : IViewModel
     {
-        #region Variables.
-
-        #endregion
-
         #region Properties.
+        /// <summary>
+        /// Property to set or return the current file writer plugin used to write the project out to a file.
+        /// </summary>
+        FileWriterPlugin WriterPlugin
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Property to set or return the active clipboard handler context.
         /// </summary>
@@ -87,19 +97,21 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the title for the project.
+        /// Property to set or return the title for the project.
         /// </summary>
         string ProjectTitle
         {
             get;
+            set;
         }
 
         /// <summary>
-        /// Property to return the file information for the project if it was opened from a file.
+        /// Property to set or return the file information for the project if it was opened from a file.
         /// </summary>
         FileInfo ProjectFile
         {
             get;
+            set;
         }
 
         /// <summary>
@@ -110,13 +122,27 @@ namespace Gorgon.Editor.ViewModels
             get;
             set;
         }
+
+        /// <summary>
+        /// Property to return the metadata manager for the project.
+        /// </summary>
+        IMetadataManager MetadataManager
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
-        #endregion
-
-        #region Constructor/Finalizer.
-
+        /// <summary>
+        /// Function to persist the project data to a file.
+        /// </summary>
+        /// <param name="projectTitle">The title for the project.</param>
+        /// <param name="path">A path to the file that will hold the project data.</param>
+        /// <param name="writer">The plug in used to write the project data.</param>
+        /// <param name="progressCallback">The callback method that reports the saving progress to the UI.</param>
+        /// <param name="cancelToken">The token used for cancellation of the operation.</param>
+        /// <returns>A task for asynchronous operation.</returns>
+        Task PersistProjectAsync(string projectTitle, string path, FileWriterPlugin writer, Action<int, int, bool> progressCallback,  CancellationToken cancelToken);
         #endregion
     }
 }

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.ComponentModel;
 using Gorgon.Editor.UI.Views;
 
 namespace Gorgon.Editor.Views
@@ -40,17 +41,76 @@ namespace Gorgon.Editor.Views
         /// Event triggered when the back button is clicked.
         /// </summary>
         public event EventHandler BackClicked;
+        /// <summary>
+        /// Event triggered when the open project button is clicked.
+        /// </summary>
+        public event EventHandler OpenClicked;
+        /// <summary>
+        /// Event triggered when the Save As button is clicked, or a new project is saved for the first time.
+        /// </summary>
+        public event EventHandler<SaveEventArgs> Save;        
         #endregion
 
         #region Variables.
 
         #endregion
-
+                
         #region Properties.
+        /// <summary>
+        /// Property to set or return whether the application can save at this time.
+        /// </summary>
+        [Browsable(false)]
+        public bool CanSave
+        {
+            get => ButtonSave.Enabled;
+            set => ButtonSave.Enabled = value;
+        }
 
+        /// <summary>
+        /// Property to set or return whether the application can save as at this time.
+        /// </summary>
+        [Browsable(false)]
+        public bool CanSaveAs
+        {
+            get => ButtonSaveAs.Enabled;
+            set => ButtonSaveAs.Enabled = value;
+        }
+
+        /// <summary>
+        /// Property to set or return whether files can be opened or not.
+        /// </summary>
+        [Browsable(false)]
+        public bool CanOpen
+        {
+            get => ButtonOpenProject.Enabled;
+            set => ButtonOpenProject.Enabled = value;
+        }
         #endregion
 
         #region Methods.
+
+        /// <summary>
+        /// Handles the Click event of the ButtonSave control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonSave_Click(object sender, EventArgs e)
+        {
+            EventHandler<SaveEventArgs> handler = Save;
+            handler?.Invoke(this, new SaveEventArgs(false));
+        }
+
+        /// <summary>
+        /// Handles the Click event of the ButtonSaveAs control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonSaveAs_Click(object sender, EventArgs e)
+        {
+            EventHandler<SaveEventArgs> handler = Save;
+            handler?.Invoke(this, new SaveEventArgs(true));
+        }
+
         /// <summary>
         /// Handles the Click event of the ButtonBack control.
         /// </summary>
@@ -60,6 +120,34 @@ namespace Gorgon.Editor.Views
         {
             EventHandler handler = BackClicked;
             handler?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>Handles the Click event of the ButtonOpenProject control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The [EventArgs] instance containing the event data.</param>
+        private void ButtonOpenProject_Click(object sender, EventArgs e)
+        {
+            EventHandler handler = OpenClicked;
+            handler?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>Handles the CheckedButtonChanged event of the ButtonGroup control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The [EventArgs] instance containing the event data.</param>
+        private void ButtonGroup_CheckedButtonChanged(object sender, EventArgs e)
+        {
+            if (CheckNewProject.Checked)
+            {
+                StageRecent.Visible = false;
+                StageNewProject.Visible = true;
+                StageNewProject.BringToFront();
+            }
+            else if (CheckRecent.Checked)
+            {
+                StageNewProject.Visible = false;
+                StageRecent.Visible = true;
+                StageRecent.BringToFront();
+            }
         }
         #endregion
 

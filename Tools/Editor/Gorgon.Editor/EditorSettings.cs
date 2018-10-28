@@ -24,7 +24,13 @@
 // 
 #endregion
 
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Text;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 using DX = SharpDX;
 
 namespace Gorgon.Editor
@@ -71,12 +77,30 @@ namespace Gorgon.Editor
         }
 
         /// <summary>
-        /// Property to set or return the last window state.
+        /// Property to set or return the previous project working directory.
         /// </summary>
-        public FormWindowState WindowState
+        public string LastProjectWorkingDirectory
         {
             get;
             set;
-        } = FormWindowState.Maximized;
+        }
+
+        /// <summary>
+        /// Property to set or return the last window state.
+        /// </summary>
+        public int WindowState
+        {
+            get;
+            set;
+        } = (int)FormWindowState.Maximized;
+
+        /// <summary>
+        /// Property to return the list of recent file items.
+        /// </summary>
+        public List<RecentItem> RecentFiles
+        {
+            get;
+            private set;
+        } = new List<RecentItem>();
     }
 }

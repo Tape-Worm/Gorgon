@@ -118,13 +118,18 @@ namespace Gorgon.Editor.ViewModels
             {
                 GPUName = _graphicsContext.Graphics.VideoAdapter.Name
             };
+            var recentFilesVm = new RecentVm();
+
             var mainVm = new Main();
-
+                        
             newProjectVm.Initialize(new StageNewVmParameters(workspace, this));
+            recentFilesVm.Initialize(new RecentVmParameters(this));
 
-            mainVm.Initialize(new MainParameters(newProjectVm, 
-                                                this, 
-                                                new EditorFileOpenDialogService(Settings, FileSystemProviders)));
+            mainVm.Initialize(new MainParameters(newProjectVm,
+                                                recentFilesVm,
+                                                this,
+                                                new EditorFileOpenDialogService(Settings, FileSystemProviders),
+                                                new EditorFileSaveDialogService(Settings, FileSystemProviders)));
 
             return mainVm;
         }

@@ -44,27 +44,43 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the dialog for opening projects.
+        /// Property to return the recent files view model.
         /// </summary>
-        public IEditorFileDialogService OpenDialog
+        public IRecentVm RecentFiles
         {
             get;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MainParameters"/> class.
+        /// Property to return the dialog for opening projects.
         /// </summary>
+        public IEditorFileOpenDialogService OpenDialog
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the dialog for saving projects.
+        /// </summary>
+        public IEditorFileSaveAsDialogService SaveDialog
+        {
+            get;
+        }
+
+        /// <summary>Initializes a new instance of the MainParameters class.</summary>
         /// <param name="newProject">The new project view model.</param>
+        /// <param name="recent">The recent files view model.</param>
         /// <param name="viewModelFactory">The view model factory for creating view models.</param>
         /// <param name="openDialog">A dialog service used for opening files.</param>
-        /// <param name="messageDisplay">The message display service to use.</param>
-        /// <param name="busyService">The busy state service to use.</param>
+        /// <param name="saveDialog">A dialog service used for saving files.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public MainParameters(IStageNewVm newProject, ViewModelFactory viewModelFactory, IEditorFileDialogService openDialog)
+        public MainParameters(IStageNewVm newProject, IRecentVm recent, ViewModelFactory viewModelFactory, IEditorFileOpenDialogService openDialog, IEditorFileSaveAsDialogService saveDialog)
             : base(viewModelFactory)
-        {
+        {            
             OpenDialog = openDialog ?? throw new ArgumentNullException(nameof(openDialog));
+            SaveDialog = saveDialog ?? throw new ArgumentNullException(nameof(saveDialog));
             NewProject = newProject ?? throw new ArgumentNullException(nameof(newProject));
+            RecentFiles = recent ?? throw new ArgumentNullException(nameof(recent));
         }
     }
 }

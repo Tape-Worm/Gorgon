@@ -80,11 +80,21 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the command to execute when the project should be created.
+        /// Property to set or return the currently active project.
         /// </summary>
-        IEditorAsyncCommand<ProjectCreateArgs> CreateProjectCommand
+        IProjectVm CurrentProject
         {
             get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the command to execute when the project should be created.
+        /// </summary>
+        IEditorCommand<object> CreateProjectCommand
+        {
+            get;
+            set;
         }
         #endregion
     }

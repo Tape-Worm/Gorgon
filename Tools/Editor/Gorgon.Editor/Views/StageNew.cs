@@ -40,13 +40,6 @@ namespace Gorgon.Editor.Views
     internal partial class StageNew
         : EditorBaseControl, IDataContext<IStageNewVm>
     {
-        #region Events.
-        /// <summary>
-        /// Event triggered when a project has been created.
-        /// </summary>
-        public event EventHandler<ProjectCreateArgs> ProjectCreated;
-        #endregion
-
         #region Properties.
         /// <summary>
         /// Property to return the data context assigned to this view.
@@ -65,24 +58,14 @@ namespace Gorgon.Editor.Views
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private async void ButtonCreate_Click(object sender, EventArgs e)
+        private void ButtonCreate_Click(object sender, EventArgs e)
         {
-            if (DataContext?.CreateProjectCommand == null)
+            if ((DataContext?.CreateProjectCommand == null) || (!DataContext.CreateProjectCommand.CanExecute(null)))
             {
                 return;
             }
 
-            var args = new ProjectCreateArgs();
-
-            if (!DataContext.CreateProjectCommand.CanExecute(args))
-            {
-                return;
-            }
-
-            await DataContext.CreateProjectCommand.ExecuteAsync(args);
-
-            EventHandler<ProjectCreateArgs> handler = ProjectCreated;
-            handler?.Invoke(this, args);
+            DataContext.CreateProjectCommand.Execute(null);
         }
 
         /// <summary>

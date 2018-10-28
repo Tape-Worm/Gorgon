@@ -26,12 +26,15 @@
 
 using System;
 using System.ComponentModel;
+using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
+using DX = SharpDX;
 using ComponentFactory.Krypton.Toolkit;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.ViewModels;
+using Gorgon.Editor.Views;
 using Gorgon.Timing;
 
 namespace Gorgon.Editor
@@ -42,6 +45,27 @@ namespace Gorgon.Editor
     internal partial class FormMain 
         : KryptonForm, IDataContext<IMain>
     {
+        #region Enumerations.
+        /// <summary>
+        /// States for the closing handler.
+        /// </summary>
+        private enum CloseStates
+        {
+            /// <summary>
+            /// The application is not closing yet.
+            /// </summary>
+            NotClosing = 0,
+            /// <summary>
+            /// The application is currently closing.
+            /// </summary>
+            Closing = 1,
+            /// <summary>
+            /// The application is closed.
+            /// </summary>
+            Closed = 2
+        }
+        #endregion
+
         #region Variables.
         // The current action to use when cancelling an operation in progress.
         private Action _progressCancelAction;
@@ -51,6 +75,8 @@ namespace Gorgon.Editor
         private SynchronizationContext _syncContext;
         // The context for a clipboard handler object.
         private IClipboardHandler _clipboardContext;
+        // The flag to indicate that the application is already closing.
+        private CloseStates _closeFlag;
         #endregion
 
         #region Properties.
@@ -232,6 +258,19 @@ namespace Gorgon.Editor
             }            
         }
 
+        /// <summary>Handles the OpenClicked event of the StageLive control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The [EventArgs] instance containing the event data.</param>
+        private void StageLive_OpenClicked(object sender, EventArgs e)
+        {
+            if ((DataContext?.OpenProjectCommand == null) || (!DataContext.OpenProjectCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            DataContext.OpenProjectCommand.Execute(null);
+        }
+
         /// <summary>
         /// Handles the OpenClicked event of the StageLauncher control.
         /// </summary>
@@ -267,7 +306,7 @@ namespace Gorgon.Editor
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void PanelProject_RenameBegin(object sender, EventArgs e) =>ButtonFileSystemRename.Enabled = false;
+        private void PanelProject_RenameBegin(object sender, EventArgs e) => ButtonFileSystemRename.Enabled = false;
 
         /// <summary>
         /// Handles the RenameEnd event of the PanelProject control.
@@ -284,6 +323,31 @@ namespace Gorgon.Editor
         private void StageLive_BackClicked(object sender, EventArgs e) => NavigateToProjectView(DataContext);
 
         /// <summary>
+        /// Handles the Save event of the StageLive control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="SaveEventArgs" /> instance containing the event data.</param>
+        private void StageLive_Save(object sender, SaveEventArgs e)
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            var args = new SaveProjectArgs(e.SaveAs, DataContext.CurrentProject);
+
+            if ((DataContext?.SaveProjectCommand == null) || (!DataContext.SaveProjectCommand.CanExecute(args)))
+            {
+                NavigateToProjectView(DataContext);
+                return;
+            }
+
+            DataContext.SaveProjectCommand.Execute(args);
+
+            NavigateToProjectView(DataContext);
+        }        
+
+        /// <summary>
         /// Handles the AppButtonMenuOpening event of the RibbonMain control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -292,22 +356,6 @@ namespace Gorgon.Editor
         {
             NavigateToStagingView();
             e.Cancel = true;
-        }
-
-        /// <summary>
-        /// Function called when a project has been created.
-        /// </summary>
-        /// <param name="sender">The sender of the event.</param>
-        /// <param name="e">The event arguments.</param>
-        private void StageNewProject_ProjectCreated(object sender, ProjectCreateArgs e)
-        {
-            if ((DataContext?.AssignProjectCommand == null)
-                || (!DataContext.AssignProjectCommand.CanExecute(e.Project)))
-            {
-                return;
-            }
-
-            DataContext.AssignProjectCommand.Execute(e.Project);
         }
 
         /// <summary>
@@ -385,7 +433,7 @@ namespace Gorgon.Editor
             PanelWorkSpace.BringToFront();
             KeepWaitPanelOnTop();
 
-            if (PanelProject.DataContext == null)
+            if (PanelProject.DataContext != dataContext?.CurrentProject)
             {
                 PanelProject.SetDataContext(dataContext?.CurrentProject);
             }
@@ -401,6 +449,20 @@ namespace Gorgon.Editor
         /// </summary>
         private void NavigateToStagingView()
         {
+            if (DataContext?.SaveProjectCommand != null)
+            {
+                var saveAsArgs = new SaveProjectArgs(true, DataContext.CurrentProject);
+                var saveArgs = new SaveProjectArgs(false, DataContext.CurrentProject);
+                StageLive.CanSaveAs = DataContext.SaveProjectCommand.CanExecute(saveAsArgs);
+                StageLive.CanSave = DataContext.SaveProjectCommand.CanExecute(saveArgs);                
+            }
+            else
+            {
+                StageLive.CanSave = StageLive.CanSaveAs = false;
+            }
+
+            StageLive.CanOpen = (DataContext.OpenProjectCommand != null) && (DataContext.OpenProjectCommand.CanExecute(null));
+
             StageLive.Visible = true;
             StageLauncher.Visible = false;
             _clipboardContext = null;
@@ -461,6 +523,8 @@ namespace Gorgon.Editor
                 ProgressScreen.ProgressTitle = e.Title ?? string.Empty;
                 ProgressScreen.ProgressMessage = e.Message ?? string.Empty;
                 ProgressScreen.CurrentValue = e.PercentageComplete;
+                ProgressScreen.AllowCancellation = e.CancelAction != null;
+                _progressCancelAction = args.CancelAction;
 
                 bool isMarquee = ProgressScreen.MeterStyle == ProgressBarStyle.Marquee;
 
@@ -476,8 +540,7 @@ namespace Gorgon.Editor
                     DataContext_ProgressDeactivated(this, EventArgs.Empty);
                 }
 
-                _progressTimer = GorgonTimerQpc.SupportsQpc() ? (IGorgonTimer)new GorgonTimerQpc() : new GorgonTimerMultimedia();
-                _progressCancelAction = e.CancelAction;
+                _progressTimer = GorgonTimerQpc.SupportsQpc() ? (IGorgonTimer)new GorgonTimerQpc() : new GorgonTimerMultimedia();                
                 ProgressScreen.OperationCancelled += ProgressScreen_OperationCancelled;
                 ProgressScreen.MeterStyle = e.IsMarquee ? ProgressBarStyle.Marquee : ProgressBarStyle.Continuous;
                 ProgressScreen.Visible = true;
@@ -546,6 +609,9 @@ namespace Gorgon.Editor
                     {
                         DataContext.CurrentProject.FileExplorer.PropertyChanged -= FileExplorer_PropertyChanged;
                     }
+
+                    // Unload this view model since we're about to replace it.
+                    PanelProject.SetDataContext(null);
                     break;
             }
         }
@@ -817,23 +883,83 @@ namespace Gorgon.Editor
 
             _clipboardContext.Copy();
         }
-
+        
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.</summary>
         /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data. </param>
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
 
-            DataContext?.OnLoad();
+            if (DataContext == null)
+            {
+                return;
+            }
+            
+            DataContext.OnLoad();
+
+            StageLauncher.CanOpen = (DataContext.OpenProjectCommand != null) && (DataContext.OpenProjectCommand.CanExecute(null));
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.</summary>
         /// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs" /> that contains the event data. </param>
-        protected override void OnFormClosing(FormClosingEventArgs e)
+        protected override async void OnFormClosing(FormClosingEventArgs e)
         {
             base.OnFormClosing(e);
 
-            DataContext?.OnUnload();
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            switch (_closeFlag)
+            {
+                case CloseStates.Closing:
+                    e.Cancel = true;
+                    return;
+                case CloseStates.NotClosing:
+
+                    _closeFlag = CloseStates.Closing;
+                    e.Cancel = true;
+
+                    DX.Rectangle windowDimensions;
+                    int windowState = (int)FormWindowState.Normal;
+
+                    switch (WindowState)
+                    {
+                        case FormWindowState.Maximized:
+                            windowDimensions = new DX.Rectangle(Location.X, Location.Y, Size.Width, Size.Height);
+                            windowState = (int)FormWindowState.Maximized;
+                            break;
+                        default:
+                            windowDimensions = new DX.Rectangle(RestoreBounds.X, RestoreBounds.Y, RestoreBounds.Width, RestoreBounds.Height);
+                            break;
+                    }
+
+                    var args = new AppCloseArgs(windowDimensions, windowState);
+
+                    // If we don't have anything to handle the shut down, then just shut it all down.
+                    if ((DataContext.AppClosingAsyncCommand == null) || (!DataContext.AppClosingAsyncCommand.CanExecute(args)))
+                    {
+                        _closeFlag = CloseStates.NotClosing;
+                        e.Cancel = false;
+                        return;
+                    }
+
+                    await DataContext.AppClosingAsyncCommand.ExecuteAsync(args);
+
+                    if (args.Cancel)
+                    {
+                        _closeFlag = CloseStates.NotClosing;
+                        return;
+                    }
+                                        
+                    _closeFlag = CloseStates.Closed;                    
+                    Close();
+                    break;
+                default:
+                    e.Cancel = false;
+                    break;
+            }
         }
 
         /// <summary>
@@ -848,6 +974,9 @@ namespace Gorgon.Editor
 
                 // Assign the data context to the new view.
                 StageLauncher.StageNewProject.SetDataContext(dataContext.NewProject);
+                StageLive.StageNewProject.SetDataContext(dataContext.NewProject);
+                StageLauncher.StageRecent.SetDataContext(dataContext.RecentFiles);
+                StageLive.StageRecent.SetDataContext(dataContext.RecentFiles);
 
                 InitializeFromDataContext(dataContext);
                 DataContext = dataContext;
@@ -896,10 +1025,13 @@ namespace Gorgon.Editor
         {
             InitializeComponent();
 
-            StageLauncher.StageNewProject.ProjectCreated += StageNewProject_ProjectCreated;
-            _syncContext = SynchronizationContext.Current;
-            RibbonMerger = new RibbonMerger(RibbonMain);
-            this.RibbonMain.AllowFormIntegrate = false;
+            if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
+            {
+                RibbonMerger = new RibbonMerger(RibbonMain);
+            }
+
+            _syncContext = SynchronizationContext.Current;            
+            RibbonMain.AllowFormIntegrate = false;
         }
         #endregion
     }

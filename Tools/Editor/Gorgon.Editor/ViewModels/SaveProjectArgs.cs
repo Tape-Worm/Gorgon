@@ -20,46 +20,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: September 5, 2018 12:57:32 PM
+// Created: October 15, 2018 3:00:13 PM
 // 
 #endregion
 
-using System.Collections.Generic;
-using System.IO;
-using Gorgon.Editor.ProjectData;
+using System.ComponentModel;
 
-namespace Gorgon.Editor.Metadata
+namespace Gorgon.Editor.ViewModels
 {
     /// <summary>
-    /// The metadata access interface.
+    /// Arguments to pass to the <see cref="IMain.SaveProjectCommand"/>.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// Plug in writers can use this to create, remove and retrieve metadata items for their plug ins, plus handle standard meta data items.
-    /// </para>
-    /// </remarks>
-    public interface IMetadataProvider
+    internal class SaveProjectArgs
+        : CancelEventArgs
     {
         /// <summary>
-        /// Property to return the file pointing to the metadata database.
+        /// Property to return whether to use the Save As functionality to save with a new file name, and/or file type.
         /// </summary>
-        FileInfo MetadataFile
+        public bool SaveAs
         {
             get;
         }
 
         /// <summary>
-        /// Function to update project data and metadata.
+        /// Property to return the currently active project.
         /// </summary>
-        /// <param name="project">The project data to send.</param>
-        /// <param name="title">The title of the project.</param>
-        /// <param name="writerType">The type of writer used to write the project data.</param>
-        void UpdateProjectData(string title, string writerType, IProject project);
+        public IProjectVm CurrentProject
+        {
+            get;
+        }
 
         /// <summary>
-        /// Function to retrieve the list of files included in this project.
+        /// Initializes a new instance of the <see cref="SaveProjectArgs"/> class.
         /// </summary>
-        /// <returns>A list of included paths.</returns>
-        IList<IncludedFileSystemPathMetadata> GetIncludedPaths();
+        /// <param name="saveAs"><b>true</b> to save with a new file name and/or file type, <b>false</b> to use the current file type.</param>
+        /// <param name="currentProject">The currently active project.</param>
+        public SaveProjectArgs(bool saveAs, IProjectVm currentProject)
+        {
+            SaveAs = saveAs;
+            CurrentProject = currentProject;
+        }
     }
 }

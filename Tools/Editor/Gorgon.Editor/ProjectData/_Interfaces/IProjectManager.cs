@@ -24,8 +24,11 @@
 // 
 #endregion
 
+using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.ProjectData
@@ -78,10 +81,27 @@ namespace Gorgon.Editor.ProjectData
         Task<(IProject project, bool hasMetadata, bool isUpgraded)> OpenProjectAsync(string path, DirectoryInfo workspace);
 
         /// <summary>
+        /// Function to save a project to a file on the disk.
+        /// </summary>
+        /// <param name="project">The project to save.</param>
+        /// <param name="path">The path to the project file.</param>
+        /// <param name="writer">The writer plug in used to write the file data.</param>
+        /// <param name="progressCallback">The callback method that reports the saving progress to the UI.</param>
+        /// <param name="cancelToken">The token used for cancellation of the operation.</param>
+        void SaveProject(IProject project, string path, FileWriterPlugin writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken);
+
+        /// <summary>
         /// Function to close the project and clean up its working data.
         /// </summary>
         /// <param name="project">The project to close.</param>        
         void CloseProject(IProject project);
+
+        /// <summary>
+        /// Function to purge old workspace directories if they were left over (e.g. debug break, crash, etc...)
+        /// </summary>
+        /// <param name="prevDirectory">The previously used directory path for the project.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="prevDirectory"/> parameter is <b>null</b>.</exception>
+        void PurgeStaleDirectories(DirectoryInfo prevDirectory);
         #endregion
     }
 }

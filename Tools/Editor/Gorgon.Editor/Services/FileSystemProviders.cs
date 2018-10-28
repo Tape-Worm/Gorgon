@@ -28,9 +28,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
+using Gorgon.Core;
 using Gorgon.Editor.Plugins;
-using Gorgon.Editor.Properties;
 using Gorgon.IO;
 using Gorgon.IO.Providers;
 
@@ -88,12 +87,36 @@ namespace Gorgon.Editor.Services
         }
 
         /// <summary>
+        /// Function to return the <see cref="FileWriterPlugin"/> by its plugin name.
+        /// </summary>
+        /// <param name="writerName">The name of the writer plug in to locate.</param>        
+        /// <returns>The <see cref="FileWriterPlugin"/>, or <b>null</b> if no writer could be found.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="writerName"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="writerName"/> parameter is empty.</exception>
+        public FileWriterPlugin GetWriterByName(string writerName)
+        {
+            if (writerName == null)
+            {
+                throw new ArgumentNullException(nameof(writerName));
+            }
+
+            if (string.IsNullOrWhiteSpace(writerName))
+            {
+                throw new ArgumentEmptyException(nameof(writerName));
+            }
+
+            _writers.TryGetValue(writerName, out FileWriterPlugin result);
+
+            return result;
+        }
+
+        /// <summary>
         /// Function to find the most suitable provider for the file specified in the path.
         /// </summary>
         /// <param name="file">The file to evaluate.</param>
         /// <returns>The best suitable provider, or <b>null</b> if none could be located.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> parameter is <b>null</b>.</exception>
-        public IGorgonFileSystemProvider GetBestProvider(FileInfo file)
+        public IGorgonFileSystemProvider GetBestReader(FileInfo file)
         {
             if (file == null)
             {
@@ -121,19 +144,49 @@ namespace Gorgon.Editor.Services
         }
 
         /// <summary>
-        /// Function to build a file system reader filter string for file dialogs.
+        /// Function to retrieve the available file extensions for all writers.
         /// </summary>
-        /// <returns>The string containing the file dialog filter.</returns>
-        public string GetReaderDialogFilterString()
+        /// <returns>A list of all file extensions available for all writers.</returns>
+        public IReadOnlyList<(string desc, FileWriterPlugin plugin, IReadOnlyList<GorgonFileExtension> extensions)> GetWriterFileExtensions()
         {
-            var result = new StringBuilder();
-            var filter = new StringBuilder();
-            var allFilter = new StringBuilder();
+            var result = new Dictionary<string, (FileWriterPlugin, List<GorgonFileExtension>)>(StringComparer.CurrentCultureIgnoreCase);
+
+            foreach (KeyValuePair<string, FileWriterPlugin> provider in _writers.OrderBy(item => item.Value.Description))
+            {
+                if (provider.Value.FileExtensions.Count == 0)
+                {
+                    continue;
+                }
+
+                string description = provider.Value.FileExtensions.FirstOrDefault(item => !string.IsNullOrWhiteSpace(item.Description)).Description;
+
+                if (string.IsNullOrWhiteSpace(description))
+                {
+                    continue;
+                }
+
+
+                if (!result.TryGetValue(description, out (FileWriterPlugin plugin, List<GorgonFileExtension> extensions) extensions))
+                {
+                    result[description] = extensions = (provider.Value, new List<GorgonFileExtension>());
+                }
+
+                extensions.extensions.AddRange(provider.Value.FileExtensions.OrderBy(item => item.Extension));
+            }
+
+            return result.Where(item => item.Value.Item2.Count > 0).Select(item => (item.Key, item.Value.Item1, (IReadOnlyList<GorgonFileExtension>)item.Value.Item2)).ToArray();
+        }
+
+        /// <summary>
+        /// Function to retrieve the available file extensions for all readers.
+        /// </summary>
+        /// <returns>A list of all file extensions available for all readers.</returns>
+        public IReadOnlyList<(string desc, IReadOnlyList<GorgonFileExtension> extensions)> GetReaderFileExtensions()
+        {
+            var result = new Dictionary<string, List<GorgonFileExtension>>(StringComparer.CurrentCultureIgnoreCase);
 
             foreach (KeyValuePair<string, IGorgonFileSystemProvider> provider in _readers.OrderBy(item => item.Value.Description))
             {
-                filter.Length = 0;
-
                 if (provider.Value.PreferredExtensions.Count == 0)
                 {
                     continue;
@@ -146,55 +199,15 @@ namespace Gorgon.Editor.Services
                     continue;
                 }
 
-                if (result.Length > 0)
+                if (!result.TryGetValue(description, out List<GorgonFileExtension> extensions))
                 {
-                    result.Append("|");
+                    result[description] = extensions = new List<GorgonFileExtension>();
                 }
 
-                result.Append(description);
-
-                foreach (GorgonFileExtension extension in provider.Value.PreferredExtensions)
-                {
-                    if (allFilter.Length > 0)
-                    {
-                        allFilter.Append(";");
-                    }
-
-                    if (filter.Length > 0)
-                    {
-                        filter.Append(";");
-                    }
-
-                    filter.Append("*.");
-                    filter.Append(extension.Extension);
-                    allFilter.Append("*.");
-                    allFilter.Append(extension.Extension);
-                }
-
-                result.Append(" (");
-                result.Append(filter);
-                result.Append(")|");
-                result.Append(filter);
+                extensions.AddRange(provider.Value.PreferredExtensions.OrderBy(item => item.Extension));
             }
 
-            if (allFilter.Length > 0)
-            {
-                if (result.Length > 0)
-                {
-                    result.Append("|");
-                }
-
-                result.Append(string.Format(Resources.GOREDIT_TEXT_SUPPORTED_FILES, allFilter));
-            }
-
-            if (result.Length > 0)
-            {
-                result.Append("|");
-            }
-            
-            result.Append(Resources.GOREDIT_TEXT_ALL_FILES);
-
-            return result.ToString();
+            return result.Where(item => item.Value.Count > 0).Select(item => (item.Key, (IReadOnlyList<GorgonFileExtension>)item.Value)).ToArray();
         }
 
         /// <summary>
