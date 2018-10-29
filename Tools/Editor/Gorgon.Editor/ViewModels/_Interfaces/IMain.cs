@@ -24,12 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ViewModels
@@ -62,6 +56,14 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Property to return the recent files view model for the recent files child view.
+        /// </summary>
+        IRecentVm RecentFiles
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the view model for the current project.
         /// </summary>
         IProjectVm CurrentProject
@@ -78,27 +80,31 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the command used to assign a project to the application.
-        /// </summary>
-        IEditorCommand<IProject> AssignProjectCommand
-        {
-            get;
-        }
-
-        /// <summary>
         /// Property to return the command used to open a project.
         /// </summary>
         IEditorCommand<object> OpenProjectCommand
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the command used to save a project.
+        /// </summary>
+        IEditorCommand<SaveProjectArgs> SaveProjectCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to query before closing the application.
+        /// </summary>
+        IEditorAsyncCommand<AppCloseArgs> AppClosingAsyncCommand
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
-
-        #endregion
-
-        #region Constructor/Finalizer.
 
         #endregion
     }

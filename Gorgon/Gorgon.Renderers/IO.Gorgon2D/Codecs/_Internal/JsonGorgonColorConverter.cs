@@ -27,7 +27,6 @@
 using System;
 using Gorgon.Graphics;
 using Newtonsoft.Json;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {

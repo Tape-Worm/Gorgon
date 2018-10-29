@@ -24,16 +24,10 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gorgon.Editor.Properties;
 using Gorgon.UI;
-using Microsoft.Win32;
 
 namespace Gorgon.Editor.Services
 {
@@ -52,6 +46,7 @@ namespace Gorgon.Editor.Services
             get;
             set;
         }
+
         /// <summary>
         /// Property to set or return the initial directory.
         /// </summary>        
@@ -63,9 +58,17 @@ namespace Gorgon.Editor.Services
 
         /// <summary>
         /// Property to set or return the title for the dialog.
-        /// </summary>
-        /// <value>The dialog title.</value>
+        /// </summary>        
         public string DialogTitle
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the initial file path to use.
+        /// </summary>        
+        public string InitialFilePath
         {
             get;
             set;
@@ -110,7 +113,8 @@ namespace Gorgon.Editor.Services
                 CheckPathExists = true,
                 Filter = FileFilter ?? string.Empty,
                 InitialDirectory = InitialDirectory?.FullName,
-                RestoreDirectory = true
+                RestoreDirectory = true,
+                FileName = InitialFilePath
             };
         }
 
@@ -133,30 +137,6 @@ namespace Gorgon.Editor.Services
                 dialog?.Dispose();
             }
         }
-
-        /// <summary>
-        /// Function to retrieve multiple file names.
-        /// </summary>
-        /// <returns>The list of file paths, or <b>null</b> if cancelled.</returns>
-        public IReadOnlyList<string> GetFilenames()
-        {
-            OpenFileDialog dialog = null;
-
-            try
-            {
-                dialog = GetDialog(false);
-
-                return dialog.ShowDialog(GetParentForm()) == DialogResult.Cancel ? null : dialog.FileNames;
-            }
-            finally
-            {
-                dialog?.Dispose();
-            }
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-
         #endregion
     }
 }

@@ -24,9 +24,9 @@
 // 
 #endregion
 
-using System;
 using System.Collections.Generic;
 using System.IO;
+using Gorgon.Editor.ProjectData;
 
 namespace Gorgon.Editor.Metadata
 {
@@ -49,10 +49,12 @@ namespace Gorgon.Editor.Metadata
         }
 
         /// <summary>
-        /// Function to update the included paths.
+        /// Function to update project data and metadata.
         /// </summary>
-        /// <param name="exclusions">The paths to update.</param>
-        void UpdateIncludedPaths(IEnumerable<IncludedFileSystemPathMetadata> exclusions);
+        /// <param name="project">The project data to send.</param>
+        /// <param name="title">The title of the project.</param>
+        /// <param name="writerType">The type of writer used to write the project data.</param>
+        void UpdateProjectData(string title, string writerType, IProject project);
 
         /// <summary>
         /// Function to retrieve the list of files included in this project.

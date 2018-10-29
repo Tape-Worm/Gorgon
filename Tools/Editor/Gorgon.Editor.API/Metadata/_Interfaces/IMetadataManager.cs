@@ -24,12 +24,8 @@
 // 
 #endregion
 
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Gorgon.Editor.Metadata
 {
@@ -46,7 +42,9 @@ namespace Gorgon.Editor.Metadata
         /// <summary>
         /// Function to save the metadata to the metadata store in the project.
         /// </summary>
-        void Save();
+        /// <param name="title">The title of the project.</param>
+        /// <param name="writerType">The type of writer used to write the project data.</param>
+        void Save(string title, string writerType);
 
         /// <summary>
         /// Function to rename items in meta data.

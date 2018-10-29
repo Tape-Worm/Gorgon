@@ -26,7 +26,6 @@
 
 using System;
 using System.Collections.ObjectModel;
-using System.IO;
 using Gorgon.Core;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Services;
@@ -90,17 +89,17 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Initializes a new instance of the <see cref="FileExplorerNodeParameters"/> class.
         /// </summary>
-        /// <param name="projectData">The project data for the current project.</param>
         /// <param name="name">The name of the node.</param>
         /// <param name="physicalPath">The physical file system object that the node represents.</param>
+        /// <param name="project">The project data.</param>
         /// <param name="viewModelFactory">The view model factory for creating view models.</param>
         /// <param name="fileSystemService">The file system service used to manipulate the underlying file system.</param>
-        /// <param name="messageDisplay">The message display service to use.</param>
-        /// <param name="busyService">The busy state service to use.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public FileExplorerNodeParameters(IProject projectData, string name, string physicalPath, ViewModelFactory viewModelFactory, IFileSystemService fileSystemService, IMessageDisplayService messageDisplay, IBusyStateService busyService)
-            : base(viewModelFactory, messageDisplay, busyService)
+        public FileExplorerNodeParameters(string name, string physicalPath, IProject project, ViewModelFactory viewModelFactory, IFileSystemService fileSystemService)
+            : base(viewModelFactory)
         {
+            Project = project ?? throw new ArgumentNullException(nameof(project));
+
             Name = name ?? throw new ArgumentNullException(nameof(name));
 
             if (string.IsNullOrWhiteSpace(Name))
@@ -108,7 +107,6 @@ namespace Gorgon.Editor.ViewModels
                 throw new ArgumentEmptyException(nameof(name));
             }
 
-            Project = projectData ?? throw new ArgumentNullException(nameof(projectData));            
             PhysicalPath = physicalPath ?? throw new ArgumentNullException(nameof(physicalPath));
 
             if (string.IsNullOrWhiteSpace(PhysicalPath))

@@ -29,14 +29,13 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Properties;
-using Gorgon.Timing;
 
 namespace Gorgon.Editor
 {
-	/// <summary>
-	/// Splash screen form.
-	/// </summary>
-	partial class FormSplash 
+    /// <summary>
+    /// Splash screen form.
+    /// </summary>
+    partial class FormSplash 
 		: Form
 	{
 		#region Variables.

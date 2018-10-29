@@ -71,11 +71,15 @@ namespace Gorgon.Editor.Views
         // The context handler for clipboard operations.
         private IClipboardHandler _clipboardContext;
         // A drag and drop handler interface.
-        private IDragDropHandler<IFileExplorerNodeDragData> _dragDropHandler;
+        private IDragDropHandler<IFileExplorerNodeDragData> _nodeDragDropHandler;
+        // A drag and drop handler interface.
+        private IDragDropHandler<IExplorerFilesDragData> _explorerDragDropHandler;
         // The drag hilight background color.
         private Color _dragBackColor;
         // The drag hilight foreground color.
         private Color _dragForeColor;
+        // The drag data for dropping files from explorer.
+        private ExplorerFileDragData _explorerDragData;
         #endregion
 
         #region Properties.
@@ -182,14 +186,14 @@ namespace Gorgon.Editor.Views
         /// <summary>
         /// Function to add a new node to the tree.
         /// </summary>
-        /// <param name="parent">The parent of the new node.</param>
         /// <param name="newNode">The new node to add.</param>
-        private void AddNode(IFileExplorerNodeVm parent, IFileExplorerNodeVm newNode)
+        private void AddNode(IFileExplorerNodeVm newNode)
         {
             // Locate the tree node that has our parent node.
             KryptonTreeNode parentTreeNode = null;
+            IFileExplorerNodeVm parent = newNode.Parent ?? DataContext.RootNode;
 
-            if (parent != null)
+            if (parent != DataContext.RootNode)
             {
                 _revNodeLinks.TryGetValue(parent, out parentTreeNode);
             }
@@ -241,14 +245,14 @@ namespace Gorgon.Editor.Views
             // Find the owner of the collection.
             IFileExplorerNodeVm node = _revNodeLinks.FirstOrDefault(item => item.Key.Children == nodes).Key;
 
-            if (node == null)
+            if ((node == null) && (nodes != DataContext.RootNode.Children))
             {
                 return;
             }
 
             TreeNodeCollection nodeList = null;
 
-            if (_revNodeLinks.TryGetValue(node, out KryptonTreeNode treeNode))
+            if ((node != null) && (_revNodeLinks.TryGetValue(node, out KryptonTreeNode treeNode)))
             {
                 SelectNode(treeNode);
 
@@ -283,7 +287,7 @@ namespace Gorgon.Editor.Views
             switch(e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    AddNode(DataContext.SelectedNode, e.NewItems.OfType<IFileExplorerNodeVm>().First());
+                    AddNode(e.NewItems.OfType<IFileExplorerNodeVm>().First());
                     break;
                 case NotifyCollectionChangedAction.Remove:
                     RemoveNode(e.OldItems.OfType<IFileExplorerNodeVm>().First());
@@ -330,6 +334,74 @@ namespace Gorgon.Editor.Views
                     }                    
                     break;
             }
+        }
+
+        /// <summary>
+        /// Handles the Click event of the MenuItemExportTo control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void MenuItemExportTo_Click(object sender, EventArgs e)
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            IFileExplorerNodeVm selectedNode = null;
+
+            if (TreeFileSystem.SelectedNode is KryptonTreeNode treeNode)
+            {
+                if (!_nodeLinks.TryGetValue(treeNode, out selectedNode))
+                {
+                    return;
+                }
+            }
+            else
+            {
+                selectedNode = DataContext.RootNode;
+            }
+
+            if ((DataContext?.ExportNodeToCommand == null)
+                || (!DataContext.ExportNodeToCommand.CanExecute(selectedNode)))
+            {
+                return;
+            }
+
+            DataContext.ExportNodeToCommand.Execute(selectedNode);
+
+        }
+
+        /// <summary>
+        /// Handles the Click event of the MenuItemIncludeAll control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void MenuItemIncludeAll_Click(object sender, EventArgs e)
+        {
+            if ((DataContext?.IncludeExcludeAllCommand == null)
+                || (!DataContext.IncludeExcludeAllCommand.CanExecute(true)))
+            {
+                return;
+            }
+
+            DataContext.IncludeExcludeAllCommand.Execute(true);
+        }
+
+        /// <summary>
+        /// Handles the Click event of the MenuItemExcludeAll control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void MenuItemExcludeAll_Click(object sender, EventArgs e)
+        {
+            if ((DataContext?.IncludeExcludeAllCommand == null)
+                || (!DataContext.IncludeExcludeAllCommand.CanExecute(false)))
+            {
+                return;
+            }
+
+            DataContext.IncludeExcludeAllCommand.Execute(false);
         }
 
         /// <summary>
@@ -525,15 +597,21 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
+            MenuItemExportTo.Enabled = dataContext.RootNode.Children.Count > 0;
+
             if (dataContext.SelectedNode == null)
             {
-                MenuSepEdit.Available = _clipboardContext?.CanPaste() ?? false;
+                MenuSepEdit.Available = true;
+                MenuItemIncludeAll.Available = true;
+                MenuItemIncludeAll.Enabled = dataContext.IncludeExcludeAllCommand?.CanExecute(true) ?? false;
+                MenuItemExcludeAll.Available = true;
+                MenuItemExcludeAll.Enabled = dataContext.IncludeExcludeAllCommand?.CanExecute(false) ?? false;
                 MenuItemCopy.Available = false;
                 MenuItemCut.Available = false;
-                MenuItemPaste.Available = MenuSepEdit.Visible;
-                MenuItemPaste.Enabled = MenuSepEdit.Visible;
+                MenuItemPaste.Available = _clipboardContext?.CanPaste() ?? false;
+                MenuItemPaste.Enabled = _clipboardContext?.CanPaste() ?? false;
                 MenuSepOrganize.Available = false;
-                MenuSepNew.Available = MenuSepEdit.Available;
+                MenuSepNew.Available = false;
                 MenuItemCreateDirectory.Available = true;
                 MenuItemDelete.Available = false;
                 MenuItemRename.Available = false;
@@ -541,6 +619,10 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
+            MenuItemIncludeAll.Available = false;
+            MenuItemIncludeAll.Enabled = false;
+            MenuItemExcludeAll.Available = false;
+            MenuItemExcludeAll.Enabled = false;
             MenuSepEdit.Available = (_clipboardContext != null) && ((_clipboardContext.CanPaste()) || (_clipboardContext.CanCut()) || (_clipboardContext.CanCopy()));
             MenuSepOrganize.Available = true;
             MenuItemRename.Available = true;
@@ -594,6 +676,32 @@ namespace Gorgon.Editor.Views
             ValidateMenuItems(DataContext);
         }
 
+        /// <summary>
+        /// Function to handle explorer file data.
+        /// </summary>
+        /// <param name="e">The event parameters to use.</param>
+        private void ExplorerFiles_DragDrop(DragEventArgs e)
+        {
+            if ((_explorerDragDropHandler == null) || (_explorerDragData == null))
+            {
+                return;
+            }
+
+            if (_explorerDragData.TargetTreeNode != null)
+            {
+                _explorerDragData.TargetTreeNode.BackColor = Color.Empty;
+                _explorerDragData.TargetTreeNode.ForeColor = Color.Empty;
+            }
+
+            // We're not allowed here, so just cancel the operation.
+            if (e.Effect == DragDropEffects.None)
+            {
+                return;
+            }
+
+            SelectNode(_explorerDragData.TargetTreeNode);
+            _explorerDragDropHandler.Drop(_explorerDragData);
+        }
 
         /// <summary>
         /// Handles the DragDrop event of the TreeFileSystem control.
@@ -607,8 +715,19 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            if (!(e.Data.GetData(typeof(TreeNodeDragData)) is TreeNodeDragData data))
+#pragma warning disable IDE0019 // Use pattern matching (it breaks the code)
+            var data = e.Data.GetData(typeof(TreeNodeDragData)) as TreeNodeDragData;
+#pragma warning restore IDE0019 // Use pattern matching
+
+            if ((data == null)
+                && (!e.Data.GetDataPresent(DataFormats.FileDrop)))
             {
+                return;
+            }
+
+            if (data == null)
+            {
+                ExplorerFiles_DragDrop(e);
                 return;
             }
 
@@ -633,7 +752,118 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            _dragDropHandler?.Drop(data);
+            _nodeDragDropHandler?.Drop(data);
+        }
+
+        /// <summary>
+        /// Handles the DragLeave event of the TreeFileSystem control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void TreeFileSystem_DragLeave(object sender, EventArgs e)
+        {
+            if (_explorerDragData == null)
+            {
+                return;
+            }
+
+            if (_explorerDragData.TargetTreeNode != null)
+            {
+                _explorerDragData.TargetTreeNode.BackColor = Color.Empty;
+                _explorerDragData.TargetTreeNode.ForeColor = Color.Empty;
+            }
+
+            _explorerDragData = null;
+        }
+
+        /// <summary>
+        /// Handles the DragEnter event of the TreeFileSystem control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+        private void TreeFileSystem_DragEnter(object sender, DragEventArgs e)
+        {
+            if ((!e.Data.GetDataPresent(DataFormats.FileDrop, false))
+                || (_explorerDragDropHandler == null))
+            {
+                return;
+            }
+
+            _explorerDragData = new ExplorerFileDragData(e.Data.GetData(DataFormats.FileDrop, false) as string[], DragOperation.Copy);
+
+            TreeViewHitTestInfo hitResult = TreeFileSystem.HitTest(TreeFileSystem.PointToClient(new Point(e.X, e.Y)));
+
+            var targetTreeNode = hitResult.Node as KryptonTreeNode;
+            IFileExplorerNodeVm targetNode;
+
+            if (targetTreeNode == null)
+            {
+                targetNode = DataContext.RootNode;
+            }
+            else
+            {
+                if (!_nodeLinks.TryGetValue((KryptonTreeNode)hitResult.Node, out targetNode))
+                {
+                    return;
+                }
+
+                targetTreeNode.BackColor = _dragBackColor;
+                targetTreeNode.ForeColor = _dragForeColor;
+            }
+
+            _explorerDragData.TargetNode = targetNode;
+            _explorerDragData.TargetTreeNode = targetTreeNode;
+
+            e.Effect = DragDropEffects.Copy;   
+        }
+
+        /// <summary>
+        /// Function to handle explorer file data.
+        /// </summary>
+        /// <param name="e">The event parameters to use.</param>
+        private void ExplorerFiles_DragOver(DragEventArgs e)
+        {
+            if ((_explorerDragDropHandler == null) || (_explorerDragData == null))
+            {
+                return;
+            }
+
+            if (_explorerDragData.TargetTreeNode != null)
+            {
+                _explorerDragData.TargetTreeNode.BackColor = Color.Empty;
+                _explorerDragData.TargetTreeNode.ForeColor = Color.Empty;
+            }
+
+            TreeViewHitTestInfo hitResult = TreeFileSystem.HitTest(TreeFileSystem.PointToClient(new Point(e.X, e.Y)));
+
+            var targetTreeNode = hitResult.Node as KryptonTreeNode;
+            IFileExplorerNodeVm targetNode;
+
+            if (targetTreeNode == null)
+            {
+                targetNode = DataContext.RootNode;
+            }
+            else
+            {
+                if (!_nodeLinks.TryGetValue((KryptonTreeNode)hitResult.Node, out targetNode))
+                {
+                    return;
+                }
+
+                targetTreeNode.BackColor = _dragBackColor;
+                targetTreeNode.ForeColor = _dragForeColor;
+            }
+
+            _explorerDragData.TargetTreeNode = targetTreeNode;
+            _explorerDragData.TargetNode = targetNode;
+
+            if (!_explorerDragDropHandler.CanDrop(_explorerDragData))
+            {
+                e.Effect = DragDropEffects.None;
+                return;
+            }
+
+            e.Effect = DragDropEffects.Copy;
         }
 
         /// <summary>
@@ -648,8 +878,19 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            if (!(e.Data.GetData(typeof(TreeNodeDragData)) is TreeNodeDragData data))
+#pragma warning disable IDE0019 // Use pattern matching (it breaks the code)
+            var data = e.Data.GetData(typeof(TreeNodeDragData)) as TreeNodeDragData;
+#pragma warning restore IDE0019 // Use pattern matching
+
+            if ((data == null)
+                && (!e.Data.GetDataPresent(DataFormats.FileDrop)))
             {
+                return;
+            }
+
+            if (data == null)
+            {                
+                ExplorerFiles_DragOver(e);
                 return;
             }
 
@@ -691,7 +932,7 @@ namespace Gorgon.Editor.Views
                 data.DragOperation = DragOperation.Move;
             }
 
-            if (!(_dragDropHandler?.CanDrop(data) ?? false))
+            if (!(_nodeDragDropHandler?.CanDrop(data) ?? false))
             {
                 if (data.DragOperation != (DragOperation.Copy | DragOperation.Move))
                 {
@@ -1156,6 +1397,11 @@ namespace Gorgon.Editor.Views
 
                     treeNodes.Add(treeNode);
 
+                    if (node.IsExpanded)
+                    {
+                        treeNode.Expand();
+                    }
+
                     _nodeLinks[treeNode] = node;
                     _revNodeLinks[node] = treeNode;
                 }
@@ -1172,7 +1418,8 @@ namespace Gorgon.Editor.Views
         private void ResetDataContext()
         {
             _clipboardContext = null;
-            _dragDropHandler = null;
+            _nodeDragDropHandler = null;
+            _explorerDragDropHandler = null;
 
             _nodeLinks.Clear();
             _revNodeLinks.Clear();
@@ -1254,7 +1501,8 @@ namespace Gorgon.Editor.Views
                 }
 
                 _clipboardContext = dataContext as IClipboardHandler;
-                _dragDropHandler = dataContext;
+                _nodeDragDropHandler = dataContext;
+                _explorerDragDropHandler = dataContext;
 
                 // Always remove any dummy nodes.
                 TreeFileSystem.Nodes.Clear();

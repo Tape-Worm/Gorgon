@@ -24,12 +24,8 @@
 // 
 #endregion
 
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Gorgon.Editor.Services
 {
@@ -58,6 +54,15 @@ namespace Gorgon.Editor.Services
         }
 
         /// <summary>
+        /// Property to set or return the initial file path to use.
+        /// </summary>
+        string InitialFilePath
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to set or return the title for the dialog.
         /// </summary>
         string DialogTitle
@@ -73,12 +78,6 @@ namespace Gorgon.Editor.Services
         /// </summary>
         /// <returns>The selected file path, or <b>null</b> if cancelled.</returns>
         string GetFilename();
-
-        /// <summary>
-        /// Function to retrieve multiple file names.
-        /// </summary>
-        /// <returns>The list of file paths, or <b>null</b> if cancelled.</returns>
-        IReadOnlyList<string> GetFilenames();
         #endregion
     }
 }

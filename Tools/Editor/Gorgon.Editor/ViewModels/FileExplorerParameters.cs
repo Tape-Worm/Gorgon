@@ -25,10 +25,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Services;
@@ -66,33 +62,21 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the application clipboard service to use.
-        /// </summary>
-        public IClipboardService ClipboardService
-        {
-            get;
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="FileExplorerParameters" /> class.
         /// </summary>
-        /// <param name="project">The project data.</param>
         /// <param name="fileSystemService">The file system service to use for manipulating the virtual file system.</param>
         /// <param name="metadataManager">The metadata manager to use.</param>
         /// <param name="rootNode">The root node for the file system tree.</param>
         /// <param name="viewModelFactory">The view model factory.</param>
-        /// <param name="messageDisplay">The message display service to use.</param>
-        /// <param name="busyService">The busy state service to use.</param>
-        /// <param name="clipboardService">The application clipboard service to use.</param>
+        /// <param name="project">The project data.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public FileExplorerParameters(IProject project, IFileSystemService fileSystemService, IMetadataManager metadataManager, IFileExplorerNodeVm rootNode, ViewModelFactory viewModelFactory, IMessageDisplayService messageDisplay, IBusyStateService busyService, IClipboardService clipboardService)
-            : base(viewModelFactory, messageDisplay, busyService)
+        public FileExplorerParameters(IFileSystemService fileSystemService, IMetadataManager metadataManager, IFileExplorerNodeVm rootNode, IProject project, ViewModelFactory viewModelFactory)
+            : base(viewModelFactory)
         {
             Project = project ?? throw new ArgumentNullException(nameof(project));
             FileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
             MetadataManager = metadataManager ?? throw new ArgumentNullException(nameof(metadataManager));
             RootNode = rootNode ?? throw new ArgumentNullException(nameof(rootNode));
-            ClipboardService = clipboardService ?? throw new ArgumentNullException(nameof(clipboardService));
         }
     }
 }

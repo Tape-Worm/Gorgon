@@ -24,11 +24,7 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.UI
@@ -50,6 +46,31 @@ namespace Gorgon.Editor.UI
         /// Property to return the service used to show message dialogs.
         /// </summary>
         IMessageDisplayService MessageDisplay
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the service used to select a directory.
+        /// </summary>
+        IDirectoryLocateService DirectoryLocator
+        {
+            get;
+        }
+
+
+        /// <summary>
+        /// Property to return the application clipboard service to use.
+        /// </summary>
+        IClipboardService ClipboardService
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the current project.
+        /// </summary>
+        IProject Project
         {
             get;
         }

@@ -26,13 +26,20 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.IO;
+using Newtonsoft.Json;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -54,7 +61,9 @@ namespace Gorgon.Editor.ViewModels
         // The currently active project.
         private IProjectVm _currentProject;
         // The project open dialog service.
-        private IEditorFileDialogService _openDialog;
+        private IEditorFileOpenDialogService _openDialog;
+        // The project save dialog service.
+        private IEditorFileSaveAsDialogService _saveDialog;
         // The settings for the project.
         private EditorSettings _settings;
         #endregion
@@ -64,6 +73,15 @@ namespace Gorgon.Editor.ViewModels
         /// Property to return the view model for the new project child view.
         /// </summary>
         public IStageNewVm NewProject
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the recent files view model for the recent files child view.
+        /// </summary>
+        public IRecentVm RecentFiles
         {
             get;
             private set;
@@ -120,14 +138,6 @@ namespace Gorgon.Editor.ViewModels
                            : string.Format(Resources.GOREDIT_CAPTION_FILE, _currentProject.ProjectTitle) + "*";
 
         /// <summary>
-        /// Property to return the command used to assign a project to the application.
-        /// </summary>
-        public IEditorCommand<IProject> AssignProjectCommand
-        {
-            get;
-        }
-
-        /// <summary>
         /// Property to return the current clipboard context.
         /// </summary>
         public IClipboardHandler ClipboardContext => CurrentProject?.ClipboardContext;
@@ -139,9 +149,66 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the command used to save a project.
+        /// </summary>
+        public IEditorCommand<SaveProjectArgs> SaveProjectCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to query before closing the application.
+        /// </summary>
+        public IEditorAsyncCommand<AppCloseArgs> AppClosingAsyncCommand
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to persist the settings back to the file system.
+        /// </summary>
+        private void PersistSettings()
+        {
+            StreamWriter writer = null;
+#if DEBUG
+            var settingsFile = new FileInfo(Path.Combine(Program.ApplicationUserDirectory.FullName, $"Gorgon.Editor.Settings.DEBUG.json"));
+#else
+            var settingsFile = new FileInfo(Path.Combine(Program.ApplicationUserDirectory.FullName, $"Gorgon.Editor.Settings.json"));
+#endif
+
+            try
+            {
+                writer = new StreamWriter(settingsFile.FullName, false, Encoding.UTF8);
+                writer.Write(JsonConvert.SerializeObject(_settings));
+            }
+            catch (Exception ex)
+            {
+                Debug.Print($"Error saving settings.\n{ex.Message}");
+            }
+            finally
+            {
+                writer?.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if a projects can be opened.
+        /// </summary>
+        /// <returns><b>true</b> if projects can be opened, <b>false</b> if not.</returns>
+        private bool CanOpenProjects() => _openDialog.Providers.Readers.Count > 0;
+
+        /// <summary>
+        /// Function to determine if a project can be saved.
+        /// </summary>
+        /// <param name="args">The arguments for the save command.</param>
+        /// <returns><b>true</b> if the project can be saved, <b>false</b> if not.</returns>
+        private bool CanSaveProject(SaveProjectArgs args) => (args?.CurrentProject != null) 
+                                                                && ((args.SaveAs) || (args.CurrentProject.ProjectState != ProjectState.Unmodified));
+
         /// <summary>
         /// Function to inject dependencies for the view model.
         /// </summary>
@@ -153,9 +220,14 @@ namespace Gorgon.Editor.ViewModels
             _projectManager = injectionParameters.ProjectManager ?? throw new ArgumentMissingException(nameof(MainParameters.ProjectManager), nameof(injectionParameters));
             _viewModelFactory = injectionParameters.ViewModelFactory ?? throw new ArgumentMissingException(nameof(MainParameters.ViewModelFactory), nameof(injectionParameters));
             _openDialog = injectionParameters.OpenDialog ?? throw new ArgumentMissingException(nameof(MainParameters.OpenDialog), nameof(injectionParameters));
+            _saveDialog = injectionParameters.SaveDialog ?? throw new ArgumentMissingException(nameof(MainParameters.SaveDialog), nameof(injectionParameters));
             _messageService = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(MainParameters.MessageDisplay), nameof(injectionParameters));
             _busyService = injectionParameters.BusyState ?? throw new ArgumentMissingException(nameof(MainParameters.BusyState), nameof(injectionParameters));
             NewProject = injectionParameters.NewProject ?? throw new ArgumentMissingException(nameof(MainParameters.NewProject), nameof(injectionParameters));
+            RecentFiles = injectionParameters.RecentFiles ?? throw new ArgumentMissingException(nameof(MainParameters.RecentFiles), nameof(injectionParameters));
+
+            RecentFiles.OpenProjectCommand = new EditorCommand<RecentItem>(DoOpenRecentAsync, CanOpenRecent);
+            NewProject.CreateProjectCommand = new EditorCommand<object>(DoCreateProjectAsync, CanCreateProject);
         }
 
         /// <summary>
@@ -220,24 +292,124 @@ namespace Gorgon.Editor.ViewModels
         private void NewProject_WaitPanelActivated(object sender, WaitPanelActivateArgs e) => ShowWaitPanel(e.Message, e.Title);
 
         /// <summary>
-        /// Function to assign a project to the project view.
+        /// Function to open a project.
         /// </summary>
-        /// <param name="project">The project to assign.</param>
-        private void DoAssignProject(IProject project)
+        /// <param name="path">The path to the project.</param>
+        /// <returns>A task for asynchronous operation.</returns>
+        private async Task OpenProjectAsync(string path)
         {
-            _busyService.SetBusy();
+            (IProject project, bool hasMetadata, bool isUpgraded) = await _projectManager.OpenProjectAsync(path, NewProject.WorkspacePath);
 
+            if (project == null)
+            {
+                Program.Log.Print("ERROR: No project was returned from the project manager.", LoggingLevel.Simple);
+                return;
+            }
+
+            IProjectVm projectVm = _viewModelFactory.CreateProjectViewModel(project, !hasMetadata);
+            projectVm.ProjectFile = new FileInfo(path);
+
+            // The project should not be in a modified state.
+            projectVm.ProjectState = ProjectState.Unmodified;
+
+            // Close the current project.
+            CurrentProject = null;
+            _settings.LastProjectWorkingDirectory = string.Empty;
+
+            CurrentProject = projectVm;
+
+            _settings.LastOpenSavePath = Path.GetDirectoryName(path).FormatDirectory(Path.DirectorySeparatorChar);
+            _settings.LastProjectWorkingDirectory = project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);            
+
+            RecentFiles.Files.Add(new RecentItem
+            {
+                FilePath = path,
+                LastUsedDate = DateTime.Now
+            });
+
+            Program.Log.Print($"Project '{projectVm.ProjectTitle}' was loaded from '{path}'.", LoggingLevel.Simple);
+        }
+
+        /// <summary>
+        /// Function to perform the check for an unsaved project.
+        /// </summary>
+        /// <returns><b>true</b> if the project was saved, or did not need to be saved, or <b>false</b> if cancelled.</returns>
+        private async Task<bool> CheckForUnsavedProjectAsync()
+        {
+            if ((CurrentProject == null) || (CurrentProject.ProjectState == ProjectState.Unmodified))
+            {
+                return true;
+            }
+
+            MessageResponse response = _messageService.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_UNSAVED_PROJ, CurrentProject.ProjectTitle), allowCancel: true);
+
+            switch (response)
+            {
+                case MessageResponse.Yes:
+                    bool saved = await CreateSaveProjectTask(new SaveProjectArgs(false, CurrentProject));                    
+                    return saved;
+                case MessageResponse.Cancel:
+                    return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Function to determine if a recent project can be opened or not.
+        /// </summary>
+        /// <param name="recentItem">The recent item to open.</param>
+        /// <returns><b>true</b> if a recent project can be opened, or <b>false</b> if not.</returns>
+        private bool CanOpenRecent(RecentItem recentItem) => (recentItem != null) && (!string.IsNullOrWhiteSpace(recentItem.FilePath));
+
+        /// <summary>
+        /// Function to open a recent project item.
+        /// </summary>
+        /// <param name="recentItem">The recent item to open.</param>
+        private async void DoOpenRecentAsync(RecentItem recentItem)
+        {
             try
             {
-                CurrentProject = _viewModelFactory.CreateProjectViewModel(project, false);
+                bool isSaved = await CheckForUnsavedProjectAsync();
+
+                if (!isSaved)
+                {
+                    return;
+                }
+
+                var projectFile = new FileInfo(recentItem.FilePath);
+
+                Program.Log.Print($"Opening '{projectFile.FullName}'...", LoggingLevel.Simple);
+
+                ShowWaitPanel(new WaitPanelActivateArgs(string.Format(Resources.GOREDIT_TEXT_OPENING_PROJECT, projectFile.FullName.Ellipses(65, true)), null));
+
+                if (!projectFile.Exists)
+                {
+                    _messageService.ShowError(string.Format(Resources.GOREDIT_ERR_PROJECT_NOT_FOUND, projectFile.FullName));
+
+                    try
+                    {
+                        RecentFiles.Files.Remove(recentItem);
+                    }
+                    catch (Exception ex)
+                    {
+                        Program.Log.Print($"Could not remove the recent item '{recentItem.FilePath}'.", LoggingLevel.Simple);
+                        Program.Log.LogException(ex);
+                    }
+
+                    return;
+                }
+
+                await OpenProjectAsync(recentItem.FilePath);
             }
             catch (Exception ex)
             {
-                _messageService.ShowError(ex, Resources.GOREDIT_ERR_CREATE_PROJECT);
+                _messageService.ShowError(ex, Resources.GOREDIT_ERR_OPENING_PROJECT);
             }
             finally
             {
-                _busyService.SetIdle();
+                PersistSettings();
+                HideWaitPanel();
             }
         }
 
@@ -248,6 +420,13 @@ namespace Gorgon.Editor.ViewModels
         {
             try
             {
+                bool isSaved = await CheckForUnsavedProjectAsync();
+
+                if (!isSaved)
+                {
+                    return;
+                }
+
                 string path = _openDialog.GetFilename();
 
                 if (string.IsNullOrWhiteSpace(path))
@@ -255,23 +434,11 @@ namespace Gorgon.Editor.ViewModels
                     return;
                 }
 
+                Program.Log.Print($"Opening '{path}'...", LoggingLevel.Simple);
+
                 ShowWaitPanel(new WaitPanelActivateArgs(string.Format(Resources.GOREDIT_TEXT_OPENING_PROJECT, path.Ellipses(65, true)), null));
 
-                (IProject project, bool hasMetadata, bool isUpgraded) = await _projectManager.OpenProjectAsync(path, NewProject.WorkspacePath);
-
-                if (project == null)
-                {
-                    return;
-                }
-
-                IProjectVm projectVm = _viewModelFactory.CreateProjectViewModel(project, !hasMetadata);
-
-                // The project should not be in a modified state.
-                projectVm.ProjectState = ProjectState.Unmodified;
-
-                CurrentProject = projectVm;
-
-                _settings.LastOpenSavePath = Path.GetDirectoryName(path).FormatDirectory(Path.DirectorySeparatorChar);                
+                await OpenProjectAsync(path);
             }
             catch (Exception ex)
             {
@@ -279,7 +446,228 @@ namespace Gorgon.Editor.ViewModels
             }
             finally
             {
+                PersistSettings();
                 HideWaitPanel();
+            }
+        }
+
+        /// <summary>
+        /// Function to save the current project.
+        /// </summary>
+        /// <param name="args">The save project arguments.</param>
+        /// <returns><b>true</b> if saved successfully, <b>false</b> if cancelled.</returns>
+        private async Task<bool> CreateSaveProjectTask(SaveProjectArgs args)
+        {
+            var cancelSource = new CancellationTokenSource();
+            FileInfo projectFile = CurrentProject.ProjectFile;
+            FileWriterPlugin writer = CurrentProject.WriterPlugin;
+            string projectTitle = CurrentProject.ProjectState == ProjectState.New ? string.Empty : CurrentProject.ProjectTitle;
+
+            try
+            {
+                // Function used to cancel the save operation.
+                void CancelOperation() => cancelSource.Cancel();
+
+                string path = projectFile?.FullName;
+
+                if ((args.SaveAs) || (string.IsNullOrWhiteSpace(path)) || (CurrentProject.WriterPlugin == null))
+                {
+                    if (projectFile != null)
+                    {
+                        _saveDialog.InitialDirectory = projectFile.Directory;
+                        _saveDialog.InitialFilePath = projectFile.Name;
+                    }
+
+                    _saveDialog.CurrentWriter = CurrentProject.WriterPlugin;
+
+                    path = _saveDialog.GetFilename();
+
+                    if (string.IsNullOrWhiteSpace(path))
+                    {
+                        args.Cancel = true;
+                        return false;
+                    }
+
+                    projectFile = new FileInfo(path);
+                    projectTitle = Path.GetFileNameWithoutExtension(path);
+                    writer = _saveDialog.CurrentWriter;
+
+                    Debug.Assert(writer != null, "Must have a writer plug in.");
+
+                    Program.Log.Print($"File writer plug in is now: {writer.Name}.", LoggingLevel.Verbose);
+                }
+
+                Program.Log.Print($"Saving to '{projectFile.FullName}'...", LoggingLevel.Simple);
+                
+                var panelUpdateArgs = new ProgressPanelUpdateArgs
+                {
+                    Title = Resources.GOREDIT_TEXT_PLEASE_WAIT,
+                    Message = string.Format(Resources.GOREDIT_TEXT_SAVING, projectTitle)
+                };
+
+                UpdateProgress(panelUpdateArgs);
+
+                // Function used to update the progress meter display.
+                void SaveProgress(int currentItem, int totalItems, bool allowCancellation)
+                {
+                    panelUpdateArgs.CancelAction = allowCancellation ? CancelOperation : (Action)null;
+                    panelUpdateArgs.PercentageComplete = (float)currentItem / totalItems;
+                    UpdateProgress(panelUpdateArgs);
+                }
+
+                await CurrentProject.PersistProjectAsync(projectTitle, path, writer, SaveProgress, cancelSource.Token);
+
+                if (cancelSource.Token.IsCancellationRequested)
+                {
+                    args.Cancel = true;
+                    return false;
+                }
+
+                // Update the current project with the updated info.               
+                args.Cancel = cancelSource.Token.IsCancellationRequested;
+
+                if (!args.Cancel)
+                {
+                    CurrentProject.ProjectTitle = projectTitle;
+                    CurrentProject.WriterPlugin = writer;
+                    CurrentProject.ProjectFile = projectFile;
+                    CurrentProject.ProjectState = ProjectState.Unmodified;
+
+                    RecentFiles.Files.Add(new RecentItem
+                    {
+                        FilePath = path,
+                        LastUsedDate = DateTime.Now
+                    });
+                    Program.Log.Print($"Saved project '{projectTitle}' to '{projectFile.FullName}'...", LoggingLevel.Simple);
+                }
+
+                return !args.Cancel;
+            }
+            finally
+            {
+                HideProgress();
+                cancelSource?.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Function to save a project file.
+        /// </summary>
+        /// <param name="args">The arguments for the command.</param>
+        private async void DoSaveProjectAsync(SaveProjectArgs args)
+        {
+            try
+            {
+                await CreateSaveProjectTask(args);
+            }
+            catch (Exception ex)
+            {
+                _messageService.ShowError(ex, Resources.GOREDIT_ERR_SAVING_PROJECT);
+                args.Cancel = true;
+            }
+        }
+
+        /// <summary>
+        /// Function called to determine if a project can be created.
+        /// </summary>
+        /// <param name="args">The arguments for the command.</param>
+        /// <returns><b>true</b> if the project can be created, <b>false</b> if not.</returns>
+        private bool CanCreateProject() => (!string.IsNullOrWhiteSpace(NewProject.Title)) && (NewProject.WorkspacePath != null) && (NewProject.WorkspacePath.Exists);
+
+        /// <summary>
+        /// Function to create a new project.
+        /// </summary>
+        /// <param name="args">The arguments for creating the project.</param>
+        /// <returns>A task for asynchronous operation.</returns>
+        private async void DoCreateProjectAsync()
+        {
+            try
+            {
+                bool saved = await CheckForUnsavedProjectAsync();
+
+                if (!saved)
+                {
+                    return;
+                }
+
+                ShowWaitPanel("Creating project...", "Please wait");
+                IProject project = await Task.Run(() => _projectManager.CreateProject(NewProject.WorkspacePath, NewProject.Title));
+
+                // Unload the current project.
+                CurrentProject = null;
+                _settings.LastProjectWorkingDirectory = string.Empty;
+
+                CurrentProject = _viewModelFactory.CreateProjectViewModel(project, false);
+                _settings.LastProjectWorkingDirectory = project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
+            }
+            catch (Exception ex)
+            {
+                _messageService.ShowError(ex, Resources.GOREDIT_ERR_CREATE_PROJECT);
+            }
+            finally
+            {
+                PersistSettings();
+                HideWaitPanel();
+            }
+        }
+
+        /// <summary>Function called when the application is closing.</summary>
+        /// <param name="args">The arguments for the command.</param>
+        private async Task DoAppClose(AppCloseArgs args)
+        {
+            try
+            {
+                // Function to save the application settings.
+                void SaveSettings()
+                {
+                    try
+                    {
+                        _settings.WindowBounds = args.WindowDimensions;
+                        _settings.WindowState = args.WindowState;
+
+                        PersistSettings();
+                    }
+                    catch (Exception ex)
+                    {
+                        // If we can't save, then don't stop the close operation.
+                        Program.Log.Print("Error saving application settings.", LoggingLevel.Simple);
+                        Program.Log.LogException(ex);
+                    }
+                }
+
+                // No changes?  The we can just go.
+                if ((CurrentProject == null) || (CurrentProject.ProjectState == ProjectState.Unmodified))
+                {
+                    SaveSettings();
+                    OnUnload();
+                    return;
+                }
+
+                MessageResponse response = _messageService.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_UNSAVED_PROJ, CurrentProject.ProjectTitle), allowCancel: true);
+
+                switch (response)
+                {
+                    case MessageResponse.Cancel:
+                        args.Cancel = true;
+                        return;
+                    case MessageResponse.Yes:
+                        args.Cancel = !(await CreateSaveProjectTask(new SaveProjectArgs(false, CurrentProject)));
+
+                        // We've cancelled the save dialog. Do nothing.
+                        if (args.Cancel)
+                        {
+                            return;
+                        }
+                        break;                    
+                }
+
+                SaveSettings();
+                OnUnload();
+            }
+            catch (Exception ex)
+            {
+                _messageService.ShowError(ex, Resources.GOREDIT_ERR_CLOSING);
+                args.Cancel = true;
             }
         }
 
@@ -314,8 +702,9 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         public Main()
         {
-            AssignProjectCommand = new EditorCommand<IProject>(DoAssignProject, args => args != null);
-            OpenProjectCommand = new EditorCommand<object>(DoOpenProjectAsync);
+            OpenProjectCommand = new EditorCommand<object>(DoOpenProjectAsync, CanOpenProjects);
+            SaveProjectCommand = new EditorCommand<SaveProjectArgs>(DoSaveProjectAsync, CanSaveProject);
+            AppClosingAsyncCommand = new EditorAsyncCommand<AppCloseArgs>(DoAppClose);
         }
         #endregion
     }

@@ -47,6 +47,7 @@ using DX = SharpDX;
 using Exception = System.Exception;
 using Gorgon.IO.Providers;
 using System.Collections.Generic;
+using Gorgon.Editor.Plugins;
 
 namespace Gorgon.Editor
 {
@@ -68,7 +69,9 @@ namespace Gorgon.Editor
         // The project manager for the application.
         private ProjectManager _projectManager;
         // The cache for plugin assemblies.
-        private GorgonMefPluginCache _pluginCache;        
+        private GorgonMefPluginCache _pluginCache;
+        // The directory locator service.
+        private DirectoryLocateService _dirLocator;
         #endregion
 
         #region Properties.
@@ -147,7 +150,7 @@ namespace Gorgon.Editor
                                                            defaultLocation.Y,
                                                            defaultSize.Width,
                                                            defaultSize.Height),
-                    WindowState = FormWindowState.Maximized,
+                    WindowState = (int)FormWindowState.Maximized,
                     PluginPath = Path.Combine(GorgonApplication.StartupPath.FullName, "Plugins").FormatDirectory(Path.DirectorySeparatorChar),
                     LastOpenSavePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).FormatDirectory(Path.DirectorySeparatorChar)
                 };
@@ -244,54 +247,6 @@ namespace Gorgon.Editor
         }
 
         /// <summary>
-        /// Function to persist the settings back to the file system.
-        /// </summary>
-        private void PersistSettings()
-        {
-            StreamWriter writer = null;
-#if DEBUG
-            var settingsFile = new FileInfo(Path.Combine(Program.ApplicationUserDirectory.FullName, $"Gorgon.Editor.Settings.DEBUG.json"));
-#else
-            var settingsFile = new FileInfo(Path.Combine(Program.ApplicationUserDirectory.FullName, $"Gorgon.Editor.Settings.json"));
-#endif
-
-            try
-            {
-                // Do not capture the window state if we're minimized, that way lies madness.
-                if (_mainForm.WindowState != FormWindowState.Minimized)
-                {
-                    if (_mainForm.WindowState != FormWindowState.Maximized)
-                    {
-                        _settings.WindowBounds = new DX.Rectangle(_mainForm.Location.X,
-                                                                  _mainForm.Location.Y,
-                                                                  _mainForm.Size.Width,
-                                                                  _mainForm.Size.Height);
-                    }
-                    else
-                    {
-                        _settings.WindowBounds = new DX.Rectangle(_mainForm.RestoreBounds.X,
-                                                                  _mainForm.RestoreBounds.Y,
-                                                                  _mainForm.RestoreBounds.Width,
-                                                                  _mainForm.RestoreBounds.Height);
-                    }
-
-                    _settings.WindowState = _mainForm.WindowState;
-                }
-
-                writer = new StreamWriter(settingsFile.FullName, false, Encoding.UTF8);
-                writer.Write(JsonConvert.SerializeObject(_settings));
-            }
-            catch (Exception ex)
-            {
-                Debug.Print($"Error saving settings.\n{ex.Message}");
-            }
-            finally
-            {
-                writer?.Dispose();
-            }
-        }
-
-        /// <summary>
         /// Function to load any plugins used to import or export files.
         /// </summary>
         /// <returns>A file system provider management interface.</returns>
@@ -316,8 +271,10 @@ namespace Gorgon.Editor
                 plugins = new GorgonMefPluginService(_pluginCache, Program.Log);
 
                 IReadOnlyList<GorgonFileSystemProvider> providers = plugins.GetPlugins<GorgonFileSystemProvider>();
-                                
+                IReadOnlyList<FileWriterPlugin> writers = plugins.GetPlugins<FileWriterPlugin>();
+
                 result.AddReaders(providers);
+                result.AddWriters(writers);
 
                 return result;
             }
@@ -338,39 +295,32 @@ namespace Gorgon.Editor
         /// <returns>The directory if selected, or <b>null</b> if canceled.</returns>
         private DirectoryInfo LocateWorkspaceDirectory(DirectoryInfo initialDirectory, IWorkspaceTester tester)
         {
-            using (var locator = new FormWorkspaceLocator
-            {
-                CurrentDirectory = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)),
-                Size = new Size(1000, 600)
-            })
-            {
-                DirectoryInfo result = null;
+            var result = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+            DirectoryInfo current = result;
 
-                Cursor.Current = Cursors.Default;
+            Cursor.Current = Cursors.Default;
 
-                do
+            do
+            {
+                result = _dirLocator.GetDirectory(current, Resources.GOREDIT_TEXT_SELECT_WORKSPACE);
+
+                if (result == null)
                 {
-                    if (locator.ShowDialog(_splash) == DialogResult.Cancel)
-                    {
-                        return null;
-                    }
+                    return null;
+                }
 
-                    Cursor.Current = Cursors.WaitCursor;
-                    (bool acceptable, string reason) = tester.TestForAccessibility(locator.CurrentDirectory);
+                Cursor.Current = Cursors.WaitCursor;
+                (bool acceptable, string reason) = tester.TestForAccessibility(result);
 
-                    if (!acceptable)
-                    {
-                        GorgonDialogs.ErrorBox(_splash, reason);
-                        locator.CurrentDirectory = locator.CurrentDirectory;
-                    }
-                    else
-                    {
-                        result = locator.CurrentDirectory;
-                    }
-                } while (result == null);
+                if (!acceptable)
+                {
+                    GorgonDialogs.ErrorBox(_splash, reason);
+                    current = result;
+                    result = null;
+                }
+            } while (result == null);
 
-                return result;
-            }            
+            return result;
         }
 
         /// <summary>
@@ -443,6 +393,46 @@ namespace Gorgon.Editor
         }
 
         /// <summary>
+        /// Function to clean up any left over instance of a project working directory from the workspace area.
+        /// </summary>
+        private void CleanPreviousWorkingDir()
+        {
+            if (string.IsNullOrWhiteSpace(_settings.LastProjectWorkingDirectory))
+            {
+                return;
+            }
+
+            var prevProject = new DirectoryInfo(_settings.LastProjectWorkingDirectory);
+
+            // Reset this here since we've no need of it from this point forward.
+            _settings.LastProjectWorkingDirectory = string.Empty;
+
+            if (!prevProject.Exists)
+            {
+                return;
+            }
+
+            Program.Log.Print($"Found stale project working directory '{prevProject.FullName}'.", LoggingLevel.Intermediate);
+
+            if (GorgonDialogs.ConfirmBox(_splash, string.Format(Resources.GOREDIT_CONFIRM_CLEAN_PREV_DIR, prevProject.Parent.FullName)) != ConfirmationResult.Yes)
+            {
+                Program.Log.Print("User opted not to clean the previous working directory. User will have to manually remove it.", LoggingLevel.Verbose);
+                return;
+            }
+
+            Program.Log.Print($"Purging old project work directory '{prevProject.FullName}'.", LoggingLevel.Verbose);
+            try
+            {
+                _projectManager.PurgeStaleDirectories(prevProject);
+            }
+            catch (Exception ex)
+            {
+                Program.Log.Print($"ERROR: Could not remove the stale project directory '{prevProject.FullName}'.", LoggingLevel.Intermediate);
+                Program.Log.LogException(ex);
+            }
+        }
+
+        /// <summary>
         /// Function to perform the boot strapping operation.
         /// </summary>
         /// <returns>The main application window.</returns>
@@ -471,8 +461,11 @@ namespace Gorgon.Editor
                 // Create the project manager for the application
                 _projectManager = new ProjectManager(fileSystemProviders);
 
+                CleanPreviousWorkingDir();
+
                 Debug.Assert(_settings.WindowBounds != null, "Window bounds should not be null.");
 
+                _dirLocator = new DirectoryLocateService();
                 DirectoryInfo workspaceDir = GetWorkspaceDirectory();
 
                 // If we didn't get a workspace directory, then leave.
@@ -490,7 +483,6 @@ namespace Gorgon.Editor
                             };
                 Program.Log.Print("Applying theme to main window...", LoggingLevel.Verbose);
                 _mainForm.LoadTheme();
-                _mainForm.FormClosing += (sender, args) => PersistSettings();
 
                 await HideSplashAsync();
 
@@ -502,11 +494,23 @@ namespace Gorgon.Editor
                                                    _projectManager,
                                                    new MessageBoxService(),
                                                    new WaitCursorBusyState(),
-                                                   new ClipboardService());
+                                                   new ClipboardService(),
+                                                   _dirLocator);
+
+                FormWindowState windowState;
+                // Ensure the window state values fall into an acceptable range.
+                if (!Enum.IsDefined(typeof(FormWindowState), _settings.WindowState))
+                {
+                    windowState = FormWindowState.Maximized;
+                }
+                else
+                {
+                    windowState = (FormWindowState)_settings.WindowState;
+                }
 
                 _mainForm.SetDataContext(factory.CreateMainViewModel(workspaceDir));
                 _mainForm.Show();
-                _mainForm.WindowState = _settings.WindowState;                
+                _mainForm.WindowState = windowState;
             }
             finally
             {

@@ -25,13 +25,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
-using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -50,28 +45,16 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to to return the application project manager.
-        /// </summary>
-        public IProjectManager ProjectManager
-        {
-            get;
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="ProjectVmParameters" /> class.
         /// </summary>
-        /// <param name="projectManager">The project manager for the application.</param>
-        /// <param name="project">The current project data.</param>
+        /// <param name="projectData">The project data.</param>
         /// <param name="metadataManager">The metadata manager.</param>
         /// <param name="viewModelFactory">The view model factory.</param>
-        /// <param name="messageDisplay">The message display service.</param>
-        /// <param name="busyService">The busy state service.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public ProjectVmParameters(IProjectManager projectManager, IProject project, IMetadataManager metadataManager, ViewModelFactory viewModelFactory, IMessageDisplayService messageDisplay, IBusyStateService busyService)
-            : base(viewModelFactory, messageDisplay, busyService)
+        public ProjectVmParameters(IProject projectData, IMetadataManager metadataManager, ViewModelFactory viewModelFactory)
+            : base(viewModelFactory)
         {
-            ProjectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
-            Project = project ?? throw new ArgumentNullException(nameof(project));
+            Project = projectData ?? throw new ArgumentNullException(nameof(projectData));
             MetadataManager = metadataManager ?? throw new ArgumentNullException(nameof(metadataManager));
         }
     }

@@ -2,7 +2,7 @@
 <!--Created by exporting the settings of a KryptonPalette instance.-->
 <!--For more information about Krypton visit www.ComponentFactory.com-->
 <!--WARNING: Modifying this file may render it invalid for importing.-->
-<KryptonPalette Version="18" Generated="Sunday, 16 September 2018, 16:50">
+<KryptonPalette Version="18" Generated="Friday, 28 September 2018, 17:04">
   <Properties>
     <ButtonStyles>
       <ButtonCommon>
@@ -563,8 +563,6 @@
             <Color2 Type="Color" Value="Silver" />
           </Back>
           <Border>
-            <Draw Type="InheritBool" Value="False" />
-            <DrawBorders Type="PaletteDrawBorders" Value="Top,Bottom,Left,Right" />
             <Width Type="Int" Value="0" />
             <Rounding Type="Int" Value="2" />
           </Border>
@@ -671,7 +669,6 @@
         <OverrideDefault>
           <Back>
             <Color1 Type="Color" Value="Transparent" />
-            <Color2 Type="Color" Value="Silver" />
           </Back>
           <Content>
             <ShortText>
@@ -1022,11 +1019,21 @@
       </InputControlCustom1>
     </InputControlStyles>
     <LabelStyles>
+      <LabelCommon>
+        <StateCommon>
+          <ShortText>
+            <Font Type="Font" Value="Segoe UI, 9pt" />
+            <Color1 Type="Color" Value="White" />
+            <Color2 Type="Color" Value="White" />
+          </ShortText>
+        </StateCommon>
+      </LabelCommon>
       <LabelNormalControl>
         <StateCommon>
           <ShortText>
             <Font Type="Font" Value="Segoe UI, 9pt" />
           </ShortText>
+          <Padding Type="Padding" Value="0, 0, 0, 0" />
         </StateCommon>
       </LabelNormalControl>
       <LabelBoldControl>
@@ -1044,6 +1051,14 @@
           </ShortText>
         </StateCommon>
       </LabelTitleControl>
+      <LabelTitlePanel>
+        <StateCommon>
+          <ShortText>
+            <Color1 Type="Color" Value="Silver" />
+            <Color2 Type="Color" Value="Silver" />
+          </ShortText>
+        </StateCommon>
+      </LabelTitlePanel>
       <LabelCustom1>
         <StateCommon>
           <ShortText>
@@ -1097,7 +1112,7 @@
     <Ribbon>
       <RibbonGeneral>
         <GroupSeparatorDark Type="Color" Value="64, 64, 64" />
-        <GroupSeparatorLight Type="Color" Value="64, 64, 64" />
+        <GroupSeparatorLight Type="Color" Value="80, 80, 80" />
         <MinimizeBarDarkColor Type="Color" Value="64, 64, 64" />
         <MinimizeBarLightColor Type="Color" Value="64, 64, 64" />
         <TextFont Type="Font" Value="Segoe UI, 9pt" />

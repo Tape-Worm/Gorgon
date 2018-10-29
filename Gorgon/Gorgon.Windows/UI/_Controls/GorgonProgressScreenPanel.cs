@@ -227,8 +227,29 @@ namespace Gorgon.UI
                 return;
             }
 
-            _messagePanel.ProgressMeter.Value = (int)(_progress * 100.0f);
-            _messagePanel.ProgressMeter.Refresh();
+            int progressValue = (int)(_progress * 100.0f);
+
+            // This awful block of code is to handle a very stupid bug that's been a part of the progress bar since Aero was introduced:
+            // https://derekwill.com/2014/06/24/combating-the-lag-of-the-winforms-progressbar/
+            // Effectively, this disables animation so that we can get accurate feedback. 
+            if (progressValue == 100)
+            {
+                _messagePanel.ProgressMeter.Maximum = 101;
+                _messagePanel.ProgressMeter.Value = 101;
+                _messagePanel.ProgressMeter.Value = 100;
+                _messagePanel.ProgressMeter.Maximum = 100;
+            }
+            else if (progressValue > 0)
+            {
+                _messagePanel.ProgressMeter.Value = progressValue + 1;
+                _messagePanel.ProgressMeter.Value = progressValue - 1;
+            }
+            else
+            {
+                _messagePanel.ProgressMeter.Value = 1;
+                _messagePanel.ProgressMeter.Value = 0;
+            }
+            _messagePanel.ProgressMeter.Update();            
         }
 
         /// <summary>Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.Control" /> and its child controls and optionally releases the managed resources.</summary>

@@ -25,16 +25,13 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Editor.Metadata;
+using Gorgon.Editor.Plugins;
 
 namespace Gorgon.Editor.ProjectData
-{
+{ 
     /// <summary>
     /// The project data.
     /// </summary>
@@ -86,6 +83,15 @@ namespace Gorgon.Editor.ProjectData
         /// Property to set or return whether file system objects like directories and files should be shown in the project even when they're not included.
         /// </summary>
         public bool ShowExternalItems
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the writer used to write to the project file.
+        /// </summary>
+        public FileWriterPlugin Writer
         {
             get;
             set;

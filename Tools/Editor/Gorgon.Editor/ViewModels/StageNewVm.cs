@@ -25,19 +25,12 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
-using Gorgon.IO;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -60,6 +53,8 @@ namespace Gorgon.Editor.ViewModels
         private IGorgonComputerInfo _computerInfo;
         // The directory to use as the work space.
         private DirectoryInfo _workspace;
+        // The currently active project.
+        private IProjectVm _current;
         // The active GPU name.
         private string _gpuName = Resources.GOREDIT_TEXT_UNKNOWN;        
         #endregion
@@ -104,11 +99,12 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the command to execute when the project should be created.
+        /// Property to set or return the command to execute when the project should be created.
         /// </summary>
-        public IEditorAsyncCommand<ProjectCreateArgs> CreateProjectCommand
+        public IEditorCommand<object> CreateProjectCommand
         {
             get;
+            set;
         }
 
         /// <summary>
@@ -143,36 +139,28 @@ namespace Gorgon.Editor.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        /// <summary>
+        /// Property to set or return the currently active project.
+        /// </summary>
+        public IProjectVm CurrentProject
+        {
+            get => _current;
+            set
+            {
+                if (_current == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _current = value;
+                OnPropertyChanged();
+            }
+        }
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function called to determine if a project can be created.
-        /// </summary>
-        /// <returns><b>true</b> if the project can be created, <b>false</b> if not.</returns>
-        private bool CanCreateProject() => (!string.IsNullOrWhiteSpace(Title)) && (WorkspacePath != null) && (WorkspacePath.Exists);
-
-        /// <summary>
-        /// Function called when a project should be created.
-        /// </summary>
-        /// <param name="args">The command arguments.</param>
-        private async Task DoCreateProjectCommandAsync(ProjectCreateArgs args)
-        {
-            try
-            {
-                ShowWaitPanel("Creating project...", "Please wait");
-                args.Project = await Task.Run(() =>_projectManager.CreateProject(WorkspacePath, Title));
-            }
-            catch (Exception ex)
-            {
-                _messageService.ShowError(ex, Resources.GOREDIT_ERR_CREATE_PROJECT);
-            }
-            finally
-            {
-                HideWaitPanel();
-            }
-        }
-
         /// <summary>
         /// Function to inject dependencies for the view model.
         /// </summary>
@@ -189,13 +177,6 @@ namespace Gorgon.Editor.ViewModels
 
             AvailableDriveSpace = (ulong)(new DriveInfo(Path.GetPathRoot(_workspace.FullName))).AvailableFreeSpace;
         }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StageNewVm"/> class.
-        /// </summary>
-        public StageNewVm() => CreateProjectCommand = new EditorAsyncCommand<ProjectCreateArgs>(DoCreateProjectCommandAsync, _ => CanCreateProject());
         #endregion
     }
 }

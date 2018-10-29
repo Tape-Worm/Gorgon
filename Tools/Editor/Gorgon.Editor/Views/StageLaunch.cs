@@ -25,7 +25,7 @@
 #endregion
 
 using System;
-using Gorgon.Editor.Services;
+using System.ComponentModel;
 using Gorgon.Editor.UI.Views;
 
 namespace Gorgon.Editor.Views
@@ -36,15 +36,7 @@ namespace Gorgon.Editor.Views
     internal partial class StageLaunch 
         : EditorBaseControl
     {
-        #region Variables.
-
-        #endregion
-
         #region Events.
-        /// <summary>
-        /// Event triggered when the back button is clicked.
-        /// </summary>
-        public event EventHandler BackClicked;
         /// <summary>
         /// Event triggered when the open project button is clicked.
         /// </summary>
@@ -53,12 +45,13 @@ namespace Gorgon.Editor.Views
 
         #region Properties.
         /// <summary>
-        /// Property to set or return whether to show the back button.
+        /// Property to set or return whether files can be opened or not.
         /// </summary>
-        public bool ShowBackButton
+        [Browsable(false)]
+        public bool CanOpen
         {
-            get => PanelBack.Visible;
-            set => PanelBack.Visible = value;
+            get => ButtonOpenProject.Visible;
+            set => ButtonOpenProject.Visible = value;
         }
         #endregion
 
@@ -75,17 +68,6 @@ namespace Gorgon.Editor.Views
         }
 
         /// <summary>
-        /// Handles the Click event of the ButtonBack control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonBack_Click(object sender, EventArgs e)
-        {
-            EventHandler handler = BackClicked;
-            handler?.Invoke(this, EventArgs.Empty);
-        }
-
-        /// <summary>
         /// Handles the CheckedButtonChanged event of the ButtonGroup control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -97,7 +79,8 @@ namespace Gorgon.Editor.Views
                 StageRecent.Visible = false;
                 StageNewProject.Visible = true;
                 StageNewProject.BringToFront();
-            } else if (CheckRecent.Checked)
+            }
+            else if (CheckRecent.Checked)
             {
                 StageNewProject.Visible = false;
                 StageRecent.Visible = true;

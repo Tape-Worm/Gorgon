@@ -15,7 +15,6 @@
         {
             if (disposing)
             {
-                DataContext?.OnUnload();
                 UnassignEvents();
             }
 

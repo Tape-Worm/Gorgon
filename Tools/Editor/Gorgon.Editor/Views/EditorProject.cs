@@ -25,14 +25,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Editor.ViewModels;
@@ -77,6 +70,11 @@ namespace Gorgon.Editor.Views
                 FileExplorer.RenameEnd -= value;
             }
         }
+        #endregion
+
+        #region Variables.
+        // Flag to indicate that the data context load should be deferred.
+        private bool _deferDataContextLoad = true;
         #endregion
 
         #region Properties.
@@ -149,6 +147,8 @@ namespace Gorgon.Editor.Views
 
             DataContext.PropertyChanging -= DataContext_PropertyChanging;
             DataContext.PropertyChanged -= DataContext_PropertyChanged;
+
+            DataContext.OnUnload();
         }
 
         /// <summary>
@@ -177,11 +177,12 @@ namespace Gorgon.Editor.Views
         {
             base.OnLoad(e);
 
-            if (IsDesignTime)
+            if ((IsDesignTime)
+                || (!_deferDataContextLoad))
             {
                 return;
             }
-
+            
             DataContext?.OnLoad();
         }
 
@@ -198,6 +199,7 @@ namespace Gorgon.Editor.Views
         {
             UnassignEvents();
 
+            DataContext = null;
             InitializeFromDataContext(dataContext);
             DataContext = dataContext;
 
@@ -206,8 +208,14 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
+            _deferDataContextLoad = !IsHandleCreated;
+            if (!_deferDataContextLoad)
+            {
+                DataContext.OnLoad();
+            }
+
             DataContext.PropertyChanging += DataContext_PropertyChanging;
-            DataContext.PropertyChanged += DataContext_PropertyChanged;
+            DataContext.PropertyChanged += DataContext_PropertyChanged;            
         }
         #endregion
 

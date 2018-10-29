@@ -25,14 +25,14 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
 using Gorgon.Editor.Metadata;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.ProjectData;
-using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 
@@ -47,8 +47,6 @@ namespace Gorgon.Editor.ViewModels
         #region Variables.
         // The project data for the view model.
         private IProject _projectData;
-        // The metadata manager for the project.
-        private IMetadataManager _metadataManager;
         // The message display service.
         private IMessageDisplayService _messageService;
         // The busy state service.
@@ -61,9 +59,39 @@ namespace Gorgon.Editor.ViewModels
         private IClipboardHandler _clipboardContext;
         // The application project manager.
         private IProjectManager _projectManager;
+        // The file for the project.
+        private FileInfo _projectFile;
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return the metadata manager for the project.
+        /// </summary>
+        public IMetadataManager MetadataManager
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to set or return the current file writer plugin used to write the project out to a file.
+        /// </summary>
+        public FileWriterPlugin WriterPlugin
+        {
+            get => _projectData.Writer;
+            set
+            {
+                if (_projectData.Writer == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _projectData.Writer = value;
+                OnPropertyChanged();
+            }
+        }
+
         /// <summary>
         /// Property to set or return the active clipboard handler context.
         /// </summary>
@@ -145,12 +173,12 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the title for the project.
+        /// Property to set or return the title for the project.
         /// </summary>
         public string ProjectTitle
         {
             get => _projectData.ProjectName;
-            private set
+            set
             {
                 if (string.Equals(_projectData.ProjectName, value, StringComparison.CurrentCulture))
                 {
@@ -163,15 +191,26 @@ namespace Gorgon.Editor.ViewModels
             }
         }
 
-        // TODO: Is this really necessary?
         /// <summary>
-        /// Property to return the file information for the project if it was opened from a file.
+        /// Property to set or return the file information for the project if it was opened from a file.
         /// </summary>
         public FileInfo ProjectFile
         {
-            // TODO:
-            get;
-            private set;
+            get => _projectFile;
+            set
+            {
+                if ((_projectFile == value) 
+                    || ((value != null) 
+                        && (_projectFile != null) 
+                        && (string.Equals(value.FullName, _projectFile.FullName, StringComparison.OrdinalIgnoreCase))))
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _projectFile = value;
+                OnPropertyChanged();                
+            }
         }
         #endregion
 
@@ -268,7 +307,56 @@ namespace Gorgon.Editor.ViewModels
             _projectData = injectionParameters.Project ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.Project), nameof(injectionParameters));
             _messageService = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.MessageDisplay), nameof(injectionParameters));
             _busyService = injectionParameters.BusyState ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.BusyState), nameof(injectionParameters));
-            _metadataManager = injectionParameters.MetadataManager ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.MetadataManager), nameof(injectionParameters));
+            MetadataManager = injectionParameters.MetadataManager ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.MetadataManager), nameof(injectionParameters));
+        }
+
+        /// <summary>
+        /// Function to persist the project data to a file.
+        /// </summary>
+        /// <param name="projectTitle">The title for the project.</param>
+        /// <param name="path">A path to the file that will hold the project data.</param>
+        /// <param name="writer">The plug in used to write the project data.</param>
+        /// <param name="progressCallback">The callback method that reports the saving progress to the UI.</param>
+        /// <param name="cancelToken">The token used for cancellation of the operation.</param>        
+        /// <returns>A task for asynchronous operation.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="projectTitle"/>, <paramref name="path"/>, or the <paramref name="writer"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="projectTitle"/> or the <paramref name="path"/> parameter is empty.</exception>
+        public Task PersistProjectAsync(string projectTitle, string path, FileWriterPlugin writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
+        {
+            if (projectTitle == null)
+            {
+                throw new ArgumentNullException(nameof(projectTitle));
+            }
+
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            if (writer == null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
+            if (string.IsNullOrWhiteSpace(projectTitle))
+            {
+                throw new ArgumentEmptyException(nameof(projectTitle)); 
+            }
+             
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentEmptyException(nameof(path));
+            } 
+ 
+            return Task.Run(() =>
+            {
+                // First, update the metadata database with our current state.
+                Program.Log.Print("Writing metadata.", LoggingLevel.Verbose);
+                MetadataManager.Save(projectTitle, writer.GetType().FullName);
+
+                Program.Log.Print("Saving files...", LoggingLevel.Verbose);
+                _projectManager.SaveProject(_projectData, path, writer, progressCallback, cancelToken);
+            }, cancelToken);
         }
 
         /// <summary>
@@ -283,7 +371,7 @@ namespace Gorgon.Editor.ViewModels
                 AssignEvents();
 
                 // Load data from the metadata store.
-                _metadataManager.Load();
+                MetadataManager.Load();
             }
             catch (Exception ex)
             {

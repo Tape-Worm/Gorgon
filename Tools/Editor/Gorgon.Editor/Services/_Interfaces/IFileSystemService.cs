@@ -27,8 +27,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -69,7 +67,7 @@ namespace Gorgon.Editor.Services
     /// <summary>
     /// A service used to interact with the file system of the project.
     /// </summary>
-    public interface IFileSystemService
+    internal interface IFileSystemService
     {
         #region Properties.
         /// <summary>
@@ -169,28 +167,24 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Function to copy a directory, and all of its child items to the specified path.
         /// </summary>
-        /// <param name="directoryPath">The path to the directory to copy.</param>
-        /// <param name="destDirectoryPath">The path to the destination directory for the copy.</param>
-        /// <param name="onCopy">The method to call when a file is about to be copied.</param>
+        /// <param name="copySettings">The settings used for the directory copy.</param>
         /// <param name="cancelToken">The token used to cancel the process.</param>
-        /// <param name="conflictResolver">[Optional] A callback method used to resolve a file copy conflict.</param>
         /// <returns><b>true</b> if the copy was successful, <b>false</b> if it was canceled.</returns>
-        /// <remarks>
-        /// <para>
-        /// The <paramref name="onCopy"/> callback method sends the file system item being copied, the destination file system item, the current item #, and the total number of items to copy.
-        /// </para>
-        /// <para>
-        /// The <paramref name="conflictResolver"/> callback function sends the file system item being copied, the destination file system item, and returns a <see cref="FileSystemConflictResolution"/> 
-        /// value.
-        /// </para>
-        /// </remarks>
-        Task<bool> CopyDirectoryAsync(string directoryPath, string destDirectoryPath, Action<FileSystemInfo, FileSystemInfo, int, int> onCopy, CancellationToken cancelToken, Func<FileSystemInfo, FileSystemInfo, FileSystemConflictResolution> conflictResolver = null);
+        Task<bool> CopyDirectoryAsync(CopyDirectoryArgs copySettings, CancellationToken cancelToken);
 
         /// <summary>
         /// Function to delete a file.
         /// </summary>
         /// <param name="filePath">The path to the file on the physical file system to delete.</param>
         void DeleteFile(string filePath);
+
+        /// <summary>
+        /// Function to export a file to a directory on the physical file system.
+        /// </summary>
+        /// <param name="filePath">The path to the file.</param>
+        /// <param name="destDirPath">The destination directory path.</param>        
+        /// <param name="onCopy">The method to call when a file is about to be copied.</param>
+        Task ExportFileAsync(string filePath, string destDirPath, Action<FileSystemInfo> onCopy);
 
         /// <summary>
         /// Function to copy a file to another location.
@@ -212,6 +206,32 @@ namespace Gorgon.Editor.Services
         /// <param name="directoryPath">The path to the directory.</param>
         /// <param name="destDirectoryPath">The destination name and path.</param>        
         void MoveDirectory(string directoryPath, string destDirectoryPath);
+
+        /// <summary>
+        /// Function to delete all files and directories in the file system.
+        /// </summary>
+        void DeleteAll();
+
+        /// <summary>
+        /// Function to export the specified directory into a physical file system location.
+        /// </summary>
+        /// <param name="exportSettings">The settings used for the export.</param>
+        /// <param name="cancelToken">A token used to cancel the operation.</param>
+        /// <returns>A task for asynchronous operation.</returns>
+        Task ExportDirectoryAsync(CopyDirectoryArgs exportSettings, CancellationToken cancelToken);
+
+        /// <summary>
+        /// Function to import the specified paths into a virtual file system location.
+        /// </summary>
+        /// <param name="importSettings">The import settings.</param>
+        /// <param name="cancelToken">A token used to cancel the operation.</param>
+        /// <returns><b>true</b> if the operation was completed successfully, <b>false</b> if not.</returns>
+        /// <remarks>
+        /// <para>
+        /// This method copies the file (and directory) data for a list of physical file system paths to a virtual file system physical location.
+        /// </para>
+        /// </remarks>
+        Task<bool> ImportIntoDirectoryAsync(ImportArgs importSettings, CancellationToken cancelToken);
         #endregion
     }
 }

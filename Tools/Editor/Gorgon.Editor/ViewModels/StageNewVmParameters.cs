@@ -26,8 +26,6 @@
 
 using System;
 using System.IO;
-using Gorgon.Editor.ProjectData;
-using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -41,14 +39,6 @@ namespace Gorgon.Editor.ViewModels
         /// Property to return the work space directory to use.
         /// </summary>
         public DirectoryInfo WorkspaceDirectory
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the project manager.
-        /// </summary>
-        public IProjectManager ProjectManager
         {
             get;
         }
@@ -71,12 +61,10 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="messageDisplay">The message display service to use.</param>
         /// <param name="busyService">The busy state service to use.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public StageNewVmParameters(IProjectManager projectManager, DirectoryInfo workspaceDirectory, EditorSettings settings, ViewModelFactory viewModelFactory, IMessageDisplayService messageDisplay, IBusyStateService busyService)
-            : base(viewModelFactory, messageDisplay, busyService)
+        public StageNewVmParameters(DirectoryInfo workspaceDirectory, ViewModelFactory viewModelFactory)
+            : base(viewModelFactory)
         {
-            ProjectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
             WorkspaceDirectory = workspaceDirectory ?? throw new ArgumentNullException(nameof(workspaceDirectory));
-            EditorSettings = settings ?? throw new ArgumentNullException(nameof(settings));
         }
     }
 }

@@ -25,20 +25,14 @@
 #endregion
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Core;
-using Gorgon.Collections;
-using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
-using Gorgon.IO;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -383,6 +377,16 @@ namespace Gorgon.Editor.ViewModels
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destNode"/> parameter is <b>null</b>.</exception>
         /// <exception cref="GorgonException">Thrown if the <paramref name="destNode"/> is unable to create child nodes.</exception>
         public abstract IFileExplorerNodeVm MoveNode(IFileExplorerNodeVm destNode);
+
+        /// <summary>
+        /// Function to export the contents of this node to the physical file system.
+        /// </summary>
+        /// <param name="destPath">The path to the directory on the physical file system that will receive the contents.</param>
+        /// <param name="onCopy">[Optional] The method to call when a file is about to be copied.</param>
+        /// <param name="cancelToken">[Optional] A token used to cancel the operation.</param>
+        /// <returns>A task for asynchronous operation.</returns>
+        /// <remarks>The <paramref name="onCopy" /> callback method sends the file system node being copied, the destination file system node, the current item #, and the total number of items to copy.</remarks>
+        public abstract Task ExportAsync(string destPath, Action<FileSystemInfo, FileSystemInfo, int, int> onCopy = null, CancellationToken? cancelToken = null);
         #endregion
 
         #region Constructor.

@@ -41,11 +41,12 @@
             this.ProgressMeter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.ProgressMeter.ForeColor = System.Drawing.Color.Lime;
             this.ProgressMeter.Location = new System.Drawing.Point(3, 67);
-            this.ProgressMeter.MarqueeAnimationSpeed = 33;
+            this.ProgressMeter.MarqueeAnimationSpeed = 15;
             this.ProgressMeter.MaximumSize = new System.Drawing.Size(500, 23);
             this.ProgressMeter.MinimumSize = new System.Drawing.Size(500, 23);
             this.ProgressMeter.Name = "ProgressMeter";
             this.ProgressMeter.Size = new System.Drawing.Size(500, 23);
+            this.ProgressMeter.Step = 1;
             this.ProgressMeter.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
             this.ProgressMeter.TabIndex = 2;
             // 

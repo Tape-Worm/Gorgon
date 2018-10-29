@@ -20,25 +20,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: September 4, 2018 1:01:17 PM
+// Created: October 28, 2018 3:44:09 PM
 // 
 #endregion
 
-using System;
-using Gorgon.Editor.ProjectData;
+using System.Collections.ObjectModel;
+using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ViewModels
 {
     /// <summary>
-    /// Arguments for the <see cref="StageNewVm.CreateProjectCommand"/>.
+    /// View model for the recent files list.
     /// </summary>
-    internal class ProjectCreateArgs
-        : EventArgs
+    internal interface IRecentVm
+        : IViewModel
     {
         /// <summary>
-        /// Property to set or return the project that was created.
+        /// Property to return the list of recent files.
         /// </summary>
-        public IProject Project
+        ObservableCollection<RecentItem> Files
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to set or return the command used to open a project.
+        /// </summary>
+        IEditorCommand<RecentItem> OpenProjectCommand
         {
             get;
             set;

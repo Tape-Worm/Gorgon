@@ -281,7 +281,7 @@ namespace Gorgon.Plugins
 
             if (assemblyName == null)
             {
-                return _loadedPlugins.Values.Select(item => item.Value).Cast<T>().ToArray();
+                return _loadedPlugins.Values.Select(item => item.Value).OfType<T>().ToArray();
             }
 
             return _loadedPlugins.Where(item =>
@@ -295,7 +295,7 @@ namespace Gorgon.Plugins
                                             return AssemblyName.ReferenceMatchesDefinition(name, assemblyName);
                                         })
                                  .Select(item => item.Value.Value)
-                                 .Cast<T>()
+                                 .OfType<T>()
                                  .ToArray();
         }
 

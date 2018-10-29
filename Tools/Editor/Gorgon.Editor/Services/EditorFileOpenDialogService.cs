@@ -29,11 +29,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gorgon.Editor.Properties;
+using Gorgon.IO;
 using Gorgon.UI;
-using Microsoft.Win32;
 
 namespace Gorgon.Editor.Services
 {
@@ -41,9 +40,23 @@ namespace Gorgon.Editor.Services
     /// A service used to show a dialog for opening an editor file.
     /// </summary>
     internal class EditorFileOpenDialogService
-        : IEditorFileDialogService
+        : IEditorFileOpenDialogService
     {
+        #region Variables.
+        // The previously selected file extension filter index.
+        private int _lastSelectedFilterIndex;
+        #endregion
+
         #region Properties.
+        /// <summary>
+        /// Property to set or return the initial file path to use.
+        /// </summary>
+        public string InitialFilePath
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Property to set or return a file filter.
         /// </summary>        
@@ -52,6 +65,7 @@ namespace Gorgon.Editor.Services
             get;
             set;
         }
+
         /// <summary>
         /// Property to set or return the initial directory.
         /// </summary>        
@@ -81,8 +95,7 @@ namespace Gorgon.Editor.Services
 
         /// <summary>
         /// Property to return the settings for the application.
-        /// </summary>
-        /// <value>The settings.</value>
+        /// </summary>        
         public EditorSettings Settings
         {
             get;
@@ -90,6 +103,78 @@ namespace Gorgon.Editor.Services
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to build a file system reader filter string for file dialogs.
+        /// </summary>
+        /// <returns>The string containing the file dialog filter.</returns>
+        private string GetReaderDialogFilterString()
+        {
+            var result = new StringBuilder();
+            var filter = new StringBuilder();
+            var allFilter = new StringBuilder();
+
+            IReadOnlyList<(string, IReadOnlyList<GorgonFileExtension>)> extensions = Providers.GetReaderFileExtensions().ToArray();
+
+            if (extensions.Count == 0)
+            {
+                return Resources.GOREDIT_TEXT_ALL_FILES;
+            }
+
+            foreach ((string desc, IReadOnlyList<GorgonFileExtension> extensions) item in extensions)
+            {
+                filter.Length = 0;
+
+                if (result.Length > 0)
+                {
+                    result.Append("|");
+                }
+
+                result.Append(item.desc);
+
+                foreach (GorgonFileExtension extension in item.extensions)
+                {
+                    if (allFilter.Length > 0)
+                    {
+                        allFilter.Append(";");
+                    }
+
+                    if (filter.Length > 0)
+                    {
+                        filter.Append(";");
+                    }
+
+                    filter.Append("*.");
+                    filter.Append(extension.Extension);
+                    allFilter.Append("*.");
+                    allFilter.Append(extension.Extension);
+                }
+
+                result.Append(" (");
+                result.Append(filter);
+                result.Append(")|");
+                result.Append(filter);
+            }
+
+            if (allFilter.Length > 0)
+            {
+                if (result.Length > 0)
+                {
+                    result.Append("|");
+                }
+
+                result.Append(string.Format(Resources.GOREDIT_TEXT_SUPPORTED_FILES, allFilter));
+            }
+
+            if (result.Length > 0)
+            {
+                result.Append("|");
+            }
+
+            result.Append(Resources.GOREDIT_TEXT_ALL_FILES);
+
+            return result.ToString();
+        }
+
         /// <summary>
         /// Function to retrieve the parent form for the message box.
         /// </summary>
@@ -131,15 +216,17 @@ namespace Gorgon.Editor.Services
             return new OpenFileDialog
             {
                 Title = string.IsNullOrWhiteSpace(DialogTitle) ? Resources.GOREDIT_TEXT_OPEN_EDITOR_FILE : DialogTitle,
+                FileName = string.IsNullOrWhiteSpace(InitialFilePath) ? string.Empty : InitialFilePath,
                 ValidateNames = true,
                 SupportMultiDottedExtensions = true,
                 Multiselect = allowMultiSelect,
                 AutoUpgradeEnabled = true,
                 CheckFileExists = true,
                 CheckPathExists = true,
-                Filter = FileFilter ?? Providers.GetReaderDialogFilterString(),
+                Filter = FileFilter ?? GetReaderDialogFilterString(),
                 InitialDirectory = initialDirectory.FullName,
-                RestoreDirectory = true
+                RestoreDirectory = true,
+                FilterIndex = _lastSelectedFilterIndex
             };
         }
 
@@ -155,27 +242,11 @@ namespace Gorgon.Editor.Services
             {
                 dialog = GetDialog(false);
 
-                return dialog.ShowDialog(GetParentForm()) == DialogResult.Cancel ? null : dialog.FileName;
-            }
-            finally
-            {
-                dialog?.Dispose();
-            }
-        }
+                string result = dialog.ShowDialog(GetParentForm()) == DialogResult.Cancel ? null : dialog.FileName;
 
-        /// <summary>
-        /// Function to retrieve multiple file names.
-        /// </summary>
-        /// <returns>The list of file paths, or <b>null</b> if cancelled.</returns>
-        public IReadOnlyList<string> GetFilenames()
-        {
-            OpenFileDialog dialog = null;
+                _lastSelectedFilterIndex = dialog.FilterIndex;
 
-            try
-            {
-                dialog = GetDialog(false);
-
-                return dialog.ShowDialog(GetParentForm()) == DialogResult.Cancel ? null : dialog.FileNames;
+                return result;
             }
             finally
             {

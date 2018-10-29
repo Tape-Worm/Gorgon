@@ -24,12 +24,9 @@
 // 
 #endregion
 
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Gorgon.Editor.Plugins;
 using Gorgon.IO;
 using Gorgon.IO.Providers;
 
@@ -42,17 +39,17 @@ namespace Gorgon.Editor.Services
     {
         #region Properties.
         /// <summary>
-        /// Property to return a list of available reader provider extensions.
+        /// Property to return all loaded file system reader providers.
         /// </summary>
-        IReadOnlyList<GorgonFileExtension> ReaderExtensions
+        IReadOnlyDictionary<string, IGorgonFileSystemProvider> Readers
         {
             get;
         }
 
         /// <summary>
-        /// Property to return all loaded file system reader providers.
+        /// Property to return all loaded file system writer plug ins.
         /// </summary>
-        IReadOnlyDictionary<string, IGorgonFileSystemProvider> Readers
+        IReadOnlyDictionary<string, FileWriterPlugin> Writers
         {
             get;
         }
@@ -60,10 +57,16 @@ namespace Gorgon.Editor.Services
 
         #region Methods.
         /// <summary>
-        /// Function to build a file system reader filter string for file dialogs.
+        /// Function to retrieve the available file extensions for all readers.
         /// </summary>
-        /// <returns>The string containing the file dialog filter.</returns>
-        string GetReaderDialogFilterString();
+        /// <returns>A list of all file extensions available for all readers.</returns>
+        IReadOnlyList<(string desc, IReadOnlyList<GorgonFileExtension> extensions)> GetReaderFileExtensions();
+
+        /// <summary>
+        /// Function to retrieve the available file extensions for all writers.
+        /// </summary>
+        /// <returns>A list of all file extensions available for all writers.</returns>
+        IReadOnlyList<(string desc, FileWriterPlugin plugin, IReadOnlyList<GorgonFileExtension> extensions)> GetWriterFileExtensions();
 
         /// <summary>
         /// Function to add file system reader providers.
@@ -72,11 +75,24 @@ namespace Gorgon.Editor.Services
         void AddReaders(IEnumerable<IGorgonFileSystemProvider> providers);
 
         /// <summary>
+        /// Function to add file system writer plug ins.
+        /// </summary>
+        /// <param name="writerPlugins">The list of plugins to add.</param>
+        void AddWriters(IEnumerable<FileWriterPlugin> writerPlugins);
+
+        /// <summary>
         /// Function to find the most suitable provider for the file specified in the path.
         /// </summary>
         /// <param name="file">The file to evaluate.</param>
         /// <returns>The best suitable provider, or <b>null</b> if none could be located.</returns>
-        IGorgonFileSystemProvider GetBestProvider(FileInfo file);
+        IGorgonFileSystemProvider GetBestReader(FileInfo file);
+
+        /// <summary>
+        /// Function to return the <see cref="FileWriterPlugin"/> by its plugin name.
+        /// </summary>
+        /// <param name="writerName">The name of the writer plug in to locate.</param>
+        /// <returns>The <see cref="FileWriterPlugin"/>, or <b>null</b> if no writer could be found.</returns>
+        FileWriterPlugin GetWriterByName(string writerName);
         #endregion
     }
 }

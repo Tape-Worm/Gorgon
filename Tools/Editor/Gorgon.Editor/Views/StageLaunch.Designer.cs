@@ -35,15 +35,11 @@
             this.ButtonGroup = new ComponentFactory.Krypton.Toolkit.KryptonCheckSet(this.components);
             this.panel2 = new System.Windows.Forms.Panel();
             this.PanelButtons = new System.Windows.Forms.Panel();
-            this.PanelBack = new System.Windows.Forms.Panel();
-            this.kryptonBorderEdge1 = new ComponentFactory.Krypton.Toolkit.KryptonBorderEdge();
-            this.ButtonBack = new ComponentFactory.Krypton.Toolkit.KryptonButton();
             this.StageNewProject = new Gorgon.Editor.Views.StageNew();
             this.StageRecent = new Gorgon.Editor.Views.StageRecent();
             ((System.ComponentModel.ISupportInitialize)(this.ButtonGroup)).BeginInit();
             this.panel2.SuspendLayout();
             this.PanelButtons.SuspendLayout();
-            this.PanelBack.SuspendLayout();
             this.SuspendLayout();
             // 
             // ButtonOpenProject
@@ -96,7 +92,6 @@
             this.panel2.AutoSize = true;
             this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.panel2.Controls.Add(this.PanelButtons);
-            this.panel2.Controls.Add(this.PanelBack);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Margin = new System.Windows.Forms.Padding(0);
@@ -112,50 +107,10 @@
             this.PanelButtons.Controls.Add(this.CheckNewProject);
             this.PanelButtons.Controls.Add(this.ButtonOpenProject);
             this.PanelButtons.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PanelButtons.Location = new System.Drawing.Point(0, 47);
+            this.PanelButtons.Location = new System.Drawing.Point(0, 0);
             this.PanelButtons.Name = "PanelButtons";
-            this.PanelButtons.Size = new System.Drawing.Size(148, 557);
+            this.PanelButtons.Size = new System.Drawing.Size(148, 604);
             this.PanelButtons.TabIndex = 1;
-            // 
-            // PanelBack
-            // 
-            this.PanelBack.AutoSize = true;
-            this.PanelBack.Controls.Add(this.kryptonBorderEdge1);
-            this.PanelBack.Controls.Add(this.ButtonBack);
-            this.PanelBack.Dock = System.Windows.Forms.DockStyle.Top;
-            this.PanelBack.Location = new System.Drawing.Point(0, 0);
-            this.PanelBack.Margin = new System.Windows.Forms.Padding(0);
-            this.PanelBack.Name = "PanelBack";
-            this.PanelBack.Padding = new System.Windows.Forms.Padding(3, 3, 3, 6);
-            this.PanelBack.Size = new System.Drawing.Size(148, 47);
-            this.PanelBack.TabIndex = 0;
-            this.PanelBack.Visible = false;
-            // 
-            // kryptonBorderEdge1
-            // 
-            this.kryptonBorderEdge1.BorderStyle = ComponentFactory.Krypton.Toolkit.PaletteBorderStyle.ContextMenuSeparator;
-            this.kryptonBorderEdge1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.kryptonBorderEdge1.Location = new System.Drawing.Point(3, 40);
-            this.kryptonBorderEdge1.Name = "kryptonBorderEdge1";
-            this.kryptonBorderEdge1.Size = new System.Drawing.Size(142, 1);
-            this.kryptonBorderEdge1.StateCommon.Width = 1;
-            this.kryptonBorderEdge1.Text = "kryptonBorderEdge1";
-            // 
-            // ButtonBack
-            // 
-            this.ButtonBack.AutoSize = true;
-            this.ButtonBack.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ButtonBack.ButtonStyle = ComponentFactory.Krypton.Toolkit.ButtonStyle.Custom3;
-            this.ButtonBack.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ButtonBack.Location = new System.Drawing.Point(3, 3);
-            this.ButtonBack.Margin = new System.Windows.Forms.Padding(0);
-            this.ButtonBack.Name = "ButtonBack";
-            this.ButtonBack.Size = new System.Drawing.Size(142, 38);
-            this.ButtonBack.StateCommon.Content.Padding = new System.Windows.Forms.Padding(6, 6, -1, 6);
-            this.ButtonBack.TabIndex = 0;
-            this.ButtonBack.Values.Image = global::Gorgon.Editor.Properties.Resources.back_icon_24x24;
-            this.ButtonBack.Values.Text = "Go back";
-            this.ButtonBack.Click += new System.EventHandler(this.ButtonBack_Click);
             // 
             // StageNewProject
             // 
@@ -177,7 +132,6 @@
             this.StageRecent.Padding = new System.Windows.Forms.Padding(6);
             this.StageRecent.Size = new System.Drawing.Size(675, 604);
             this.StageRecent.TabIndex = 1;
-            this.StageRecent.Visible = false;
             // 
             // StageLaunch
             // 
@@ -194,8 +148,6 @@
             this.panel2.PerformLayout();
             this.PanelButtons.ResumeLayout(false);
             this.PanelButtons.PerformLayout();
-            this.PanelBack.ResumeLayout(false);
-            this.PanelBack.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -206,12 +158,9 @@
         private ComponentFactory.Krypton.Toolkit.KryptonCheckButton CheckNewProject;
         private ComponentFactory.Krypton.Toolkit.KryptonCheckButton CheckRecent;
         private ComponentFactory.Krypton.Toolkit.KryptonCheckSet ButtonGroup;
-        private StageRecent StageRecent;
         public StageNew StageNewProject;
         private System.Windows.Forms.Panel panel2;
-        private ComponentFactory.Krypton.Toolkit.KryptonButton ButtonBack;
         private System.Windows.Forms.Panel PanelButtons;
-        private System.Windows.Forms.Panel PanelBack;
-        private ComponentFactory.Krypton.Toolkit.KryptonBorderEdge kryptonBorderEdge1;
+        internal StageRecent StageRecent;
     }
 }

@@ -25,15 +25,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Gorgon.Editor.Metadata;
-using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Services;
-using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -52,9 +44,9 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the project manager used to manage a project.
+        /// Property to return the recent files view model.
         /// </summary>
-        public IProjectManager ProjectManager
+        public IRecentVm RecentFiles
         {
             get;
         }
@@ -62,29 +54,33 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the dialog for opening projects.
         /// </summary>
-        public IEditorFileDialogService OpenDialog
+        public IEditorFileOpenDialogService OpenDialog
         {
             get;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MainParameters"/> class.
+        /// Property to return the dialog for saving projects.
         /// </summary>
-        /// <param name="settings">The settings for the application.</param>
-        /// <param name="projectManager">The project manager for the application.</param>
+        public IEditorFileSaveAsDialogService SaveDialog
+        {
+            get;
+        }
+
+        /// <summary>Initializes a new instance of the MainParameters class.</summary>
         /// <param name="newProject">The new project view model.</param>
+        /// <param name="recent">The recent files view model.</param>
         /// <param name="viewModelFactory">The view model factory for creating view models.</param>
         /// <param name="openDialog">A dialog service used for opening files.</param>
-        /// <param name="messageDisplay">The message display service to use.</param>
-        /// <param name="busyService">The busy state service to use.</param>
+        /// <param name="saveDialog">A dialog service used for saving files.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public MainParameters(EditorSettings settings, IProjectManager projectManager, IStageNewVm newProject, ViewModelFactory viewModelFactory, IEditorFileDialogService openDialog, IMessageDisplayService messageDisplay, IBusyStateService busyService)
-            : base(viewModelFactory, messageDisplay, busyService)
-        {
-            Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        public MainParameters(IStageNewVm newProject, IRecentVm recent, ViewModelFactory viewModelFactory, IEditorFileOpenDialogService openDialog, IEditorFileSaveAsDialogService saveDialog)
+            : base(viewModelFactory)
+        {            
             OpenDialog = openDialog ?? throw new ArgumentNullException(nameof(openDialog));
-            ProjectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
+            SaveDialog = saveDialog ?? throw new ArgumentNullException(nameof(saveDialog));
             NewProject = newProject ?? throw new ArgumentNullException(nameof(newProject));
+            RecentFiles = recent ?? throw new ArgumentNullException(nameof(recent));
         }
     }
 }

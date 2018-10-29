@@ -25,13 +25,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Editor.UI;
-using Gorgon.IO;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -39,7 +33,7 @@ namespace Gorgon.Editor.ViewModels
     /// The view model for our file explorer.
     /// </summary>
     internal interface IFileExplorerVm
-        : IViewModel, IDragDropHandler<IFileExplorerNodeDragData>
+        : IViewModel, IDragDropHandler<IFileExplorerNodeDragData>, IDragDropHandler<IExplorerFilesDragData>
     {
         #region Events.
         /// <summary>
@@ -61,6 +55,14 @@ namespace Gorgon.Editor.ViewModels
         /// Property to return the root node for the file system.
         /// </summary>
         IFileExplorerNodeVm RootNode
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command to execute when including or excluding all nodes.
+        /// </summary>
+        IEditorCommand<bool> IncludeExcludeAllCommand
         {
             get;
         }
@@ -125,6 +127,30 @@ namespace Gorgon.Editor.ViewModels
         /// Property to return the command used to refresh the specified node children.
         /// </summary>
         IEditorCommand<IFileExplorerNodeVm> RefreshNodeCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to delete the file system.
+        /// </summary>
+        IEditorCommand<object> DeleteFileSystemCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to export a node's contents to the physical file system
+        /// </summary>
+        IEditorCommand<IFileExplorerNodeVm> ExportNodeToCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to import files and directories into the specified node.
+        /// </summary>
+        IEditorCommand<IFileExplorerNodeVm> ImportIntoNodeCommand
         {
             get;
         }

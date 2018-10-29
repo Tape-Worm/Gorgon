@@ -40,18 +40,17 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to set or return the serivce used to show busy states.
         /// </summary>
-        public IBusyStateService BusyState
-        {
-            get;
-        }
+        public IBusyStateService BusyState => ViewModelFactory.BusyService;
 
         /// <summary>
         /// Property to set or return the service used to show message dialogs.
         /// </summary>
-        public IMessageDisplayService MessageDisplay
-        {
-            get;
-        }
+        public IMessageDisplayService MessageDisplay => ViewModelFactory.MessageDisplay;
+
+        /// <summary>
+        /// Property to return the directory locator service used to select a directory.
+        /// </summary>
+        public IDirectoryLocateService DirectoryLocator => ViewModelFactory.DirectoryLocator;
 
         /// <summary>
         /// Property to set or return the current project.
@@ -63,13 +62,14 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to set or return the settings for the application.
+        /// Property to return the project manager for the application.
         /// </summary>
-        public EditorSettings Settings
-        {
-            get;
-            set;
-        }
+        public IProjectManager ProjectManager => ViewModelFactory.ProjectManager;        
+
+        /// <summary>
+        /// Property to return the settings for the application.
+        /// </summary>
+        public EditorSettings Settings => ViewModelFactory.Settings;
 
         /// <summary>
         /// Property to return the view model factory.
@@ -78,19 +78,20 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
         }
+        
+        /// <summary>
+        /// Property to return the application clipboard service to use.
+        /// </summary>
+        public IClipboardService ClipboardService => ViewModelFactory.Clipboard;        
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewModelCommonParameters"/> class.
         /// </summary>
         /// <param name="viewModelFactory">The view model factory for creating view models.</param>
-        /// <param name="messageDisplay">The message display service to use.</param>
-        /// <param name="busyService">The busy state service to use.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public ViewModelCommonParameters(ViewModelFactory viewModelFactory, IMessageDisplayService messageDisplay, IBusyStateService busyService)
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="viewModelFactory"/> parameter is <b>null</b>.</exception>
+        public ViewModelCommonParameters(ViewModelFactory viewModelFactory)
         {
             ViewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
-            MessageDisplay = messageDisplay ?? throw new ArgumentNullException(nameof(messageDisplay));
-            BusyState = busyService ?? throw new ArgumentNullException(nameof(busyService));
         }
     }
 }
