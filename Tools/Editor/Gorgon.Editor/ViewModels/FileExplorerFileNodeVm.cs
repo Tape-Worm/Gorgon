@@ -31,6 +31,7 @@ using Gorgon.Core;
 using Gorgon.Editor.Services;
 using System.Threading;
 using Gorgon.Editor.Properties;
+using Gorgon.Editor.Plugins;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -40,6 +41,11 @@ namespace Gorgon.Editor.ViewModels
     internal class FileExplorerFileNodeVm
         : FileExplorerNodeCommon
     {
+        #region Variables.
+        // The plug in metadata.
+        private IContentPluginMetadata _contentPlugin;
+        #endregion
+
         #region Properties.
         /// <summary>
         /// Property to return whether to allow child node creation for this node.
@@ -59,12 +65,39 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the image name to use for the node type.
         /// </summary>
-        public override string ImageName => "generic_file_20x20.png";
+        public override string ImageName => _contentPlugin == null ? "generic_file_20x20.png" : _contentPlugin.SmallIconID.ToString("N");
 
         /// <summary>
         /// Property to return whether or not the allow this node to be deleted.
         /// </summary>
         public override bool AllowDelete => true;
+
+        /// <summary>Property to return whether this node represents content or not.</summary>
+        public override bool IsContent => true;
+
+        /// <summary>
+        /// Property to set or return the metadata for a content plugin on this node.
+        /// </summary>
+        /// <remarks>
+        /// For this type of node, there is no metadata.
+        /// </remarks>
+        public override IContentPluginMetadata ContentMetadata
+        {
+            get => _contentPlugin;
+            set
+            {
+                if (_contentPlugin == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _contentPlugin = value;
+                OnPropertyChanged();
+
+                NotifyPropertyChanged(nameof(ImageName));
+            }
+        }
         #endregion
 
         #region Methods.

@@ -31,6 +31,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Core;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.IO;
@@ -68,6 +69,24 @@ namespace Gorgon.Editor.ViewModels
         /// Property to return whether or not the allow this node to be deleted.
         /// </summary>
         public override bool AllowDelete => true;
+
+        /// <summary>Property to return whether this node represents content or not.</summary>
+        public override bool IsContent => false;
+
+        /// <summary>
+        /// Property to set or return the metadata for a content plugin on this node.
+        /// </summary>
+        /// <remarks>
+        /// For this type of node, there is no metadata.
+        /// </remarks>
+        public override IContentPluginMetadata ContentMetadata
+        {
+            get => null;
+            set
+            {
+                // Empty by default.
+            }
+        }
         #endregion
 
         #region Methods.

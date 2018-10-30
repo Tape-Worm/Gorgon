@@ -65,6 +65,7 @@ namespace Gorgon.Editor.ProjectData
         // The query used to create a table for file/folder inclusions in the project.
         private const string IncludeMetadataCreate = @"CREATE TABLE IF NOT EXISTS IncludedPathMetadata (
                                                             FullPath TEXT NOT NULL,
+                                                            PluginName TEXT NULL,
                                                             PRIMARY KEY (FullPath)
                                                        );
                                                        CREATE UNIQUE INDEX IncludeIndex ON IncludedPathMetadata (FullPath)";

@@ -27,6 +27,7 @@
 using System;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
+using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -36,6 +37,11 @@ namespace Gorgon.Editor.ViewModels
     internal class ProjectVmParameters
         : ViewModelCommonParameters
     {
+        /// <summary>
+        /// Property to return the content plugins.
+        /// </summary>
+        public IContentPluginService ContentPlugins => ViewModelFactory.ContentPlugins;
+
         /// <summary>
         /// Property to return the metadata manager for the project.
         /// </summary>

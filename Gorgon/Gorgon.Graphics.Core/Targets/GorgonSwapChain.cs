@@ -1118,6 +1118,7 @@ namespace Gorgon.Graphics.Core
 
             if (swapChain == null)
             {
+                this.UnregisterDisposable(Graphics);
                 return;
             }
 

@@ -36,6 +36,7 @@ using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Editor.Data;
 using Gorgon.Editor.Metadata;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
@@ -97,6 +98,8 @@ namespace Gorgon.Editor.ViewModels
         private IDirectoryLocateService _directoryLocator;
         // The application settings.
         private EditorSettings _settings;
+        // The content plugin service.
+        private IContentPluginService _contentPlugins;
         #endregion
 
         #region Properties.
@@ -404,7 +407,7 @@ namespace Gorgon.Editor.ViewModels
                 // Add child nodes.
                 foreach (IFileExplorerNodeVm child in RootNode.Children.Traverse(n => n.Children))
                 {
-                    child.Included = include;
+                    child.Included = include;                    
                     paths.Add(child.FullPath);
                 }
 
@@ -415,6 +418,11 @@ namespace Gorgon.Editor.ViewModels
                 else
                 {
                     _metaDataManager.ExcludePaths(paths);
+                }
+
+                foreach (IFileExplorerNodeVm child in RootNode.Children.Traverse(n => n.Children))
+                {
+                    GetNodeAssociationData(child);
                 }
 
                 // Remove all nodes if we're not showing excluded items.
@@ -450,7 +458,7 @@ namespace Gorgon.Editor.ViewModels
                 if (node != RootNode)
                 {
                     paths.Add(node.FullPath);
-                    node.Included = include;
+                    node.Included = include;                    
                 }
 
                 // If our parent node is not included, and we've included this node, then we'll include it now.
@@ -464,7 +472,7 @@ namespace Gorgon.Editor.ViewModels
                 // Add child nodes.
                 foreach (IFileExplorerNodeVm child in node.Children.Traverse(n => n.Children))
                 {
-                    child.Included = include;
+                    child.Included = include;                    
                     paths.Add(child.FullPath);
                 }
 
@@ -476,6 +484,14 @@ namespace Gorgon.Editor.ViewModels
                 {
                     _metaDataManager.ExcludePaths(paths);
                 }
+
+                // Update associations.
+                foreach (IFileExplorerNodeVm child in node.Children.Traverse(n => n.Children))
+                {
+                    GetNodeAssociationData(child);
+                }
+
+                GetNodeAssociationData(node);
 
                 if ((!include) && (!_project.ShowExternalItems))
                 {
@@ -587,7 +603,12 @@ namespace Gorgon.Editor.ViewModels
 
             foreach (FileInfo file in _metaDataManager.GetIncludedFiles(parent.FullName))
             {
-                nodeToRefresh.Children.Add(_factory.CreateFileExplorerFileNodeVm(_project, _fileSystemService, nodeToRefresh, file));
+                nodeToRefresh.Children.Add(_factory.CreateFileExplorerFileNodeVm(_project, _metaDataManager, _fileSystemService, nodeToRefresh, file));
+            }
+
+            foreach (IFileExplorerNodeVm childNode in nodeToRefresh.Children.Traverse(n => n.Children))
+            {
+                GetNodeAssociationData(childNode);
             }
         }
 
@@ -1146,6 +1167,8 @@ namespace Gorgon.Editor.ViewModels
             {
                 _nodePathLookup[node.FullPath] = node;
                 node.Children.CollectionChanged += Children_CollectionChanged;
+
+                GetNodeAssociationData(node);
             }
 
             parent.Children.CollectionChanged += Children_CollectionChanged;
@@ -1195,6 +1218,64 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Function to retrieve association data for the node.
+        /// </summary>
+        /// <param name="node">The node to evaluate.</param>
+        private void GetNodeAssociationData(IFileExplorerNodeVm node)
+        {
+            // Do not query association data for excluded file paths.
+            if ((!node.Included) || (!node.IsContent))
+            {
+                node.ContentMetadata = null;
+                return;
+            }
+
+            // This node is already associated.
+            if (node.ContentMetadata != null)
+            {
+                return;
+            }
+
+            // Check the metadata for the plugin type associated with the node.
+            if (_metaDataManager.PathInProject(node.FullPath))
+            {
+                (ContentPlugin plugin, MetadataPluginState state) = _metaDataManager.GetPlugin(node.FullPath);
+
+                switch (state)
+                {
+                    case MetadataPluginState.NotFound:
+                        node.ContentMetadata = null;
+                        return;
+                    case MetadataPluginState.Assigned:
+                        node.ContentMetadata = plugin as IContentPluginMetadata;
+                        return;
+                }
+            }
+
+            // TODO: Look at database metadata first, then fall back to this as this will be slow.
+            // Attempt to associate a content plug in with the node.            
+            foreach (KeyValuePair<string, ContentPlugin> plugin in _contentPlugins.Plugins)
+            {
+                var pluginMetadata = plugin.Value as IContentPluginMetadata;
+                node.ContentMetadata = null;
+
+                if (pluginMetadata == null)
+                {
+                    continue;
+                }
+
+                if (!pluginMetadata.CanOpenContent(node.PhysicalPath))
+                {
+                    continue;
+                }
+
+                node.ContentMetadata = pluginMetadata;
+            }
+
+            _metaDataManager.SetPlugin(node.FullPath, node.ContentMetadata as ContentPlugin);
+        }
+
+        /// <summary>
         /// Function to inject dependencies for the view model.
         /// </summary>
         /// <param name="injectionParameters">The parameters to inject.</param>
@@ -1211,6 +1292,7 @@ namespace Gorgon.Editor.ViewModels
             RootNode = injectionParameters.RootNode ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.RootNode), nameof(injectionParameters));
             _clipboard = injectionParameters.ClipboardService ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.ClipboardService), nameof(injectionParameters));
             _directoryLocator = injectionParameters.DirectoryLocator ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.DirectoryLocator), nameof(injectionParameters));
+            _contentPlugins = injectionParameters.ContentPlugins ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.ContentPlugins), nameof(injectionParameters));
 
             EnumerateChildren(RootNode);
         }
@@ -1443,7 +1525,7 @@ namespace Gorgon.Editor.ViewModels
                 Program.Log.LogException(ex);
                 return false;
             }
-        }
+        }        
         #endregion
 
         #region Constructor/Finalizer.

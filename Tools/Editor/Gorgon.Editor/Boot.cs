@@ -247,6 +247,54 @@ namespace Gorgon.Editor
         }
 
         /// <summary>
+        /// Function to load any content plugins used to create/edit content.
+        /// </summary>
+        /// <returns>The content plugin manager service used to manipulate the loaded content plugins.</returns>
+        private ContentPluginService LoadContentPlugins()
+        {
+            var contentPluginsDir = new DirectoryInfo(Path.Combine(_settings.PluginPath, "Content"));
+            IGorgonPluginService plugins = null;
+            var contentPlugins = new ContentPluginService();
+
+            try
+            {
+                _splash.InfoText = Resources.GOREDIT_TEXT_LOADING_FILESYSTEM_PLUGINS;
+
+                if (!contentPluginsDir.Exists)
+                {
+                    contentPluginsDir.Create();
+                    return contentPlugins;
+                }
+
+                _pluginCache.LoadPluginAssemblies(contentPluginsDir.FullName, "*.dll");
+
+                plugins = new GorgonMefPluginService(_pluginCache, Program.Log);
+
+                IReadOnlyList<ContentPlugin> pluginList = plugins.GetPlugins<ContentPlugin>();
+
+                foreach (ContentPlugin plugin in pluginList)
+                {
+                    // TODO: Error trap and mark as disabled so we can keep going.
+                    contentPlugins.AddContentPlugin(plugin);                    
+                }
+
+                // Initialize the plugins.
+                foreach (KeyValuePair<string, ContentPlugin> plugin in contentPlugins.Plugins)
+                {
+                    // TODO: Error trap and mark as disabled so we can keep going.
+                    plugin.Value.Initialize(contentPlugins);
+                }
+            }
+            catch (Exception ex)
+            {
+                Program.Log.LogException(ex);
+                GorgonDialogs.ErrorBox(_splash, Resources.GOREDIT_ERR_LOADING_PLUGINS, Resources.GOREDIT_ERR_ERROR, ex);
+            }
+
+            return contentPlugins;
+        }
+
+        /// <summary>
         /// Function to load any plugins used to import or export files.
         /// </summary>
         /// <returns>A file system provider management interface.</returns>
@@ -457,6 +505,8 @@ namespace Gorgon.Editor
 
                 // Load our file system import/export plugins.
                 FileSystemProviders fileSystemProviders = LoadFileSystemPlugins();
+                // Load our content service plugins.
+                ContentPluginService contentPluginService = LoadContentPlugins();
 
                 // Create the project manager for the application
                 _projectManager = new ProjectManager(fileSystemProviders);
@@ -489,8 +539,8 @@ namespace Gorgon.Editor
                 MainForm = _mainForm;
 
                 var factory = new ViewModelFactory(_settings,
-                                                   _graphicsContext,
                                                    fileSystemProviders,
+                                                   contentPluginService,
                                                    _projectManager,
                                                    new MessageBoxService(),
                                                    new WaitCursorBusyState(),
@@ -508,7 +558,8 @@ namespace Gorgon.Editor
                     windowState = (FormWindowState)_settings.WindowState;
                 }
 
-                _mainForm.SetDataContext(factory.CreateMainViewModel(workspaceDir));
+                _mainForm.GraphicsContext = _graphicsContext;
+                _mainForm.SetDataContext(factory.CreateMainViewModel(workspaceDir, _graphicsContext.Graphics.VideoAdapter.Name));
                 _mainForm.Show();
                 _mainForm.WindowState = windowState;
             }

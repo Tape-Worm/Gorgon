@@ -155,7 +155,7 @@ namespace Gorgon.Editor.Rendering
                                                                  Width = control.ClientSize.Width,
                                                                  Height = control.ClientSize.Height,
                                                                  Format = BufferFormat.R8G8B8A8_UNorm,
-                                                                 StretchBackBuffer = false
+                                                                 UseFlipMode = true
                                                              });
 
             _swapChainLeases[control.Name] = new WeakReference<GorgonSwapChain>(resultSwap);

@@ -172,4 +172,10 @@
   <data name="GOREDIT_ERR_STREAM_READ_ONLY" xml:space="preserve">
     <value>The stream is read only.</value>
   </data>
+  <data name="GOREDIT_ERR_NO_CONTENT_VIEW" xml:space="preserve">
+    <value>Content objects must have a view associated with them.</value>
+  </data>
+  <data name="GOREDIT_ERR_NO_CONTENT_FROM_PLUGIN" xml:space="preserve">
+    <value>The plug in '{0}' did not produce any content.</value>
+  </data>
 </root>

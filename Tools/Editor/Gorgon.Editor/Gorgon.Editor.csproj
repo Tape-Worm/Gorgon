@@ -79,6 +79,7 @@
     <Compile Include="ProjectData\MetadataManager.cs" />
     <Compile Include="RecentItem.cs" />
     <Compile Include="RibbonMerger.cs" />
+    <Compile Include="Services\ContentPluginService.cs" />
     <Compile Include="Services\CopyDirectoryArgs.cs" />
     <Compile Include="Services\EditorFileSaveDialogService.cs" />
     <Compile Include="Services\EditorFileOpenDialogService.cs" />
@@ -94,6 +95,7 @@
     <Compile Include="EditorSettings.cs" />
     <Compile Include="Services\ImportArgs.cs" />
     <Compile Include="Services\WorkspaceTester.cs" />
+    <Compile Include="Services\_Interfaces\IContentPluginManagerService.cs" />
     <Compile Include="Services\_Interfaces\IEditorFileSaveAsDialogService.cs" />
     <Compile Include="Services\_Interfaces\IEditorFileOpenDialogService.cs" />
     <Compile Include="Services\_Interfaces\IFileSystemProviders.cs" />
@@ -349,11 +351,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy $(SolutionDir)PlugIns\Bin\$(ConfigurationName)\Gorgon.FileSystem.*.dll $(TargetDir)\Plugins\Filesystem\
-copy $(SolutionDir)PlugIns\Bin\$(ConfigurationName)\Gorgon.FileSystem.*.pdb $(TargetDir)\Plugins\Filesystem\
-copy $(SolutionDir)PlugIns\Bin\$(ConfigurationName)\Gorgon.Editor.GorPackWriter.dll $(TargetDir)\Plugins\Filesystem\
-copy $(SolutionDir)PlugIns\Bin\$(ConfigurationName)\Gorgon.Editor.GorPackWriter.pdb $(TargetDir)\Plugins\Filesystem\
-copy $(SolutionDir)PlugIns\Bin\$(ConfigurationName)\ICSharpCode.SharpZipLib.dll $(TargetDir)\Plugins\Filesystem\
-</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>

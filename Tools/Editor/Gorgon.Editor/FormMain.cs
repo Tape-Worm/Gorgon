@@ -36,6 +36,7 @@ using Gorgon.Editor.UI;
 using Gorgon.Editor.ViewModels;
 using Gorgon.Editor.Views;
 using Gorgon.Timing;
+using Gorgon.Editor.Rendering;
 
 namespace Gorgon.Editor
 {
@@ -88,6 +89,16 @@ namespace Gorgon.Editor
         {
             get;
             private set;
+        }
+
+        /// <summary>
+        /// Property to set or return the application graphics context.
+        /// </summary>
+        [Browsable(false)]
+        public IGraphicsContext GraphicsContext
+        {
+            get => PanelProject.GraphicsContext;
+            set => PanelProject.GraphicsContext = value;
         }
 
         /// <summary>
@@ -411,6 +422,11 @@ namespace Gorgon.Editor
         /// </summary>
         private void KeepWaitPanelOnTop()
         {
+            if (ProgressScreen.Visible)
+            {
+                ProgressScreen.BringToFront();
+            }
+
             if (!WaitScreen.Visible)
             {
                 return;
@@ -914,6 +930,8 @@ namespace Gorgon.Editor
             switch (_closeFlag)
             {
                 case CloseStates.Closing:
+                    // Don't hang on to this.
+                    GraphicsContext = null;
                     e.Cancel = true;
                     return;
                 case CloseStates.NotClosing:
@@ -926,12 +944,14 @@ namespace Gorgon.Editor
 
                     switch (WindowState)
                     {
+                        case FormWindowState.Normal:
                         case FormWindowState.Maximized:
                             windowDimensions = new DX.Rectangle(Location.X, Location.Y, Size.Width, Size.Height);
-                            windowState = (int)FormWindowState.Maximized;
+                            windowState = (int)WindowState;
                             break;
                         default:
                             windowDimensions = new DX.Rectangle(RestoreBounds.X, RestoreBounds.Y, RestoreBounds.Width, RestoreBounds.Height);
+                            windowState = (int)FormWindowState.Normal;
                             break;
                     }
 

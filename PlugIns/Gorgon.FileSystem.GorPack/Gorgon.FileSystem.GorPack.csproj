@@ -108,11 +108,15 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetDir)ICSharpCode.SharpZipLib.dll" "$(SolutionDir)PlugIns\Bin\$(ConfigurationName)\"
+    <PostBuildEvent>REM Copy
+copy "$(TargetDir)ICSharpCode.SharpZipLib.dll" "$(SolutionDir)PlugIns\Bin\$(ConfigurationName)\"
 copy "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)PlugIns\Bin\$(ConfigurationName)\"
 copy "$(TargetPath)" "$(SolutionDir)PlugIns\Bin\$(ConfigurationName)\"
-REM copy "$(TargetDir)$(ProjectName).dll" "$(SolutionDir)Tools\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\"
-REM copy "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)Tools\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\"
+
+REM Editor copy.
+copy "$(TargetPath)" "$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\FileSystem"
+copy "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\FileSystem"
+copy "$(TargetDir)ICSharpCode.SharpZipLib.dll" "$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\FileSystem"
 </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

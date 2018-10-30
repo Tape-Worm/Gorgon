@@ -31,6 +31,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Core;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 
@@ -92,6 +93,12 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
             private set;
+        }
+
+        /// <summary>Property to return whether this node represents content or not.</summary>
+        public abstract bool IsContent
+        {
+            get;
         }
 
         /// <summary>
@@ -255,6 +262,14 @@ namespace Gorgon.Editor.ViewModels
                 _isExpanded = value;
                 OnPropertyChanged();
             }
+        }
+
+        /// <summary>Property to set or return the metadata for a content plugin on this node.</summary>
+        /// <value>The content metadata.</value>
+        public abstract IContentPluginMetadata ContentMetadata
+        {
+            get;
+            set;
         }
         #endregion
 

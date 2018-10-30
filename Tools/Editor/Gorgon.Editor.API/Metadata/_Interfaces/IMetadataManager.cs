@@ -26,9 +26,29 @@
 
 using System.Collections.Generic;
 using System.IO;
+using Gorgon.Editor.Plugins;
 
 namespace Gorgon.Editor.Metadata
 {
+    /// <summary>
+    /// The state for the plugin when associated with an included item.
+    /// </summary>
+    public enum MetadataPluginState
+    {
+        /// <summary>
+        /// No plugin was ever assigned.
+        /// </summary>
+        Unassigned,
+        /// <summary>
+        /// The plugin was assigned.
+        /// </summary>
+        Assigned,
+        /// <summary>
+        /// The plugin was not found.
+        /// </summary>
+        NotFound
+    }
+
     /// <summary>
     /// Manages metadata for a project.
     /// </summary>
@@ -91,5 +111,19 @@ namespace Gorgon.Editor.Metadata
         /// <param name="rootPath">The root path to evaluate.</param>
         /// <returns>A list of included files.</returns>
         IEnumerable<FileInfo> GetIncludedFiles(string rootPath);
+
+        /// <summary>
+        /// Function to retrieve the plug in for a specified path.
+        /// </summary>
+        /// <param name="path">The path to evaluate.</param>
+        /// <returns>A tuple containing the plugin (if available), and a <see cref="MetadataPluginState"/>.</returns>
+        (ContentPlugin plugin, MetadataPluginState state) GetPlugin(string path);
+
+        /// <summary>
+        /// Function to assign a plugin to a path.
+        /// </summary>
+        /// <param name="path">The path to evaluate.</param>
+        /// <param name="plugin">The plugin to assign.</param>
+        void SetPlugin(string path, ContentPlugin plugin);
     }
 }

@@ -544,4 +544,10 @@ Would you like to remove this project working directory now?</value>
 
 Please try again.</value>
   </data>
+  <data name="GOREDIT_TEXT_LOADING_CONTENT_PLUGINS" xml:space="preserve">
+    <value>Loading content plug ins...</value>
+  </data>
+  <data name="GOREDIT_ERR_PATH_NOT_INCLUDED" xml:space="preserve">
+    <value>The path '{0}' does not exist in the project metadata.</value>
+  </data>
 </root>

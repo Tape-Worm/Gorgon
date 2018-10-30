@@ -29,6 +29,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ViewModels
@@ -59,6 +60,14 @@ namespace Gorgon.Editor.ViewModels
         : IViewModel
     {
         #region Properties.
+        /// <summary>
+        /// Property to return whether this node represents content or not.
+        /// </summary>
+        bool IsContent
+        {
+            get;            
+        }
+
         /// <summary>
         /// Property to set or return whether to mark this node as "cut" or not.
         /// </summary>
@@ -153,6 +162,15 @@ namespace Gorgon.Editor.ViewModels
         /// Property to set or return whether the node is in an expanded state or not (if it has children).
         /// </summary>
         bool IsExpanded
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the metadata for a content plugin on this node.
+        /// </summary>
+        IContentPluginMetadata ContentMetadata
         {
             get;
             set;

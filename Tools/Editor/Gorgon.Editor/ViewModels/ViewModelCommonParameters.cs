@@ -48,11 +48,6 @@ namespace Gorgon.Editor.ViewModels
         public IMessageDisplayService MessageDisplay => ViewModelFactory.MessageDisplay;
 
         /// <summary>
-        /// Property to return the directory locator service used to select a directory.
-        /// </summary>
-        public IDirectoryLocateService DirectoryLocator => ViewModelFactory.DirectoryLocator;
-
-        /// <summary>
         /// Property to set or return the current project.
         /// </summary>
         public IProject Project
@@ -82,7 +77,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the application clipboard service to use.
         /// </summary>
-        public IClipboardService ClipboardService => ViewModelFactory.Clipboard;        
+        public IClipboardService ClipboardService => ViewModelFactory.Clipboard;                
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewModelCommonParameters"/> class.

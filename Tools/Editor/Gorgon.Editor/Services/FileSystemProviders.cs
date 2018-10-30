@@ -42,20 +42,13 @@ namespace Gorgon.Editor.Services
         : IFileSystemProviders
     {
         #region Variables.
-        // The list of available file extensions that are supported.
-        private List<GorgonFileExtension> _readerExtensions = new List<GorgonFileExtension>();
         // A list of available file system reader providers.
         private readonly Dictionary<string, IGorgonFileSystemProvider> _readers = new Dictionary<string, IGorgonFileSystemProvider>(StringComparer.OrdinalIgnoreCase);
         // A list of available file system writer providers.
         private readonly Dictionary<string, FileWriterPlugin> _writers = new Dictionary<string, FileWriterPlugin>(StringComparer.OrdinalIgnoreCase);
         #endregion
 
-        #region Properties.
-        /// <summary>
-        /// Property to return a list of available reader provider extensions.
-        /// </summary>
-        public IReadOnlyList<GorgonFileExtension> ReaderExtensions => _readerExtensions;
-                
+        #region Properties.                
         /// <summary>
         /// Property to return all loaded file system reader providers.
         /// </summary>

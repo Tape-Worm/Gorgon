@@ -49,6 +49,18 @@ namespace Gorgon.Editor.Metadata
         {
             get;
         }
+        
+        /// <summary>
+        /// Property to set or return the name of the plugin associated with the metadata file path.
+        /// </summary>
+        /// <remarks>
+        /// If this value is <b>null</b>, then the plugin hasn't been set.  If it's an empty string, then no plugin is associated with this metadata.
+        /// </remarks>
+        public string PluginName
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Constructor.

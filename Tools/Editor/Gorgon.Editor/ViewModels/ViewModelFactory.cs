@@ -25,10 +25,12 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using Gorgon.Collections;
 using Gorgon.Editor.Metadata;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
@@ -51,8 +53,6 @@ namespace Gorgon.Editor.ViewModels
         private readonly ProjectManager _projectManager;
         // The clip board service to use.
         private readonly ClipboardService _clipboard;
-        // The graphics context to use.
-        private readonly GraphicsContext _graphicsContext;
         // The directory locator service.
         private readonly DirectoryLocateService _dirLocator;
         #endregion
@@ -70,6 +70,14 @@ namespace Gorgon.Editor.ViewModels
         /// Property to return the file system providers used to read/write project files.
         /// </summary>
         public IFileSystemProviders FileSystemProviders
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the content plugins for the application.
+        /// </summary>
+        public IContentPluginService ContentPlugins
         {
             get;
         }
@@ -95,11 +103,6 @@ namespace Gorgon.Editor.ViewModels
         public IClipboardService Clipboard => _clipboard;
 
         /// <summary>
-        /// Property to return the graphics context for the application.
-        /// </summary>
-        public IGraphicsContext Graphics => _graphicsContext;
-
-        /// <summary>
         /// Property to return the directory locator service used to select directories on the physical file system.
         /// </summary>
         public IDirectoryLocateService DirectoryLocator => _dirLocator;
@@ -110,13 +113,14 @@ namespace Gorgon.Editor.ViewModels
         /// Function to create the main view model and any child view models.
         /// </summary>
         /// <param name="workspace">The directory to use for the workspace.</param>
+        /// <param name="gpuName">The name of the GPU used by the application.</param>
         /// <returns>A new instance of the main view model.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="workspace"/> parameter is <b>null</b>.</exception>
-        public IMain CreateMainViewModel(DirectoryInfo workspace)
+        public IMain CreateMainViewModel(DirectoryInfo workspace, string gpuName)
         {
             var newProjectVm = new StageNewVm
             {
-                GPUName = _graphicsContext.Graphics.VideoAdapter.Name
+                GPUName = gpuName
             };
             var recentFilesVm = new RecentVm();
 
@@ -138,20 +142,41 @@ namespace Gorgon.Editor.ViewModels
         /// Function to create a file explorer node view model for a file.
         /// </summary>
         /// <param name="project">The project data.</param>
+        /// <param name="metadataManager">The metadata manager for the project.</param>
         /// <param name="fileSystemService">The file system service used to manipulate the underlying physical file system.</param>
         /// <param name="parent">The parent for the node.</param>
         /// <param name="file">The file system file to wrap in the view model.</param>
         /// <returns>The new file explorer node view model.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, <paramref name="fileSystemService"/> or the <paramref name="file"/> parameter is <b>null</b>.</exception>
-        public IFileExplorerNodeVm CreateFileExplorerFileNodeVm(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parent, FileInfo file)
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, <paramref name="metadataManager"/>, <paramref name="fileSystemService"/> or the <paramref name="file"/> parameter is <b>null</b>.</exception>
+        public IFileExplorerNodeVm CreateFileExplorerFileNodeVm(IProject project, IMetadataManager metadataManager, IFileSystemService fileSystemService, IFileExplorerNodeVm parent, FileInfo file)
         {
+            if (project == null)
+            {
+                throw new ArgumentNullException(nameof(project));
+            }
+
+            if (metadataManager == null)
+            {
+                throw new ArgumentNullException(nameof(metadataManager));
+            }
+
+            if (fileSystemService == null)
+            {
+                throw new ArgumentNullException(nameof(fileSystemService));
+            }
+
+            if (file == null)
+            {
+                throw new ArgumentNullException(nameof(file));
+            }
+
             var result = new FileExplorerFileNodeVm();
 
             // TODO: Add links as children.
             result.Initialize(new FileExplorerNodeParameters(file.Name, file.FullName, project, this, fileSystemService)
             {
                 Parent = parent
-            });
+            });            
 
             return result;
         }
@@ -186,7 +211,7 @@ namespace Gorgon.Editor.ViewModels
 
             foreach (FileInfo file in metadataManager.GetIncludedFiles(directory.FullName))
             {
-                children.Add(CreateFileExplorerFileNodeVm(project, fileSystemService, result, file));
+                children.Add(CreateFileExplorerFileNodeVm(project, metadataManager, fileSystemService, result, file));
             }
 
             return result;
@@ -227,7 +252,7 @@ namespace Gorgon.Editor.ViewModels
 
             foreach (FileInfo file in metadataManager.GetIncludedFiles(project.ProjectWorkSpace.FullName))
             {
-                nodes.Add(CreateFileExplorerFileNodeVm(project, fileSystemService, root, file));
+                nodes.Add(CreateFileExplorerFileNodeVm(project, metadataManager, fileSystemService, root, file));
             }
 
             if (autoInclude)
@@ -273,7 +298,7 @@ namespace Gorgon.Editor.ViewModels
             var result = new ProjectVm();
             var fileSystemService = new FileSystemService(projectData.ProjectWorkSpace);
 
-            var metaDataManager = new MetadataManager(projectData, new SqliteMetadataProvider(projectData.MetadataFile));
+            var metaDataManager = new MetadataManager(projectData, ContentPlugins, new SqliteMetadataProvider(projectData.MetadataFile));
             metaDataManager.Load();
 
             result.FileExplorer = CreateFileExplorerViewModel(projectData, metaDataManager, fileSystemService, autoInclude);
@@ -297,8 +322,8 @@ namespace Gorgon.Editor.ViewModels
         ///<param name="dirLocatorService">The directory locator service.</param>
         /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
         public ViewModelFactory(EditorSettings settings, 
-                                GraphicsContext graphics, 
                                 FileSystemProviders providers, 
+                                ContentPluginService contentPlugins,
                                 ProjectManager projectManager, 
                                 MessageBoxService messages, 
                                 WaitCursorBusyState waitState, 
@@ -306,8 +331,8 @@ namespace Gorgon.Editor.ViewModels
                                 DirectoryLocateService dirLocatorService)
         {
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
-            _graphicsContext = graphics ?? throw new ArgumentNullException(nameof(graphics));
             FileSystemProviders = providers ?? throw new ArgumentNullException(nameof(providers));
+            ContentPlugins = contentPlugins ?? throw new ArgumentNullException(nameof(contentPlugins));
             _projectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
             _messageBoxService = messages ?? throw new ArgumentNullException(nameof(messages));
             _waitCursorService = waitState ?? throw new ArgumentNullException(nameof(waitState));

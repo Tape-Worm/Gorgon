@@ -35,6 +35,7 @@
         {
             this.SplitProject = new ComponentFactory.Krypton.Toolkit.KryptonSplitContainer();
             this.FileExplorer = new Gorgon.Editor.Views.FileExploder();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.SplitProject)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.SplitProject.Panel1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.SplitProject.Panel2)).BeginInit();
@@ -53,6 +54,7 @@
             // 
             // SplitProject.Panel2
             // 
+            this.SplitProject.Panel2.Controls.Add(this.button1);
             this.SplitProject.Panel2.Controls.Add(this.FileExplorer);
             this.SplitProject.Panel2MinSize = 256;
             this.SplitProject.Size = new System.Drawing.Size(976, 596);
@@ -70,6 +72,16 @@
             this.FileExplorer.TabIndex = 0;
             this.FileExplorer.Enter += new System.EventHandler(this.FileExplorer_Enter);
             this.FileExplorer.Leave += new System.EventHandler(this.FileExplorer_Enter);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(64, 356);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(156, 23);
+            this.button1.TabIndex = 1;
+            this.button1.Text = "CLICK ME";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // EditorProject
             // 
@@ -91,5 +103,6 @@
 
         private ComponentFactory.Krypton.Toolkit.KryptonSplitContainer SplitProject;
         public FileExploder FileExplorer;
+        private System.Windows.Forms.Button button1;
     }
 }

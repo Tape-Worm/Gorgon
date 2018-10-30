@@ -28,6 +28,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Gorgon.Editor.Content;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Plugins;
 using Gorgon.Editor.UI;
@@ -130,6 +131,14 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the current content for the project.
+        /// </summary>
+        IEditorContent CurrentContent
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
@@ -144,5 +153,10 @@ namespace Gorgon.Editor.ViewModels
         /// <returns>A task for asynchronous operation.</returns>
         Task PersistProjectAsync(string projectTitle, string path, FileWriterPlugin writer, Action<int, int, bool> progressCallback,  CancellationToken cancelToken);
         #endregion
+        
+        IEditorCommand<object> ClickTheButton
+        {
+            get;
+        }
     }
 }

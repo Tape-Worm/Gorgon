@@ -45,9 +45,9 @@ namespace Gorgon.Editor.Metadata
         // Query to remove all included paths from the metadata.
         private const string DeleteIncludedPaths = "DELETE FROM IncludedPathMetadata WHERE FullPath = @PPath";
         // Query to add an included path to the metadata.
-        private const string InsertIncludedPath = @"INSERT OR REPLACE INTO IncludedPathMetadata (FullPath) VALUES (@PPath)";
+        private const string InsertIncludedPath = @"INSERT OR REPLACE INTO IncludedPathMetadata (FullPath, PluginName ) VALUES (@PPath, @PPlugin)";
         // Query to retrieve all included paths from the metadata.
-        private const string SelectIncludedPaths = "SELECT FullPath FROM IncludedPathMetadata";
+        private const string SelectIncludedPaths = "SELECT FullPath, PluginName FROM IncludedPathMetadata";
         // Query to update the project metadata header.
         private const string UpdateProjectHeader = "UPDATE ProjectMetadata SET ProjectName=@PName, Version=@PVersion, WriterName=@PWriter, ShowExternalObjects=@PShowExtern";
         #endregion
@@ -81,10 +81,10 @@ namespace Gorgon.Editor.Metadata
         /// <param name="command">The command to execute against the database.</param>
         /// <param name="updated">The list of updated paths.</param>
         /// <param name="deleted">The list of deleted paths.</param>
-        private void UpdateIncludedPaths(SQLiteCommand command, IEnumerable<string> updated, IEnumerable<string> deleted)
+        private void UpdateIncludedPaths(SQLiteCommand command, IEnumerable<IncludedFileSystemPathMetadata> updated, IEnumerable<string> deleted)
         {                               
             command.CommandText = DeleteIncludedPaths;
-            SQLiteParameter param = command.Parameters.Add("@PPath", DbType.String);
+            SQLiteParameter param = command.Parameters.Add("@PPath", DbType.String);            
 
             foreach (string deletePath in deleted)
             {
@@ -93,10 +93,12 @@ namespace Gorgon.Editor.Metadata
             }
                                                
             command.CommandText = InsertIncludedPath;
+            SQLiteParameter param1 = command.Parameters.Add("@PPlugin", DbType.String);
 
-            foreach (string path in updated)
+            foreach (IncludedFileSystemPathMetadata path in updated)
             {
-                param.Value = path;
+                param.Value = path.Path;
+                param1.Value = path.PluginName;
                 command.ExecuteNonQuery();
             }
         }
@@ -142,11 +144,10 @@ namespace Gorgon.Editor.Metadata
 
             try
             {
-                var current = new HashSet<string>(GetIncludedPaths().Select(item => item.Path), StringComparer.OrdinalIgnoreCase);
-                var updated = new HashSet<string>(project.Metadata.IncludedPaths.Select(item => item.Path), StringComparer.OrdinalIgnoreCase);
+                var deleted = new HashSet<string>(GetIncludedPaths().Select(item => item.Path), StringComparer.OrdinalIgnoreCase);
 
                 // Get all items that are deleted from the updated list.
-                current.ExceptWith(updated);
+                deleted.ExceptWith(project.Metadata.IncludedPaths.Select(item => item.Path));
 
                 trans = conn.BeginTransaction();
                 command = new SQLiteCommand(UpdateProjectHeader, conn, trans);
@@ -159,7 +160,7 @@ namespace Gorgon.Editor.Metadata
 
                 command.Parameters.Clear();
 
-                UpdateIncludedPaths(command, updated, current);
+                UpdateIncludedPaths(command, project.Metadata.IncludedPaths, deleted);
 
                 trans.Commit();
 
@@ -194,7 +195,10 @@ namespace Gorgon.Editor.Metadata
 
                 while (reader.Read())
                 {
-                    result.Add(new IncludedFileSystemPathMetadata(reader.GetString(0)));
+                    result.Add(new IncludedFileSystemPathMetadata(reader.GetString(0))
+                    {
+                        PluginName = reader.GetValue(1).IfNull<string>(null)
+                    });
                 }
 
                 return result;

@@ -326,6 +326,7 @@ namespace Gorgon.Editor.Views
                         }
                     }
                     break;
+                case nameof(IFileExplorerNodeVm.ImageName):
                 case nameof(IFileExplorerNodeVm.IsCut):
                 case nameof(IFileExplorerNodeVm.Included):
                     if (treeNode != null)
@@ -1186,29 +1187,19 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            // Recursively remove all links.
-            void RemoveLinksRecursive(IEnumerable<KryptonTreeNode> treeNodes)
+            // Do not hang on to tree nodes that don't need to be kept.
+            foreach (KryptonTreeNode treeNode in e.Node.Nodes.OfType<KryptonTreeNode>().Traverse(n => n.Nodes.OfType<KryptonTreeNode>()))
             {
-                // Do not hang on to tree nodes that don't need to be kept.
-                foreach (KryptonTreeNode treeNode in treeNodes)
+                _nodeLinks.TryGetValue(treeNode, out IFileExplorerNodeVm fsNode);
+                // Remove from our tree node linkage so we don't keep old nodes alive.                
+                _nodeLinks.Remove(treeNode);
+
+                if (fsNode != null)
                 {
-                    if (treeNode.Nodes.Count > 0)
-                    {
-                        RemoveLinksRecursive(treeNode.Nodes.OfType<KryptonTreeNode>());
-                    }
-
-                    _nodeLinks.TryGetValue(treeNode, out IFileExplorerNodeVm fsNode);
-                    // Remove from our tree node linkage so we don't keep old nodes alive.                
-                    _nodeLinks.Remove(treeNode);
-
-                    if (fsNode != null)
-                    {
-                        _revNodeLinks.Remove(fsNode);
-                    }
+                    _revNodeLinks.Remove(fsNode);
                 }
             }
-
-            RemoveLinksRecursive(e.Node.Nodes.OfType<KryptonTreeNode>());
+            
             e.Node.Nodes.Clear();
 
             if ((!_nodeLinks.TryGetValue((KryptonTreeNode)e.Node, out IFileExplorerNodeVm node))
@@ -1280,11 +1271,6 @@ namespace Gorgon.Editor.Views
             // Turn off events for this nodes children since they'll be destroyed anyway, and we really don't want to trigger the events during a refresh.
             UnassignNodeEvents(parentNode.Children);
 
-            if ((DataContext?.RefreshNodeCommand != null) && (DataContext.RefreshNodeCommand.CanExecute(parentNode)))
-            {
-                DataContext.RefreshNodeCommand.Execute(parentNode);
-            }
-
             FillTree(e.Node.Nodes, parentNode.Children);
 
             AssignNodeEvents(parentNode.Children);
@@ -1312,6 +1298,26 @@ namespace Gorgon.Editor.Views
                 // Make the text translucent if we're in cut mode.
                 treeNode.ForeColor = Color.FromArgb(128, treeNode.ForeColor);
             }
+
+            // Check for an icon.            
+            if (node.ContentMetadata != null)
+            {
+                string imageName = node.ImageName;
+                Image icon = node.ContentMetadata.GetSmallIcon();                
+
+                // This ID has not been registered in the image list, do so now.
+                if ((!TreeImages.Images.ContainsKey(node.ImageName))
+                    && (icon != null))
+                {
+                    TreeImages.Images.Add(node.ImageName, icon);
+                }
+            }
+
+            int imageIndex = FindImageIndexFromNode(node);
+            if (imageIndex != -1)
+            {
+                treeNode.ImageIndex = treeNode.SelectedImageIndex = imageIndex;
+            }            
 
             if ((node.Children.Count > 0) && (!treeNode.IsExpanded))
             {
@@ -1355,7 +1361,15 @@ namespace Gorgon.Editor.Views
             {
                 return;
             }
-            
+
+            if (_nodeLinks.TryGetValue((KryptonTreeNode)TreeFileSystem.SelectedNode, out IFileExplorerNodeVm node))
+            {
+                if ((DataContext.RefreshNodeCommand != null) && (DataContext.RefreshNodeCommand.CanExecute(node)))
+                {
+                    DataContext.RefreshNodeCommand.Execute(node);
+                }
+            }
+
             TreeFileSystem.SelectedNode.Expand();
         }
 

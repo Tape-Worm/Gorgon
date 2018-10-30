@@ -96,8 +96,10 @@
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetDir)ICSharpCode.SharpZipLib.dll" "$(SolutionDir)PlugIns\Bin\$(ConfigurationName)\"
-copy "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)PlugIns\Bin\$(ConfigurationName)\"
-copy "$(TargetPath)" "$(SolutionDir)PlugIns\Bin\$(ConfigurationName)\"</PostBuildEvent>
+    <PostBuildEvent>REM Editor copy.
+copy "$(TargetPath)" "$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\FileSystem"
+copy "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\FileSystem"
+copy "$(TargetDir)ICSharpCode.SharpZipLib.dll" "$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\FileSystem"
+</PostBuildEvent>
   </PropertyGroup>
 </Project>

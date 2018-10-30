@@ -26,6 +26,8 @@
 
 using System;
 using System.ComponentModel;
+using System.Windows.Forms;
+using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Editor.ViewModels;
@@ -79,6 +81,16 @@ namespace Gorgon.Editor.Views
 
         #region Properties.
         /// <summary>
+        /// Property to set or return the application graphics context.
+        /// </summary>
+        [Browsable(false)]
+        public IGraphicsContext GraphicsContext
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to return the data context assigned to this view.
         /// </summary>
         [Browsable(false)]
@@ -102,6 +114,9 @@ namespace Gorgon.Editor.Views
                 case nameof(IProjectVm.FileExplorer):
                     FileExplorer.SetDataContext(DataContext.FileExplorer);
                     break;
+                case nameof(IProjectVm.CurrentContent):
+                    SetupContent(DataContext);
+                    break;
             }
         }
 
@@ -119,6 +134,36 @@ namespace Gorgon.Editor.Views
         /// Function to reset the view to its default state when the data context is reset.
         /// </summary>
         private void ResetDataContext() => FileExplorer.SetDataContext(null);
+
+        /// <summary>
+        /// Function to set up the currently active content.
+        /// </summary>
+        /// <param name="dataContext">The current data context.</param>
+        private void SetupContent(IProjectVm dataContext)
+        {
+            // Remove all controls.
+            while (SplitProject.Panel1.Controls.Count > 0)
+            {                
+                SplitProject.Panel1.Controls[SplitProject.Panel1.Controls.Count - 1].Dispose();
+            }
+
+            // No content, so we can go now.
+            if (dataContext?.CurrentContent == null)
+            {
+                SplitProject.Panel1Collapsed = true;
+                return;
+            }
+
+            // Get our view from the content.
+            ContentBaseControl control = dataContext.CurrentContent.GetView();
+            control.Dock = DockStyle.Fill;
+            SplitProject.Panel1.Controls.Add(control);
+            SplitProject.Panel1Collapsed = false;
+
+            // Set up the graphics context.
+            control.SetupGraphics(GraphicsContext);
+            control.Start();
+        }
 
         /// <summary>
         /// Function to initialize the view with the data context.
@@ -225,5 +270,15 @@ namespace Gorgon.Editor.Views
         /// </summary>
         public EditorProject() => InitializeComponent();
         #endregion
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (DataContext?.ClickTheButton == null)
+            {
+                return;
+            }
+
+            DataContext.ClickTheButton.Execute(null);
+        }
     }
 }

@@ -759,6 +759,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The path &apos;{0}&apos; does not exist in the project metadata..
+        /// </summary>
+        internal static string GOREDIT_ERR_PATH_NOT_INCLUDED {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_PATH_NOT_INCLUDED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not find the project on the path &apos;{0}&apos;.
         ///
         ///Please select another file and try again..
@@ -950,6 +959,15 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_TEXT_INITIALIZING {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_INITIALIZING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading content plug ins....
+        /// </summary>
+        internal static string GOREDIT_TEXT_LOADING_CONTENT_PLUGINS {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_LOADING_CONTENT_PLUGINS", resourceCulture);
             }
         }
         

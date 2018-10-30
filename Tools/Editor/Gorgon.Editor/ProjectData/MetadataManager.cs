@@ -30,6 +30,9 @@ using System.IO;
 using System.Linq;
 using Gorgon.Core;
 using Gorgon.Editor.Metadata;
+using Gorgon.Editor.Plugins;
+using Gorgon.Editor.Properties;
+using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.ProjectData
 {
@@ -44,6 +47,8 @@ namespace Gorgon.Editor.ProjectData
         private readonly IProject _project;
         // The provider to use to persist metadata information.
         private readonly IMetadataProvider _metadataProvider;
+        // The service for the content plugins.
+        private readonly IContentPluginService _contentPlugins;
         #endregion
 
         #region Properties.
@@ -319,6 +324,62 @@ namespace Gorgon.Editor.ProjectData
                                     && (!string.Equals(item.Name, CommonEditorConstants.EditorMetadataFileName, StringComparison.OrdinalIgnoreCase)));
 
         }
+
+        /// <summary>
+        /// Function to retrieve the plug in for a specified path.
+        /// </summary>
+        /// <param name="path">The path to evaluate.</param>
+        /// <returns>A tuple containing the plugin (if available), and a <see cref="MetadataPluginState"/>.</returns>
+        public (ContentPlugin plugin, MetadataPluginState state) GetPlugin(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_PATH_NOT_INCLUDED, "NULL"), nameof(path));
+            }
+
+            if (!_project.Metadata.IncludedPaths.TryGetValue(path, out IncludedFileSystemPathMetadata metaData))
+            {
+                throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_PATH_NOT_INCLUDED, path), nameof(path));
+            }
+
+            // No plugin was found, and was never assigned.
+            if (metaData.PluginName == null)
+            {
+                return (null, MetadataPluginState.Unassigned);
+            }
+
+            if (string.IsNullOrWhiteSpace(metaData.PluginName))
+            {
+                return (null, MetadataPluginState.Assigned);
+            }
+
+            if (!_contentPlugins.Plugins.TryGetValue(metaData.PluginName, out ContentPlugin plugin))
+            {
+                return (null, MetadataPluginState.NotFound);
+            }
+            
+            return (plugin, MetadataPluginState.Assigned);
+        }
+
+        /// <summary>
+        /// Function to assign a plugin to a path.
+        /// </summary>
+        /// <param name="path">The path to evaluate.</param>
+        /// <param name="plugin">The plugin to assign.</param>
+        public void SetPlugin(string path, ContentPlugin plugin)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return;
+            }
+
+            if (!_project.Metadata.IncludedPaths.TryGetValue(path, out IncludedFileSystemPathMetadata metaData))
+            {
+                throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_PATH_NOT_INCLUDED, path), nameof(path));                
+            }
+
+            metaData.PluginName = plugin?.Name ?? string.Empty;
+        }
         #endregion
 
         #region Constructor/Finalizer.
@@ -326,11 +387,13 @@ namespace Gorgon.Editor.ProjectData
         /// Initializes a new instance of the <see cref="MetadataManager"/> class.
         /// </summary>
         /// <param name="project">The project to manage metadata for.</param>
+        /// <param name="contentPlugins">The content plugins.</param>
         /// <param name="provider">The provider used to store or retrieve metadata.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, or the <paramref name="provider"/> parameter is <b>null</b>.</exception>        
-        public MetadataManager(IProject project, IMetadataProvider provider)
+        public MetadataManager(IProject project, IContentPluginService contentPlugins, IMetadataProvider provider)
         {
             _project = project ?? throw new ArgumentNullException(nameof(project));
+            _contentPlugins = contentPlugins ?? throw new ArgumentNullException(nameof(contentPlugins));
             _metadataProvider = provider ?? throw new ArgumentNullException(nameof(provider));
         }
         #endregion

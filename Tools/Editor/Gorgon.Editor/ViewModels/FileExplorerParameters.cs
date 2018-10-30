@@ -38,6 +38,16 @@ namespace Gorgon.Editor.ViewModels
         : ViewModelCommonParameters
     {
         /// <summary>
+        /// Property to return the content plugins for the file explorer.
+        /// </summary>
+        public IContentPluginService ContentPlugins => ViewModelFactory.ContentPlugins;
+
+        /// <summary>
+        /// Property to return the directory locator service used to select a directory.
+        /// </summary>
+        public IDirectoryLocateService DirectoryLocator => ViewModelFactory.DirectoryLocator;
+
+        /// <summary>
         /// Property to set or return the metadata manager.
         /// </summary>
         public IMetadataManager MetadataManager

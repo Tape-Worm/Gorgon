@@ -26,10 +26,12 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
+using Gorgon.Editor.Content;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Plugins;
 using Gorgon.Editor.ProjectData;
@@ -61,9 +63,30 @@ namespace Gorgon.Editor.ViewModels
         private IProjectManager _projectManager;
         // The file for the project.
         private FileInfo _projectFile;
+        // The content plugin service.
+        private IContentPluginService _contentPlugins;
+        // The currently active content.
+        private IEditorContent _currentContent;
         #endregion
 
         #region Properties.
+        /// <summary>Property to return the current content for the project.</summary>
+        public IEditorContent CurrentContent
+        {
+            get => _currentContent;
+            set
+            {
+                if (_currentContent == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _currentContent = value;
+                OnPropertyChanged();
+            }
+        }
+
         /// <summary>
         /// Property to return the metadata manager for the project.
         /// </summary>
@@ -308,6 +331,7 @@ namespace Gorgon.Editor.ViewModels
             _messageService = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.MessageDisplay), nameof(injectionParameters));
             _busyService = injectionParameters.BusyState ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.BusyState), nameof(injectionParameters));
             MetadataManager = injectionParameters.MetadataManager ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.MetadataManager), nameof(injectionParameters));
+            _contentPlugins = injectionParameters.ContentPlugins ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.ContentPlugins), nameof(injectionParameters));
         }
 
         /// <summary>
@@ -403,7 +427,35 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         public ProjectVm()
         {
+            ClickTheButton = new EditorCommand<object>(DoClickTheButton);
         }
         #endregion
+
+
+        private void DoClickTheButton()
+        {
+            try
+            {
+                CurrentContent = null;
+
+                ContentPlugin plugin = _contentPlugins.Plugins.FirstOrDefault().Value;
+
+                if (plugin == null)
+                {
+                    return;
+                }
+
+                CurrentContent = plugin.CreateContent(Program.Log);
+            }
+            catch (Exception ex)
+            {
+                _messageService.ShowError(ex);
+            }
+        }
+
+        public IEditorCommand<object> ClickTheButton
+        {
+            get;
+        }
     }
 }

@@ -39,12 +39,11 @@ using Gorgon.IO;
 using Gorgon.Math;
 using ICSharpCode.SharpZipLib.BZip2;
 using Gorgon.Core;
-using Gorgon.Timing;
 
 namespace Gorgon.Editor.GorPackWriterPlugIn
 {
     /// <summary>
-    /// Font editor plug-in interface.
+    /// Gorgon packed file writer plug-in interface.
     /// </summary>
     internal class GorPlugWriterPlugin
         : FileWriterPlugin

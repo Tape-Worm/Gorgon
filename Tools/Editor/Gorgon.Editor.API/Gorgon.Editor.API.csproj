@@ -52,14 +52,19 @@
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CommonEditorConstants.cs" />
+    <Compile Include="Content\EditorContentCommon.cs" />
+    <Compile Include="Content\_Interfaces\IEditorContent.cs" />
     <Compile Include="Metadata\_Interfaces\IMetadataManager.cs" />
+    <Compile Include="Plugins\ContentPlugin.cs" />
     <Compile Include="Plugins\EditorPlugin.cs" />
     <Compile Include="Plugins\FileWriterPlugIn.cs" />
     <Compile Include="Plugins\_Extensions\EditorPluginExtensions.cs" />
+    <Compile Include="Plugins\_Interfaces\IContentPluginMetadata.cs" />
     <Compile Include="Services\ClipboardService.cs" />
     <Compile Include="Services\DirectoryLocateService.cs" />
     <Compile Include="Services\FileOpenDialogService.cs" />
     <Compile Include="Services\_Interfaces\IClipboardService.cs" />
+    <Compile Include="Services\_Interfaces\IContentPluginService.cs" />
     <Compile Include="Services\_Interfaces\IDirectoryLocateService.cs" />
     <Compile Include="Services\_Interfaces\IFileDialogService.cs" />
     <Compile Include="Metadata\SqliteMetadataProvider.cs" />
@@ -85,6 +90,12 @@
     <Compile Include="UI\ViewModels\ProgressPanelUpdateArgs.cs" />
     <Compile Include="UI\ViewModels\WaitPanelActivateArgs.cs" />
     <Compile Include="UI\ViewModels\_Interfaces\IViewModelInjection.cs" />
+    <Compile Include="UI\Views\ContentBaseControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Views\ContentBaseControl.Designer.cs">
+      <DependentUpon>ContentBaseControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Views\EditorBaseControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -120,6 +131,9 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Views\ContentBaseControl.resx">
+      <DependentUpon>ContentBaseControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Views\EditorBaseControl.resx">
       <DependentUpon>EditorBaseControl.cs</DependentUpon>

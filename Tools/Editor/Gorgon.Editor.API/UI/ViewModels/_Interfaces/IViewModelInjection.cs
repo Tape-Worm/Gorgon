@@ -51,15 +51,6 @@ namespace Gorgon.Editor.UI
         }
 
         /// <summary>
-        /// Property to return the service used to select a directory.
-        /// </summary>
-        IDirectoryLocateService DirectoryLocator
-        {
-            get;
-        }
-
-
-        /// <summary>
         /// Property to return the application clipboard service to use.
         /// </summary>
         IClipboardService ClipboardService
