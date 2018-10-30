@@ -153,7 +153,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the command used to save a project.
         /// </summary>
-        public IEditorCommand<SaveProjectArgs> SaveProjectCommand
+        public IEditorAsyncCommand<SaveProjectArgs> SaveProjectCommand
         {
             get;
         }
@@ -477,6 +477,18 @@ namespace Gorgon.Editor.ViewModels
                         _saveDialog.InitialDirectory = projectFile.Directory;
                         _saveDialog.InitialFilePath = projectFile.Name;
                     }
+                    else
+                    {
+                        var lastSaveDir = new DirectoryInfo(_settings.LastOpenSavePath);
+
+                        if (!lastSaveDir.Exists)
+                        {
+                            lastSaveDir = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+                        }
+
+                        _saveDialog.InitialDirectory = lastSaveDir;
+                        _saveDialog.InitialFilePath = string.Empty;
+                    }
 
                     _saveDialog.CurrentWriter = CurrentProject.WriterPlugin;
 
@@ -554,7 +566,7 @@ namespace Gorgon.Editor.ViewModels
         /// Function to save a project file.
         /// </summary>
         /// <param name="args">The arguments for the command.</param>
-        private async void DoSaveProjectAsync(SaveProjectArgs args)
+        private async Task DoSaveProjectAsync(SaveProjectArgs args)
         {
             try
             {
@@ -703,7 +715,7 @@ namespace Gorgon.Editor.ViewModels
         public Main()
         {
             OpenProjectCommand = new EditorCommand<object>(DoOpenProjectAsync, CanOpenProjects);
-            SaveProjectCommand = new EditorCommand<SaveProjectArgs>(DoSaveProjectAsync, CanSaveProject);
+            SaveProjectCommand = new EditorAsyncCommand<SaveProjectArgs>(DoSaveProjectAsync, CanSaveProject);
             AppClosingAsyncCommand = new EditorAsyncCommand<AppCloseArgs>(DoAppClose);
         }
         #endregion

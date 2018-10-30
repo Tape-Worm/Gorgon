@@ -369,9 +369,6 @@ namespace Gorgon.Editor.ViewModels
             try
             {
                 AssignEvents();
-
-                // Load data from the metadata store.
-                MetadataManager.Load();
             }
             catch (Exception ex)
             {

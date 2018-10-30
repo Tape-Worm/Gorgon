@@ -90,7 +90,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the command used to save a project.
         /// </summary>
-        IEditorCommand<SaveProjectArgs> SaveProjectCommand
+        IEditorAsyncCommand<SaveProjectArgs> SaveProjectCommand
         {
             get;
         }
@@ -102,10 +102,6 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
         }
-        #endregion
-
-        #region Methods.
-
         #endregion
     }
 }

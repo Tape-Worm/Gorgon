@@ -327,7 +327,7 @@ namespace Gorgon.Editor
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="SaveEventArgs" /> instance containing the event data.</param>
-        private void StageLive_Save(object sender, SaveEventArgs e)
+        private async void StageLive_Save(object sender, SaveEventArgs e)
         {
             if (DataContext == null)
             {
@@ -342,7 +342,7 @@ namespace Gorgon.Editor
                 return;
             }
 
-            DataContext.SaveProjectCommand.Execute(args);
+            await DataContext.SaveProjectCommand.ExecuteAsync(args);
 
             NavigateToProjectView(DataContext);
         }        
