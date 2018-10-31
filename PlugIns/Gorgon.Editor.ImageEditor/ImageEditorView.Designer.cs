@@ -1,6 +1,6 @@
 ﻿namespace Gorgon.Editor.ImageEditor
 {
-    partial class TestView
+    partial class ImageEditorView
     {
         /// <summary> 
         /// Required designer variable.

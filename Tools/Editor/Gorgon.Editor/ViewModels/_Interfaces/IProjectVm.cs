@@ -153,10 +153,5 @@ namespace Gorgon.Editor.ViewModels
         /// <returns>A task for asynchronous operation.</returns>
         Task PersistProjectAsync(string projectTitle, string path, FileWriterPlugin writer, Action<int, int, bool> progressCallback,  CancellationToken cancelToken);
         #endregion
-        
-        IEditorCommand<object> ClickTheButton
-        {
-            get;
-        }
     }
 }

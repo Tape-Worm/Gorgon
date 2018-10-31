@@ -867,6 +867,21 @@ namespace Gorgon.Editor.Views
             e.Effect = DragDropEffects.Copy;
         }
 
+        /// <summary>Handles the NodeMouseDoubleClick event of the TreeFileSystem control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The [TreeNodeMouseClickEventArgs] instance containing the event data.</param>
+        private void TreeFileSystem_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            _nodeLinks.TryGetValue((KryptonTreeNode)e.Node, out IFileExplorerNodeVm node);
+
+            if ((DataContext?.OpenContentFile == null) || (!DataContext.OpenContentFile.CanExecute(node)))
+            {
+                return;
+            }
+
+            DataContext.OpenContentFile.Execute(node);            
+        }
+
         /// <summary>
         /// Handles the DragOver event of the TreeFileSystem control.
         /// </summary>

@@ -60,12 +60,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="TestContent.cs" />
-    <Compile Include="TestView.cs">
+    <Compile Include="ImageContent.cs" />
+    <Compile Include="ImageEditorView.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="TestView.Designer.cs">
-      <DependentUpon>TestView.cs</DependentUpon>
+    <Compile Include="ImageEditorView.Designer.cs">
+      <DependentUpon>ImageEditorView.cs</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -77,8 +77,8 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="TestView.resx">
-      <DependentUpon>TestView.cs</DependentUpon>
+    <EmbeddedResource Include="ImageEditorView.resx">
+      <DependentUpon>ImageEditorView.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

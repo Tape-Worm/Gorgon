@@ -312,6 +312,11 @@ namespace Gorgon.Editor.ViewModels
             // The project should not be in a modified state.
             projectVm.ProjectState = ProjectState.Unmodified;
 
+            if (isUpgraded)
+            {
+                projectVm.ProjectState = ProjectState.Modified;
+            }
+
             // Close the current project.
             CurrentProject = null;
             _settings.LastProjectWorkingDirectory = string.Empty;
@@ -381,7 +386,7 @@ namespace Gorgon.Editor.ViewModels
 
                 Program.Log.Print($"Opening '{projectFile.FullName}'...", LoggingLevel.Simple);
 
-                ShowWaitPanel(new WaitPanelActivateArgs(string.Format(Resources.GOREDIT_TEXT_OPENING_PROJECT, projectFile.FullName.Ellipses(65, true)), null));
+                ShowWaitPanel(new WaitPanelActivateArgs(string.Format(Resources.GOREDIT_TEXT_OPENING, projectFile.FullName.Ellipses(65, true)), null));
 
                 if (!projectFile.Exists)
                 {
@@ -436,7 +441,7 @@ namespace Gorgon.Editor.ViewModels
 
                 Program.Log.Print($"Opening '{path}'...", LoggingLevel.Simple);
 
-                ShowWaitPanel(new WaitPanelActivateArgs(string.Format(Resources.GOREDIT_TEXT_OPENING_PROJECT, path.Ellipses(65, true)), null));
+                ShowWaitPanel(new WaitPanelActivateArgs(string.Format(Resources.GOREDIT_TEXT_OPENING, path.Ellipses(65, true)), null));
 
                 await OpenProjectAsync(path);
             }

@@ -197,7 +197,7 @@ Gorgon requires a video adapter that is compatible with Direct 3D 11.4 or better
 
 Would you like to overrwrite it?</value>
   </data>
-  <data name="GOREDIT_TEXT_OPENING_PROJECT" xml:space="preserve">
+  <data name="GOREDIT_TEXT_OPENING" xml:space="preserve">
     <value>Opening '{0}'...</value>
   </data>
   <data name="GOREDIT_ERR_NO_PROVIDER" xml:space="preserve">
@@ -549,5 +549,13 @@ Please try again.</value>
   </data>
   <data name="GOREDIT_ERR_PATH_NOT_INCLUDED" xml:space="preserve">
     <value>The path '{0}' does not exist in the project metadata.</value>
+  </data>
+  <data name="GOREDIT_ERR_CANNOT_OPEN_CONTENT" xml:space="preserve">
+    <value>There was an error opening the content file '{0}'.
+
+Please try again.</value>
+  </data>
+  <data name="GOREDIT_ERR_NO_PLUGIN_FOR_CONTENT" xml:space="preserve">
+    <value>There is no plugin loaded that can handle opening the file '{0}'.</value>
   </data>
 </root>

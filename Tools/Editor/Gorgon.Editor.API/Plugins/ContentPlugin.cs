@@ -79,21 +79,29 @@ namespace Gorgon.Editor.Plugins
         }
 
         /// <summary>
-        /// Function called to create a content object from this plugin.
+        /// Function to open a content object from this plugin.
         /// </summary>
+        /// <param name="file">The file that contains the content.</param>
         /// <param name="log">The logging interface to use.</param>
         /// <returns>A new <see cref="IEditorContent"/> object.</returns>
-        protected abstract IEditorContent OnCreateContent(IGorgonLog log);
+        protected abstract Task<IEditorContent> OnOpenContentAsync(IContentFile file, IGorgonLog log);
 
         /// <summary>
-        /// Function to create a content object from this plugin.
+        /// Function to open a content object from this plugin.
         /// </summary>        
+        /// <param name="file">The file that contains the content.</param>
         /// <param name="log">The logging interface to use.</param>
         /// <returns>A new <see cref="IEditorContent"/> object.</returns>
-        /// <exception cref="GorgonException">Thrown if the <see cref="OnCreateContent"/> method returns <b>null</b>.</exception>
-        public IEditorContent CreateContent(IGorgonLog log)
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <see cref="OnOpenContentAsync"/> method returns <b>null</b>.</exception>
+        public async Task<IEditorContent> OpenContentAsync(IContentFile file, IGorgonLog log)
         {
-            IEditorContent content = OnCreateContent(log ?? GorgonLog.NullLog);
+            if (file == null)
+            {
+                throw new ArgumentNullException(nameof(file));
+            }
+
+            IEditorContent content = await OnOpenContentAsync(file, log ?? GorgonLog.NullLog);
 
             if (content == null)
             {

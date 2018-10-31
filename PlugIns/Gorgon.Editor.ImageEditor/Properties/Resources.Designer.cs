@@ -70,6 +70,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There is no codec loaded that can read the file &apos;{0}&apos;..
+        /// </summary>
+        internal static string GORIMG_ERR_NO_CODEC {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_NO_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap image_16x16 {

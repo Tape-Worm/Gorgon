@@ -34,6 +34,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Collections;
 using Gorgon.Core;
+using Gorgon.Editor.Content;
 using Gorgon.Editor.Data;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Plugins;
@@ -225,6 +226,15 @@ namespace Gorgon.Editor.ViewModels
         public IEditorCommand<object> DeleteFileSystemCommand
         {
             get;
+        }
+
+        /// <summary>
+        /// Property to set or return the command to execute when a content node is opened.
+        /// </summary>
+        public IEditorCommand<IFileExplorerNodeVm> OpenContentFile
+        {
+            get;
+            set;
         }
         #endregion
 
@@ -775,8 +785,7 @@ namespace Gorgon.Editor.ViewModels
                 // Update the node.     
                 if (node != RootNode)
                 {
-                    node.IsExpanded = false;
-                    node.IsExpanded = true;
+                    RefreshNode(node);
                 }
                 else
                 {
@@ -1223,8 +1232,10 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="node">The node to evaluate.</param>
         private void GetNodeAssociationData(IFileExplorerNodeVm node)
         {
+            var contentFile = node as IContentFile;
+
             // Do not query association data for excluded file paths.
-            if ((!node.Included) || (!node.IsContent))
+            if ((!node.Included) || (!node.IsContent) || (contentFile == null))
             {
                 node.ContentMetadata = null;
                 return;
@@ -1250,13 +1261,14 @@ namespace Gorgon.Editor.ViewModels
                         node.ContentMetadata = plugin as IContentPluginMetadata;
                         return;
                 }
-            }
+            }            
 
             // TODO: Look at database metadata first, then fall back to this as this will be slow.
             // Attempt to associate a content plug in with the node.            
             foreach (KeyValuePair<string, ContentPlugin> plugin in _contentPlugins.Plugins)
             {
                 var pluginMetadata = plugin.Value as IContentPluginMetadata;
+                
                 node.ContentMetadata = null;
 
                 if (pluginMetadata == null)
@@ -1264,7 +1276,7 @@ namespace Gorgon.Editor.ViewModels
                     continue;
                 }
 
-                if (!pluginMetadata.CanOpenContent(node.PhysicalPath))
+                if (!pluginMetadata.CanOpenContent(contentFile))
                 {
                     continue;
                 }

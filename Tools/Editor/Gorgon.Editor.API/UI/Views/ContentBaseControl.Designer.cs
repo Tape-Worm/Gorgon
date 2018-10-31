@@ -20,8 +20,7 @@
 
             if (disposing)
             {
-                Stop();
-                SetupGraphics(null);
+                Shutdown();
             }
             base.Dispose(disposing);
         }

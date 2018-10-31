@@ -20,48 +20,65 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: October 29, 2018 9:04:44 PM
+// Created: October 30, 2018 7:11:23 PM
 // 
 #endregion
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Drawing;
-using Gorgon.Editor.Content;
+using Gorgon.Editor.Plugins;
 
-namespace Gorgon.Editor.Plugins
+namespace Gorgon.Editor.Content
 {
     /// <summary>
-    /// Provides metadata for a plugin.
+    /// A data structure representing a file containing content.
     /// </summary>
-    public interface IContentPluginMetadata
+    public interface IContentFile
     {
-        #region Properties.
         /// <summary>
-        /// Property to return the ID of the small icon for this plug in.
+        /// Property to return the path to the file.
         /// </summary>
-        Guid SmallIconID
+        string Path
         {
             get;
         }
-        #endregion
+
+        /// <summary>
+        /// Property to return the name for the file.
+        /// </summary>
+        string Name
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the extension for the file.
+        /// </summary>
+        string Extension
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the plugin associated with the file.
+        /// </summary>
+        ContentPlugin ContentPlugin
+        {
+            get;
+        }
 
         #region Methods.
         /// <summary>
-        /// Function to determine if the content plugin can open the specified file.
+        /// Function to open the file for reading.
         /// </summary>
-        /// <param name="file">The content file to evaluate.</param>
-        /// <returns><b>true</b> if the plugin can open the file, or <b>false</b> if not.</returns>
-        bool CanOpenContent(IContentFile file);
+        /// <returns>A stream containing the file data.</returns>
+        Stream OpenRead();
 
-        /// <summary>
-        /// Function to retrieve the small icon for the content plug in.
-        /// </summary>
-        /// <returns>An image for the small icon.</returns>
-        Image GetSmallIcon();
+        // TODO: OpenWrite so we can send data back out.
         #endregion
     }
 }

@@ -162,6 +162,10 @@ namespace Gorgon.Editor.Views
 
             // Set up the graphics context.
             control.SetupGraphics(GraphicsContext);
+
+            // Initialize now that the view is alive.
+            dataContext.CurrentContent.Initialize();
+
             control.Start();
         }
 
@@ -270,15 +274,5 @@ namespace Gorgon.Editor.Views
         /// </summary>
         public EditorProject() => InitializeComponent();
         #endregion
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            if (DataContext?.ClickTheButton == null)
-            {
-                return;
-            }
-
-            DataContext.ClickTheButton.Execute(null);
-        }
     }
 }

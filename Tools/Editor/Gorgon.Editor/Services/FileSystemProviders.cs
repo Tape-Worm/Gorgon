@@ -79,14 +79,13 @@ namespace Gorgon.Editor.Services
             return null;
         }
 
-        /// <summary>
-        /// Function to return the <see cref="FileWriterPlugin"/> by its plugin name.
-        /// </summary>
-        /// <param name="writerName">The name of the writer plug in to locate.</param>        
-        /// <returns>The <see cref="FileWriterPlugin"/>, or <b>null</b> if no writer could be found.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="writerName"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="writerName"/> parameter is empty.</exception>
-        public FileWriterPlugin GetWriterByName(string writerName)
+        /// <summary>Function to return the [FileWriterPlugin] by its plugin name.</summary>
+        /// <param name="writerName">The name of the writer plug in to locate.</param>
+        /// <param name="useV2PluginName">[Optional] Use the v2 compatible plugin name.</param>
+        /// <returns>The [FileWriterPlugin], or <b>null</b> if no writer could be found.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="writerName" /> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="writerName" /> parameter is empty.</exception>
+        public FileWriterPlugin GetWriterByName(string writerName, bool useV2PluginName = false)
         {
             if (writerName == null)
             {
@@ -96,6 +95,16 @@ namespace Gorgon.Editor.Services
             if (string.IsNullOrWhiteSpace(writerName))
             {
                 throw new ArgumentEmptyException(nameof(writerName));
+            }
+
+            if (useV2PluginName)
+            {
+                FileWriterPlugin v2Plugin = _writers.FirstOrDefault(item => string.Equals(item.Value.V2PluginName, writerName, StringComparison.OrdinalIgnoreCase)).Value;
+
+                if (v2Plugin != null)
+                {
+                    return v2Plugin;
+                }
             }
 
             _writers.TryGetValue(writerName, out FileWriterPlugin result);

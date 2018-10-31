@@ -38,10 +38,32 @@ namespace Gorgon.Editor.Content
     /// </summary>
     public interface IEditorContent
     {
+        #region Properties.
+        /// <summary>
+        /// Property to return the content file.
+        /// </summary>
+        IContentFile File
+        {
+            get;
+        }
+        #endregion
+
+        #region Methods.
         /// <summary>
         /// Function to retrieve the view for the content.
         /// </summary>
         /// <returns>A UI for the content, must not be <b>null</b>.</returns>
         ContentBaseControl GetView();
+        
+        /// <summary>
+        /// Function to initialize the content.
+        /// </summary>
+        void Initialize();
+
+        /// <summary>
+        /// Function to close the content.
+        /// </summary>
+        void Close();
+        #endregion
     }
 }

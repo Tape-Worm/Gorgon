@@ -32,6 +32,7 @@ using Gorgon.Editor.Services;
 using System.Threading;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Plugins;
+using Gorgon.Editor.Content;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -39,7 +40,7 @@ namespace Gorgon.Editor.ViewModels
     /// A node for a file system file.
     /// </summary>
     internal class FileExplorerFileNodeVm
-        : FileExplorerNodeCommon
+        : FileExplorerNodeCommon, IContentFile
     {
         #region Variables.
         // The plug in metadata.
@@ -98,6 +99,20 @@ namespace Gorgon.Editor.ViewModels
                 NotifyPropertyChanged(nameof(ImageName));
             }
         }
+
+        /// <summary>Property to return the path to the file.</summary>
+        string IContentFile.Path => FullPath;
+
+        /// <summary>
+        /// Property to return the name for the file.
+        /// </summary>
+        string IContentFile.Name => Name;
+
+        /// <summary>Property to return the extension for the file.</summary>
+        string IContentFile.Extension => Path.GetExtension(Name);
+
+        /// <summary>Property to return the plugin associated with the file.</summary>
+        ContentPlugin IContentFile.ContentPlugin => ContentMetadata as ContentPlugin;
         #endregion
 
         #region Methods.
@@ -346,6 +361,10 @@ namespace Gorgon.Editor.ViewModels
 
             return FileSystemService.ExportFileAsync(PhysicalPath, destPath, ProgressUpdate);
         }
+
+        /// <summary>Function to open the file for reading.</summary>
+        /// <returns>A stream containing the file data.</returns>
+        Stream IContentFile.OpenRead() => File.OpenRead(PhysicalPath);
         #endregion
 
         #region Constructor/Finalizer.

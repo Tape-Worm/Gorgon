@@ -45,20 +45,26 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
     /// <summary>
     /// Gorgon packed file writer plug-in interface.
     /// </summary>
-    internal class GorPlugWriterPlugin
+    internal class GorPackWriterPlugin
         : FileWriterPlugin
 	{
         #region Constants.
         // The header for the file.
         private const string FileHeader = "GORPACK1.SharpZip.BZ2";
+        // The type name for v2 of the Gorgon file writer plugin.
+        private const string EquivV2Plugin = "GorgonLibrary.Editor.GorPackWriterPlugIn.GorgonGorPackWriterPlugIn";
         #endregion
 
         #region Variables.
         // The buffer used to write blocks of data (sized to avoid the LOH).
-		private byte[] _writeBuffer = new byte[80000];
+        private byte[] _writeBuffer = new byte[80000];
         #endregion
 
         #region Properties.
+        /// <summary>Property to return the equivalent type name for v2 of the Gorgon file writer plugin.</summary>
+        /// <remarks>This is here to facilitate importing of file metadata from v2 of the gorgon editor files. Only specify a compatible type here, otherwise things will go wrong.</remarks>
+        public override string V2PluginName => EquivV2Plugin;
+
         /// <summary>
         /// Property to return the capabilities of the writer.
         /// </summary>
@@ -480,9 +486,9 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
 
         #region Constructor/Destructor.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorPlugWriterPlugin"/> class.
+        /// Initializes a new instance of the <see cref="GorPackWriterPlugin"/> class.
         /// </summary>
-        public GorPlugWriterPlugin()
+        public GorPackWriterPlugin()
             : base(Resources.GORPKW_DESC, new[] { new GorgonFileExtension("gorPack", Resources.GORPKW_GORPACK_FILE_EXT_DESC) } )
         {
         }

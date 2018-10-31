@@ -99,6 +99,25 @@ namespace Gorgon.Editor.UI.Views
         }
 
         /// <summary>
+        /// Function called to shut down the view.
+        /// </summary>
+        protected virtual void OnShutdown()
+        {
+
+        }
+
+        /// <summary>
+        /// Function to shut down the view.
+        /// </summary>
+        public void Shutdown()
+        {
+            OnShutdown();
+
+            Stop();
+            SetupGraphics(null);
+        }
+
+        /// <summary>
         /// Function to begin rendering on the control.
         /// </summary>
         public void Start() => GorgonApplication.IdleMethod = IdleMethod;

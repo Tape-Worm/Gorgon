@@ -69,6 +69,16 @@ namespace Gorgon.Editor.Plugins
 
         #region Properties.
         /// <summary>
+        /// Property to return the equivalent type name for v2 of the Gorgon file writer plugin.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This is here to facilitate importing of file metadata from v2 of the gorgon editor files. Only specify a compatible type here, otherwise things will go wrong.
+        /// </para>
+        /// </remarks>
+        public virtual string V2PluginName => string.Empty;
+
+        /// <summary>
         /// Property to return the capabilities of the writer.
         /// </summary>
         public abstract WriterCapabilities Capabilities

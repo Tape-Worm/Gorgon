@@ -299,7 +299,11 @@ namespace Gorgon.Editor.ViewModels
             var fileSystemService = new FileSystemService(projectData.ProjectWorkSpace);
 
             var metaDataManager = new MetadataManager(projectData, ContentPlugins, new SqliteMetadataProvider(projectData.MetadataFile));
-            metaDataManager.Load();
+            // If we don't any included items at this point, try and retrieve from the metadata.
+            if (projectData.Metadata.IncludedPaths.Count == 0)
+            {
+                metaDataManager.Load();
+            }            
 
             result.FileExplorer = CreateFileExplorerViewModel(projectData, metaDataManager, fileSystemService, autoInclude);
             result.Initialize(new ProjectVmParameters(projectData, metaDataManager, this));

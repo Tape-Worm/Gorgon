@@ -48,9 +48,9 @@ namespace Gorgon.Editor.ProjectData
     internal class ProjectManager 
         : IProjectManager
     {
-        #region Constant
+        #region Constants
         // The extension applied to editor project directories.
-        private const string EditorProjectDirectoryExtension = ".gorEditProj";
+        private const string EditorProjectDirectoryExtension = ".gorEditProj";        
         #endregion
 
         #region Queries.
@@ -69,6 +69,31 @@ namespace Gorgon.Editor.ProjectData
                                                             PRIMARY KEY (FullPath)
                                                        );
                                                        CREATE UNIQUE INDEX IncludeIndex ON IncludedPathMetadata (FullPath)";
+
+        // The query used to create a table for file attributes.
+        private const string AttributeMetadataCreate = @"CREATE TABLE IF NOT EXISTS Attributes (
+                                                            FullPath TEXT NOT NULL REFERENCES IncludedPathMetadata (FullPath) ON DELETE CASCADE ON UPDATE CASCADE,
+                                                            AttributeName TEXT NOT NULL,
+                                                            AttributeValue TEXT NULL,
+                                                            PRIMARY KEY (FullPath, AttributeName)
+                                                       );
+                                                       CREATE UNIQUE INDEX AttributeIndex ON Attributes (FullPath, AttributeName)";
+
+        // The query used to create a table for linkages.
+        private const string LinkageMetadataCreate = @"CREATE TABLE Links (
+                                                            LinkParent TEXT REFERENCES IncludedPathMetadata(FullPath) ON DELETE CASCADE
+                                                                                                                      ON UPDATE CASCADE
+                                                                            NOT NULL,
+                                                            LinkChild  TEXT REFERENCES IncludedPathMetadata(FullPath) ON DELETE CASCADE
+                                                                                                                      ON UPDATE CASCADE
+                                                                            NOT NULL,
+                                                            LinkType TEXT NOT NULL, 
+                                                            PRIMARY KEY(
+                                                                LinkParent,
+                                                                LinkChild
+                                                            )
+                                                        );
+                                                        CREATE UNIQUE INDEX LinkIndex ON Links (LinkParent ASC, LinkChild ASC);";
 
         // The query used to create the inital project metadata.
         private const string AddProjectMetadata = @"INSERT INTO ProjectMetadata (ProjectName, Version, ShowExternalObjects) VALUES (@PName, @PVersion, @PShowExtern)";
@@ -129,6 +154,16 @@ namespace Gorgon.Editor.ProjectData
                 }
 
                 using (var command = new SQLiteCommand(IncludeMetadataCreate, conn))
+                {
+                    command.ExecuteNonQuery();
+                }
+
+                using (var command = new SQLiteCommand(AttributeMetadataCreate, conn))
+                {
+                    command.ExecuteNonQuery();
+                }
+
+                using (var command = new SQLiteCommand(LinkageMetadataCreate, conn))
                 {
                     command.ExecuteNonQuery();
                 }
@@ -333,7 +368,18 @@ namespace Gorgon.Editor.ProjectData
                 result = new Project(Path.GetFileNameWithoutExtension(fileSystemFile.Name), metaData);
                 BuildMetadataDatabase(result);
 
-                // TODO: Import v2 files.
+                var v2Metadata = new FileInfo(Path.Combine(result.ProjectWorkSpace.FullName, V2MetadataImporter.V2MetadataFilename));
+
+                // We have v2 meatdata, upgrade the file.
+                if (v2Metadata.Exists)
+                {
+                    
+                    var importer = new V2MetadataImporter(v2Metadata, Providers);
+                    importer.Import(result);
+
+                    // No autoimport needed if we imported everything.
+                    return (result, true, true);
+                }
 
                 return (result, false, true);
             }

@@ -35,6 +35,7 @@ using Gorgon.Editor.Content;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Plugins;
 using Gorgon.Editor.ProjectData;
+using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 
@@ -298,7 +299,7 @@ namespace Gorgon.Editor.ViewModels
             FileExplorer.ProgressUpdated += FileExplorer_ProgressUpdated;
             FileExplorer.ProgressDeactivated += FileExplorer_ProgressDeactivated;
             FileExplorer.FileSystemChanged += FileExplorer_FileSystemChanged;
-        }        
+        }
 
         /// <summary>
         /// Function to unassign events from the child view models.
@@ -316,6 +317,58 @@ namespace Gorgon.Editor.ViewModels
             FileExplorer.WaitPanelDeactivated -= FileExplorer_WaitPanelDeactivated;
             FileExplorer.FileSystemChanged -= FileExplorer_FileSystemChanged;
         }
+
+        /// <summary>
+        /// Function to determine whether the content can be opened or not.
+        /// </summary>
+        /// <param name="node">The node being opened.</param>
+        /// <returns><b>true</b> if the node can be opened, <b>false</b> if not.</returns>
+        private bool CanOpenContent(IFileExplorerNodeVm node) => (node != null) && (node.IsContent);
+
+        /// <summary>
+        /// Function to open a file node as content.
+        /// </summary>
+        /// <param name="node">The node to open.</param>
+        private async void DoOpenContent(IFileExplorerNodeVm node)
+        {
+            try
+            {
+                // TODO: Check for unsaved content.
+
+                if ((!(node is IContentFile file)) || (file.ContentPlugin == null))
+                {
+                    _messageService.ShowError(string.Format(Resources.GOREDIT_ERR_NO_PLUGIN_FOR_CONTENT, node.FullPath));
+                    return;
+                }
+
+                // Close the current content. It should be saved at this point.
+                CurrentContent?.Close();
+                CurrentContent = null;
+
+                ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_OPENING, node.Name));
+
+                // Create a content object.
+                IEditorContent content = await file.ContentPlugin.OpenContentAsync(file, Program.Log);
+
+                if (content == null)
+                {
+                    return;
+                }
+
+                // TODO: Open the file.
+
+                // Load the content.
+                CurrentContent = content;
+            }
+            catch (Exception ex)
+            {
+                _messageService.ShowError(ex, string.Format(Resources.GOREDIT_ERR_CANNOT_OPEN_CONTENT, node.FullPath));
+            }
+            finally
+            {
+                HideWaitPanel();
+            }
+        }
         
         /// <summary>
         /// Function used to initialize the view model with dependencies.
@@ -332,6 +385,8 @@ namespace Gorgon.Editor.ViewModels
             _busyService = injectionParameters.BusyState ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.BusyState), nameof(injectionParameters));
             MetadataManager = injectionParameters.MetadataManager ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.MetadataManager), nameof(injectionParameters));
             _contentPlugins = injectionParameters.ContentPlugins ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.ContentPlugins), nameof(injectionParameters));
+
+            FileExplorer.OpenContentFile = new EditorCommand<IFileExplorerNodeVm>(DoOpenContent, CanOpenContent);
         }
 
         /// <summary>
@@ -392,7 +447,7 @@ namespace Gorgon.Editor.ViewModels
 
             try
             {
-                AssignEvents();
+                AssignEvents();                
             }
             catch (Exception ex)
             {
@@ -418,44 +473,9 @@ namespace Gorgon.Editor.ViewModels
             HideWaitPanel();
             HideProgress();
             UnassignEvents();
+
+            CurrentContent?.Close();
         }
         #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ProjectVm"/> class.
-        /// </summary>
-        public ProjectVm()
-        {
-            ClickTheButton = new EditorCommand<object>(DoClickTheButton);
-        }
-        #endregion
-
-
-        private void DoClickTheButton()
-        {
-            try
-            {
-                CurrentContent = null;
-
-                ContentPlugin plugin = _contentPlugins.Plugins.FirstOrDefault().Value;
-
-                if (plugin == null)
-                {
-                    return;
-                }
-
-                CurrentContent = plugin.CreateContent(Program.Log);
-            }
-            catch (Exception ex)
-            {
-                _messageService.ShowError(ex);
-            }
-        }
-
-        public IEditorCommand<object> ClickTheButton
-        {
-            get;
-        }
     }
 }

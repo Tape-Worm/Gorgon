@@ -91,8 +91,9 @@ namespace Gorgon.Editor.Services
         /// Function to return the <see cref="FileWriterPlugin"/> by its plugin name.
         /// </summary>
         /// <param name="writerName">The name of the writer plug in to locate.</param>
+        /// <param name="useV2PluginName">[Optional] Use the v2 compatible plugin name.</param>
         /// <returns>The <see cref="FileWriterPlugin"/>, or <b>null</b> if no writer could be found.</returns>
-        FileWriterPlugin GetWriterByName(string writerName);
+        FileWriterPlugin GetWriterByName(string writerName, bool useV2PluginName = false);
         #endregion
     }
 }

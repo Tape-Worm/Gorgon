@@ -38,6 +38,7 @@ using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Services;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
+using Gorgon.Graphics.Imaging;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -64,11 +65,65 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Methods.
-        /// <summary>Function called to create a content object from this plugin.</summary>
-        /// <returns>A new IEditorContent object.</returns>
-        protected override IEditorContent OnCreateContent(IGorgonLog log)
+        /// <summary>
+        /// Function to retrieve the codec used by the image.
+        /// </summary>
+        /// <param name="file">The file containing the image content.</param>
+        /// <returns>The codec used to read the file.</returns>
+        private IGorgonImageCodec GetCodec(IContentFile file)
         {
-            return new TestContent();
+            IGorgonImageCodec result = null;
+
+            // First, locate the extension.
+            if (!string.IsNullOrWhiteSpace(file.Extension))
+            {
+                var extension = new GorgonFileExtension(file.Extension);
+
+                result = _codecs.FirstOrDefault(item => item.extension == extension).codec;
+
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
+            // If that failed, then test to see if the file can be opened by the codec, this is more intensive because we have file access.
+            foreach (IGorgonImageCodec codec in _codecList)
+            {
+                using (Stream stream = file.OpenRead())
+                {
+                    if (codec.IsReadable(stream))
+                    {
+                        return codec;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>Function to open a content object from this plugin.</summary>
+        /// <param name="file">The file that contains the content.</param>
+        /// <param name="log">The logging interface to use.</param>
+        /// <returns>A new IEditorContent object.</returns>
+        protected async override Task<IEditorContent> OnOpenContentAsync(IContentFile file, IGorgonLog log)
+        {
+            IGorgonImageCodec codec = GetCodec(file);
+
+            if (codec == null)
+            {
+                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_ERR_NO_CODEC, file.Name));
+            }
+
+            IGorgonImage image = await Task.Run(() => 
+            {
+                using (Stream stream = file.OpenRead())
+                {
+                    return codec.LoadFromStream(stream);
+                }
+            });
+
+            return new ImageContent(file, image);
         }
 
         /// <summary>Function to provide initialization for the plugin.</summary>
@@ -96,53 +151,18 @@ namespace Gorgon.Editor.ImageEditor
         }
 
         /// <summary>Function to determine if the content plugin can open the specified file.</summary>
-        /// <param name="filePath">The path to the file.</param>
-        /// <returns><b>true</b> if the plugin can open the file, or <b>false</b> if not.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
-        public bool CanOpenContent(string filePath)
+        /// <param name="file">The content file to evaluate.</param>
+        /// <returns>
+        ///   <b>true</b> if the plugin can open the file, or <b>false</b> if not.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file" /> parameter is <b>null</b>.</exception>
+        public bool CanOpenContent(IContentFile file)
         {
-            if (filePath == null)
+            if (file == null)
             {
-                throw new ArgumentNullException(nameof(filePath));
+                throw new ArgumentNullException(nameof(file));
             }
-
-            if (string.IsNullOrWhiteSpace(filePath))
-            {
-                throw new ArgumentEmptyException(nameof(filePath));
-            }
-
-            var file = new FileInfo(filePath);
-
-            if (!file.Exists)
-            {
-                return false;
-            }
-
-            // First, locate the extension.
-            if (!string.IsNullOrWhiteSpace(file.Extension))
-            {
-                var extension = new GorgonFileExtension(file.Extension);
-
-                if (_codecs.Any(item => item.extension == extension))
-                {
-                    return true;
-                }
-            }
-
-            // If that failed, then test to see if the file can be opened by the codec, this is more intensive because we have file access.
-            foreach (IGorgonImageCodec codec in _codecList)
-            {
-                using (Stream stream = file.OpenRead())
-                {
-                    if (codec.IsReadable(stream))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
+            
+            return GetCodec(file) != null;
         }
 
         /// <summary>

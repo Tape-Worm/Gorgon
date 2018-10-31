@@ -138,6 +138,7 @@
             this.TreeFileSystem.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.TreeFileSystem_BeforeExpand);
             this.TreeFileSystem.BeforeLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.TreeFileSystem_BeforeLabelEdit);
             this.TreeFileSystem.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.TreeFileSystem_ItemDrag);
+            this.TreeFileSystem.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.TreeFileSystem_NodeMouseDoubleClick);
             this.TreeFileSystem.DragDrop += new System.Windows.Forms.DragEventHandler(this.TreeFileSystem_DragDrop);
             this.TreeFileSystem.DragEnter += new System.Windows.Forms.DragEventHandler(this.TreeFileSystem_DragEnter);
             this.TreeFileSystem.DragOver += new System.Windows.Forms.DragEventHandler(this.TreeFileSystem_DragOver);

@@ -53,6 +53,7 @@
     </Compile>
     <Compile Include="CommonEditorConstants.cs" />
     <Compile Include="Content\EditorContentCommon.cs" />
+    <Compile Include="Content\_Interfaces\IContentFile.cs" />
     <Compile Include="Content\_Interfaces\IEditorContent.cs" />
     <Compile Include="Metadata\_Interfaces\IMetadataManager.cs" />
     <Compile Include="Plugins\ContentPlugin.cs" />

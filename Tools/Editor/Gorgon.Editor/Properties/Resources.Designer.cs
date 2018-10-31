@@ -481,6 +481,17 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error opening the content file &apos;{0}&apos;.
+        ///
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_CANNOT_OPEN_CONTENT {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CANNOT_OPEN_CONTENT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not use &apos;{0}&apos; as the work space directory:
         ///{1}
         ///
@@ -639,6 +650,15 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_NEW_PROJECT {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_NEW_PROJECT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is no plugin loaded that can handle opening the file &apos;{0}&apos;..
+        /// </summary>
+        internal static string GOREDIT_ERR_NO_PLUGIN_FOR_CONTENT {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_NO_PLUGIN_FOR_CONTENT", resourceCulture);
             }
         }
         
@@ -992,9 +1012,9 @@ namespace Gorgon.Editor.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Opening &apos;{0}&apos;....
         /// </summary>
-        internal static string GOREDIT_TEXT_OPENING_PROJECT {
+        internal static string GOREDIT_TEXT_OPENING {
             get {
-                return ResourceManager.GetString("GOREDIT_TEXT_OPENING_PROJECT", resourceCulture);
+                return ResourceManager.GetString("GOREDIT_TEXT_OPENING", resourceCulture);
             }
         }
         

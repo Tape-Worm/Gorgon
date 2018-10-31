@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: October 29, 2018 4:15:09 PM
+// Created: October 30, 2018 7:58:37 PM
 // 
 #endregion
 
@@ -29,69 +29,67 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Gorgon.Core;
-using Gorgon.Editor.Properties;
+using Gorgon.Editor.Content;
 using Gorgon.Editor.UI.Views;
+using Gorgon.Graphics.Imaging;
 
-namespace Gorgon.Editor.Content
+namespace Gorgon.Editor.ImageEditor
 {
     /// <summary>
-    /// Common functionality for editor content.
+    /// The image editor content.
     /// </summary>
-    public abstract class EditorContentCommon
-        : IEditorContent
+    internal class ImageContent
+        : EditorContentCommon
     {
-        #region Variables.
 
+        #region Variables.
+        // The image.
+        private IGorgonImage _image;
+        // The view for the content.
+        private ImageEditorView _view;
         #endregion
 
         #region Properties.
-        /// <summary>
-        /// Property to return the content file.
-        /// </summary>
-        public IContentFile File
-        {
-            get;
-            private set;
-        }
+
         #endregion
 
-        #region Methods.
+        #region Methods.        
         /// <summary>Function to retrieve the view for the content.</summary>
         /// <returns>A UI for the content, must not be <b>null</b>.</returns>
-        protected abstract ContentBaseControl OnGetView();
-
-        /// <summary>Function to close the content.</summary>
-        public abstract void Close();
-
-        /// <summary>Function to retrieve the view for the content.</summary>
-        /// <returns>A UI for the content, must not be <b>null</b>.</returns>
-        /// <exception cref="GorgonException">Thrown if no view was found for the content.</exception>
-        public ContentBaseControl GetView()
+        protected override ContentBaseControl OnGetView()
         {
-            ContentBaseControl control = OnGetView();
+            _view = new ImageEditorView();
 
-            if (control == null)
+            return _view;
+        }
+
+        /// <summary>Function to initialize the content.</summary>
+        public override void Initialize()
+        {
+            if (_view == null)
             {
-                throw new GorgonException(GorgonResult.CannotCreate, Resources.GOREDIT_ERR_NO_CONTENT_VIEW);
+                return;
             }
 
-            return control;
+            _view.TempSetupImageToRender(_image, File.Path);
         }
-        
-        /// <summary>
-        /// Function to initialize the content.
-        /// </summary>
-        public abstract void Initialize();
+
+        /// <summary>Function to close the content.</summary>
+        public override void Close()
+        {
+            _view?.Dispose();
+            _image?.Dispose();
+        }
         #endregion
 
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the EditorContentCommon class.</summary>
         /// <param name="file">The file for the content.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> parameter is <b>null</b>.</exception>
-        public EditorContentCommon(IContentFile file)
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/>, or the <paramref name="image"/> parameter is <b>null</b>.</exception>
+        public ImageContent(IContentFile file, IGorgonImage image)
+            : base(file)
         {
-            File = file ?? throw new ArgumentNullException(nameof(file));
+            _image = image ?? throw new ArgumentNullException(nameof(image));
         }
         #endregion
     }
