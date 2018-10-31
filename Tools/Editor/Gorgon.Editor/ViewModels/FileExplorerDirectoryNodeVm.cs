@@ -223,6 +223,7 @@ namespace Gorgon.Editor.ViewModels
 
             string name = Name;
             string newPath = destNode.PhysicalPath.FormatDirectory(Path.DirectorySeparatorChar);
+            string newPhysicalPath = Path.Combine(newPath, Name);
             IFileExplorerNodeVm dupeNode = null;
 
             // Find out if this node already exists. We'll have to get rid of it.
@@ -240,7 +241,7 @@ namespace Gorgon.Editor.ViewModels
                 if (!copied)
                 {
                     return null;
-                }
+                }                
             }
             catch (Exception ex)
             {
@@ -248,7 +249,7 @@ namespace Gorgon.Editor.ViewModels
             }
 
             // This can happen if an exception occurs if we fail to create any directory.
-            if (!Directory.Exists(newPath))
+            if (!Directory.Exists(newPhysicalPath))
             {
                 return null;
             }
@@ -264,7 +265,7 @@ namespace Gorgon.Editor.ViewModels
                 IsExpanded = false,
                 Name = name,
                 Parent = destNode,
-                PhysicalPath = newPath,
+                PhysicalPath = newPhysicalPath,
                 Included = Included
             };
         }
