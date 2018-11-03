@@ -30,6 +30,7 @@ using System.Data;
 using System.Data.SQLite;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Core;
@@ -39,6 +40,7 @@ using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.IO;
 using Gorgon.IO.Providers;
+using Newtonsoft.Json;
 
 namespace Gorgon.Editor.ProjectData
 {
@@ -51,58 +53,6 @@ namespace Gorgon.Editor.ProjectData
         #region Constants
         // The extension applied to editor project directories.
         private const string EditorProjectDirectoryExtension = ".gorEditProj";        
-        #endregion
-
-        #region Queries.
-        // The query used to create a table for our base metadata.
-        private const string ProjectMetadataCreate = @"CREATE TABLE IF NOT EXISTS ProjectMetadata (
-                                                            ProjectName TEXT NOT NULL,
-                                                            Version TEXT NOT NULL,
-                                                            WriterName TEXT,
-                                                            ShowExternalObjects INT NOT NULL
-                                                       ) ";
-
-        // The query used to create a table for file/folder inclusions in the project.
-        private const string IncludeMetadataCreate = @"CREATE TABLE IF NOT EXISTS IncludedPathMetadata (
-                                                            FullPath TEXT NOT NULL,
-                                                            PluginName TEXT NULL,
-                                                            PRIMARY KEY (FullPath)
-                                                       );
-                                                       CREATE UNIQUE INDEX IncludeIndex ON IncludedPathMetadata (FullPath)";
-
-        // The query used to create a table for file attributes.
-        private const string AttributeMetadataCreate = @"CREATE TABLE IF NOT EXISTS Attributes (
-                                                            FullPath TEXT NOT NULL REFERENCES IncludedPathMetadata (FullPath) ON DELETE CASCADE ON UPDATE CASCADE,
-                                                            AttributeName TEXT NOT NULL,
-                                                            AttributeValue TEXT NULL,
-                                                            PRIMARY KEY (FullPath, AttributeName)
-                                                       );
-                                                       CREATE UNIQUE INDEX AttributeIndex ON Attributes (FullPath, AttributeName)";
-
-        // The query used to create a table for linkages.
-        private const string LinkageMetadataCreate = @"CREATE TABLE Links (
-                                                            LinkParent TEXT REFERENCES IncludedPathMetadata(FullPath) ON DELETE CASCADE
-                                                                                                                      ON UPDATE CASCADE
-                                                                            NOT NULL,
-                                                            LinkChild  TEXT REFERENCES IncludedPathMetadata(FullPath) ON DELETE CASCADE
-                                                                                                                      ON UPDATE CASCADE
-                                                                            NOT NULL,
-                                                            LinkType TEXT NOT NULL, 
-                                                            PRIMARY KEY(
-                                                                LinkParent,
-                                                                LinkChild
-                                                            )
-                                                        );
-                                                        CREATE UNIQUE INDEX LinkIndex ON Links (LinkParent ASC, LinkChild ASC);";
-
-        // The query used to create the inital project metadata.
-        private const string AddProjectMetadata = @"INSERT INTO ProjectMetadata (ProjectName, Version, ShowExternalObjects) VALUES (@PName, @PVersion, @PShowExtern)";
-
-        // The query used to retrieve the name of the project from the metadata.
-        private const string GetProjectNameFromMetadata = @"SELECT ProjectName FROM ProjectMetadata";
-
-        // The query used to retrieve the metadata for a project.
-        private const string GetProjectMetadata = @"SELECT ProjectName, Version, WriterName, ShowExternalObjects FROM ProjectMetadata";
         #endregion
 
         #region Properties.
@@ -135,51 +85,38 @@ namespace Gorgon.Editor.ProjectData
         }
 
         /// <summary>
+        /// Function to persist out the metadata for the project.
+        /// </summary>
+        /// <param name="project">The project to write out.</param>
+        /// <param name="path">The path to the metadata file.</param>
+        private void PersistMetadata(IProject project)
+        {
+            // First, write out the metadata so we cans store it in the project file.
+            Program.Log.Print("Writing metadata.", LoggingLevel.Verbose);
+            using (var jsonWriter = new StreamWriter(Path.Combine(project.ProjectWorkSpace.FullName, CommonEditorConstants.EditorMetadataFileName), false, Encoding.UTF8))
+            {
+                jsonWriter.Write(JsonConvert.SerializeObject(project));
+                jsonWriter.Flush();
+            }
+        }
+
+        /// <summary>
         /// Function to build the metadata database for our project.
         /// </summary>
         /// <param name="project">The project that contains the initial data to write.</param>
-        private static void BuildMetadataDatabase(Project project)
+        /// <param name="metadataFile">The metadata file to write.</param>
+        private void BuildMetadataDatabase(Project project, FileInfo metadataFile)
         {
-            if (project.MetadataFile.Exists)
+            if (metadataFile.Exists)
             {
-                project.MetadataFile.Delete();
-                project.MetadataFile.Refresh();
+                metadataFile.Delete();
+                metadataFile.Refresh();
             }
 
-            using (SQLiteConnection conn = GetConnection(project.ProjectWorkSpace))
-            {
-                using (var command = new SQLiteCommand(ProjectMetadataCreate, conn))
-                {
-                    command.ExecuteNonQuery();
-                }
+            PersistMetadata(project);
 
-                using (var command = new SQLiteCommand(IncludeMetadataCreate, conn))
-                {
-                    command.ExecuteNonQuery();
-                }
-
-                using (var command = new SQLiteCommand(AttributeMetadataCreate, conn))
-                {
-                    command.ExecuteNonQuery();
-                }
-
-                using (var command = new SQLiteCommand(LinkageMetadataCreate, conn))
-                {
-                    command.ExecuteNonQuery();
-                }
-
-                using (var command = new SQLiteCommand(AddProjectMetadata, conn))
-                {
-                    command.Parameters.AddWithValue("PName", project.ProjectName);
-                    command.Parameters.AddWithValue("PVersion", CommonEditorConstants.EditorCurrentProjectVersion);
-                    command.Parameters.AddWithValue("PShowExtern", Convert.ToInt32(project.ShowExternalItems));
-
-                    command.ExecuteNonQuery();
-                }
-            }
-
-            project.MetadataFile.Attributes = FileAttributes.Hidden | FileAttributes.Archive | FileAttributes.Normal;
-            project.MetadataFile.Refresh();
+            metadataFile.Attributes = FileAttributes.Archive | FileAttributes.Normal;
+            metadataFile.Refresh();
         }
 
         /// <summary>
@@ -290,7 +227,7 @@ namespace Gorgon.Editor.ProjectData
                 readStream.CopyTo(writeStream);
             }
 
-            metaDataOutput.Attributes = FileAttributes.Hidden | FileAttributes.Archive | FileAttributes.Normal;
+            metaDataOutput.Attributes = FileAttributes.Archive | FileAttributes.Normal;
             metaDataOutput.Refresh();
 
             return metaDataOutput;
@@ -301,46 +238,35 @@ namespace Gorgon.Editor.ProjectData
         /// </summary>
         /// <param name="metaDataFile">The metadata file to use.</param>
         /// <returns>A new project object.</returns>
-        private Project CreateFromMetadata(FileInfo metaDataFile)
+        private IProject CreateFromMetadata(FileInfo metaDataFile)
         {
             Project result = null;
 
             Program.Log.Print("Loading project metadata.", LoggingLevel.Verbose);
 
-            using (SQLiteConnection conn = GetConnection(metaDataFile.Directory))
-            using (var command = new SQLiteCommand(GetProjectMetadata, conn))
-            using (IDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection | CommandBehavior.SingleRow))
+            using (var reader = new StreamReader(metaDataFile.FullName, Encoding.UTF8))
             {
-                while (reader.Read())
+                string readJsonData = reader.ReadToEnd();
+
+                result = JsonConvert.DeserializeObject<Project>(readJsonData);
+                result.ProjectWorkSpace = metaDataFile.Directory;
+            }
+
+            if (!string.IsNullOrWhiteSpace(result.WriterPluginName))
+            {
+                string writerName = result.WriterPluginName;
+
+                result.AssignWriter(Providers.GetWriterByName(writerName));
+
+                if (result.Writer == null)
                 {
-                    string projectName = reader["ProjectName"].ToString();
-                    string version = reader["Version"].ToString();
-                    string writer = reader["WriterName"].IfNull(string.Empty);
-                    int showExternal = Convert.ToInt32(reader["ShowExternalObjects"]);
-
-                    FileWriterPlugin writerPlugin = null;
-
-                    if (!string.IsNullOrWhiteSpace(writer))
-                    {
-                        writerPlugin = Providers.GetWriterByName(writer);
-
-                        if (writerPlugin != null)
-                        {
-                            Program.Log.Print($"WARNING: Project has a writer plug in named '{writer}', but no such plug in was loaded.", LoggingLevel.Verbose);
-                        }
-                    }
-
-                    // TODO: Version checking. We're at the first version now, so there's no need to upgrade.
-
-                    Program.Log.Print($"Project '{projectName}', version {version}, writer plugin: {writer}.", LoggingLevel.Verbose);
-
-                    result = new Project(projectName, metaDataFile)
-                    {
-                        ShowExternalItems = showExternal != 0,
-                        Writer = writerPlugin
-                    };
+                    Program.Log.Print($"WARNING: Project has a writer plug in named '{writerName}', but no such plug in was loaded.", LoggingLevel.Verbose);
                 }
             }
+
+            // Here we'll check the version and upgrade as needed. Not necessary now since we're in the first go around.
+
+            Program.Log.Print($"Project version {result.Version}, writer plugin: {result.WriterPluginName}.", LoggingLevel.Verbose);
 
             return result;
         }
@@ -365,8 +291,8 @@ namespace Gorgon.Editor.ProjectData
             {
                 Program.Log.Print("No metadata file exists. A new one will be created.", LoggingLevel.Verbose);
 
-                result = new Project(Path.GetFileNameWithoutExtension(fileSystemFile.Name), metaData);
-                BuildMetadataDatabase(result);
+                result = new Project(projectWorkspace);
+                BuildMetadataDatabase(result, metaData);
 
                 var v2Metadata = new FileInfo(Path.Combine(result.ProjectWorkSpace.FullName, V2MetadataImporter.V2MetadataFilename));
 
@@ -422,62 +348,6 @@ namespace Gorgon.Editor.ProjectData
         }
 
         /// <summary>
-        /// Function to indicate that the selected directory already contains a project.
-        /// </summary>
-        /// <param name="path">The path to evaluate.</param>
-        /// <returns>A flag to indicate whether a project is located in the directory, and the name of the project if there's one present.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
-        /// <remarks>
-        /// <para>
-        /// If this method returns <b>false</b>, but the <c>projectName</c> return value is populated, then an exception was thrown during the check. In this case, the <c>projectName</c> value will contain
-        /// the exception error message.
-        /// </para>
-        /// </remarks>
-        public (bool hasProject, string projectName) HasProject(DirectoryInfo path)
-        {
-            SQLiteConnection conn = null;
-            SQLiteCommand command = null;
-
-            if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
-
-            try
-            {
-                path.Refresh();
-                if (!path.Exists)
-                {
-                    return (false, null);
-                }
-
-                // Look for the project metadata file.
-                FileInfo file = path.GetFiles(CommonEditorConstants.EditorMetadataFileName).FirstOrDefault();
-
-                if (file == null)
-                {
-                    return (false, null);
-                }
-
-                conn = GetConnection(path);
-                command = new SQLiteCommand(GetProjectNameFromMetadata, conn);
-                object val = command.ExecuteScalar(CommandBehavior.CloseConnection);
-
-                return (true, val.IfNull(Resources.GOREDIT_NEW_PROJECT));
-            }
-            catch (Exception ex)
-            {
-                Program.Log.LogException(ex);
-                return (false, ex.Message);
-            }
-            finally
-            {
-                command?.Dispose();
-                conn?.Dispose();
-            }
-        }
-
-        /// <summary>
         /// Function to create a project object.
         /// </summary>
         /// <param name="workspace">The directory used as a work space location.</param>
@@ -506,9 +376,9 @@ namespace Gorgon.Editor.ProjectData
 
             var metadataFile = new FileInfo(Path.Combine(workspace.FullName, CommonEditorConstants.EditorMetadataFileName));
 
-            var result = new Project(projectName, metadataFile);
+            var result = new Project(workspace);
 
-            BuildMetadataDatabase(result);
+            BuildMetadataDatabase(result, metadataFile);
 
             return result;
         }
@@ -543,6 +413,8 @@ namespace Gorgon.Editor.ProjectData
             {
                 throw new ArgumentEmptyException(nameof(path));
             }
+
+            PersistMetadata(project);
 
             var outputFile = new FileInfo(path);
             using (FileStream stream = outputFile.Open(FileMode.Create, FileAccess.Write, FileShare.None))

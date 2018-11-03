@@ -416,11 +416,38 @@ namespace Gorgon.Windows.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ERROR: .
+        /// </summary>
+        internal static string GOR_LOG_ERROR {
+            get {
+                return ResourceManager.GetString("GOR_LOG_ERROR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Exception.
         /// </summary>
         internal static string GOR_LOG_EXCEPTION {
             get {
                 return ResourceManager.GetString("GOR_LOG_EXCEPTION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to WARNING: .
+        /// </summary>
+        internal static string GOR_LOG_WARNING {
+            get {
+                return ResourceManager.GetString("GOR_LOG_WARNING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [WARNING]:.
+        /// </summary>
+        internal static string GOR_LOG_WARNING2 {
+            get {
+                return ResourceManager.GetString("GOR_LOG_WARNING2", resourceCulture);
             }
         }
         

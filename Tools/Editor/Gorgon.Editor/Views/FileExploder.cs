@@ -64,6 +64,8 @@ namespace Gorgon.Editor.Views
         private readonly Dictionary<KryptonTreeNode, IFileExplorerNodeVm> _nodeLinks = new Dictionary<KryptonTreeNode, IFileExplorerNodeVm>();
         // The reverse of the above.
         private readonly Dictionary<IFileExplorerNodeVm, KryptonTreeNode> _revNodeLinks = new Dictionary<IFileExplorerNodeVm, KryptonTreeNode>();
+        // The sorting comparer for the tree.
+        private readonly FileSystemNodeComparer _sortComparer;
         // The node being renamed.
         private IFileExplorerNodeVm _renameNode;
         // Font used for excluded items.
@@ -211,9 +213,9 @@ namespace Gorgon.Editor.Views
 
                 UpdateNodeVisualState(newTreeNode, newNode);
 
-                nodes.Add(newTreeNode);
                 _nodeLinks[newTreeNode] = newNode;
                 _revNodeLinks[newNode] = newTreeNode;
+                nodes.Add(newTreeNode);
                 SelectNode(newTreeNode);
                 newTreeNode.EnsureVisible();
                 return;
@@ -328,7 +330,7 @@ namespace Gorgon.Editor.Views
                     break;
                 case nameof(IFileExplorerNodeVm.ImageName):
                 case nameof(IFileExplorerNodeVm.IsCut):
-                case nameof(IFileExplorerNodeVm.Included):
+                case nameof(IFileExplorerNodeVm.Metadata):
                     if (treeNode != null)
                     {
                         UpdateNodeVisualState(treeNode, node);
@@ -636,7 +638,7 @@ namespace Gorgon.Editor.Views
 
             MenuItemCreateDirectory.Available = dataContext.CreateNodeCommand?.CanExecute(null) ?? false;
             MenuItemDelete.Available = dataContext.DeleteNodeCommand?.CanExecute(null) ?? false;
-            MenuItemIncludeInProject.Checked = dataContext.SelectedNode.Included;
+            MenuItemIncludeInProject.Checked = dataContext.SelectedNode.Metadata != null;
 
             MenuSepNew.Visible = MenuItemCreateDirectory.Available;
         }
@@ -1094,6 +1096,9 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="NodeLabelEditEventArgs"/> instance containing the event data.</param>
         private void TreeFileSystem_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
         {
+            TreeFileSystem.BeforeLabelEdit -= TreeFileSystem_BeforeLabelEdit;
+            TreeFileSystem.AfterLabelEdit -= TreeFileSystem_AfterLabelEdit;
+
             try
             {
                 // If we didn't change the name, or there's no node being renamed, then leave.
@@ -1113,7 +1118,7 @@ namespace Gorgon.Editor.Views
 
                 DataContext.RenameNodeCommand.Execute(args);
 
-                e.CancelEdit = args.Cancel;
+                e.CancelEdit = args.Cancel;                
             }
             finally
             {
@@ -1128,6 +1133,9 @@ namespace Gorgon.Editor.Views
 
                 EventHandler handler = RenameEnd;
                 handler?.Invoke(this, EventArgs.Empty);
+
+                TreeFileSystem.AfterLabelEdit += TreeFileSystem_AfterLabelEdit;
+                TreeFileSystem.BeforeLabelEdit += TreeFileSystem_BeforeLabelEdit;
             }
         }
 
@@ -1305,8 +1313,8 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            treeNode.NodeFont = node.Included ? null : _excludedFont;
-            treeNode.ForeColor = node.Included ? Color.Empty : Color.DimGray;
+            treeNode.NodeFont = node.Metadata != null ? null : _excludedFont;
+            treeNode.ForeColor = node.Metadata != null ? Color.Empty : Color.DimGray;
 
             if (node.IsCut)
             {
@@ -1315,10 +1323,10 @@ namespace Gorgon.Editor.Views
             }
 
             // Check for an icon.            
-            if (node.ContentMetadata != null)
+            if (node.Metadata?.ContentMetadata != null)
             {
                 string imageName = node.ImageName;
-                Image icon = node.ContentMetadata.GetSmallIcon();                
+                Image icon = node.Metadata.ContentMetadata.GetSmallIcon();                
 
                 // This ID has not been registered in the image list, do so now.
                 if ((!TreeImages.Images.ContainsKey(node.ImageName))
@@ -1712,6 +1720,7 @@ namespace Gorgon.Editor.Views
 
             // Bug in krypton treeview:
             TreeFileSystem.TreeView.MouseUp += TreeFileSystem_MouseUp;
+            TreeFileSystem.TreeViewNodeSorter = _sortComparer = new FileSystemNodeComparer(_nodeLinks);            
         }
         #endregion
     }

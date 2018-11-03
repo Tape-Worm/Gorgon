@@ -24,9 +24,11 @@
 // 
 #endregion
 
+using System.Collections.Generic;
 using System.IO;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Plugins;
+using Newtonsoft.Json;
 
 namespace Gorgon.Editor.ProjectData
 {
@@ -35,13 +37,13 @@ namespace Gorgon.Editor.ProjectData
     /// </summary>
     public interface IProject
     {
+        #region Properties.
         /// <summary>
-        /// Property to set or return the name of the project.
+        /// Property to return the version for the project file.
         /// </summary>
-        string ProjectName
+        string Version
         {
             get;
-            set;
         }
 
         /// <summary>
@@ -50,15 +52,8 @@ namespace Gorgon.Editor.ProjectData
         /// <remarks>
         /// A project work space is a folder on the local file system that contains a copy of the project content. This folder is transitory, and will be cleaned up upon application exit.
         /// </remarks>
+        [JsonIgnore]
         DirectoryInfo ProjectWorkSpace
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the metadata file location.
-        /// </summary>
-        FileInfo MetadataFile
         {
             get;
         }
@@ -66,16 +61,17 @@ namespace Gorgon.Editor.ProjectData
         /// <summary>
         /// Property to set or return the writer used to write to the project file.
         /// </summary>
+        [JsonIgnore]
         FileWriterPlugin Writer
         {
             get;
-            set;
         }
 
         /// <summary>
-        /// Property to return the list of metadata for the project.
+        /// Property to return the name of the writer plug in used to write the project file.
         /// </summary>
-        IProjectMetadata Metadata
+        [JsonProperty]
+        string WriterPluginName
         {
             get;
         }
@@ -88,5 +84,22 @@ namespace Gorgon.Editor.ProjectData
             get;
             set;
         }
+
+        /// <summary>
+        /// Property to return the list of project items.
+        /// </summary>
+        Dictionary<string, ProjectItemMetadata> ProjectItems
+        {
+            get;
+        }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to assign a file system writer to the project.
+        /// </summary>
+        /// <param name="plugin">The plug in used to write the project file.</param>
+        void AssignWriter(FileWriterPlugin plugin);
+        #endregion
     }
 }

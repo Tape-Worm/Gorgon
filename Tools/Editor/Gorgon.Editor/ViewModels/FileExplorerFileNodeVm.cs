@@ -33,6 +33,8 @@ using System.Threading;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Content;
+using Gorgon.Editor.Metadata;
+using System.Collections.Generic;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -42,11 +44,6 @@ namespace Gorgon.Editor.ViewModels
     internal class FileExplorerFileNodeVm
         : FileExplorerNodeCommon, IContentFile
     {
-        #region Variables.
-        // The plug in metadata.
-        private IContentPluginMetadata _contentPlugin;
-        #endregion
-
         #region Properties.
         /// <summary>
         /// Property to return whether to allow child node creation for this node.
@@ -66,7 +63,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the image name to use for the node type.
         /// </summary>
-        public override string ImageName => _contentPlugin == null ? "generic_file_20x20.png" : _contentPlugin.SmallIconID.ToString("N");
+        public override string ImageName => Metadata?.ContentMetadata == null ? "generic_file_20x20.png" : Metadata.ContentMetadata.SmallIconID.ToString("N");
 
         /// <summary>
         /// Property to return whether or not the allow this node to be deleted.
@@ -75,30 +72,6 @@ namespace Gorgon.Editor.ViewModels
 
         /// <summary>Property to return whether this node represents content or not.</summary>
         public override bool IsContent => true;
-
-        /// <summary>
-        /// Property to set or return the metadata for a content plugin on this node.
-        /// </summary>
-        /// <remarks>
-        /// For this type of node, there is no metadata.
-        /// </remarks>
-        public override IContentPluginMetadata ContentMetadata
-        {
-            get => _contentPlugin;
-            set
-            {
-                if (_contentPlugin == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _contentPlugin = value;
-                OnPropertyChanged();
-
-                NotifyPropertyChanged(nameof(ImageName));
-            }
-        }
 
         /// <summary>Property to return the path to the file.</summary>
         string IContentFile.Path => FullPath;
@@ -112,7 +85,22 @@ namespace Gorgon.Editor.ViewModels
         string IContentFile.Extension => Path.GetExtension(Name);
 
         /// <summary>Property to return the plugin associated with the file.</summary>
-        ContentPlugin IContentFile.ContentPlugin => ContentMetadata as ContentPlugin;
+        ContentPlugin IContentFile.ContentPlugin => Metadata?.ContentMetadata as ContentPlugin;
+
+        public override ProjectItemMetadata Metadata
+        {
+            get => base.Metadata;
+            set
+            {
+                if (base.Metadata == value)
+                {
+                    return;
+                }
+                                
+                base.Metadata = value;
+                NotifyPropertyChanged(nameof(ImageName));
+            }
+        }
         #endregion
 
         #region Methods.
@@ -153,13 +141,19 @@ namespace Gorgon.Editor.ViewModels
         /// Function to rename the node.
         /// </summary>
         /// <param name="newName">The new name for the node.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="newName"/> parameter is <b>null</b>.</exception>
+        /// <param name="projectItems">The list of items in the project.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="newName"/>, or the <paramref name="projectItems"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="newName"/> parameter is empty.</exception>
-        public override void RenameNode(string newName)
+        public override void RenameNode(string newName, IDictionary<string, ProjectItemMetadata> projectItems)
         {
             if (newName == null)
             {
                 throw new ArgumentNullException(nameof(newName));
+            }
+
+            if (projectItems == null)
+            {
+                throw new ArgumentNullException(nameof(projectItems));
             }
 
             if (string.IsNullOrWhiteSpace(newName))
@@ -167,9 +161,15 @@ namespace Gorgon.Editor.ViewModels
                 throw new ArgumentEmptyException(nameof(newName));
             }
 
+            projectItems.Remove(FullPath);
             PhysicalPath = FileSystemService.RenameFile(PhysicalPath, newName);
             Name = newName;
-            NotifyPropertyChanged(nameof(FullPath));
+
+            if (Metadata != null)
+            {
+                projectItems[FullPath] = Metadata;
+            }
+            NotifyPropertyChanged(nameof(FullPath));            
         }
 
         /// <summary>
@@ -236,7 +236,7 @@ namespace Gorgon.Editor.ViewModels
                 Name = Name,
                 Parent = destNode,
                 PhysicalPath = newPath,
-                Included = Included
+                Metadata = Metadata != null ? new ProjectItemMetadata(Metadata) : null
             };
 
             // Renames a node that is in conflict when the file is the same in the source and dest, or if the user chooses to not overwrite.
@@ -313,7 +313,7 @@ namespace Gorgon.Editor.ViewModels
                 Name = Name,
                 Parent = destNode,
                 PhysicalPath = newPath,
-                Included = Included
+                Metadata = Metadata
             };
 
             if (FileSystemService.FileExists(newPath))

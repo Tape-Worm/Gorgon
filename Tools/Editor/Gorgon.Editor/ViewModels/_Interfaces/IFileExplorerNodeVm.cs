@@ -25,10 +25,12 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Plugins;
 using Gorgon.Editor.UI;
 
@@ -61,6 +63,15 @@ namespace Gorgon.Editor.ViewModels
     {
         #region Properties.
         /// <summary>
+        /// Property to set or return the metadata for the node.
+        /// </summary>
+        ProjectItemMetadata Metadata
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to return whether this node represents content or not.
         /// </summary>
         bool IsContent
@@ -72,15 +83,6 @@ namespace Gorgon.Editor.ViewModels
         /// Property to set or return whether to mark this node as "cut" or not.
         /// </summary>
         bool IsCut
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return whether or not the node is included in the project.
-        /// </summary>
-        bool Included
         {
             get;
             set;
@@ -166,15 +168,6 @@ namespace Gorgon.Editor.ViewModels
             get;
             set;
         }
-
-        /// <summary>
-        /// Property to set or return the metadata for a content plugin on this node.
-        /// </summary>
-        IContentPluginMetadata ContentMetadata
-        {
-            get;
-            set;
-        }
         #endregion
 
         #region Methods.
@@ -189,7 +182,8 @@ namespace Gorgon.Editor.ViewModels
         /// Function to rename the node.
         /// </summary>
         /// <param name="newName">The new name for the node.</param>
-        void RenameNode(string newName);
+        /// <param name="projectItems">The list of items in the project.</param>
+        void RenameNode(string newName, IDictionary<string, ProjectItemMetadata> projectItems);
 
         /// <summary>
         /// Function to delete the node.

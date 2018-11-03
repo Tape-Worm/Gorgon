@@ -60,6 +60,6 @@ namespace Gorgon.Editor.Metadata
         /// Function to retrieve the list of files included in this project.
         /// </summary>
         /// <returns>A list of included paths.</returns>
-        IList<IncludedFileSystemPathMetadata> GetIncludedPaths();
+        IList<ProjectItemMetadata> GetIncludedPaths();
     }
 }

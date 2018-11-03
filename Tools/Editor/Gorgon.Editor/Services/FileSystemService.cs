@@ -506,7 +506,10 @@ namespace Gorgon.Editor.Services
 
             return !directory.Exists
                 ? (new DirectoryInfo[0])
-                : directory.GetDirectories("*", recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+                : directory.GetDirectories("*", recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
+                .Where(item => (item.Attributes & FileAttributes.Directory) == FileAttributes.Directory
+                            && (item.Attributes & FileAttributes.System) != FileAttributes.System
+                            && (item.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden).ToArray();
         }
 
         /// <summary>
@@ -535,7 +538,11 @@ namespace Gorgon.Editor.Services
 
             return !directory.Exists
                 ? (new FileInfo[0])
-                : directory.GetFiles("*", recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+                : directory.GetFiles("*", recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
+                            .Where(item => (item.Attributes & FileAttributes.Directory) != FileAttributes.Directory
+                                        && (item.Attributes & FileAttributes.System) != FileAttributes.System
+                                        && (item.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden
+                                        && !string.Equals(item.Name, CommonEditorConstants.EditorMetadataFileName, StringComparison.OrdinalIgnoreCase)).ToArray();
         }
 
         /// <summary>

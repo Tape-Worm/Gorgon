@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using Gorgon.Collections;
+using Gorgon.Core;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Plugins;
 using Gorgon.Editor.ProjectData;
@@ -110,6 +111,79 @@ namespace Gorgon.Editor.ViewModels
 
         #region Methods.
         /// <summary>
+        /// Function to enumerate the physical file system to build the node hierarchy.
+        /// </summary>
+        /// <param name="path">The path to enumerate.</param>
+        /// <param name="project">The project being evaluated.</param>
+        /// <param name="fileSystemService">The file system service used to retrieve file system data.</param>
+        /// <param name="parent">The parent of the nodes.</param>
+        /// <param name="nodes">The node list to update.</param>                
+        private void DoEnumerateFileSystemObjects(string path, IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parent, ObservableCollection<IFileExplorerNodeVm> nodes)
+        {
+            foreach (DirectoryInfo dir in fileSystemService.GetDirectories(path, true))
+            {
+                if ((project.ShowExternalItems) || (project.ProjectItems.ContainsKey(dir.ToFileSystemPath(project.ProjectWorkSpace))))
+                {
+                    nodes.Add(CreateFileExplorerDirectoryNodeVm(project, fileSystemService, parent, dir));
+                }
+            }
+
+            foreach (FileInfo file in fileSystemService.GetFiles(path, false))
+            {
+                if ((project.ShowExternalItems) || (project.ProjectItems.ContainsKey(file.ToFileSystemPath(project.ProjectWorkSpace))))
+                {
+                    nodes.Add(CreateFileExplorerFileNodeVm(project, fileSystemService, parent, file));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Function to enumerate the physical file system to build the node hierarchy.
+        /// </summary>
+        /// <param name="path">The path to enumerate.</param>
+        /// <param name="project">The project being evaluated.</param>
+        /// <param name="fileSystemService">The file system service used to retrieve file system data.</param>
+        /// <param name="parent">The parent of the nodes.</param>
+        /// <param name="nodes">The node list to update.</param>
+        /// <returns>A hierarchy of nodes representing the physical file system.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+        public void EnumerateFileSystemObjects(string path, IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parent, ObservableCollection<IFileExplorerNodeVm> nodes)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentEmptyException(nameof(path));
+            }
+
+            if (project == null)
+            {
+                throw new ArgumentNullException(nameof(project));
+            }
+
+            if (fileSystemService == null)
+            {
+                throw new ArgumentNullException(nameof(fileSystemService));
+            }
+
+            if (parent == null)
+            {
+                throw new ArgumentNullException(nameof(parent));
+            }
+
+            if (nodes == null)
+            {
+                throw new ArgumentNullException(nameof(nodes));
+            }
+
+            DoEnumerateFileSystemObjects(path, project, fileSystemService, parent, nodes);
+        }
+
+        /// <summary>
         /// Function to create the main view model and any child view models.
         /// </summary>
         /// <param name="workspace">The directory to use for the workspace.</param>
@@ -142,22 +216,16 @@ namespace Gorgon.Editor.ViewModels
         /// Function to create a file explorer node view model for a file.
         /// </summary>
         /// <param name="project">The project data.</param>
-        /// <param name="metadataManager">The metadata manager for the project.</param>
         /// <param name="fileSystemService">The file system service used to manipulate the underlying physical file system.</param>
         /// <param name="parent">The parent for the node.</param>
         /// <param name="file">The file system file to wrap in the view model.</param>
         /// <returns>The new file explorer node view model.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, <paramref name="metadataManager"/>, <paramref name="fileSystemService"/> or the <paramref name="file"/> parameter is <b>null</b>.</exception>
-        public IFileExplorerNodeVm CreateFileExplorerFileNodeVm(IProject project, IMetadataManager metadataManager, IFileSystemService fileSystemService, IFileExplorerNodeVm parent, FileInfo file)
+        public IFileExplorerNodeVm CreateFileExplorerFileNodeVm(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parent, FileInfo file)
         {
             if (project == null)
             {
                 throw new ArgumentNullException(nameof(project));
-            }
-
-            if (metadataManager == null)
-            {
-                throw new ArgumentNullException(nameof(metadataManager));
             }
 
             if (fileSystemService == null)
@@ -192,8 +260,28 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="rootDirectory">The root directory.</param>
         /// <returns>The new file explorer node view model.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, <paramref name="fileSystemService"/>, <paramref name="parentNode"/>, or the <paramref name="directory"/> parameter is <b>null</b>.</exception>
-        public IFileExplorerNodeVm CreateFileExplorerDirectoryNodeVm(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parentNode, IMetadataManager metadataManager, DirectoryInfo directory)
+        public IFileExplorerNodeVm CreateFileExplorerDirectoryNodeVm(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parentNode, DirectoryInfo directory)
         {
+            if (project == null)
+            {
+                throw new ArgumentNullException(nameof(project));
+            }
+
+            if (fileSystemService == null)
+            {
+                throw new ArgumentNullException(nameof(fileSystemService));
+            }
+
+            if (parentNode == null)
+            {
+                throw new ArgumentNullException(nameof(parentNode));
+            }
+
+            if (directory == null)
+            {
+                throw new ArgumentNullException(nameof(directory));
+            }
+
             var result = new FileExplorerDirectoryNodeVm();
 
             var children = new ObservableCollection<IFileExplorerNodeVm>();
@@ -204,15 +292,7 @@ namespace Gorgon.Editor.ViewModels
                 Children = children
             });
 
-            foreach (DirectoryInfo subDir in metadataManager.GetIncludedDirectories(directory.FullName))
-            {
-                children.Add(CreateFileExplorerDirectoryNodeVm(project, fileSystemService, result, metadataManager, subDir));
-            }
-
-            foreach (FileInfo file in metadataManager.GetIncludedFiles(directory.FullName))
-            {
-                children.Add(CreateFileExplorerFileNodeVm(project, metadataManager, fileSystemService, result, file));
-            }
+            DoEnumerateFileSystemObjects(directory.FullName, project, fileSystemService, result, children);
 
             return result;
         }
@@ -221,11 +301,10 @@ namespace Gorgon.Editor.ViewModels
         /// Function to create a file explorer view model.
         /// </summary>
         /// <param name="project">The project data.</param>
-        /// <param name="metadataManager">The metadata manager to use.</param>
         /// <param name="fileSystemService">The file system service for the project.</param>
         /// <param name="autoInclude"><b>true</b> to automatically include any and all file system objects in the project, or <b>false</b> to only use what is in the metadata.</param>
         /// <returns>The file explorer view model.</returns>
-        private IFileExplorerVm CreateFileExplorerViewModel(IProject project, IMetadataManager metadataManager, IFileSystemService fileSystemService, bool autoInclude)
+        private IFileExplorerVm CreateFileExplorerViewModel(IProject project, IFileSystemService fileSystemService, bool autoInclude)
         {
             project.ProjectWorkSpace.Refresh();
             if (!project.ProjectWorkSpace.Exists)
@@ -234,37 +313,20 @@ namespace Gorgon.Editor.ViewModels
             }
 
             var result = new FileExplorerVm();
-            var nodes = new ObservableCollection<IFileExplorerNodeVm>();
-
+            
             var root = new FileExplorerDirectoryNodeVm
             {
                 IsExpanded = true,
-                Included = true
+                Metadata = new ProjectItemMetadata()
             };
 
-            bool showExternal = project.ShowExternalItems;
+            bool showUnknown = project.ShowExternalItems;
             project.ShowExternalItems = autoInclude;
 
-            foreach (DirectoryInfo rootDir in metadataManager.GetIncludedDirectories(project.ProjectWorkSpace.FullName))
-            {
-                nodes.Add(CreateFileExplorerDirectoryNodeVm(project, fileSystemService, root, metadataManager, rootDir));
-            }
+            var nodes = new ObservableCollection<IFileExplorerNodeVm>();
+            DoEnumerateFileSystemObjects(project.ProjectWorkSpace.FullName, project, fileSystemService, root, nodes);
 
-            foreach (FileInfo file in metadataManager.GetIncludedFiles(project.ProjectWorkSpace.FullName))
-            {
-                nodes.Add(CreateFileExplorerFileNodeVm(project, metadataManager, fileSystemService, root, file));
-            }
-
-            if (autoInclude)
-            {
-                foreach (IFileExplorerNodeVm node in nodes.Traverse(p => p.Children))
-                {
-                    node.Included = true;
-                    project.Metadata.IncludedPaths.Add(new IncludedFileSystemPathMetadata(node.FullPath));
-                }
-            }
-
-            project.ShowExternalItems = showExternal;                        
+            project.ShowExternalItems = showUnknown;
 
             // This is a special node, used internally.
             root.Initialize(new FileExplorerNodeParameters("/", project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar), project, this, fileSystemService)
@@ -272,8 +334,16 @@ namespace Gorgon.Editor.ViewModels
                 Children = nodes
             });
 
+            if (autoInclude)
+            {
+                // We'll rebuild the include list because it should be empty at this point.
+                foreach (IFileExplorerNodeVm node in nodes.Traverse(p => p.Children))
+                {
+                    project.ProjectItems[node.FullPath] = node.Metadata = new ProjectItemMetadata();
+                }
+            }
+
             result.Initialize(new FileExplorerParameters(fileSystemService,
-                                                        metadataManager,
                                                         root,
                                                         project,
                                                         this));
@@ -298,15 +368,8 @@ namespace Gorgon.Editor.ViewModels
             var result = new ProjectVm();
             var fileSystemService = new FileSystemService(projectData.ProjectWorkSpace);
 
-            var metaDataManager = new MetadataManager(projectData, ContentPlugins, new SqliteMetadataProvider(projectData.MetadataFile));
-            // If we don't any included items at this point, try and retrieve from the metadata.
-            if (projectData.Metadata.IncludedPaths.Count == 0)
-            {
-                metaDataManager.Load();
-            }            
-
-            result.FileExplorer = CreateFileExplorerViewModel(projectData, metaDataManager, fileSystemService, autoInclude);
-            result.Initialize(new ProjectVmParameters(projectData, metaDataManager, this));
+            result.FileExplorer = CreateFileExplorerViewModel(projectData, fileSystemService, autoInclude);
+            result.Initialize(new ProjectVmParameters(projectData, this));
 
             return result;
         }

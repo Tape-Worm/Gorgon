@@ -76,7 +76,6 @@
     <Compile Include="FormSplash.designer.cs">
       <DependentUpon>FormSplash.cs</DependentUpon>
     </Compile>
-    <Compile Include="ProjectData\MetadataManager.cs" />
     <Compile Include="ProjectData\V2MetadataImporter.cs" />
     <Compile Include="RecentItem.cs" />
     <Compile Include="RibbonMerger.cs" />
@@ -89,7 +88,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="ProjectData\Project.cs" />
     <Compile Include="ProjectData\ProjectManager.cs" />
-    <Compile Include="ProjectData\ProjectMetadata.cs" />
     <Compile Include="ProjectData\_Interfaces\IProjectManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\GraphicsContext.cs" />
@@ -145,6 +143,7 @@
     <Compile Include="Views\FileExploder.Designer.cs">
       <DependentUpon>FileExploder.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\FileSystemNodeComparer.cs" />
     <Compile Include="Views\SaveEventArgs.cs" />
     <Compile Include="Views\StageLaunch.cs">
       <SubType>UserControl</SubType>

@@ -25,10 +25,13 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using Gorgon.Core;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Plugins;
+using Newtonsoft.Json;
 
 namespace Gorgon.Editor.ProjectData
 { 
@@ -44,39 +47,26 @@ namespace Gorgon.Editor.ProjectData
 
         #region Properties.
         /// <summary>
-        /// Property to return the metadata file location.
+        /// Property to return the version for the project file.
         /// </summary>
-        public FileInfo MetadataFile
+        [JsonProperty]
+        public string Version
         {
             get;
-        }
+            private set;
+        } = CommonEditorConstants.EditorCurrentProjectVersion;
 
         /// <summary>
-        /// Property to set or return the name of the project.
-        /// </summary>
-        public string ProjectName
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the workspace used by the project.
+        /// Property to set or return the workspace used by the project.
         /// </summary>
         /// <remarks>
         /// A project workspace is a folder on the local file system that contains a copy of the project content. This folder is transitory, and will be cleaned up upon application exit.
         /// </remarks>
+        [JsonIgnore]
         public DirectoryInfo ProjectWorkSpace
         {
             get;
-        }
-
-        /// <summary>
-        /// Property to return the list of excluded paths.
-        /// </summary>
-        public IProjectMetadata Metadata
-        {
-            get;
+            set;
         }
 
         /// <summary>
@@ -91,38 +81,60 @@ namespace Gorgon.Editor.ProjectData
         /// <summary>
         /// Property to set or return the writer used to write to the project file.
         /// </summary>
+        [JsonIgnore]
         public FileWriterPlugin Writer
         {
             get;
-            set;
+            private set;
         }
+
+        /// <summary>
+        /// Property to set or return the name of the plugin used to write the project file.
+        /// </summary>
+        [JsonProperty]
+        public string WriterPluginName
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the list of project items.
+        /// </summary>
+        public Dictionary<string, ProjectItemMetadata> ProjectItems
+        {
+            get;
+            private set;
+        } = new Dictionary<string, ProjectItemMetadata>(StringComparer.OrdinalIgnoreCase);
         #endregion
 
         #region Methods.
-
+        /// <summary>
+        /// Function to assign a file system writer to the project.
+        /// </summary>
+        /// <param name="plugin">The plug in used to write the project file.</param>
+        public void AssignWriter(FileWriterPlugin plugin)
+        {
+            Writer = plugin;
+            WriterPluginName = plugin?.Name;
+        }
         #endregion
 
-        #region Constructor/Finalizer.
+        #region Constructor/Finalizer.        
+        /// <summary>Initializes a new instance of the Project class.</summary>
+        [JsonConstructor]
+        public Project()
+        {
+            // Used by JSON.Net for deserialization.
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Project"/> class.
         /// </summary>
-        /// <param name="projectName">The name of the project.</param>
-        /// <param name="metadata">The metadata file for the project.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="projectName"/>, or the <paramref name="metadata"/> parameter is <b>null</b>.</exception>
+        /// <param name="workspace">The work space directory for the project.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="projectName"/>, or the <paramref name="workspace"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="projectName"/> parameter is empty.</exception>
-        public Project(string projectName, FileInfo metadata)
-        {
-            ProjectName = projectName ?? throw new ArgumentNullException(nameof(projectName));
-
-            if (string.IsNullOrWhiteSpace(projectName))
-            {
-                throw new ArgumentEmptyException(nameof(projectName));
-            }
-
-            MetadataFile = metadata ?? throw new ArgumentNullException(nameof(metadata));
-            ProjectWorkSpace = metadata.Directory;
-            Metadata = new ProjectMetadata();
-        }
+        public Project(DirectoryInfo workspace) => ProjectWorkSpace = workspace ?? throw new ArgumentNullException(nameof(workspace));
         #endregion
     }
 }

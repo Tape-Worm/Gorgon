@@ -80,7 +80,7 @@ namespace Gorgon.Editor.ProjectData
         /// </summary>
         /// <param name="files">The files to populate.</param>
         /// <param name="rootNode">The root node of the metadata.</param>
-        private void GetFiles(IGorgonNamedObjectDictionary<IncludedFileSystemPathMetadata> files, XElement rootNode)
+        private void GetFiles(IDictionary<string, ProjectItemMetadata> files, XElement rootNode)
         {
             Program.Log.Print("Importing file list.", LoggingLevel.Verbose);
 
@@ -98,12 +98,15 @@ namespace Gorgon.Editor.ProjectData
                 string dirPath = Path.GetDirectoryName(filePath).FormatDirectory('/');
 
                 // Add directories.
-                if ((!string.IsNullOrWhiteSpace(dirPath)) && (!files.Contains(dirPath)))
+                if ((!string.IsNullOrWhiteSpace(dirPath)) && (!files.ContainsKey(dirPath)))
                 {
-                    files.Add(new IncludedFileSystemPathMetadata(dirPath));
+                    files.Add(dirPath, new ProjectItemMetadata());
                 }
 
-                files.Add(new IncludedFileSystemPathMetadata(filePath));
+                files.Add(filePath, new ProjectItemMetadata()
+                {
+                    PluginName = null
+                });
 
                 // TODO: We need to import attributes and dependencies.  
             }
@@ -147,8 +150,7 @@ namespace Gorgon.Editor.ProjectData
                 throw new ArgumentNullException(nameof(project));
             }
 
-            project.Metadata.IncludedPaths.Clear();
-            project.Writer = null;
+            project.AssignWriter(null);
 
             if (!_file.Exists)
             {
@@ -167,8 +169,9 @@ namespace Gorgon.Editor.ProjectData
                 return;
             }
 
-            project.Writer = GetWriterPlugin(rootNode);
-            GetFiles(project.Metadata.IncludedPaths, rootNode);
+            project.AssignWriter(GetWriterPlugin(rootNode));
+                        
+            GetFiles(project.ProjectItems, rootNode);
 
             try
             {

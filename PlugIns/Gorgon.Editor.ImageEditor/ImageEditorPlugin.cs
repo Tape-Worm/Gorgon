@@ -57,6 +57,12 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Properties.
+        /// <summary>Property to return the name of the plug in.</summary>
+        string IContentPluginMetadata.PluginName => Name;
+
+        /// <summary>Property to return the description of the plugin.</summary>
+        string IContentPluginMetadata.Description => Description;
+
         /// <summary>Property to return the ID of the small icon for this plug in.</summary>
         public Guid SmallIconID 
         {

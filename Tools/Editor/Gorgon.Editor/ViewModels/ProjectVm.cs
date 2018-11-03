@@ -67,7 +67,7 @@ namespace Gorgon.Editor.ViewModels
         // The content plugin service.
         private IContentPluginService _contentPlugins;
         // The currently active content.
-        private IEditorContent _currentContent;
+        private IEditorContent _currentContent;        
         #endregion
 
         #region Properties.
@@ -89,15 +89,6 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the metadata manager for the project.
-        /// </summary>
-        public IMetadataManager MetadataManager
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
         /// Property to set or return the current file writer plugin used to write the project out to a file.
         /// </summary>
         public FileWriterPlugin WriterPlugin
@@ -111,7 +102,7 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 OnPropertyChanging();
-                _projectData.Writer = value;
+                _projectData.AssignWriter(value);                
                 OnPropertyChanged();
             }
         }
@@ -199,21 +190,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to set or return the title for the project.
         /// </summary>
-        public string ProjectTitle
-        {
-            get => _projectData.ProjectName;
-            set
-            {
-                if (string.Equals(_projectData.ProjectName, value, StringComparison.CurrentCulture))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _projectData.ProjectName = value;
-                OnPropertyChanged();
-            }
-        }
+        public string ProjectTitle => string.IsNullOrWhiteSpace(ProjectFile?.Name) ? Resources.GOREDIT_NEW_PROJECT : Path.GetFileNameWithoutExtension(ProjectFile.Name);
 
         /// <summary>
         /// Property to set or return the file information for the project if it was opened from a file.
@@ -233,7 +210,8 @@ namespace Gorgon.Editor.ViewModels
 
                 OnPropertyChanging();
                 _projectFile = value;
-                OnPropertyChanged();                
+                OnPropertyChanged();
+                NotifyPropertyChanged(nameof(ProjectTitle));
             }
         }
         #endregion
@@ -382,8 +360,7 @@ namespace Gorgon.Editor.ViewModels
             _projectManager = injectionParameters.ProjectManager ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.ProjectManager), nameof(injectionParameters));
             _projectData = injectionParameters.Project ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.Project), nameof(injectionParameters));
             _messageService = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.MessageDisplay), nameof(injectionParameters));
-            _busyService = injectionParameters.BusyState ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.BusyState), nameof(injectionParameters));
-            MetadataManager = injectionParameters.MetadataManager ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.MetadataManager), nameof(injectionParameters));
+            _busyService = injectionParameters.BusyState ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.BusyState), nameof(injectionParameters));            
             _contentPlugins = injectionParameters.ContentPlugins ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.ContentPlugins), nameof(injectionParameters));
 
             FileExplorer.OpenContentFile = new EditorCommand<IFileExplorerNodeVm>(DoOpenContent, CanOpenContent);
@@ -429,11 +406,8 @@ namespace Gorgon.Editor.ViewModels
  
             return Task.Run(() =>
             {
-                // First, update the metadata database with our current state.
-                Program.Log.Print("Writing metadata.", LoggingLevel.Verbose);
-                MetadataManager.Save(projectTitle, writer.GetType().FullName);
-
                 Program.Log.Print("Saving files...", LoggingLevel.Verbose);
+                _projectData.AssignWriter(writer);
                 _projectManager.SaveProject(_projectData, path, writer, progressCallback, cancelToken);
             }, cancelToken);
         }

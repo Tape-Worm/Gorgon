@@ -430,4 +430,13 @@ Are you sure you wish to delete this directory?</value>
   <data name="GOR_TEXT_PROGRESS" xml:space="preserve">
     <value>Updating...</value>
   </data>
+  <data name="GOR_LOG_ERROR" xml:space="preserve">
+    <value>ERROR: </value>
+  </data>
+  <data name="GOR_LOG_WARNING" xml:space="preserve">
+    <value>WARNING: </value>
+  </data>
+  <data name="GOR_LOG_WARNING2" xml:space="preserve">
+    <value>[WARNING]:</value>
+  </data>
 </root>

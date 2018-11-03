@@ -55,7 +55,7 @@
     <Compile Include="Content\EditorContentCommon.cs" />
     <Compile Include="Content\_Interfaces\IContentFile.cs" />
     <Compile Include="Content\_Interfaces\IEditorContent.cs" />
-    <Compile Include="Metadata\_Interfaces\IMetadataManager.cs" />
+    <Compile Include="Metadata\_Extensions\ProjectItemMetadataExtensions.cs" />
     <Compile Include="Plugins\ContentPlugin.cs" />
     <Compile Include="Plugins\EditorPlugin.cs" />
     <Compile Include="Plugins\FileWriterPlugIn.cs" />
@@ -68,10 +68,8 @@
     <Compile Include="Services\_Interfaces\IContentPluginService.cs" />
     <Compile Include="Services\_Interfaces\IDirectoryLocateService.cs" />
     <Compile Include="Services\_Interfaces\IFileDialogService.cs" />
-    <Compile Include="Metadata\SqliteMetadataProvider.cs" />
-    <Compile Include="Metadata\IncludedPathMetadata.cs" />
+    <Compile Include="Metadata\ProjectItemMetadata.cs" />
     <Compile Include="Metadata\_Interfaces\IMetadataProvider.cs" />
-    <Compile Include="Metadata\_Interfaces\IProjectMetadata.cs" />
     <Compile Include="ProjectData\_Interfaces\IProject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

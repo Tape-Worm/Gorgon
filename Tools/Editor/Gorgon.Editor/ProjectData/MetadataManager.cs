@@ -39,7 +39,7 @@ namespace Gorgon.Editor.ProjectData
     /// <summary>
     /// Manages the metadata for a project.
     /// </summary>
-    internal class MetadataManager  
+    internal class OBSOLETE_MetadataManager
         : IMetadataManager
     {
         #region Variables.
@@ -68,12 +68,12 @@ namespace Gorgon.Editor.ProjectData
                 return;
             }
 
-            IList<IncludedFileSystemPathMetadata> paths = _metadataProvider.GetIncludedPaths();
+            IList<ProjectItemMetadata> paths = _metadataProvider.GetIncludedPaths();
 
-            foreach (IncludedFileSystemPathMetadata path in paths)
+            foreach (ProjectItemMetadata path in paths)
             {
                 _project.Metadata.IncludedPaths[path.Path] = path;
-            }            
+            }
         }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace Gorgon.Editor.ProjectData
                 throw new ArgumentEmptyException(nameof(newPath));
             }
 
-            IncludedFileSystemPathMetadata[] oldIncluded = _project.Metadata.IncludedPaths.Where(item => item.Path.StartsWith(oldPath, StringComparison.OrdinalIgnoreCase))
+            ProjectItemMetadata[] oldIncluded = _project.Metadata.IncludedPaths.Where(item => item.Path.StartsWith(oldPath, StringComparison.OrdinalIgnoreCase))
                                                         .ToArray();
 
             if (oldIncluded.Length == 0)
@@ -147,39 +147,69 @@ namespace Gorgon.Editor.ProjectData
 
             for (int i = 0; i < oldIncluded.Length; ++i)
             {
-                IncludedFileSystemPathMetadata metadata = oldIncluded[i];
+                ProjectItemMetadata metadata = oldIncluded[i];
 
-                string oldPathRoot = metadata.Path.Substring(oldPath.Length);
-                string newPathRoot = newPath + oldPathRoot;
+                string oldPathNoRoot = metadata.Path.Substring(oldPath.Length);
+                string newPathRoot = newPath + oldPathNoRoot;
 
                 _project.Metadata.IncludedPaths.Remove(metadata);
-                _project.Metadata.IncludedPaths.Add(new IncludedFileSystemPathMetadata(newPathRoot));
+                _project.Metadata.IncludedPaths.Add(new ProjectItemMetadata(metadata, newPathRoot));
             }
         }
 
         /// <summary>
-        /// Function to exclude the specified paths in the project metadata.
+        /// Function to exclude the specified items from the project metadata.
         /// </summary>
-        /// <param name="paths">The list of paths to evaluate.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="paths"/> parameter is <b>null</b>.</exception>
-        public void ExcludePaths(IReadOnlyList<string> paths)
+        /// <param name="items">The list of project items to exclude.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="items"/> parameter is <b>null</b>.</exception>
+        public void ExcludeItems(IEnumerable<ProjectItemMetadata> items)
         {
-            if (paths == null)
+            if (items == null)
             {
-                throw new ArgumentNullException(nameof(paths));
+                throw new ArgumentNullException(nameof(items));
             }
 
-            for (int i = 0; i < paths.Count; ++i)
+            foreach (ProjectItemMetadata item in items)
             {
-                string path = paths[i];
-
-                if ((string.IsNullOrWhiteSpace(path))
-                    || (!_project.Metadata.IncludedPaths.Contains(path)))
+                if (!_project.Metadata.IncludedPaths.TryGetValue(item.Path, out ProjectItemMetadata metadata))
                 {
                     continue;
                 }
 
-                _project.Metadata.IncludedPaths.Remove(path);
+                _project.Metadata.IncludedPaths.Remove(metadata.Path);
+            }
+        }
+
+        /// <summary>
+        /// Function to include a single project item.
+        /// </summary>
+        /// <param name="item">The item to include.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="item"/> parameter is <b>null</b>.</exception>
+        public void IncludeItem(ProjectItemMetadata item)
+        {
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            _project.Metadata.IncludedPaths[item.Path] = item;
+        }
+
+        /// <summary>
+        /// Function to include a list of project items.
+        /// </summary>
+        /// <param name="items">The items to include.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="item"/> parameter is <b>null</b>.</exception>
+        public void IncludeItems(IEnumerable<ProjectItemMetadata> items)
+        {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
+            foreach (ProjectItemMetadata item in items)
+            {
+                _project.Metadata.IncludedPaths[item.Path] = item;
             }
         }
 
@@ -204,7 +234,7 @@ namespace Gorgon.Editor.ProjectData
                     continue;
                 }
 
-                _project.Metadata.IncludedPaths[path] = new IncludedFileSystemPathMetadata(path);
+                _project.Metadata.IncludedPaths[path] = new ProjectItemMetadata(path);
             }
         }
 
@@ -227,7 +257,7 @@ namespace Gorgon.Editor.ProjectData
             }
 
             // Update metadata.
-            IncludedFileSystemPathMetadata[] included = _project.Metadata.IncludedPaths
+            ProjectItemMetadata[] included = _project.Metadata.IncludedPaths
                                                                         .Where(item => item.Path.StartsWith(path, StringComparison.OrdinalIgnoreCase))
                                                                         .ToArray();
 
@@ -337,7 +367,7 @@ namespace Gorgon.Editor.ProjectData
                 throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_PATH_NOT_INCLUDED, "NULL"), nameof(path));
             }
 
-            if (!_project.Metadata.IncludedPaths.TryGetValue(path, out IncludedFileSystemPathMetadata metaData))
+            if (!_project.Metadata.IncludedPaths.TryGetValue(path, out ProjectItemMetadata metaData))
             {
                 throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_PATH_NOT_INCLUDED, path), nameof(path));
             }
@@ -357,7 +387,7 @@ namespace Gorgon.Editor.ProjectData
             {
                 return (null, MetadataPluginState.NotFound);
             }
-            
+
             return (plugin, MetadataPluginState.Assigned);
         }
 
@@ -373,13 +403,20 @@ namespace Gorgon.Editor.ProjectData
                 return;
             }
 
-            if (!_project.Metadata.IncludedPaths.TryGetValue(path, out IncludedFileSystemPathMetadata metaData))
+            if (!_project.Metadata.IncludedPaths.TryGetValue(path, out ProjectItemMetadata metaData))
             {
-                throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_PATH_NOT_INCLUDED, path), nameof(path));                
+                throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_PATH_NOT_INCLUDED, path), nameof(path));
             }
 
             metaData.PluginName = plugin?.Name ?? string.Empty;
         }
+
+        /// <summary>
+        /// Function to retrieve the metadata for the item specified by the path.
+        /// </summary>
+        /// <param name="path">The path to the project item.</param>
+        /// <returns>The metadata for the project item, or <b>null</b> if no metadata exists for the project item.</returns>
+        public ProjectItemMetadata GetMetadata(string path) => !_project.Metadata.IncludedPaths.TryGetValue(path, out ProjectItemMetadata metaData) ? null : metaData;
         #endregion
 
         #region Constructor/Finalizer.

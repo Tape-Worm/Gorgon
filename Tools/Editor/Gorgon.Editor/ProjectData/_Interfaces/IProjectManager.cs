@@ -50,19 +50,6 @@ namespace Gorgon.Editor.ProjectData
 
         #region Methods.
         /// <summary>
-        /// Function to indicate that the selected directory already contains a project.
-        /// </summary>
-        /// <param name="path">The path to evaluate.</param>
-        /// <returns>A flag to indicate whether a project is located in the directory, and the name of the project if there's one present.</returns>
-        /// <remarks>
-        /// <para>
-        /// If this method returns <b>false</b>, but the <c>projectName</c> return value is populated, then an exception was thrown during the check. In this case, the <c>projectName</c> value should
-        /// contain the exception error message.
-        /// </para>
-        /// </remarks>
-        (bool hasProject, string projectName) HasProject(DirectoryInfo path);
-
-        /// <summary>
         /// Function to create a project object.
         /// </summary>
         /// <param name="workspace">The directory used as a work space location.</param>

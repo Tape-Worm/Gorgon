@@ -464,7 +464,7 @@ namespace Gorgon.Editor
 
             if (GorgonDialogs.ConfirmBox(_splash, string.Format(Resources.GOREDIT_CONFIRM_CLEAN_PREV_DIR, prevProject.Parent.FullName)) != ConfirmationResult.Yes)
             {
-                Program.Log.Print("User opted not to clean the previous working directory. User will have to manually remove it.", LoggingLevel.Verbose);
+                Program.Log.Print("WARNING: User opted not to clean the previous working directory. User will have to manually remove it.", LoggingLevel.Verbose);
                 return;
             }
 
@@ -514,7 +514,6 @@ namespace Gorgon.Editor
                 CleanPreviousWorkingDir();
 
                 Debug.Assert(_settings.WindowBounds != null, "Window bounds should not be null.");
-
                 _dirLocator = new DirectoryLocateService();
                 DirectoryInfo workspaceDir = GetWorkspaceDirectory();
 

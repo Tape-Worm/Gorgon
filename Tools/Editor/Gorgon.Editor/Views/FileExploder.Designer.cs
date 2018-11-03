@@ -100,6 +100,7 @@
             this.TreeFileSystem.ImageList = this.TreeImages;
             this.TreeFileSystem.ItemHeight = 24;
             this.TreeFileSystem.LabelEdit = true;
+            this.TreeFileSystem.Sorted = true;
             this.TreeFileSystem.Location = new System.Drawing.Point(0, 20);
             this.TreeFileSystem.Name = "TreeFileSystem";
             treeNode1.Name = "Node4";

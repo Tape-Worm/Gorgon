@@ -545,7 +545,6 @@ namespace Gorgon.Editor.ViewModels
 
                 if (!args.Cancel)
                 {
-                    CurrentProject.ProjectTitle = projectTitle;
                     CurrentProject.WriterPlugin = writer;
                     CurrentProject.ProjectFile = projectFile;
                     CurrentProject.ProjectState = ProjectState.Unmodified;

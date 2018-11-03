@@ -25,12 +25,14 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Core;
+using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
@@ -72,21 +74,6 @@ namespace Gorgon.Editor.ViewModels
 
         /// <summary>Property to return whether this node represents content or not.</summary>
         public override bool IsContent => false;
-
-        /// <summary>
-        /// Property to set or return the metadata for a content plugin on this node.
-        /// </summary>
-        /// <remarks>
-        /// For this type of node, there is no metadata.
-        /// </remarks>
-        public override IContentPluginMetadata ContentMetadata
-        {
-            get => null;
-            set
-            {
-                // Empty by default.
-            }
-        }
         #endregion
 
         #region Methods.
@@ -181,13 +168,19 @@ namespace Gorgon.Editor.ViewModels
         /// Function to rename the node.
         /// </summary>
         /// <param name="newName">The new name for the node.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="newName"/> parameter is <b>null</b>.</exception>
+        /// <param name="projectItems">The list of items in the project.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="newName"/>, or the <paramref name="projectItems"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="newName"/> parameter is empty.</exception>
-        public override void RenameNode(string newName)
+        public override void RenameNode(string newName, IDictionary<string, ProjectItemMetadata> projectItems)
         {
             if (newName == null)
             {
                 throw new ArgumentNullException(nameof(newName));
+            }
+
+            if (projectItems == null)
+            {
+                throw new ArgumentNullException(nameof(projectItems));
             }
 
             if (string.IsNullOrWhiteSpace(newName))
@@ -195,8 +188,18 @@ namespace Gorgon.Editor.ViewModels
                 throw new ArgumentEmptyException(nameof(newName));
             }
 
+            // Remove the previous project item.
+            projectItems.Remove(FullPath);
+
             PhysicalPath = FileSystemService.RenameDirectory(PhysicalPath, newName);
             Name = newName;
+
+            // Update with the new path.
+            if (Metadata != null)
+            {
+                projectItems[FullPath] = Metadata;
+            }
+            
             NotifyPropertyChanged(nameof(FullPath));
         }
 
@@ -266,7 +269,7 @@ namespace Gorgon.Editor.ViewModels
                 Name = name,
                 Parent = destNode,
                 PhysicalPath = newPhysicalPath,
-                Included = Included
+                Metadata = new ProjectItemMetadata(Metadata)
             };
         }
 
@@ -302,7 +305,7 @@ namespace Gorgon.Editor.ViewModels
                 Name = Name,
                 Parent = destNode,
                 PhysicalPath = newPath,
-                Included = Included
+                Metadata = Metadata
             };
 
             FileSystemService.MoveDirectory(PhysicalPath, result.PhysicalPath);

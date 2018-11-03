@@ -41,6 +41,22 @@ namespace Gorgon.Editor.Plugins
     {
         #region Properties.
         /// <summary>
+        /// Property to return the name of the plug in.
+        /// </summary>
+        string PluginName
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the user friendly description of the plug in.
+        /// </summary>
+        string Description
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the ID of the small icon for this plug in.
         /// </summary>
         Guid SmallIconID

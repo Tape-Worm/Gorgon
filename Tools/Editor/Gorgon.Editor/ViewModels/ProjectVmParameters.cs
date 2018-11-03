@@ -43,25 +43,15 @@ namespace Gorgon.Editor.ViewModels
         public IContentPluginService ContentPlugins => ViewModelFactory.ContentPlugins;
 
         /// <summary>
-        /// Property to return the metadata manager for the project.
-        /// </summary>
-        public IMetadataManager MetadataManager
-        {
-            get;
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="ProjectVmParameters" /> class.
         /// </summary>
         /// <param name="projectData">The project data.</param>
-        /// <param name="metadataManager">The metadata manager.</param>
         /// <param name="viewModelFactory">The view model factory.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public ProjectVmParameters(IProject projectData, IMetadataManager metadataManager, ViewModelFactory viewModelFactory)
+        public ProjectVmParameters(IProject projectData, ViewModelFactory viewModelFactory)
             : base(viewModelFactory)
         {
             Project = projectData ?? throw new ArgumentNullException(nameof(projectData));
-            MetadataManager = metadataManager ?? throw new ArgumentNullException(nameof(metadataManager));
         }
     }
 }

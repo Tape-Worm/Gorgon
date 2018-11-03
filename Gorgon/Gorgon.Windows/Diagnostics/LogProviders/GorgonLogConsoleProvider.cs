@@ -41,11 +41,46 @@ namespace Gorgon.Diagnostics.LogProviders
     public class GorgonLogConsoleProvider
         : IGorgonLogProvider
     {
+        #region Enums.
+        /// <summary>
+        /// The type of message to display.
+        /// </summary>
+        private enum MessageType
+        {
+            /// <summary>
+            /// A normal message.
+            /// </summary>
+            Normal,
+            /// <summary>
+            /// An error message.
+            /// </summary>
+            Error,
+            /// <summary>
+            /// An exception.
+            /// </summary>
+            Exception,
+            /// <summary>
+            /// A warning message.
+            /// </summary>
+            Warning,
+            /// <summary>
+            /// Another type of warning message.
+            /// </summary>
+            Warning2
+        }
+        #endregion
+
         #region Variables.
+        // Message strings used to determine the type of message.
+        private readonly string _exceptionLine = $"\t{Resources.GOR_LOG_EXCEPTION.ToUpper()}!!";
+        private readonly string _errorLine = $"] {Resources.GOR_LOG_ERROR}";
+        private readonly string _warnLine1 = $"] {Resources.GOR_LOG_WARNING}";
+        private readonly string _warnLine2 = $"] {Resources.GOR_LOG_WARNING2}";
+
         // Flag to indicate that the app has a console window.
         private int _hasConsole;
         // Flag to indicate that we own the console window.
-        private bool _ownsConsole;
+        private bool _ownsConsole;        
         #endregion
 
         #region Methods.
@@ -169,12 +204,30 @@ namespace Gorgon.Diagnostics.LogProviders
                                  StringSplitOptions.RemoveEmptyEntries);
         }
 
+        private static string HilightWord(string line, string word, ConsoleColor color)
+        {
+            int start = line.IndexOf(word);
+
+            if (start == -1)
+            {
+                return line;
+            }
+
+            string hilight = line.Substring(start, word.Length);
+
+            Console.ForegroundColor = color;
+            Console.Write(" " + word);
+            Console.ResetColor();
+
+            return line.Substring(start + word.Length);
+        }
+
         /// <summary>
         /// Function to format an individual line.
         /// </summary>
         /// <param name="line">The line to format.</param>
-        /// <param name="isException"><b>true</b> if the line is part of an exception, <b>false</b> if not.</param>
-        private static void FormatLine(string line, bool isException)
+        /// <param name="messageType">The type of message.</param>
+        private static void FormatLine(string line, MessageType messageType)
         {
             if (line.StartsWith("[", StringComparison.CurrentCultureIgnoreCase))
             {
@@ -192,13 +245,23 @@ namespace Gorgon.Diagnostics.LogProviders
                 }
             }
 
-            if (isException)
+            switch (messageType)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-            }
-            else
-            {
-                Console.ResetColor();
+                case MessageType.Exception:
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    break;
+                case MessageType.Error:
+                    line = HilightWord(line, Resources.GOR_LOG_ERROR, ConsoleColor.Red);
+                    break;
+                case MessageType.Warning:
+                    line = HilightWord(line, Resources.GOR_LOG_WARNING, ConsoleColor.Yellow);
+                    break;
+                case MessageType.Warning2:
+                    line = HilightWord(line, Resources.GOR_LOG_WARNING2, ConsoleColor.Yellow);
+                    break;
+                default:
+                    Console.ResetColor();
+                    break;
             }
 
             Console.WriteLine(line);
@@ -217,7 +280,6 @@ namespace Gorgon.Diagnostics.LogProviders
                 return;
             }
 
-            string exceptionLine = $"\t{Resources.GOR_LOG_EXCEPTION.ToUpper()}!!";
             string[] lines;
 
             if (message.IndexOf('\n') != -1)
@@ -232,11 +294,25 @@ namespace Gorgon.Diagnostics.LogProviders
                         };
             }
 
-            bool isException = message.Contains(exceptionLine);
+            MessageType messageType = MessageType.Normal;
 
-            for (var i = 0; i < lines.Length; i++)
+            if (message.Contains(_exceptionLine))
             {
-                FormatLine(lines[i], isException);
+                messageType = MessageType.Exception;
+            } else if (message.Contains(_errorLine))
+            {
+                messageType = MessageType.Error;
+            } else if (message.Contains(_warnLine1))
+            {
+                messageType = MessageType.Warning;
+            } else if (message.Contains(_warnLine2))
+            {
+                messageType = MessageType.Warning2;
+            }
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                FormatLine(lines[i], messageType);
             }
         }
         #endregion

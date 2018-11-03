@@ -25,13 +25,16 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Core;
+using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Plugins;
+using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 
@@ -46,8 +49,6 @@ namespace Gorgon.Editor.ViewModels
         #region Variables.
         // The parent for this node.
         private IFileExplorerNodeVm _parent;
-        // Flag to indicate that this node is included in the project.
-        private bool _included;
         // The name of the file.
         private string _name;
         // The physical file system path to the node.
@@ -56,6 +57,8 @@ namespace Gorgon.Editor.ViewModels
         private bool _isExpanded;
         // Flag to indicate that the node is cut.
         private bool _isCut;
+        // The metadata for the node.
+        private ProjectItemMetadata _metadata;
         #endregion
 
         #region Properties.
@@ -126,25 +129,6 @@ namespace Gorgon.Editor.ViewModels
         public abstract bool AllowChildCreation
         {
             get;
-        }
-
-        /// <summary>
-        /// Property to set or return whether or not the node is included in the project.
-        /// </summary>
-        public bool Included
-        {
-            get => _included;
-            set
-            {
-                if (_included == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _included = value;
-                OnPropertyChanged();
-            }
         }
 
         /// <summary>
@@ -264,12 +248,21 @@ namespace Gorgon.Editor.ViewModels
             }
         }
 
-        /// <summary>Property to set or return the metadata for a content plugin on this node.</summary>
-        /// <value>The content metadata.</value>
-        public abstract IContentPluginMetadata ContentMetadata
+        /// <summary>Property to set or return the metadata for the node.</summary>        
+        public virtual ProjectItemMetadata Metadata
         {
-            get;
-            set;
+            get => _metadata;
+            set
+            {
+                if (_metadata == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _metadata = value;
+                OnPropertyChanged();
+            }
         }
         #endregion
 
@@ -320,8 +313,9 @@ namespace Gorgon.Editor.ViewModels
             _parent = injectionParameters.Parent;
 
             Children = injectionParameters.Children ?? new ObservableCollection<IFileExplorerNodeVm>();
+
             // Determine if we are included in the project or not.
-            _included = injectionParameters.Project.Metadata.IncludedPaths.Any(item => string.Equals(item.Path, FullPath, StringComparison.OrdinalIgnoreCase));
+            injectionParameters.Project.ProjectItems.TryGetValue(FullPath, out _metadata);
         }
 
         /// <summary>
@@ -341,9 +335,10 @@ namespace Gorgon.Editor.ViewModels
         /// Function to rename the node.
         /// </summary>
         /// <param name="newName">The new name for the node.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="newName"/> parameter is <b>null</b>.</exception>
+        /// <param name="projectItems">The list of items in the project.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="newName"/>, or the <paramref name="projectItems"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="newName"/> parameter is empty.</exception>
-        public abstract void RenameNode(string newName);
+        public abstract void RenameNode(string newName, IDictionary<string, ProjectItemMetadata> projectItems);
 
         /// <summary>
         /// Function to determine if this node is an ancestor of the specified parent node.
@@ -415,14 +410,11 @@ namespace Gorgon.Editor.ViewModels
             MessageDisplay = copy.MessageDisplay;
             Name = copy.Name;
             IsExpanded = copy.IsExpanded;
-            Included = copy.Included;
+            Metadata = copy.Metadata;
             PhysicalPath = copy.PhysicalPath;
             Parent = copy.Parent;
             FileSystemService = copy.FileSystemService;
             ViewModelFactory = copy.ViewModelFactory;
-            
-            // TODO: Not sure what to do here.
-            //this.Children = new ObservableCollection<IFileExplorerNodeVm>()
         }
 
         /// <summary>

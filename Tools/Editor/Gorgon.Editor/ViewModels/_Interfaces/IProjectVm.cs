@@ -98,12 +98,11 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to set or return the title for the project.
+        /// Property to return the title for the project.
         /// </summary>
         string ProjectTitle
         {
             get;
-            set;
         }
 
         /// <summary>
@@ -122,14 +121,6 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
             set;
-        }
-
-        /// <summary>
-        /// Property to return the metadata manager for the project.
-        /// </summary>
-        IMetadataManager MetadataManager
-        {
-            get;
         }
 
         /// <summary>
