@@ -39,6 +39,7 @@ using Gorgon.Editor.UI.Views;
 using Gorgon.Editor.ViewModels;
 using System.Diagnostics;
 using Gorgon.Collections;
+using Gorgon.Editor.Content;
 
 namespace Gorgon.Editor.Views
 {
@@ -875,13 +876,15 @@ namespace Gorgon.Editor.Views
         private void TreeFileSystem_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
             _nodeLinks.TryGetValue((KryptonTreeNode)e.Node, out IFileExplorerNodeVm node);
+            
+            var contentFile = node as IContentFile;
 
-            if ((DataContext?.OpenContentFile == null) || (!DataContext.OpenContentFile.CanExecute(node)))
+            if ((DataContext?.OpenContentFile == null) || (!DataContext.OpenContentFile.CanExecute(contentFile)))
             {
                 return;
             }
 
-            DataContext.OpenContentFile.Execute(node);            
+            DataContext.OpenContentFile.Execute(contentFile);            
         }
 
         /// <summary>

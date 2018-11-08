@@ -41,11 +41,26 @@ namespace Gorgon.Editor.Content
     public abstract class EditorContentCommon
         : IEditorContent
     {
+        #region Constants.
+        /// <summary>
+        /// The attribute name for the content type attribute.
+        /// </summary>
+        public const string ContentTypeAttr = "Type";
+        #endregion
+
         #region Variables.
 
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return the type of content.
+        /// </summary>
+        public abstract string ContentType
+        {
+            get;
+        }
+
         /// <summary>
         /// Property to return the content file.
         /// </summary>
@@ -92,6 +107,11 @@ namespace Gorgon.Editor.Content
         public EditorContentCommon(IContentFile file)
         {
             File = file ?? throw new ArgumentNullException(nameof(file));
+
+            if (!string.IsNullOrWhiteSpace(ContentType))
+            {
+                File.Metadata.Attributes[ContentTypeAttr] = ContentType;
+            }            
         }
         #endregion
     }

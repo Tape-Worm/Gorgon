@@ -54,6 +54,14 @@ namespace Gorgon.Editor.Plugins
         #region Properties.
         /// <summary>Property to return the type of this plug in.</summary>
         public override PluginType PluginType => PluginType.Content;
+
+        /// <summary>
+        /// Property to return whether or not the plugin is capable of creating content.
+        /// </summary>
+        public abstract bool CanCreateContent
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
@@ -61,12 +69,13 @@ namespace Gorgon.Editor.Plugins
         /// Function to provide initialization for the plugin.
         /// </summary>
         /// <param name="pluginService">The plugin service used to access other plugins.</param>
+        /// <param name="log">The logging interface for debug messages.</param>
         /// <remarks>
         /// <para>
         /// This method is only called when the plugin is loaded at startup.
         /// </para>
         /// </remarks>
-        protected virtual void OnInitialize(IContentPluginService pluginService)
+        protected virtual void OnInitialize(IContentPluginService pluginService, IGorgonLog log)
         {
         }
 
@@ -84,7 +93,7 @@ namespace Gorgon.Editor.Plugins
         /// <param name="file">The file that contains the content.</param>
         /// <param name="log">The logging interface to use.</param>
         /// <returns>A new <see cref="IEditorContent"/> object.</returns>
-        protected abstract Task<IEditorContent> OnOpenContentAsync(IContentFile file, IGorgonLog log);
+        protected abstract Task<IEditorContent> OnOpenContentAsync(IContentFile file, IGorgonLog log);        
 
         /// <summary>
         /// Function to open a content object from this plugin.
@@ -130,19 +139,27 @@ namespace Gorgon.Editor.Plugins
         /// Function to perform any required initialization for the plugin.
         /// </summary>
         /// <param name="pluginService">The plugin service used to access other plugins.</param>        
+        /// <param name="log">The logging interface for debug messages.</param>
         /// <remarks>
         /// <para>
         /// This method is only called when the plugin is loaded at startup.
         /// </para>
         /// </remarks>
-        public void Initialize(IContentPluginService pluginService)
+        public void Initialize(IContentPluginService pluginService, IGorgonLog log)
         {
             if (Interlocked.Exchange(ref _initialized, 1) == 1)
             {
                 return;
             }
 
-            OnInitialize(pluginService);
+            if (log == null)
+            {
+                log = GorgonLog.NullLog;
+            }
+
+            log.Print($"Initializing {Name}...", LoggingLevel.Simple);
+
+            OnInitialize(pluginService, log);
         }
         #endregion
 

@@ -24,11 +24,7 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Gorgon.Editor.Content;
 using Gorgon.Editor.Plugins;
 
 namespace Gorgon.Editor.Services
@@ -39,11 +35,6 @@ namespace Gorgon.Editor.Services
     internal interface IContentPluginManagerService
         : IContentPluginService
     {
-        #region Properties.
-
-        #endregion
-
-        #region Methods.
         /// <summary>
         /// Function to add a content plugin to the service.
         /// </summary>
@@ -57,9 +48,16 @@ namespace Gorgon.Editor.Services
         void RemoveContentPlugin(ContentPlugin plugin);
 
         /// <summary>
+        /// Function to set up the content plug in association for a content file.
+        /// </summary>
+        /// <param name="contentFile">The content file to evaluate.</param>
+        /// <param name="metadataOnly"><b>true</b> to indicate that only metadata should be used to scan the content file, <b>false</b> to scan, in depth, per plugin (slow).</param>
+        /// <returns><b>true</b> if a content plug in was associated, <b>false</b> if not.</returns>
+        bool AssignContentPlugin(IContentFile contentFile, bool metadataOnly);
+
+        /// <summary>
         /// Function to clear all of the content plugins.
         /// </summary>
         void Clear();        
-        #endregion
     }
 }

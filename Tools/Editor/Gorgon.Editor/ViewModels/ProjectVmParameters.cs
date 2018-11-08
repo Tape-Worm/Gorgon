@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Services;
 
@@ -40,7 +39,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the content plugins.
         /// </summary>
-        public IContentPluginService ContentPlugins => ViewModelFactory.ContentPlugins;
+        public IContentPluginManagerService ContentPlugins => ViewModelFactory.ContentPlugins;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProjectVmParameters" /> class.

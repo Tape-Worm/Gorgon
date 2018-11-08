@@ -20,58 +20,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: October 29, 2018 3:49:26 PM
+// Created: November 7, 2018 1:33:38 PM
 // 
 #endregion
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Gorgon.Editor.UI.Views;
+using Newtonsoft.Json;
 
-namespace Gorgon.Editor.Content
+namespace Gorgon.Editor.ImageEditor
 {
     /// <summary>
-    /// Interface to define editor content.
+    /// The settings for the image editor plug in.
     /// </summary>
-    public interface IEditorContent
+    internal class ImageEditorSettings
     {
-        #region Properties.
         /// <summary>
-        /// Property to return the content file.
+        /// Property to return the list of additional image codec plug ins to load.
         /// </summary>
-        IContentFile File
+        [JsonProperty]
+        public Dictionary<string, string> CodecPluginPaths
         {
             get;
-        }
-
-        /// <summary>
-        /// Property to return the type of content.
-        /// </summary>
-        string ContentType
-        {
-            get;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to retrieve the view for the content.
-        /// </summary>
-        /// <returns>A UI for the content, must not be <b>null</b>.</returns>
-        ContentBaseControl GetView();
-        
-        /// <summary>
-        /// Function to initialize the content.
-        /// </summary>
-        void Initialize();
-
-        /// <summary>
-        /// Function to close the content.
-        /// </summary>
-        void Close();
-        #endregion
+            private set;
+        } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
     }
 }

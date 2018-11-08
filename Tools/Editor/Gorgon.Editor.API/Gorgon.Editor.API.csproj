@@ -55,7 +55,6 @@
     <Compile Include="Content\EditorContentCommon.cs" />
     <Compile Include="Content\_Interfaces\IContentFile.cs" />
     <Compile Include="Content\_Interfaces\IEditorContent.cs" />
-    <Compile Include="Metadata\_Extensions\ProjectItemMetadataExtensions.cs" />
     <Compile Include="Plugins\ContentPlugin.cs" />
     <Compile Include="Plugins\EditorPlugin.cs" />
     <Compile Include="Plugins\FileWriterPlugIn.cs" />

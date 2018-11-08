@@ -26,6 +26,7 @@
 
 
 using System;
+using System.Collections.Generic;
 using Gorgon.Core;
 using Gorgon.Editor.Plugins;
 using Newtonsoft.Json;
@@ -54,6 +55,16 @@ namespace Gorgon.Editor.Metadata
             get;
             set;
         }
+
+        /// <summary>
+        /// Property to return the custom attributes for this metadata.
+        /// </summary>
+        [JsonProperty]
+        public Dictionary<string, string> Attributes
+        {
+            get;
+            private set;
+        } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         
         /// <summary>
         /// Property to return the content plugin metadata associated with this project item.

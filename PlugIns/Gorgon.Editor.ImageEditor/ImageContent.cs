@@ -26,12 +26,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Graphics.Imaging;
+using Gorgon.Graphics.Imaging.Codecs;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -41,16 +43,47 @@ namespace Gorgon.Editor.ImageEditor
     internal class ImageContent
         : EditorContentCommon
     {
+        #region Constants.
+        /// <summary>
+        /// The attribute key name for the image codec attribute.
+        /// </summary>
+        public const string CodecAttr = "ImageCodec";
+        #endregion
 
         #region Variables.
         // The image.
         private IGorgonImage _image;
         // The view for the content.
         private ImageEditorView _view;
+        // The codec used by the image.
+        private IGorgonImageCodec _codec;
         #endregion
 
         #region Properties.
+        /// <summary>Property to return the type of content.</summary>
+        public override string ContentType => "Image";
 
+        /// <summary>
+        /// Property to return the available image codecs.
+        /// </summary>
+        public IReadOnlyList<IGorgonImageCodec> Codecs
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to set or return the image codec used by the image content.
+        /// </summary>
+        public IGorgonImageCodec Codec
+        {
+            get => _codec;
+            set
+            {
+                Debug.Assert(value != null, "Codec should never be null.");
+                _codec = value;
+                File.Metadata.Attributes[CodecAttr] = value.GetType().FullName;
+            }
+        }
         #endregion
 
         #region Methods.        
@@ -61,7 +94,7 @@ namespace Gorgon.Editor.ImageEditor
             _view = new ImageEditorView();
 
             return _view;
-        }
+        }        
 
         /// <summary>Function to initialize the content.</summary>
         public override void Initialize()
@@ -85,11 +118,14 @@ namespace Gorgon.Editor.ImageEditor
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the EditorContentCommon class.</summary>
         /// <param name="file">The file for the content.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/>, or the <paramref name="image"/> parameter is <b>null</b>.</exception>
-        public ImageContent(IContentFile file, IGorgonImage image)
+        /// <param name="image">The image data.</param>
+        /// <param name="codecs">The available codec list.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/>, <paramref name="image"/>, or the <paramref name="codecs"/> parameter is <b>null</b>.</exception>
+        public ImageContent(IContentFile file, IGorgonImage image, IReadOnlyList<IGorgonImageCodec> codecs)
             : base(file)
         {
             _image = image ?? throw new ArgumentNullException(nameof(image));
+            Codecs = codecs ?? throw new ArgumentNullException(nameof(codecs));
         }
         #endregion
     }

@@ -30,6 +30,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Plugins;
 
 namespace Gorgon.Editor.Content
@@ -39,6 +40,7 @@ namespace Gorgon.Editor.Content
     /// </summary>
     public interface IContentFile
     {
+        #region Properties.
         /// <summary>
         /// Property to return the path to the file.
         /// </summary>
@@ -71,6 +73,15 @@ namespace Gorgon.Editor.Content
             get;
         }
 
+        /// <summary>
+        /// Property to return the metadata associated with the file.
+        /// </summary>
+        ProjectItemMetadata Metadata
+        {
+            get;
+        }
+        #endregion
+
         #region Methods.
         /// <summary>
         /// Function to open the file for reading.
@@ -79,6 +90,11 @@ namespace Gorgon.Editor.Content
         Stream OpenRead();
 
         // TODO: OpenWrite so we can send data back out.
+
+        /// <summary>
+        /// Function to notify that the metadata should be refreshed.
+        /// </summary>
+        void RefreshMetadata();
         #endregion
     }
 }

@@ -65,7 +65,7 @@ namespace Gorgon.Editor.ViewModels
         // The file for the project.
         private FileInfo _projectFile;
         // The content plugin service.
-        private IContentPluginService _contentPlugins;
+        private IContentPluginManagerService _contentPlugins;
         // The currently active content.
         private IEditorContent _currentContent;        
         #endregion
@@ -301,29 +301,46 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="node">The node being opened.</param>
         /// <returns><b>true</b> if the node can be opened, <b>false</b> if not.</returns>
-        private bool CanOpenContent(IFileExplorerNodeVm node) => (node != null) && (node.IsContent);
+        private bool CanOpenContent(IContentFile node) => node?.Metadata != null;
 
         /// <summary>
         /// Function to open a file node as content.
         /// </summary>
-        /// <param name="node">The node to open.</param>
-        private async void DoOpenContent(IFileExplorerNodeVm node)
+        /// <param name="file">The content file to open.</param>
+        private async void DoOpenContent(IContentFile file)
         {
+            ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_LOADING_CONTENT, file.Name));
+
             try
             {
                 // TODO: Check for unsaved content.
 
-                if ((!(node is IContentFile file)) || (file.ContentPlugin == null))
+                if (file.ContentPlugin == null)
                 {
-                    _messageService.ShowError(string.Format(Resources.GOREDIT_ERR_NO_PLUGIN_FOR_CONTENT, node.FullPath));
-                    return;
+                    // Reset back to unassigned.                    
+                    file.Metadata.PluginName = null;
+
+                    // If we don't have a content plug in, then try to find one now.
+                    // If that fails (i.e. the assignment won't change), then tell the user we can't open.
+                    _contentPlugins.AssignContentPlugin(file, false);
+
+                    if (file.ContentPlugin == null)
+                    {
+                        _messageService.ShowError(string.Format(Resources.GOREDIT_ERR_NO_PLUGIN_FOR_CONTENT, file.Path));
+                        return;
+                    }
+                    else
+                    {
+                        // If we updated the content plug in for a content file, then the project is now in a modified state.
+                        ProjectState = ProjectState.Modified;
+                    }
                 }
 
                 // Close the current content. It should be saved at this point.
                 CurrentContent?.Close();
                 CurrentContent = null;
 
-                ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_OPENING, node.Name));
+                ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_OPENING, file.Name));
 
                 // Create a content object.
                 IEditorContent content = await file.ContentPlugin.OpenContentAsync(file, Program.Log);
@@ -340,7 +357,7 @@ namespace Gorgon.Editor.ViewModels
             }
             catch (Exception ex)
             {
-                _messageService.ShowError(ex, string.Format(Resources.GOREDIT_ERR_CANNOT_OPEN_CONTENT, node.FullPath));
+                _messageService.ShowError(ex, string.Format(Resources.GOREDIT_ERR_CANNOT_OPEN_CONTENT, file.Path));
             }
             finally
             {
@@ -363,7 +380,7 @@ namespace Gorgon.Editor.ViewModels
             _busyService = injectionParameters.BusyState ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.BusyState), nameof(injectionParameters));            
             _contentPlugins = injectionParameters.ContentPlugins ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.ContentPlugins), nameof(injectionParameters));
 
-            FileExplorer.OpenContentFile = new EditorCommand<IFileExplorerNodeVm>(DoOpenContent, CanOpenContent);
+            FileExplorer.OpenContentFile = new EditorCommand<IContentFile>(DoOpenContent, CanOpenContent);
         }
 
         /// <summary>

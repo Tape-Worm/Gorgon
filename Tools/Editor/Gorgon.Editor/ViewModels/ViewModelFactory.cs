@@ -78,7 +78,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the content plugins for the application.
         /// </summary>
-        public IContentPluginService ContentPlugins
+        public IContentPluginManagerService ContentPlugins
         {
             get;
         }

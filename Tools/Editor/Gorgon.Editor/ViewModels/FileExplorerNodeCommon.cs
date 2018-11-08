@@ -289,6 +289,21 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Function to assign the appropriate content plug in to a node.
+        /// </summary>
+        /// <param name="contentPlugins">The plug ins to evaluate.</param>
+        /// <param name="deepScan"><b>true</b> to perform a more in depth scan for the associated plug in type, <b>false</b> to use the node metadata exclusively.</param>
+        /// <returns><b>true</b> if a plug in was assigned, <b>false</b> if not.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="contentPlugins"/> parameter is <b>null</b>.</exception>
+        /// <remarks>
+        /// <para>
+        /// If the <paramref name="deepScan" /> parameter is set to <b>true</b>, then the lookup for the plug ins will involve opening the file using each plug in to find a matching plug in for the node
+        /// file type. This, obviously, is much slower, so should only be used when the node metadata is not sufficient for association information.
+        /// </para>
+        /// </remarks>
+        protected virtual bool OnAssignContentPlugin(IContentPluginManagerService plugins, bool deepScan) => false;
+
+        /// <summary>
         /// Function to inject dependencies for the view model.
         /// </summary>
         /// <param name="injectionParameters">The parameters to inject.</param>
@@ -397,6 +412,30 @@ namespace Gorgon.Editor.ViewModels
         /// <returns>A task for asynchronous operation.</returns>
         /// <remarks>The <paramref name="onCopy" /> callback method sends the file system node being copied, the destination file system node, the current item #, and the total number of items to copy.</remarks>
         public abstract Task ExportAsync(string destPath, Action<FileSystemInfo, FileSystemInfo, int, int> onCopy = null, CancellationToken? cancelToken = null);
+
+        /// <summary>Function to assign the appropriate content plug in to a node.</summary>
+        /// <param name="contentPlugins">The plug ins to evaluate.</param>
+        /// <param name="deepScan">[Optional] <b>true</b> to perform a more in depth scan for the associated plug in type, <b>false</b> to use the node metadata exclusively.</param>
+        /// <returns><b>true</b> if a plug in was associated, <b>false</b> if not.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="contentPlugins" /> parameter is <b>null</b>.</exception>
+        /// <remarks>
+        /// If the <paramref name="deepScan" /> parameter is set to <b>true</b>, then the lookup for the plug ins will involve opening the file using each plug in to find a matching plug in for the node
+        /// file type. This, obviously, is much slower, so should only be used when the node metadata is not sufficient for association information.
+        /// </remarks>
+        public bool AssignContentPlugin(IContentPluginManagerService contentPlugins, bool deepScan = false)
+        {
+            if (contentPlugins == null)
+            {
+                throw new ArgumentNullException(nameof(contentPlugins));
+            }
+
+            if (!IsContent)
+            {
+                return false;
+            }
+
+            return OnAssignContentPlugin(contentPlugins, deepScan);
+        }
         #endregion
 
         #region Constructor.

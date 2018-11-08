@@ -72,6 +72,8 @@ namespace Gorgon.Editor
         private GorgonMefPluginCache _pluginCache;
         // The directory locator service.
         private DirectoryLocateService _dirLocator;
+        // The plugin service used to manage content plugins.
+        private ContentPluginService _contentPlugins;
         #endregion
 
         #region Properties.
@@ -84,11 +86,13 @@ namespace Gorgon.Editor
         /// <see langword="true" /> to release both managed and unmanaged resources; <see langword="false" /> to release only unmanaged resources. </param>
         protected override void Dispose(bool disposing)
         {
+            ContentPluginService contentPlugins = Interlocked.Exchange(ref _contentPlugins, null);
             GraphicsContext context = Interlocked.Exchange(ref _graphicsContext, null);
             GorgonMefPluginCache pluginCache = Interlocked.Exchange(ref _pluginCache, null);
             FormMain mainForm = Interlocked.Exchange(ref _mainForm, null);
             FormSplash splash = Interlocked.Exchange(ref _splash, null);
 
+            contentPlugins?.Dispose();
             context?.Dispose();
             pluginCache?.Dispose();
             mainForm?.Dispose();
@@ -254,7 +258,16 @@ namespace Gorgon.Editor
         {
             var contentPluginsDir = new DirectoryInfo(Path.Combine(_settings.PluginPath, "Content"));
             IGorgonPluginService plugins = null;
-            var contentPlugins = new ContentPluginService();
+
+            var contentPluginSettingsDir = new DirectoryInfo(Path.Combine(Program.ApplicationUserDirectory.FullName, "ContentPlugins"));
+
+            if (!contentPluginSettingsDir.Exists)
+            {
+                contentPluginSettingsDir.Create();
+                contentPluginSettingsDir.Refresh();
+            }
+
+            var contentPlugins = new ContentPluginService(contentPluginSettingsDir);
 
             try
             {
@@ -282,7 +295,7 @@ namespace Gorgon.Editor
                 foreach (KeyValuePair<string, ContentPlugin> plugin in contentPlugins.Plugins)
                 {
                     // TODO: Error trap and mark as disabled so we can keep going.
-                    plugin.Value.Initialize(contentPlugins);
+                    plugin.Value.Initialize(contentPlugins, Program.Log);
                 }
             }
             catch (Exception ex)
@@ -506,7 +519,7 @@ namespace Gorgon.Editor
                 // Load our file system import/export plugins.
                 FileSystemProviders fileSystemProviders = LoadFileSystemPlugins();
                 // Load our content service plugins.
-                ContentPluginService contentPluginService = LoadContentPlugins();
+                _contentPlugins = LoadContentPlugins();
 
                 // Create the project manager for the application
                 _projectManager = new ProjectManager(fileSystemProviders);
@@ -539,7 +552,7 @@ namespace Gorgon.Editor
 
                 var factory = new ViewModelFactory(_settings,
                                                    fileSystemProviders,
-                                                   contentPluginService,
+                                                   _contentPlugins,
                                                    _projectManager,
                                                    new MessageBoxService(),
                                                    new WaitCursorBusyState(),

@@ -39,6 +39,7 @@ using Gorgon.Editor.Services;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Graphics.Imaging;
+using Gorgon.Plugins;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -54,6 +55,15 @@ namespace Gorgon.Editor.ImageEditor
 
         // The list of available codecs matched by extension.
         private readonly List<(GorgonFileExtension extension, IGorgonImageCodec codec)> _codecs = new List<(GorgonFileExtension extension, IGorgonImageCodec codec)>();
+
+        // The image editor settings.
+        private ImageEditorSettings _settings = new ImageEditorSettings();
+
+        // The plug in cache for image codecs.
+        private GorgonMefPluginCache _pluginCache;
+
+        // The content plug in service that loaded this plug in.
+        private IContentPluginService _pluginService;
         #endregion
 
         #region Properties.
@@ -62,6 +72,9 @@ namespace Gorgon.Editor.ImageEditor
 
         /// <summary>Property to return the description of the plugin.</summary>
         string IContentPluginMetadata.Description => Description;
+
+        /// <summary>Property to return whether or not the plugin is capable of creating content.</summary>
+        public override bool CanCreateContent => false;
 
         /// <summary>Property to return the ID of the small icon for this plug in.</summary>
         public Guid SmallIconID 
@@ -80,7 +93,19 @@ namespace Gorgon.Editor.ImageEditor
         {
             IGorgonImageCodec result = null;
 
-            // First, locate the extension.
+            // First, check the attribute information.
+            if (file.Metadata.Attributes.TryGetValue(ImageContent.CodecAttr, out string imageCodecType))
+            {
+                // Locate the actual type in amongst our loaded codecs.
+                result = _codecList.FirstOrDefault(item => string.Equals(item.GetType().AssemblyQualifiedName, imageCodecType, StringComparison.Ordinal));
+
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
+            // Second, locate the extension.
             if (!string.IsNullOrWhiteSpace(file.Extension))
             {
                 var extension = new GorgonFileExtension(file.Extension);
@@ -129,14 +154,86 @@ namespace Gorgon.Editor.ImageEditor
                 }
             });
 
-            return new ImageContent(file, image);
+            return new ImageContent(file, image, _codecList)
+            {
+                Codec = codec
+            };
+        }
+
+        /// <summary>Function to provide clean up for the plugin.</summary>
+        protected override void OnShutdown()
+        {
+            foreach (IDisposable codec in _codecList.OfType<IDisposable>())
+            {   
+                codec?.Dispose();
+            }
+
+            try
+            {
+                if (_settings != null)
+                {
+                    // Persist any settings.
+                    _pluginService.WriteContentSettings(this, _settings);
+                }
+            }
+            catch (Exception ex)
+            {
+                // TODO: Need to log this.
+            }            
+
+            _pluginCache?.Dispose();
+            base.OnShutdown();
+        }
+
+        /// <summary>
+        /// Function to load external image codec plug ins.
+        /// </summary>
+        /// <param name="log">The logging interface used to log debug messages.</param>
+        private void LoadCodecPlugins(IGorgonLog log)
+        {
+            if (_settings.CodecPluginPaths.Count == 0)
+            {
+                return;
+            }
+
+            log.Print("Loading image codecs...", LoggingLevel.Intermediate);
+
+            foreach (KeyValuePair<string, string> plugin in _settings.CodecPluginPaths)
+            {
+                log.Print($"Loading '{plugin.Key}' from '{plugin.Value}'...", LoggingLevel.Verbose);
+
+                var file = new FileInfo(plugin.Value);
+
+                if (!file.Exists)
+                {
+                    log.Print($"ERROR: Could not find the plug in assembly '{plugin.Value}' for plug in '{plugin.Key}'.", LoggingLevel.Simple);
+                    continue;
+                }
+
+                _pluginCache.LoadPluginAssemblies(file.DirectoryName, file.Name);
+            }
+
+            IGorgonPluginService plugins = new GorgonMefPluginService(_pluginCache, log);
+
+            // Load all the codecs contained within the plug in (a plug in can have multiple codecs).
+            foreach (GorgonImageCodecPlugin plugin in plugins.GetPlugins<GorgonImageCodecPlugin>())
+            {
+                foreach (GorgonImageCodecDescription desc in plugin.Codecs)
+                {
+                    _codecList.Add(plugin.CreateCodec(desc.Name));                    
+                }                
+            }
         }
 
         /// <summary>Function to provide initialization for the plugin.</summary>
         /// <param name="pluginService">The plugin service used to access other plugins.</param>
+        /// <param name="log">The logging interface for debug messages.</param>
         /// <remarks>This method is only called when the plugin is loaded at startup.</remarks>
-        protected override void OnInitialize(IContentPluginService pluginService)
+        protected override void OnInitialize(IContentPluginService pluginService, IGorgonLog log)
         {
+            _pluginService = pluginService;
+            _pluginCache = new GorgonMefPluginCache(log);
+
             // Get built-in codec list.
             _codecList.Add(new GorgonCodecPng());
             _codecList.Add(new GorgonCodecJpeg());
@@ -145,6 +242,16 @@ namespace Gorgon.Editor.ImageEditor
             _codecList.Add(new GorgonCodecBmp());
             _codecList.Add(new GorgonCodecGif());
 
+            ImageEditorSettings settings = pluginService.ReadContentSettings<ImageEditorSettings>(this);
+
+            if (settings != null)
+            {
+                _settings = settings;
+            }
+
+            // Load the additional plug ins.
+            LoadCodecPlugins(log);
+
             foreach (IGorgonImageCodec codec in _codecList)
             {
                 foreach (string extension in codec.CodecCommonExtensions)
@@ -152,8 +259,6 @@ namespace Gorgon.Editor.ImageEditor
                     _codecs.Add((new GorgonFileExtension(extension), codec));
                 }
             }
-
-            // TODO: We need to load configuration settings for the plugin.
         }
 
         /// <summary>Function to determine if the content plugin can open the specified file.</summary>
@@ -168,7 +273,18 @@ namespace Gorgon.Editor.ImageEditor
                 throw new ArgumentNullException(nameof(file));
             }
             
-            return GetCodec(file) != null;
+            IGorgonImageCodec codec = GetCodec(file);
+
+            if (codec != null)
+            {
+                file.Metadata.Attributes[ImageContent.CodecAttr] = codec.GetType().FullName;
+            }
+            else
+            {
+                file.Metadata.Attributes.Remove(ImageContent.CodecAttr);                
+            }
+
+            return codec != null;
         }
 
         /// <summary>

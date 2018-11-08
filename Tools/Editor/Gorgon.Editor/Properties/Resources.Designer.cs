@@ -983,6 +983,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Loading {0}....
+        /// </summary>
+        internal static string GOREDIT_TEXT_LOADING_CONTENT {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_LOADING_CONTENT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Loading content plug ins....
         /// </summary>
         internal static string GOREDIT_TEXT_LOADING_CONTENT_PLUGINS {

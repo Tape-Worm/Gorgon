@@ -37,7 +37,6 @@ using Gorgon.Core;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Data;
 using Gorgon.Editor.Metadata;
-using Gorgon.Editor.Plugins;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
@@ -98,7 +97,7 @@ namespace Gorgon.Editor.ViewModels
         // The application settings.
         private EditorSettings _settings;
         // The content plugin service.
-        private IContentPluginService _contentPlugins;
+        private IContentPluginManagerService _contentPlugins;
         #endregion
 
         #region Properties.
@@ -229,7 +228,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to set or return the command to execute when a content node is opened.
         /// </summary>
-        public IEditorCommand<IFileExplorerNodeVm> OpenContentFile
+        public IEditorCommand<IContentFile> OpenContentFile
         {
             get;
             set;
@@ -405,16 +404,25 @@ namespace Gorgon.Editor.ViewModels
                 _project.ProjectItems.Remove(node.FullPath);
             }
 
-            node.Metadata = metaData;
+            node.Metadata = metaData;            
 
-            if (metaData == null)
+            if (metaData != null)
             {
-                GetNodeAssociationData(node, false);
-                return;
+                _project.ProjectItems[node.FullPath] = metaData;
             }
 
-            _project.ProjectItems[node.FullPath] = metaData;
-            GetNodeAssociationData(node, false);
+            if ((node.Metadata != null) && (node.IsContent))
+            {
+                if (node.AssignContentPlugin(_contentPlugins, true))
+                {
+                    OnFileSystemChanged();
+                }
+            }
+            else if (node.Metadata?.ContentMetadata != null)
+            {
+                node.Metadata.ContentMetadata = null;
+                OnFileSystemChanged();
+            }
         }
 
         /// <summary>
@@ -586,7 +594,10 @@ namespace Gorgon.Editor.ViewModels
             // Rebuild file associations.
             foreach (IFileExplorerNodeVm child in nodeToRefresh.Children.Traverse(n => n.Children))
             {
-                GetNodeAssociationData(child, !deepScanForAssociation);
+                if (child.Metadata != null)
+                {
+                    child.AssignContentPlugin(_contentPlugins, deepScanForAssociation);
+                }                
             }
         }
 
@@ -1103,13 +1114,12 @@ namespace Gorgon.Editor.ViewModels
                 {
                     foreach (IFileExplorerNodeVm child in newNode.Children.Traverse(n => n.Children))
                     {
-                        GetNodeAssociationData(child, true);
+                        child.AssignContentPlugin(_contentPlugins);
                     }
                 }
 
+                newNode.AssignContentPlugin(_contentPlugins);
                 OnFileSystemChanged();
-
-                GetNodeAssociationData(newNode, true);
 
                 SelectedNode = prevNode;                
             }
@@ -1140,7 +1150,10 @@ namespace Gorgon.Editor.ViewModels
                 _nodePathLookup[node.FullPath] = node;
                 node.Children.CollectionChanged += Children_CollectionChanged;
 
-                GetNodeAssociationData(node, true);
+                if (node.Metadata != null)
+                {
+                    node.AssignContentPlugin(_contentPlugins);
+                }                
             }
 
             parent.Children.CollectionChanged += Children_CollectionChanged;
@@ -1190,76 +1203,6 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Function to retrieve association data for the node.
-        /// </summary>
-        /// <param name="node">The node to evaluate.</param>
-        /// <param name="metadataOnly"><b>true</b> to indicate that only metadata should be used to scan the nodes, <b>false</b> to scan, in depth, per plugin (slow).</param>
-        private void GetNodeAssociationData(IFileExplorerNodeVm node, bool metadataOnly)
-        {            
-            var contentFile = node as IContentFile;
-
-            // Do not query association data for excluded file paths.
-            if ((node.Metadata == null) || (!node.IsContent) || (contentFile == null))
-            {
-                if (node.Metadata != null)
-                {
-                    node.Metadata.ContentMetadata = null;
-                    OnFileSystemChanged();
-                }               
-                
-                return;
-            }
-
-            // This node is already associated.
-            if (node.Metadata?.ContentMetadata != null)
-            {
-                return;
-            }
-
-            // Check the metadata for the plugin type associated with the node.            
-            (ContentPlugin plugin, MetadataPluginState state) = node.Metadata.GetContentPlugin(_contentPlugins);
-
-            switch (state)
-            {
-                case MetadataPluginState.NotFound:
-                    node.Metadata.ContentMetadata = null;
-                    node.Metadata.PluginName = string.Empty;
-                    node.NotifyPropertyChanged(nameof(IFileExplorerNodeVm.ImageName));
-                    OnFileSystemChanged();
-                    return;
-                case MetadataPluginState.Assigned:
-                    node.Metadata.ContentMetadata = plugin as IContentPluginMetadata;
-                    node.NotifyPropertyChanged(nameof(IFileExplorerNodeVm.ImageName));
-                    OnFileSystemChanged();
-                    return;
-            }
-
-            if (metadataOnly)
-            {
-                return;
-            }
-
-            // Assume that no plugin is available for the node.
-            node.Metadata.PluginName = string.Empty;
-
-            // Attempt to associate a content plug in with the node.            
-            foreach (KeyValuePair<string, ContentPlugin> servicePlugin in _contentPlugins.Plugins)
-            {
-                if ((!(servicePlugin.Value is IContentPluginMetadata pluginMetadata))
-                    || (!pluginMetadata.CanOpenContent(contentFile)))
-                {                    
-                    continue;
-                }
-
-                node.Metadata.ContentMetadata = pluginMetadata;
-                break;
-            }
-
-            OnFileSystemChanged();
-            node.NotifyPropertyChanged(nameof(IFileExplorerNodeVm.ImageName));
-        }
-
-        /// <summary>
         /// Function to inject dependencies for the view model.
         /// </summary>
         /// <param name="injectionParameters">The parameters to inject.</param>
@@ -1282,7 +1225,7 @@ namespace Gorgon.Editor.ViewModels
             // Scan for associations.  If this file was upgraded, then we'll need to add new associations.
             foreach (IFileExplorerNodeVm node in RootNode.Children.Traverse(n => n.Children))
             {
-                GetNodeAssociationData(node, false);
+                node.AssignContentPlugin(_contentPlugins, true);
             }
         }
 

@@ -87,6 +87,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>Property to return the plugin associated with the file.</summary>
         ContentPlugin IContentFile.ContentPlugin => Metadata?.ContentMetadata as ContentPlugin;
 
+        /// <summary>Property to set or return the metadata for the node.</summary>
         public override ProjectItemMetadata Metadata
         {
             get => base.Metadata;
@@ -96,8 +97,10 @@ namespace Gorgon.Editor.ViewModels
                 {
                     return;
                 }
-                                
+                
+                OnPropertyChanging();
                 base.Metadata = value;
+                OnPropertyChanged();
                 NotifyPropertyChanged(nameof(ImageName));
             }
         }
@@ -136,6 +139,18 @@ namespace Gorgon.Editor.ViewModels
                 }
             }
         }
+
+        /// <summary>Function to assign the appropriate content plug in to a node.</summary>
+        /// <param name="plugins">The plugins.</param>
+        /// <param name="deepScan"><b>true</b> to perform a more in depth scan for the associated plug in type, <b>false</b> to use the node metadata exclusively.</param>
+        /// <returns><b>true</b> if a plug in was assigned, <b>false</b> if not.</returns>
+        /// <remarks>
+        /// <para>
+        /// If the <paramref name="deepScan" /> parameter is set to <b>true</b>, then the lookup for the plug ins will involve opening the file using each plug in to find a matching plug in for the node
+        /// file type. This, obviously, is much slower, so should only be used when the node metadata is not sufficient for association information.
+        /// </para>
+        /// </remarks>
+        protected override bool OnAssignContentPlugin(IContentPluginManagerService plugins, bool deepScan) => plugins.AssignContentPlugin(this, !deepScan);
 
         /// <summary>
         /// Function to rename the node.
@@ -365,6 +380,9 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>Function to open the file for reading.</summary>
         /// <returns>A stream containing the file data.</returns>
         Stream IContentFile.OpenRead() => File.OpenRead(PhysicalPath);
+
+        /// <summary>Function to notify that the metadata should be refreshed.</summary>
+        void IContentFile.RefreshMetadata() => NotifyPropertyChanged(nameof(Metadata));
         #endregion
 
         #region Constructor/Finalizer.

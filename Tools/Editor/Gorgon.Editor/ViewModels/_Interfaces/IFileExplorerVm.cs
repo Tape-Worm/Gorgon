@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using Gorgon.Editor.Content;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ViewModels
@@ -158,7 +159,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to set or return the command to execute when a content node is opened.
         /// </summary>
-        IEditorCommand<IFileExplorerNodeVm> OpenContentFile
+        IEditorCommand<IContentFile> OpenContentFile
         {
             get;
             set;
