@@ -390,18 +390,20 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		            settings.ArrayCount = (int)dx10Header.ArrayCount;
 		            break;
                 case ImageType.Image2D:
-					// Make the array size a multiple of 6 if the DDS holds a texture cube map.
-					if ((dx10Header.MiscFlags & DdsHeaderMiscFlags.TextureCube) == DdsHeaderMiscFlags.TextureCube)
-					{
-						settings = new GorgonImageInfo(ImageType.ImageCube, format)
-						           {
-							           ArrayCount = (int)dx10Header.ArrayCount * 6
-						           };
-					}
-
-					settings.ArrayCount = (int)dx10Header.ArrayCount;
+                    // Make the array size a multiple of 6 if the DDS holds a texture cube map.
+                    if ((dx10Header.MiscFlags & DdsHeaderMiscFlags.TextureCube) == DdsHeaderMiscFlags.TextureCube)
+                    {
+                        settings = new GorgonImageInfo(ImageType.ImageCube, format)
+                        {
+                            ArrayCount = (int)dx10Header.ArrayCount * 6
+                        };
+                    }
+                    else
+                    {
+                        settings.ArrayCount = (int)dx10Header.ArrayCount;
+                    }
+					
 		            settings.Height = (int)header.Height;
-
                     
                     break;
                 case ImageType.Image3D:
