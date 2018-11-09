@@ -209,7 +209,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="info">Information used to create this image.</param>
 		private void SanitizeInfo(IGorgonImageInfo info)
 		{
-			GorgonImageInfo newInfo = new GorgonImageInfo(info);
+			var newInfo = new GorgonImageInfo(info);
 
 			// Validate the array size.
 			newInfo.ArrayCount = newInfo.ImageType == ImageType.Image3D ? 1 : newInfo.ArrayCount.Max(1);
@@ -226,37 +226,36 @@ namespace Gorgon.Graphics.Imaging
 				newInfo.MipCount = maxMipCount;
 			}
 
-			if (newInfo.ImageType != ImageType.ImageCube)
-			{
-				_imageInfo = newInfo;
-				return;
-			}
+            if (newInfo.ImageType == ImageType.ImageCube)
+            {
+                // If we're an image cube, and we don't have an array count that's a multiple of 6, then up size until we do.
+                while ((newInfo.ArrayCount % 6) != 0)
+                {
+                    newInfo.ArrayCount++;
+                }
+            }
 
-			// If we're an image cube, and we don't have an array count that's a multiple of 6, then up size until we do.
-			while ((newInfo.ArrayCount % 6) != 0)
-			{
-				newInfo.ArrayCount++;
-			}
-		}
+            _imageInfo = newInfo;            
+        }
 
-		/// <summary>
-		/// Function to return the size of an image in bytes.
-		/// </summary>
-		/// <param name="imageType">The type of image.</param>
-		/// <param name="width">Width of the image.</param>
-		/// <param name="height">Height of the image.</param>
-		/// <param name="depthOrArrayCount">Depth (for <see cref="Imaging.ImageType.Image3D"/>) or array count (for <see cref="Imaging.ImageType.Image1D"/> or <see cref="Imaging.ImageType.Image2D"/>) of the image.</param>
-		/// <param name="format">Format of the image.</param>
-		/// <param name="mipCount">[Optional] Number of mip-map levels in the image.</param>
-		/// <param name="pitchFlags">[Optional] Flags used to influence the row pitch of the image.</param>
-		/// <returns>The number of bytes for the image.</returns>
-		/// <exception cref="GorgonException">Thrown when the <paramref name="format"/> is not supported.</exception>
-		/// <remarks>
-		/// <para>
-		/// The <paramref name="pitchFlags"/> parameter is used to compensate in cases where the original image data is not laid out correctly (such as with older DirectDraw DDS images).
-		/// </para>
-		/// </remarks>
-		public static int CalculateSizeInBytes(ImageType imageType, int width, int height, int depthOrArrayCount, BufferFormat format, int mipCount = 1, PitchFlags pitchFlags = PitchFlags.None)
+        /// <summary>
+        /// Function to return the size of an image in bytes.
+        /// </summary>
+        /// <param name="imageType">The type of image.</param>
+        /// <param name="width">Width of the image.</param>
+        /// <param name="height">Height of the image.</param>
+        /// <param name="depthOrArrayCount">Depth (for <see cref="Imaging.ImageType.Image3D"/>) or array count (for <see cref="Imaging.ImageType.Image1D"/> or <see cref="Imaging.ImageType.Image2D"/>) of the image.</param>
+        /// <param name="format">Format of the image.</param>
+        /// <param name="mipCount">[Optional] Number of mip-map levels in the image.</param>
+        /// <param name="pitchFlags">[Optional] Flags used to influence the row pitch of the image.</param>
+        /// <returns>The number of bytes for the image.</returns>
+        /// <exception cref="GorgonException">Thrown when the <paramref name="format"/> is not supported.</exception>
+        /// <remarks>
+        /// <para>
+        /// The <paramref name="pitchFlags"/> parameter is used to compensate in cases where the original image data is not laid out correctly (such as with older DirectDraw DDS images).
+        /// </para>
+        /// </remarks>
+        public static int CalculateSizeInBytes(ImageType imageType, int width, int height, int depthOrArrayCount, BufferFormat format, int mipCount = 1, PitchFlags pitchFlags = PitchFlags.None)
 		{
 			if (format == BufferFormat.Unknown)
 			{

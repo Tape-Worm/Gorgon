@@ -90,7 +90,8 @@ namespace Gorgon.Editor.UI.Views
         /// <param name="context">The context being assigned.</param>
         /// <remarks>
         /// <para>
-        /// If the <paramref name="context"/> is <b>null</b>, then applications should use this method to shut down/dispose of any created graphics items.
+        /// If the <paramref name="context"/> is <b>null</b>, then applications should use this method to shut down/dispose of any created graphics items if they cannot be removed in the 
+        /// <see cref="OnShutdown"/> method.
         /// </para>
         /// </remarks>
         protected virtual void OnSetupGraphics(IGraphicsContext context)

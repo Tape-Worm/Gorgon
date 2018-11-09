@@ -55,6 +55,7 @@
     <Compile Include="Content\EditorContentCommon.cs" />
     <Compile Include="Content\_Interfaces\IContentFile.cs" />
     <Compile Include="Content\_Interfaces\IEditorContent.cs" />
+    <Compile Include="EditorCommonResources.cs" />
     <Compile Include="Plugins\ContentPlugin.cs" />
     <Compile Include="Plugins\EditorPlugin.cs" />
     <Compile Include="Plugins\FileWriterPlugIn.cs" />
@@ -117,6 +118,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\Pattern.dds" />
     <None Include="Resources\folder_48x48.png" />
     <None Include="Resources\file_48x48.png" />
     <None Include="Resources\drive_remove_48x48.png" />

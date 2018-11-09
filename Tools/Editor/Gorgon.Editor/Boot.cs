@@ -510,6 +510,9 @@ namespace Gorgon.Editor
 
                 await ShowSplashAsync();
 
+                // Initalize the common resources.
+                EditorCommonResources.LoadResources();
+
                 _pluginCache = new GorgonMefPluginCache(Program.Log);
                 _graphicsContext = GraphicsContext.Create(Program.Log);
 
