@@ -235,7 +235,7 @@ namespace Gorgon.Graphics.Imaging
                 }
             }
 
-            _imageInfo = newInfo;            
+            _imageInfo = newInfo;
         }
 
         /// <summary>
