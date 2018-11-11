@@ -31,6 +31,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Gorgon.Editor.Content;
+using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
@@ -57,19 +58,13 @@ namespace Gorgon.Editor.ImageEditor
         private ImageEditorView _view;
         // The codec used by the image.
         private IGorgonImageCodec _codec;
+        // The available image codecs.        
+        private readonly IReadOnlyList<IGorgonImageCodec> _codecs;
         #endregion
 
         #region Properties.
         /// <summary>Property to return the type of content.</summary>
-        public override string ContentType => "Image";
-
-        /// <summary>
-        /// Property to return the available image codecs.
-        /// </summary>
-        public IReadOnlyList<IGorgonImageCodec> Codecs
-        {
-            get;
-        }
+        public override string ContentType => ImageEditorCommonConstants.ContentType;
 
         /// <summary>
         /// Property to set or return the image codec used by the image content.
@@ -91,7 +86,10 @@ namespace Gorgon.Editor.ImageEditor
         /// <returns>A UI for the content, must not be <b>null</b>.</returns>
         protected override ContentBaseControl OnGetView()
         {
+            IImageContentVm imageContentVm = new ImageContentVm();
+
             _view = new ImageEditorView();
+            _view.SetDataContext(imageContentVm);            
 
             return _view;
         }        
@@ -125,7 +123,7 @@ namespace Gorgon.Editor.ImageEditor
             : base(file)
         {
             _image = image ?? throw new ArgumentNullException(nameof(image));
-            Codecs = codecs ?? throw new ArgumentNullException(nameof(codecs));
+            _codecs = codecs ?? throw new ArgumentNullException(nameof(codecs));
         }
         #endregion
     }

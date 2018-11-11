@@ -382,7 +382,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				throw new IOException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, dx10Header.Format));
 			}
 
-			GorgonImageInfo settings = new GorgonImageInfo(dx10Header.ResourceDimension, format);
+			var settings = new GorgonImageInfo(dx10Header.ResourceDimension, format);
 
 			switch (settings.ImageType)
             {
@@ -602,7 +602,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 }
             }
 
-			GorgonFormatInfo formatInfo = new GorgonFormatInfo(settings.Format);
+			var formatInfo = new GorgonFormatInfo(settings.Format);
 
 			if (formatInfo.IsCompressed)
 			{
@@ -852,9 +852,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="flags">Legacy file format flags.</param>
 		private void WriteHeader(IGorgonImageInfo settings, GorgonBinaryWriter writer, DdsLegacyFlags flags)
 		{
-			DdsHeader header = new DdsHeader();
+			var header = new DdsHeader();
 			DdsPixelFormat? format = null;
-			GorgonFormatInfo formatInfo = new GorgonFormatInfo(settings.Format);
+			var formatInfo = new GorgonFormatInfo(settings.Format);
 
 			if ((settings.ArrayCount > 1) && ((settings.ArrayCount != 6) || (settings.ImageType != ImageType.Image2D) || (settings.ImageType != ImageType.ImageCube)))
 			{
@@ -1097,7 +1097,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="palette">Palette used in indexed conversion.</param>
 		private void CopyImageData(GorgonBinaryReader reader, GorgonImage image, PitchFlags pitchFlags, DdsConversionFlags conversionFlags, uint[] palette)
 		{
-			GorgonFormatInfo formatInfo = new GorgonFormatInfo(image.Format);
+			var formatInfo = new GorgonFormatInfo(image.Format);
 
 			// Get copy flag bits per pixel if we have an expansion.
 			if ((conversionFlags & DdsConversionFlags.Expand) == DdsConversionFlags.Expand)
@@ -1257,12 +1257,12 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				throw new EndOfStreamException();
 			}
 
-			GorgonBinaryReader reader = new GorgonBinaryReader(stream, true);
+			var reader = new GorgonBinaryReader(stream, true);
 
 			// Read the header information.
 			IGorgonImageInfo settings = ReadHeader(reader, size, DecodingOptions?.LegacyFormatConversionFlags ?? DdsLegacyFlags.None, out DdsConversionFlags flags);
 
-			GorgonImage imageData = new GorgonImage(settings);
+			var imageData = new GorgonImage(settings);
 
 			try
 			{
@@ -1323,97 +1323,6 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 			return imageData;
 		}
-		/*
-		/// <summary>
-        /// Function to load an image from a stream.
-        /// </summary>
-        /// <param name="stream">Stream containing the data to load.</param>
-        /// <param name="size">Size of the data to read, in bytes.</param>
-        /// <returns>
-        /// The image data that was in the stream.
-        /// </returns>
-		protected internal override GorgonImageData LoadFromStream(GorgonDataStream stream, int size)
-		{
-	        DDSConversionFlags flags;
-	        uint[] palette = null;
-                        
-            if (size < DirectAccess.SizeOf<DdsHeader>() + sizeof(uint))
-            {
-                throw new EndOfStreamException(Resources.GORGFX_STREAM_EOF);
-            }
-
-			// Read the header information.
-			IImageSettings settings = ReadHeader(stream, size, out flags);
-	        _actualDepth = settings.Depth;
-	        _actualArrayCount = settings.ArrayCount;
-            
-			// Override array/depth settings.
-	        if (settings.ImageType == ImageType.Image3D)
-	        {
-		        if (Depth > 0)
-		        {
-			        settings.Depth = Depth;
-		        }
-	        }
-	        else
-	        {
-		        if (ArrayCount > 0)
-		        {
-			        settings.ArrayCount = ArrayCount;
-		        }
-	        }
-
-            var imageData = new GorgonImageData(settings);
-
-            try
-            {
-			    // We have a palette, either create a new one or clone the assigned one.
-			    if ((flags & DDSConversionFlags.Palette) == DDSConversionFlags.Palette)
-			    {
-                    const int paletteSize = sizeof(uint) * 256;
-
-                    if (paletteSize > stream.Length - stream.Position)
-                    {
-                        throw new EndOfStreamException(Resources.GORGFX_STREAM_EOF);
-                    }
-
-				    palette = new uint[256];
-				    if (Palette.Count > 0)
-				    {
-					    int count = Palette.Count.Min(256);
-
-					    for (int i = 0; i < count; i++)
-					    {
-						    palette[i] = (uint)Palette[i].ToARGB();
-					    }
-
-                        // Skip past palette data since we're not using it.
-                        stream.Position += paletteSize;
-				    }
-				    else
-				    {
-					    // Read from the stream if we haven't assigned a palette.
-					    stream.ReadRange(palette, 0, 256);
-				    }
-			    }
-
-				// Copy the data from the stream to the buffer.
-	            CopyImageData(stream.GetPointer(), imageData,
-	                          ((LegacyConversionFlags & DDSFlags.LegacyDWORD) == DDSFlags.LegacyDWORD)
-		                          ? PitchFlags.LegacyDWORD
-		                          : PitchFlags.None, flags, palette);
-            }
-			catch 
-			{
-				// Clean up any memory allocated if we can't copy the image.
-				imageData.Dispose();
-
-				throw;
-			}
-
-			return imageData;
-		}
-		*/
 
 		/// <summary>
 		/// Function to persist a <see cref="IGorgonImage"/> to a stream.
@@ -1452,7 +1361,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 			}
             
 			// Use a binary writer.
-			using (GorgonBinaryWriter writer = new GorgonBinaryWriter(stream, true))
+			using (var writer = new GorgonBinaryWriter(stream, true))
 			{
 				// Write the header for the file.
 				WriteHeader(imageData, writer, DdsLegacyFlags.None);

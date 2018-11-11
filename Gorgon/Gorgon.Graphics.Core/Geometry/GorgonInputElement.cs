@@ -262,7 +262,7 @@ namespace Gorgon.Graphics.Core
 		        throw new ArgumentEmptyException(nameof(context));
 		    }
 
-			GorgonFormatInfo formatInfo = new GorgonFormatInfo(format);
+			var formatInfo = new GorgonFormatInfo(format);
 
             if (formatInfo.BitDepth == 0)
             {

@@ -343,7 +343,7 @@ namespace Gorgon.IO.Extensions
                                                                               textureStream,
                                                                               codec,
                                                                               textureFile.Size,
-                                                                              new GorgonTextureLoadOptions
+                                                                              new GorgonTexture2DLoadOptions
                                                                               {
                                                                                   Name = textureFile.FullPath,
                                                                                   Usage = ResourceUsage.Default,
@@ -498,7 +498,7 @@ namespace Gorgon.IO.Extensions
                                                                               textureStream,
                                                                               codec,
                                                                               textureFile.Size,
-                                                                              new GorgonTextureLoadOptions
+                                                                              new GorgonTexture2DLoadOptions
                                                                               {
                                                                                   Name = textureFile.FullPath,
                                                                                   Usage = ResourceUsage.Default,
@@ -663,7 +663,7 @@ namespace Gorgon.IO.Extensions
                                                                               textureStream,
                                                                               codec,
                                                                               textureFile.Size,
-                                                                              new GorgonTextureLoadOptions
+                                                                              new GorgonTexture2DLoadOptions
                                                                               {
                                                                                   Name = textureFile.FullPath,
                                                                                   Usage = ResourceUsage.Default,

@@ -699,12 +699,13 @@ namespace Gorgon.Graphics.Core
             GorgonTexture2D texture = initialData == null
                                           ? new GorgonTexture2D(graphics, newInfo)
                                           : initialData.ToTexture2D(graphics,
-                                                                    new GorgonTextureLoadOptions
+                                                                    new GorgonTexture2DLoadOptions
                                                                     {
                                                                         Usage = newInfo.Usage,
                                                                         Binding = newInfo.Binding,
                                                                         MultisampleInfo = newInfo.MultisampleInfo,
-                                                                        Name = newInfo.Name
+                                                                        Name = newInfo.Name,
+                                                                        IsTextureCube = newInfo.IsCubeMap
                                                                     });
 
             GorgonTexture2DView result = texture.GetShaderResourceView();
@@ -757,7 +758,7 @@ namespace Gorgon.Graphics.Core
         /// what they are doing and will handle the disposal of the texture and view on their own.
         /// </para>
         /// </remarks>
-        public static GorgonTexture2DView FromStream(GorgonGraphics graphics, Stream stream, IGorgonImageCodec codec, long? size = null, GorgonTextureLoadOptions options = null)
+        public static GorgonTexture2DView FromStream(GorgonGraphics graphics, Stream stream, IGorgonImageCodec codec, long? size = null, GorgonTexture2DLoadOptions options = null)
         {
             if (graphics == null)
             {
@@ -836,7 +837,7 @@ namespace Gorgon.Graphics.Core
         /// what they are doing and will handle the disposal of the texture and view on their own.
         /// </para>
         /// </remarks>
-        public static GorgonTexture2DView FromFile(GorgonGraphics graphics, string filePath, IGorgonImageCodec codec, GorgonTextureLoadOptions options = null)
+        public static GorgonTexture2DView FromFile(GorgonGraphics graphics, string filePath, IGorgonImageCodec codec, GorgonTexture2DLoadOptions options = null)
         {
             if (graphics == null)
             {
@@ -862,9 +863,12 @@ namespace Gorgon.Graphics.Core
             {
                 if (options == null)
                 {
-                    options = new GorgonTextureLoadOptions
+                    options = new GorgonTexture2DLoadOptions
                               {
-                                  Name = Path.GetFileNameWithoutExtension(filePath), Usage = ResourceUsage.Default, Binding = TextureBinding.ShaderResource
+                                  Name = Path.GetFileNameWithoutExtension(filePath),
+                                  Usage = ResourceUsage.Default,
+                                  Binding = TextureBinding.ShaderResource,
+                                  IsTextureCube = image.ImageType == ImageType.Image2D
                               };
                 }
                 GorgonTexture2D texture = image.ToTexture2D(graphics, options);

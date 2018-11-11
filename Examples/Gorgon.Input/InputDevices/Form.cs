@@ -126,7 +126,7 @@ namespace Gorgon.Examples
 		        return;
 	        }
 
-	        using(Pen pen = new Pen(Color.Black, SystemInformation.BorderSize.Height))
+	        using(var pen = new Pen(Color.Black, SystemInformation.BorderSize.Height))
 	        {
 		        e.Graphics.DrawLine(pen, new Point(0, 0), new Point(control.Width, 0));
 	        }

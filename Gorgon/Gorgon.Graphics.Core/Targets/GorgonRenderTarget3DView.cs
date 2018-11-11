@@ -206,7 +206,7 @@ namespace Gorgon.Graphics.Core
         {
             Graphics.Log.Print($"Render Target 3D View '{Texture.Name}': Creating D3D11 render target view.", LoggingLevel.Simple);
 
-            D3D11.RenderTargetViewDescription1 desc = new D3D11.RenderTargetViewDescription1
+            var desc = new D3D11.RenderTargetViewDescription1
                                                       {
                                                           Format = (Format)Format,
                                                           Dimension = D3D11.RenderTargetViewDimension.Texture3D,

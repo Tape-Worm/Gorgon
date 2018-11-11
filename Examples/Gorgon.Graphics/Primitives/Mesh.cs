@@ -128,8 +128,8 @@ namespace Gorgon.Examples
         /// <param name="indexData">Buffer holding the indices.</param>
         protected void CalculateTangents(GorgonNativeBuffer<Vertex3D> vertexData, GorgonNativeBuffer<int> indexData)
         {
-			DX.Vector3[] biTanData = new DX.Vector3[VertexCount];
-			DX.Vector3[] tanData = new DX.Vector3[VertexCount];
+			var biTanData = new DX.Vector3[VertexCount];
+			var tanData = new DX.Vector3[VertexCount];
             int indexOffset = 0;
 
             for (int i = 0; i < TriangleCount; ++i)
@@ -165,11 +165,11 @@ namespace Gorgon.Examples
 		            r = 1.0f / denom;
 	            }
 				
-	            DX.Vector3 tangent = new DX.Vector3(((deltaUV2.Y * deltaPos1.X) - (deltaUV1.Y * deltaPos2.X)) * r,
+	            var tangent = new DX.Vector3(((deltaUV2.Y * deltaPos1.X) - (deltaUV1.Y * deltaPos2.X)) * r,
 	                                      ((deltaUV2.Y * deltaPos1.Y) - (deltaUV1.Y * deltaPos2.Y)) * r,
 	                                      ((deltaUV2.Y * deltaPos1.Z) - (deltaUV1.Y * deltaPos2.Z)) * r);
 
-				DX.Vector3 biTangent = new DX.Vector3(((deltaUV1.X * deltaPos2.X) - (deltaUV2.X * deltaPos1.X)) * r,
+				var biTangent = new DX.Vector3(((deltaUV1.X * deltaPos2.X) - (deltaUV2.X * deltaPos1.X)) * r,
 	                                        ((deltaUV1.X * deltaPos2.Y) - (deltaUV2.X * deltaPos1.Y)) * r,
 	                                        ((deltaUV1.X * deltaPos2.Z) - (deltaUV2.X * deltaPos1.Z)) * r);
 

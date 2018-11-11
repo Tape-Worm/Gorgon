@@ -75,7 +75,7 @@ namespace Gorgon.IO
                                }
                            };
 
-            JObject jsonObj = JObject.FromObject(animation, settings);
+            var jsonObj = JObject.FromObject(animation, settings);
             JToken firstProp = jsonObj.First;
             firstProp.AddBeforeSelf(new JProperty(JsonHeaderProp, GorgonAnimationCodecCommon.CurrentFileHeader));
             firstProp.AddBeforeSelf(new JProperty(JsonVersionProp, GorgonAnimationCodecCommon.CurrentVersion.ToString(2)));

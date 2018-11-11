@@ -229,7 +229,7 @@ namespace Gorgon.Examples
                 _metal = GorgonTexture2DView.FromFile(_graphics, 
                                                       Path.Combine(GorgonExample.GetResourcePath(@"\Textures\Animation\").FullName, "metal.gif"),
                                                       gif,
-                                                      new GorgonTextureLoadOptions
+                                                      new GorgonTexture2DLoadOptions
                                                       {
                                                           Name = @"Metal \m/",
                                                           Usage = ResourceUsage.Immutable,
@@ -238,7 +238,7 @@ namespace Gorgon.Examples
                 _trooper = GorgonTexture2DView.FromFile(_graphics,
                                                         Path.Combine(GorgonExample.GetResourcePath(@"\Textures\Animation\").FullName, "trooper.png"),
                                                         new GorgonCodecPng(),
-                                                        new GorgonTextureLoadOptions
+                                                        new GorgonTexture2DLoadOptions
                                                         {
                                                             Name = "Trooper",
                                                             Usage = ResourceUsage.Immutable,

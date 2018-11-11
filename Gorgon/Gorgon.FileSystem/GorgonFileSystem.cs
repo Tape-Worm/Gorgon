@@ -215,7 +215,7 @@ namespace Gorgon.IO
 				throw new IOException(string.Format(Resources.GORFS_ERR_CANNOT_READ_FILESYSTEM, physicalPath));
 			}
 
-			GorgonFileSystemMountPoint mountPoint = new GorgonFileSystemMountPoint(provider, physicalPath, mountPath);
+			var mountPoint = new GorgonFileSystemMountPoint(provider, physicalPath, mountPath);
 
 			GetFileSystemObjects(mountPoint);
 
@@ -250,7 +250,7 @@ namespace Gorgon.IO
 				throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, physicalPath));
 			}
 
-			GorgonFileSystemMountPoint mountPoint = new GorgonFileSystemMountPoint(DefaultProvider, physicalPath, mountPath);
+			var mountPoint = new GorgonFileSystemMountPoint(DefaultProvider, physicalPath, mountPath);
 
 			GetFileSystemObjects(mountPoint);
 
@@ -280,7 +280,7 @@ namespace Gorgon.IO
 				throw new IOException(string.Format(Resources.GORFS_ERR_CANNOT_READ_FILESYSTEM, location));
 			}
 
-			GorgonFileSystemMountPoint mountPoint = new GorgonFileSystemMountPoint(provider, location, mountDirectory, true);
+			var mountPoint = new GorgonFileSystemMountPoint(provider, location, mountDirectory, true);
 
 			GetFileSystemObjects(mountPoint);
 
@@ -446,7 +446,7 @@ namespace Gorgon.IO
 				directories = directories.Where(item => IsPatternMatch(item, searchMask));
 			}
 
-			Queue<VirtualDirectory> stack = new Queue<VirtualDirectory>(directories);
+			var stack = new Queue<VirtualDirectory>(directories);
 
 			while (stack.Count > 0)
 			{

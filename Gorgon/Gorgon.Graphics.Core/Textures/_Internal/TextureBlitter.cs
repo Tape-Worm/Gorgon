@@ -205,7 +205,7 @@ namespace Gorgon.Graphics
 
 
 		        _defaultTexture = Resources.White_2x2.ToTexture2D(_graphics,
-		                                                          new GorgonTextureLoadOptions
+		                                                          new GorgonTexture2DLoadOptions
 		                                                          {
 		                                                              Name = "Gorgon_Default_White_Texture",
 		                                                              Usage = ResourceUsage.Immutable,

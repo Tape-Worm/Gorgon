@@ -83,7 +83,7 @@ namespace Gorgon.Examples
 
 			// Set up the assembly cache.
 			// We'll need the assemblies loaded into this object in order to load our plugin types.
-            GorgonMefPluginCache pluginCache = new GorgonMefPluginCache(_log);
+            var pluginCache = new GorgonMefPluginCache(_log);
 
 			// Create our plugin service.
 			// This takes the cache of assemblies we just created.

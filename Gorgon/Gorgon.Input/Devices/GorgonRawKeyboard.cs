@@ -103,7 +103,7 @@ namespace Gorgon.Input
 		/// <returns>The device information for the system keyboard.</returns>
 		private static RawKeyboardInfo GetSysKeyboardInfo()
 		{
-			RID_DEVICE_INFO_KEYBOARD rawInfo = new RID_DEVICE_INFO_KEYBOARD
+			var rawInfo = new RID_DEVICE_INFO_KEYBOARD
 			              {
 				              dwNumberOfFunctionKeys = UserApi.FunctionKeyCount,
 				              dwKeyboardMode = 0,
@@ -344,7 +344,7 @@ namespace Gorgon.Input
 		/// </remarks>
 		public GorgonRawKeyboard(IGorgonKeyboardInfo keyboardInfo = null)
 		{
-			RawKeyboardInfo rawInfo = keyboardInfo as RawKeyboardInfo;
+			var rawInfo = keyboardInfo as RawKeyboardInfo;
 
 			if (keyboardInfo == null)
 			{

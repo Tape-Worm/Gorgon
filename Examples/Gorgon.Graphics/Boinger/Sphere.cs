@@ -87,11 +87,11 @@ namespace Gorgon.Graphics.Example
 	        {
 	            float angle = deltaRingAngle * ring;
 	            float ringSin = angle.Sin();
-	            DX.Vector3 position = new DX.Vector3(0, angle.Cos() * radius, 0);
+	            var position = new DX.Vector3(0, angle.Cos() * radius, 0);
 
 	            for (int segment = 0; segment <= segmentCount; segment++)
 	            {
-	                DX.Vector2 textureDelta = new DX.Vector2(1.0f - (segment / (float)segmentCount), 1.0f - (ring / (float)ringCount));
+	                var textureDelta = new DX.Vector2(1.0f - (segment / (float)segmentCount), 1.0f - (ring / (float)ringCount));
 	                float segmentAngle = deltaSegAngle * segment;
 
 	                position.X = ringSin * segmentAngle.Sin() * radius;
@@ -125,8 +125,8 @@ namespace Gorgon.Graphics.Example
 	        }
 
 	        // Copy the above vertex/index data into a vertex and index buffer so we can render our sphere.
-	        using (GorgonNativeBuffer<ushort> indexPtr = GorgonNativeBuffer<ushort>.Pin(Indices))
-	        using (GorgonNativeBuffer<BoingerVertex> vertexPtr = GorgonNativeBuffer<BoingerVertex>.Pin(Vertices))
+	        using (var indexPtr = GorgonNativeBuffer<ushort>.Pin(Indices))
+	        using (var vertexPtr = GorgonNativeBuffer<BoingerVertex>.Pin(Vertices))
 	        {
 	            VertexBufferBindings[0] = GorgonVertexBufferBinding.CreateVertexBuffer(graphics,
 	                                                                                   new GorgonVertexBufferInfo("Sphere Vertex Buffer")

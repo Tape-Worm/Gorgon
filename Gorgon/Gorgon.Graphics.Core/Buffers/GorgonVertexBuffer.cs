@@ -273,7 +273,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>The staging buffer to retrieve.</returns>
         public GorgonVertexBuffer GetStaging()
 	    {
-	        GorgonVertexBuffer buffer = new GorgonVertexBuffer(Graphics, new GorgonVertexBufferInfo(_info, $"{Name}_Staging")
+	        var buffer = new GorgonVertexBuffer(Graphics, new GorgonVertexBufferInfo(_info, $"{Name}_Staging")
 	                                                                     {
                                                                              Binding = VertexIndexBufferBinding.None,
                                                                              Usage = ResourceUsage.Staging
@@ -344,7 +344,7 @@ namespace Gorgon.Graphics.Core
 	        }
 
 	        // Ensure the size of the data type fits the requested format.
-	        GorgonFormatInfo info = new GorgonFormatInfo(format);
+	        var info = new GorgonFormatInfo(format);
 
 	        if (info.IsTypeless)
 	        {
@@ -362,7 +362,7 @@ namespace Gorgon.Graphics.Core
 
 	        elementCount = elementCount.Min(totalElementCount - startElement).Max(1);
 
-	        BufferShaderViewKey key = new BufferShaderViewKey(startElement, elementCount, format);
+	        var key = new BufferShaderViewKey(startElement, elementCount, format);
 	        GorgonVertexBufferReadWriteView result = GetReadWriteView<GorgonVertexBufferReadWriteView>(key);
 
 	        if (result != null)

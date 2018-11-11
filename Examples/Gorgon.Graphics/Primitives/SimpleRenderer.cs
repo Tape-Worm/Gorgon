@@ -226,7 +226,7 @@ namespace Gorgon.Examples
                 return;
             }
 
-            GorgonVertexShader vertexShader = (GorgonVertexShader)shader;
+            var vertexShader = (GorgonVertexShader)shader;
 
             if (!ShaderCache.TryGetValue(mesh.Material.PixelShader, out shader))
             {
@@ -242,7 +242,7 @@ namespace Gorgon.Examples
                 _vertexLayout = GorgonInputLayout.CreateUsingType<Vertex3D>(_graphics, vertexShader);
             }
 
-            GorgonPixelShader pixelShader = (GorgonPixelShader)shader;
+            var pixelShader = (GorgonPixelShader)shader;
 
             GorgonPipelineState pipelineState = _stateBuilder.Clear()
                                                              .DepthStencilState(mesh.IsDepthWriteEnabled
@@ -397,7 +397,7 @@ namespace Gorgon.Examples
                                                     }).GetView();
 
             // Initialize the constant buffers.
-            ViewProjectionData emptyViewProjection = new ViewProjectionData
+            var emptyViewProjection = new ViewProjectionData
                                       {
                                           Projection = DX.Matrix.Identity,
                                           View = DX.Matrix.Identity,
@@ -405,14 +405,14 @@ namespace Gorgon.Examples
                                       };
             DX.Matrix emptyWorld = DX.Matrix.Identity;
 
-            CameraData emptyCamera = new CameraData
+            var emptyCamera = new CameraData
                               {
                                   CameraLookAt = new DX.Vector3(0, 0, -1.0f),
                                   CameraUp = new DX.Vector3(0, 1, 0),
                                   CameraPosition = DX.Vector3.Zero
                               };
 
-            Material emptyMaterial = new Material
+            var emptyMaterial = new Material
                                 {
                                     SpecularPower = 1.0f,
                                     UVOffset = DX.Vector2.Zero
@@ -429,7 +429,7 @@ namespace Gorgon.Examples
         /// </summary>
         private void UpdateMaterials(MeshMaterial material)
         {
-            Material materialData = new Material
+            var materialData = new Material
                                     {
                                         UVOffset = material.TextureOffset,
                                         SpecularPower = material.SpecularPower
@@ -454,7 +454,7 @@ namespace Gorgon.Examples
             {
                 if (Camera.IsViewDirty)
                 {
-                    CameraData camData = new CameraData
+                    var camData = new CameraData
                                   {
                                       CameraLookAt = Camera.LookAt,
                                       CameraPosition = Camera.EyePosition,
@@ -463,7 +463,7 @@ namespace Gorgon.Examples
                     _cameraBuffer.Buffer.SetData(ref camData);
                 }
 
-                ViewProjectionData viewProjData = new ViewProjectionData
+                var viewProjData = new ViewProjectionData
                                    {
                                        Projection = Camera.GetProjectionMatrix(),
                                        View = Camera.GetViewMatrix(),

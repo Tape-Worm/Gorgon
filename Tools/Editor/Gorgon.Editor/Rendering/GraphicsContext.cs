@@ -182,7 +182,7 @@ namespace Gorgon.Editor.Rendering
             IGorgonVideoAdapterInfo adapter = adapters.OrderByDescending(item => item.FeatureSet).First();
 
             // TODO: Allow an override to this later.
-            GorgonGraphics graphics = new GorgonGraphics(adapter, log: log);
+            var graphics = new GorgonGraphics(adapter, log: log);
 
             return new GraphicsContext(graphics);
         }

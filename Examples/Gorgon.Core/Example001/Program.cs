@@ -46,7 +46,7 @@ namespace Gorgon.Examples
 		/// </summary>
 		private static void UpdateTime()
 		{
-			TimeSpan time = new TimeSpan(0, 0, (int)GorgonTiming.SecondsSinceStart);
+			var time = new TimeSpan(0, 0, (int)GorgonTiming.SecondsSinceStart);
 
 			// Get the time.
 			string timeString = $"Application up time: {time.Hours}:{time.Minutes:00}:{time.Seconds:00}";

@@ -210,7 +210,7 @@ namespace Gorgon.Security
         /// </remarks>
 	    public static (byte[] IV, byte[] Key) GenerateIvKey(string password, byte[] salt = null)
         {
-            using (RandomNumberGenerator rndGen = RandomNumberGenerator.Create())
+            using (var rndGen = RandomNumberGenerator.Create())
             {
                 if (salt == null)
                 {
@@ -218,9 +218,9 @@ namespace Gorgon.Security
                     rndGen.GetBytes(salt);
                 }
 
-                using (AesManaged aes = new AesManaged())
+                using (var aes = new AesManaged())
                 {
-                    using (Rfc2898DeriveBytes rfc2898 = new Rfc2898DeriveBytes(password, salt, 100))
+                    using (var rfc2898 = new Rfc2898DeriveBytes(password, salt, 100))
                     {
                         return (rfc2898.GetBytes(aes.BlockSize / 8), rfc2898.GetBytes(aes.KeySize / 8));
                     }

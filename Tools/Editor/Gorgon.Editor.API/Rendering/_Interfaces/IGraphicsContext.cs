@@ -65,7 +65,7 @@ namespace Gorgon.Editor.Rendering
         /// <summary>
         /// Function to return a leased out swap chain.
         /// </summary>
-        /// <param name="swapChain">The swap chain to return.</param>
+        /// <param name="swapChain">The swap chain to return.</param>        
         void ReturnSwapPresenter(ref GorgonSwapChain swapChain);
 
         /// <summary>

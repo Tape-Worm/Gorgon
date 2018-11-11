@@ -347,7 +347,7 @@ namespace Gorgon.Reflection
 			}
 
 			ParameterExpression paramExpr = Expression.Parameter(typeof(object[]), "args");
-			Expression[] argumentsExpr = new Expression[Params.Length];
+			var argumentsExpr = new Expression[Params.Length];
 
 			//pick each arg from the params array 
 			//and create a typed expression of them
@@ -375,7 +375,7 @@ namespace Gorgon.Reflection
 				Expression.Lambda(typeof(ObjectActivator<T>), newExp, paramExpr);
 
 			//compile it
-			ObjectActivator<T> compiled = (ObjectActivator<T>)lambda.Compile();
+			var compiled = (ObjectActivator<T>)lambda.Compile();
 			return compiled;
 		}
 
@@ -529,7 +529,7 @@ namespace Gorgon.Reflection
 				throw new ArgumentNullException(nameof(type));
 			}
 
-			List<FieldInfo> result = new List<FieldInfo>();
+			var result = new List<FieldInfo>();
 			incompatibleFields = result;
 
 			if ((type.StructLayoutAttribute == null) || (type.IsAutoLayout))

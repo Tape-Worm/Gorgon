@@ -105,7 +105,7 @@ namespace Gorgon.Examples
 
 				_picture.Image = null;
 				_textDisplay.Text = string.Empty;
-				IGorgonVirtualFile file = (IGorgonVirtualFile)e.Node.Tag;
+				var file = (IGorgonVirtualFile)e.Node.Tag;
 
 				// Here we load the image from the file system.
 				// Note that we don't care if it's from the zip file
@@ -163,7 +163,7 @@ namespace Gorgon.Examples
 		/// <param name="e">The <see cref="TreeViewCancelEventArgs" /> instance containing the event data.</param>
 		private void TreeFileSystem_BeforeExpand(object sender, TreeViewCancelEventArgs e)
 		{
-			IGorgonVirtualDirectory directory = e.Node.Tag as IGorgonVirtualDirectory;
+			var directory = e.Node.Tag as IGorgonVirtualDirectory;
 
 			try
 			{
@@ -188,7 +188,7 @@ namespace Gorgon.Examples
 		/// <param name="e">The <see cref="TreeViewCancelEventArgs" /> instance containing the event data.</param>
 		private void TreeFileSystem_BeforeCollapse(object sender, TreeViewCancelEventArgs e)
 		{
-			IGorgonVirtualDirectory directory = e.Node.Tag as IGorgonVirtualDirectory;
+			var directory = e.Node.Tag as IGorgonVirtualDirectory;
 
 			try
 			{
@@ -215,11 +215,11 @@ namespace Gorgon.Examples
 			// We can load the objects we need and discard the plugin system after.
 			// This works because we keep the references to the objects that our 
 			// plugin creates, even after the plugin is gone.
-			using (GorgonMefPluginCache pluginAssemblies = new GorgonMefPluginCache(Program.Log))
+			using (var pluginAssemblies = new GorgonMefPluginCache(Program.Log))
 			{
 				pluginAssemblies.LoadPluginAssemblies(Program.PlugInPath, "Gorgon.FileSystem.Zip.DLL");
 
-				GorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(
+				var providerFactory = new GorgonFileSystemProviderFactory(
 					new GorgonMefPluginService(pluginAssemblies, Program.Log),
 					Program.Log);
 
@@ -286,7 +286,7 @@ namespace Gorgon.Examples
 				// Get directories.
 				foreach (IGorgonVirtualDirectory subDirectory in directories)
 				{
-					TreeNode directoryNode = new TreeNode(subDirectory.Name)
+					var directoryNode = new TreeNode(subDirectory.Name)
 					    {
 					        Name = subDirectory.FullPath, 
                             Tag = subDirectory
@@ -323,7 +323,7 @@ namespace Gorgon.Examples
 						continue;
 					}
 
-					TreeNode fileNode = new TreeNode(file.Name)
+					var fileNode = new TreeNode(file.Name)
 					{
 						Name = file.FullPath, 
 						Tag = file

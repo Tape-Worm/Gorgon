@@ -199,7 +199,7 @@ namespace Gorgon.Examples
             _torusTexture = GorgonTexture2DView.FromFile(_graphics,
                                                          Path.Combine(GorgonExample.GetResourcePath(@"Textures\GiveMeSomeControl\").FullName, "Torus.png"),
                                                          new GorgonCodecPng(),
-                                                         new GorgonTextureLoadOptions
+                                                         new GorgonTexture2DLoadOptions
                                                          {
                                                              Binding = TextureBinding.ShaderResource,
                                                              Name = "Torus Animation Sheet",

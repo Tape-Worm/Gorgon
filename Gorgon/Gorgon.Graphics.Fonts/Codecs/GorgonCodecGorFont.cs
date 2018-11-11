@@ -256,7 +256,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		{
 			IGorgonImage image = null;
 			GorgonBinaryReader reader = fontFile.OpenChunk(TextureChunk);
-			List<GorgonTexture2D> result = new List<GorgonTexture2D>();
+			var result = new List<GorgonTexture2D>();
 			UnmanagedMemoryStream memoryStream = null;
 			GZipStream textureStream = null;
 
@@ -293,7 +293,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 
 				    // Convert to a texture and add that texture to our internal list.
 				    result.Add(image.ToTexture2D(Factory.Graphics,
-				                                 new GorgonTextureLoadOptions
+				                                 new GorgonTexture2DLoadOptions
 				                                 {
 				                                     Name = textureName
 				                                 }));
@@ -320,7 +320,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// <param name="textures">The textures for the glyphs.</param>
 		private IReadOnlyList<GorgonGlyph> ReadGlyphs(GorgonChunkFileReader fontFile, IReadOnlyList<GorgonTexture2D> textures)
 		{
-			List<GorgonGlyph> result = new List<GorgonGlyph>();
+			var result = new List<GorgonGlyph>();
 
 			// Get glyph information.
 			GorgonBinaryReader reader = fontFile.OpenChunk(GlyphDataChunk);
@@ -393,7 +393,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// <param name="fontFile">Font file to read.</param>
 		private static Dictionary<GorgonKerningPair, int> ReadKernPairs(GorgonChunkFileReader fontFile)
 		{
-			Dictionary<GorgonKerningPair, int> result = new Dictionary<GorgonKerningPair, int>();
+			var result = new Dictionary<GorgonKerningPair, int>();
 			GorgonBinaryReader reader = fontFile.OpenChunk(KernDataChunk);
 
 			// Read optional kerning information.

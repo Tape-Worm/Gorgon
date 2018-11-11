@@ -112,7 +112,7 @@ namespace Gorgon.Graphics.Imaging
 		internal void CreateBuffers(GorgonNativeBuffer<byte> data)
 		{
 			int bufferIndex = 0;
-			GorgonFormatInfo formatInfo = new GorgonFormatInfo(_image.Format);	// Format information.
+			var formatInfo = new GorgonFormatInfo(_image.Format);	// Format information.
 			
 			// Allocate enough room for the array and mip levels.
 			_buffers = new IGorgonImageBuffer[GorgonImage.CalculateDepthSliceCount(_image.Depth, _image.MipCount) * _image.ArrayCount];

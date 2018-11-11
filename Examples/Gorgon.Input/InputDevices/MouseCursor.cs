@@ -127,7 +127,7 @@ namespace Gorgon.Examples
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void displayControl_Resize(object sender, EventArgs e)
         {
-            Control displayControl = (Control)sender;
+            var displayControl = (Control)sender;
             System.Windows.Forms.Form ownerForm = displayControl.FindForm();
             
             CleanUp();

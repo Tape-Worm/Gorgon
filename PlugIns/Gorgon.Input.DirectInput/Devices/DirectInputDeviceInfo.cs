@@ -154,8 +154,8 @@ namespace Gorgon.Input.DirectInput
 		/// <param name="joystick">The DirectInput joystick to evaluate.</param>
 		public void GetDeviceCaps(DI.Joystick joystick)
 		{
-			Dictionary<GamingDeviceAxis, int> defaults = new Dictionary<GamingDeviceAxis, int>(new GorgonGamingDeviceAxisEqualityComparer());
-			Dictionary<GamingDeviceAxis, GorgonRange> axisRanges = new Dictionary<GamingDeviceAxis, GorgonRange>(new GorgonGamingDeviceAxisEqualityComparer());
+			var defaults = new Dictionary<GamingDeviceAxis, int>(new GorgonGamingDeviceAxisEqualityComparer());
+			var axisRanges = new Dictionary<GamingDeviceAxis, GorgonRange>(new GorgonGamingDeviceAxisEqualityComparer());
 
 			ProductID = joystick.Properties.ProductId;
 			ManufacturerID = joystick.Properties.VendorId;
@@ -167,7 +167,7 @@ namespace Gorgon.Input.DirectInput
 
 			foreach (DI.DeviceObjectInstance axis in axisInfo)
 			{
-				HIDUsage usage = (HIDUsage)axis.Usage;
+				var usage = (HIDUsage)axis.Usage;
 				DI.ObjectProperties properties = joystick.GetObjectPropertiesById(axis.ObjectId);
 
 				// Skip this axis if retrieving the properties results in failure.
@@ -176,7 +176,7 @@ namespace Gorgon.Input.DirectInput
 					continue;
 				}
 
-				GorgonRange range = new GorgonRange(properties.Range.Minimum, properties.Range.Maximum);
+				var range = new GorgonRange(properties.Range.Minimum, properties.Range.Maximum);
 				int midPoint = ((range.Range + 1) / 2) + range.Minimum;
 
 				switch (usage)

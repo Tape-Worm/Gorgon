@@ -188,6 +188,7 @@
     <Compile Include="Textures\GorgonTexture2DInfo.cs" />
     <Compile Include="Textures\GorgonTexture1DReadWriteView.cs" />
     <Compile Include="Textures\GorgonTexture1DView.cs" />
+    <Compile Include="Textures\GorgonTexture2DLoadOptions.cs" />
     <Compile Include="Textures\GorgonTextureLoadOptions.cs" />
     <Compile Include="Textures\GorgonTexture2DView.cs" />
     <Compile Include="Textures\GorgonTexture2DReadWriteView.cs" />

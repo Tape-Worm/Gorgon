@@ -57,7 +57,7 @@ namespace Gorgon.Graphics.Core
 
 		#region Variables.
         // Default texture loading options.
-        private static readonly GorgonTextureLoadOptions _defaultLoadOptions = new GorgonTextureLoadOptions();
+        private static readonly GorgonTexture2DLoadOptions _defaultLoadOptions = new GorgonTexture2DLoadOptions();
 		// The ID number of the texture.
 		private static int _textureID;
 	    // The list of cached texture unordered access views.
@@ -360,7 +360,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		private void ValidateTextureSettings()
 		{
-		    GorgonFormatInfo formatInfo = new GorgonFormatInfo(Format);
+		    var formatInfo = new GorgonFormatInfo(Format);
 
 		    if (Usage == ResourceUsage.Dynamic)
 		    {
@@ -1184,7 +1184,7 @@ namespace Gorgon.Graphics.Core
 				throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_TEXTURE_RESOLVE_DEST_NOT_DEFAULT, destination.Name));
 			}
 
-			GorgonFormatInfo resolveFormatInfo = new GorgonFormatInfo(resolveFormat);
+			var resolveFormatInfo = new GorgonFormatInfo(resolveFormat);
 
 			// If we have typed formats, and they're not the same, then that's an error according to the D3D docs.
 			if ((!FormatInformation.IsTypeless) && (!destination.FormatInformation.IsTypeless))
@@ -1254,7 +1254,7 @@ namespace Gorgon.Graphics.Core
 				                          Usage = ResourceUsage.Staging,
 				                          Binding = TextureBinding.None
 			                          };
-			GorgonTexture2D staging = new GorgonTexture2D(Graphics, info);
+			var staging = new GorgonTexture2D(Graphics, info);
 
 			// Copy the data from this texture into the new staging texture.
 			CopyTo(staging);
@@ -1384,7 +1384,7 @@ namespace Gorgon.Graphics.Core
 
             // Clip the destination rectangle against our texture size.
             DX.Rectangle destRect = destRectangle ?? new DX.Rectangle(0, 0, width, height);
-            DX.Rectangle maxRect = new DX.Rectangle(0, 0, width, height);
+            var maxRect = new DX.Rectangle(0, 0, width, height);
             DX.Rectangle.Intersect(ref destRect, ref maxRect, out DX.Rectangle destBounds);
 
             var finalBounds = new DX.Rectangle(destBounds.X, destBounds.Y, imageBuffer.Width.Min(destBounds.Width), imageBuffer.Height.Min(destBounds.Height));
@@ -1741,7 +1741,7 @@ namespace Gorgon.Graphics.Core
 
 	        arrayCount = (arrayCount.Min(ArrayCount - arrayIndex)).Max(1);
 
-            TextureViewKey key = new TextureViewKey(format, firstMipLevel, mipCount, arrayIndex, arrayCount);
+            var key = new TextureViewKey(format, firstMipLevel, mipCount, arrayIndex, arrayCount);
 
 	        if ((_cachedSrvs.TryGetValue(key, out GorgonTexture2DView view))
                 && (view.Native != null))
@@ -1843,7 +1843,7 @@ namespace Gorgon.Graphics.Core
 
 	        arrayCount = arrayCount.Min(ArrayCount - arrayIndex).Max(1);
 
-	        TextureViewKey key = new TextureViewKey(format, firstMipLevel, _info.MipLevels, arrayIndex, arrayCount);
+	        var key = new TextureViewKey(format, firstMipLevel, _info.MipLevels, arrayIndex, arrayCount);
 
 	        if ((_cachedReadWriteViews.TryGetValue(key, out GorgonTexture2DReadWriteView view))
                 && (view.Native != null))
@@ -1956,7 +1956,7 @@ namespace Gorgon.Graphics.Core
 	        arrayCount = arrayCount.Min(_info.ArrayCount - arrayIndex).Max(1);
 
             // Since we don't use the mip count, we can repurpose it to store the flag settings.
-	        TextureViewKey key = new TextureViewKey(format, firstMipLevel, (int)flags, arrayIndex, arrayCount);
+	        var key = new TextureViewKey(format, firstMipLevel, (int)flags, arrayIndex, arrayCount);
 
 	        if ((_cachedDsvs.TryGetValue(key, out GorgonDepthStencil2DView view))
                 && (view.Native != null))
@@ -2045,7 +2045,7 @@ namespace Gorgon.Graphics.Core
 
 	        arrayCount = arrayCount.Min(_info.ArrayCount - arrayIndex).Max(1);
 
-	        TextureViewKey key = new TextureViewKey(format, firstMipLevel, 1, arrayIndex, arrayCount);
+	        var key = new TextureViewKey(format, firstMipLevel, 1, arrayIndex, arrayCount);
 
 	        if ((_cachedRtvs.TryGetValue(key, out GorgonRenderTarget2DView view))
                 && (view.Native != null))
@@ -2104,7 +2104,7 @@ namespace Gorgon.Graphics.Core
         /// </list>
         /// </para>
         /// </remarks>
-        public static GorgonTexture2D FromStream(GorgonGraphics graphics, Stream stream, IGorgonImageCodec codec, long? size = null, GorgonTextureLoadOptions options = null)
+        public static GorgonTexture2D FromStream(GorgonGraphics graphics, Stream stream, IGorgonImageCodec codec, long? size = null, GorgonTexture2DLoadOptions options = null)
         {
             if (graphics == null)
             {
@@ -2185,7 +2185,7 @@ namespace Gorgon.Graphics.Core
         /// </list>
         /// </para>
         /// </remarks>
-        public static GorgonTexture2D FromFile(GorgonGraphics graphics, string filePath, IGorgonImageCodec codec, GorgonTextureLoadOptions options = null)
+        public static GorgonTexture2D FromFile(GorgonGraphics graphics, string filePath, IGorgonImageCodec codec, GorgonTexture2DLoadOptions options = null)
         {
             if (graphics == null)
             {
@@ -2324,9 +2324,20 @@ namespace Gorgon.Graphics.Core
         /// This constructor is used when converting an image to a texture.
         /// </para>
         /// </remarks>
-        internal GorgonTexture2D(GorgonGraphics graphics, IGorgonImage image, GorgonTextureLoadOptions options)
+        internal GorgonTexture2D(GorgonGraphics graphics, IGorgonImage image, GorgonTexture2DLoadOptions options)
 			: base(graphics)
 		{
+            bool isCubeMap = false;
+
+            if (options.IsTextureCube == null)
+            {
+                isCubeMap = image.ImageType == ImageType.ImageCube;
+            }
+            else
+            {
+                isCubeMap = options.IsTextureCube.Value;
+            }
+
 		    _info = new GorgonTexture2DInfo(options.Name)
 		            {
 		                Format = image.Format,
@@ -2335,7 +2346,7 @@ namespace Gorgon.Graphics.Core
 		                Usage = options.Usage,
 		                ArrayCount = image.ArrayCount,
 		                Binding = options.Binding,
-		                IsCubeMap = image.ImageType == ImageType.ImageCube,
+		                IsCubeMap = isCubeMap,
 		                MipLevels = image.MipCount,
 		                MultisampleInfo = options.MultisampleInfo
 		            };

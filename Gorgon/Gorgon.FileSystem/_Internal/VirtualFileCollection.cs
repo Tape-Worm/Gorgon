@@ -151,7 +151,7 @@ namespace Gorgon.IO
 				throw new IOException(string.Format(Resources.GORFS_ERR_FILE_EXISTS, fileInfo.FullPath));
 			}
 
-			VirtualFile result = new VirtualFile(mountPoint, fileInfo, _parent);
+			var result = new VirtualFile(mountPoint, fileInfo, _parent);
 
 			// Create the entry.
 			_files.Add(fileInfo.Name, result);

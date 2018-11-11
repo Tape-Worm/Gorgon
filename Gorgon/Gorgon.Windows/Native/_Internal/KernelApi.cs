@@ -79,7 +79,7 @@ namespace Gorgon.Native
 		{
 			get
 			{
-				MEMORYSTATUSEX memory = new MEMORYSTATUSEX
+				var memory = new MEMORYSTATUSEX
 				{
 					dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX))
 				};
@@ -100,7 +100,7 @@ namespace Gorgon.Native
 		{
 			get
 			{
-				MEMORYSTATUSEX memory = new MEMORYSTATUSEX
+				var memory = new MEMORYSTATUSEX
 				{
 					dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX))
 				};

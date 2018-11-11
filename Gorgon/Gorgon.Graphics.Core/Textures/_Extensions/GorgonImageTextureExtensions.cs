@@ -37,47 +37,47 @@ namespace Gorgon.Graphics.Core
     public static class GorgonImageTextureExtensions
 	{
         // Default load options.
-        private static readonly GorgonTextureLoadOptions _defaultLoadOptions = new GorgonTextureLoadOptions();
+        private static readonly GorgonTexture2DLoadOptions _defaultLoadOptions = new GorgonTexture2DLoadOptions();
 
-	    /// <summary>
-	    /// Function to create a <see cref="GorgonTexture2D"/> from a GDI+ bitmap.
-	    /// </summary>
-	    /// <param name="gdiBitmap">The GDI+ bitmap used to create the texture.</param>
-	    /// <param name="graphics">The graphics interface used to create the texture.</param>
-	    /// <param name="options">[Optional] Options used to further define the texture.</param>
-	    /// <returns>A new <see cref="GorgonTexture2D"/> containing the data from the <paramref name="gdiBitmap"/>.</returns>
-	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="gdiBitmap"/>, or the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
-	    /// <remarks>
-	    /// <para>
-	    /// A GDI+ bitmap is useful to holding image data in memory, but it cannot be sent to the GPU for use as a texture. This method allows an application to convert the GDI+ bitmap into a 
-	    /// <see cref="GorgonTexture2D"/>. 
-	    /// </para>
-	    /// <para>
-	    /// The resulting <see cref="GorgonTexture2D"/> will only contain a single mip level, and single array level. The only image type available will be 2D (i.e. image with a width and height). The GDI+ 
-	    /// bitmap should have a 32bpp rgba format, or a 24bpp rgb format or else an exception will be thrown.
-	    /// </para>
-	    /// <para>
-	    /// The optional <paramref name="options"/>parameter will define how Gorgon and shaders should handle the texture.  The <see cref="GorgonTextureLoadOptions"/> type contains the following:
-	    /// <list type="bullet">
-	    ///		<item>
-	    ///			<term>Binding</term>
-	    ///			<description>When defined, will indicate the <see cref="TextureBinding"/> that defines how the texture will be bound to the graphics pipeline. If it is omitted, then the binding will be 
-	    ///         <see cref="TextureBinding.ShaderResource"/>.</description>
-	    ///		</item>
-	    ///		<item>
-	    ///			<term>Usage</term>
-	    ///			<description>When defined, will indicate the preferred usage for the texture. If it is omitted, then the usage will be set to <see cref="ResourceUsage.Default"/>.</description>
-	    ///		</item>
-	    ///		<item>
-	    ///			<term>Multisample info</term>
-	    ///			<description>When defined (i.e. not <b>null</b>), defines the multisampling to apply to the texture. If omitted, then the default is <see cref="GorgonMultisampleInfo.NoMultiSampling"/>.</description>
-	    ///		</item>
-	    /// </list>
-	    /// </para>
-	    /// </remarks>
-	    public static GorgonTexture2D ToTexture2D(this Bitmap gdiBitmap,
+        /// <summary>
+        /// Function to create a <see cref="GorgonTexture2D"/> from a GDI+ bitmap.
+        /// </summary>
+        /// <param name="gdiBitmap">The GDI+ bitmap used to create the texture.</param>
+        /// <param name="graphics">The graphics interface used to create the texture.</param>
+        /// <param name="options">[Optional] Options used to further define the texture.</param>
+        /// <returns>A new <see cref="GorgonTexture2D"/> containing the data from the <paramref name="gdiBitmap"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="gdiBitmap"/>, or the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
+        /// <remarks>
+        /// <para>
+        /// A GDI+ bitmap is useful to holding image data in memory, but it cannot be sent to the GPU for use as a texture. This method allows an application to convert the GDI+ bitmap into a 
+        /// <see cref="GorgonTexture2D"/>. 
+        /// </para>
+        /// <para>
+        /// The resulting <see cref="GorgonTexture2D"/> will only contain a single mip level, and single array level. The only image type available will be 2D (i.e. image with a width and height). The GDI+ 
+        /// bitmap should have a 32bpp rgba format, or a 24bpp rgb format or else an exception will be thrown.
+        /// </para>
+        /// <para>
+        /// The optional <paramref name="options"/>parameter will define how Gorgon and shaders should handle the texture.  The <see cref="GorgonTextureLoadOptions"/> type contains the following:
+        /// <list type="bullet">
+        ///		<item>
+        ///			<term>Binding</term>
+        ///			<description>When defined, will indicate the <see cref="TextureBinding"/> that defines how the texture will be bound to the graphics pipeline. If it is omitted, then the binding will be 
+        ///         <see cref="TextureBinding.ShaderResource"/>.</description>
+        ///		</item>
+        ///		<item>
+        ///			<term>Usage</term>
+        ///			<description>When defined, will indicate the preferred usage for the texture. If it is omitted, then the usage will be set to <see cref="ResourceUsage.Default"/>.</description>
+        ///		</item>
+        ///		<item>
+        ///			<term>Multisample info</term>
+        ///			<description>When defined (i.e. not <b>null</b>), defines the multisampling to apply to the texture. If omitted, then the default is <see cref="GorgonMultisampleInfo.NoMultiSampling"/>.</description>
+        ///		</item>
+        /// </list>
+        /// </para>
+        /// </remarks>
+        public static GorgonTexture2D ToTexture2D(this Bitmap gdiBitmap,
 	                                              GorgonGraphics graphics,
-	                                              GorgonTextureLoadOptions options = null)
+	                                              GorgonTexture2DLoadOptions options = null)
 	    {
 	        if (gdiBitmap == null)
 	        {
@@ -198,7 +198,7 @@ namespace Gorgon.Graphics.Core
 	    /// </remarks>
 	    public static GorgonTexture2D ToTexture2D(this IGorgonImage image,
 	                                              GorgonGraphics graphics,
-                                                  GorgonTextureLoadOptions options = null)
+                                                  GorgonTexture2DLoadOptions options = null)
 	    {
 	        if (image == null)
 	        {

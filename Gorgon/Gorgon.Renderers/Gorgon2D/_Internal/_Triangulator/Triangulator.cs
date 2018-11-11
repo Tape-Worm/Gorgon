@@ -326,7 +326,7 @@ namespace GorgonTriangulator
 			Log("\nReversing winding order...");
 			
 #if DEBUG
-			StringBuilder vString = new StringBuilder();
+			var vString = new StringBuilder();
 			foreach (Gorgon2DVertex v in vertices)
 				vString.Append($"{v.Position}, ");
 			Log("Original Vertices: {0}", vString);
@@ -402,17 +402,17 @@ namespace GorgonTriangulator
 
 			//write out the states of each of the lists
 #if DEBUG
-			StringBuilder rString = new StringBuilder();
+			var rString = new StringBuilder();
 			foreach (Vertex v in _reflexVertices)
 				rString.Append($"{v.Index}, ");
 			Log("Reflex Vertices: {0}", rString);
 
-			StringBuilder cString = new StringBuilder();
+			var cString = new StringBuilder();
 			foreach (Vertex v in _convexVertices)
 				cString.Append($"{v.Index}, ");
 			Log("Convex Vertices: {0}", cString);
 
-			StringBuilder eString = new StringBuilder();
+			var eString = new StringBuilder();
 			foreach (Vertex v in _earVertices)
 				eString.Append($"{v.Index}, ");
 			Log("Ear Vertices: {0}", eString);
@@ -525,9 +525,9 @@ namespace GorgonTriangulator
 			Vertex p = _polygonVertices[_polygonVertices.IndexOf(c) - 1].Value;
 			Vertex n = _polygonVertices[_polygonVertices.IndexOf(c) + 1].Value; 
 			
-			Vector2 d1 = Vector2.Normalize(c.Position - p.Position);
-			Vector2 d2 = Vector2.Normalize(n.Position - c.Position);
-			Vector2 n2 = new Vector2(-d2.Y, d2.X);
+			var d1 = Vector2.Normalize(c.Position - p.Position);
+			var d2 = Vector2.Normalize(n.Position - c.Position);
+			var n2 = new Vector2(-d2.Y, d2.X);
 
 			return (Vector2.Dot(d1, n2) <= 0f);
 		}

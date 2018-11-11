@@ -70,7 +70,7 @@ namespace Gorgon.Input
 		/// </summary>
 		public void Reset()
 		{
-			Keys[] keys = (Keys[])Enum.GetValues(typeof(Keys));
+			var keys = (Keys[])Enum.GetValues(typeof(Keys));
 
 			foreach (Keys key in keys)
 			{

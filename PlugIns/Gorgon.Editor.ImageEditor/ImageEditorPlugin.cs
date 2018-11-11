@@ -40,6 +40,7 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Plugins;
+using System.Diagnostics;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -85,6 +86,55 @@ namespace Gorgon.Editor.ImageEditor
 
         #region Methods.
         /// <summary>
+        /// Function to update the metadata for a file that is missing metadata attributes.
+        /// </summary>
+        /// <param name="attributes">The attributes to update.</param>
+        /// <param name="codec">The codec for the image.</param>
+        /// <returns><b>true</b> if the metadata needs refreshing for the file, <b>false</b> if not.</returns>
+        private bool UpdateFileMetadataAttributes(Dictionary<string, string> attributes, IGorgonImageCodec codec)
+        {
+            bool needsRefresh = false;
+            string codecType = codec?.GetType().FullName;
+            string currentCodecType;
+            string currentContentType;
+
+            if (codecType == null)
+            {
+                if ((attributes.TryGetValue(ImageContent.CodecAttr, out currentCodecType))
+                    && (!string.IsNullOrWhiteSpace(currentCodecType)))
+                {
+                    attributes.Remove(ImageContent.CodecAttr);
+                    needsRefresh = true;
+                }
+
+                if ((attributes.TryGetValue(EditorContentCommon.ContentTypeAttr, out currentContentType))
+                    && (string.Equals(currentContentType, ImageEditorCommonConstants.ContentType, StringComparison.OrdinalIgnoreCase)))
+                {
+                    attributes.Remove(EditorContentCommon.ContentTypeAttr);
+                    needsRefresh = true;
+                }
+                
+                return needsRefresh;
+            }
+
+            if ((!attributes.TryGetValue(ImageContent.CodecAttr, out currentCodecType))
+                || (!string.Equals(currentCodecType, codecType, StringComparison.OrdinalIgnoreCase)))
+            {
+                attributes[ImageContent.CodecAttr] = codecType;
+                needsRefresh = true;
+            }
+
+            if ((!attributes.TryGetValue(EditorContentCommon.ContentTypeAttr, out currentContentType))
+                || (!string.Equals(currentContentType, ImageEditorCommonConstants.ContentType, StringComparison.OrdinalIgnoreCase)))
+            {
+                attributes[EditorContentCommon.ContentTypeAttr] = ImageEditorCommonConstants.ContentType;
+                needsRefresh = true;
+            }
+
+            return needsRefresh;
+        }
+
+        /// <summary>
         /// Function to retrieve the codec used by the image.
         /// </summary>
         /// <param name="file">The file containing the image content.</param>
@@ -92,42 +142,57 @@ namespace Gorgon.Editor.ImageEditor
         private IGorgonImageCodec GetCodec(IContentFile file)
         {
             IGorgonImageCodec result = null;
+            Stream stream = null;
 
-            // First, check the attribute information.
-            if (file.Metadata.Attributes.TryGetValue(ImageContent.CodecAttr, out string imageCodecType))
+            try
             {
-                // Locate the actual type in amongst our loaded codecs.
-                result = _codecList.FirstOrDefault(item => string.Equals(item.GetType().AssemblyQualifiedName, imageCodecType, StringComparison.Ordinal));
-
-                if (result != null)
+                // First, check the attribute information.
+                if (file.Metadata.Attributes.TryGetValue(ImageContent.CodecAttr, out string imageCodecType))
                 {
-                    return result;
-                }
-            }
+                    // Locate the actual type in amongst our loaded codecs.
+                    result = _codecList.FirstOrDefault(item => string.Equals(item.GetType().FullName, imageCodecType, StringComparison.Ordinal));
 
-            // Second, locate the extension.
-            if (!string.IsNullOrWhiteSpace(file.Extension))
-            {
-                var extension = new GorgonFileExtension(file.Extension);
-
-                result = _codecs.FirstOrDefault(item => item.extension == extension).codec;
-
-                if (result != null)
-                {
-                    return result;
-                }
-            }
-
-            // If that failed, then test to see if the file can be opened by the codec, this is more intensive because we have file access.
-            foreach (IGorgonImageCodec codec in _codecList)
-            {
-                using (Stream stream = file.OpenRead())
-                {
-                    if (codec.IsReadable(stream))
+                    if (result != null)
                     {
-                        return codec;
+                        return result;
                     }
                 }
+
+                // Second, locate the extension.
+                if (!string.IsNullOrWhiteSpace(file.Extension))
+                {
+                    var extension = new GorgonFileExtension(file.Extension);
+
+                    result = _codecs.FirstOrDefault(item => item.extension == extension).codec;
+
+                    if (result != null)
+                    {
+                        return result;
+                    }
+                }
+
+                // If that failed, then test to see if the file can be opened by the codec, this is more intensive because we have to attempt opening the file for each item.
+                foreach (IGorgonImageCodec codec in _codecList)
+                {
+                    stream = file.OpenRead();
+
+                    if (codec.IsReadable(stream))
+                    {
+                        result = codec;
+                        return codec;
+                    }
+
+                    stream.Dispose();
+                }
+            }
+            finally
+            {
+                // If metadata has been changed, we need to update.
+                if (UpdateFileMetadataAttributes(file.Metadata.Attributes, result))
+                {
+                    file.RefreshMetadata();
+                }
+                stream?.Dispose();
             }
 
             return null;
@@ -161,7 +226,8 @@ namespace Gorgon.Editor.ImageEditor
         }
 
         /// <summary>Function to provide clean up for the plugin.</summary>
-        protected override void OnShutdown()
+        /// <param name="log">The logging interface for debug messages.</param>
+        protected override void OnShutdown(IGorgonLog log)
         {
             foreach (IDisposable codec in _codecList.OfType<IDisposable>())
             {   
@@ -178,11 +244,12 @@ namespace Gorgon.Editor.ImageEditor
             }
             catch (Exception ex)
             {
-                // TODO: Need to log this.
+                // We don't care if it crashes. The worst thing that'll happen is your settings won't persist.
+                log.LogException(ex);
             }            
 
             _pluginCache?.Dispose();
-            base.OnShutdown();
+            base.OnShutdown(log);
         }
 
         /// <summary>

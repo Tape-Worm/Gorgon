@@ -59,7 +59,7 @@ namespace Gorgon.Examples
             // Then, we apply a gaussian blur to the render target several times to "smooth" out the edges.
             // Once that is done, we can create new sprites from our render target texture that point to the blurred image.
 
-            GorgonTexture2DView resultTexture = GorgonTexture2DView.CreateTexture(_renderer.Graphics,
+            var resultTexture = GorgonTexture2DView.CreateTexture(_renderer.Graphics,
                                                                                   new GorgonTexture2DInfo("Shadow Texture")
                                                                                   {
                                                                                       Width = (int)(_sprite1.Size.Width + _sprite2.Size.Width) * 2,

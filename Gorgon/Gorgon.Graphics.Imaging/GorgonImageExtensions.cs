@@ -170,7 +170,7 @@ namespace Gorgon.Graphics.Imaging
 				                        };
 
 			// Our destination image for B8G8R8A8 or R8G8B8A8.
-			GorgonImage destImage = new GorgonImage(destInfo);
+			var destImage = new GorgonImage(destInfo);
 
 			try
 			{
@@ -308,13 +308,13 @@ namespace Gorgon.Graphics.Imaging
 				mipCount = maxMips;
 			}
 
-			GorgonImageInfo destSettings = new GorgonImageInfo(baseImage)
+			var destSettings = new GorgonImageInfo(baseImage)
 			                               {
 				                               MipCount = mipCount
 			                               };
 
-			GorgonImage newImage = new GorgonImage(destSettings);
-			WicUtilities wic = new WicUtilities();
+			var newImage = new GorgonImage(destSettings);
+			var wic = new WicUtilities();
 
 			try
 			{
@@ -383,15 +383,15 @@ namespace Gorgon.Graphics.Imaging
 			}
 
 			// If the intersection of the crop rectangle and the source buffer are the same (and the depth is the same), then we don't need to crop.
-			DX.Rectangle bufferRect = new DX.Rectangle(0, 0, baseImage.Width, baseImage.Height);
-			DX.Rectangle clipRect = DX.Rectangle.Intersect(cropRect, bufferRect);
+			var bufferRect = new DX.Rectangle(0, 0, baseImage.Width, baseImage.Height);
+			var clipRect = DX.Rectangle.Intersect(cropRect, bufferRect);
 
 			if ((bufferRect.Equals(ref clipRect)) && (newDepth == baseImage.Depth))
 			{
 				return baseImage;
 			}
 
-			WicUtilities wic = new WicUtilities();
+			var wic = new WicUtilities();
 
 			IGorgonImage newImage = null;
 
@@ -576,7 +576,7 @@ namespace Gorgon.Graphics.Imaging
 				return baseImage;
 			}
 
-			WicUtilities wic = new WicUtilities();
+			var wic = new WicUtilities();
 
 			IGorgonImage newImage = null;
 			try
@@ -648,7 +648,7 @@ namespace Gorgon.Graphics.Imaging
 				return ConvertFromB4G4R4A4(baseImage, format);
 			}
 
-			GorgonFormatInfo destInfo = new GorgonFormatInfo(format);
+			var destInfo = new GorgonFormatInfo(format);
 			WicUtilities wic = null;
 
 			IGorgonImage newImage = null;
@@ -697,7 +697,7 @@ namespace Gorgon.Graphics.Imaging
 			try
 			{
 				// Worker image.
-				GorgonImageInfo cloneImageInfo = new GorgonImageInfo(baseImage)
+				var cloneImageInfo = new GorgonImageInfo(baseImage)
 				                     {
 					                     HasPreMultipliedAlpha = true
 				                     };
@@ -721,7 +721,7 @@ namespace Gorgon.Graphics.Imaging
 
 					for (int i = 0; i < newImage.SizeInBytes; i += newImage.FormatInfo.SizeInBytes)
 					{
-						GorgonColor color = GorgonColor.FromABGR(*imagePtr);
+						var color = GorgonColor.FromABGR(*imagePtr);
 						color = new GorgonColor(color.Red * color.Alpha, color.Green * color.Alpha, color.Blue * color.Alpha, color.Alpha);
 						*(imagePtr++) = color.ToABGR();
 					}

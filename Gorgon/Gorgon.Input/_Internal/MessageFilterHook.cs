@@ -90,7 +90,7 @@ namespace Gorgon.Input
 				return UserApi.CallWindowProc(_defaultWndProc, hwnd, msg, wParam, lParam);
 			}
 
-			Message windowMessage = new Message
+			var windowMessage = new Message
 			                    {
 				                    HWnd = hwnd,
 				                    Msg = msg,
@@ -156,7 +156,7 @@ namespace Gorgon.Input
 		/// <param name="filter">The filter to add to the hook.</param>
 		private void AddFilter(IMessageFilter filter)
 		{
-			List<IMessageFilter> filters = new List<IMessageFilter>(_messageFilters);
+			var filters = new List<IMessageFilter>(_messageFilters);
 
 			if (!_messageFilters.Contains(filter))
 			{
@@ -172,7 +172,7 @@ namespace Gorgon.Input
 		/// <param name="filter">The filter to remove from the hook.</param>
 		private void RemoveFilter(IMessageFilter filter)
 		{
-			List<IMessageFilter> filters = new List<IMessageFilter>(_messageFilters);
+			var filters = new List<IMessageFilter>(_messageFilters);
 
 			if (!_messageFilters.Contains(filter))
 			{

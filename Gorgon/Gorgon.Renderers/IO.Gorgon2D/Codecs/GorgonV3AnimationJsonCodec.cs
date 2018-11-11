@@ -525,7 +525,7 @@ namespace Gorgon.IO
         {
             using (var wrappedStream = new GorgonStreamWrapper(stream, stream.Position, byteCount, false))
             {
-                using (StreamReader reader = new StreamReader(wrappedStream, Encoding.UTF8, true, 80192, true))
+                using (var reader = new StreamReader(wrappedStream, Encoding.UTF8, true, 80192, true))
                 {
                     string jsonString = reader.ReadToEnd();
                     return FromJson(Renderer, jsonString);

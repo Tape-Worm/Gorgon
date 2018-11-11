@@ -179,7 +179,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// <returns>A new dictionary containing the key/value pairs.</returns>
 		private static Dictionary<string, string> GetLineKeyValuePairs(string[] lineItems)
 		{
-			Dictionary<string, string> result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
 			foreach (string line in lineItems)
 			{
@@ -234,7 +234,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 			string italic = keyValues[ItalicTag];
 			string aa = keyValues[AaTag];
 			string spacing = keyValues[SpacingTag];
-			var style = FontStyle.Normal;
+            FontStyle style = FontStyle.Normal;
 			
 			if ((string.Equals(bold, "1", StringComparison.OrdinalIgnoreCase))
 				&& (string.Equals(italic, "1", StringComparison.OrdinalIgnoreCase)))
@@ -508,7 +508,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// <returns>A list of textures.</returns>
 		private IReadOnlyList<GorgonTexture2D> ReadTextures(string filePath, BmFontInfo fontInfo)
 		{
-			GorgonTexture2D[] textures = new GorgonTexture2D[fontInfo.FontTextures.Length];
+			var textures = new GorgonTexture2D[fontInfo.FontTextures.Length];
 			var directory = new DirectoryInfo(Path.GetDirectoryName(filePath).FormatDirectory(Path.DirectorySeparatorChar));
 
 			Debug.Assert(directory.Exists, "Font directory should exist, but does not.");
@@ -527,7 +527,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 				using (IGorgonImage image = codec.LoadFromFile(fileInfo.FullName))
 				{
 				    image.ToTexture2D(Factory.Graphics,
-				                      new GorgonTextureLoadOptions
+				                      new GorgonTexture2DLoadOptions
 				                      {
 				                          Name = $"BmFont_Texture_{Guid.NewGuid():N}"
 				                      });
@@ -546,7 +546,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// <returns>A new list of glyphs.</returns>
 		private IReadOnlyList<GorgonGlyph> GetGlyphs(IReadOnlyList<GorgonTexture2D> textures, BmFontInfo fontInfo)
 		{
-			List<GorgonGlyph> glyphs = new List<GorgonGlyph>();
+			var glyphs = new List<GorgonGlyph>();
 
 			foreach (char character in fontInfo.Characters)
 			{

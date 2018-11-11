@@ -79,7 +79,7 @@ namespace Gorgon.Native
                 }
             }
 
-            GorgonNativeBuffer<T> result = new GorgonNativeBuffer<T>(count.Value);
+            var result = new GorgonNativeBuffer<T>(count.Value);
             
             using (var reader = new GorgonBinaryReader(stream, true))
             {

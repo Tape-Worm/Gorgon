@@ -233,7 +233,7 @@ namespace Gorgon.Examples
             _screen.RenderTargetView.Clear(_glowIndex != _fontIndex ? GorgonColor.CornFlowerBlue : new GorgonColor(0, 0, 0.2f));
 
             DX.Size2F textSize = currentFont.MeasureText(Resources.Lorem_Ipsum, false);
-            DX.Vector2 position = new DX.Vector2((int)((_screen.Width / 2.0f) - (textSize.Width / 2.0f)).Max(4.0f), (int)((_screen.Height / 2.0f) - (textSize.Height / 2.0f)).Max(100));
+            var position = new DX.Vector2((int)((_screen.Width / 2.0f) - (textSize.Width / 2.0f)).Max(4.0f), (int)((_screen.Height / 2.0f) - (textSize.Height / 2.0f)).Max(100));
             _text.Font = currentFont;
             _text.Position = position;
             

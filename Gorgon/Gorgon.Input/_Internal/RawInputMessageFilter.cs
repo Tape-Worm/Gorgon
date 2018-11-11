@@ -245,7 +245,7 @@ namespace Gorgon.Native
 			}
 
 			RAWINPUT data = RawInputApi.GetRawInputData(m.LParam);
-			DeviceKey key = new DeviceKey
+			var key = new DeviceKey
 			{
 				DeviceType = data.Header.Type,
 				DeviceHandle = IntPtr.Zero

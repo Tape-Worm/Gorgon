@@ -217,16 +217,16 @@ namespace Gorgon.Examples
 		/// <param name="indexList">List of indices.</param>
 		private static void FixSeam(List<Vertex3D> vertexList, List<int> indexList)
 		{
-			List<int> newIndices = new List<int>();
-			Dictionary<int, int> corrections = new Dictionary<int, int>();
+			var newIndices = new List<int>();
+			var corrections = new Dictionary<int, int>();
 
 			for (int i = indexList.Count - 3; i >= 0; i -= 3)
 			{
 				// see if the texture coordinates appear in counter-clockwise order.
 				// If so, the triangle needs to be rectified.
-				DX.Vector3 v0 = new DX.Vector3(vertexList[indexList[i + 0]].UV, 0);
-				DX.Vector3 v1 = new DX.Vector3(vertexList[indexList[i + 1]].UV, 0);
-				DX.Vector3 v2 = new DX.Vector3(vertexList[indexList[i + 2]].UV, 0);
+				var v0 = new DX.Vector3(vertexList[indexList[i + 0]].UV, 0);
+				var v1 = new DX.Vector3(vertexList[indexList[i + 1]].UV, 0);
+				var v2 = new DX.Vector3(vertexList[indexList[i + 2]].UV, 0);
 
 
                 DX.Vector3.Subtract(ref v0, ref v1, out DX.Vector3 diff1);
@@ -289,7 +289,7 @@ namespace Gorgon.Examples
 
 			for (int i = 0; i < tesselation; ++i)
 			{
-				List<int[]> subIndices = new List<int[]>();
+				var subIndices = new List<int[]>();
 
 				foreach (int[] index in indices)
 				{
@@ -336,8 +336,8 @@ namespace Gorgon.Examples
 			const float pi2Recip = 1.0f / (2.0f * (float)System.Math.PI);
 
 			// Final list.
-			List<Vertex3D> vertexList = new List<Vertex3D>();
-			List<int> indexList = new List<int>();
+			var vertexList = new List<Vertex3D>();
+			var indexList = new List<int>();
 
 			foreach (DX.Vector3 vector in _vertices)
 			{

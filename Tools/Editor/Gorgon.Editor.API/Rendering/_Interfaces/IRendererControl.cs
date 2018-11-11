@@ -35,6 +35,7 @@ namespace Gorgon.Editor.Rendering
     public interface IRendererControl
         : IGorgonNamedObject
     {
+        #region Properties.
         /// <summary>
         /// Property to return the graphics context.
         /// </summary>
@@ -50,5 +51,18 @@ namespace Gorgon.Editor.Rendering
         {
             get;
         }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to begin rendering on the control.
+        /// </summary>
+        void Start();
+
+        /// <summary>
+        /// Function to cease rendering on the control.
+        /// </summary>
+        void Stop();
+        #endregion
     }
 }

@@ -139,7 +139,7 @@ namespace Gorgon.Math
                 return Points[startPointIndex + 1];
             }
 
-            DX.Vector4 deltaCubeSquare = new DX.Vector4(delta * delta * delta, delta * delta, delta * delta, 1.0f);
+            var deltaCubeSquare = new DX.Vector4(delta * delta * delta, delta * delta, delta * delta, 1.0f);
 
 			DX.Vector4 startPoint = Points[startPointIndex];
 			DX.Vector4 startPointNext = Points[startPointIndex + 1];

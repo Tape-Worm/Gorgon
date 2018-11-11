@@ -61,7 +61,7 @@ namespace Gorgon.Input.DirectInput
 		/// <returns>A string containing the PID and VID portions of the device ID.</returns>
 		private static string GetXInputDeviceID(string deviceName, int pidIndex, int vidIndex)
 		{
-			StringBuilder buffer = new StringBuilder();
+			var buffer = new StringBuilder();
 			string pidValue = deviceName.Substring(pidIndex + 4, 4);
 			string vidValue = deviceName.Substring(vidIndex + 4, 4);
 
@@ -80,7 +80,7 @@ namespace Gorgon.Input.DirectInput
 			// This monstrosity is based on the code at:
 			// https://msdn.microsoft.com/en-ca/library/windows/desktop/ee417014(v=vs.85).aspx
 			// 
-			using (ManagementObjectSearcher search = new ManagementObjectSearcher("SELECT DeviceID FROM Win32_PnPEntity"))
+			using (var search = new ManagementObjectSearcher("SELECT DeviceID FROM Win32_PnPEntity"))
 			{
 				IEnumerable<string> xinputDevices = (from pnpDevice in search.Get().Cast<ManagementBaseObject>()
 				                                     let deviceID = pnpDevice.GetPropertyValue("DeviceID")
@@ -163,9 +163,9 @@ namespace Gorgon.Input.DirectInput
 				       })
 				.Select(item =>
 				        {
-					        DirectInputDeviceInfo info = new DirectInputDeviceInfo(item);
+					        var info = new DirectInputDeviceInfo(item);
 
-					        using (DI.Joystick joystick = new DI.Joystick(_directInput.Value, info.InstanceGuid))
+					        using (var joystick = new DI.Joystick(_directInput.Value, info.InstanceGuid))
 					        {
 						        info.GetDeviceCaps(joystick);
 

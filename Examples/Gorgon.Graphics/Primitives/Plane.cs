@@ -62,7 +62,7 @@ namespace Gorgon.Examples
             {
                 for (int x = 0; x <= columns; ++x)
                 {
-                    DX.Vector3 vertexPos = new DX.Vector3(((x * columnWidth) - 0.5f) * size.X,
+                    var vertexPos = new DX.Vector3(((x * columnWidth) - 0.5f) * size.X,
                                                    ((y * columnHeight) - 0.5f) * size.Y,
                                                    0);
 

@@ -931,7 +931,7 @@ namespace Gorgon.Graphics.Core
 				                          Usage = ResourceUsage.Staging,
 				                          Binding = TextureBinding.None
 			                          };
-			GorgonTexture1D staging = new GorgonTexture1D(Graphics, info);
+			var staging = new GorgonTexture1D(Graphics, info);
 
 			// Copy the data from this texture into the new staging texture.
 			CopyTo(staging);
@@ -1049,7 +1049,7 @@ namespace Gorgon.Graphics.Core
 
             // Clip the destination rectangle against our texture size.
             DX.Rectangle destRange = destinationRange == null ? new DX.Rectangle(0, 0, width, 1) : new DX.Rectangle(destinationRange.Value.Minimum, 0, destinationRange.Value.Maximum, 1);
-            DX.Rectangle maxRect = new DX.Rectangle(0, 0, width, 1);
+            var maxRect = new DX.Rectangle(0, 0, width, 1);
             DX.Rectangle.Intersect(ref destRange, ref maxRect, out DX.Rectangle destBounds);
 
             var finalBounds = new DX.Rectangle(destBounds.X, 0, imageBuffer.Width.Min(destBounds.Width), 1);
@@ -1359,7 +1359,7 @@ namespace Gorgon.Graphics.Core
 
 	        arrayCount = (arrayCount.Min(ArrayCount - arrayIndex)).Max(1);
 
-            TextureViewKey key = new TextureViewKey(format, firstMipLevel, mipCount, arrayIndex, arrayCount);
+            var key = new TextureViewKey(format, firstMipLevel, mipCount, arrayIndex, arrayCount);
 
 	        if ((_cachedSrvs.TryGetValue(key, out GorgonTexture1DView view))
                 && (view.Native != null))
@@ -1454,7 +1454,7 @@ namespace Gorgon.Graphics.Core
 
 	        arrayCount = arrayCount.Min(ArrayCount - arrayIndex).Max(1);
 
-	        TextureViewKey key = new TextureViewKey(format, firstMipLevel, _info.MipLevels, arrayIndex, arrayCount);
+	        var key = new TextureViewKey(format, firstMipLevel, _info.MipLevels, arrayIndex, arrayCount);
 
 	        if ((_cachedReadWriteViews.TryGetValue(key, out GorgonTexture1DReadWriteView view))
                 && (view.Native != null))

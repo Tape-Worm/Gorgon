@@ -60,9 +60,9 @@ namespace Gorgon.IO.GorPack
 		/// <returns>The uncompressed data.</returns>
 		private static byte[] Decompress(byte[] data)
 		{
-			using (MemoryStream sourceStream = new MemoryStream(data))
+			using (var sourceStream = new MemoryStream(data))
 			{
-				using (MemoryStream decompressedStream = new MemoryStream())
+				using (var decompressedStream = new MemoryStream())
 				{			
 					BZip2.Decompress(sourceStream, decompressedStream, true);
 					return decompressedStream.ToArray();
@@ -78,7 +78,7 @@ namespace Gorgon.IO.GorPack
 		/// <returns>A read only list of directory paths mapped to the virtual file system.</returns>
 		private static IReadOnlyList<string> EnumerateDirectories(XDocument index, IGorgonVirtualDirectory mountPoint)
 		{
-			List<string> result = new List<string>();
+			var result = new List<string>();
 			IEnumerable<XElement> directories = index.Descendants("Path");
 
 			foreach (XElement directoryNode in directories)
@@ -108,7 +108,7 @@ namespace Gorgon.IO.GorPack
 		private static IReadOnlyList<IGorgonPhysicalFileInfo> EnumerateFiles(XDocument index, long offset, string physicalLocation, IGorgonVirtualDirectory mountPoint)
 		{
 			IEnumerable<XElement> files = index.Descendants("File");
-			List<IGorgonPhysicalFileInfo> result = new List<IGorgonPhysicalFileInfo>();
+			var result = new List<IGorgonPhysicalFileInfo>();
 
 			foreach (XElement file in files)
 			{

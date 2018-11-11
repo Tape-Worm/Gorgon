@@ -84,7 +84,7 @@ namespace Gorgon.Examples
             Cursor.Current = Cursors.WaitCursor;
 
             IGorgonImage image = null;
-            GorgonCodecPng png = new GorgonCodecPng();
+            var png = new GorgonCodecPng();
 
             try
             {
@@ -102,7 +102,7 @@ namespace Gorgon.Examples
                 image = png.LoadFromFile(DialogOpenPng.FileName);
                 _sourceTexture = image.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm)
                                       .ToTexture2D(_graphics,
-                                                   new GorgonTextureLoadOptions
+                                                   new GorgonTexture2DLoadOptions
                                                    {
                                                        Name =
                                                            Path.GetFileNameWithoutExtension(DialogOpenPng.FileName)
@@ -170,8 +170,8 @@ namespace Gorgon.Examples
                 // every frame.
                 _sobel.Process(_sourceTexture, _outputUav, TrackThickness.Value, TrackThreshold.Value / 100.0f);
 
-                GorgonCodecPng png = new GorgonCodecPng();
-                using (GorgonTexture2D tempTexture = new GorgonTexture2D(_graphics, new GorgonTexture2DInfo(_outputTexture)
+                var png = new GorgonCodecPng();
+                using (var tempTexture = new GorgonTexture2D(_graphics, new GorgonTexture2DInfo(_outputTexture)
                                                                                     {
                                                                                         Format = BufferFormat.R8G8B8A8_UNorm
                                                                                     }))

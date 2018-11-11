@@ -33,32 +33,32 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.PanelRenderer = new ComponentFactory.Krypton.Toolkit.KryptonPanel();
-            ((System.ComponentModel.ISupportInitialize)(this.PanelRenderer)).BeginInit();
+            this.PanelPresenter = new ComponentFactory.Krypton.Toolkit.KryptonPanel();
+            ((System.ComponentModel.ISupportInitialize)(this.PanelPresenter)).BeginInit();
             this.SuspendLayout();
             // 
-            // PanelRenderer
+            // PanelPresenter
             // 
-            this.PanelRenderer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PanelRenderer.Location = new System.Drawing.Point(0, 0);
-            this.PanelRenderer.Name = "PanelRenderer";
-            this.PanelRenderer.Size = new System.Drawing.Size(600, 468);
-            this.PanelRenderer.TabIndex = 0;
+            this.PanelPresenter.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PanelPresenter.Location = new System.Drawing.Point(0, 0);
+            this.PanelPresenter.Name = "PanelPresenter";
+            this.PanelPresenter.Size = new System.Drawing.Size(600, 468);
+            this.PanelPresenter.TabIndex = 0;
             // 
             // ContentBaseControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.PanelRenderer);
+            this.Controls.Add(this.PanelPresenter);
             this.Name = "ContentBaseControl";
-            ((System.ComponentModel.ISupportInitialize)(this.PanelRenderer)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PanelPresenter)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        [System.Runtime.CompilerServices.AccessedThroughProperty("RenderPanel")]
-        private ComponentFactory.Krypton.Toolkit.KryptonPanel PanelRenderer;
+        [System.Runtime.CompilerServices.AccessedThroughProperty("PresentationPanel")]
+        private ComponentFactory.Krypton.Toolkit.KryptonPanel PanelPresenter;
     }
 }

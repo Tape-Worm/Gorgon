@@ -209,7 +209,7 @@ namespace Gorgon.Examples
                 _backgroundLogoTexture = GorgonTexture2DView.FromFile(_graphics,
                                                             Path.Combine(GorgonExample.GetResourcePath(@"Textures\Lights\").FullName, "lights.dds"),
                                                             new GorgonCodecDds(),
-                                                            new GorgonTextureLoadOptions
+                                                            new GorgonTexture2DLoadOptions
                                                             {
                                                                 Usage = ResourceUsage.Immutable,
                                                                 Binding = TextureBinding.ShaderResource,
@@ -219,7 +219,7 @@ namespace Gorgon.Examples
                 _torchTexture = GorgonTexture2DView.FromFile(_graphics,
                                                              Path.Combine(GorgonExample.GetResourcePath(@"Textures\Lights\").FullName, "Torch.png"),
                                                              new GorgonCodecPng(),
-                                                             new GorgonTextureLoadOptions
+                                                             new GorgonTexture2DLoadOptions
                                                              {
                                                                  Usage = ResourceUsage.Immutable,
                                                                  Binding = TextureBinding.ShaderResource,

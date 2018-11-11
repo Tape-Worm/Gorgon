@@ -388,7 +388,7 @@ namespace Gorgon.IO
 		        return string.Empty;
 	        }
 
-			StringBuilder output = new StringBuilder(path);
+			var output = new StringBuilder(path);
 
 			output = _illegalPathChars.Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
 
@@ -439,7 +439,7 @@ namespace Gorgon.IO
                 directorySeparator = Path.DirectorySeparatorChar;
             }
 
-			StringBuilder output = new StringBuilder(path);
+			var output = new StringBuilder(path);
 			
 			output = _illegalPathChars.Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
 
@@ -486,7 +486,7 @@ namespace Gorgon.IO
 		    path = path.Replace(Path.DirectorySeparatorChar, '_');
 		    path = path.Replace(Path.AltDirectorySeparatorChar, '_');
 
-            StringBuilder output = new StringBuilder(path);
+            var output = new StringBuilder(path);
 
             output = _illegalPathChars.Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
 
@@ -556,10 +556,10 @@ namespace Gorgon.IO
             }
 
 			// Filter out bad characters.
-	        StringBuilder output = new StringBuilder(path);
+	        var output = new StringBuilder(path);
 			output = _illegalPathChars.Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
 
-            StringBuilder filePath = new StringBuilder(FormatDirectory(Path.GetDirectoryName(output.ToString()), directorySeparator));
+            var filePath = new StringBuilder(FormatDirectory(Path.GetDirectoryName(output.ToString()), directorySeparator));
 
 	        path = output.ToString();
 

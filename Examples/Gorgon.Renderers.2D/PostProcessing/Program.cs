@@ -155,7 +155,7 @@ namespace Gorgon.Examples
             {
                 Drawing.Point cursorPosition = _screen.Window.PointToClient(Cursor.Position);
                 
-                DX.RectangleF pos = new DX.RectangleF(cursorPosition.X - _dragOffset.X, cursorPosition.Y - _dragOffset.Y, _dragButton.Bounds.Width, _dragButton.Bounds.Height);
+                var pos = new DX.RectangleF(cursorPosition.X - _dragOffset.X, cursorPosition.Y - _dragOffset.Y, _dragButton.Bounds.Width, _dragButton.Bounds.Height);
                 _renderer.DrawFilledRectangle(pos, _dragButton.BackColor);
                 _renderer.DrawString(_dragButton.Text, pos.TopLeft, color: _dragButton.ForeColor);
             }
@@ -177,7 +177,7 @@ namespace Gorgon.Examples
         /// <returns><b>true</b> if files were loaded successfully, <b>false</b> if not.</returns>
         private static bool LoadImageFiles(IGorgonImageCodec codec)
         {
-            var dirInfo = GorgonExample.GetResourcePath(@"\Textures\PostProcess");
+            DirectoryInfo dirInfo = GorgonExample.GetResourcePath(@"\Textures\PostProcess");
             FileInfo[] files = dirInfo.GetFiles("*.dds", SearchOption.TopDirectoryOnly);
 
             if (files.Length == 0)
@@ -195,7 +195,7 @@ namespace Gorgon.Examples
                 _images[i] = GorgonTexture2DView.FromFile(_graphics,
                                                           files[i].FullName,
                                                           codec,
-                                                          new GorgonTextureLoadOptions
+                                                          new GorgonTexture2DLoadOptions
                                                           {
                                                               Binding = TextureBinding.ShaderResource,
                                                               Usage = ResourceUsage.Immutable,
@@ -488,7 +488,7 @@ namespace Gorgon.Examples
 
                 if (_dragButton != null)
                 {
-                    DX.RectangleF dragPosition = new DX.RectangleF(e.X - _dragOffset.X, e.Y - _dragOffset.Y, _dragButton.Bounds.Width, _dragButton.Bounds.Height);
+                    var dragPosition = new DX.RectangleF(e.X - _dragOffset.X, e.Y - _dragOffset.Y, _dragButton.Bounds.Width, _dragButton.Bounds.Height);
 
                     if ((!button.Bounds.Intersects(dragPosition)) || (targetAcquired))
                     {
@@ -532,7 +532,7 @@ namespace Gorgon.Examples
 
             if (_dragButton != null)
             {
-                DX.RectangleF dragPosition = new DX.RectangleF(e.X - _dragOffset.X, e.Y - _dragOffset.Y, _dragButton.Bounds.Width, _dragButton.Bounds.Height);
+                var dragPosition = new DX.RectangleF(e.X - _dragOffset.X, e.Y - _dragOffset.Y, _dragButton.Bounds.Width, _dragButton.Bounds.Height);
                 int index = -1;
                 for (int i = 0; i < _buttons.Length; ++i)
                 {

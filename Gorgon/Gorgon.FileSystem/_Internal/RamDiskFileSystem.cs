@@ -244,7 +244,7 @@ namespace Gorgon.IO
 			}
 
 			// This is a new file, so open it as such.
-			RamDiskFileInfo info = new RamDiskFileInfo(path, 0, DateTime.Now, DateTime.Now);
+			var info = new RamDiskFileInfo(path, 0, DateTime.Now, DateTime.Now);
 			stream = new MemoryStream();
 			_fileInfos.Add(path, info);
 			_fileData.Add(info, stream);

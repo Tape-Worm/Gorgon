@@ -158,7 +158,7 @@ namespace Gorgon.Graphics.Core
                     break;
             }
 
-            D3D11.ShaderResourceViewDescription1 desc = new D3D11.ShaderResourceViewDescription1
+            var desc = new D3D11.ShaderResourceViewDescription1
                                                         {
                                                             Format = (Format)format,
                                                             Dimension = ShaderResourceViewDimension.ExtendedBuffer,

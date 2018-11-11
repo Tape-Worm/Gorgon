@@ -244,7 +244,7 @@ namespace Gorgon.Graphics.Imaging
         /// <param name="imageType">The type of image.</param>
         /// <param name="width">Width of the image.</param>
         /// <param name="height">Height of the image.</param>
-        /// <param name="depthOrArrayCount">Depth (for <see cref="Imaging.ImageType.Image3D"/>) or array count (for <see cref="Imaging.ImageType.Image1D"/> or <see cref="Imaging.ImageType.Image2D"/>) of the image.</param>
+        /// <param name="depth">Depth (for <see cref="Imaging.ImageType.Image3D"/>) of the image.</param>
         /// <param name="format">Format of the image.</param>
         /// <param name="mipCount">[Optional] Number of mip-map levels in the image.</param>
         /// <param name="pitchFlags">[Optional] Flags used to influence the row pitch of the image.</param>
@@ -255,7 +255,7 @@ namespace Gorgon.Graphics.Imaging
         /// The <paramref name="pitchFlags"/> parameter is used to compensate in cases where the original image data is not laid out correctly (such as with older DirectDraw DDS images).
         /// </para>
         /// </remarks>
-        public static int CalculateSizeInBytes(ImageType imageType, int width, int height, int depthOrArrayCount, BufferFormat format, int mipCount = 1, PitchFlags pitchFlags = PitchFlags.None)
+        public static int CalculateSizeInBytes(ImageType imageType, int width, int height, int depth, BufferFormat format, int mipCount = 1, PitchFlags pitchFlags = PitchFlags.None)
 		{
 			if (format == BufferFormat.Unknown)
 			{
@@ -264,9 +264,9 @@ namespace Gorgon.Graphics.Imaging
 
 			width = 1.Max(width);
 			height = 1.Max(height);
-			depthOrArrayCount = 1.Max(depthOrArrayCount);
+			depth = 1.Max(depth);
 			mipCount = 1.Max(mipCount);
-			GorgonFormatInfo formatInfo = new GorgonFormatInfo(format);
+			var formatInfo = new GorgonFormatInfo(format);
 			int result = 0;
 
 			if (formatInfo.SizeInBytes == 0)
@@ -280,61 +280,48 @@ namespace Gorgon.Graphics.Imaging
 			for (int mip = 0; mip < mipCount; mip++)
 			{
 				GorgonPitchLayout pitchInfo = formatInfo.GetPitchForFormat(mipWidth, mipHeight, pitchFlags);
-				result += pitchInfo.SlicePitch * depthOrArrayCount;
+				result += pitchInfo.SlicePitch * depth;
 
 				if (mipWidth > 1)
 				{
 					mipWidth >>= 1;
 				}
 
-				switch (imageType)
+				if (mipHeight > 1)
 				{
-					case ImageType.Image2D:
-					case ImageType.ImageCube:
-						if (mipHeight > 1)
-						{
-							mipHeight >>= 1;
-						}
-						break;
-					case ImageType.Image3D:
-						if (depthOrArrayCount > 1)
-						{
-							depthOrArrayCount >>= 1;
-						}
-						break;
+					mipHeight >>= 1;
+				}
+
+                if (depth > 1)
+				{
+					depth >>= 1;
 				}
 			}
 
 			return result;
 		}
 
-		/// <summary>
-		/// Function to return the size, in bytes, of an image with the given <see cref="IGorgonImageInfo"/>.
-		/// </summary>
-		/// <param name="info">The <see cref="IGorgonImageInfo"/> used to describe the image.</param>
-		/// <param name="pitchFlags">[Optional] Flags to influence the size of the row pitch.</param>
-		/// <returns>The number of bytes for the image.</returns>
-		/// <exception cref="ArgumentException">Thrown when the format value of the <paramref name="info"/> parameter is not supported.</exception>
-		/// <remarks>
-		/// <para>
-		/// The <paramref name="pitchFlags"/> parameter is used to compensate in cases where the original image data is not laid out correctly (such as with older DirectDraw DDS images).
-		/// </para>
-		/// </remarks>
-		public static int CalculateSizeInBytes(IGorgonImageInfo info, PitchFlags pitchFlags = PitchFlags.None)
-		{
-			if (info == null)
-			{
-				return 0;
-			}
-
-			return CalculateSizeInBytes(info.ImageType,
-			                      info.Width,
-			                      info.Height,
-			                      info.ImageType == ImageType.Image3D ? info.Depth : info.ArrayCount,
-			                      info.Format,
-			                      info.MipCount,
-			                      pitchFlags);
-		}
+        /// <summary>
+        /// Function to return the size, in bytes, of an image with the given <see cref="IGorgonImageInfo"/>.
+        /// </summary>
+        /// <param name="info">The <see cref="IGorgonImageInfo"/> used to describe the image.</param>
+        /// <param name="pitchFlags">[Optional] Flags to influence the size of the row pitch.</param>
+        /// <returns>The number of bytes for the image.</returns>
+        /// <exception cref="ArgumentException">Thrown when the format value of the <paramref name="info"/> parameter is not supported.</exception>
+        /// <remarks>
+        /// <para>
+        /// The <paramref name="pitchFlags"/> parameter is used to compensate in cases where the original image data is not laid out correctly (such as with older DirectDraw DDS images).
+        /// </para>
+        /// </remarks>
+        public static int CalculateSizeInBytes(IGorgonImageInfo info, PitchFlags pitchFlags = PitchFlags.None) => info == null
+                ? 0
+                : CalculateSizeInBytes(info.ImageType,
+                                  info.Width,
+                                  info.Height,
+                                  info.ImageType == ImageType.Image3D ? info.Depth : info.ArrayCount,
+                                  info.Format,
+                                  info.MipCount,
+                                  pitchFlags);
 
         /// <summary>
         /// Function to return the maximum number of mip levels supported given the specified settings.
@@ -454,7 +441,7 @@ namespace Gorgon.Graphics.Imaging
 				sourceFormat = BufferFormat.B8G8R8A8_UNorm;
 			}
 
-			using (WicUtilities wic = new WicUtilities())
+			using (var wic = new WicUtilities())
 			{
 				return wic.CanConvertFormats(sourceFormat,
 				                             new[]
@@ -480,13 +467,13 @@ namespace Gorgon.Graphics.Imaging
 			// If we're converting from B4G4R4A4, then we need to use another path.
 			if (_imageInfo.Format == BufferFormat.B4G4R4A4_UNorm)
 			{
-				using (WicUtilities wic = new WicUtilities())
+				using (var wic = new WicUtilities())
 				{
 					return wic.CanConvertFormats(BufferFormat.B8G8R8A8_UNorm, destFormats);
 				}
 			}
 
-			using (WicUtilities wic = new WicUtilities())
+			using (var wic = new WicUtilities())
 			{
 				return wic.CanConvertFormats(_imageInfo.Format, destFormats);
 			}
@@ -544,7 +531,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <returns>A new <see cref="IGorgonImage"/> that contains an identical copy of this image and its data.</returns>
 		public IGorgonImage Clone()
 		{
-			GorgonImage image = new GorgonImage(_imageInfo)
+			var image = new GorgonImage(_imageInfo)
 			            {
 				            FormatInfo = new GorgonFormatInfo(_imageInfo.Format),
 							SizeInBytes = CalculateSizeInBytes(_imageInfo)
@@ -617,7 +604,7 @@ namespace Gorgon.Graphics.Imaging
 
 			// Create a copy of the settings so outside forces don't change it.
 			SanitizeInfo(info);
-			SizeInBytes = CalculateSizeInBytes(info);
+			SizeInBytes = CalculateSizeInBytes(_imageInfo);
 
 			// Validate the image size.
 			if ((data != null) && (SizeInBytes > data.Value.SizeInBytes))

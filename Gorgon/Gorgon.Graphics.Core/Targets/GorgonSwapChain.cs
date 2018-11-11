@@ -1160,7 +1160,7 @@ namespace Gorgon.Graphics.Core
 
             this.RegisterDisposable(graphics);
 
-            using (SwapChain1 dxgiSwapChain = new SwapChain1(Graphics.DXGIFactory, Graphics.D3DDevice, control.Handle, ref desc)
+            using (var dxgiSwapChain = new SwapChain1(Graphics.DXGIFactory, Graphics.D3DDevice, control.Handle, ref desc)
                                                    {
                                                        DebugName = $"{info.Name}_DXGISwapChain4"
                                                    })

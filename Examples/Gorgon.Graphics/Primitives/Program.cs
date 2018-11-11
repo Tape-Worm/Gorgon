@@ -372,63 +372,63 @@ namespace Gorgon.Examples
         {
             // Load standard images from the resource section.
             _renderer.TextureCache["UV"] = Resources.UV.ToTexture2D(_graphics,
-                                                                    new GorgonTextureLoadOptions
+                                                                    new GorgonTexture2DLoadOptions
                                                                     {
                                                                         Name = "UV"
                                                                     }).GetShaderResourceView();
 
             _renderer.TextureCache["Earth"] = Resources.earthmap1k.ToTexture2D(_graphics,
-                                                                               new GorgonTextureLoadOptions
+                                                                               new GorgonTexture2DLoadOptions
                                                                                {
                                                                                    Name = "Earth"
                                                                                }).GetShaderResourceView();
 
             _renderer.TextureCache["Earth_Specular"] = Resources.earthspec1k.ToTexture2D(_graphics,
-                                                                                         new GorgonTextureLoadOptions
+                                                                                         new GorgonTexture2DLoadOptions
                                                                                          {
                                                                                              Name = "Earth_Specular"
                                                                                          }).GetShaderResourceView();
 
             _renderer.TextureCache["Clouds"] = Resources.earthcloudmap.ToTexture2D(_graphics,
-                                                                                   new GorgonTextureLoadOptions
+                                                                                   new GorgonTexture2DLoadOptions
                                                                                    {
                                                                                        Name = "Clouds"
                                                                                    }).GetShaderResourceView();
 
             _renderer.TextureCache["GorgonNormalMap"] = Resources.normalmap.ToTexture2D(_graphics,
-                                                                                        new GorgonTextureLoadOptions
+                                                                                        new GorgonTexture2DLoadOptions
                                                                                         {
                                                                                             Name = "GorgonNormalMap"
                                                                                         }).GetShaderResourceView();
 
             // The following images are DDS encoded and require an encoder to read them from the resources.
-	        GorgonCodecDds dds = new GorgonCodecDds();
+	        var dds = new GorgonCodecDds();
 
-	        using (MemoryStream stream = new MemoryStream(Resources.Rain_Height_NRM))
+	        using (var stream = new MemoryStream(Resources.Rain_Height_NRM))
 	        using (IGorgonImage image = dds.LoadFromStream(stream))
 	        {
 	            _renderer.TextureCache["Water_Normal"] = image.ToTexture2D(_graphics,
-	                                                                       new GorgonTextureLoadOptions
+	                                                                       new GorgonTexture2DLoadOptions
 	                                                                       {
 	                                                                           Name = "Water_Normal"
 	                                                                       }).GetShaderResourceView();
 	        }
 
-            using (MemoryStream stream = new MemoryStream(Resources.Rain_Height_SPEC))
+            using (var stream = new MemoryStream(Resources.Rain_Height_SPEC))
                 using (IGorgonImage image = dds.LoadFromStream(stream))
                 {
                     _renderer.TextureCache["Water_Specular"] = image.ToTexture2D(_graphics,
-                                                                                 new GorgonTextureLoadOptions
+                                                                                 new GorgonTexture2DLoadOptions
                                                                                  {
                                                                                      Name = "Water_Specular"
                                                                                  }).GetShaderResourceView();
                 }
 
-            using (MemoryStream stream = new MemoryStream(Resources.earthbump1k_NRM))
+            using (var stream = new MemoryStream(Resources.earthbump1k_NRM))
 	        using (IGorgonImage image = dds.LoadFromStream(stream))
 	        {
 	            _renderer.TextureCache["Earth_Normal"] = image.ToTexture2D(_graphics,
-	                                                                       new GorgonTextureLoadOptions
+	                                                                       new GorgonTexture2DLoadOptions
 	                                                                       {
 	                                                                           Name = "Earth_Normal"
 	                                                                       }).GetShaderResourceView();
@@ -440,8 +440,8 @@ namespace Gorgon.Examples
         /// </summary>
 	    private static void BuildMeshes()
 	    {
-	        DX.Vector3 fnU = new DX.Vector3(0.5f, 1.0f, 0);
-	        DX.Vector3 fnV = new DX.Vector3(1.0f, 1.0f, 0);
+	        var fnU = new DX.Vector3(0.5f, 1.0f, 0);
+	        var fnV = new DX.Vector3(1.0f, 1.0f, 0);
 	        DX.Vector3.Cross(ref fnU, ref fnV, out DX.Vector3 faceNormal);
 	        faceNormal.Normalize();
 

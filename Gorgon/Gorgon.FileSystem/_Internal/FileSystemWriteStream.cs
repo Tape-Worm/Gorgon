@@ -51,7 +51,7 @@ namespace Gorgon.IO
 		{
 			if ((disposing) && (_virtualFile != null) && (CanWrite))
 			{
-				FileInfo info = new FileInfo(_virtualFile.PhysicalFile.FullPath);
+				var info = new FileInfo(_virtualFile.PhysicalFile.FullPath);
 				_virtualFile.PhysicalFile = new PhysicalFileInfo(info, _virtualFile.FullPath);
 
 				if (_virtualFile.MountPoint != _mountPoint)

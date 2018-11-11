@@ -340,7 +340,7 @@ namespace Gorgon.Graphics.Imaging
 		private FormatConverter GetFormatConverter(BitmapSource bitmap, Guid targetFormat, ImageDithering dither, Palette palette, float alpha8Bit)
 		{
 			BitmapPaletteType paletteType = BitmapPaletteType.Custom;
-			FormatConverter result = new FormatConverter(_factory);
+			var result = new FormatConverter(_factory);
 
 			if (!result.CanConvert(bitmap.PixelFormat, targetFormat))
 			{
@@ -388,7 +388,7 @@ namespace Gorgon.Graphics.Imaging
 			srcContext.InitializeFromExifColorSpace(srcIsSRgb ? 1 : 2);
 			destContext.InitializeFromExifColorSpace(destIsSRgb ? 1 : 2);
 
-			ColorTransform result = new ColorTransform(_factory);
+			var result = new ColorTransform(_factory);
 			result.Initialize(source, srcContext, destContext, pixelFormat);
 
 			return result;
@@ -446,7 +446,7 @@ namespace Gorgon.Graphics.Imaging
 			}
 
 			// Generate from our custom palette.
-			DX.Color[] dxColors = new DX.Color[paletteColors.Count];
+			var dxColors = new DX.Color[paletteColors.Count];
 			int size = paletteColors.Count.Min(dxColors.Length);
 
 			for (int i = 0; i < size; i++)
@@ -464,7 +464,7 @@ namespace Gorgon.Graphics.Imaging
 				}
 			}
 
-			Palette wicPalette = new Palette(_factory);
+			var wicPalette = new Palette(_factory);
 			wicPalette.Initialize(dxColors);
 			
 			return (wicPalette, alpha);
@@ -503,7 +503,7 @@ namespace Gorgon.Graphics.Imaging
 			}
 
 			// Generate from our custom palette.
-			DX.Color[] dxColors = new DX.Color[paletteColors.Count];
+			var dxColors = new DX.Color[paletteColors.Count];
 			int size = paletteColors.Count.Min(dxColors.Length);
 
 			for (int i = 0; i < size; i++)
@@ -640,9 +640,9 @@ namespace Gorgon.Graphics.Imaging
 				return new BufferFormat[0];
 			}
 
-			List<BufferFormat> result = new List<BufferFormat>();
+			var result = new List<BufferFormat>();
 
-			using (FormatConverter converter = new FormatConverter(_factory))
+			using (var converter = new FormatConverter(_factory))
 			{
 				foreach (BufferFormat destFormat in destFormats)
 				{
@@ -907,7 +907,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="filter">The filter to apply when smoothing the image during scaling.</param>
 		private void ScaleBitmapData(BitmapSource bitmap, IGorgonImageBuffer buffer, int width, int height, ImageFilter filter)
 		{
-			using (BitmapScaler scaler = new BitmapScaler(_factory))
+			using (var scaler = new BitmapScaler(_factory))
 			{
 				scaler.Initialize(bitmap, width, height, (BitmapInterpolationMode)filter);
 
@@ -957,9 +957,9 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="height">The new height of the image data.</param>
 		private void CropBitmapData(BitmapSource bitmap, IGorgonImageBuffer buffer, int offsetX, int offsetY, int width, int height)
 		{
-			using (BitmapClipper clipper = new BitmapClipper(_factory))
+			using (var clipper = new BitmapClipper(_factory))
 			{
-				DX.Rectangle rect = DX.Rectangle.Intersect(new DX.Rectangle(0, 0, bitmap.Size.Width, bitmap.Size.Height),
+				var rect = DX.Rectangle.Intersect(new DX.Rectangle(0, 0, bitmap.Size.Width, bitmap.Size.Height),
 				                                           new DX.Rectangle(offsetX, offsetY, width, height));
 
 				if (rect.IsEmpty)
@@ -1014,7 +1014,7 @@ namespace Gorgon.Graphics.Imaging
 		public IReadOnlyList<DX.Point> GetFrameOffsetMetadata(Stream stream, Guid fileFormat, IReadOnlyList<string> metadataNames)
 		{
 			long oldPosition = stream.Position;
-			GorgonStreamWrapper wrapper = new GorgonStreamWrapper(stream, stream.Position);
+			var wrapper = new GorgonStreamWrapper(stream, stream.Position);
 			BitmapDecoder decoder = null;
 			WICStream wicStream = null;
 			BitmapFrameDecode frame = null;
@@ -1069,7 +1069,7 @@ namespace Gorgon.Graphics.Imaging
 		public GorgonImageInfo GetImageMetaDataFromStream(Stream stream, Guid fileFormat, IGorgonImageCodecDecodingOptions options)
 		{
 			long oldPosition = stream.Position;
-			GorgonStreamWrapper wrapper = new GorgonStreamWrapper(stream, stream.Position);
+			var wrapper = new GorgonStreamWrapper(stream, stream.Position);
 		    (GorgonImageInfo ImageInfo,
 		        BitmapFrameDecode FrameDecoder,
 		        BitmapDecoder Decoder,
@@ -1230,7 +1230,7 @@ namespace Gorgon.Graphics.Imaging
 				throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, imageData.Format));
 			}
 
-			GorgonImageInfo imageInfo = new GorgonImageInfo(imageData.ImageType, imageData.Format)
+			var imageInfo = new GorgonImageInfo(imageData.ImageType, imageData.Format)
 			                {
 				                Width = newWidth,
 				                Height = newHeight,
@@ -1239,7 +1239,7 @@ namespace Gorgon.Graphics.Imaging
 				                MipCount = calculatedMipLevels
 			                };
 
-			GorgonImage result = new GorgonImage(imageInfo);
+			var result = new GorgonImage(imageInfo);
 			Bitmap bitmap = null;
 
 			try
@@ -1304,7 +1304,7 @@ namespace Gorgon.Graphics.Imaging
 			Guid destFormat = GetGUID(format);
 
 			// Duplicate the settings, and update the format.
-			GorgonImageInfo resultInfo = new GorgonImageInfo(imageData.ImageType, format)
+			var resultInfo = new GorgonImageInfo(imageData.ImageType, format)
 			                             {
 				                             Width = imageData.Width,
 				                             Height = imageData.Height,
@@ -1313,7 +1313,7 @@ namespace Gorgon.Graphics.Imaging
 				                             MipCount = imageData.MipCount
 			                             };
 
-			GorgonImage result = new GorgonImage(resultInfo);
+			var result = new GorgonImage(resultInfo);
 
 			try
 			{
@@ -1330,7 +1330,7 @@ namespace Gorgon.Graphics.Imaging
 			                    // Get the array/mip/depth buffer.
 			                    IGorgonImageBuffer destBuffer = result.Buffers[mip, resultInfo.ImageType == ImageType.Image3D ? depth : array];
 			                    IGorgonImageBuffer srcBuffer = imageData.Buffers[mip, resultInfo.ImageType == ImageType.Image3D ? depth : array];
-			                    DX.DataRectangle rect = new DX.DataRectangle(new IntPtr((void*)srcBuffer.Data), srcBuffer.PitchInformation.RowPitch);
+			                    var rect = new DX.DataRectangle(new IntPtr((void*)srcBuffer.Data), srcBuffer.PitchInformation.RowPitch);
 
 			                    Bitmap bitmap = null;
 			                    BitmapSource formatConverter = null;
@@ -1392,7 +1392,7 @@ namespace Gorgon.Graphics.Imaging
 		public int[] GetFrameDelays(Stream stream, Guid decoderFormat, string delayMetaDataName)
 		{
 			long oldPosition = stream.Position;
-			GorgonStreamWrapper wrapper = new GorgonStreamWrapper(stream, stream.Position);
+			var wrapper = new GorgonStreamWrapper(stream, stream.Position);
 			BitmapDecoder decoder = null;
 			WICStream wicStream = null;
 			BitmapFrameDecode frame = null;

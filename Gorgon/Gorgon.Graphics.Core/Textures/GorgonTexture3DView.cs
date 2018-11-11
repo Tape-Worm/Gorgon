@@ -187,7 +187,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>The view that was created.</returns>
         private protected override D3D11.ResourceView OnCreateNativeView()
 		{
-		    D3D11.ShaderResourceViewDescription1 desc = new D3D11.ShaderResourceViewDescription1
+		    var desc = new D3D11.ShaderResourceViewDescription1
 		                                                {
 		                                                    Format = (Format)Format,
 		                                                    Dimension = D3D.ShaderResourceViewDimension.Texture3D,
@@ -453,7 +453,6 @@ namespace Gorgon.Graphics.Core
                                                                     {
                                                                         Usage = newInfo.Usage,
                                                                         Binding = newInfo.Binding,
-                                                                        MultisampleInfo = GorgonMultisampleInfo.NoMultiSampling,
                                                                         Name = newInfo.Name
                                                                     });
 

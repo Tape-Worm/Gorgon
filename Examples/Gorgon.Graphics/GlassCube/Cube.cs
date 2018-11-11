@@ -99,7 +99,7 @@ namespace Gorgon.Examples
 			// Quaternion for rotation.
 
 			// Convert degrees to radians.
-			DX.Vector3 rotRads = new DX.Vector3(xAngle.ToRadians(), yAngle.ToRadians(), zAngle.ToRadians());
+			var rotRads = new DX.Vector3(xAngle.ToRadians(), yAngle.ToRadians(), zAngle.ToRadians());
 
 			// Rotate and build a new rotation matrix.
 			DX.Quaternion.RotationYawPitchRoll(rotRads.Y, rotRads.X, rotRads.Z, out DX.Quaternion quatRotation);
@@ -182,8 +182,8 @@ namespace Gorgon.Examples
 			};
 
 			// Create our index buffer and vertex buffer and populate with our cube data.
-			using (GorgonNativeBuffer<ushort> indexPtr = GorgonNativeBuffer<ushort>.Pin(indices))
-		    using (GorgonNativeBuffer<GlassCubeVertex> vertexPtr = GorgonNativeBuffer<GlassCubeVertex>.Pin(vertices))
+			using (var indexPtr = GorgonNativeBuffer<ushort>.Pin(indices))
+		    using (var vertexPtr = GorgonNativeBuffer<GlassCubeVertex>.Pin(vertices))
 		    {
 		        IndexBuffer = new GorgonIndexBuffer(graphics,
 		                                            new GorgonIndexBufferInfo("GlassCube Index Buffer")

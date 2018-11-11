@@ -221,7 +221,7 @@ namespace Gorgon.Native
                 return null;
             }
 
-            using (Icon iconFromShell = Icon.FromHandle(handle))
+            using (var iconFromShell = Icon.FromHandle(handle))
             {
                 return (Icon)iconFromShell.Clone();
             }

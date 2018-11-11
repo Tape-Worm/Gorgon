@@ -72,10 +72,10 @@ namespace Gorgon.IO.Zip
 		/// </remarks>
 		protected override GorgonPhysicalFileSystemData OnEnumerate(string physicalLocation, IGorgonVirtualDirectory mountPoint)
 		{
-            List<string> directories = new List<string>();
-            List<IGorgonPhysicalFileInfo> files = new List<IGorgonPhysicalFileInfo>();
+            var directories = new List<string>();
+            var files = new List<IGorgonPhysicalFileInfo>();
 
-			using (ZipInputStream zipStream = new ZipInputStream(File.Open(physicalLocation, FileMode.Open, FileAccess.Read, FileShare.Read)))
+			using (var zipStream = new ZipInputStream(File.Open(physicalLocation, FileMode.Open, FileAccess.Read, FileShare.Read)))
 			{
 				ZipEntry entry;
 

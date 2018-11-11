@@ -98,7 +98,7 @@ namespace Gorgon.Graphics.Example
         {
             // Update the animated offset for the center point.  We need to put this into a Vector4 because our data needs to be 
             // aligned to a 16 byte boundary for constant buffers.
-            DX.Vector4 offset = new DX.Vector4(_heightOffset, 0, 0, 0);
+            var offset = new DX.Vector4(_heightOffset, 0, 0, 0);
             
             DX.Matrix.RotationY(_angle.ToRadians(), out _worldMatrix);
             _worldMatrix.Row4 = new DX.Vector4(0, 0, 2.0f, 1.0f);

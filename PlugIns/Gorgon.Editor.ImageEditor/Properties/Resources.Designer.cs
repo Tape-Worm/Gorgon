@@ -61,6 +61,16 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap center_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("center_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gorgon Image Editor.
         /// </summary>
         internal static string GORIMG_DESC {

@@ -80,8 +80,8 @@ namespace Gorgon.Graphics.Example
 		              };
 
 			// Copy the above vertex/index data into a vertex and index buffer so we can render our plane.
-			using (GorgonNativeBuffer<BoingerVertex> vertexPtr = GorgonNativeBuffer<BoingerVertex>.Pin(Vertices))
-			using (GorgonNativeBuffer<ushort> indexPtr = GorgonNativeBuffer<ushort>.Pin(Indices))
+			using (var vertexPtr = GorgonNativeBuffer<BoingerVertex>.Pin(Vertices))
+			using (var indexPtr = GorgonNativeBuffer<ushort>.Pin(Indices))
 			{
 			    VertexBufferBindings[0] = GorgonVertexBufferBinding.CreateVertexBuffer(graphics,
 			                                                                           new GorgonVertexBufferInfo("Plane Vertex Buffer")

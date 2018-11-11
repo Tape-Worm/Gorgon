@@ -200,7 +200,7 @@ namespace Gorgon.Examples
                 _texture = GorgonTexture2DView.FromFile(_graphics,
                                                         GetResourcePath(@"Textures\PolySprites\Ship.png"),
                                                         new GorgonCodecPng(),
-                                                        new GorgonTextureLoadOptions
+                                                        new GorgonTexture2DLoadOptions
                                                         {
                                                             Binding = TextureBinding.ShaderResource, Name = "Ship Texture", Usage = ResourceUsage.Immutable
                                                         });

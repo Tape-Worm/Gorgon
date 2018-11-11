@@ -219,7 +219,7 @@ namespace Gorgon.Examples
 		/// <param name="size">Size of the point.</param>
 		public void DrawPoint(Point position, Color color, float size)
 		{
-			using (SolidBrush brush = new SolidBrush(color))
+			using (var brush = new SolidBrush(color))
 			{
 				float halfSize = size / 2.0f;
 				_imageGraphics.FillEllipse(brush, new Rectangle(position.X - (int)halfSize, position.Y - (int)halfSize, (int)size, (int)size));

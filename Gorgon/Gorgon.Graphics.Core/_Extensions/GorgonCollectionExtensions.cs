@@ -93,11 +93,11 @@ namespace Gorgon.Graphics.Core
                 return;
             }
             
-            using (Factory1 factory = new Factory1())
+            using (var factory = new Factory1())
             using (Adapter1 adapter = factory.GetAdapter1(output.Adapter.Index))
             using (Output giOutput = adapter.GetOutput(output.Index))
             using (Output1 giOutput1 = giOutput.QueryInterface<Output1>())
-            using (D3D11.Device device = new D3D11.Device(adapter,
+            using (var device = new D3D11.Device(adapter,
                                                             GorgonGraphics.IsDebugEnabled
                                                                 ? D3D11.DeviceCreationFlags.Debug
                                                                 : D3D11.DeviceCreationFlags.None,

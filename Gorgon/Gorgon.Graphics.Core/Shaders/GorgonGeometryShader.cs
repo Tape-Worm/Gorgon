@@ -104,11 +104,11 @@ namespace Gorgon.Graphics.Core
 
 	        int[] strideList = strides?.Take(4).ToArray() ?? new int[0];
             // Clone the byte code just in case we decide to destroy the original.
-	        ShaderBytecode byteCode = new ShaderBytecode(D3DByteCode.Data);
+	        var byteCode = new ShaderBytecode(D3DByteCode.Data);
 
             Graphics.Log.Print($"Converting '{Name}' to Stream-Out.", LoggingLevel.Verbose);
 
-	        D3D11.GeometryShader shader = new D3D11.GeometryShader(Graphics.D3DDevice, byteCode, streamOutLayout.Native, strideList, 0)
+	        var shader = new D3D11.GeometryShader(Graphics.D3DDevice, byteCode, streamOutLayout.Native, strideList, 0)
 	                                      {
 	                                          DebugName = $"{Name}_ID3D11GeometryShader (SO)"
 	                                      };

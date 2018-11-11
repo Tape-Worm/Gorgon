@@ -131,7 +131,7 @@ namespace Gorgon.IO
         {
             using (var wrappedStream = new GorgonStreamWrapper(stream, stream.Position, byteCount, false))
             {
-                using (StreamReader reader = new StreamReader(wrappedStream, Encoding.UTF8, true, 80192, true))
+                using (var reader = new StreamReader(wrappedStream, Encoding.UTF8, true, 80192, true))
                 {
                     string jsonString = reader.ReadToEnd();
                     return FromJson(Renderer, jsonString);
@@ -256,7 +256,7 @@ namespace Gorgon.IO
             serializer.Converters.Add(new VersionConverter());
 
             // Parse the string so we can extract our header/version for comparison.
-            JObject jobj = JObject.Parse(json);
+            var jobj = JObject.Parse(json);
             ulong jsonID = jobj[GorgonSpriteExtensions.JsonHeaderProp].Value<ulong>();
             Version jsonVersion = jobj[GorgonSpriteExtensions.JsonVersionProp].ToObject<Version>(serializer);
 

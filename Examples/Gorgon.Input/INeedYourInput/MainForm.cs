@@ -392,7 +392,7 @@ namespace Gorgon.Examples
 		{
 			// Cursor position.
 		    Point mousePosition = PointToClient(!_useWinFormsInput ? _mouse.Position : Cursor.Position);
-			DX.Vector2 cursorPosition = new DX.Vector2(mousePosition.X, mousePosition.Y);
+			var cursorPosition = new DX.Vector2(mousePosition.X, mousePosition.Y);
 
 			if (!_useWinFormsInput)
 			{
@@ -514,7 +514,7 @@ namespace Gorgon.Examples
 			// If the window loses focus, some of our gaming devices will become unacquired. 
 			// This means that no data will be received from the gaming devices until they are acquired.
 			// Doing this on window activation is the best way to ensure that happens.
-			foreach (var joystick in _joystickList)
+			foreach (IGorgonGamingDevice joystick in _joystickList)
 			{
 				joystick.IsAcquired = true;
 			}
@@ -525,7 +525,7 @@ namespace Gorgon.Examples
 			base.OnDeactivate(e);
 
 			// Mark each gaming device as unacquired if we lose focus.
-			foreach (var joystick in _joystickList)
+			foreach (IGorgonGamingDevice joystick in _joystickList)
 			{
 				joystick.IsAcquired = true;
 			}
@@ -576,7 +576,7 @@ namespace Gorgon.Examples
                 IGorgonPluginService plugInService = new GorgonMefPluginService(_assemblyCache, GorgonApplication.Log);
 
 				// Create the factory to retrieve gaming device drivers.
-				GorgonGamingDeviceDriverFactory factory = new GorgonGamingDeviceDriverFactory(plugInService);
+				var factory = new GorgonGamingDeviceDriverFactory(plugInService);
 
 				// Create the raw input interface.
 				_input = new GorgonRawInput(this, GorgonApplication.Log);
@@ -630,7 +630,7 @@ namespace Gorgon.Examples
 			    }
 
 				// For the backup image. Used to make it as large as the monitor that we're on.
-				Screen currentScreen = Screen.FromHandle(Handle);
+				var currentScreen = Screen.FromHandle(Handle);
 
 				// Relocate the window to the center of the screen.				
 				Location = new Point(currentScreen.Bounds.Left + (currentScreen.WorkingArea.Width / 2) - (ClientSize.Width / 2),
@@ -674,7 +674,7 @@ namespace Gorgon.Examples
 			    {
                     image.Buffers[0].Fill(0xff);
 			        _backupImage = image.ToTexture2D(_graphics,
-			                                         new GorgonTextureLoadOptions
+			                                         new GorgonTexture2DLoadOptions
 			                                         {
 			                                             Binding = TextureBinding.None,
 			                                             Usage = ResourceUsage.Staging

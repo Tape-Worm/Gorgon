@@ -163,7 +163,7 @@ namespace Gorgon.Graphics.Core
 
 			Log.Print($"{Name} Constant Buffer: Creating D3D11 buffer. Size: {_info.SizeInBytes} bytes", LoggingLevel.Simple);
 
-			D3D11.BufferDescription desc  = new D3D11.BufferDescription
+			var desc  = new D3D11.BufferDescription
 			{
 				SizeInBytes = _info.SizeInBytes,
 				Usage = (D3D11.ResourceUsage)_info.Usage,
@@ -274,7 +274,7 @@ namespace Gorgon.Graphics.Core
 	    /// <returns>The staging buffer to retrieve.</returns>
 	    public GorgonConstantBuffer GetStaging()
 	    {
-	        GorgonConstantBuffer buffer = new GorgonConstantBuffer(Graphics,
+	        var buffer = new GorgonConstantBuffer(Graphics,
 	                                                               new GorgonConstantBufferInfo(_info, $"{Name}_Staging")
 	                                                               {
 	                                                                   Usage = ResourceUsage.Staging

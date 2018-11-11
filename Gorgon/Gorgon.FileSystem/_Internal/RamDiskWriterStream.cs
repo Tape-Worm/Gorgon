@@ -126,7 +126,7 @@ namespace Gorgon.IO
 					_virtualFile.MountPoint = _mountPoint;
 				}
 
-				RamDiskFileInfo info = new RamDiskFileInfo(_virtualFile);
+				var info = new RamDiskFileInfo(_virtualFile);
 				_provider.FileData.UpdateFile(_virtualFile.FullPath, ref info);
 			}
 

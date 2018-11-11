@@ -461,7 +461,7 @@ namespace Gorgon.IO
         /// <returns>The name of the texture associated with the sprite, or <b>null</b> if no texture was found.</returns>
         protected override string OnGetAssociatedTextureName(Stream stream)
         {
-            using (GorgonBinaryReader reader = new GorgonBinaryReader(stream, true))
+            using (var reader = new GorgonBinaryReader(stream, true))
             {
                 string headerVersion = reader.ReadString();
                 if ((!headerVersion.StartsWith("GORSPR", StringComparison.OrdinalIgnoreCase))

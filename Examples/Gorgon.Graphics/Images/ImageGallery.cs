@@ -173,7 +173,7 @@ namespace Gorgon.Examples
             _gifBuffer = new Bitmap(_imageSize.Width, _imageSize.Height, PixelFormat.Format32bppArgb);
 
             float imageAspect = _images[3].Height / (float)_images[3].Width;
-            Size newSize = new Size(_imageSize.Width, (int)(_imageSize.Width * imageAspect));
+            var newSize = new Size(_imageSize.Width, (int)(_imageSize.Width * imageAspect));
 
             // With this one, the source image isn't in the same aspect ratio as our thumbnail size.
             // So we need to expand the image boundaries to fit.  The expand method will do just that.
@@ -202,7 +202,7 @@ namespace Gorgon.Examples
                 graphics.CompositingMode = CompositingMode.SourceOver;
             }
 
-            System.Drawing.Graphics bufferGraphics = System.Drawing.Graphics.FromImage(_gifBuffer);
+            var bufferGraphics = System.Drawing.Graphics.FromImage(_gifBuffer);
 
             try
             {

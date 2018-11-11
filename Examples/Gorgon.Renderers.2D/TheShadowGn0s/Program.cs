@@ -286,7 +286,7 @@ ESC - Quit.";
                                                                   Path.Combine(GorgonExample.GetResourcePath(@"Textures\TheShadowGn0s\").FullName,
                                                                                "VBBack.jpg"),
                                                                   new GorgonCodecJpeg(),
-                                                                  new GorgonTextureLoadOptions
+                                                                  new GorgonTexture2DLoadOptions
                                                                   {
                                                                       Name = "Background Texture",
                                                                       Binding = TextureBinding.ShaderResource,
@@ -315,7 +315,7 @@ ESC - Quit.";
                                                               Path.Combine(GorgonExample.GetResourcePath(@"Textures\TheShadowGn0s\").FullName,
                                                                            "0_HardVacuum.png"),
                                                               new GorgonCodecPng(),
-                                                              new GorgonTextureLoadOptions
+                                                              new GorgonTexture2DLoadOptions
                                                               {
                                                                   Name = "/Images/0_HardVacuum.png",
                                                                   Binding = TextureBinding.ShaderResource,

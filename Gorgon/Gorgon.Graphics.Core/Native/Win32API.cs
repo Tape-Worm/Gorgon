@@ -76,7 +76,7 @@ namespace Gorgon.Native
 		/// <returns><b>true</b> if the version is the same or better, <b>false</b> if not.</returns>
 		private static bool IsWindowsVersionOrGreater(uint majorVersion, uint minorVersion, uint? buildNumber, ushort? servicePackMajorVersion)
 		{
-			OSVERSIONINFOEX osInfoEx = new OSVERSIONINFOEX
+			var osInfoEx = new OSVERSIONINFOEX
 			{
 				dwOSVersionInfoSize = (uint)Marshal.SizeOf<OSVERSIONINFOEX>(),
 				dwMajorVersion = majorVersion,

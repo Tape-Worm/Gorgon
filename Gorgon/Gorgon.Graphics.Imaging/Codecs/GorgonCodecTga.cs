@@ -299,7 +299,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 					throw new IOException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, header.ImageType));
             }
 
-		    GorgonImageInfo settings = new GorgonImageInfo(ImageType.Image2D, pixelFormat)
+		    var settings = new GorgonImageInfo(ImageType.Image2D, pixelFormat)
 		                   {
 			                   MipCount = 1,
 			                   ArrayCount = 1,
@@ -710,7 +710,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 			IGorgonImageBuffer buffer = image.Buffers[0];	        
 			
 			// Determine how large a row is, in bytes.
-			GorgonFormatInfo formatInfo = new GorgonFormatInfo(image.Format);
+			var formatInfo = new GorgonFormatInfo(image.Format);
 
 			GorgonPitchLayout srcPitch = (conversionFlags & TGAConversionFlags.Expand) == TGAConversionFlags.Expand
 				                             ? new GorgonPitchLayout(image.Width * 3, image.Width * 3 * image.Height)
@@ -826,7 +826,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				throw new EndOfStreamException();
 			}
 
-			using (GorgonBinaryReader reader = new GorgonBinaryReader(stream, true))
+			using (var reader = new GorgonBinaryReader(stream, true))
 			{
 				IGorgonImageInfo info = ReadHeader(reader, out TGAConversionFlags flags);
 
@@ -868,7 +868,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, imageData.Format));
 			}
 
-		    using (GorgonBinaryWriter writer = new GorgonBinaryWriter(stream, true))
+		    using (var writer = new GorgonBinaryWriter(stream, true))
 		    {
 		        // Write the header for the file before we dump the file contents.
 		        TgaHeader header = GetHeader(imageData, out TGAConversionFlags conversionFlags);
@@ -881,7 +881,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		        }
 		        else
 		        {
-		            GorgonFormatInfo formatInfo = new GorgonFormatInfo(imageData.Format);
+		            var formatInfo = new GorgonFormatInfo(imageData.Format);
 		            destPitch = formatInfo.GetPitchForFormat(imageData.Width, imageData.Height);
 		        }
 
@@ -1045,7 +1045,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 			try
 			{
                 position = stream.Position;
-				GorgonBinaryReader reader = new GorgonBinaryReader(stream, true); 
+				var reader = new GorgonBinaryReader(stream, true); 
 				header = reader.ReadValue<TgaHeader>();
 			}
 			finally

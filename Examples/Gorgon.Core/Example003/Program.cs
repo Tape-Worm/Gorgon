@@ -77,7 +77,7 @@ namespace Gorgon.Examples
 		        _log.Print("In new idle loop.", LoggingLevel.All);
 		    }
 
-			formMain form = (formMain)GorgonApplication.ApplicationContext.MainForm;		// Get our main form from the context.
+			var form = (formMain)GorgonApplication.ApplicationContext.MainForm;		// Get our main form from the context.
 			
 			// Draw some bars every 16 ms.
 			if ((GorgonTiming.MillisecondsSinceStart - _lastTime) >= 16.6f)
@@ -138,7 +138,7 @@ namespace Gorgon.Examples
                 _log.Print("In primary idle loop.", LoggingLevel.All);
 		    }
 
-		    formMain form = (formMain)GorgonApplication.ApplicationContext.MainForm;		// Get our main form from the context.
+		    var form = (formMain)GorgonApplication.ApplicationContext.MainForm;		// Get our main form from the context.
 
 		    int x = _rnd.Next(0, form.GraphicsSize.Width - 1);
 			int y = _rnd.Next(0, form.GraphicsSize.Height - 1);

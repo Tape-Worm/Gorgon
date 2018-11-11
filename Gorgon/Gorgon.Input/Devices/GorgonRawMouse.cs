@@ -464,7 +464,7 @@ namespace Gorgon.Input
 				return button;
 			}
 
-			Rectangle doubleClickArea = new Rectangle(_doubleClickPosition.X - (DoubleClickSize.Width / 2),
+			var doubleClickArea = new Rectangle(_doubleClickPosition.X - (DoubleClickSize.Width / 2),
 													  _doubleClickPosition.Y - (DoubleClickSize.Height / 2),
 													  DoubleClickSize.Width,
 													  DoubleClickSize.Height);
@@ -666,7 +666,7 @@ namespace Gorgon.Input
 
 			if (upButtons != MouseButtons.None)
 			{
-				GorgonMouseEventArgs e = new GorgonMouseEventArgs(upButtons, Buttons, _position, _wheelPosition, RelativePositionOffset, RelativeWheelDelta, _clickCount, !rawInputData.IsRelative);
+				var e = new GorgonMouseEventArgs(upButtons, Buttons, _position, _wheelPosition, RelativePositionOffset, RelativeWheelDelta, _clickCount, !rawInputData.IsRelative);
 
 				MouseButtonUp?.Invoke(this, e);
 
@@ -701,7 +701,7 @@ namespace Gorgon.Input
 		/// </remarks>
 		public GorgonRawMouse(IGorgonMouseInfo mouseInfo = null)
 		{
-			RawMouseInfo info = mouseInfo as RawMouseInfo;
+			var info = mouseInfo as RawMouseInfo;
 			
 			if (mouseInfo == null)
 			{

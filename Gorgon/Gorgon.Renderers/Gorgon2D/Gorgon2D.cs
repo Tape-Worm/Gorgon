@@ -380,7 +380,7 @@ namespace Gorgon.Renderers
 
                 // We need to ensure that we have a default texture in case we decide not to send a texture in.
                 GorgonTexture2D textureResource = Resources.White_2x2.ToTexture2D(Graphics,
-                                                                                  new GorgonTextureLoadOptions
+                                                                                  new GorgonTexture2DLoadOptions
                                                                                   {
                                                                                       Name = "Default White 2x2 Texture",
                                                                                       Binding = TextureBinding.ShaderResource,
@@ -1177,7 +1177,7 @@ namespace Gorgon.Renderers
             // If we supply our own texture coordinates, then ensure that the individual lines are mapped appropriately.
             if ((textureRegion != null) && (texture != null))
             {
-                DX.RectangleF innerRect = new DX.RectangleF(thickness, thickness, region.Width - (thickness * 2), region.Height - (thickness * 2));
+                var innerRect = new DX.RectangleF(thickness, thickness, region.Width - (thickness * 2), region.Height - (thickness * 2));
 
                 innerRect.Left = (innerRect.Left / region.Width) + textureRegion.Value.Left;
                 innerRect.Top = (innerRect.Top / region.Height) + textureRegion.Value.Top;

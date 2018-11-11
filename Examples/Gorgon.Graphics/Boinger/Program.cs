@@ -419,7 +419,7 @@ namespace Gorgon.Graphics.Example
 			if (!Settings.Default.IsWindowed)
 			{
 			    // Get the output for the main window.
-			    Screen currentScreen = Screen.FromControl(_mainForm);
+			    var currentScreen = Screen.FromControl(_mainForm);
 			    IGorgonVideoOutputInfo output = _graphics.VideoAdapter.Outputs[currentScreen.DeviceName];
 
 				// If we've asked for full screen mode, then locate the correct video mode and set us up.
@@ -453,7 +453,7 @@ namespace Gorgon.Graphics.Example
 		    using (IGorgonImage image = Resources.Texture.ToGorgonImage())
 		    {
 		        _texture = image.ToTexture2D(_graphics,
-		                                     new GorgonTextureLoadOptions
+		                                     new GorgonTexture2DLoadOptions
 		                                     {
 		                                         Usage = ResourceUsage.Immutable,
 		                                         Name = "Texture"
@@ -626,7 +626,7 @@ namespace Gorgon.Graphics.Example
 			else
 			{
 			    // Get the output for the main window.
-			    Screen currentScreen = Screen.FromControl(_mainForm);
+			    var currentScreen = Screen.FromControl(_mainForm);
 			    IGorgonVideoOutputInfo output = _graphics.VideoAdapter.Outputs[currentScreen.DeviceName];
 
 				_swap.EnterFullScreen(in _selectedVideoMode, output);

@@ -93,14 +93,16 @@ namespace Gorgon.Editor.Services
                 return (null, MetadataPluginState.NotFound);
             }
 
+            #pragma warning disable IDE0046 // Convert to conditional expression
             if (!Plugins.TryGetValue(metadata.PluginName, out ContentPlugin plugin))
             {
                 return (null, MetadataPluginState.NotFound);
             }
 
             return (plugin, MetadataPluginState.Assigned);
+            #pragma warning restore IDE0046 // Convert to conditional expression
         }
-        
+
         /// <summary>
         /// Function to return the file for the content plug in settings.
         /// </summary>
@@ -281,7 +283,7 @@ namespace Gorgon.Editor.Services
         {
             foreach (KeyValuePair<string, ContentPlugin> plugin in _plugins)
             {
-                plugin.Value.Shutdown();
+                plugin.Value.Shutdown(Program.Log);
             }
 
             _plugins.Clear();
@@ -310,7 +312,7 @@ namespace Gorgon.Editor.Services
             }
 
             _plugins.Remove(plugin.Name);
-            plugin.Shutdown();            
+            plugin.Shutdown(Program.Log);
         }
         #endregion
 
@@ -318,10 +320,7 @@ namespace Gorgon.Editor.Services
         /// <summary>Initializes a new instance of the ContentPluginService class.</summary>
         /// <param name="settingsDirectory">The directory that will contain settings for the content plug ins.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settingsDirectory"/> is <b>null</b>.</exception>
-        public ContentPluginService(DirectoryInfo settingsDirectory)
-        {
-            _settingsDir = settingsDirectory ?? throw new ArgumentNullException(nameof(settingsDirectory));
-        }
+        public ContentPluginService(DirectoryInfo settingsDirectory) => _settingsDir = settingsDirectory ?? throw new ArgumentNullException(nameof(settingsDirectory));
         #endregion
     }
 }

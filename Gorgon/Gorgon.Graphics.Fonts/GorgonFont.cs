@@ -300,7 +300,7 @@ namespace Gorgon.Graphics.Fonts
 		/// <returns>A new list of available characters, sorted by character.</returns>
 		private List<char> GetAvailableCharacters()
 		{
-			List<char> result = (from character in Info.Characters
+			var result = (from character in Info.Characters
 								 where (!char.IsControl(character))
 									   && (Convert.ToInt32(character) >= 32)
 									   && (!char.IsWhiteSpace(character))
@@ -362,7 +362,7 @@ namespace Gorgon.Graphics.Fonts
 						image?.Dispose();
 						image = new GorgonImage(imageSettings);
 
-						texture = image.ToTexture2D(Graphics, new GorgonTextureLoadOptions
+						texture = image.ToTexture2D(Graphics, new GorgonTexture2DLoadOptions
 						                                      {
                                                                   Name = $"GorgonFont_Internal_Texture_{Guid.NewGuid():N}"
 						                                      });

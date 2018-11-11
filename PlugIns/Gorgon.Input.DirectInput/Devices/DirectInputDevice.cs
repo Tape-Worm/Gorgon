@@ -124,7 +124,7 @@ namespace Gorgon.Input.DirectInput
 		/// <returns>The DirectInput joystick object.</returns>
 		private DI.Joystick CreateJoystick(DI.DirectInput directInput, DirectInputDeviceInfo deviceInfo)
 		{
-			DI.Joystick result = new DI.Joystick(directInput, deviceInfo.InstanceGuid);
+			var result = new DI.Joystick(directInput, deviceInfo.InstanceGuid);
 
 			IntPtr mainWindow = FindMainApplicationWindow();
 

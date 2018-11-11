@@ -323,7 +323,7 @@ namespace Gorgon.Examples
         private static FormMain Initialize()
         {
             GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
-            var window = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Effects");
+            FormMain window = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Effects");
 
             try
             {
@@ -379,7 +379,7 @@ namespace Gorgon.Examples
                 _background = GorgonTexture2DView.FromFile(_graphics,
                                                            Path.Combine(GorgonExample.GetResourcePath(@"Textures\").FullName, "HotPocket.dds"),
                                                            new GorgonCodecDds(),
-                                                           new GorgonTextureLoadOptions
+                                                           new GorgonTexture2DLoadOptions
                                                            {
                                                                Usage = ResourceUsage.Immutable,
                                                                Binding = TextureBinding.ShaderResource
@@ -389,7 +389,7 @@ namespace Gorgon.Examples
                 _spaceShipTexture = GorgonTexture2DView.FromFile(_graphics,
                                                                  Path.Combine(GorgonExample.GetResourcePath(@"Textures\Effects\").FullName, "ship.png"),
                                                                  new GorgonCodecPng(),
-                                                                 new GorgonTextureLoadOptions
+                                                                 new GorgonTexture2DLoadOptions
                                                                  {
                                                                      Usage = ResourceUsage.Immutable, Binding = TextureBinding.ShaderResource
                                                                  });

@@ -68,7 +68,7 @@ namespace Gorgon.Examples
                 _graphics = null;
             }
             
-            Bitmap newBuffer = new Bitmap(newSize.Width, newSize.Height, PixelFormat.Format32bppArgb);
+            var newBuffer = new Bitmap(newSize.Width, newSize.Height, PixelFormat.Format32bppArgb);
             _graphics = DrawingGraphics.FromImage(newBuffer);
 
             if (Surface != null)
@@ -89,7 +89,7 @@ namespace Gorgon.Examples
         /// <param name="point">Origin point for the spray.</param>
         public void SprayPoint(Point point)
         {
-            Point randomArea = new Point(GorgonRandom.RandomInt32(-10, 10), GorgonRandom.RandomInt32(-10, 10));
+            var randomArea = new Point(GorgonRandom.RandomInt32(-10, 10), GorgonRandom.RandomInt32(-10, 10));
 	        _graphics.FillEllipse(_brushes[GorgonRandom.RandomInt32(0, _brushes.Length - 1)], new Rectangle(point.X + randomArea.X, point.Y + randomArea.Y, 10, 10));
         }
         #endregion

@@ -583,12 +583,13 @@ namespace Gorgon.Graphics.Core
             GorgonTexture2D texture = initialData == null
                                           ? new GorgonTexture2D(graphics, newInfo)
                                           : initialData.ToTexture2D(graphics,
-                                                                    new GorgonTextureLoadOptions
+                                                                    new GorgonTexture2DLoadOptions
                                                                     {
                                                                         Usage = newInfo.Usage,
                                                                         Binding = newInfo.Binding,
                                                                         MultisampleInfo = newInfo.MultisampleInfo,
-                                                                        Name = newInfo.Name
+                                                                        Name = newInfo.Name,
+                                                                        IsTextureCube = newInfo.IsCubeMap
                                                                     });
 
             GorgonTexture2DReadWriteView result = texture.GetReadWriteView();
@@ -641,7 +642,7 @@ namespace Gorgon.Graphics.Core
         /// what they are doing and will handle the disposal of the texture and view on their own.
         /// </para>
         /// </remarks>
-        public static GorgonTexture2DReadWriteView FromStream(GorgonGraphics graphics, Stream stream, IGorgonImageCodec codec, long? size = null, GorgonTextureLoadOptions options = null)
+        public static GorgonTexture2DReadWriteView FromStream(GorgonGraphics graphics, Stream stream, IGorgonImageCodec codec, long? size = null, GorgonTexture2DLoadOptions options = null)
         {
             if (graphics == null)
             {
@@ -720,7 +721,7 @@ namespace Gorgon.Graphics.Core
         /// what they are doing and will handle the disposal of the texture and view on their own.
         /// </para>
         /// </remarks>
-        public static GorgonTexture2DReadWriteView FromFile(GorgonGraphics graphics, string filePath, IGorgonImageCodec codec, GorgonTextureLoadOptions options = null)
+        public static GorgonTexture2DReadWriteView FromFile(GorgonGraphics graphics, string filePath, IGorgonImageCodec codec, GorgonTexture2DLoadOptions options = null)
         {
             if (graphics == null)
             {

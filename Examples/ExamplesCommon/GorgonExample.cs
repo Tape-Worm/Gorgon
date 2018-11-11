@@ -281,7 +281,7 @@ namespace Gorgon.Examples
             using (var stream = new MemoryStream(Resources.Gorgon_Logo_Small))
             {
                 var ddsCodec = new GorgonCodecDds();
-                _logo = GorgonTexture2DView.FromStream(graphics, stream, ddsCodec, options: new GorgonTextureLoadOptions
+                _logo = GorgonTexture2DView.FromStream(graphics, stream, ddsCodec, options: new GorgonTexture2DLoadOptions
                                                                                             {
                                                                                                 Name = "Gorgon Logo Texture",
                                                                                                 Binding = TextureBinding.ShaderResource,

@@ -143,7 +143,7 @@ namespace Gorgon.Input
 				return new GorgonGamingDevice[0];
 			}
 
-			List<IGorgonGamingDevice> result = new List<IGorgonGamingDevice>();
+			var result = new List<IGorgonGamingDevice>();
 
 			foreach (IGorgonGamingDeviceInfo deviceInfo in infoList)
 			{

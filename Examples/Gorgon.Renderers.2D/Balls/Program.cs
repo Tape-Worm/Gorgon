@@ -448,7 +448,7 @@ namespace Gorgon.Examples
 		        _ballTexture = GorgonTexture2DView.FromFile(_graphics,
 		                                                    GetResourcePath(@"Textures\Balls\BallsTexture.dds"),
 		                                                    new GorgonCodecDds(),
-		                                                    new GorgonTextureLoadOptions
+		                                                    new GorgonTexture2DLoadOptions
 		                                                    {
 		                                                        Usage = ResourceUsage.Immutable, Name = "Ball Texture"
 		                                                    });
@@ -616,26 +616,40 @@ namespace Gorgon.Examples
 					break;
 				case Keys.Up:
 					if ((e.Control) && (e.Shift))
-						ballIncrement = 1000;
-					else
+                    {
+                        ballIncrement = 1000;
+                    }
+                    else
 					{
 						if (e.Control)
-							ballIncrement = 100;
-						if (e.Shift)
-							ballIncrement = 10;
-					}
+                        {
+                            ballIncrement = 100;
+                        }
+
+                        if (e.Shift)
+                        {
+                            ballIncrement = 10;
+                        }
+                    }
 					GenerateBalls(ballIncrement);
 					break;
 				case Keys.Down:
 					if ((e.Control) && (e.Shift))
-						ballIncrement = 1000;
-					else
+                    {
+                        ballIncrement = 1000;
+                    }
+                    else
 					{
 						if (e.Control)
-							ballIncrement = 100;
-						if (e.Shift)
-							ballIncrement = 10;
-					}
+                        {
+                            ballIncrement = 100;
+                        }
+
+                        if (e.Shift)
+                        {
+                            ballIncrement = 10;
+                        }
+                    }
 					GenerateBalls(-ballIncrement);
 					break;
 				case Keys.Enter:

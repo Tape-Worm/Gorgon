@@ -120,7 +120,7 @@ namespace Gorgon.Input
 				state = MouseButtonState.Button5Up;
 			}
 
-			GorgonRawMouseData processedData = new GorgonRawMouseData
+			var processedData = new GorgonRawMouseData
 			{
 				ButtonState = state,
 				MouseWheelDelta = wheelDelta,
@@ -161,7 +161,7 @@ namespace Gorgon.Input
 	            flags |= rawData.MakeCode == 0x36 ? KeyboardDataFlags.RightKey : KeyboardDataFlags.LeftKey;
 	        }
 
-	        GorgonRawKeyboardData data = new GorgonRawKeyboardData
+	        var data = new GorgonRawKeyboardData
 	                                     {
 	                                         ScanCode = rawData.MakeCode,
 	                                         Key = (Keys)rawData.VirtualKey,

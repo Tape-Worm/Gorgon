@@ -80,7 +80,7 @@ namespace Gorgon.Graphics.Core
 		private static GorgonShaderInclude ParseIncludeLine(StringBuilder includeLine, bool checkFileExists)
 		{
 			int length = "#GorgonInclude".Length;
-			StringBuilder line = new StringBuilder(includeLine.ToString(), length, includeLine.Length - length, includeLine.Length - length);
+			var line = new StringBuilder(includeLine.ToString(), length, includeLine.Length - length, includeLine.Length - length);
 
 			TrimLine(line);
 
@@ -163,10 +163,10 @@ namespace Gorgon.Graphics.Core
 		/// <returns>The processed shader source.</returns>
 		public string Process(string sourceCode)
 		{
-			StringBuilder result = new StringBuilder();
+			var result = new StringBuilder();
 
 			// Replace carriage returns with new lines.
-			StringBuilder code = new StringBuilder(sourceCode);
+			var code = new StringBuilder(sourceCode);
 			code.Replace("\r\n", "\n");
 			code.Replace("\n\r", "\n");
 			code.Replace("\r", "\n");
@@ -174,7 +174,7 @@ namespace Gorgon.Graphics.Core
 			IList<string> lines = code.ToString().Split('\n');
 			int i = 0;
 
-			StringBuilder includeLine = new StringBuilder();
+			var includeLine = new StringBuilder();
 
 			while (i < lines.Count)
 			{

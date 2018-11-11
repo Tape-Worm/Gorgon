@@ -431,7 +431,7 @@ namespace Gorgon.Graphics
         /// </remarks>
         public static GorgonColor Lerp(GorgonColor start, GorgonColor end, float weight)
 		{
-		    GorgonColor outColor = new GorgonColor(
+		    var outColor = new GorgonColor(
 		        start.Red + ((end.Red - start.Red) * weight),
 		        start.Green + ((end.Green - start.Green) * weight),
 		        start.Blue + ((end.Blue - start.Blue) * weight),

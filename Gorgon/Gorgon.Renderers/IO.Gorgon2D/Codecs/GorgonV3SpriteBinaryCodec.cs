@@ -186,7 +186,7 @@ namespace Gorgon.IO
                     return sprite;
                 }
 
-                GorgonSamplerStateBuilder builder = new GorgonSamplerStateBuilder(Renderer.Graphics);
+                var builder = new GorgonSamplerStateBuilder(Renderer.Graphics);
                 binReader = reader.OpenChunk(TextureSamplerData);
                 binReader.ReadValue(out SampleFilter filter);
                 binReader.ReadValue(out GorgonColor borderColor);

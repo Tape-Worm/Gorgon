@@ -77,7 +77,7 @@ namespace Gorgon.Renderers.Extensions
             serializer.Converters.Add(new JsonSamplerConverter(null));
             serializer.Converters.Add(new JsonTexture2DConverter(null));
 
-            JObject jsonObj = JObject.FromObject(sprite, serializer);
+            var jsonObj = JObject.FromObject(sprite, serializer);
             JToken firstProp = jsonObj.First;
             firstProp.AddBeforeSelf(new JProperty(JsonHeaderProp, GorgonSpriteCodecCommon.CurrentFileHeader));
             firstProp.AddBeforeSelf(new JProperty(JsonVersionProp, GorgonSpriteCodecCommon.CurrentVersion.ToString(2)));
@@ -114,7 +114,7 @@ namespace Gorgon.Renderers.Extensions
             serializer.Converters.Add(new JsonSamplerConverter(null));
             serializer.Converters.Add(new JsonTexture2DConverter(null));
 
-            JObject jsonObj = JObject.FromObject(sprite, serializer);
+            var jsonObj = JObject.FromObject(sprite, serializer);
             JToken firstProp = jsonObj.First;
             firstProp.AddBeforeSelf(new JProperty(JsonHeaderProp, GorgonPolySpriteCodecCommon.CurrentFileHeader));
             firstProp.AddBeforeSelf(new JProperty(JsonVersionProp, GorgonPolySpriteCodecCommon.CurrentVersion.ToString(2)));

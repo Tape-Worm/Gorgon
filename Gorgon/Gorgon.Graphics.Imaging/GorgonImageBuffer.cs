@@ -157,7 +157,7 @@ namespace Gorgon.Graphics.Imaging
 		/// </remarks>
 		public void CopyTo(IGorgonImageBuffer buffer, in DX.Rectangle? sourceRegion = null, int destX = 0, int destY = 0)
 		{
-			DX.Rectangle sourceBufferDims = new DX.Rectangle
+			var sourceBufferDims = new DX.Rectangle
 			                       {
 				                       Left = 0,
 				                       Top = 0,
@@ -323,7 +323,7 @@ namespace Gorgon.Graphics.Imaging
         /// <seealso cref="IGorgonImage"/>
         public IGorgonImageBuffer GetRegion(in DX.Rectangle clipRegion)
         {
-            DX.Rectangle finalRegion = DX.Rectangle.Intersect(clipRegion, new DX.Rectangle(0, 0, Width, Height));
+            var finalRegion = DX.Rectangle.Intersect(clipRegion, new DX.Rectangle(0, 0, Width, Height));
 
             if ((finalRegion.Width <= 0)
                 || (finalRegion.Height <= 0))

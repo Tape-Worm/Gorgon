@@ -898,7 +898,7 @@ namespace Gorgon.Graphics
 			// Do calculations for compressed formats.
 			if (IsCompressed)
 			{
-				int bpb;
+                int bpb;
 
 				switch (Format)
 				{
@@ -914,12 +914,26 @@ namespace Gorgon.Graphics
 						bpb = 16;
 						break;
 				}
-
+                /*
 				int widthCounter = 1.Max((width + 3) / 4);
 				int heightCounter = 1.Max((height + 3) / 4);
-				rowPitch = widthCounter * bpb;
+				rowPitch = widthCounter * bpb;*/
 
-				return new GorgonPitchLayout(widthCounter * bpb, heightCounter * rowPitch, widthCounter, heightCounter);
+                long numBlocksWide = 0;
+                if (width > 0)
+                {
+                    numBlocksWide = (width + 3) / 4;
+                }
+                long numBlocksHigh = 0;
+                if (height > 0)
+                {
+                    numBlocksHigh = (height + 3) / 4;
+                }
+                long rowBytes = numBlocksWide * bpb;
+                long numRows = numBlocksHigh;
+                long numBytes = rowBytes * numBlocksHigh;
+
+                return new GorgonPitchLayout((int)rowBytes, (int)numBytes, (int)numBlocksWide, (int)numBlocksHigh);
 			}
 
 			if (IsPacked)

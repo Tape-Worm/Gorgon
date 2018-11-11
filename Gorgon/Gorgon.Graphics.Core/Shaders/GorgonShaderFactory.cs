@@ -174,7 +174,7 @@ namespace Gorgon.Graphics.Core
 
             // We will store the shader as a Gorgon chunked binary format. 
             // This will break the shader into parts within the file to allow us the ability to read portions of the file.
-            GorgonChunkFileReader chunkReader = new GorgonChunkFileReader(stream,
+            var chunkReader = new GorgonChunkFileReader(stream,
                                                                           new[]
                                                                           {
                                                                               BinaryShaderFileHeader.ChunkID()

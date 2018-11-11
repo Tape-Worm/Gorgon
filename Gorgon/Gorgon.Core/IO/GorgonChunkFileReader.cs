@@ -202,7 +202,7 @@ namespace Gorgon.IO
         /// </exception>
         protected override void ReadHeaderValidate()
 		{
-			using (GorgonBinaryReader reader = new GorgonBinaryReader(Stream, true))
+			using (var reader = new GorgonBinaryReader(Stream, true))
 			{
 				ulong headerID = reader.ReadUInt64();
 

@@ -82,7 +82,8 @@ namespace Gorgon.Editor.Plugins
         /// <summary>
         /// Function to provide clean up for the plugin.
         /// </summary>
-        protected virtual void OnShutdown()
+        /// <param name="log">The logging interface for debug messages.</param>
+        protected virtual void OnShutdown(IGorgonLog log)
         {
 
         }
@@ -123,7 +124,8 @@ namespace Gorgon.Editor.Plugins
         /// <summary>
         /// Function to perform any required clean up for the plugin.
         /// </summary>
-        public void Shutdown()
+        /// <param name="log">The logging interface for debug messages.</param>
+        public void Shutdown(IGorgonLog log)
         {
             int initalizedFlag = Interlocked.Exchange(ref _initialized, 0);
 
@@ -132,7 +134,7 @@ namespace Gorgon.Editor.Plugins
                 return;
             }
 
-            OnShutdown();
+            OnShutdown(log ?? GorgonLog.NullLog);
         }
 
         /// <summary>

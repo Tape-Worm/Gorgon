@@ -144,7 +144,7 @@ namespace Gorgon.IO
 			{
 				// If the area specified by the write directory does not exist yet, then 
 				// create it.
-				DirectoryInfo writeDir = new DirectoryInfo(WriteLocation);
+				var writeDir = new DirectoryInfo(WriteLocation);
 
 				if (!writeDir.Exists)
 				{
@@ -166,7 +166,7 @@ namespace Gorgon.IO
 				return WriteLocation;
 			}
 
-			StringBuilder physicalPath = new StringBuilder(WriteLocation);
+			var physicalPath = new StringBuilder(WriteLocation);
 
 			if (path.StartsWith("/", StringComparison.OrdinalIgnoreCase))
 			{
@@ -435,7 +435,7 @@ namespace Gorgon.IO
 
 			string writePath = GetWriteDirectoryPath(path);
 
-			DirectoryInfo dirInfo = new DirectoryInfo(writePath);
+			var dirInfo = new DirectoryInfo(writePath);
 
 			if (dirInfo.Exists)
 			{
@@ -476,7 +476,7 @@ namespace Gorgon.IO
 		{
 			// If the writable area does not exist at all, then we have nothing to 
 			// delete.
-			DirectoryInfo dirInfo = new DirectoryInfo(WriteLocation);
+			var dirInfo = new DirectoryInfo(WriteLocation);
 
 			// If we're not "deleting" the root, then just kill the subdirectory.
 			if (path != "/")
@@ -664,7 +664,7 @@ namespace Gorgon.IO
 
 			// If the writable area does not exist at all, then we have nothing to 
 			// delete.
-			DirectoryInfo dirInfo = new DirectoryInfo(WriteLocation);
+			var dirInfo = new DirectoryInfo(WriteLocation);
 
 			if (!dirInfo.Exists)
 			{

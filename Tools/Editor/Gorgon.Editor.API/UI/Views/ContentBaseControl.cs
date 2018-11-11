@@ -65,10 +65,31 @@ namespace Gorgon.Editor.UI.Views
         }
 
         /// <summary>
-        /// Property to return the panel that will be used for rendering.
+        /// Property to set or return the control that will be rendered into using a <see cref="GorgonSwapChain"/>.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Plug in developers should set this in the IDE designer to set up a swap chain for rendering when this control is created.
+        /// </para>
+        /// <para>
+        /// If this property is assigned after control creation, the <see cref="SetupGraphics(IGraphicsContext)"/> method must be called again for it to take effect.
+        /// </para>
+        /// <para>
+        /// If this value is set to <b>null</b>, then no swap chain will be created and the <see cref="SwapChain"/> property will be set to <b>null</b>.
+        /// </para>
+        /// </remarks>
+        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Rendering"), Description("Sets or returns the custom control to use for Gorgon rendering.")]
+        public Control RenderControl
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the panel that will be used for presentation of the content.
         /// </summary>
         [Browsable(false)]
-        public KryptonPanel RenderPanel => PanelRenderer;
+        public KryptonPanel PresentationPanel => PanelPresenter;
 
         /// <summary>Property to return the graphics context.</summary>
         [Browsable(false)]
@@ -88,23 +109,21 @@ namespace Gorgon.Editor.UI.Views
         /// Function to allow user defined setup of the graphics context with this control.
         /// </summary>
         /// <param name="context">The context being assigned.</param>
-        /// <remarks>
-        /// <para>
-        /// If the <paramref name="context"/> is <b>null</b>, then applications should use this method to shut down/dispose of any created graphics items if they cannot be removed in the 
-        /// <see cref="OnShutdown"/> method.
-        /// </para>
-        /// </remarks>
-        protected virtual void OnSetupGraphics(IGraphicsContext context)
+        /// <param name="swapChain">The swap chain assigned to the <see cref="RenderControl"/>.</param>
+        protected virtual void OnSetupGraphics(IGraphicsContext context, GorgonSwapChain swapChain)
         {
-
         }
 
         /// <summary>
-        /// Function called to shut down the view.
+        /// Function called to shut down the view and perform any clean up required (including user defined graphics objects).
         /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Plug in developers do not need to clean up the <see cref="SwapChain"/> as it will be returned to the swap chain pool automatically.
+        /// </para>
+        /// </remarks>
         protected virtual void OnShutdown()
         {
-
         }
 
         /// <summary>
@@ -112,10 +131,15 @@ namespace Gorgon.Editor.UI.Views
         /// </summary>
         public void Shutdown()
         {
-            OnShutdown();
-
             Stop();
-            SetupGraphics(null);
+
+            OnShutdown();            
+
+            // Return the swap chain to the pool.
+            if (_swapChain != null)
+            {
+                GraphicsContext.ReturnSwapPresenter(ref _swapChain);
+            }
         }
 
         /// <summary>
@@ -132,9 +156,10 @@ namespace Gorgon.Editor.UI.Views
         /// Function to initialize the graphics context for the control.
         /// </summary>
         /// <param name="context">The graphics context to use.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="context"/> parameter is <b>null</b>.</exception>
         /// <remarks>
         /// <para>
-        /// This method assigns the swap chain to the control, so the user does not need to set one up on control creation.
+        /// If the <see cref="RenderControl"/> property is assigned on control creation, then a primary swap chain will be created for that control and provided via the <see cref="SwapChain"/> property.
         /// </para>
         /// </remarks>
         public void SetupGraphics(IGraphicsContext context)
@@ -145,19 +170,33 @@ namespace Gorgon.Editor.UI.Views
                 return;
             }
 
-            if ((GraphicsContext != null) && (_swapChain != null))
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            // If we've made no change, then do nothing.
+            if ((context == GraphicsContext) && (_swapChain != null) && (_swapChain.Window == RenderControl))
+            {
+                return;
+            }
+
+            if (_swapChain != null)
             {
                 GraphicsContext.ReturnSwapPresenter(ref _swapChain);
             }
 
-            if (context != null)
+            GorgonSwapChain swapChain = null;
+
+            // If we've defined a render control, then lease a swap chain from the swap chain pool.
+            if ((context != null) && (RenderControl != null))
             {
-                _swapChain = context.LeaseSwapPresenter(PanelRenderer);
+                swapChain = context.LeaseSwapPresenter(RenderControl);
             }            
 
-            OnSetupGraphics(context);
-
+            OnSetupGraphics(context, swapChain);
             GraphicsContext = context;
+            _swapChain = swapChain;
         }
         #endregion
 

@@ -212,7 +212,7 @@ namespace Gorgon.Diagnostics
 
 				while (inner != null)
 				{
-					GorgonException gorgonException = inner as GorgonException;
+					var gorgonException = inner as GorgonException;
 
 					if ((inner == ex) || (LogFilterLevel == LoggingLevel.Verbose) || (LogFilterLevel == LoggingLevel.All))
 					{

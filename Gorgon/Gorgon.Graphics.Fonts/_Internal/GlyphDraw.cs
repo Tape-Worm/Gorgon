@@ -527,11 +527,11 @@ namespace Gorgon.Graphics.Fonts
 		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
 		public Dictionary<char, GlyphInfo> DrawToPackedBitmaps(List<char> characters, Dictionary<char, GlyphRegions> glyphBounds, bool hasOutline)
 		{
-			Dictionary<char, GlyphInfo> result = new Dictionary<char, GlyphInfo>();
+			var result = new Dictionary<char, GlyphInfo>();
 			System.Drawing.Graphics packedGraphics = null;
 			DX.Size2 maxGlyphSize = GetMaxGlyphSize(glyphBounds, hasOutline);
 			var glyphBitmap = new Bitmap(maxGlyphSize.Width + 10, maxGlyphSize.Height + 10, PixelFormat.Format32bppArgb);
-			System.Drawing.Graphics glyphGraphics = System.Drawing.Graphics.FromImage(glyphBitmap);
+			var glyphGraphics = System.Drawing.Graphics.FromImage(glyphBitmap);
 			GorgonGlyphBrush glyphBrush = _fontInfo.Brush ?? new GorgonGlyphSolidBrush
 			                                                 {
 				                                                 Color = GorgonColor.White
@@ -605,11 +605,11 @@ namespace Gorgon.Graphics.Fonts
 		/// <returns>A list of glyph regions.</returns>
 		public Dictionary<char, GlyphRegions> GetGlyphRegions(List<char> characters, bool hasOutline)
 		{
-			Dictionary<char, GlyphRegions> result = new Dictionary<char, GlyphRegions>();
+			var result = new Dictionary<char, GlyphRegions>();
 			System.Drawing.Graphics glyphBitmapGraphics = null;
 			Bitmap glyphBitmap = null;
 			var tempBitmap = new Bitmap(_fontInfo.TextureWidth, _fontInfo.TextureHeight, PixelFormat.Format32bppArgb);
-			System.Drawing.Graphics tempBitmapGraphics = System.Drawing.Graphics.FromImage(tempBitmap);
+			var tempBitmapGraphics = System.Drawing.Graphics.FromImage(tempBitmap);
 
 			tempBitmapGraphics.PageUnit = GraphicsUnit.Pixel;
 

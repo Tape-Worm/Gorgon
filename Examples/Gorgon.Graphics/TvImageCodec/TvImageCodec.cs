@@ -148,11 +148,11 @@ namespace Gorgon.Graphics.Example
             }
 
             // We only support 2D images with the tv format.
-            GorgonImageInfo settings = new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8G8B8A8_UNorm);
+            var settings = new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8G8B8A8_UNorm);
             TvHeader header;
 
             // Load the header for the image.
-            using(GorgonBinaryReader reader = new GorgonBinaryReader(stream, true))
+            using(var reader = new GorgonBinaryReader(stream, true))
             {
                 header = reader.ReadValue<TvHeader>();
             }
@@ -202,9 +202,9 @@ namespace Gorgon.Graphics.Example
 			}
 
 			// Create our resulting image buffer.
-			GorgonImage result = new GorgonImage(settings);
+			var result = new GorgonImage(settings);
 
-		    using (GorgonBinaryReader reader = new GorgonBinaryReader(stream, true))
+		    using (var reader = new GorgonBinaryReader(stream, true))
 		    {
 				// Write each scanline.
 				for (int y = 0; y < settings.Height; ++y)
@@ -263,7 +263,7 @@ namespace Gorgon.Graphics.Example
 	        }
 
 			// First, we'll need to set up our header metadata.
-	        TvHeader header = new TvHeader
+	        var header = new TvHeader
 	                     {
 		                     MagicValueData = MagicValue,
 		                     Width = imageData.Width,
@@ -271,7 +271,7 @@ namespace Gorgon.Graphics.Example
 	                     };
 
 			// Write the metadata to the stream.
-	        using (GorgonBinaryWriter writer = new GorgonBinaryWriter(stream, true))
+	        using (var writer = new GorgonBinaryWriter(stream, true))
 	        {
 		        writer.WriteValue(header);
 

@@ -339,12 +339,7 @@ namespace Gorgon.Graphics.Core
         {
             float width = Texture.Width;
 
-            if (mipLevel == null)
-            {
-                return pixelOffset / width;
-            }
-
-            return pixelOffset / GetMipWidth(mipLevel.Value);
+            return mipLevel == null ? pixelOffset / width : pixelOffset / GetMipWidth(mipLevel.Value);
         }
 
         /// <summary>
@@ -363,13 +358,8 @@ namespace Gorgon.Graphics.Core
         public int ToPixel(float texelOffset, int? mipLevel = null)
         {
             float width = Texture.Width;
-            
-            if (mipLevel == null)
-            {
-                return (int)(texelOffset * width);
-            }
 
-            return (int)(texelOffset * GetMipWidth(mipLevel.Value));
+            return mipLevel == null ? (int)(texelOffset * width) : (int)(texelOffset * GetMipWidth(mipLevel.Value));
         }
 
         /// <summary>
@@ -447,7 +437,6 @@ namespace Gorgon.Graphics.Core
                                                                     {
                                                                         Usage = newInfo.Usage,
                                                                         Binding = newInfo.Binding,
-                                                                        MultisampleInfo = GorgonMultisampleInfo.NoMultiSampling,
                                                                         Name = newInfo.Name
                                                                     });
 

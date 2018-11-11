@@ -216,17 +216,17 @@ namespace Gorgon.Graphics.Core
         /// <returns>The view that was created.</returns>
         private protected override D3D11.ResourceView OnCreateNativeView()
         {
-            D3D11.UnorderedAccessViewDescription1 desc = new D3D11.UnorderedAccessViewDescription1
-                                                         {
-                                                             Format = (Format)Format,
-                                                             Dimension = D3D11.UnorderedAccessViewDimension.Texture3D,
-                                                             Texture3D =
-                                                             {
-                                                                 MipSlice = MipSlice,
-                                                                 FirstWSlice = StartDepthSlice,
-                                                                 WSize = DepthSliceCount
-                                                             }
-                                                         };
+            var desc = new D3D11.UnorderedAccessViewDescription1
+                                {
+                                    Format = (Format)Format,
+                                    Dimension = D3D11.UnorderedAccessViewDimension.Texture3D,
+                                    Texture3D =
+                                    {
+                                        MipSlice = MipSlice,
+                                        FirstWSlice = StartDepthSlice,
+                                        WSize = DepthSliceCount
+                                    }
+                                };
 
             Graphics.Log.Print($"Creating 3D texture unordered access view for {Texture.Name}.", LoggingLevel.Verbose);
 
@@ -479,8 +479,7 @@ namespace Gorgon.Graphics.Core
                                                                     new GorgonTextureLoadOptions
                                                                     {
                                                                         Usage = newInfo.Usage,
-                                                                        Binding = newInfo.Binding,
-                                                                        MultisampleInfo = GorgonMultisampleInfo.NoMultiSampling,
+                                                                        Binding = newInfo.Binding,                                                                        
                                                                         Name = newInfo.Name
                                                                     });
 

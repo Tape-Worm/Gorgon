@@ -58,14 +58,5 @@ namespace Gorgon.Graphics.Core
             get;
             set;
         } = TextureBinding.ShaderResource;
-
-        /// <summary>
-        /// Property to set or return the multisampling information to apply to the texture.
-        /// </summary>
-        public GorgonMultisampleInfo MultisampleInfo
-        {
-            get;
-            set;
-        } = GorgonMultisampleInfo.NoMultiSampling;
    }
 }

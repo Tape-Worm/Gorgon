@@ -70,11 +70,11 @@ namespace CodecPlugIn
 		{
 			_swap.RenderTargetView.Clear(GorgonColor.White);
 
-			DX.Size2F windowSize = new DX.Size2F(ClientSize.Width, ClientSize.Height);
-			DX.Size2F imageSize = new DX.Size2F(_texture.Width, _texture.Height);
+			var windowSize = new DX.Size2F(ClientSize.Width, ClientSize.Height);
+			var imageSize = new DX.Size2F(_texture.Width, _texture.Height);
 
 			// Calculate the scale between the images.
-			DX.Size2F scale = new DX.Size2F(windowSize.Width / imageSize.Width, windowSize.Height / imageSize.Height);
+			var scale = new DX.Size2F(windowSize.Width / imageSize.Width, windowSize.Height / imageSize.Height);
 
 			// Only scale on a single axis if we don't have a 1:1 aspect ratio.
 			if (scale.Height > scale.Width)
@@ -87,10 +87,10 @@ namespace CodecPlugIn
 			}
 
 			// Scale the image.
-			DX.Size2 size = new DX.Size2((int)(scale.Width * imageSize.Width), (int)(scale.Height * imageSize.Height));
+			var size = new DX.Size2((int)(scale.Width * imageSize.Width), (int)(scale.Height * imageSize.Height));
 
 			// Find the position.
-			DX.Rectangle bounds = new DX.Rectangle((int)((windowSize.Width / 2) - (size.Width / 2)), (int)((windowSize.Height / 2) - (size.Height / 2)), size.Width, size.Height);
+			var bounds = new DX.Rectangle((int)((windowSize.Width / 2) - (size.Width / 2)), (int)((windowSize.Height / 2) - (size.Height / 2)), size.Width, size.Height);
 
             _graphics.DrawTexture(_texture, bounds);
 
@@ -147,7 +147,7 @@ namespace CodecPlugIn
 
 				_image = _customCodec.LoadFromFile(tempPath);
 				
-				_texture = _image.ToTexture2D(_graphics, new GorgonTextureLoadOptions
+				_texture = _image.ToTexture2D(_graphics, new GorgonTexture2DLoadOptions
 				                                         {
                                                              Name = "Converted Texture"
 				                                         }).GetShaderResourceView();

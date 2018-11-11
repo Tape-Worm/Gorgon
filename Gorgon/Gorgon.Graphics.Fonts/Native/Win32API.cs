@@ -220,7 +220,7 @@ namespace Gorgon.Native
 			uint firstCharIndex = Convert.ToUInt32(firstCharacter);
 			uint lastCharIndex = Convert.ToUInt32(lastCharacter);
 			int size = (int)(lastCharIndex - firstCharIndex) + 1;
-			Dictionary<char, ABC> result = new Dictionary<char, ABC>();
+			var result = new Dictionary<char, ABC>();
 
 			if (_hdc == IntPtr.Zero)
 			{

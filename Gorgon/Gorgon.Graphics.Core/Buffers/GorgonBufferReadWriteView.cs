@@ -153,7 +153,7 @@ namespace Gorgon.Graphics.Core
         {
             Graphics.Log.Print($"Creating D3D11 buffer unordered access view for {Buffer.Name}.", LoggingLevel.Verbose);
 
-            D3D11.UnorderedAccessViewDescription1 desc = new D3D11.UnorderedAccessViewDescription1
+            var desc = new D3D11.UnorderedAccessViewDescription1
                        {
                            Dimension = D3D11.UnorderedAccessViewDimension.Buffer,
                            Buffer =

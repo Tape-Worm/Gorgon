@@ -142,7 +142,7 @@ namespace Gorgon.Examples
         /// <returns><b>true</b> if successfully loaded, <b>false</b> if not.</returns>
         private static bool LoadZipProviderPlugin()
         {
-            FileInfo zipProviderFile = new FileInfo(Path.Combine(PluginPath.FormatDirectory(Path.DirectorySeparatorChar), "Gorgon.FileSystem.Zip.dll"));
+            var zipProviderFile = new FileInfo(Path.Combine(PluginPath.FormatDirectory(Path.DirectorySeparatorChar), "Gorgon.FileSystem.Zip.dll"));
 
 			// Check to see if the file exists.
             if (!zipProviderFile.Exists)
@@ -160,7 +160,7 @@ namespace Gorgon.Examples
             _pluginAssemblies.LoadPluginAssemblies(zipProviderFile.Directory?.FullName, zipProviderFile.Name);
 
 			// Create our file system provider factory so we can retrieve the zip file provider.
-	        GorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_pluginService, _log);
+	        var providerFactory = new GorgonFileSystemProviderFactory(_pluginService, _log);
 
 			// Get our zip file provider.
 	        GorgonFileSystemProvider provider;

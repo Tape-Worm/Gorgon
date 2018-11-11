@@ -77,7 +77,7 @@ namespace Gorgon.UI
 		/// <returns>A formatted stack trace.</returns>
 		private static string FormatStackTrace(string stackTrace)
 		{
-			StringBuilder result = new StringBuilder(8192);
+			var result = new StringBuilder(8192);
 
 			if (string.IsNullOrEmpty(stackTrace))
 			{
@@ -119,7 +119,7 @@ namespace Gorgon.UI
 			}
 
 			// Find all inner exceptions.
-			StringBuilder errorText = new StringBuilder(1024);
+			var errorText = new StringBuilder(1024);
 			Exception nextException = innerException;
 
 			while (nextException != null)
@@ -157,7 +157,7 @@ namespace Gorgon.UI
 				// Print custom information.
 				if (extraInfo.Count > 0)
 				{
-					StringBuilder customData = new StringBuilder(256);
+					var customData = new StringBuilder(256);
 
 					foreach (DictionaryEntry item in extraInfo)
 					{

@@ -59,7 +59,7 @@ namespace Gorgon.Graphics.Core
 
             using (Adapter warp = factory.GetWarpAdapter())
             using (Adapter4 warpAdapter4 = warp.QueryInterface<Adapter4>())
-            using (D3D11.Device D3DDevice = new D3D11.Device(warpAdapter4, flags))
+            using (var D3DDevice = new D3D11.Device(warpAdapter4, flags))
             using (D3D11.Device5 D3DDevice5 = D3DDevice.QueryInterface<D3D11.Device5>())
             {
                 FeatureSet? featureSet = GetFeatureLevel(D3DDevice5);
@@ -70,7 +70,7 @@ namespace Gorgon.Graphics.Core
                     return null;
                 }
 
-                VideoAdapterInfo result = new VideoAdapterInfo(index, warpAdapter4, featureSet.Value, new Dictionary<string, VideoOutputInfo>(), VideoDeviceType.Software);
+                var result = new VideoAdapterInfo(index, warpAdapter4, featureSet.Value, new Dictionary<string, VideoOutputInfo>(), VideoDeviceType.Software);
 
                 PrintLog(result, log);
 
@@ -261,7 +261,7 @@ namespace Gorgon.Graphics.Core
                         }
 
                         // We create a D3D device here to filter out unsupported video modes from the format list.
-                        using (D3D11.Device D3DDevice = new D3D11.Device(adapter, flags, D3D.FeatureLevel.Level_12_1, D3D.FeatureLevel.Level_12_0))
+                        using (var D3DDevice = new D3D11.Device(adapter, flags, D3D.FeatureLevel.Level_12_1, D3D.FeatureLevel.Level_12_0))
                         using (D3D11.Device5 D3DDevice5 = D3DDevice.QueryInterface<D3D11.Device5>())
                         {
                             D3DDevice5.DebugName = "Output enumerator device.";
@@ -283,7 +283,7 @@ namespace Gorgon.Graphics.Core
                                             LoggingLevel.Verbose);
                             }
 
-                            VideoAdapterInfo videoAdapter = new VideoAdapterInfo(i, adapter, featureSet.Value, outputs, VideoDeviceType.Hardware);
+                            var videoAdapter = new VideoAdapterInfo(i, adapter, featureSet.Value, outputs, VideoDeviceType.Hardware);
 
                             devices.Add(videoAdapter);
                             PrintLog(videoAdapter, log);

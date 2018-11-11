@@ -1874,7 +1874,7 @@ namespace Gorgon.Graphics.Core
             Adapter4 resultAdapter;
             D3D11.Device5 resultDevice;
 
-            using (Factory2 factory2 = new Factory2(IsDebugEnabled))
+            using (var factory2 = new Factory2(IsDebugEnabled))
             {
                 resultFactory = factory2.QueryInterface<Factory5>();
 
@@ -1884,7 +1884,7 @@ namespace Gorgon.Graphics.Core
                 {
                     resultAdapter = adapter.QueryInterface<Adapter4>();
 
-                    using (D3D11.Device device = new D3D11.Device(resultAdapter, flags, requestedFeatureLevel)
+                    using (var device = new D3D11.Device(resultAdapter, flags, requestedFeatureLevel)
                                                  {
                                                      DebugName =
                                                          $"'{adapterInfo.Name}' D3D11.4 {(adapterInfo.VideoDeviceType == VideoDeviceType.Software ? "Software Adapter" : "Adapter")}"
@@ -1914,7 +1914,7 @@ namespace Gorgon.Graphics.Core
             // Get support values for each format.
             foreach (BufferFormat format in formats)
             {
-                Format dxgiFormat = (Format)format;
+                var dxgiFormat = (Format)format;
 
                 // NOTE: NV12 seems to come back as value of -92093664, no idea what the extra flags might be, the documentation for D3D doesn't
                 //       specify the flags.

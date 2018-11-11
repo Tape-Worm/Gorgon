@@ -132,7 +132,7 @@ namespace Gorgon.Examples
                     continue;
                 }
 
-                DX.Vector2 position = new DX.Vector2(star.X * _screen.Width, star.Y * _screen.Height);
+                var position = new DX.Vector2(star.X * _screen.Width, star.Y * _screen.Height);
 
                 float starColorValue = GorgonRandom.RandomSingle(0.35f, 1.0f);
                 var starColor = new GorgonColor(starColorValue, starColorValue, starColorValue, 1.0f);
@@ -215,7 +215,7 @@ namespace Gorgon.Examples
                 _spaceBackground = GorgonTexture2DView.FromFile(_graphics,
                                                                 Path.Combine(GorgonExample.GetResourcePath(@"Textures\").FullName, "HotPocket.dds"),
                                                                 new GorgonCodecDds(),
-                                                                new GorgonTextureLoadOptions
+                                                                new GorgonTexture2DLoadOptions
                                                                 {
                                                                     Usage = ResourceUsage.Immutable
                                                                 });
@@ -224,7 +224,7 @@ namespace Gorgon.Examples
                 _shipTexture = GorgonTexture2DView.FromFile(_graphics,
                                                             Path.Combine(GorgonExample.GetResourcePath(@"Textures\Sprites\").FullName, "wship1.png"),
                                                             new GorgonCodecPng(),
-                                                            new GorgonTextureLoadOptions
+                                                            new GorgonTexture2DLoadOptions
                                                             {
                                                                 Usage = ResourceUsage.Immutable
                                                             });

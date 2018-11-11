@@ -53,6 +53,7 @@
     <Compile Include="..\..\Gorgon\Gorgon.Core\SharedAssemblyInfo.cs">
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="ImageEditorCommonConstants.cs" />
     <Compile Include="ImageEditorPlugin.cs" />
     <Compile Include="ImageEditorSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -68,9 +69,12 @@
     <Compile Include="ImageEditorView.Designer.cs">
       <DependentUpon>ImageEditorView.cs</DependentUpon>
     </Compile>
+    <Compile Include="ViewModels\ImageContentVm.cs" />
+    <Compile Include="ViewModels\_Interfaces\IImageContentVm.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\center_16x16.png" />
     <None Include="Resources\image_16x16.png" />
   </ItemGroup>
   <ItemGroup>

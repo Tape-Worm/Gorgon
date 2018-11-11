@@ -99,8 +99,8 @@ namespace Gorgon.Examples
 		/// <param name="index">Index of the controller.</param>
 		private void UpdateControllerLabels(IGorgonGamingDevice device, int index)
 		{			
-			Panel panel = (Panel)panelControllers.Controls["panelController" + index];
-			Label label = (Label)panel.Controls["labelController" + index];			
+			var panel = (Panel)panelControllers.Controls["panelController" + index];
+			var label = (Label)panel.Controls["labelController" + index];			
 
 			// Update the label visibility for the controller.
 			if (device.IsConnected)
@@ -187,10 +187,10 @@ namespace Gorgon.Examples
 			GorgonRange xRange = controller.Info.AxisInfo[GamingDeviceAxis.LeftStickX].Range;
 			GorgonRange yRange = controller.Info.AxisInfo[GamingDeviceAxis.LeftStickY].Range;
 			int playerColorValue = (int)(((uint)0xFF << (index * 8)) | 0xFF000000);						// Get the color based on the controller index.			
-			Size cursorSize = new Size(_surface.CursorSize.Width / 2, _surface.CursorSize.Height / 2);	// Get the cursor size with offset.
+			var cursorSize = new Size(_surface.CursorSize.Width / 2, _surface.CursorSize.Height / 2);	// Get the cursor size with offset.
 
 			// Transform the axis into a -1 .. 1 range.				
-			PointF moveVector = new PointF(controller.Axis[GamingDeviceAxis.LeftStickX].Value - (float)xRange.Minimum,
+			var moveVector = new PointF(controller.Axis[GamingDeviceAxis.LeftStickX].Value - (float)xRange.Minimum,
 											controller.Axis[GamingDeviceAxis.LeftStickY].Value - (float)yRange.Minimum);
 
 			moveVector = new PointF((moveVector.X / (xRange.Range + 1) * 2.0f) - 1.0f,
@@ -198,7 +198,7 @@ namespace Gorgon.Examples
 
 			// Move at 100 units per second 
 			float speed = panelDisplay.ClientSize.Width / 2.0f * GorgonTiming.Delta;
-			PointF position = new PointF((speed * moveVector.X) + _stickPosition[index].X,
+			var position = new PointF((speed * moveVector.X) + _stickPosition[index].X,
 										(speed * -moveVector.Y) + _stickPosition[index].Y);
 
 
@@ -366,7 +366,7 @@ namespace Gorgon.Examples
 				IGorgonPluginService pluginService = new GorgonMefPluginService(_assemblies, GorgonApplication.Log);
 
 				// Create the gaming device driver factory.
-				GorgonGamingDeviceDriverFactory factory = new GorgonGamingDeviceDriverFactory(pluginService, GorgonApplication.Log);
+				var factory = new GorgonGamingDeviceDriverFactory(pluginService, GorgonApplication.Log);
 
 				// Create our factory.
 				_driver = factory.LoadDriver("Gorgon.Input.XInput.GorgonXInputDriver");

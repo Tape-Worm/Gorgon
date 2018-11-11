@@ -161,7 +161,7 @@ namespace Gorgon.UI
         /// <param name="m">The Windows <see cref="T:System.Windows.Forms.Message" /> to process.</param>
 	    protected override void WndProc(ref Message m)
 	    {
-		    WindowMessages message = (WindowMessages)m.Msg;
+		    var message = (WindowMessages)m.Msg;
 
 		    switch (message)
 		    {

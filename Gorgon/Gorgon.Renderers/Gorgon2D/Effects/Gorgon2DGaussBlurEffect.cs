@@ -288,7 +288,7 @@ namespace Gorgon.Renderers
         private void UpdateOffsets()
         {
             // This adjusts just how far from the texel the blurring can occur.
-            DX.Vector2 unitSize = new DX.Vector2(1.0f / BlurRenderTargetsSize.Width, 1.0f / BlurRenderTargetsSize.Height);
+            var unitSize = new DX.Vector2(1.0f / BlurRenderTargetsSize.Width, 1.0f / BlurRenderTargetsSize.Height);
 
             int pointerOffset = 0;
             int yOffset = (((_blurRadius) * 2) + 1);

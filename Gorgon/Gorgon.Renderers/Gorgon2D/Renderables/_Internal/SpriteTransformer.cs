@@ -42,7 +42,7 @@ namespace Gorgon.Renderers
         /// <param name="corners">The corners of the renderable.</param>
         private static void BuildRenderable(ref DX.RectangleF bounds, ref DX.Vector2 anchor, out DX.Vector4 corners)
         {
-            DX.Vector2 vectorSize = new DX.Vector2(bounds.Size.Width, bounds.Size.Height);
+            var vectorSize = new DX.Vector2(bounds.Size.Width, bounds.Size.Height);
             DX.Vector2 axisOffset = default;
 
             if (!anchor.IsZero)

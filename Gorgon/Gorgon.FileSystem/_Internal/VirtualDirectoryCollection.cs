@@ -237,7 +237,7 @@ namespace Gorgon.IO
 				}
 				else
 				{
-					VirtualDirectory newDirectoryInfo = new VirtualDirectory(mountPoint, _parent.FileSystem, directory, item);
+					var newDirectoryInfo = new VirtualDirectory(mountPoint, _parent.FileSystem, directory, item);
 					directory.Directories.Add(newDirectoryInfo);
 					directory = newDirectoryInfo;
 				}
