@@ -63,6 +63,7 @@
     </Compile>
     <Compile Include="Boot.cs" />
     <Compile Include="CommonCommands.cs" />
+    <Compile Include="ContentRibbonEventArgs.cs" />
     <Compile Include="Data\FileSystemClipboardData.cs" />
     <Compile Include="FormMain.cs">
       <SubType>Form</SubType>

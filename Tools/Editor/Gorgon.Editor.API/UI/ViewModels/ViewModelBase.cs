@@ -29,6 +29,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
 using Gorgon.Editor.Properties;
 using Gorgon.Math;
 
@@ -77,10 +78,19 @@ namespace Gorgon.Editor.UI
 
         #region Variables.
         // The list of properties to use.
-        private PropertyDescriptorCollection _properties;
+        private PropertyDescriptorCollection _properties;        
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return the logging interface for debug log messages.
+        /// </summary>
+        protected IGorgonLog Log
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// Property to set or return whether to use property name validation when evaluating property changes.
         /// </summary>
@@ -360,7 +370,17 @@ namespace Gorgon.Editor.UI
         /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
         /// </para>
         /// </remarks>
-        public void Initialize(T injectionParameters) => OnInitialize(injectionParameters ?? throw new ArgumentNullException(nameof(injectionParameters)));
+        public void Initialize(T injectionParameters)
+        {
+            if (injectionParameters == null)
+            {
+                throw new ArgumentNullException(nameof(injectionParameters));
+            }
+
+            Log = injectionParameters.Log ?? GorgonLog.NullLog;
+
+            OnInitialize(injectionParameters);
+        }
         #endregion
 
         #region Constructor.

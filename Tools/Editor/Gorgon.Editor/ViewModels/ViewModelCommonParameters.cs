@@ -35,18 +35,8 @@ namespace Gorgon.Editor.ViewModels
     /// Common injection parameters for all view models.
     /// </summary>
     internal abstract class ViewModelCommonParameters
-        : IViewModelInjection
+        : ViewModelInjectionCommon
     {
-        /// <summary>
-        /// Property to set or return the serivce used to show busy states.
-        /// </summary>
-        public IBusyStateService BusyState => ViewModelFactory.BusyService;
-
-        /// <summary>
-        /// Property to set or return the service used to show message dialogs.
-        /// </summary>
-        public IMessageDisplayService MessageDisplay => ViewModelFactory.MessageDisplay;
-
         /// <summary>
         /// Property to set or return the current project.
         /// </summary>
@@ -87,6 +77,8 @@ namespace Gorgon.Editor.ViewModels
         public ViewModelCommonParameters(ViewModelFactory viewModelFactory)
         {
             ViewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
+            BusyService = ViewModelFactory.BusyService;
+            MessageDisplay = ViewModelFactory.MessageDisplay;
         }
     }
 }

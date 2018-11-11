@@ -171,7 +171,7 @@ namespace Gorgon.Editor.ViewModels
             _workspace = injectionParameters.WorkspaceDirectory ?? throw new ArgumentMissingException(nameof(StageNewVmParameters.WorkspaceDirectory), nameof(injectionParameters));
             _projectManager = injectionParameters.ProjectManager ?? throw new ArgumentMissingException(nameof(StageNewVmParameters.ProjectManager), nameof(injectionParameters));            
             _messageService = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(StageNewVmParameters.MessageDisplay), nameof(injectionParameters));
-            _busyService = injectionParameters.BusyState ?? throw new ArgumentMissingException(nameof(StageNewVmParameters.BusyState), nameof(injectionParameters));
+            _busyService = injectionParameters.BusyService ?? throw new ArgumentMissingException(nameof(StageNewVmParameters.BusyService), nameof(injectionParameters));
 
             _computerInfo = new GorgonComputerInfo();
 

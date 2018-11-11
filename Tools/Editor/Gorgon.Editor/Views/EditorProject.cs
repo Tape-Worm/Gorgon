@@ -27,6 +27,7 @@
 using System;
 using System.ComponentModel;
 using System.Windows.Forms;
+using ComponentFactory.Krypton.Ribbon;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
@@ -41,6 +42,16 @@ namespace Gorgon.Editor.Views
         : EditorBaseControl, IDataContext<IProjectVm>
     {
         #region Events.
+        /// <summary>
+        /// Event triggered when a ribbon is added.
+        /// </summary>
+        public event EventHandler<ContentRibbonEventArgs> RibbonAdded;
+
+        /// <summary>
+        /// Event triggered when a ribbon is added.
+        /// </summary>
+        public event EventHandler<ContentRibbonEventArgs> RibbonRemoved;
+
         /// <summary>
         /// Event used to indicate that a rename operation has started.
         /// </summary>
@@ -77,8 +88,10 @@ namespace Gorgon.Editor.Views
         #region Variables.
         // Flag to indicate that the data context load should be deferred.
         private bool _deferDataContextLoad = true;
+        // The current ribbon for the current content.
+        private KryptonRibbon _currentContentRibbon;
         #endregion
-
+        
         #region Properties.
         /// <summary>
         /// Property to set or return the application graphics context.
@@ -130,6 +143,17 @@ namespace Gorgon.Editor.Views
             
         }
 
+
+        /// <summary>
+        /// Function called when the current content control is closing.
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The event parameters.</param>
+        private void ContentControl_ControlClosing(object sender, EventArgs e)
+        {
+            SetupContent(null);
+        }
+
         /// <summary>
         /// Function to reset the view to its default state when the data context is reset.
         /// </summary>
@@ -141,9 +165,25 @@ namespace Gorgon.Editor.Views
         /// <param name="dataContext">The current data context.</param>
         private void SetupContent(IProjectVm dataContext)
         {
+            if (_currentContentRibbon != null)
+            {                
+                var args = new ContentRibbonEventArgs(_currentContentRibbon);
+                _currentContentRibbon = null;
+
+                EventHandler<ContentRibbonEventArgs> handler = RibbonRemoved;
+                handler?.Invoke(this, args);
+            }
+
             // Remove all controls.
             while (SplitProject.Panel1.Controls.Count > 0)
-            {                
+            {
+                var contentControl = SplitProject.Panel1.Controls[SplitProject.Panel1.Controls.Count - 1] as ContentBaseControl;
+
+                if (contentControl != null)
+                {
+                    contentControl.ControlClosing -= ContentControl_ControlClosing;
+                }
+
                 SplitProject.Panel1.Controls[SplitProject.Panel1.Controls.Count - 1].Dispose();
             }
 
@@ -155,7 +195,8 @@ namespace Gorgon.Editor.Views
             }
 
             // Get our view from the content.
-            ContentBaseControl control = dataContext.CurrentContent.GetView();
+            ContentBaseControl control = ViewFactory.CreateView<ContentBaseControl>(dataContext.CurrentContent);
+            ViewFactory.AssignViewModel(dataContext.CurrentContent, control);
             control.Dock = DockStyle.Fill;
             SplitProject.Panel1.Controls.Add(control);
             SplitProject.Panel1Collapsed = false;
@@ -163,8 +204,16 @@ namespace Gorgon.Editor.Views
             // Set up the graphics context.
             control.SetupGraphics(GraphicsContext);
 
-            // Initialize now that the view is alive.
-            dataContext.CurrentContent.Initialize();
+            if (control.Ribbon != null)
+            {
+                var args = new ContentRibbonEventArgs(control.Ribbon);
+                EventHandler<ContentRibbonEventArgs> handler = RibbonAdded;
+                handler?.Invoke(this, args);
+
+                _currentContentRibbon = control.Ribbon;
+            }
+
+            control.ControlClosing += ContentControl_ControlClosing;
 
             control.Start();
         }
@@ -189,6 +238,9 @@ namespace Gorgon.Editor.Views
         /// </summary>
         private void UnassignEvents()
         {
+            // Close the current content control.
+            SetupContent(null);
+
             if (DataContext == null)
             {
                 return;

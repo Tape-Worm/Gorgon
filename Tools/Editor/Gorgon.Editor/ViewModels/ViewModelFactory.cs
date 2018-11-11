@@ -30,11 +30,13 @@ using System.Collections.ObjectModel;
 using System.IO;
 using Gorgon.Collections;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Plugins;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
+using Gorgon.Editor.UI;
 using Gorgon.IO;
 
 namespace Gorgon.Editor.ViewModels
@@ -43,6 +45,7 @@ namespace Gorgon.Editor.ViewModels
     /// A factory for generating view models and their dependencies.
     /// </summary>
     internal class ViewModelFactory
+        : IViewModelInjection
     {
 
         #region Variables.
@@ -107,6 +110,16 @@ namespace Gorgon.Editor.ViewModels
         /// Property to return the directory locator service used to select directories on the physical file system.
         /// </summary>
         public IDirectoryLocateService DirectoryLocator => _dirLocator;
+
+        /// <summary>Property to set or return the logging interface for debug logging.</summary>
+        IGorgonLog IViewModelInjection.Log
+        {
+            get => Program.Log;
+            set
+            {
+                // Intentionally left empty.
+            }
+        }
         #endregion
 
         #region Methods.

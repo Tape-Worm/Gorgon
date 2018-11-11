@@ -37,6 +37,8 @@ using Gorgon.Editor.Rendering;
 using Gorgon.Graphics.Core;
 using Gorgon.UI;
 using ComponentFactory.Krypton.Toolkit;
+using ComponentFactory.Krypton.Ribbon;
+using Gorgon.Editor.Content;
 
 namespace Gorgon.Editor.UI.Views
 {
@@ -46,6 +48,13 @@ namespace Gorgon.Editor.UI.Views
     public partial class ContentBaseControl 
         : EditorBaseControl, IRendererControl
     {
+        #region Events.
+        /// <summary>
+        /// Event triggered when the control is closing.
+        /// </summary>
+        public event EventHandler ControlClosing;
+        #endregion
+
         #region Variables.
         // The swap chain for the control.
         private GorgonSwapChain _swapChain;
@@ -62,6 +71,16 @@ namespace Gorgon.Editor.UI.Views
         {
             get;
             set;
+        }
+
+        /// <summary>
+        /// Property to return the ribbon for the content view.
+        /// </summary>
+        [Browsable(false)]
+        public KryptonRibbon Ribbon
+        {
+            get;
+            protected set;
         }
 
         /// <summary>
@@ -124,6 +143,15 @@ namespace Gorgon.Editor.UI.Views
         /// </remarks>
         protected virtual void OnShutdown()
         {
+        }
+
+        /// <summary>
+        /// Function to close the control.
+        /// </summary>
+        public void Close()
+        {
+            EventHandler handler = ControlClosing;
+            handler?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -197,6 +225,22 @@ namespace Gorgon.Editor.UI.Views
             OnSetupGraphics(context, swapChain);
             GraphicsContext = context;
             _swapChain = swapChain;
+        }
+
+        /// <summary>
+        /// Function to assign the current content name.
+        /// </summary>
+        /// <param name="contentName">The name of the content.</param>
+        public void SetContentName(string contentName)
+        {
+            if (string.IsNullOrWhiteSpace(contentName))
+            {
+                PanelContentName.Visible = false;
+                return;
+            }
+
+            LabelHeader.Text = contentName;
+            PanelContentName.Visible = true;
         }
         #endregion
 

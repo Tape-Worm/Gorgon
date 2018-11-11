@@ -20,18 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: November 9, 2018 3:30:20 PM
+// Created: November 10, 2018 10:36:44 PM
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Gorgon.Editor.UI;
-
-namespace Gorgon.Editor.ImageEditor.ViewModels
+namespace Gorgon.Editor.ImageEditor
 {
     /// <summary>
     /// The zoom levels for image magnification.
@@ -74,35 +67,5 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Shrink to 1600% of normal size.
         /// </summary>
         Percent1600 = 8
-    }
-
-    /// <summary>
-    /// The image content view model.
-    /// </summary>
-    internal interface IImageContentVm
-        : IViewModel
-    {
-        #region Variables.
-
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to set or return the zoom level.
-        /// </summary>
-        ZoomLevels ZoomLevel
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Methods.
-
-        #endregion
-
-        #region Constructor/Finalizer.
-
-        #endregion
     }
 }

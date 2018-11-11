@@ -49,6 +49,7 @@
             this.SplitProject.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
             this.SplitProject.Location = new System.Drawing.Point(0, 0);
             this.SplitProject.Name = "SplitProject";
+            this.SplitProject.Panel1Collapsed = true;
             this.SplitProject.Panel1MinSize = 640;
             // 
             // SplitProject.Panel2
@@ -66,7 +67,7 @@
             this.FileExplorer.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.FileExplorer.Location = new System.Drawing.Point(0, 0);
             this.FileExplorer.Name = "FileExplorer";
-            this.FileExplorer.Size = new System.Drawing.Size(288, 596);
+            this.FileExplorer.Size = new System.Drawing.Size(976, 596);
             this.FileExplorer.TabIndex = 0;
             this.FileExplorer.Enter += new System.EventHandler(this.FileExplorer_Enter);
             this.FileExplorer.Leave += new System.EventHandler(this.FileExplorer_Enter);

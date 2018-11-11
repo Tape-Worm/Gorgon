@@ -141,11 +141,31 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not find a view factory registered to the type &apos;{0}&apos;..
+        /// </summary>
+        internal static string GOREDIT_ERR_CANNOT_FIND_VIEW_FACTORY {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CANNOT_FIND_VIEW_FACTORY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There is no data of the type &apos;{0}&apos; on the clipboard..
         /// </summary>
         internal static string GOREDIT_ERR_CLIPBOARD_NO_DATA_OF_TYPE {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_CLIPBOARD_NO_DATA_OF_TYPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error closing the content.
+        ///
+        ///Some changes may not have been saved..
+        /// </summary>
+        internal static string GOREDIT_ERR_CLOSE_CONTENT {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CLOSE_CONTENT", resourceCulture);
             }
         }
         

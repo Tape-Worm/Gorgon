@@ -32,17 +32,18 @@ using System.Text;
 using System.Threading.Tasks;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ImageEditor.ViewModels;
+using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.ImageEditor.ViewModels
 {
     /// <summary>
     /// The image editor content.
     /// </summary>
     internal class ImageContent
-        : EditorContentCommon
+        : EditorContentCommon<ImageContentParameters>, IImageContent
     {
         #region Constants.
         /// <summary>
@@ -54,12 +55,10 @@ namespace Gorgon.Editor.ImageEditor
         #region Variables.
         // The image.
         private IGorgonImage _image;
-        // The view for the content.
-        private ImageEditorView _view;
         // The codec used by the image.
         private IGorgonImageCodec _codec;
         // The available image codecs.        
-        private readonly IReadOnlyList<IGorgonImageCodec> _codecs;
+        private IReadOnlyList<IGorgonImageCodec> _codecs;
         #endregion
 
         #region Properties.
@@ -69,52 +68,56 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>
         /// Property to set or return the image codec used by the image content.
         /// </summary>
-        public IGorgonImageCodec Codec
+        public IGorgonImageCodec CurrentCodec
         {
             get => _codec;
             set
             {
+                if (_codec == value)
+                {
+                    return;
+                }
+
                 Debug.Assert(value != null, "Codec should never be null.");
+                OnPropertyChanging();
                 _codec = value;
                 File.Metadata.Attributes[CodecAttr] = value.GetType().FullName;
+                OnPropertyChanged();                
             }
         }
+
+        /// <summary>Property to return the name of the content.</summary>
+        public string ContentName => File.Name;
         #endregion
 
         #region Methods.        
-        /// <summary>Function to retrieve the view for the content.</summary>
-        /// <returns>A UI for the content, must not be <b>null</b>.</returns>
-        protected override ContentBaseControl OnGetView()
-        {
-            IImageContentVm imageContentVm = new ImageContentVm();
-
-            _view = new ImageEditorView();
-            _view.SetDataContext(imageContentVm);            
-
-            return _view;
-        }        
 
         /// <summary>Function to initialize the content.</summary>
-        public override void Initialize()
+        /// <param name="injectionParameters">Common view model dependency injection parameters from the application.</param>
+        protected override void OnInitialize(ImageContentParameters injectionParameters)
         {
-            if (_view == null)
-            {
-                return;
-            }
+            base.OnInitialize(injectionParameters);
 
-            _view.TempSetupImageToRender(_image, File.Path);
+            _codec = injectionParameters.Codec ?? throw new ArgumentMissingException(nameof(injectionParameters.Codec), nameof(injectionParameters));
+            _codecs = injectionParameters.Codecs ?? throw new ArgumentMissingException(nameof(injectionParameters.Codecs), nameof(injectionParameters));
+            _image = injectionParameters.Image ?? throw new ArgumentMissingException(nameof(ImageContentParameters.Image), nameof(injectionParameters));
         }
 
-        /// <summary>Function to close the content.</summary>
-        public override void Close()
+        /// <summary>
+        /// Function to retrieve the image data for displaying on the view.
+        /// </summary>
+        /// <returns>The underlying image data for display.</returns>
+        public IGorgonImage GetImage() => _image;
+
+        /// <summary>Function called when the associated view is unloaded.</summary>
+        public override void OnUnload()
         {
-            _view?.Dispose();
             _image?.Dispose();
         }
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the EditorContentCommon class.</summary>
+        /*/// <summary>Initializes a new instance of the EditorContentCommon class.</summary>
         /// <param name="file">The file for the content.</param>
         /// <param name="image">The image data.</param>
         /// <param name="codecs">The available codec list.</param>
@@ -124,7 +127,7 @@ namespace Gorgon.Editor.ImageEditor
         {
             _image = image ?? throw new ArgumentNullException(nameof(image));
             _codecs = codecs ?? throw new ArgumentNullException(nameof(codecs));
-        }
+        }*/
         #endregion
     }
 }

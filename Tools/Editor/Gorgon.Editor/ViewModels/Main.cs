@@ -223,7 +223,7 @@ namespace Gorgon.Editor.ViewModels
             _openDialog = injectionParameters.OpenDialog ?? throw new ArgumentMissingException(nameof(MainParameters.OpenDialog), nameof(injectionParameters));
             _saveDialog = injectionParameters.SaveDialog ?? throw new ArgumentMissingException(nameof(MainParameters.SaveDialog), nameof(injectionParameters));
             _messageService = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(MainParameters.MessageDisplay), nameof(injectionParameters));
-            _busyService = injectionParameters.BusyState ?? throw new ArgumentMissingException(nameof(MainParameters.BusyState), nameof(injectionParameters));
+            _busyService = injectionParameters.BusyService ?? throw new ArgumentMissingException(nameof(MainParameters.BusyService), nameof(injectionParameters));
             NewProject = injectionParameters.NewProject ?? throw new ArgumentMissingException(nameof(MainParameters.NewProject), nameof(injectionParameters));
             RecentFiles = injectionParameters.RecentFiles ?? throw new ArgumentMissingException(nameof(MainParameters.RecentFiles), nameof(injectionParameters));
 

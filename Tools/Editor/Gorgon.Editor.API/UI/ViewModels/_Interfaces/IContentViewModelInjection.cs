@@ -24,37 +24,20 @@
 // 
 #endregion
 
-using Gorgon.Diagnostics;
-using Gorgon.Editor.Services;
+using Gorgon.Editor.Content;
 
 namespace Gorgon.Editor.UI
 {
     /// <summary>
-    /// Defines values to inject into a view model.
+    /// Defines values to inject into content view models.
     /// </summary>
-    public interface IViewModelInjection
+    public interface IContentViewModelInjection
+        : IViewModelInjection
     {
         /// <summary>
-        /// Property to set or return the logging interface for debug logging.
+        /// Property to return the content file.
         /// </summary>
-        IGorgonLog Log
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the serivce used to show busy states.
-        /// </summary>
-        IBusyStateService BusyService
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the service used to show message dialogs.
-        /// </summary>
-        IMessageDisplayService MessageDisplay
+        IContentFile File
         {
             get;
         }

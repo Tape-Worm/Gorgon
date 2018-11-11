@@ -36,6 +36,7 @@ using Gorgon.Editor.Content;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
+using Gorgon.Editor.UI;
 using Gorgon.Plugins;
 
 namespace Gorgon.Editor.Plugins
@@ -92,26 +93,33 @@ namespace Gorgon.Editor.Plugins
         /// Function to open a content object from this plugin.
         /// </summary>
         /// <param name="file">The file that contains the content.</param>
+        /// <param name="injector">Parameters for injecting dependency objects.</param>
         /// <param name="log">The logging interface to use.</param>
         /// <returns>A new <see cref="IEditorContent"/> object.</returns>
-        protected abstract Task<IEditorContent> OnOpenContentAsync(IContentFile file, IGorgonLog log);        
+        protected abstract Task<IEditorContent> OnOpenContentAsync(IContentFile file, IViewModelInjection injector, IGorgonLog log);
 
         /// <summary>
         /// Function to open a content object from this plugin.
         /// </summary>        
         /// <param name="file">The file that contains the content.</param>
+        /// <param name="injector">Parameters for injecting dependency objects.</param>
         /// <param name="log">The logging interface to use.</param>
         /// <returns>A new <see cref="IEditorContent"/> object.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/>, or the <paramref name="injector"/> parameter is <b>null</b>.</exception>
         /// <exception cref="GorgonException">Thrown if the <see cref="OnOpenContentAsync"/> method returns <b>null</b>.</exception>
-        public async Task<IEditorContent> OpenContentAsync(IContentFile file, IGorgonLog log)
+        public async Task<IEditorContent> OpenContentAsync(IContentFile file, IViewModelInjection injector, IGorgonLog log)
         {
             if (file == null)
             {
                 throw new ArgumentNullException(nameof(file));
             }
 
-            IEditorContent content = await OnOpenContentAsync(file, log ?? GorgonLog.NullLog);
+            if (injector == null)
+            {
+                throw new ArgumentNullException(nameof(injector));
+            }
+
+            IEditorContent content = await OnOpenContentAsync(file, injector, log ?? GorgonLog.NullLog);
 
             if (content == null)
             {
@@ -140,7 +148,7 @@ namespace Gorgon.Editor.Plugins
         /// <summary>
         /// Function to perform any required initialization for the plugin.
         /// </summary>
-        /// <param name="pluginService">The plugin service used to access other plugins.</param>        
+        /// <param name="pluginService">The plugin service used to access other plugins.</param>                
         /// <param name="log">The logging interface for debug messages.</param>
         /// <remarks>
         /// <para>
@@ -170,7 +178,7 @@ namespace Gorgon.Editor.Plugins
         /// <param name="description">Optional description of the plugin.</param>
         protected ContentPlugin(string description)
             : base(description)
-        {
+        {            
         }
         #endregion
     }

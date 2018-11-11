@@ -48,6 +48,8 @@ namespace Gorgon.Editor.ViewModels
         : ViewModelBase<ProjectVmParameters>, IProjectVm
     {
         #region Variables.
+        // The factory used to create view models.
+        private ViewModelFactory _viewModelFactory;
         // The project data for the view model.
         private IProject _projectData;
         // The message display service.
@@ -65,7 +67,7 @@ namespace Gorgon.Editor.ViewModels
         // The file for the project.
         private FileInfo _projectFile;
         // The content plugin service.
-        private IContentPluginManagerService _contentPlugins;
+        private IContentPluginManagerService _contentPlugins;        
         // The currently active content.
         private IEditorContent _currentContent;        
         #endregion
@@ -337,13 +339,13 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 // Close the current content. It should be saved at this point.
-                CurrentContent?.Close();
+                CurrentContent?.OnUnload();
                 CurrentContent = null;
 
                 ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_OPENING, file.Name));
 
                 // Create a content object.
-                IEditorContent content = await file.ContentPlugin.OpenContentAsync(file, Program.Log);
+                IEditorContent content = await file.ContentPlugin.OpenContentAsync(file, _viewModelFactory, Program.Log);
 
                 if (content == null)
                 {
@@ -374,10 +376,11 @@ namespace Gorgon.Editor.ViewModels
         /// <exception cref="ArgumentMissingException">Thrown if any argument is <b>null</b>.</exception>
         protected override void OnInitialize(ProjectVmParameters injectionParameters)
         {
+            _viewModelFactory = injectionParameters.ViewModelFactory;
             _projectManager = injectionParameters.ProjectManager ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.ProjectManager), nameof(injectionParameters));
             _projectData = injectionParameters.Project ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.Project), nameof(injectionParameters));
             _messageService = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.MessageDisplay), nameof(injectionParameters));
-            _busyService = injectionParameters.BusyState ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.BusyState), nameof(injectionParameters));            
+            _busyService = injectionParameters.BusyService ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.BusyService), nameof(injectionParameters));            
             _contentPlugins = injectionParameters.ContentPlugins ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.ContentPlugins), nameof(injectionParameters));
 
             FileExplorer.OpenContentFile = new EditorCommand<IContentFile>(DoOpenContent, CanOpenContent);
@@ -465,7 +468,7 @@ namespace Gorgon.Editor.ViewModels
             HideProgress();
             UnassignEvents();
 
-            CurrentContent?.Close();
+            CurrentContent?.OnUnload();
         }
         #endregion
     }

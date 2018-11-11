@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: November 9, 2018 3:56:48 PM
+// Created: November 9, 2018 3:30:20 PM
 // 
 #endregion
 
@@ -30,53 +30,42 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Gorgon.Editor.UI;
+using Gorgon.Graphics.Imaging;
+using Gorgon.Graphics.Imaging.Codecs;
 
 namespace Gorgon.Editor.ImageEditor.ViewModels
 {
     /// <summary>
     /// The image content view model.
     /// </summary>
-    internal class ImageContentVm
-        : ViewModelBase<IViewModelInjection>, IImageContentVm
+    internal interface IImageContent
+        : IEditorContent
     {
-        #region Variables.
-        // The current zoom level.
-        private ZoomLevels _zoomLevels = ZoomLevels.ToWindow;
-        #endregion
-
         #region Properties.
-        /// <summary>Property to set or return the zoom level.</summary>
-        public ZoomLevels ZoomLevel
+        /// <summary>
+        /// Property to return the name of the content.
+        /// </summary>
+        string ContentName
         {
-            get => _zoomLevels;
-            set
-            {
-                if (_zoomLevels == value)
-                {
-                    return;
-                }
+            get;
+        }
 
-                OnPropertyChanging();
-                _zoomLevels = value;
-                OnPropertyChanged();
-            }
+        /// <summary>
+        /// Property to set or return the current image codec.
+        /// </summary>
+        IGorgonImageCodec CurrentCodec
+        {
+            get;
+            set;
         }
         #endregion
 
         #region Methods.
-        /// <summary>Function to inject dependencies for the view model.</summary>
-        /// <param name="injectionParameters">The parameters to inject.</param>
-        /// <remarks>
-        /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
-        /// </remarks>
-        protected override void OnInitialize(IViewModelInjection injectionParameters)
-        {
-            // Not needed right now
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-
+        /// <summary>
+        /// Function to retrieve the image data for displaying on the view.
+        /// </summary>
+        /// <returns>The underlying image data for display.</returns>
+        IGorgonImage GetImage();
         #endregion
     }
 }

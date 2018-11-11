@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: September 17, 2018 7:58:15 AM
+// Created: November 10, 2018 11:07:56 PM
 // 
 #endregion
 
@@ -30,33 +30,34 @@ using Gorgon.Editor.Services;
 namespace Gorgon.Editor.UI
 {
     /// <summary>
-    /// Defines values to inject into a view model.
+    /// Common view model parameters.
     /// </summary>
-    public interface IViewModelInjection
+    public class ViewModelInjectionCommon
+        : IViewModelInjection
     {
-        /// <summary>
-        /// Property to set or return the logging interface for debug logging.
-        /// </summary>
-        IGorgonLog Log
+        /// <summary>Property to set or return the logging interface for debug logging.</summary>
+        public IGorgonLog Log
         {
             get;
             set;
         }
 
         /// <summary>
-        /// Property to return the serivce used to show busy states.
+        /// Property to set or return the serivce used to show busy states.
         /// </summary>
-        IBusyStateService BusyService
+        public IBusyStateService BusyService
         {
             get;
+            protected set;
         }
 
         /// <summary>
-        /// Property to return the service used to show message dialogs.
+        /// Property to set or return the service used to show message dialogs.
         /// </summary>
-        IMessageDisplayService MessageDisplay
+        public IMessageDisplayService MessageDisplay
         {
             get;
+            protected set;
         }
     }
 }

@@ -20,43 +20,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: September 17, 2018 7:58:15 AM
+// Created: November 10, 2018 11:07:56 PM
 // 
 #endregion
 
-using Gorgon.Diagnostics;
+using System;
+using Gorgon.Editor.Content;
 using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.UI
 {
     /// <summary>
-    /// Defines values to inject into a view model.
+    /// Common content view model parameters.
     /// </summary>
-    public interface IViewModelInjection
+    public class ContentViewModelInjectionCommon
+        : ViewModelInjectionCommon, IContentViewModelInjection
     {
-        /// <summary>
-        /// Property to set or return the logging interface for debug logging.
-        /// </summary>
-        IGorgonLog Log
+        /// <summary>Property to return the content file.</summary>
+        public IContentFile File
         {
-            get;
-            set;
+            get;            
         }
 
-        /// <summary>
-        /// Property to return the serivce used to show busy states.
-        /// </summary>
-        IBusyStateService BusyService
+        /// <summary>Initializes a new instance of the ContentViewModelInjectionCommon class.</summary>
+        /// <param name="file">The file that contains the content.</param>
+        /// <param name="messageService">The message display service.</param>
+        /// <param name="busyService">The busy state service.</param>
+        /// <exception cref="ArgumentNullException">Thrown any of the parameters are <b>null</b></exception>
+        public ContentViewModelInjectionCommon(IContentFile file, IMessageDisplayService messageService, IBusyStateService busyService)
         {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the service used to show message dialogs.
-        /// </summary>
-        IMessageDisplayService MessageDisplay
-        {
-            get;
+            File = file ?? throw new ArgumentNullException(nameof(file));
+            MessageDisplay = messageService ?? throw new ArgumentNullException(nameof(messageService));
+            BusyService = busyService ?? throw new ArgumentNullException(nameof(busyService));
         }
     }
 }

@@ -21,6 +21,9 @@
             if (disposing)
             {
                 UnassignEvents();
+
+                DataContext?.OnUnload();
+                _ribbonForm?.Dispose();
             }
 
             base.Dispose(disposing);

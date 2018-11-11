@@ -53,6 +53,13 @@
     <Compile Include="..\..\Gorgon\Gorgon.Core\SharedAssemblyInfo.cs">
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="FormRibbon.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormRibbon.Designer.cs">
+      <DependentUpon>FormRibbon.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\ImageContentParameters.cs" />
     <Compile Include="ImageEditorCommonConstants.cs" />
     <Compile Include="ImageEditorPlugin.cs" />
     <Compile Include="ImageEditorSettings.cs" />
@@ -62,22 +69,31 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="ImageContent.cs" />
+    <Compile Include="ViewModels\ImageContent.cs" />
     <Compile Include="ImageEditorView.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ImageEditorView.Designer.cs">
       <DependentUpon>ImageEditorView.cs</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\ImageContentVm.cs" />
-    <Compile Include="ViewModels\_Interfaces\IImageContentVm.cs" />
+    <Compile Include="ViewModels\_Interfaces\IImageContent.cs" />
+    <Compile Include="ZoomLevels.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\save_content_16x16.png" />
+    <None Include="Resources\save_content_48x48.png" />
+    <None Include="Resources\cancel_16x16.png" />
+    <None Include="Resources\cancel_48x48.png" />
+    <None Include="Resources\save_16x16.png" />
+    <None Include="Resources\save_48x48.png" />
     <None Include="Resources\center_16x16.png" />
     <None Include="Resources\image_16x16.png" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="FormRibbon.resx">
+      <DependentUpon>FormRibbon.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

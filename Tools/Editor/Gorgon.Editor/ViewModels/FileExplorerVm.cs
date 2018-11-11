@@ -1214,7 +1214,7 @@ namespace Gorgon.Editor.ViewModels
             _project = injectionParameters.Project ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.Project), nameof(injectionParameters));            
             _fileSystemService = injectionParameters.FileSystemService ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.FileSystemService), nameof(injectionParameters));
             _messageService = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.MessageDisplay), nameof(injectionParameters));
-            _busyService = injectionParameters.BusyState ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.BusyState), nameof(injectionParameters));
+            _busyService = injectionParameters.BusyService ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.BusyService), nameof(injectionParameters));
             RootNode = injectionParameters.RootNode ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.RootNode), nameof(injectionParameters));
             _clipboard = injectionParameters.ClipboardService ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.ClipboardService), nameof(injectionParameters));
             _directoryLocator = injectionParameters.DirectoryLocator ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.DirectoryLocator), nameof(injectionParameters));

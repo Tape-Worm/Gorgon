@@ -20,43 +20,61 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: September 17, 2018 7:58:15 AM
+// Created: October 29, 2018 3:49:26 PM
 // 
 #endregion
 
-using Gorgon.Diagnostics;
-using Gorgon.Editor.Services;
+using System;
+using Gorgon.Editor.Content;
 
 namespace Gorgon.Editor.UI
 {
     /// <summary>
-    /// Defines values to inject into a view model.
+    /// Common interface for editor content view models.
     /// </summary>
-    public interface IViewModelInjection
+    public interface IEditorContent
+        : IViewModel
     {
+        #region Events.
         /// <summary>
-        /// Property to set or return the logging interface for debug logging.
+        /// Event to notify the view that the content should close.
         /// </summary>
-        IGorgonLog Log
+        event EventHandler CloseContent;
+        #endregion
+
+        #region Properties.
+        /// <summary>
+        /// Property to return the content file.
+        /// </summary>
+        IContentFile File
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the type of content.
+        /// </summary>
+        string ContentType
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to set or return the command used to close the content.
+        /// </summary>
+        IEditorCommand<object> CloseContentCommand
         {
             get;
             set;
         }
+        #endregion
 
-        /// <summary>
-        /// Property to return the serivce used to show busy states.
+        #region Methods.
+        /*/// <summary>
+        /// Function to retrieve the view for the content.
         /// </summary>
-        IBusyStateService BusyService
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the service used to show message dialogs.
-        /// </summary>
-        IMessageDisplayService MessageDisplay
-        {
-            get;
-        }
+        /// <returns>A UI for the content, must not be <b>null</b>.</returns>
+        ContentBaseControl GetView();*/
+        #endregion
     }
 }

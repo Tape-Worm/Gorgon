@@ -112,6 +112,22 @@ namespace Gorgon.Editor
         #endregion
 
         #region Methods.
+        /// <summary>Handles the RibbonAdded event of the PanelProject control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The [ContentRibbonEventArgs] instance containing the event data.</param>
+        private void PanelProject_RibbonAdded(object sender, ContentRibbonEventArgs e)
+        {
+            RibbonMerger.Merge(e.Ribbon);
+        }
+
+        /// <summary>Handles the RibbonRemoved event of the PanelProject control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The [ContentRibbonEventArgs] instance containing the event data.</param>
+        private void PanelProject_RibbonRemoved(object sender, ContentRibbonEventArgs e)
+        {
+            RibbonMerger.Unmerge(e.Ribbon);
+        }
+
         /// <summary>
         /// Handles the Click event of the ButtonExport control.
         /// </summary>

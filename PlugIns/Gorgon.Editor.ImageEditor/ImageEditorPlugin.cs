@@ -34,13 +34,14 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ImageEditor.Properties;
+using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Services;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Plugins;
-using System.Diagnostics;
+using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -107,10 +108,10 @@ namespace Gorgon.Editor.ImageEditor
                     needsRefresh = true;
                 }
 
-                if ((attributes.TryGetValue(EditorContentCommon.ContentTypeAttr, out currentContentType))
+                if ((attributes.TryGetValue(ImageContent.ContentTypeAttr, out currentContentType))
                     && (string.Equals(currentContentType, ImageEditorCommonConstants.ContentType, StringComparison.OrdinalIgnoreCase)))
                 {
-                    attributes.Remove(EditorContentCommon.ContentTypeAttr);
+                    attributes.Remove(ImageContent.ContentTypeAttr);
                     needsRefresh = true;
                 }
                 
@@ -124,10 +125,10 @@ namespace Gorgon.Editor.ImageEditor
                 needsRefresh = true;
             }
 
-            if ((!attributes.TryGetValue(EditorContentCommon.ContentTypeAttr, out currentContentType))
+            if ((!attributes.TryGetValue(ImageContent.ContentTypeAttr, out currentContentType))
                 || (!string.Equals(currentContentType, ImageEditorCommonConstants.ContentType, StringComparison.OrdinalIgnoreCase)))
             {
-                attributes[EditorContentCommon.ContentTypeAttr] = ImageEditorCommonConstants.ContentType;
+                attributes[ImageContent.ContentTypeAttr] = ImageEditorCommonConstants.ContentType;
                 needsRefresh = true;
             }
 
@@ -202,7 +203,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="file">The file that contains the content.</param>
         /// <param name="log">The logging interface to use.</param>
         /// <returns>A new IEditorContent object.</returns>
-        protected async override Task<IEditorContent> OnOpenContentAsync(IContentFile file, IGorgonLog log)
+        protected async override Task<IEditorContent> OnOpenContentAsync(IContentFile file, IViewModelInjection injector, IGorgonLog log)
         {
             IGorgonImageCodec codec = GetCodec(file);
 
@@ -219,10 +220,10 @@ namespace Gorgon.Editor.ImageEditor
                 }
             });
 
-            return new ImageContent(file, image, _codecList)
-            {
-                Codec = codec
-            };
+            var content = new ImageContent();
+            content.Initialize(new ImageContentParameters(file, image, codec, _codecList, injector));
+
+            return content;
         }
 
         /// <summary>Function to provide clean up for the plugin.</summary>
@@ -249,6 +250,9 @@ namespace Gorgon.Editor.ImageEditor
             }            
 
             _pluginCache?.Dispose();
+
+            ViewFactory.Unregister<IImageContent>();
+
             base.OnShutdown(log);
         }
 
@@ -298,6 +302,8 @@ namespace Gorgon.Editor.ImageEditor
         /// <remarks>This method is only called when the plugin is loaded at startup.</remarks>
         protected override void OnInitialize(IContentPluginService pluginService, IGorgonLog log)
         {
+            ViewFactory.Register<IImageContent>(() => new ImageEditorView());
+
             _pluginService = pluginService;
             _pluginCache = new GorgonMefPluginCache(log);
 

@@ -764,10 +764,13 @@ namespace Gorgon.Editor
             this.PanelProject.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.PanelProject.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PanelProject.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.PanelProject.GraphicsContext = null;
             this.PanelProject.Location = new System.Drawing.Point(0, 0);
             this.PanelProject.Name = "PanelProject";
             this.PanelProject.Size = new System.Drawing.Size(1264, 761);
             this.PanelProject.TabIndex = 0;
+            this.PanelProject.RibbonAdded += new System.EventHandler<Gorgon.Editor.ContentRibbonEventArgs>(this.PanelProject_RibbonAdded);
+            this.PanelProject.RibbonRemoved += new System.EventHandler<Gorgon.Editor.ContentRibbonEventArgs>(this.PanelProject_RibbonRemoved);
             this.PanelProject.RenameBegin += new System.EventHandler(this.PanelProject_RenameBegin);
             this.PanelProject.RenameEnd += new System.EventHandler(this.PanelProject_RenameEnd);
             // 
@@ -808,7 +811,6 @@ namespace Gorgon.Editor
             this.RibbonMain.RibbonAppButton.AppButtonShowRecentDocs = false;
             this.RibbonMain.RibbonTabs.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab[] {
             this.TabFileSystem});
-            this.RibbonMain.SelectedContext = null;
             this.RibbonMain.SelectedTab = this.TabFileSystem;
             this.RibbonMain.ShowMinimizeButton = false;
             this.RibbonMain.Size = new System.Drawing.Size(1264, 115);

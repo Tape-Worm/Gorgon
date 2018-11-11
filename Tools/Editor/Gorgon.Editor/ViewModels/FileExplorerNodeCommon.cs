@@ -322,7 +322,7 @@ namespace Gorgon.Editor.ViewModels
             // This is the root node if we have no parent.
             _name = injectionParameters.Parent == null ? "/" : (injectionParameters.Name ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.Name), nameof(injectionParameters)));
             MessageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.MessageDisplay), nameof(injectionParameters));
-            BusyService = injectionParameters.BusyState ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.BusyState), nameof(injectionParameters));
+            BusyService = injectionParameters.BusyService ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.BusyService), nameof(injectionParameters));
 
             // Optional.
             _parent = injectionParameters.Parent;

@@ -20,58 +20,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: October 29, 2018 3:49:26 PM
+// Created: November 10, 2018 10:13:20 PM
 // 
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Gorgon.Editor.UI.Views;
+using ComponentFactory.Krypton.Ribbon;
 
-namespace Gorgon.Editor.Content
+namespace Gorgon.Editor
 {
     /// <summary>
-    /// Interface to define editor content.
+    /// Event parameters used to indicate when a content ribbon is added to or removed from the project view.
     /// </summary>
-    public interface IEditorContent
+    internal class ContentRibbonEventArgs
+        : EventArgs
     {
-        #region Properties.
         /// <summary>
-        /// Property to return the content file.
+        /// Property to return the ribbon that was added.
         /// </summary>
-        IContentFile File
+        public KryptonRibbon Ribbon
         {
             get;
         }
 
-        /// <summary>
-        /// Property to return the type of content.
-        /// </summary>
-        string ContentType
+        /// <summary>Initializes a new instance of the ContentRibbonAddedEventArgs class.</summary>
+        /// <param name="ribbon">The ribbon.</param>
+        public ContentRibbonEventArgs(KryptonRibbon ribbon)
         {
-            get;
+            Ribbon = ribbon;
         }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to retrieve the view for the content.
-        /// </summary>
-        /// <returns>A UI for the content, must not be <b>null</b>.</returns>
-        ContentBaseControl GetView();
-        
-        /// <summary>
-        /// Function to initialize the content.
-        /// </summary>
-        void Initialize();
-
-        /// <summary>
-        /// Function to close the content.
-        /// </summary>
-        void Close();
-        #endregion
     }
 }

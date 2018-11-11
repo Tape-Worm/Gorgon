@@ -51,9 +51,11 @@ namespace Gorgon.Editor.ImageEditor
     /// The main view for the image editor.
     /// </summary>
     internal partial class ImageEditorView 
-        : ContentBaseControl, IDataContext<IImageContentVm>
+        : ContentBaseControl, IDataContext<IImageContent>
     {
         #region Variables.        
+        // The form for the ribbon.
+        private FormRibbon _ribbonForm;
         // The background texture.
         private GorgonTexture2DView _background;
         // The 2D texture data.
@@ -73,7 +75,7 @@ namespace Gorgon.Editor.ImageEditor
         #region Properties.
         /// <summary>Property to return the data context assigned to this view.</summary>
         /// <value>The data context.</value>
-        public IImageContentVm DataContext
+        public IImageContent DataContext
         {
             get;
             private set;
@@ -81,18 +83,20 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Methods.
+        /// <summary>Handles the CloseEditor event of the DataContext control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The [EventArgs] instance containing the event data.</param>
+        private void DataContext_CloseEditor(object sender, EventArgs e)
+        {
+            Close();
+        }
+
         /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The [PropertyChangedEventArgs] instance containing the event data.</param>
         private void DataContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            switch (e.PropertyName)
-            {
-                case nameof(IImageContentVm.ZoomLevel):
-                    _zoomLevel = DataContext.ZoomLevel;
-                    UpdateZoomMenu();
-                    break;
-            }
+            UpdateTexture2D(GraphicsContext?.Graphics);
         }
 
         /// <summary>Handles the PropertyChanging event of the DataContext control.</summary>
@@ -115,12 +119,6 @@ namespace Gorgon.Editor.ImageEditor
         {
             var item = (ToolStripMenuItem)sender;
 
-            if (DataContext == null)
-            {
-                item.Checked = false;
-                return;
-            }
-
             if ((item.Tag == null) || (!Enum.TryParse(item.Tag.ToString(), out ZoomLevels zoom)))
             {
                 item.Checked = false;
@@ -135,7 +133,8 @@ namespace Gorgon.Editor.ImageEditor
             }
 
             MenuZoomItems.Text = item.Text;
-            DataContext.ZoomLevel = zoom;
+            _zoomLevel = zoom;
+            UpdateZoomMenu();
 
             if (item != ItemZoomToWindow)
             {
@@ -223,6 +222,7 @@ namespace Gorgon.Editor.ImageEditor
         private void ResetDataContext()
         {
             // Reset the zoom menu.
+            SetContentName(null);
             _zoomLevel = ZoomLevels.ToWindow;
             UpdateZoomMenu();
             ItemZoomToWindow.Checked = true;
@@ -238,6 +238,7 @@ namespace Gorgon.Editor.ImageEditor
                 return;
             }
 
+            DataContext.CloseContent -= DataContext_CloseEditor;
             DataContext.PropertyChanging -= DataContext_PropertyChanging;
             DataContext.PropertyChanged -= DataContext_PropertyChanged;
         }
@@ -246,7 +247,7 @@ namespace Gorgon.Editor.ImageEditor
         /// Function to initialize the view from the data context.
         /// </summary>
         /// <param name="dataContext">The data context to use.</param>
-        private void InitializeFromDataContext(IImageContentVm dataContext)
+        private void InitializeFromDataContext(IImageContent dataContext)
         {
             if (dataContext == null)
             {
@@ -254,8 +255,7 @@ namespace Gorgon.Editor.ImageEditor
                 return;
             }
 
-            _zoomLevel = dataContext.ZoomLevel;
-
+            SetContentName(dataContext.ContentName);
             UpdateZoomMenu();
         }
 
@@ -269,20 +269,6 @@ namespace Gorgon.Editor.ImageEditor
             }
 
             Idle();
-        }
-
-        public void TempSetupImageToRender(IGorgonImage image, string filePath)
-        {
-            _texture2D?.Dispose();
-            _texture2D = image.ToTexture2D(GraphicsContext.Graphics, new GorgonTexture2DLoadOptions
-            {
-                Name = filePath,
-                Binding = TextureBinding.ShaderResource,
-                Usage = ResourceUsage.Immutable,
-                IsTextureCube = false
-            });
-
-            _texture2DView = _texture2D.GetShaderResourceView(arrayIndex: 0, arrayCount: image.ArrayCount);
         }
 
         /// <summary>
@@ -425,6 +411,32 @@ namespace Gorgon.Editor.ImageEditor
             return true;
         }
 
+        /// <summary>
+        /// Function to update the image texture for display.
+        /// </summary>
+        /// <param name="graphics">The graphics interface to use for generating the texture.</param>
+        private void UpdateTexture2D(GorgonGraphics graphics)
+        {
+            _texture2D?.Dispose();
+
+            IGorgonImage image = DataContext?.GetImage();
+
+            if ((image == null) || (graphics == null))
+            {
+                return;
+            }
+
+            _texture2D = image.ToTexture2D(graphics, new GorgonTexture2DLoadOptions
+            {
+                Name = DataContext.File.Path,
+                Binding = TextureBinding.ShaderResource,
+                Usage = ResourceUsage.Immutable,
+                IsTextureCube = false
+            });
+
+            _texture2DView = _texture2D.GetShaderResourceView(arrayIndex: 0, arrayCount: image.ArrayCount);
+        }
+
         /// <summary>Function to allow user defined setup of the graphics context with this control.</summary>
         /// <param name="context">The context being assigned.</param>
         /// <param name="swapChain">
@@ -442,6 +454,8 @@ namespace Gorgon.Editor.ImageEditor
                 Binding = TextureBinding.ShaderResource,
                 Usage = ResourceUsage.Immutable
             }, EditorCommonResources.CheckerBoardPatternImage);
+
+            UpdateTexture2D(context.Graphics);
         }
 
         /// <summary>Function called to shut down the view.</summary>
@@ -465,9 +479,16 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">An <a href="http://msdn.microsoft.com/en-us/library/system.eventargs.aspx" target="_blank">EventArgs</a> that contains the event data.</param>
         protected override void OnLoad(EventArgs e)
         {
+            base.OnLoad(e);
+
             if (IsDesignTime)
             {
                 return;
+            }
+
+            if (!_ribbonForm.IsHandleCreated)
+            {
+                _ribbonForm.CreateControl();
             }
 
             DataContext?.OnLoad();
@@ -477,13 +498,13 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Function to assign a data context to the view as a view model.</summary>
         /// <param name="dataContext">The data context to assign.</param>
         /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
-        public void SetDataContext(IImageContentVm dataContext)
+        public void SetDataContext(IImageContent dataContext)
         {            
             UnassignEvents();
 
             InitializeFromDataContext(dataContext);
 
-            DataContext = dataContext;
+            _ribbonForm.DataContext = DataContext = dataContext;            
 
             if (DataContext == null)
             {
@@ -492,6 +513,7 @@ namespace Gorgon.Editor.ImageEditor
 
             DataContext.PropertyChanging += DataContext_PropertyChanging;
             DataContext.PropertyChanged += DataContext_PropertyChanged;
+            DataContext.CloseContent += DataContext_CloseEditor;
         }
         #endregion
 
@@ -500,6 +522,9 @@ namespace Gorgon.Editor.ImageEditor
         public ImageEditorView()
         {
             InitializeComponent();
+
+            _ribbonForm = new FormRibbon();
+            Ribbon = _ribbonForm.RibbonImageContent;            
         }
         #endregion
     }
