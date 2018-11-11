@@ -206,8 +206,9 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="args">The arguments for the save command.</param>
         /// <returns><b>true</b> if the project can be saved, <b>false</b> if not.</returns>
-        private bool CanSaveProject(SaveProjectArgs args) => (args?.CurrentProject != null) 
-                                                                && ((args.SaveAs) || (args.CurrentProject.ProjectState != ProjectState.Unmodified));
+        private bool CanSaveProject(SaveProjectArgs args) => (_saveDialog.Providers.Writers.Count > 0) 
+                                                            && (args?.CurrentProject != null) 
+                                                            && ((args.SaveAs) || (args.CurrentProject.ProjectState != ProjectState.Unmodified));
 
         /// <summary>
         /// Function to inject dependencies for the view model.
@@ -652,7 +653,7 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 // No changes?  The we can just go.
-                if ((CurrentProject == null) || (CurrentProject.ProjectState == ProjectState.Unmodified))
+                if ((CurrentProject == null) || (CurrentProject.ProjectState == ProjectState.Unmodified) || (_saveDialog.Providers.Writers.Count == 0))
                 {
                     SaveSettings();
                     OnUnload();

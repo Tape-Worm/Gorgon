@@ -29,6 +29,7 @@ using System.IO;
 using Gorgon.Editor.Plugins;
 using Gorgon.IO;
 using Gorgon.IO.Providers;
+using Gorgon.Plugins;
 
 namespace Gorgon.Editor.Services
 {
@@ -36,6 +37,7 @@ namespace Gorgon.Editor.Services
     /// Functionality to capture and load file system providers from plugins.
     /// </summary>
     internal interface IFileSystemProviders
+        : IDisabledPluginService
     {
         #region Properties.
         /// <summary>
@@ -69,16 +71,11 @@ namespace Gorgon.Editor.Services
         IReadOnlyList<(string desc, FileWriterPlugin plugin, IReadOnlyList<GorgonFileExtension> extensions)> GetWriterFileExtensions();
 
         /// <summary>
-        /// Function to add file system reader providers.
+        /// Function to load the file system provider plug ins.
         /// </summary>
-        /// <param name="providers">The list of providers to add.</param>
-        void AddReaders(IEnumerable<IGorgonFileSystemProvider> providers);
-
-        /// <summary>
-        /// Function to add file system writer plug ins.
-        /// </summary>
-        /// <param name="writerPlugins">The list of plugins to add.</param>
-        void AddWriters(IEnumerable<FileWriterPlugin> writerPlugins);
+        /// <param name="pluginCache">The MEF plug in cache used to load the file system plug ins.</param>
+        /// <param name="pluginDir">The plug in directory.</param>
+        void LoadProviders(GorgonMefPluginCache pluginCache, DirectoryInfo pluginDir);
 
         /// <summary>
         /// Function to find the most suitable provider for the file specified in the path.

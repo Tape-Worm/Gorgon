@@ -340,18 +340,7 @@ namespace Gorgon.Editor.ImageEditor
                 throw new ArgumentNullException(nameof(file));
             }
             
-            IGorgonImageCodec codec = GetCodec(file);
-
-            if (codec != null)
-            {
-                file.Metadata.Attributes[ImageContent.CodecAttr] = codec.GetType().FullName;
-            }
-            else
-            {
-                file.Metadata.Attributes.Remove(ImageContent.CodecAttr);                
-            }
-
-            return codec != null;
+            return GetCodec(file) != null;
         }
 
         /// <summary>

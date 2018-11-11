@@ -561,4 +561,15 @@ Please try again.</value>
   <data name="GOREDIT_TEXT_LOADING_CONTENT" xml:space="preserve">
     <value>Loading {0}...</value>
   </data>
+  <data name="GOREDIT_TEXT_DISABLED_PLUGIN_DEFAULT_TEXT" xml:space="preserve">
+    <value>No reason was given by the plug in author.</value>
+  </data>
+  <data name="GOREDIT_DISABLE_FILE_PROVIDER_EXCEPTION" xml:space="preserve">
+    <value>An error occurred while loading the plug in.
+Exception: {0}</value>
+  </data>
+  <data name="GOREDIT_DISABLE_CONTENT_PLUGIN_EXCEPTION" xml:space="preserve">
+    <value>An error occurred while loading the plug in.
+Exception: {0}</value>
+  </data>
 </root>

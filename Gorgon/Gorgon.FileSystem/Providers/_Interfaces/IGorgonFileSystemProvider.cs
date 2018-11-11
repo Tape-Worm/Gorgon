@@ -60,6 +60,7 @@ namespace Gorgon.IO.Providers
 	/// </para>
 	/// </remarks>
 	public interface IGorgonFileSystemProvider
+        : IGorgonNamedObject
 	{
 		/// <summary>
 		/// Property to return the provider specific prefix for a physical location.

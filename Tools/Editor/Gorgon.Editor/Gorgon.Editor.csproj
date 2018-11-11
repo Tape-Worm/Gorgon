@@ -76,6 +76,7 @@
     <Compile Include="FormSplash.designer.cs">
       <DependentUpon>FormSplash.cs</DependentUpon>
     </Compile>
+    <Compile Include="Plugins\DisabledPlugin.cs" />
     <Compile Include="ProjectData\V2MetadataImporter.cs" />
     <Compile Include="RecentItem.cs" />
     <Compile Include="RibbonMerger.cs" />
@@ -346,9 +347,7 @@
       <Version>4.5.2</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Plugins\_Interfaces\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

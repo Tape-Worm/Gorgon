@@ -74,6 +74,8 @@ namespace Gorgon.Editor
         private DirectoryLocateService _dirLocator;
         // The plugin service used to manage content plugins.
         private ContentPluginService _contentPlugins;
+        // A li
+        private Dictionary<string, string> _disabledPlugins = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         #endregion
 
         #region Properties.
@@ -257,8 +259,6 @@ namespace Gorgon.Editor
         private ContentPluginService LoadContentPlugins()
         {
             var contentPluginsDir = new DirectoryInfo(Path.Combine(_settings.PluginPath, "Content"));
-            IGorgonPluginService plugins = null;
-
             var contentPluginSettingsDir = new DirectoryInfo(Path.Combine(Program.ApplicationUserDirectory.FullName, "ContentPlugins"));
 
             if (!contentPluginSettingsDir.Exists)
@@ -279,24 +279,7 @@ namespace Gorgon.Editor
                     return contentPlugins;
                 }
 
-                _pluginCache.LoadPluginAssemblies(contentPluginsDir.FullName, "*.dll");
-
-                plugins = new GorgonMefPluginService(_pluginCache, Program.Log);
-
-                IReadOnlyList<ContentPlugin> pluginList = plugins.GetPlugins<ContentPlugin>();
-
-                foreach (ContentPlugin plugin in pluginList)
-                {
-                    // TODO: Error trap and mark as disabled so we can keep going.
-                    contentPlugins.AddContentPlugin(plugin);                    
-                }
-
-                // Initialize the plugins.
-                foreach (KeyValuePair<string, ContentPlugin> plugin in contentPlugins.Plugins)
-                {
-                    // TODO: Error trap and mark as disabled so we can keep going.
-                    plugin.Value.Initialize(contentPlugins, Program.Log);
-                }
+                contentPlugins.LoadContentPlugins(_pluginCache, contentPluginsDir);
             }
             catch (Exception ex)
             {
@@ -314,7 +297,6 @@ namespace Gorgon.Editor
         private FileSystemProviders LoadFileSystemPlugins()
         {
             var fileSystemPlugInsDir = new DirectoryInfo(Path.Combine(_settings.PluginPath, "Filesystem"));
-            IGorgonPluginService plugins = null;
             var result = new FileSystemProviders();
 
             try
@@ -328,14 +310,7 @@ namespace Gorgon.Editor
                     return result;
                 }
 
-                _pluginCache.LoadPluginAssemblies(fileSystemPlugInsDir.FullName, "*.dll");
-                plugins = new GorgonMefPluginService(_pluginCache, Program.Log);
-
-                IReadOnlyList<GorgonFileSystemProvider> providers = plugins.GetPlugins<GorgonFileSystemProvider>();
-                IReadOnlyList<FileWriterPlugin> writers = plugins.GetPlugins<FileWriterPlugin>();
-
-                result.AddReaders(providers);
-                result.AddWriters(writers);
+                result.LoadProviders(_pluginCache, fileSystemPlugInsDir);
 
                 return result;
             }

@@ -24,8 +24,10 @@
 // 
 #endregion
 
+using System.IO;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Plugins;
+using Gorgon.Plugins;
 
 namespace Gorgon.Editor.Services
 {
@@ -35,6 +37,13 @@ namespace Gorgon.Editor.Services
     internal interface IContentPluginManagerService
         : IContentPluginService
     {
+        /// <summary>
+        /// Function to load all of the content plug ins into the service.
+        /// </summary>
+        /// <param name="pluginCache">The plug in assembly cache.</param>
+        /// <param name="pluginDir">The directory that contains the plug ins.</param>
+        void LoadContentPlugins(GorgonMefPluginCache pluginCache, DirectoryInfo pluginDir);
+
         /// <summary>
         /// Function to add a content plugin to the service.
         /// </summary>

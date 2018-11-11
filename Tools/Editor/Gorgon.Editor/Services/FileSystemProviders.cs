@@ -29,9 +29,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
 using Gorgon.Editor.Plugins;
+using Gorgon.Editor.Properties;
 using Gorgon.IO;
 using Gorgon.IO.Providers;
+using Gorgon.Plugins;
 
 namespace Gorgon.Editor.Services
 {
@@ -46,9 +49,16 @@ namespace Gorgon.Editor.Services
         private readonly Dictionary<string, IGorgonFileSystemProvider> _readers = new Dictionary<string, IGorgonFileSystemProvider>(StringComparer.OrdinalIgnoreCase);
         // A list of available file system writer providers.
         private readonly Dictionary<string, FileWriterPlugin> _writers = new Dictionary<string, FileWriterPlugin>(StringComparer.OrdinalIgnoreCase);
+        // A list of disabled plug ins.
+        private readonly Dictionary<string, IDisabledPlugin> _disabled = new Dictionary<string, IDisabledPlugin>(StringComparer.OrdinalIgnoreCase);
         #endregion
 
         #region Properties.                
+        /// <summary>
+        /// Property to return the list of disabled provider plug ins.
+        /// </summary>
+        public IReadOnlyDictionary<string, IDisabledPlugin> DisabledPlugins => _disabled;
+
         /// <summary>
         /// Property to return all loaded file system reader providers.
         /// </summary>
@@ -213,49 +223,90 @@ namespace Gorgon.Editor.Services
         }
 
         /// <summary>
-        /// Function to add file system writer plug ins.
+        /// Function to load the file system provider plug ins.
         /// </summary>
-        /// <param name="writerPlugins">The list of plugins to add.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="writerPlugins"/> parameter is <b>null</b>.</exception>
-        public void AddWriters(IEnumerable<FileWriterPlugin> writerPlugins)
+        /// <param name="pluginCache">The MEF plug in cache used to load the file system plug ins.</param>
+        /// <param name="pluginDir">The plug in directory.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginCache"/>, or the <paramref name="pluginDir"/> parameter is <b>null</b>.</exception>
+        public void LoadProviders(GorgonMefPluginCache pluginCache, DirectoryInfo pluginDir)
         {
-            if (writerPlugins == null)
+            if (pluginCache == null)
             {
-                throw new ArgumentNullException(nameof(writerPlugins));
+                throw new ArgumentNullException(nameof(pluginCache));
             }
 
-            foreach (FileWriterPlugin writer in writerPlugins)
+            if (pluginDir == null)
+            {
+                throw new ArgumentNullException(nameof(pluginDir));
+            }
+
+            FileInfo[] assemblies = pluginDir.GetFiles("*.dll");
+
+            foreach (FileInfo file in assemblies)
+            {
+                try
+                {
+                    Program.Log.Print($"Loading file system provider plug in assembly '{file.FullName}'...", LoggingLevel.Simple);
+                    pluginCache.LoadPluginAssemblies(file.DirectoryName, file.Name);
+                }
+                catch (Exception ex)
+                {
+                    Program.Log.Print($"ERROR: Cannot load provider plug in assembly '{file.FullName}'.", LoggingLevel.Simple);
+                    Program.Log.LogException(ex);
+                }
+            }
+
+            IGorgonPluginService plugins = new GorgonMefPluginService(pluginCache, Program.Log);
+            IReadOnlyList<GorgonFileSystemProvider> readers = plugins.GetPlugins<GorgonFileSystemProvider>();
+            IReadOnlyList<FileWriterPlugin> writers = plugins.GetPlugins<FileWriterPlugin>();
+
+            // Get readers.
+            foreach (IGorgonFileSystemProvider reader in readers)
+            {
+                try
+                {                   
+                    Program.Log.Print($"Creating file system reader plug in '{reader.Name}'...", LoggingLevel.Simple);                    
+                    _readers[reader.Name] = reader;
+                }
+                catch (Exception ex)
+                {
+                    Program.Log.Print($"ERROR: Cannot create file system reader plug in '{reader.Name}'.", LoggingLevel.Simple);
+                    Program.Log.LogException(ex);
+
+                    _disabled[reader.Name] = new DisabledPlugin(DisabledReasonCode.Error, reader.Name, string.Format(Resources.GOREDIT_DISABLE_FILE_PROVIDER_EXCEPTION, ex.Message));
+                }
+            }
+
+            // Get writers
+            foreach (FileWriterPlugin writer in writers)
             {
                 IReadOnlyList<string> disabled = writer.IsPluginAvailable();
 
-                if (disabled.Count != 0)
+                try
                 {
-                    Program.Log.Print($"The file system writer plug in '{writer.Name}' is disabled.", Diagnostics.LoggingLevel.Simple);
-                    Program.Log.Print($"Disable info: {string.Join("\n", disabled)}", Diagnostics.LoggingLevel.Verbose);
+                    Program.Log.Print($"Creating file system writer plug in '{writer.Name}'...", LoggingLevel.Simple);
 
-                    // TODO: Add to disabled list.
-                    continue;
+                    if (disabled.Count != 0)
+                    {                        
+                        Program.Log.Print($"WARNING: The file system writer plug in '{writer.Name}' is disabled:", LoggingLevel.Simple);
+                        foreach (string reason in disabled)
+                        {
+                            Program.Log.Print($"WARNING: {reason}", LoggingLevel.Verbose);
+                        }                        
+
+                        _disabled[writer.Name] = new DisabledPlugin(DisabledReasonCode.ValidationError, writer.Name, string.Join("\n", disabled));
+                        continue;
+                    }
+
+                    _writers[writer.GetType().FullName] = writer;
                 }
+                catch (Exception ex)
+                {
+                    Program.Log.Print($"ERROR: Cannot create file system writer plug in '{writer.Name}'.", LoggingLevel.Simple);
+                    Program.Log.LogException(ex);
 
-                _writers[writer.GetType().FullName] = writer;
-            }
-        }
-
-        /// <summary>
-        /// Function to add file system reader providers.
-        /// </summary>
-        /// <param name="providers">The list of providers to add.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="providers"/> parameter is <b>null</b>.</exception>
-        public void AddReaders(IEnumerable<IGorgonFileSystemProvider> providers)
-        {
-            if (providers == null)
-            {
-                throw new ArgumentNullException(nameof(providers));
-            }
-
-            foreach (IGorgonFileSystemProvider provider in providers)
-            {
-                _readers[provider.GetType().FullName] = provider;
+                    _disabled[writer.Name] = new DisabledPlugin(DisabledReasonCode.Error, writer.Name, string.Format(Resources.GOREDIT_DISABLE_FILE_PROVIDER_EXCEPTION, ex.Message));
+                }
             }
         }
         #endregion

@@ -59,6 +59,7 @@
     <Compile Include="Plugins\ContentPlugin.cs" />
     <Compile Include="Plugins\EditorPlugin.cs" />
     <Compile Include="Plugins\FileWriterPlugIn.cs" />
+    <Compile Include="Plugins\_Interfaces\IDisabledPlugin.cs" />
     <Compile Include="Plugins\_Extensions\EditorPluginExtensions.cs" />
     <Compile Include="Plugins\_Interfaces\IContentPluginMetadata.cs" />
     <Compile Include="Services\ClipboardService.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="Services\_Interfaces\IClipboardService.cs" />
     <Compile Include="Services\_Interfaces\IContentPluginService.cs" />
     <Compile Include="Services\_Interfaces\IDirectoryLocateService.cs" />
+    <Compile Include="Services\_Interfaces\IDisabledPluginService.cs" />
     <Compile Include="Services\_Interfaces\IFileDialogService.cs" />
     <Compile Include="Metadata\ProjectItemMetadata.cs" />
     <Compile Include="Metadata\_Interfaces\IMetadataProvider.cs" />

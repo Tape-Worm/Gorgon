@@ -28,9 +28,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Plugins;
+using Gorgon.Editor.Properties;
+using Gorgon.Plugins;
 using Newtonsoft.Json;
 
 namespace Gorgon.Editor.Services
@@ -63,6 +66,8 @@ namespace Gorgon.Editor.Services
         #region Variables.
         // The plugin list.
         private Dictionary<string, ContentPlugin> _plugins = new Dictionary<string, ContentPlugin>(StringComparer.OrdinalIgnoreCase);
+        // The list of disabled content plug ins.
+        private Dictionary<string, IDisabledPlugin> _disabled = new Dictionary<string, IDisabledPlugin>(StringComparer.OrdinalIgnoreCase);
         // The directory that contains the settings for the plug ins.
         private DirectoryInfo _settingsDir;
         #endregion
@@ -71,6 +76,9 @@ namespace Gorgon.Editor.Services
         /// <summary>Property to return the list of content plugins loaded in to the application.</summary>
         /// <value>The plugins.</value>
         public IReadOnlyDictionary<string, ContentPlugin> Plugins => _plugins;
+
+        /// <summary>Property to return the list of disabled plug ins.</summary>
+        public IReadOnlyDictionary<string, IDisabledPlugin> DisabledPlugins => _disabled;
         #endregion
 
         #region Methods.
@@ -296,6 +304,83 @@ namespace Gorgon.Editor.Services
         /// <typeparam name="T">The type that is inherited/implemented. Must inherit GorgonPlugin</typeparam>
         /// <returns>A list of plugins that implement, inherit or matches a specific type.</returns>
         public IEnumerable<T> GetByType<T>() where T : ContentPlugin => throw new NotImplementedException();
+
+        /// <summary>
+        /// Function to load all of the content plug ins into the service.
+        /// </summary>
+        /// <param name="pluginCache">The plug in assembly cache.</param>
+        /// <param name="pluginDir">The directory that contains the plug ins.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginCache"/>, or the <paramref name="pluginDir"/> parameter is <b>null</b>.</exception>
+        public void LoadContentPlugins(GorgonMefPluginCache pluginCache, DirectoryInfo pluginDir)
+        {
+            if (pluginCache == null)
+            {
+                throw new ArgumentNullException(nameof(pluginCache));
+            }
+
+            if (pluginDir == null)
+            {
+                throw new ArgumentNullException(nameof(pluginDir));
+            }
+
+            FileInfo[] assemblies = pluginDir.GetFiles("*.dll");
+
+            foreach (FileInfo file in assemblies)
+            {
+                try
+                {
+                    Program.Log.Print($"Loading content plug in assembly '{file.FullName}'...", LoggingLevel.Simple);
+                    pluginCache.LoadPluginAssemblies(pluginDir.FullName, "*.dll");
+                }
+                catch (Exception ex)
+                {
+                    Program.Log.Print($"ERROR: Cannot load content plug in assembly '{file.FullName}'.", LoggingLevel.Simple);
+                    Program.Log.LogException(ex);
+                }
+            }
+
+            IGorgonPluginService plugins = new GorgonMefPluginService(pluginCache, Program.Log);            
+            IReadOnlyList<ContentPlugin> pluginList = plugins.GetPlugins<ContentPlugin>();
+
+            foreach (ContentPlugin plugin in pluginList)
+            {
+                try
+                {
+                    Program.Log.Print($"Creating content plug in '{plugin.Name}'...", LoggingLevel.Simple);
+                    plugin.Initialize(this, Program.Log);
+
+                    // Check to see if this plug in can continue.
+                    IReadOnlyList<string> validation = plugin.IsPluginAvailable();                    
+
+                    if (validation.Count > 0)
+                    {
+                        // Shut the plug in down.
+                        plugin.Shutdown(Program.Log);
+
+                        Program.Log.Print($"WARNING: The content plug in '{plugin.Name}' is disabled:", LoggingLevel.Simple);
+                        foreach (string reason in validation)
+                        {
+                            Program.Log.Print($"WARNING: {reason}", LoggingLevel.Verbose);
+                        }
+
+                        _disabled[plugin.Name] = new DisabledPlugin(DisabledReasonCode.ValidationError, plugin.Name, string.Join("\n", validation));
+                        continue;
+                    }
+                                        
+                    AddContentPlugin(plugin);                    
+                }
+                catch (Exception ex)
+                {
+                    // Attempt to gracefully shut the plug in down if we error out.
+                    plugin.Shutdown(Program.Log);
+
+                    Program.Log.Print($"ERROR: Cannot create content plug in '{plugin.Name}'.", LoggingLevel.Simple);
+                    Program.Log.LogException(ex);
+
+                    _disabled[plugin.Name] = new DisabledPlugin(DisabledReasonCode.Error, plugin.Name, string.Format(Resources.GOREDIT_DISABLE_CONTENT_PLUGIN_EXCEPTION, ex.Message));
+                }
+            }
+        }
 
         /// <summary>Function to remove a content plugin from the service.</summary>
         /// <param name="plugin">The plugin to remove.</param>

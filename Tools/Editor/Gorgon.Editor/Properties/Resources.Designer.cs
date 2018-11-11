@@ -411,6 +411,26 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An error occurred while loading the plug in.
+        ///Exception: {0}.
+        /// </summary>
+        internal static string GOREDIT_DISABLE_CONTENT_PLUGIN_EXCEPTION {
+            get {
+                return ResourceManager.GetString("GOREDIT_DISABLE_CONTENT_PLUGIN_EXCEPTION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurred while loading the plug in.
+        ///Exception: {0}.
+        /// </summary>
+        internal static string GOREDIT_DISABLE_FILE_PROVIDER_EXCEPTION {
+            get {
+                return ResourceManager.GetString("GOREDIT_DISABLE_FILE_PROVIDER_EXCEPTION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The editor was unable to locate a workspace location that is accessible to the current user.
         ///
         ///The application will now close..
@@ -952,6 +972,15 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_TEXT_DELETING {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_DELETING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No reason was given by the plug in author..
+        /// </summary>
+        internal static string GOREDIT_TEXT_DISABLED_PLUGIN_DEFAULT_TEXT {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_DISABLED_PLUGIN_DEFAULT_TEXT", resourceCulture);
             }
         }
         
