@@ -49,18 +49,12 @@ namespace Gorgon.Editor.UI
         /// <param name="constructor">The function that will create and return the view.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="constructor"/> parameter is <b>null</b>.</exception>
         public static void Register<T>(Func<Control> constructor)
-            where T : IViewModel
-        {
-            _viewBuilders[typeof(T).AssemblyQualifiedName] = constructor ?? throw new ArgumentNullException(nameof(constructor));
-        }
+            where T : IViewModel => _viewBuilders[typeof(T).AssemblyQualifiedName] = constructor ?? throw new ArgumentNullException(nameof(constructor));
 
         /// <summary>Function to unregisters the specified view model type.</summary>
         /// <typeparam name="T">The type of view model. Must implement <see cref="IViewModel"/>.</typeparam>
         public static void Unregister<T>()
-            where T : IViewModel
-        {
-            _viewBuilders.Remove(typeof(T).AssemblyQualifiedName);
-        }
+            where T : IViewModel => _viewBuilders.Remove(typeof(T).AssemblyQualifiedName);
 
         /// <summary>
         /// Function to assign a view model to the specified control.

@@ -420,18 +420,26 @@ namespace Gorgon.UI
 			{
 				lock (_syncLock)
 				{
-					_log?.LogEnd();
+                    try
+                    {
+                        _log?.LogEnd();
 
-					if (value == null)
-					{
-						_log = _dummyLog;
-						return;
-					}
+                        if (value == null)
+                        {
+                            _log = _dummyLog;
+                            return;
+                        }
 
-					_log = value;
+                        _log = value;
 
-					InitializeLogger();
-				}
+                        InitializeLogger();
+                    }
+                    catch
+                    {
+                        // We couldn't set up the logging, so fall back to the null log.
+                        _log = GorgonLog.NullLog;
+                    }
+                }
 			}
 		}
 		#endregion
@@ -897,8 +905,15 @@ namespace Gorgon.UI
 		{
             ComputerInfo = new GorgonComputerInfo();
 			ThreadID = Thread.CurrentThread.ManagedThreadId;
-			
-			Log = new GorgonLog(LogFile, "Tape_Worm", typeof(GorgonApplication).Assembly.GetName().Version);
+
+            try
+            {
+                Log = new GorgonLog(LogFile, "Tape_Worm", typeof(GorgonApplication).Assembly.GetName().Version);
+            }
+            catch
+            {
+                Log = GorgonLog.NullLog;
+            }
 
 		    StartupPath = new DirectoryInfo(Application.StartupPath.FormatDirectory(Path.DirectorySeparatorChar));
 		}

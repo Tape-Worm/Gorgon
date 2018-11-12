@@ -409,6 +409,7 @@ namespace Gorgon.UI
 
                 foreach (Control control in siblings)
                 {
+                    control.Refresh();
                     control.DrawToBitmap(backingImage, control.Bounds);
                 }
 

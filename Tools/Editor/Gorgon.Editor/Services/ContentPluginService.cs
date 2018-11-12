@@ -33,6 +33,7 @@ using Gorgon.Editor.Content;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Properties;
+using Gorgon.Editor.Rendering;
 using Gorgon.Plugins;
 using Newtonsoft.Json;
 
@@ -67,9 +68,11 @@ namespace Gorgon.Editor.Services
         // The plugin list.
         private Dictionary<string, ContentPlugin> _plugins = new Dictionary<string, ContentPlugin>(StringComparer.OrdinalIgnoreCase);
         // The list of disabled content plug ins.
-        private Dictionary<string, IDisabledPlugin> _disabled = new Dictionary<string, IDisabledPlugin>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, IDisabledPlugin> _disabled = new Dictionary<string, IDisabledPlugin>(StringComparer.OrdinalIgnoreCase);
         // The directory that contains the settings for the plug ins.
         private DirectoryInfo _settingsDir;
+        // The application graphics context for passing to content plug ins.
+        private readonly IGraphicsContext _graphicsContext;
         #endregion
 
         #region Properties.
@@ -347,7 +350,7 @@ namespace Gorgon.Editor.Services
                 try
                 {
                     Program.Log.Print($"Creating content plug in '{plugin.Name}'...", LoggingLevel.Simple);
-                    plugin.Initialize(this, Program.Log);
+                    plugin.Initialize(this, _graphicsContext, Program.Log);
 
                     // Check to see if this plug in can continue.
                     IReadOnlyList<string> validation = plugin.IsPluginAvailable();                    
@@ -364,6 +367,9 @@ namespace Gorgon.Editor.Services
                         }
 
                         _disabled[plugin.Name] = new DisabledPlugin(DisabledReasonCode.ValidationError, plugin.Name, string.Join("\n", validation));
+
+                        // Remove this plug in.
+                        plugins.Unload(plugin.Name);
                         continue;
                     }
                                         
@@ -404,8 +410,13 @@ namespace Gorgon.Editor.Services
         #region Constructor.
         /// <summary>Initializes a new instance of the ContentPluginService class.</summary>
         /// <param name="settingsDirectory">The directory that will contain settings for the content plug ins.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settingsDirectory"/> is <b>null</b>.</exception>
-        public ContentPluginService(DirectoryInfo settingsDirectory) => _settingsDir = settingsDirectory ?? throw new ArgumentNullException(nameof(settingsDirectory));
+        /// <param name="graphicsContext">The graphics context used to pass the application graphics context to plug ins.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settingsDirectory"/>, or the <paramref name="graphicsContext"/> parameter is <b>null</b>.</exception>
+        public ContentPluginService(DirectoryInfo settingsDirectory, IGraphicsContext graphicsContext)
+        {
+            _settingsDir = settingsDirectory ?? throw new ArgumentNullException(nameof(settingsDirectory));
+            _graphicsContext = graphicsContext ?? throw new ArgumentNullException(nameof(graphicsContext));
+        }
         #endregion
     }
 }

@@ -81,6 +81,26 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\right_20x20.png" />
+    <None Include="Resources\left_20x20.png" />
+    <None Include="Resources\redo_48x48.png" />
+    <None Include="Resources\redo_16x16.png" />
+    <None Include="Resources\undo_48x48.png" />
+    <None Include="Resources\undo_16x16.png" />
+    <None Include="Resources\import_image_48x48.png" />
+    <None Include="Resources\import_image_16x16.png" />
+    <None Include="Resources\edit_image_48x48.png" />
+    <None Include="Resources\edit_image_16x16.png" />
+    <None Include="Resources\generate_mip_maps_48x48.png" />
+    <None Include="Resources\generate_mip_maps_16x16.png" />
+    <None Include="Resources\image_dimensions_48x48.png" />
+    <None Include="Resources\image_dimensions_16x16.png" />
+    <None Include="Resources\image_size_48x48.png" />
+    <None Include="Resources\image_size_16x16.png" />
+    <None Include="Resources\pixel_format_48x48.png" />
+    <None Include="Resources\pixel_format_16x16.png" />
+    <None Include="Resources\codec_16x16.png" />
+    <None Include="Resources\codec_48x48.png" />
     <None Include="Resources\save_content_16x16.png" />
     <None Include="Resources\save_content_48x48.png" />
     <None Include="Resources\cancel_16x16.png" />

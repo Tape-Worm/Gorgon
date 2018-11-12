@@ -154,6 +154,7 @@ namespace Gorgon.Editor
             catch (Exception ex)
             {
                 Debug.Print($"Couldn't open the log for the editor: {ex.Message}.");
+                Log = GorgonLog.NullLog;
             }
         }
 

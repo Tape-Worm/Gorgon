@@ -88,7 +88,17 @@ namespace Gorgon.Editor.ImageEditor
         /// <remarks>Implementors should override this method in order to handle a property change notification from their data context.</remarks>
         protected override void OnPropertyChanged(PropertyChangedEventArgs e) 
         {
-            UpdateTexture2D(GraphicsContext?.Graphics);
+            switch (e.PropertyName)
+            {
+                case nameof(IImageContent.ContentState):
+                case nameof(IImageContent.File):
+                case nameof(IImageContent.CurrentCodec):
+                    // This only matters when we save, so there's no real visual update.
+                    return;
+                default:
+                    UpdateTexture2D(GraphicsContext?.Graphics);
+                    break;
+            }            
         }
                
         /// <summary>Handles the ValueChanged event of the ScrollVertical control.</summary>
@@ -414,6 +424,8 @@ namespace Gorgon.Editor.ImageEditor
         {
             Debug.Assert(EditorCommonResources.CheckerBoardPatternImage != null, "Background texture was not loaded.");
 
+            _ribbonForm.GraphicsContext = context;
+
             _background = GorgonTexture2DView.CreateTexture(context.Graphics, new GorgonTexture2DInfo("Editor_BG_Texture")
             {
                 Format = EditorCommonResources.CheckerBoardPatternImage.Format,
@@ -423,7 +435,7 @@ namespace Gorgon.Editor.ImageEditor
                 Usage = ResourceUsage.Immutable
             }, EditorCommonResources.CheckerBoardPatternImage);
 
-            UpdateTexture2D(context.Graphics);
+            UpdateTexture2D(context.Graphics);            
         }
 
         /// <summary>Function called to shut down the view.</summary>
@@ -472,7 +484,8 @@ namespace Gorgon.Editor.ImageEditor
 
             InitializeFromDataContext(dataContext);
 
-            _ribbonForm.DataContext = DataContext = dataContext;            
+            DataContext = dataContext;
+            _ribbonForm.SetDataContext(dataContext);
         }
         #endregion
 

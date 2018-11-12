@@ -26,10 +26,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Gorgon.Editor.UI;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 
@@ -51,12 +54,51 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
-        /// Property to set or return the current image codec.
+        /// Property to return the current image codec.
         /// </summary>
         IGorgonImageCodec CurrentCodec
         {
             get;
-            set;
+        }
+
+        /// <summary>
+        /// Property to return the list of codecs available.
+        /// </summary>
+        ObservableCollection<IGorgonImageCodec> Codecs
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the list of available image pixel formats (based on codec).
+        /// </summary>
+        ObservableCollection<BufferFormat> PixelFormats
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the current pixel format for the image.
+        /// </summary>
+        BufferFormat CurrentPixelFormat
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to assign the image codec.
+        /// </summary>
+        IEditorCommand<IGorgonImageCodec> SetCodecCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the format support information for the current video card.
+        /// </summary>
+        IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> FormatSupport
+        {
+            get;
         }
         #endregion
 

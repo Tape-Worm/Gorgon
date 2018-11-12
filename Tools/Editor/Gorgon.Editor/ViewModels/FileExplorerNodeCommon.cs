@@ -480,12 +480,7 @@ namespace Gorgon.Editor.ViewModels
                 throw new ArgumentNullException(nameof(contentPlugins));
             }
 
-            if (!IsContent)
-            {
-                return false;
-            }
-
-            return OnAssignContentPlugin(contentPlugins, deepScan);
+            return !IsContent ? false : OnAssignContentPlugin(contentPlugins, deepScan);
         }
         #endregion
 

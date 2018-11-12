@@ -535,6 +535,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error closing the content..
+        /// </summary>
+        internal static string GOREDIT_ERR_CLOSING_CONTENT {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CLOSING_CONTENT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error copying &apos;{0}&apos; to the clipboard.
         ///Please try again..
         /// </summary>

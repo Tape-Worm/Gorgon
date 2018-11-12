@@ -572,4 +572,7 @@ Exception: {0}</value>
     <value>An error occurred while loading the plug in.
 Exception: {0}</value>
   </data>
+  <data name="GOREDIT_ERR_CLOSING_CONTENT" xml:space="preserve">
+    <value>There was an error closing the content.</value>
+  </data>
 </root>

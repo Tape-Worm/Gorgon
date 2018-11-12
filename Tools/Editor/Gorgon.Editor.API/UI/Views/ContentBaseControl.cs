@@ -48,13 +48,6 @@ namespace Gorgon.Editor.UI.Views
     public partial class ContentBaseControl 
         : EditorBaseControl, IRendererControl
     {
-        #region Events.
-        /// <summary>
-        /// Event triggered when the control is closing.
-        /// </summary>
-        public event EventHandler ControlClosing;
-        #endregion
-
         #region Variables.
         // The swap chain for the control.
         private GorgonSwapChain _swapChain;
@@ -126,10 +119,18 @@ namespace Gorgon.Editor.UI.Views
         #endregion
 
         #region Methods.
-        /// <summary>Handles the CloseContent event of the DataContext control.</summary>
+        /// <summary>Handles the Click event of the ButtonClose control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The [EventArgs] instance containing the event data.</param>
-        private void DataContext_CloseContent(object sender, EventArgs e) => OnCloseContent();
+        private void ButtonClose_Click(object sender, EventArgs e)
+        {
+            if ((_dataContext?.CloseContentCommand == null) || (!_dataContext.CloseContentCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            _dataContext.CloseContentCommand.Execute(null);
+        }
 
         /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
         /// <param name="sender">The source of the event.</param>
@@ -138,9 +139,17 @@ namespace Gorgon.Editor.UI.Views
         {
             switch (e.PropertyName)
             {
+                case nameof(IEditorContent.CloseContentCommand):
+                    ButtonClose.Visible = _dataContext.CloseContentCommand != null;
+
+                    if (!PanelContentName.Visible)
+                    {
+                        SetContentName(_dataContext);
+                    }
+                    return;
                 case nameof(IEditorContent.ContentState):
                 case nameof(IEditorContent.File):
-                    SetContentName(_dataContext.File?.Name, _dataContext.ContentState);
+                    SetContentName(_dataContext);
                     break;
             }
 
@@ -164,7 +173,8 @@ namespace Gorgon.Editor.UI.Views
                 return;
             }
 
-            SetContentName(dataContext.File?.Name, dataContext.ContentState);
+            ButtonClose.Visible = dataContext.CloseContentCommand != null;
+            SetContentName(dataContext);
         }
 
         /// <summary>
@@ -188,17 +198,24 @@ namespace Gorgon.Editor.UI.Views
         /// <summary>
         /// Function to assign the current content name.
         /// </summary>
-        /// <param name="contentName">The name of the content.</param>
-        /// <param name="state">The current content state.</param>
-        private void SetContentName(string contentName, ContentState state)
+        /// <param name="dataContext">The data context to use.</param>
+        private void SetContentName(IEditorContent dataContext)
         {
-            if (string.IsNullOrWhiteSpace(contentName))
+            if (string.IsNullOrWhiteSpace(dataContext?.File?.Name))
             {
-                PanelContentName.Visible = false;
+                LabelHeader.Text = string.Empty;
+                if (dataContext?.CloseContentCommand == null)
+                {
+                    PanelContentName.Visible = false;
+                }
+                else
+                {
+                    PanelContentName.Visible = true;
+                }
                 return;
             }
 
-            LabelHeader.Text = $"{contentName}{(state == ContentState.Unmodified ? string.Empty : "*")}";
+            LabelHeader.Text = $"{dataContext.File.Name}{(dataContext.ContentState == ContentState.Unmodified ? string.Empty : "*")}";
             PanelContentName.Visible = true;
         }
 
@@ -231,19 +248,6 @@ namespace Gorgon.Editor.UI.Views
         }
 
         /// <summary>
-        /// Function called when the data context requests that the content be closed.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// Implementors should override this method in order to provide custom functionality on close.
-        /// </para>
-        /// </remarks>
-        protected virtual void OnCloseContent()
-        {
-            Close();
-        }
-
-        /// <summary>
         /// Function to unassign events for the data context.
         /// </summary>
         protected virtual void UnassignEvents()
@@ -253,7 +257,6 @@ namespace Gorgon.Editor.UI.Views
                 return;
             }
 
-            _dataContext.CloseContent -= DataContext_CloseContent;
             _dataContext.PropertyChanging -= DataContext_PropertyChanging;
             _dataContext.PropertyChanged -= DataContext_PropertyChanged;
         }
@@ -268,7 +271,8 @@ namespace Gorgon.Editor.UI.Views
                 return;
             }
 
-            SetContentName(null, ContentState.Unmodified);
+            ButtonClose.Visible = false;
+            SetContentName(null);
         }
 
         /// <summary>
@@ -294,7 +298,6 @@ namespace Gorgon.Editor.UI.Views
 
             _dataContext.PropertyChanged += DataContext_PropertyChanged;
             _dataContext.PropertyChanging += DataContext_PropertyChanging;
-            _dataContext.CloseContent += DataContext_CloseContent;
         }
 
         /// <summary>
@@ -316,15 +319,6 @@ namespace Gorgon.Editor.UI.Views
         /// </remarks>
         protected virtual void OnShutdown()
         {
-        }
-
-        /// <summary>
-        /// Function to close the control.
-        /// </summary>
-        public void Close()
-        {
-            EventHandler handler = ControlClosing;
-            handler?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>

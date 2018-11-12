@@ -25,9 +25,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Core;
@@ -37,7 +34,6 @@ using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
-using Gorgon.Plugins;
 
 namespace Gorgon.Editor.Plugins
 {
@@ -53,6 +49,15 @@ namespace Gorgon.Editor.Plugins
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return the graphics context for the application.
+        /// </summary>
+        protected IGraphicsContext GraphicsContext
+        {
+            get;
+            private set;
+        }
+
         /// <summary>Property to return the type of this plug in.</summary>
         public override PluginType PluginType => PluginType.Content;
 
@@ -152,13 +157,14 @@ namespace Gorgon.Editor.Plugins
         /// Function to perform any required initialization for the plugin.
         /// </summary>
         /// <param name="pluginService">The plugin service used to access other plugins.</param>                
+        /// <param name="graphicsContext">The graphics context for the application.</param>
         /// <param name="log">The logging interface for debug messages.</param>
         /// <remarks>
         /// <para>
         /// This method is only called when the plugin is loaded at startup.
         /// </para>
         /// </remarks>
-        public void Initialize(IContentPluginService pluginService, IGorgonLog log)
+        public void Initialize(IContentPluginService pluginService, IGraphicsContext graphicsContext, IGorgonLog log)
         {
             if (Interlocked.Exchange(ref _initialized, 1) == 1)
             {
@@ -171,6 +177,8 @@ namespace Gorgon.Editor.Plugins
             }
 
             log.Print($"Initializing {Name}...", LoggingLevel.Simple);
+
+            GraphicsContext = graphicsContext;
 
             OnInitialize(pluginService, log);
         }

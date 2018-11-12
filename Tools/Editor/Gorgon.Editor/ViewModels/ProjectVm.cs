@@ -77,16 +77,49 @@ namespace Gorgon.Editor.ViewModels
         public IEditorContent CurrentContent
         {
             get => _currentContent;
-            set
+            private set
             {
                 if (_currentContent == value)
                 {
                     return;
                 }
 
+                if (_currentContent != null)
+                {
+                    CurrentContent.CloseContent -= CurrentContent_CloseContent;
+                    CurrentContent.WaitPanelActivated -= FileExplorer_WaitPanelActivated;
+                    CurrentContent.WaitPanelDeactivated -= FileExplorer_WaitPanelDeactivated;
+                    CurrentContent.ProgressUpdated -= FileExplorer_ProgressUpdated;
+                    CurrentContent.ProgressDeactivated -= FileExplorer_ProgressDeactivated;
+                }
+
                 OnPropertyChanging();
                 _currentContent = value;
                 OnPropertyChanged();
+
+                if (_currentContent != null)
+                {
+                    CurrentContent.WaitPanelActivated += FileExplorer_WaitPanelActivated;
+                    CurrentContent.WaitPanelDeactivated += FileExplorer_WaitPanelDeactivated;
+                    CurrentContent.ProgressUpdated += FileExplorer_ProgressUpdated;
+                    CurrentContent.ProgressDeactivated += FileExplorer_ProgressDeactivated;
+                    CurrentContent.CloseContent += CurrentContent_CloseContent;
+                }
+            }
+        }
+
+        /// <summary>Handles the CloseContent event of the CurrentContent control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The [EventArgs] instance containing the event data.</param>
+        private void CurrentContent_CloseContent(object sender, EventArgs e) 
+        {
+            try
+            {
+                CurrentContent = null;
+            }
+            catch (Exception ex)
+            {
+                _messageService.ShowError(ex, Resources.GOREDIT_ERR_CLOSING_CONTENT);
             }
         }
 
@@ -286,6 +319,15 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         private void UnassignEvents()
         {
+            if (_currentContent != null)
+            {
+                CurrentContent.CloseContent -= CurrentContent_CloseContent;
+                CurrentContent.WaitPanelActivated -= FileExplorer_WaitPanelActivated;
+                CurrentContent.WaitPanelDeactivated -= FileExplorer_WaitPanelDeactivated;
+                CurrentContent.ProgressUpdated -= FileExplorer_ProgressUpdated;
+                CurrentContent.ProgressDeactivated -= FileExplorer_ProgressDeactivated;
+            }
+
             if (FileExplorer == null)
             {
                 return;
@@ -339,8 +381,11 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 // Close the current content. It should be saved at this point.
-                CurrentContent?.OnUnload();
-                CurrentContent = null;
+                if (CurrentContent != null)
+                {
+                    CurrentContent.OnUnload();
+                    CurrentContent = null;                    
+                }
 
                 ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_OPENING, file.Name));
 
@@ -470,6 +515,7 @@ namespace Gorgon.Editor.ViewModels
             UnassignEvents();
 
             CurrentContent?.OnUnload();
+            CurrentContent = null;
         }
         #endregion
     }

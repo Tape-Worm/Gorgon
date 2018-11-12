@@ -267,7 +267,7 @@ namespace Gorgon.Editor
                 contentPluginSettingsDir.Refresh();
             }
 
-            var contentPlugins = new ContentPluginService(contentPluginSettingsDir);
+            var contentPlugins = new ContentPluginService(contentPluginSettingsDir, _graphicsContext);
 
             try
             {

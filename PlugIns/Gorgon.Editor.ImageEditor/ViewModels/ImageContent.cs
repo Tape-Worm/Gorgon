@@ -26,14 +26,18 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Gorgon.Editor.Content;
+using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 
@@ -57,8 +61,10 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         private IGorgonImage _image;
         // The codec used by the image.
         private IGorgonImageCodec _codec;
-        // The available image codecs.        
-        private IReadOnlyList<IGorgonImageCodec> _codecs;
+        // The format support information for the current video card.
+        private IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> _formatSupport;
+        // The available pixel formats, based on codec.
+        private ObservableCollection<BufferFormat> _pixelFormats = new ObservableCollection<BufferFormat>();
         #endregion
 
         #region Properties.
@@ -71,7 +77,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         public IGorgonImageCodec CurrentCodec
         {
             get => _codec;
-            set
+            private set
             {
                 if (_codec == value)
                 {
@@ -82,15 +88,154 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 OnPropertyChanging();
                 _codec = value;
                 File.Metadata.Attributes[CodecAttr] = value.GetType().FullName;
-                OnPropertyChanged();                
+                OnPropertyChanged();                                
             }
         }
 
         /// <summary>Property to return the name of the content.</summary>
         public string ContentName => File.Name;
+
+        /// <summary>
+        /// Property to return the list of codecs available.
+        /// </summary>
+        public ObservableCollection<IGorgonImageCodec> Codecs
+        {
+            get;
+        } = new ObservableCollection<IGorgonImageCodec>();
+
+        /// <summary>
+        /// Property to return the list of available image pixel formats (based on codec).
+        /// </summary>
+        public ObservableCollection<BufferFormat> PixelFormats
+        {
+            get => _pixelFormats;
+            private set
+            {
+                if (_pixelFormats == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _pixelFormats = value;
+                OnPropertyChanged();
+            }
+        } 
+
+        /// <summary>
+        /// Property to return the command used to assign the image codec.
+        /// </summary>
+        public IEditorCommand<IGorgonImageCodec> SetCodecCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the current pixel format for the image.
+        /// </summary>
+        public BufferFormat CurrentPixelFormat => _image.Format;
+
+        /// <summary>
+        /// Property to return the format support information for the current video card.
+        /// </summary>
+        public IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> FormatSupport
+        {
+            get => _formatSupport;
+            private set
+            {
+                if (_formatSupport == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _formatSupport = value;
+                OnPropertyChanged();
+            }
+        }
         #endregion
 
         #region Methods.        
+        /// <summary>
+        /// Function to retrieve the list of pixel formats applicable to each codec type.
+        /// </summary>
+        /// <param name="codec">The codec to evaluate.</param>
+        /// <returns>A list of formats.</returns>
+        private ObservableCollection<BufferFormat> GetFilteredFormats(IGorgonImageCodec codec)
+        {
+            if (codec == null)
+            {
+                return new ObservableCollection<BufferFormat>();
+            }
+
+            var result = new ObservableCollection<BufferFormat>();
+            IReadOnlyList<BufferFormat> supportedFormats = codec.SupportedPixelFormats;
+
+            if (_image.FormatInfo.IsCompressed)
+            {
+                // Assume our block compressed format expands to R8G8B8A8
+                supportedFormats = BufferFormat.R8G8B8A8_UNorm.CanConvertToAny(codec.SupportedPixelFormats)
+                    .Concat(codec.SupportedPixelFormats.Where(item => (new GorgonFormatInfo(item)).IsCompressed))
+                    .ToArray();
+            }
+
+            foreach (BufferFormat format in supportedFormats.OrderBy(item => item.ToString()))
+            {
+                if ((!_formatSupport.TryGetValue(format, out IGorgonFormatSupportInfo supportInfo))
+                    || (!supportInfo.IsTextureFormat(_image.ImageType))
+                    || (supportInfo.IsDepthBufferFormat))
+                {
+                    continue;
+                }
+
+                var formatInfo = new GorgonFormatInfo(format);
+
+                if ((formatInfo.IsPacked) || (formatInfo.IsTypeless))
+                {
+                    continue;
+                }
+                                
+                if ((!_image.FormatInfo.IsCompressed) && (!formatInfo.IsCompressed) && (!_image.CanConvertToFormat(format)))
+                {
+                    continue;
+                }
+
+                result.Add(format);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Function to determine if the current image codec can be changed.
+        /// </summary>
+        /// <param name="codec">The codec to assign.</param>
+        /// <returns><b>true</b> if the codec can be changed, <b>false</b> if not.</returns>
+        private bool CanSetImageCodec(IGorgonImageCodec codec) => (codec != null) && (Codecs.Contains(codec)) && (codec != CurrentCodec);
+
+        /// <summary>
+        /// Function to assign a new image codec.
+        /// </summary>
+        /// <param name="codec">The codec to assign.</param>
+        private void DoSetImageCodec(IGorgonImageCodec codec)
+        {
+            BusyState.SetBusy();
+
+            try
+            {
+                CurrentCodec = codec;
+                PixelFormats = GetFilteredFormats(codec);
+                ContentState = ContentState.Modified;
+            }
+            catch (Exception ex)
+            {
+                MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_CODEC_ASSIGN);
+            }
+            finally
+            {
+                BusyState.SetIdle();
+            }
+        }
 
         /// <summary>Function to initialize the content.</summary>
         /// <param name="injectionParameters">Common view model dependency injection parameters from the application.</param>
@@ -98,9 +243,20 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             base.OnInitialize(injectionParameters);
 
-            _codec = injectionParameters.Codec ?? throw new ArgumentMissingException(nameof(injectionParameters.Codec), nameof(injectionParameters));
-            _codecs = injectionParameters.Codecs ?? throw new ArgumentMissingException(nameof(injectionParameters.Codecs), nameof(injectionParameters));
-            _image = injectionParameters.Image ?? throw new ArgumentMissingException(nameof(ImageContentParameters.Image), nameof(injectionParameters));
+            _codec = injectionParameters.Codec ?? throw new ArgumentMissingException(nameof(injectionParameters.Codec), nameof(injectionParameters));            
+            _image = injectionParameters.Image ?? throw new ArgumentMissingException(nameof(injectionParameters.Image), nameof(injectionParameters));
+            _formatSupport = injectionParameters.FormatSupport ?? throw new ArgumentMissingException(nameof(injectionParameters.FormatSupport), nameof(injectionParameters));
+
+            IReadOnlyList<IGorgonImageCodec> codecs = injectionParameters.Codecs ?? throw new ArgumentMissingException(nameof(injectionParameters.Codecs), nameof(injectionParameters));
+
+            Codecs.Clear();
+
+            foreach (IGorgonImageCodec codec in codecs.Where(item => item.CanEncode).OrderBy(item => item.Codec))
+            {                
+                Codecs.Add(codec);
+            }
+
+            _pixelFormats = GetFilteredFormats(_codec);
         }
 
         /// <summary>
@@ -119,17 +275,11 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         #endregion
 
         #region Constructor/Finalizer.
-        /*/// <summary>Initializes a new instance of the EditorContentCommon class.</summary>
-        /// <param name="file">The file for the content.</param>
-        /// <param name="image">The image data.</param>
-        /// <param name="codecs">The available codec list.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/>, <paramref name="image"/>, or the <paramref name="codecs"/> parameter is <b>null</b>.</exception>
-        public ImageContent(IContentFile file, IGorgonImage image, IReadOnlyList<IGorgonImageCodec> codecs)
-            : base(file)
+        /// <summary>Initializes a new instance of the ImageContent class.</summary>
+        public ImageContent()
         {
-            _image = image ?? throw new ArgumentNullException(nameof(image));
-            _codecs = codecs ?? throw new ArgumentNullException(nameof(codecs));
-        }*/
+            SetCodecCommand = new EditorCommand<IGorgonImageCodec>(DoSetImageCodec, CanSetImageCodec);
+        }
         #endregion
     }
 }

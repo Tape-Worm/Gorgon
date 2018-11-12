@@ -25,6 +25,8 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
@@ -741,5 +743,30 @@ namespace Gorgon.Graphics.Imaging
 				newImage?.Dispose();
 			}
 		}
-	}
+
+        /// <summary>
+        /// Function to determine if the source format can convert to any of the formats in the destination list.
+        /// </summary>
+        /// <param name="sourceFormat">The source format to compare.</param>
+        /// <param name="destFormat">List of destination formats to compare.</param>
+        /// <returns>An array of formats that the source format can be converted into, or an empty array if no conversion is possible.</returns>
+        public static IReadOnlyList<BufferFormat> CanConvertToAny(this BufferFormat sourceFormat, IEnumerable<BufferFormat> destFormat)
+        {
+            if ((sourceFormat == BufferFormat.Unknown)
+                || (destFormat == null))
+            {
+                return new BufferFormat[0];
+            }
+
+            if (destFormat.All(item => item == sourceFormat))
+            {
+                return destFormat.ToArray();
+            }
+
+            using (var wic = new WicUtilities())
+            {
+                return wic.CanConvertFormats(sourceFormat, destFormat);
+            }
+        }
+    }
 }

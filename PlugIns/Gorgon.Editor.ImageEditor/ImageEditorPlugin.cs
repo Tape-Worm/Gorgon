@@ -219,9 +219,9 @@ namespace Gorgon.Editor.ImageEditor
                     return codec.LoadFromStream(stream);
                 }
             });
-
+                        
             var content = new ImageContent();
-            content.Initialize(new ImageContentParameters(file, image, codec, _codecList, injector));
+            content.Initialize(new ImageContentParameters(file, image, codec, _codecList, GraphicsContext.Graphics.FormatSupport, injector));
 
             return content;
         }

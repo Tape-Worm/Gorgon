@@ -143,17 +143,6 @@ namespace Gorgon.Editor.Views
             
         }
 
-
-        /// <summary>
-        /// Function called when the current content control is closing.
-        /// </summary>
-        /// <param name="sender">The sender of the event.</param>
-        /// <param name="e">The event parameters.</param>
-        private void ContentControl_ControlClosing(object sender, EventArgs e)
-        {
-            SetupContent(null);
-        }
-
         /// <summary>
         /// Function to reset the view to its default state when the data context is reset.
         /// </summary>
@@ -177,13 +166,8 @@ namespace Gorgon.Editor.Views
             // Remove all controls.
             while (SplitProject.Panel1.Controls.Count > 0)
             {
-                var contentControl = SplitProject.Panel1.Controls[SplitProject.Panel1.Controls.Count - 1] as ContentBaseControl;
-
-                if (contentControl != null)
-                {
-                    contentControl.ControlClosing -= ContentControl_ControlClosing;
-                }
-
+                // Leave this here for now, just in case we need it later.
+                //var contentControl = SplitProject.Panel1.Controls[SplitProject.Panel1.Controls.Count - 1] as ContentBaseControl;
                 SplitProject.Panel1.Controls[SplitProject.Panel1.Controls.Count - 1].Dispose();
             }
 
@@ -212,8 +196,6 @@ namespace Gorgon.Editor.Views
 
                 _currentContentRibbon = control.Ribbon;
             }
-
-            control.ControlClosing += ContentControl_ControlClosing;
 
             control.Start();
         }

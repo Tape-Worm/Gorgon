@@ -28,6 +28,8 @@ using System;
 using System.Collections.Generic;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.UI;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 
@@ -75,6 +77,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the format support information for the current video card.
+        /// </summary>
+        public IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> FormatSupport
+        {
+            get;
+        }
         #endregion
 
         #region Constructor/Finalizer.
@@ -85,12 +95,18 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <param name="codecs">The list of available codecs.</param>
         /// <param name="baseInjection">The base injection object used to transfer common objects from the application to the plug in view model.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file" />, <paramref name="image"/>, <paramref name="currentCodec"/>, <paramref name="codecs"/>, or the <paramref name="baseInjection"/> parameter is <b>null</b>.</exception>
-        public ImageContentParameters(IContentFile file, IGorgonImage image, IGorgonImageCodec currentCodec, IReadOnlyList<IGorgonImageCodec> codecs, IViewModelInjection baseInjection)
+        public ImageContentParameters(IContentFile file, 
+            IGorgonImage image, 
+            IGorgonImageCodec currentCodec, 
+            IReadOnlyList<IGorgonImageCodec> codecs, 
+            IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> formatSupport,
+            IViewModelInjection baseInjection)
             : base(file, baseInjection?.MessageDisplay ?? throw new ArgumentNullException(nameof(baseInjection)), baseInjection.BusyService)
         {
             Image = image ?? throw new ArgumentNullException(nameof(image));
             Codec = currentCodec ?? throw new ArgumentNullException(nameof(currentCodec));
             Codecs = codecs ?? throw new ArgumentNullException(nameof(codecs));
+            FormatSupport = formatSupport ?? throw new ArgumentNullException(nameof(formatSupport));
             Log = baseInjection.Log;
         }
         #endregion
