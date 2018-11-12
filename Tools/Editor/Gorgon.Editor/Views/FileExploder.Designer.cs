@@ -22,6 +22,9 @@
 
                 DataContext?.OnUnload();
                 UnassignEvents();
+
+                _excludedFont?.Dispose();
+                _openFont?.Dispose();
             }
 
             if (disposing && (components != null))

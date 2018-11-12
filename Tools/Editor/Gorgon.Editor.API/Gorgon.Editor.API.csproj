@@ -52,6 +52,7 @@
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CommonEditorConstants.cs" />
+    <Compile Include="Content\ContentFileMovedEventArgs.cs" />
     <Compile Include="UI\ViewFactory.cs" />
     <Compile Include="UI\ViewModels\EditorContentCommon.cs" />
     <Compile Include="Content\_Interfaces\IContentFile.cs" />

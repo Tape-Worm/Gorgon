@@ -71,6 +71,8 @@ namespace Gorgon.Editor.Views
         private IFileExplorerNodeVm _renameNode;
         // Font used for excluded items.
         private Font _excludedFont;
+        // Font used for open items.
+        private Font _openFont;
         // The context handler for clipboard operations.
         private IClipboardHandler _clipboardContext;
         // A drag and drop handler interface.
@@ -82,7 +84,7 @@ namespace Gorgon.Editor.Views
         // The drag hilight foreground color.
         private Color _dragForeColor;
         // The drag data for dropping files from explorer.
-        private ExplorerFileDragData _explorerDragData;
+        private ExplorerFileDragData _explorerDragData;        
         #endregion
 
         #region Properties.
@@ -315,7 +317,7 @@ namespace Gorgon.Editor.Views
             _revNodeLinks.TryGetValue(node, out KryptonTreeNode treeNode);
 
             switch (e.PropertyName)
-            {
+            {       
                 case nameof(IFileExplorerNodeVm.IsExpanded):
                     if (treeNode != null)
                     {
@@ -329,6 +331,8 @@ namespace Gorgon.Editor.Views
                         }
                     }
                     break;
+                case nameof(IFileExplorerNodeVm.IsChanged):
+                case nameof(IFileExplorerNodeVm.IsOpen):
                 case nameof(IFileExplorerNodeVm.ImageName):
                 case nameof(IFileExplorerNodeVm.IsCut):
                 case nameof(IFileExplorerNodeVm.Metadata):
@@ -1243,8 +1247,7 @@ namespace Gorgon.Editor.Views
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="PropertyChangingEventArgs"/> instance containing the event data.</param>
         private void DataContext_PropertyChanging(object sender, PropertyChangingEventArgs e)
-        {
-            
+        {            
         }
 
         /// <summary>
@@ -1254,11 +1257,11 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
         private void DataContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            KryptonTreeNode node = null;
+
             switch (e.PropertyName)
             {
                 case nameof(IFileExplorerVm.SelectedNode):
-                    KryptonTreeNode node = null;
-
                     if (DataContext.SelectedNode != null)
                     {
                         _revNodeLinks.TryGetValue(DataContext.SelectedNode, out node);
@@ -1316,8 +1319,24 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            treeNode.NodeFont = node.Metadata != null ? null : _excludedFont;
-            treeNode.ForeColor = node.Metadata != null ? Color.Empty : Color.DimGray;
+            if (node.Metadata == null)
+            {
+                treeNode.NodeFont = _excludedFont;
+                treeNode.ForeColor = Color.DimGray;
+            }
+            else
+            {
+                treeNode.ForeColor = node.IsChanged ? Color.LightGreen : Color.Empty;
+
+                if (node.IsOpen)
+                {
+                    treeNode.NodeFont = _openFont;
+                }
+                else
+                {
+                    treeNode.NodeFont = null;
+                }
+            }            
 
             if (node.IsCut)
             {
@@ -1572,6 +1591,9 @@ namespace Gorgon.Editor.Views
             _excludedFont = new Font(KryptonManager.CurrentGlobalPalette
                                                    .GetContentShortTextFont((PaletteContentStyle)TreeFileSystem.ItemStyle, PaletteState.Normal),
                                      FontStyle.Italic);
+            _openFont = new Font(KryptonManager.CurrentGlobalPalette
+                                                   .GetContentShortTextFont((PaletteContentStyle)TreeFileSystem.ItemStyle, PaletteState.Normal),
+                                                   FontStyle.Bold);
 
             _dragBackColor = KryptonManager.CurrentGlobalPalette.GetBackColor1(PaletteBackStyle.ButtonListItem, PaletteState.Tracking);
             _dragForeColor = KryptonManager.CurrentGlobalPalette.GetContentShortTextColor1(PaletteContentStyle.ButtonListItem, PaletteState.Tracking);

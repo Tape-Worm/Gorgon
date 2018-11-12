@@ -58,6 +58,8 @@ namespace Gorgon.Editor.UI.Views
         #region Variables.
         // The swap chain for the control.
         private GorgonSwapChain _swapChain;
+        // The data context for the editor context.
+        private IEditorContent _dataContext;
         #endregion
 
         #region Properties.
@@ -124,6 +126,177 @@ namespace Gorgon.Editor.UI.Views
         #endregion
 
         #region Methods.
+        /// <summary>Handles the CloseContent event of the DataContext control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The [EventArgs] instance containing the event data.</param>
+        private void DataContext_CloseContent(object sender, EventArgs e) => OnCloseContent();
+
+        /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The [PropertyChangedEventArgs] instance containing the event data.</param>
+        private void DataContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(IEditorContent.ContentState):
+                case nameof(IEditorContent.File):
+                    SetContentName(_dataContext.File?.Name, _dataContext.ContentState);
+                    break;
+            }
+
+            OnPropertyChanged(e);
+        }
+
+        /// <summary>Handles the PropertyChanging event of the DataContext control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The [PropertyChangingEventArgs] instance containing the event data.</param>
+        private void DataContext_PropertyChanging(object sender, PropertyChangingEventArgs e) => OnPropertyChanging(e);
+
+        /// <summary>
+        /// Function to initialize the view from the current data context.
+        /// </summary>
+        /// <param name="dataContext">The data context being assigned.</param>
+        private void InitializeFromDataContext(IEditorContent dataContext)
+        {
+            if (dataContext == null)
+            {
+                ResetDataContext();
+                return;
+            }
+
+            SetContentName(dataContext.File?.Name, dataContext.ContentState);
+        }
+
+        /// <summary>
+        /// Function to shut down the view.
+        /// </summary>
+        private void Shutdown()
+        {
+            UnassignEvents();
+
+            Stop();
+
+            OnShutdown();
+
+            // Return the swap chain to the pool.
+            if (_swapChain != null)
+            {
+                GraphicsContext.ReturnSwapPresenter(ref _swapChain);
+            }
+        }
+
+        /// <summary>
+        /// Function to assign the current content name.
+        /// </summary>
+        /// <param name="contentName">The name of the content.</param>
+        /// <param name="state">The current content state.</param>
+        private void SetContentName(string contentName, ContentState state)
+        {
+            if (string.IsNullOrWhiteSpace(contentName))
+            {
+                PanelContentName.Visible = false;
+                return;
+            }
+
+            LabelHeader.Text = $"{contentName}{(state == ContentState.Unmodified ? string.Empty : "*")}";
+            PanelContentName.Visible = true;
+        }
+
+        /// <summary>
+        /// Function called when a property is changing on the data context.
+        /// </summary>
+        /// <param name="e">The event parameters.</param>
+        /// <remarks>
+        /// <para>
+        /// Implementors should override this method in order to handle a property change notification from their data context.
+        /// </para>
+        /// </remarks>
+        protected virtual void OnPropertyChanging(PropertyChangingEventArgs e)
+        {
+
+        }
+
+        /// <summary>
+        /// Function called when a property is changed on the data context.
+        /// </summary>
+        /// <param name="e">The event parameters.</param>
+        /// <remarks>
+        /// <para>
+        /// Implementors should override this method in order to handle a property change notification from their data context.
+        /// </para>
+        /// </remarks>
+        protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
+        {
+
+        }
+
+        /// <summary>
+        /// Function called when the data context requests that the content be closed.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Implementors should override this method in order to provide custom functionality on close.
+        /// </para>
+        /// </remarks>
+        protected virtual void OnCloseContent()
+        {
+            Close();
+        }
+
+        /// <summary>
+        /// Function to unassign events for the data context.
+        /// </summary>
+        protected virtual void UnassignEvents()
+        {
+            if (_dataContext == null)
+            {
+                return;
+            }
+
+            _dataContext.CloseContent -= DataContext_CloseContent;
+            _dataContext.PropertyChanging -= DataContext_PropertyChanging;
+            _dataContext.PropertyChanged -= DataContext_PropertyChanged;
+        }
+
+        /// <summary>
+        /// Function called when the view should be reset by a <b>null</b> data context.
+        /// </summary>
+        protected virtual void ResetDataContext()
+        {
+            if (_dataContext == null)
+            {
+                return;
+            }
+
+            SetContentName(null, ContentState.Unmodified);
+        }
+
+        /// <summary>
+        /// Function to assign the data context to this object.
+        /// </summary>
+        /// <param name="dataContext">The data context to assign.</param>
+        /// <remarks>
+        /// <para>
+        /// Applications must call this method when setting their own data context. Otherwise, some functionality will not work.
+        /// </para>
+        /// </remarks>
+        protected void SetDataContext(IEditorContent dataContext)
+        {
+            UnassignEvents();
+
+            InitializeFromDataContext(dataContext);
+            _dataContext = dataContext;
+
+            if (_dataContext == null)
+            {
+                return;
+            }
+
+            _dataContext.PropertyChanged += DataContext_PropertyChanged;
+            _dataContext.PropertyChanging += DataContext_PropertyChanging;
+            _dataContext.CloseContent += DataContext_CloseContent;
+        }
+
         /// <summary>
         /// Function to allow user defined setup of the graphics context with this control.
         /// </summary>
@@ -152,22 +325,6 @@ namespace Gorgon.Editor.UI.Views
         {
             EventHandler handler = ControlClosing;
             handler?.Invoke(this, EventArgs.Empty);
-        }
-
-        /// <summary>
-        /// Function to shut down the view.
-        /// </summary>
-        public void Shutdown()
-        {
-            Stop();
-
-            OnShutdown();            
-
-            // Return the swap chain to the pool.
-            if (_swapChain != null)
-            {
-                GraphicsContext.ReturnSwapPresenter(ref _swapChain);
-            }
         }
 
         /// <summary>
@@ -225,22 +382,6 @@ namespace Gorgon.Editor.UI.Views
             OnSetupGraphics(context, swapChain);
             GraphicsContext = context;
             _swapChain = swapChain;
-        }
-
-        /// <summary>
-        /// Function to assign the current content name.
-        /// </summary>
-        /// <param name="contentName">The name of the content.</param>
-        public void SetContentName(string contentName)
-        {
-            if (string.IsNullOrWhiteSpace(contentName))
-            {
-                PanelContentName.Visible = false;
-                return;
-            }
-
-            LabelHeader.Text = contentName;
-            PanelContentName.Visible = true;
         }
         #endregion
 

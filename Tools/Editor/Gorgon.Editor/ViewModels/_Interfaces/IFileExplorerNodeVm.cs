@@ -72,6 +72,15 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Property to set or return whether the file has changes.
+        /// </summary>
+        bool IsChanged
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to return whether this node represents content or not.
         /// </summary>
         bool IsContent
@@ -83,6 +92,15 @@ namespace Gorgon.Editor.ViewModels
         /// Property to set or return whether to mark this node as "cut" or not.
         /// </summary>
         bool IsCut
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return whether the node is open for editing.
+        /// </summary>
+        bool IsOpen
         {
             get;
             set;
@@ -171,6 +189,12 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to notify that the parent of this node was moved.
+        /// </summary>
+        /// <param name="newNode">The new node representing this node under the new parent.</param>
+        void NotifyParentMoved(IFileExplorerNodeVm newNode);
+
         /// <summary>
         /// Function to determine if this node is an ancestor of the specified parent node.
         /// </summary>

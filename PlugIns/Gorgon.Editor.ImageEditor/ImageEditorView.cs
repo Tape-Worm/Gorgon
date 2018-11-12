@@ -83,28 +83,12 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Methods.
-        /// <summary>Handles the CloseEditor event of the DataContext control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The [EventArgs] instance containing the event data.</param>
-        private void DataContext_CloseEditor(object sender, EventArgs e)
-        {
-            Close();
-        }
-
-        /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The [PropertyChangedEventArgs] instance containing the event data.</param>
-        private void DataContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        /// <summary>Function called when a property is changed on the data context.</summary>
+        /// <param name="e">The event parameters.</param>
+        /// <remarks>Implementors should override this method in order to handle a property change notification from their data context.</remarks>
+        protected override void OnPropertyChanged(PropertyChangedEventArgs e) 
         {
             UpdateTexture2D(GraphicsContext?.Graphics);
-        }
-
-        /// <summary>Handles the PropertyChanging event of the DataContext control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The [PropertyChangingEventArgs] instance containing the event data.</param>
-        private void DataContext_PropertyChanging(object sender, PropertyChangingEventArgs e)
-        {
-
         }
                
         /// <summary>Handles the ValueChanged event of the ScrollVertical control.</summary>
@@ -219,28 +203,13 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>
         /// Function to reset the view to its original state.
         /// </summary>
-        private void ResetDataContext()
+        protected override void ResetDataContext()
         {
+            base.ResetDataContext();
             // Reset the zoom menu.
-            SetContentName(null);
             _zoomLevel = ZoomLevels.ToWindow;
             UpdateZoomMenu();
             ItemZoomToWindow.Checked = true;
-        }
-
-        /// <summary>
-        /// Function to unassign events from the data context.
-        /// </summary>
-        private void UnassignEvents()
-        {
-            if (DataContext == null)
-            {
-                return;
-            }
-
-            DataContext.CloseContent -= DataContext_CloseEditor;
-            DataContext.PropertyChanging -= DataContext_PropertyChanging;
-            DataContext.PropertyChanged -= DataContext_PropertyChanged;
         }
 
         /// <summary>
@@ -254,8 +223,7 @@ namespace Gorgon.Editor.ImageEditor
                 ResetDataContext();
                 return;
             }
-
-            SetContentName(dataContext.ContentName);
+                        
             UpdateZoomMenu();
         }
 
@@ -499,21 +467,12 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="dataContext">The data context to assign.</param>
         /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
         public void SetDataContext(IImageContent dataContext)
-        {            
-            UnassignEvents();
+        {
+            base.SetDataContext(dataContext);
 
             InitializeFromDataContext(dataContext);
 
             _ribbonForm.DataContext = DataContext = dataContext;            
-
-            if (DataContext == null)
-            {
-                return;
-            }
-
-            DataContext.PropertyChanging += DataContext_PropertyChanging;
-            DataContext.PropertyChanged += DataContext_PropertyChanged;
-            DataContext.CloseContent += DataContext_CloseEditor;
         }
         #endregion
 

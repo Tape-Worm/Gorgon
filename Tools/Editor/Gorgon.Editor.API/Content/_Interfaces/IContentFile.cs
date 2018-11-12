@@ -40,7 +40,33 @@ namespace Gorgon.Editor.Content
     /// </summary>
     public interface IContentFile
     {
+        #region Events.
+        /// <summary>
+        /// Event triggered if this content file was deleted.
+        /// </summary>
+        event EventHandler Deleted;
+
+        /// <summary>
+        /// Event triggered if this content file was moved in the file system.
+        /// </summary>
+        event EventHandler<ContentFileMovedEventArgs> Moved;
+
+        /// <summary>
+        /// Event triggered if this content file is excluded from the project.
+        /// </summary>
+        event EventHandler Excluded;
+        #endregion
+
         #region Properties.
+        /// <summary>
+        /// Property to set or return whether the file has changes.
+        /// </summary>
+        bool IsChanged
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Property to return the path to the file.
         /// </summary>
@@ -79,6 +105,15 @@ namespace Gorgon.Editor.Content
         ProjectItemMetadata Metadata
         {
             get;
+        }
+
+        /// <summary>
+        /// Property to set or return whether the file is open for editing or not.
+        /// </summary>
+        bool IsOpen
+        {
+            get;
+            set;
         }
         #endregion
 

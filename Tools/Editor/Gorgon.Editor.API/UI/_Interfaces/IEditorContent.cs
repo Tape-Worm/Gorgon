@@ -30,6 +30,25 @@ using Gorgon.Editor.Content;
 namespace Gorgon.Editor.UI
 {
     /// <summary>
+    /// The flags used to identify the current content state.
+    /// </summary>
+    public enum ContentState
+    {
+        /// <summary>
+        /// Content is unmodified.
+        /// </summary>
+        Unmodified = 0,
+        /// <summary>
+        /// Content is new.
+        /// </summary>
+        New = 1,
+        /// <summary>
+        /// Content is modified.
+        /// </summary>
+        Modified = 2
+    }
+
+    /// <summary>
     /// Common interface for editor content view models.
     /// </summary>
     public interface IEditorContent
@@ -43,6 +62,15 @@ namespace Gorgon.Editor.UI
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to set or return the current content state.
+        /// </summary>
+        ContentState ContentState
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Property to return the content file.
         /// </summary>

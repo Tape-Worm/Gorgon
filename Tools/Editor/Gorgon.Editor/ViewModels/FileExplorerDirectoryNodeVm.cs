@@ -74,6 +74,17 @@ namespace Gorgon.Editor.ViewModels
 
         /// <summary>Property to return whether this node represents content or not.</summary>
         public override bool IsContent => false;
+
+        /// <summary>Property to set or return whether the node is open for editing.</summary>
+        /// <remarks>Directory nodes cannot be opened for editing, thus this property will always return <strong>false</strong>.</remarks>
+        public override bool IsOpen
+        {
+            get => false;
+            set
+            {
+                // Intentionally left blank.
+            }
+        }
         #endregion
 
         #region Methods.

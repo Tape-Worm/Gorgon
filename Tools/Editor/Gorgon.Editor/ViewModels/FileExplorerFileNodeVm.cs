@@ -44,7 +44,27 @@ namespace Gorgon.Editor.ViewModels
     internal class FileExplorerFileNodeVm
         : FileExplorerNodeCommon, IContentFile
     {
-        #region Properties.
+        #region Variables.
+        // Flag to indicate whether the node is open for editing.
+        private bool _isOpen;
+        #endregion
+
+        #region Events.
+        /// <summary>Event triggered if this content file was deleted.</summary>
+        public event EventHandler Deleted;
+
+        /// <summary>
+        /// Event triggered if this content file was moved in the file system.
+        /// </summary>
+        public event EventHandler<ContentFileMovedEventArgs> Moved;
+
+        /// <summary>
+        /// Event triggered if this content file is excluded from the project.
+        /// </summary>
+        public event EventHandler Excluded;
+        #endregion
+
+        #region Properties.        
         /// <summary>
         /// Property to return whether to allow child node creation for this node.
         /// </summary>
@@ -101,7 +121,31 @@ namespace Gorgon.Editor.ViewModels
                 OnPropertyChanging();
                 base.Metadata = value;
                 OnPropertyChanged();
+
+                if (value == null)
+                {
+                    EventHandler handler = Excluded;
+                    handler?.Invoke(this, EventArgs.Empty);
+                }
+
                 NotifyPropertyChanged(nameof(ImageName));
+            }
+        }
+        
+        /// <summary>Property to set or return whether the node is open for editing.</summary>
+        public override bool IsOpen
+        {
+            get => _isOpen;
+            set
+            {
+                if (_isOpen == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _isOpen = value;
+                OnPropertyChanged();
             }
         }
         #endregion
@@ -138,6 +182,21 @@ namespace Gorgon.Editor.ViewModels
                     BusyService.SetBusy();
                 }
             }
+        }
+
+
+        /// <summary>Function called when the parent of this node is moved.</summary>
+        /// <param name="newNode">The new node representing this node under the new parent.</param>
+        protected override void OnNotifyParentMoved(IFileExplorerNodeVm newNode)
+        {
+            if ((!(newNode is IContentFile contentFile)) || (!contentFile.IsOpen))
+            {
+                return;
+            }
+
+            var args = new ContentFileMovedEventArgs(contentFile);
+            EventHandler<ContentFileMovedEventArgs> handler = Moved;
+            Moved?.Invoke(this, args);
         }
 
         /// <summary>Function to assign the appropriate content plug in to a node.</summary>
@@ -203,13 +262,30 @@ namespace Gorgon.Editor.ViewModels
             // There's no need to make this asynchronous, nor have a status display associated with it.  
             var tcs = new TaskCompletionSource<object>();
 
-            // Delete the physical object first. If we fail here, our node will survive.
-            FileSystemService.DeleteFile(PhysicalPath);
+            try
+            {
+                // Delete the physical object first. If we fail here, our node will survive.
+                FileSystemService.DeleteFile(PhysicalPath);
 
-            // Drop us from the parent list.
-            // This will begin a chain reaction that will remove us from the UI.
-            Parent.Children.Remove(this);
-            Parent = null;
+                // Drop us from the parent list.
+                // This will begin a chain reaction that will remove us from the UI.
+                Parent.Children.Remove(this);
+                Parent = null;
+
+                if (IsOpen)
+                {
+                    EventHandler deleteEvent = Deleted;
+                    Deleted?.Invoke(this, EventArgs.Empty);
+                    IsOpen = false;
+                }
+
+                // Mark as completed.
+                tcs.SetResult(null);
+            }
+            catch (Exception ex)
+            {
+                tcs.SetException(ex);
+            }
 
             return tcs.Task;
         }
@@ -322,13 +398,14 @@ namespace Gorgon.Editor.ViewModels
             FileSystemConflictResolution resolution = FileSystemConflictResolution.Exception;
             string newPath = Path.Combine(destNode.PhysicalPath, Name);
 
-            IFileExplorerNodeVm result = new FileExplorerFileNodeVm(this)
+            var result = new FileExplorerFileNodeVm(this)
             {
                 IsExpanded = false,
                 Name = Name,
                 Parent = destNode,
                 PhysicalPath = newPath,
-                Metadata = Metadata
+                Metadata = Metadata,
+                IsOpen = IsOpen
             };
 
             if (FileSystemService.FileExists(newPath))
@@ -347,6 +424,13 @@ namespace Gorgon.Editor.ViewModels
             }
 
             FileSystemService.MoveFile(PhysicalPath, result.PhysicalPath);
+
+            if (IsOpen)
+            {
+                var args = new ContentFileMovedEventArgs(result);
+                EventHandler<ContentFileMovedEventArgs> handler = Moved;
+                Moved?.Invoke(this, args);
+            }
 
             return result;
         }

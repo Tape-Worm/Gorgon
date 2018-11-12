@@ -31,6 +31,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Plugins;
@@ -59,6 +60,8 @@ namespace Gorgon.Editor.ViewModels
         private bool _isCut;
         // The metadata for the node.
         private ProjectItemMetadata _metadata;
+        // Flag to indicate that the file was changed.
+        private bool _isChanged;
         #endregion
 
         #region Properties.
@@ -98,10 +101,34 @@ namespace Gorgon.Editor.ViewModels
             private set;
         }
 
+        /// <summary>Property to set or return whether the file has changes.</summary>
+        public bool IsChanged
+        {
+            get => _isChanged;
+            set
+            {
+                if (_isChanged == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _isChanged = value;
+                OnPropertyChanged();
+            }
+        }
+
         /// <summary>Property to return whether this node represents content or not.</summary>
         public abstract bool IsContent
         {
             get;
+        }
+        
+        /// <summary>Property to set or return whether the node is open for editing.</summary>
+        public abstract bool IsOpen
+        {
+            get;
+            set;
         }
 
         /// <summary>
@@ -304,6 +331,15 @@ namespace Gorgon.Editor.ViewModels
         protected virtual bool OnAssignContentPlugin(IContentPluginManagerService plugins, bool deepScan) => false;
 
         /// <summary>
+        /// Function called when the parent of this node is moved.
+        /// </summary>
+        /// <param name="newNode">The new node representing this node under the new parent.</param>
+        protected virtual void OnNotifyParentMoved(IFileExplorerNodeVm newNode)
+        {
+
+        }
+
+        /// <summary>
         /// Function to inject dependencies for the view model.
         /// </summary>
         /// <param name="injectionParameters">The parameters to inject.</param>
@@ -331,6 +367,21 @@ namespace Gorgon.Editor.ViewModels
 
             // Determine if we are included in the project or not.
             injectionParameters.Project.ProjectItems.TryGetValue(FullPath, out _metadata);
+        }
+
+        /// <summary>
+        /// Function to notify that the parent of this node was moved.
+        /// </summary>
+        /// <param name="newNode">The new node representing this node under the new parent.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="newNode"/> parameter is <b>null</b>.</exception>
+        public void NotifyParentMoved(IFileExplorerNodeVm newNode)
+        {
+            if (newNode == null)
+            {
+                throw new ArgumentNullException(nameof(newNode));
+            }
+
+            OnNotifyParentMoved(newNode);
         }
 
         /// <summary>
@@ -454,6 +505,7 @@ namespace Gorgon.Editor.ViewModels
             Parent = copy.Parent;
             FileSystemService = copy.FileSystemService;
             ViewModelFactory = copy.ViewModelFactory;
+            IsChanged = copy.IsChanged;            
         }
 
         /// <summary>

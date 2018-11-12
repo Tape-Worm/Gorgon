@@ -141,6 +141,17 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error updating the associated file information after it was moved.
+        ///
+        ///This content will now close in order to avoid corrupting the file..
+        /// </summary>
+        internal static string GOREDIT_ERR_AFTER_MOVE_UPDATE {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_AFTER_MOVE_UPDATE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not find a view factory registered to the type &apos;{0}&apos;..
         /// </summary>
         internal static string GOREDIT_ERR_CANNOT_FIND_VIEW_FACTORY {

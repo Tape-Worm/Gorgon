@@ -126,6 +126,9 @@ namespace Gorgon.Editor.Plugins
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GOREDIT_ERR_NO_CONTENT_FROM_PLUGIN, Name));
             }
 
+            // Reset the content state.
+            content.ContentState = ContentState.Unmodified;
+
             return content;
         }
 

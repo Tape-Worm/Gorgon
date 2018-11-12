@@ -189,4 +189,9 @@ Some changes may not have been saved.</value>
   <data name="GOREDIT_ERR_CANNOT_FIND_VIEW_FACTORY" xml:space="preserve">
     <value>Could not find a view factory registered to the type '{0}'.</value>
   </data>
+  <data name="GOREDIT_ERR_AFTER_MOVE_UPDATE" xml:space="preserve">
+    <value>There was an error updating the associated file information after it was moved.
+
+This content will now close in order to avoid corrupting the file.</value>
+  </data>
 </root>

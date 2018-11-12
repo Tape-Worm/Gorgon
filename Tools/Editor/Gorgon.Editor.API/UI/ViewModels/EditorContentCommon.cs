@@ -25,16 +25,9 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Gorgon.Core;
-using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
-using Gorgon.Editor.UI.Views;
 
 namespace Gorgon.Editor.UI
 {
@@ -54,7 +47,7 @@ namespace Gorgon.Editor.UI
 
         #region Events.
         /// <summary>Event to notify the view that the content should close.</summary>
-        public event EventHandler CloseContent;
+        public event EventHandler CloseContent;        
         #endregion
 
         #region Variables.
@@ -63,6 +56,9 @@ namespace Gorgon.Editor.UI
 
         // The file for the content.
         private IContentFile _file;
+
+        // The current content state.
+        private ContentState _state = ContentState.New;
         #endregion
 
         #region Properties.
@@ -82,6 +78,25 @@ namespace Gorgon.Editor.UI
         {
             get;
             private set;
+        }
+
+        /// <summary>
+        /// Property to return the current content state.
+        /// </summary>
+        public ContentState ContentState
+        {
+            get => _state;
+            set
+            {
+                if ((_state == value) || ((_state == ContentState.New) && (value != ContentState.Unmodified)))
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _state = value;
+                OnPropertyChanged();
+            }
         }
 
         /// <summary>
@@ -130,27 +145,40 @@ namespace Gorgon.Editor.UI
         #endregion
 
         #region Methods.
-        /*/// <summary>Function to retrieve the view for the content.</summary>
-        /// <returns>A UI for the content, must not be <b>null</b>.</returns>
-        protected abstract ContentBaseControl OnGetView();
+        // TODO: Maybe change this to a cancel event.
+        /// <summary>Handles the Excluded event of the File control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The [EventArgs] instance containing the event data.</param>
+        private void File_Excluded(object sender, EventArgs e) => DoCloseContent();
 
-        /// <summary>Function to close the content.</summary>
-        public abstract void Close();
+        /// <summary>Handles the Deleted event of the File control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The [EventArgs] instance containing the event data.</param>
+        private void File_Deleted(object sender, EventArgs e) => DoCloseContent();
 
-        /// <summary>Function to retrieve the view for the content.</summary>
-        /// <returns>A UI for the content, must not be <b>null</b>.</returns>
-        /// <exception cref="GorgonException">Thrown if no view was found for the content.</exception>
-        public ContentBaseControl GetView()
+        /// <summary>Handles the Moved event of the File control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The ContentFileMovedEventArgs instance containing the event data.</param>
+        private void File_Moved(object sender, ContentFileMovedEventArgs e)
         {
-            ContentBaseControl control = OnGetView();
-
-            if (control == null)
+            try
             {
-                throw new GorgonException(GorgonResult.CannotCreate, Resources.GOREDIT_ERR_NO_CONTENT_VIEW);
-            }
+                _file.Excluded -= File_Excluded;
+                _file.Moved -= File_Moved;
+                _file.Deleted -= File_Deleted;
 
-            return control;
-        }*/
+                File = e.NewFile;
+
+                _file.Moved += File_Moved;
+                _file.Deleted += File_Deleted;
+                _file.Excluded += File_Excluded;
+            }
+            catch (Exception ex)
+            {
+                MessageDisplay.ShowError(ex, Resources.GOREDIT_ERR_AFTER_MOVE_UPDATE);
+                DoCloseContent();
+            }
+        }
 
         /// <summary>
         /// Function called to close the content.
@@ -172,7 +200,7 @@ namespace Gorgon.Editor.UI
             {
                 BusyState.SetIdle();
             }
-        }
+        }               
 
         /// <summary>
         /// Function to initialize the content.
@@ -195,6 +223,22 @@ namespace Gorgon.Editor.UI
             {
                 _file.Metadata.Attributes[ContentTypeAttr] = ContentType;
             }
+
+            _file.Moved += File_Moved;
+            _file.Deleted += File_Deleted;
+            _file.Excluded += File_Excluded;
+        }
+
+
+        /// <summary>Function called when the associated view is unloaded.</summary>
+        public override void OnUnload()
+        {
+            // TODO: This should get marked when we commit the file data back to the file system.
+            // _file.IsChanged = true;
+            _file.Moved -= File_Moved;
+            _file.Deleted -= File_Deleted;
+            _file.Excluded -= File_Excluded;
+            _file.IsOpen = false;
         }
         #endregion
 

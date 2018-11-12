@@ -113,6 +113,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         public override void OnUnload()
         {
             _image?.Dispose();
+
+            base.OnUnload();
         }
         #endregion
 

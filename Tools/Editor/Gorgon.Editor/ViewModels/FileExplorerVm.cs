@@ -97,7 +97,7 @@ namespace Gorgon.Editor.ViewModels
         // The application settings.
         private EditorSettings _settings;
         // The content plugin service.
-        private IContentPluginManagerService _contentPlugins;
+        private IContentPluginManagerService _contentPlugins;        
         #endregion
 
         #region Properties.
@@ -296,6 +296,19 @@ namespace Gorgon.Editor.ViewModels
                 string message = hasChildren ? string.Format(Resources.GOREDIT_CONFIRM_DELETE_CHILDREN, SelectedNode.FullPath)
                                                 : string.Format(Resources.GOREDIT_CONFIRM_DELETE_NO_CHILDREN, SelectedNode.FullPath);
 
+                // If we have an open node, and it has unsaved changes, prompt with:
+                //
+                // "There is a file open in the editor that has unsaved changes.
+                // Deleting this file will result in the loss of these changes.
+                // 
+                // Are you sure you wish to delete this file?
+                //
+                // Yes/No"
+                if (SelectedNode.IsOpen)
+                {
+                    // TODO: Update the message string.  We'll let the prompt below handle everything.  Better than having multiple prompts.
+                }
+
                 if (_messageService.ShowConfirmation(message) == MessageResponse.No)
                 {
                     return;
@@ -303,7 +316,15 @@ namespace Gorgon.Editor.ViewModels
 
                 if (!hasChildren)
                 {
+                    string path = SelectedNode.FullPath;
+
                     await SelectedNode.DeleteNodeAsync();
+
+                    // Remove this item from the metadata.
+                    if (_project.ProjectItems.Remove(path))
+                    {
+                        OnFileSystemChanged();
+                    }
                     return;
                 }
 
@@ -437,6 +458,11 @@ namespace Gorgon.Editor.ViewModels
                 // Add child nodes.
                 foreach (IFileExplorerNodeVm child in RootNode.Children.Traverse(n => n.Children))
                 {
+                    if ((child.IsOpen) && (!include))
+                    {
+                        // TODO: Ask for permission to exclude if we have changes.
+                    }
+
                     UpdateMetadataForNode(child, include ? new ProjectItemMetadata() : null);
                 }
 
@@ -472,6 +498,11 @@ namespace Gorgon.Editor.ViewModels
                 if (node != RootNode)
                 {
                     UpdateMetadataForNode(node, include ? new ProjectItemMetadata() : null);
+                                        
+                    if ((node.IsOpen) && (!include))
+                    {
+                        // TODO: Ask for permission to exclude if we have changes.
+                    }
                 }
 
                 // If our parent node is not included, and we've included this node, then we'll include it now.
@@ -580,6 +611,23 @@ namespace Gorgon.Editor.ViewModels
         {
             IFileExplorerNodeVm nodeToRefresh = node ?? RootNode;
 
+            // Check for open content.
+            string openContentPath = null;
+            var changedFilePaths = new HashSet<string>();
+
+            foreach (IFileExplorerNodeVm child in nodeToRefresh.Children.Traverse(n => n.Children))
+            {
+                if (child.IsOpen)
+                {
+                    openContentPath = child.FullPath;
+                }
+
+                if ((child.IsChanged) && (!changedFilePaths.Contains(child.FullPath)))
+                {
+                    changedFilePaths.Add(child.FullPath);
+                }
+            }
+                        
             nodeToRefresh.Children.Clear();
 
             var parent = new DirectoryInfo(nodeToRefresh == RootNode ? _project.ProjectWorkSpace.FullName : nodeToRefresh.PhysicalPath);
@@ -597,7 +645,18 @@ namespace Gorgon.Editor.ViewModels
                 if (child.Metadata != null)
                 {
                     child.AssignContentPlugin(_contentPlugins, deepScanForAssociation);
-                }                
+                }
+
+                // Restore the open flag.
+                if ((openContentPath != null) && (string.Equals(child.FullPath, openContentPath, StringComparison.OrdinalIgnoreCase)))
+                {
+                    child.IsOpen = true;
+                }
+
+                if (changedFilePaths.Contains(child.FullPath))
+                {
+                    child.IsChanged = true;
+                }
             }
         }
 
@@ -905,6 +964,21 @@ namespace Gorgon.Editor.ViewModels
         {
             try
             {
+                IFileExplorerNodeVm openNode = RootNode.Children.Traverse(n => n.Children).FirstOrDefault(n => n.IsOpen);
+
+                // If we have an open node, and it has unsaved changes, prompt with:
+                //
+                // "There is a file open in the editor that has unsaved changes.
+                // Deleting this file will result in the loss of these changes.
+                // 
+                // Are you sure you wish to delete this file?
+                //
+                // Yes/No" (no cancel because if we say no, we stop deleting).
+                if (openNode != null)
+                {
+                    // TODO: Check for changes and prompt.
+                }
+
                 if (_messageService.ShowConfirmation(Resources.GOREDIT_CONFIRM_DELETE_ALL) == MessageResponse.No)
                 {
                     return;
@@ -978,11 +1052,20 @@ namespace Gorgon.Editor.ViewModels
                 source.Metadata = null;
             }
 
+            IFileExplorerNodeVm openFile = null;
+            string newOpenFilePath = null;
+
             if (source.AllowChildCreation)
             {
                 foreach (IFileExplorerNodeVm childNode in source.Children.Traverse(n => n.Children).Where(item => item.Metadata != null))
                 {
                     string destPath = RemapNodePath(childNode, newNode, source);
+
+                    if (childNode.IsOpen)
+                    {
+                        openFile = childNode;
+                        newOpenFilePath = destPath;
+                    }
 
                     _project.ProjectItems.Remove(childNode.FullPath);
 
@@ -1000,6 +1083,17 @@ namespace Gorgon.Editor.ViewModels
             if (source.Children.Count > 0)
             {
                 RefreshNode(newNode, false);
+
+                if (openFile != null)
+                {
+                    IFileExplorerNodeVm newOpenFile = newNode.Children.Traverse(n => n.Children).FirstOrDefault(n => string.Equals(n.FullPath, newOpenFilePath, StringComparison.OrdinalIgnoreCase));
+
+                    if (newOpenFile != null)
+                    {
+                        newOpenFile.IsOpen = true;
+                        openFile.NotifyParentMoved(newOpenFile);
+                    }                    
+                }                
             }            
 
             SelectedNode = dest;

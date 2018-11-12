@@ -355,6 +355,7 @@ namespace Gorgon.Editor.ViewModels
                 // TODO: Open the file.
 
                 // Load the content.
+                file.IsOpen = true;
                 CurrentContent = content;
             }
             catch (Exception ex)
