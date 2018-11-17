@@ -59,6 +59,19 @@ namespace Gorgon.Editor.ProjectData
         }
 
         /// <summary>
+        /// Property to return the scratch space directory for the project.
+        /// </summary>
+        /// <remarks>
+        /// The scratch space directory is a temporary directory used for plug ins to store transitory data that only needs to exist during the lifetime of the application or plug in. Nothing in this 
+        /// directory is saved into the project.
+        /// </remarks>
+        [JsonIgnore]
+        DirectoryInfo ProjectScratchSpace
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to set or return the writer used to write to the project file.
         /// </summary>
         [JsonIgnore]

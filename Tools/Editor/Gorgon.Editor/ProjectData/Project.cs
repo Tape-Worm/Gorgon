@@ -34,7 +34,7 @@ using Gorgon.Editor.Plugins;
 using Newtonsoft.Json;
 
 namespace Gorgon.Editor.ProjectData
-{ 
+{
     /// <summary>
     /// The project data.
     /// </summary>
@@ -64,6 +64,20 @@ namespace Gorgon.Editor.ProjectData
         /// </remarks>
         [JsonIgnore]
         public DirectoryInfo ProjectWorkSpace
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the scratch space directory for the project.
+        /// </summary>
+        /// <remarks>
+        /// The scratch space directory is a temporary directory used for plug ins to store transitory data that only needs to exist during the lifetime of the application or plug in. Nothing in this 
+        /// directory is saved into the project.
+        /// </remarks>
+        [JsonIgnore]
+        public DirectoryInfo ProjectScratchSpace
         {
             get;
             set;
@@ -132,9 +146,13 @@ namespace Gorgon.Editor.ProjectData
         /// Initializes a new instance of the <see cref="Project"/> class.
         /// </summary>
         /// <param name="workspace">The work space directory for the project.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="projectName"/>, or the <paramref name="workspace"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="projectName"/> parameter is empty.</exception>
-        public Project(DirectoryInfo workspace) => ProjectWorkSpace = workspace ?? throw new ArgumentNullException(nameof(workspace));
+        /// <param name="scratchDir">The temporary scratch directory for the project.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="workspace"/>, or the <paramref name="scratchDir"/> parameter is <b>null</b>.</exception>        
+        public Project(DirectoryInfo workspace, DirectoryInfo scratchDir)
+        {
+            ProjectWorkSpace = workspace ?? throw new ArgumentNullException(nameof(workspace));
+            ProjectScratchSpace = scratchDir ?? throw new ArgumentNullException(nameof(scratchDir));
+        }
         #endregion
     }
 }

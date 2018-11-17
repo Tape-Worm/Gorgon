@@ -24,7 +24,9 @@
 // 
 #endregion
 
+using System.IO;
 using Gorgon.Editor.Content;
+using Gorgon.IO;
 
 namespace Gorgon.Editor.UI
 {
@@ -38,6 +40,22 @@ namespace Gorgon.Editor.UI
         /// Property to return the content file.
         /// </summary>
         IContentFile File
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the file system containing the scratch area for the plug in.
+        /// </summary>
+        IGorgonFileSystem ScratchArea
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the writer used to write into the scratch area.
+        /// </summary>
+        IGorgonFileSystemWriter<Stream> ScratchWriter
         {
             get;
         }

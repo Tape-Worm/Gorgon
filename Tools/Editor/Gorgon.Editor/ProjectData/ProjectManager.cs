@@ -67,6 +67,24 @@ namespace Gorgon.Editor.ProjectData
 
         #region Methods.
         /// <summary>
+        /// Function to return a temporary scratch directory for the project.
+        /// </summary>
+        /// <param name="workspace">The workspace location for the directory.</param>
+        /// <returns>The temporary scratch directory.</returns>
+        private static DirectoryInfo GetScratchDirectory(DirectoryInfo workspace)
+        {
+            var scratchLocation = new DirectoryInfo(Path.Combine(workspace.FullName, $"Scratch_{Guid.NewGuid().ToString("N")}"));
+
+            if (!scratchLocation.Exists)
+            {
+                scratchLocation.Create();
+                scratchLocation.Refresh();
+            }
+
+            return scratchLocation;
+        }
+
+        /// <summary>
         /// Function to return a new project workspace directory.
         /// </summary>
         /// <param name="workspace">The base workspace directory.</param>
@@ -237,8 +255,9 @@ namespace Gorgon.Editor.ProjectData
         /// Function to build the project information from the metadata.
         /// </summary>
         /// <param name="metaDataFile">The metadata file to use.</param>
+        /// <param name="scratchArea">The scratch area used for temporary files.</param>
         /// <returns>A new project object.</returns>
-        private IProject CreateFromMetadata(FileInfo metaDataFile)
+        private IProject CreateFromMetadata(FileInfo metaDataFile, DirectoryInfo scratchArea)
         {
             Project result = null;
 
@@ -250,6 +269,7 @@ namespace Gorgon.Editor.ProjectData
 
                 result = JsonConvert.DeserializeObject<Project>(readJsonData);
                 result.ProjectWorkSpace = metaDataFile.Directory;
+                result.ProjectScratchSpace = scratchArea;
             }
 
             if (!string.IsNullOrWhiteSpace(result.WriterPluginName))
@@ -281,6 +301,7 @@ namespace Gorgon.Editor.ProjectData
         private (IProject project, bool hasMetadata, bool isUpgraded) OpenProject(FileInfo fileSystemFile, IGorgonFileSystemProvider provider, DirectoryInfo workspace)
         {
             DirectoryInfo projectWorkspace = GetProjectWorkspace(workspace);
+            DirectoryInfo scratchDir = GetScratchDirectory(workspace);
 
             FileInfo metaData = CopyFileSystem(fileSystemFile, provider, projectWorkspace);
 
@@ -291,7 +312,7 @@ namespace Gorgon.Editor.ProjectData
             {
                 Program.Log.Print("No metadata file exists. A new one will be created.", LoggingLevel.Verbose);
 
-                result = new Project(projectWorkspace);
+                result = new Project(projectWorkspace, scratchDir);
                 BuildMetadataDatabase(result, metaData);
 
                 var v2Metadata = new FileInfo(Path.Combine(result.ProjectWorkSpace.FullName, V2MetadataImporter.V2MetadataFilename));
@@ -310,7 +331,7 @@ namespace Gorgon.Editor.ProjectData
                 return (result, false, true);
             }
 
-            return (CreateFromMetadata(metaData), true, false);
+            return (CreateFromMetadata(metaData, scratchDir), true, false);
         }
 
         /// <summary>
@@ -326,6 +347,27 @@ namespace Gorgon.Editor.ProjectData
             }
 
             int count = 0;
+
+            // Try multiple times if explorer is being a jerk.
+            while (count < 3)
+            {
+                try
+                {
+                    // Blow away the directory containing the project scratch data.
+                    project.ProjectScratchSpace.Delete(true);
+                    project.ProjectScratchSpace.Refresh();
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    Program.Log.LogException(ex);
+                    ++count;
+
+                    Thread.Sleep(250);
+                }
+            }
+
+            count = 0;
 
             // Try multiple times if explorer is being a jerk.
             while (count < 3)
@@ -372,11 +414,12 @@ namespace Gorgon.Editor.ProjectData
                 throw new ArgumentEmptyException(nameof(workspace));
             }
 
+            DirectoryInfo scratchDir = GetScratchDirectory(workspace);
             workspace = GetProjectWorkspace(workspace);
 
             var metadataFile = new FileInfo(Path.Combine(workspace.FullName, CommonEditorConstants.EditorMetadataFileName));
 
-            var result = new Project(workspace);
+            var result = new Project(workspace, scratchDir);
 
             BuildMetadataDatabase(result, metadataFile);
 

@@ -390,7 +390,7 @@ namespace Gorgon.Editor.ViewModels
                 ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_OPENING, file.Name));
 
                 // Create a content object.
-                IEditorContent content = await file.ContentPlugin.OpenContentAsync(file, _viewModelFactory, Program.Log);
+                IEditorContent content = await file.ContentPlugin.OpenContentAsync(file, _viewModelFactory, _projectData, Program.Log);
 
                 if (content == null)
                 {

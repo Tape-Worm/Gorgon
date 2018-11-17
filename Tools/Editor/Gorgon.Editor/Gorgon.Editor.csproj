@@ -351,7 +351,6 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>copy "$(SolutionDir)Tools\texconv\texconv.exe" "$(TargetDir)Plugins\content"</PostBuildEvent>
   </PropertyGroup>
 </Project>

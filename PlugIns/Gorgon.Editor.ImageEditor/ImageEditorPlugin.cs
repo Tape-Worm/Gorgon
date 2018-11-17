@@ -201,9 +201,10 @@ namespace Gorgon.Editor.ImageEditor
 
         /// <summary>Function to open a content object from this plugin.</summary>
         /// <param name="file">The file that contains the content.</param>
+        /// <param name="scratchAreaDirectory">The directory for the temporary working directory.</param>
         /// <param name="log">The logging interface to use.</param>
         /// <returns>A new IEditorContent object.</returns>
-        protected async override Task<IEditorContent> OnOpenContentAsync(IContentFile file, IViewModelInjection injector, IGorgonLog log)
+        protected async override Task<IEditorContent> OnOpenContentAsync(IContentFile file, IViewModelInjection injector, IGorgonFileSystemWriter<Stream> scratchArea, IGorgonLog log)
         {
             IGorgonImageCodec codec = GetCodec(file);
 
@@ -221,7 +222,7 @@ namespace Gorgon.Editor.ImageEditor
             });
                         
             var content = new ImageContent();
-            content.Initialize(new ImageContentParameters(file, image, codec, _codecList, GraphicsContext.Graphics.FormatSupport, injector));
+            content.Initialize(new ImageContentParameters(file, image, codec, _codecList, GraphicsContext.Graphics.FormatSupport, scratchArea, injector));
 
             return content;
         }

@@ -25,9 +25,11 @@
 #endregion
 
 using System;
+using System.IO;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
+using Gorgon.IO;
 
 namespace Gorgon.Editor.UI
 {
@@ -47,7 +49,7 @@ namespace Gorgon.Editor.UI
 
         #region Events.
         /// <summary>Event to notify the view that the content should close.</summary>
-        public event EventHandler CloseContent;        
+        public event EventHandler CloseContent;
         #endregion
 
         #region Variables.
@@ -62,6 +64,24 @@ namespace Gorgon.Editor.UI
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return the scratch area file system.
+        /// </summary>
+        protected IGorgonFileSystem ScratchArea
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the scratch area file system writer.
+        /// </summary>
+        protected IGorgonFileSystemWriter<Stream> ScratchWriter
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// Property to return the message display service.
         /// </summary>
@@ -227,8 +247,10 @@ namespace Gorgon.Editor.UI
             _file.Moved += File_Moved;
             _file.Deleted += File_Deleted;
             _file.Excluded += File_Excluded;
-        }
 
+            ScratchArea = injectionParameters.ScratchArea ?? throw new ArgumentMissingException(nameof(IContentViewModelInjection.ScratchArea), nameof(injectionParameters));
+            ScratchWriter = injectionParameters.ScratchWriter ?? throw new ArgumentMissingException(nameof(IContentViewModelInjection.ScratchWriter), nameof(injectionParameters));            
+        }
 
         /// <summary>Function called when the associated view is unloaded.</summary>
         public override void OnUnload()

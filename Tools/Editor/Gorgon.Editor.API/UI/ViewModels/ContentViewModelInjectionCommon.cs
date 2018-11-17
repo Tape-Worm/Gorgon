@@ -25,8 +25,11 @@
 #endregion
 
 using System;
+using System.IO;
+using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Services;
+using Gorgon.IO;
 
 namespace Gorgon.Editor.UI
 {
@@ -42,16 +45,43 @@ namespace Gorgon.Editor.UI
             get;            
         }
 
+
+        /// <summary>
+        /// Property to return the file system containing the scratch area for the plug in.
+        /// </summary>
+        public IGorgonFileSystem ScratchArea
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the writer used to write into the scratch area.
+        /// </summary>
+        public IGorgonFileSystemWriter<Stream> ScratchWriter
+        {
+            get;
+        }
+
         /// <summary>Initializes a new instance of the ContentViewModelInjectionCommon class.</summary>
         /// <param name="file">The file that contains the content.</param>
+        /// <param name="scratchArea">The file system for temporary files.</param>
         /// <param name="messageService">The message display service.</param>
         /// <param name="busyService">The busy state service.</param>
         /// <exception cref="ArgumentNullException">Thrown any of the parameters are <b>null</b></exception>
-        public ContentViewModelInjectionCommon(IContentFile file, IMessageDisplayService messageService, IBusyStateService busyService)
+        public ContentViewModelInjectionCommon(IContentFile file, IGorgonFileSystemWriter<Stream> scratchArea, IMessageDisplayService messageService, IBusyStateService busyService)
         {
             File = file ?? throw new ArgumentNullException(nameof(file));
             MessageDisplay = messageService ?? throw new ArgumentNullException(nameof(messageService));
             BusyService = busyService ?? throw new ArgumentNullException(nameof(busyService));
+
+            if (scratchArea == null)
+            {
+                throw new ArgumentNullException(nameof(scratchArea));
+            }
+
+            // Mount the temporary area as a file system we can use.            
+            ScratchArea = scratchArea.FileSystem;
+            ScratchWriter = scratchArea;
         }
     }
 }

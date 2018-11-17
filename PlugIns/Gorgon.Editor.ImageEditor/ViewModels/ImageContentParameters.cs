@@ -26,12 +26,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
+using Gorgon.IO;
 
 namespace Gorgon.Editor.ImageEditor.ViewModels
 {
@@ -93,6 +95,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <param name="image">The image data.</param>
         /// <param name="currentCodec">The current codec for the image data.</param>
         /// <param name="codecs">The list of available codecs.</param>
+        /// <param name="scratchArea">The file system for temporary files.</param>
         /// <param name="baseInjection">The base injection object used to transfer common objects from the application to the plug in view model.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file" />, <paramref name="image"/>, <paramref name="currentCodec"/>, <paramref name="codecs"/>, or the <paramref name="baseInjection"/> parameter is <b>null</b>.</exception>
         public ImageContentParameters(IContentFile file, 
@@ -100,8 +103,9 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             IGorgonImageCodec currentCodec, 
             IReadOnlyList<IGorgonImageCodec> codecs, 
             IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> formatSupport,
+            IGorgonFileSystemWriter<Stream> scratchArea,
             IViewModelInjection baseInjection)
-            : base(file, baseInjection?.MessageDisplay ?? throw new ArgumentNullException(nameof(baseInjection)), baseInjection.BusyService)
+            : base(file, scratchArea, baseInjection?.MessageDisplay ?? throw new ArgumentNullException(nameof(baseInjection)), baseInjection.BusyService)
         {
             Image = image ?? throw new ArgumentNullException(nameof(image));
             Codec = currentCodec ?? throw new ArgumentNullException(nameof(currentCodec));

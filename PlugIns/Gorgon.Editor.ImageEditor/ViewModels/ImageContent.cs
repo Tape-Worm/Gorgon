@@ -28,9 +28,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.ViewModels;
@@ -40,6 +42,7 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
+using Gorgon.IO;
 
 namespace Gorgon.Editor.ImageEditor.ViewModels
 {
@@ -65,6 +68,10 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         private IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> _formatSupport;
         // The available pixel formats, based on codec.
         private ObservableCollection<BufferFormat> _pixelFormats = new ObservableCollection<BufferFormat>();
+        // The file for the texture converter process.
+        private FileInfo _texConvFile;
+        // The working directory for temporary data.
+        private IGorgonVirtualDirectory _tempDir;
         #endregion
 
         #region Properties.
@@ -174,9 +181,15 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             if (_image.FormatInfo.IsCompressed)
             {
                 // Assume our block compressed format expands to R8G8B8A8
-                supportedFormats = BufferFormat.R8G8B8A8_UNorm.CanConvertToAny(codec.SupportedPixelFormats)
-                    .Concat(codec.SupportedPixelFormats.Where(item => (new GorgonFormatInfo(item)).IsCompressed))
-                    .ToArray();
+                supportedFormats = BufferFormat.R8G8B8A8_UNorm.CanConvertToAny(codec.SupportedPixelFormats);
+
+                // Do not provide block compressed formats if we can't convert them.
+                if (_texConvFile.Exists)
+                {
+                    supportedFormats = supportedFormats
+                        .Concat(codec.SupportedPixelFormats.Where(item => (new GorgonFormatInfo(item)).IsCompressed))
+                        .ToArray();
+                }
             }
 
             foreach (BufferFormat format in supportedFormats.OrderBy(item => item.ToString()))
@@ -256,6 +269,20 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 Codecs.Add(codec);
             }
 
+            // The availability of texconv.exe determines whether or not we can use block compressed formats or not.
+            Log.Print("Checking for texconv.exe...", LoggingLevel.Simple);
+            var pluginDir = new DirectoryInfo(Path.GetDirectoryName(GetType().Assembly.Location));
+            _texConvFile = new FileInfo(Path.Combine(pluginDir.FullName, "texconv.exe"));
+
+            if (!_texConvFile.Exists)
+            {
+                Log.Print($"WARNING: Texconv.exe was not found at {pluginDir.FullName}. Block compressed formats will be unavailable.", LoggingLevel.Simple);
+            }
+            else
+            {
+                Log.Print($"Found texconv.exe at '{_texConvFile.FullName}'.", LoggingLevel.Simple);
+            }
+
             _pixelFormats = GetFilteredFormats(_codec);
         }
 
@@ -265,10 +292,29 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <returns>The underlying image data for display.</returns>
         public IGorgonImage GetImage() => _image;
 
+        /// <summary>Function called when the associated view is loaded.</summary>
+        public override void OnLoad()
+        {
+            _tempDir = ScratchWriter.CreateDirectory("/" + GetType().Assembly.GetName().Name + "_" + Guid.NewGuid().ToString("N"));
+        }
+
         /// <summary>Function called when the associated view is unloaded.</summary>
         public override void OnUnload()
         {
             _image?.Dispose();
+
+            if (_tempDir != null)
+            {
+                try
+                {
+                    ScratchWriter.DeleteDirectory(_tempDir.FullPath);
+                }
+                catch (Exception ex)
+                {
+                    Log.Print("There was an error cleaning up the image plug in temporary directory.", LoggingLevel.Verbose);
+                    Log.LogException(ex);
+                }
+            }            
 
             base.OnUnload();
         }
@@ -276,10 +322,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the ImageContent class.</summary>
-        public ImageContent()
-        {
-            SetCodecCommand = new EditorCommand<IGorgonImageCodec>(DoSetImageCodec, CanSetImageCodec);
-        }
+        public ImageContent() => SetCodecCommand = new EditorCommand<IGorgonImageCodec>(DoSetImageCodec, CanSetImageCodec);
         #endregion
     }
 }
