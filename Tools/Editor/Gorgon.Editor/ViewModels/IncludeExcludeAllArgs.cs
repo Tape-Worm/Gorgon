@@ -20,23 +20,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: September 5, 2018 9:09:28 AM
+// Created: November 18, 2018 12:17:38 PM
 // 
 #endregion
 
-using System.ComponentModel;
+using System;
 
 namespace Gorgon.Editor.ViewModels
 {
     /// <summary>
-    /// Arguments for the <see cref="IFileExplorerNodeVm.RenameCommand"/>.
+    /// Command arguments for the <see cref="IFileExplorerVm.IncludeExcludeAllCommand"/> or the <see cref="IFileExplorerVm.IncludeExcludeCommand"/>.
     /// </summary>
-    internal class FileExplorerNodeRenameArgs
-        : CancelEventArgs
+    internal class IncludeExcludeArgs
+        : EventArgs
     {
         #region Properties.
         /// <summary>
-        /// Property to return the path to the node that is being renamed.
+        /// Property to return the path to the node being included/excluded.
         /// </summary>
         public string NodePath
         {
@@ -44,37 +44,23 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the old name.
+        /// Property to return whether the node should be included or excluded.
         /// </summary>
-        public string OldName
+        public bool Include
         {
             get;
-        }
-
-        /// <summary>
-        /// Property to set or return the new name.
-        /// </summary>
-        public string NewName
-        {
-            get;
-            set;
         }
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FileExplorerNodeRenameArgs"/> class.
-        /// </summary>
-        /// <param name="node">The node being renamed.</param>
-        /// <param name="oldName">The old name.</param>
-        /// <param name="newName">The new name.</param>
-        public FileExplorerNodeRenameArgs(IFileExplorerNodeVm node, string oldName, string newName)
-            : base(false)
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ViewModels.IncludeExcludeArgs"/> class.</summary>
+        /// <param name="node">The node being included/excluded.</param>
+        /// <param name="include"><b>true</b> to include the node, <b>false</b> to exclude.</param>
+        public IncludeExcludeArgs(IFileExplorerNodeVm node, bool include)
         {
             NodePath = node.FullPath;
-            OldName = oldName;
-            NewName = newName;
-        }
+            Include = include;
+        }            
         #endregion
     }
 }

@@ -80,6 +80,15 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Property to set or return the active undo handler context.
+        /// </summary>
+        IUndoHandler UndoContext
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to set or return whether to show external items that are not included in the project file system.
         /// </summary>
         bool ShowExternalItems

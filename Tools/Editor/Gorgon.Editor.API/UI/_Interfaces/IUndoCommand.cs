@@ -20,61 +20,51 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: September 5, 2018 9:09:28 AM
+// Created: November 17, 2018 1:11:01 PM
 // 
 #endregion
 
-using System.ComponentModel;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.UI
 {
     /// <summary>
-    /// Arguments for the <see cref="IFileExplorerNodeVm.RenameCommand"/>.
+    /// A command used to perform an undo (or redo) action that will store commands (and associated data) to reset state or the opposite.
     /// </summary>
-    internal class FileExplorerNodeRenameArgs
-        : CancelEventArgs
+    public interface IUndoCommand
     {
         #region Properties.
         /// <summary>
-        /// Property to return the path to the node that is being renamed.
+        /// Property to return whether or not the undo operation is executing.
         /// </summary>
-        public string NodePath
+        bool IsExecuting
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the old name.
+        /// Property to return the description of the aceiont to undo/redo.
         /// </summary>
-        public string OldName
+        string Description
         {
             get;
-        }
-
-        /// <summary>
-        /// Property to set or return the new name.
-        /// </summary>
-        public string NewName
-        {
-            get;
-            set;
         }
         #endregion
 
-        #region Constructor/Finalizer.
+        #region Methods.
         /// <summary>
-        /// Initializes a new instance of the <see cref="FileExplorerNodeRenameArgs"/> class.
+        /// Function to undo the changes performed by this command.
         /// </summary>
-        /// <param name="node">The node being renamed.</param>
-        /// <param name="oldName">The old name.</param>
-        /// <param name="newName">The new name.</param>
-        public FileExplorerNodeRenameArgs(IFileExplorerNodeVm node, string oldName, string newName)
-            : base(false)
-        {
-            NodePath = node.FullPath;
-            OldName = oldName;
-            NewName = newName;
-        }
+        void Undo();
+
+        /// <summary>
+        /// Function to redo the changes that were previously undone.
+        /// </summary>
+        void Redo();
         #endregion
     }
 }

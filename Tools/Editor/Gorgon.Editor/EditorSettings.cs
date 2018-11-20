@@ -86,6 +86,15 @@ namespace Gorgon.Editor
         }
 
         /// <summary>
+        /// Property to set or return the previous project scratch/temporary directory.
+        /// </summary>
+        public string LastProjectScratchDirectory
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to set or return the last window state.
         /// </summary>
         public int WindowState

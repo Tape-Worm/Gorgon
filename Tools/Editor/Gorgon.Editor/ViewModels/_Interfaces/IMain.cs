@@ -34,15 +34,19 @@ namespace Gorgon.Editor.ViewModels
     internal interface IMain
         : IViewModel
     {
-        #region Variables.
-
-        #endregion
-
         #region Properties.
         /// <summary>
         /// Property to return the current clipboard context.
         /// </summary>
         IClipboardHandler ClipboardContext
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the current undo context.
+        /// </summary>
+        IUndoHandler UndoContext
         {
             get;
         }

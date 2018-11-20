@@ -62,6 +62,8 @@ namespace Gorgon.Editor.ViewModels
         private IFileExplorerVm _fileExplorer;
         // The current clipboard handler context.
         private IClipboardHandler _clipboardContext;
+        // The current undo handler context.
+        private IUndoHandler _undoContext;
         // The application project manager.
         private IProjectManager _projectManager;
         // The file for the project.
@@ -138,6 +140,23 @@ namespace Gorgon.Editor.ViewModels
 
                 OnPropertyChanging();
                 _projectData.AssignWriter(value);                
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>Property to set or return the active undo handler context.</summary>
+        public IUndoHandler UndoContext
+        {
+            get => _undoContext;
+            set
+            {
+                if (_undoContext == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _undoContext = value;
                 OnPropertyChanged();
             }
         }

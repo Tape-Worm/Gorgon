@@ -246,6 +246,7 @@ namespace Gorgon.Editor.Views
                 if ((ActiveControl == this) || (ActiveControl == FileExplorer))
                 {
                     DataContext.ClipboardContext = DataContext.FileExplorer as IClipboardHandler;
+                    DataContext.UndoContext = DataContext.FileExplorer as IUndoHandler;
                 }
                 else
                 {

@@ -95,6 +95,5 @@ namespace Gorgon.Editor.UI
             _canExecuteNoArgs = canExecute;
         }
         #endregion
-
     }
 }

@@ -1120,6 +1120,42 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Directory creation..
+        /// </summary>
+        internal static string GOREDIT_UNDO_CREATE_DIR {
+            get {
+                return ResourceManager.GetString("GOREDIT_UNDO_CREATE_DIR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        internal static string GOREDIT_UNDO_DELETE {
+            get {
+                return ResourceManager.GetString("GOREDIT_UNDO_DELETE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Include/Exclude.
+        /// </summary>
+        internal static string GOREDIT_UNDO_INCLUDE_EXCLUDE {
+            get {
+                return ResourceManager.GetString("GOREDIT_UNDO_INCLUDE_EXCLUDE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rename.
+        /// </summary>
+        internal static string GOREDIT_UNDO_RENAME {
+            get {
+                return ResourceManager.GetString("GOREDIT_UNDO_RENAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap Gorgon_2_x_Logo_Full {
@@ -1292,6 +1328,26 @@ namespace Gorgon.Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap redo_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("redo_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap redo_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("redo_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap rename_16x16 {
             get {
                 object obj = ResourceManager.GetObject("rename_16x16", resourceCulture);
@@ -1355,6 +1411,26 @@ namespace Gorgon.Editor.Properties {
         internal static System.Drawing.Bitmap show_external_48x48 {
             get {
                 object obj = ResourceManager.GetObject("show_external_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap undo_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("undo_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap undo_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("undo_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

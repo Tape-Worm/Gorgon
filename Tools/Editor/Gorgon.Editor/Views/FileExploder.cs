@@ -40,6 +40,7 @@ using Gorgon.Editor.ViewModels;
 using System.Diagnostics;
 using Gorgon.Collections;
 using Gorgon.Editor.Content;
+using Gorgon.Editor.Properties;
 
 namespace Gorgon.Editor.Views
 {
@@ -84,7 +85,9 @@ namespace Gorgon.Editor.Views
         // The drag hilight foreground color.
         private Color _dragForeColor;
         // The drag data for dropping files from explorer.
-        private ExplorerFileDragData _explorerDragData;        
+        private ExplorerFileDragData _explorerDragData;
+        // The handler for undo/redo operations.
+        private IUndoHandler _undoContext;
         #endregion
 
         #region Properties.
@@ -317,7 +320,13 @@ namespace Gorgon.Editor.Views
             _revNodeLinks.TryGetValue(node, out KryptonTreeNode treeNode);
 
             switch (e.PropertyName)
-            {       
+            {
+                case nameof(IFileExplorerNodeVm.Name):
+                    if (treeNode != null)
+                    {
+                        treeNode.Text = node.Name;
+                    }
+                    break;
                 case nameof(IFileExplorerNodeVm.IsExpanded):
                     if (treeNode != null)
                     {
@@ -387,13 +396,15 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void MenuItemIncludeAll_Click(object sender, EventArgs e)
         {
+            var args = new IncludeExcludeArgs(DataContext.RootNode, true);
+
             if ((DataContext?.IncludeExcludeAllCommand == null)
-                || (!DataContext.IncludeExcludeAllCommand.CanExecute(true)))
+                || (!DataContext.IncludeExcludeAllCommand.CanExecute(args)))
             {
                 return;
             }
 
-            DataContext.IncludeExcludeAllCommand.Execute(true);
+            DataContext.IncludeExcludeAllCommand.Execute(args);
         }
 
         /// <summary>
@@ -403,13 +414,15 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void MenuItemExcludeAll_Click(object sender, EventArgs e)
         {
+            var args = new IncludeExcludeArgs(DataContext.RootNode, false);
+
             if ((DataContext?.IncludeExcludeAllCommand == null)
-                || (!DataContext.IncludeExcludeAllCommand.CanExecute(false)))
+                || (!DataContext.IncludeExcludeAllCommand.CanExecute(args)))
             {
                 return;
             }
 
-            DataContext.IncludeExcludeAllCommand.Execute(false);
+            DataContext.IncludeExcludeAllCommand.Execute(args);
         }
 
         /// <summary>
@@ -419,14 +432,20 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ItemIncludeInProject_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.SelectedNode == null) 
-                || (DataContext?.IncludeExcludeCommand == null) 
-                || (!DataContext.IncludeExcludeCommand.CanExecute(MenuItemIncludeInProject.Checked)))
+            if (DataContext?.SelectedNode == null)
             {
                 return;
             }
 
-            DataContext.IncludeExcludeCommand.Execute(MenuItemIncludeInProject.Checked);                        
+            var args = new IncludeExcludeArgs(DataContext.SelectedNode, MenuItemIncludeInProject.Checked);
+
+            if ((DataContext?.IncludeExcludeCommand == null) 
+                || (!DataContext.IncludeExcludeCommand.CanExecute(args)))
+            {
+                return;
+            }
+
+            DataContext.IncludeExcludeCommand.Execute(args);                        
         }
 
         /// <summary>
@@ -443,15 +462,26 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ItemDelete_Click(object sender, EventArgs e)
         {
+            // If we're renaming, then ignore our delete.
+            if ((TreeFileSystem.SelectedNode != null) && (TreeFileSystem.SelectedNode.IsEditing))
+            {
+                return;
+            }
+
+            if (!_nodeLinks.TryGetValue((KryptonTreeNode)TreeFileSystem.SelectedNode, out IFileExplorerNodeVm node))
+            {
+                return;
+            }
+
+            var args = new DeleteNodeArgs(node.Parent, node.FullPath);
+
             if ((DataContext?.DeleteNodeCommand == null)
-                || (!DataContext.DeleteNodeCommand.CanExecute(null))
-                // If we're renaming, then ignore our delete.
-                || ((TreeFileSystem.SelectedNode != null) && (TreeFileSystem.SelectedNode.IsEditing)))
+                || (!DataContext.DeleteNodeCommand.CanExecute(args)))
             {
                 return;
             }
             
-            DataContext.DeleteNodeCommand.Execute(null);
+            DataContext.DeleteNodeCommand.Execute(args);            
         }
 
         /// <summary>
@@ -569,7 +599,18 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            var args = new CreateNodeArgs();
+            IFileExplorerNodeVm parentNode;
+
+            if (TreeFileSystem.SelectedNode == null)
+            {
+                parentNode = DataContext.RootNode;
+            }
+            else if (!_nodeLinks.TryGetValue((KryptonTreeNode)TreeFileSystem.SelectedNode, out parentNode))
+            {
+                return;
+            }
+
+            var args = new CreateNodeArgs(parentNode);
 
             if (!DataContext.CreateNodeCommand.CanExecute(args))
             {
@@ -578,7 +619,7 @@ namespace Gorgon.Editor.Views
 
             DataContext.CreateNodeCommand.Execute(args);
 
-            if ((!args.RenameAfterCreate) || (args.Cancel))
+            if (args.Cancel)
             {
                 return;
             }
@@ -611,9 +652,9 @@ namespace Gorgon.Editor.Views
             {
                 MenuSepEdit.Available = true;
                 MenuItemIncludeAll.Available = true;
-                MenuItemIncludeAll.Enabled = dataContext.IncludeExcludeAllCommand?.CanExecute(true) ?? false;
+                MenuItemIncludeAll.Enabled = dataContext.IncludeExcludeAllCommand?.CanExecute(new IncludeExcludeArgs(dataContext.RootNode, true)) ?? false;
                 MenuItemExcludeAll.Available = true;
-                MenuItemExcludeAll.Enabled = dataContext.IncludeExcludeAllCommand?.CanExecute(false) ?? false;
+                MenuItemExcludeAll.Enabled = dataContext.IncludeExcludeAllCommand?.CanExecute(new IncludeExcludeArgs(dataContext.RootNode, false)) ?? false;
                 MenuItemCopy.Available = false;
                 MenuItemCut.Available = false;
                 MenuItemPaste.Available = _clipboardContext?.CanPaste() ?? false;
@@ -1115,7 +1156,8 @@ namespace Gorgon.Editor.Views
                     return;
                 }
 
-                var args = new FileExplorerNodeRenameArgs(_renameNode.Name, e.Label);
+                string oldName = _renameNode.Name;
+                var args = new FileExplorerNodeRenameArgs(_renameNode, oldName, e.Label);
 
                 if (!DataContext.RenameNodeCommand.CanExecute(args))
                 {
@@ -1125,16 +1167,10 @@ namespace Gorgon.Editor.Views
 
                 DataContext.RenameNodeCommand.Execute(args);
 
-                e.CancelEdit = args.Cancel;                
+                e.CancelEdit = args.Cancel;
             }
             finally
             {
-                // Revert the node name back (why the actual control doesn't do this is beyond me).
-                if ((e.CancelEdit) && (e.Node != null) && (_renameNode != null))
-                {
-                    //e.Node.Name = _renameNode.Name;
-                }
-
                 // We're no longer renaming anything.
                 _renameNode = null;
 
@@ -1476,6 +1512,7 @@ namespace Gorgon.Editor.Views
         /// </summary>
         private void ResetDataContext()
         {
+            _undoContext = null;
             _clipboardContext = null;
             _nodeDragDropHandler = null;
             _explorerDragDropHandler = null;
@@ -1560,6 +1597,7 @@ namespace Gorgon.Editor.Views
                 }
 
                 _clipboardContext = dataContext as IClipboardHandler;
+                _undoContext = dataContext as IUndoHandler;
                 _nodeDragDropHandler = dataContext;
                 _explorerDragDropHandler = dataContext;
 
@@ -1600,6 +1638,21 @@ namespace Gorgon.Editor.Views
 
             DataContext?.OnLoad();
         }
+
+        /// <summary>
+        /// Function to include all items in the project.
+        /// </summary>
+        public void IncludeAll() => MenuItemIncludeAll.PerformClick();
+
+        /// <summary>
+        /// Function to include or exclude a specific item in the project.
+        /// </summary>
+        public void IncludeOrExcludeItem() => MenuItemIncludeInProject.PerformClick();
+
+        /// <summary>
+        /// Function to exclude all items in the project.
+        /// </summary>
+        public void ExcludeAll() => MenuItemExcludeAll.PerformClick();
 
         /// <summary>
         /// Function to expand the currently selected file system node.

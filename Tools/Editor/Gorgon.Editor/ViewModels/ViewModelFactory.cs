@@ -59,6 +59,8 @@ namespace Gorgon.Editor.ViewModels
         private readonly ClipboardService _clipboard;
         // The directory locator service.
         private readonly DirectoryLocateService _dirLocator;
+        // The service used for undo/redo functionality.
+        private readonly UndoService _undoService;
         #endregion
 
         #region Properties.
@@ -357,6 +359,7 @@ namespace Gorgon.Editor.ViewModels
             }
 
             result.Initialize(new FileExplorerParameters(fileSystemService,
+                                                        _undoService,
                                                         root,
                                                         project,
                                                         this));
@@ -393,9 +396,10 @@ namespace Gorgon.Editor.ViewModels
         /// Initializes a new instance of the <see cref="ViewModelFactory"/> class.
         /// </summary>
         /// <param name="settings">The settings for the application.</param>
-        /// <param name="graphics">The graphics context for the application.</param>
         /// <param name="providers">The providers used to open/save files.</param>
+        /// <param name="contentPlugins">The plugins used for content.</param>
         /// <param name="projectManager">The application project manager.</param>
+        /// <param name="undoService">The service used for undo/redo functionality.</param>
         /// <param name="messages">The message dialog service.</param>
         /// <param name="waitState">The wait state service.</param>
         /// <param name="clipboardService">The application clipboard service.</param>
@@ -405,6 +409,7 @@ namespace Gorgon.Editor.ViewModels
                                 FileSystemProviders providers, 
                                 ContentPluginService contentPlugins,
                                 ProjectManager projectManager, 
+                                UndoService undoService,
                                 MessageBoxService messages, 
                                 WaitCursorBusyState waitState, 
                                 ClipboardService clipboardService, 
@@ -413,6 +418,7 @@ namespace Gorgon.Editor.ViewModels
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             FileSystemProviders = providers ?? throw new ArgumentNullException(nameof(providers));
             ContentPlugins = contentPlugins ?? throw new ArgumentNullException(nameof(contentPlugins));
+            _undoService = undoService ?? throw new ArgumentNullException(nameof(undoService));
             _projectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
             _messageBoxService = messages ?? throw new ArgumentNullException(nameof(messages));
             _waitCursorService = waitState ?? throw new ArgumentNullException(nameof(waitState));

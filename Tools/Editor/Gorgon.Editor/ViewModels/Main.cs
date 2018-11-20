@@ -143,6 +143,11 @@ namespace Gorgon.Editor.ViewModels
         public IClipboardHandler ClipboardContext => CurrentProject?.ClipboardContext;
 
         /// <summary>
+        /// Property to return the current undo context.
+        /// </summary>
+        public IUndoHandler UndoContext => CurrentProject?.UndoContext;
+
+        /// <summary>
         /// Property to return the command used to open a project.
         /// </summary>        
         public IEditorCommand<object> OpenProjectCommand
@@ -243,6 +248,9 @@ namespace Gorgon.Editor.ViewModels
                 case nameof(IProjectVm.ClipboardContext):
                     NotifyPropertyChanged(nameof(ClipboardContext));
                     break;
+                case nameof(IProjectVm.UndoContext):
+                    NotifyPropertyChanged(nameof(UndoContext));
+                    break;
                 case nameof(IProjectVm.ProjectTitle):
                 case nameof(IProjectVm.ProjectState):
                     NotifyPropertyChanged(nameof(Text));
@@ -321,11 +329,13 @@ namespace Gorgon.Editor.ViewModels
             // Close the current project.
             CurrentProject = null;
             _settings.LastProjectWorkingDirectory = string.Empty;
+            _settings.LastProjectScratchDirectory = string.Empty;
 
             CurrentProject = projectVm;
 
             _settings.LastOpenSavePath = Path.GetDirectoryName(path).FormatDirectory(Path.DirectorySeparatorChar);
-            _settings.LastProjectWorkingDirectory = project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);            
+            _settings.LastProjectWorkingDirectory = project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
+            _settings.LastProjectScratchDirectory = project.ProjectScratchSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
 
             RecentFiles.Files.Add(new RecentItem
             {
@@ -613,9 +623,11 @@ namespace Gorgon.Editor.ViewModels
                 // Unload the current project.
                 CurrentProject = null;
                 _settings.LastProjectWorkingDirectory = string.Empty;
+                _settings.LastProjectScratchDirectory = string.Empty;
 
                 CurrentProject = _viewModelFactory.CreateProjectViewModel(project, false);
                 _settings.LastProjectWorkingDirectory = project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
+                _settings.LastProjectScratchDirectory = project.ProjectScratchSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
             }
             catch (Exception ex)
             {

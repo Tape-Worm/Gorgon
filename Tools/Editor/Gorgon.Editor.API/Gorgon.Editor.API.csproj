@@ -53,6 +53,7 @@
     </Compile>
     <Compile Include="CommonEditorConstants.cs" />
     <Compile Include="Content\ContentFileMovedEventArgs.cs" />
+    <Compile Include="Services\_Interfaces\IUndoService.cs" />
     <Compile Include="UI\ViewFactory.cs" />
     <Compile Include="UI\ViewModels\EditorContentCommon.cs" />
     <Compile Include="Content\_Interfaces\IContentFile.cs" />
@@ -114,6 +115,8 @@
     <Compile Include="UI\ViewModels\_Interfaces\IViewModel.cs" />
     <Compile Include="UI\Views\_Interfaces\IDataContext.cs" />
     <Compile Include="UI\_Interfaces\IRibbonMerger.cs" />
+    <Compile Include="UI\_Interfaces\IUndoCommand.cs" />
+    <Compile Include="UI\_Interfaces\IUndoHandler.cs" />
     <Compile Include="UI\_Internal\FormDirectoryLocator.cs">
       <SubType>Form</SubType>
     </Compile>

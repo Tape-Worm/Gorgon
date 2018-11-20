@@ -56,9 +56,17 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to set or return the root node for the file system.
+        /// Property to return the root node for the file system.
         /// </summary>
         public IFileExplorerNodeVm RootNode
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the service used for undo/redo functionality.
+        /// </summary>
+        public IUndoService UndoService
         {
             get;
         }
@@ -67,14 +75,16 @@ namespace Gorgon.Editor.ViewModels
         /// Initializes a new instance of the <see cref="FileExplorerParameters" /> class.
         /// </summary>
         /// <param name="fileSystemService">The file system service to use for manipulating the virtual file system.</param>
+        /// <param name="undoService">The service used for undo/redo functionality.</param>
         /// <param name="rootNode">The root node for the file system tree.</param>
         /// <param name="viewModelFactory">The view model factory.</param>
         /// <param name="project">The project data.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public FileExplorerParameters(IFileSystemService fileSystemService, IFileExplorerNodeVm rootNode, IProject project, ViewModelFactory viewModelFactory)
+        public FileExplorerParameters(IFileSystemService fileSystemService, IUndoService undoService, IFileExplorerNodeVm rootNode, IProject project, ViewModelFactory viewModelFactory)
             : base(viewModelFactory)
         {
             Project = project ?? throw new ArgumentNullException(nameof(project));
+            UndoService = undoService ?? throw new ArgumentNullException(nameof(undoService));
             FileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
             RootNode = rootNode ?? throw new ArgumentNullException(nameof(rootNode));
         }

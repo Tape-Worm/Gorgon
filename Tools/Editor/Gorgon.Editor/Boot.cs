@@ -48,6 +48,7 @@ using Exception = System.Exception;
 using Gorgon.IO.Providers;
 using System.Collections.Generic;
 using Gorgon.Editor.Plugins;
+using System.Linq;
 
 namespace Gorgon.Editor
 {
@@ -74,8 +75,8 @@ namespace Gorgon.Editor
         private DirectoryLocateService _dirLocator;
         // The plugin service used to manage content plugins.
         private ContentPluginService _contentPlugins;
-        // A li
-        private Dictionary<string, string> _disabledPlugins = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        // Provides undo functionality to the application.
+        private UndoService _undoService;
         #endregion
 
         #region Properties.
@@ -433,39 +434,45 @@ namespace Gorgon.Editor
         /// </summary>
         private void CleanPreviousWorkingDir()
         {
-            if (string.IsNullOrWhiteSpace(_settings.LastProjectWorkingDirectory))
+            ConfirmationResult confirmResult = ConfirmationResult.None;
+
+            string[] paths =
             {
-                return;
+                _settings.LastProjectWorkingDirectory,
+                _settings.LastProjectScratchDirectory
+            };
+
+            foreach (DirectoryInfo dir in paths.Where(item => !string.IsNullOrWhiteSpace(item))
+                                        .Select(item => new DirectoryInfo(item))
+                                        .Where(item => item.Exists))
+            {
+                Program.Log.Print($"Found stale project working directory '{dir.FullName}'.", LoggingLevel.Intermediate);
+                
+                if (confirmResult == ConfirmationResult.None)
+                {
+                    confirmResult = GorgonDialogs.ConfirmBox(_splash, string.Format(Resources.GOREDIT_CONFIRM_CLEAN_PREV_DIR, dir.Parent.FullName));
+
+                    if (confirmResult != ConfirmationResult.Yes)
+                    {
+                        Program.Log.Print("WARNING: User opted not to clean the previous working directory. User will have to manually remove it.", LoggingLevel.Verbose);
+                        return;
+                    }
+                }                
+
+                Program.Log.Print($"Purging old project work directory '{dir.FullName}'.", LoggingLevel.Verbose);
+                try
+                {
+                    _projectManager.PurgeStaleDirectories(dir);
+                }
+                catch (Exception ex)
+                {
+                    Program.Log.Print($"ERROR: Could not remove the stale project directory '{dir.FullName}'.", LoggingLevel.Intermediate);
+                    Program.Log.LogException(ex);
+                }
             }
 
-            var prevProject = new DirectoryInfo(_settings.LastProjectWorkingDirectory);
-
-            // Reset this here since we've no need of it from this point forward.
+            _settings.LastProjectScratchDirectory = string.Empty;
             _settings.LastProjectWorkingDirectory = string.Empty;
-
-            if (!prevProject.Exists)
-            {
-                return;
-            }
-
-            Program.Log.Print($"Found stale project working directory '{prevProject.FullName}'.", LoggingLevel.Intermediate);
-
-            if (GorgonDialogs.ConfirmBox(_splash, string.Format(Resources.GOREDIT_CONFIRM_CLEAN_PREV_DIR, prevProject.Parent.FullName)) != ConfirmationResult.Yes)
-            {
-                Program.Log.Print("WARNING: User opted not to clean the previous working directory. User will have to manually remove it.", LoggingLevel.Verbose);
-                return;
-            }
-
-            Program.Log.Print($"Purging old project work directory '{prevProject.FullName}'.", LoggingLevel.Verbose);
-            try
-            {
-                _projectManager.PurgeStaleDirectories(prevProject);
-            }
-            catch (Exception ex)
-            {
-                Program.Log.Print($"ERROR: Could not remove the stale project directory '{prevProject.FullName}'.", LoggingLevel.Intermediate);
-                Program.Log.LogException(ex);
-            }
         }
 
         /// <summary>
@@ -496,6 +503,7 @@ namespace Gorgon.Editor
 
                 // Load our file system import/export plugins.
                 FileSystemProviders fileSystemProviders = LoadFileSystemPlugins();
+
                 // Load our content service plugins.
                 _contentPlugins = LoadContentPlugins();
 
@@ -514,6 +522,8 @@ namespace Gorgon.Editor
                     GorgonApplication.Quit();
                     return;
                 }
+
+                _undoService = new UndoService(Program.Log);
                 
                 _mainForm = new FormMain
                             {
@@ -530,8 +540,9 @@ namespace Gorgon.Editor
 
                 var factory = new ViewModelFactory(_settings,
                                                    fileSystemProviders,
-                                                   _contentPlugins,
+                                                   _contentPlugins,                                                   
                                                    _projectManager,
+                                                   _undoService,
                                                    new MessageBoxService(),
                                                    new WaitCursorBusyState(),
                                                    new ClipboardService(),

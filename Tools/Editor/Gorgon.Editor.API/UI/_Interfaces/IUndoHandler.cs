@@ -20,60 +20,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: September 5, 2018 9:09:28 AM
+// Created: November 17, 2018 6:57:44 PM
 // 
 #endregion
 
-using System.ComponentModel;
-
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.UI
 {
     /// <summary>
-    /// Arguments for the <see cref="IFileExplorerNodeVm.RenameCommand"/>.
+    /// Provides undo functionality to a view.
     /// </summary>
-    internal class FileExplorerNodeRenameArgs
-        : CancelEventArgs
+    public interface IUndoHandler
     {
         #region Properties.
         /// <summary>
-        /// Property to return the path to the node that is being renamed.
+        /// Property to return the command to undo an operation.
         /// </summary>
-        public string NodePath
+        IEditorCommand<object> UndoCommand
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the old name.
+        /// Property to return the command to redo an operation.
         /// </summary>
-        public string OldName
+        IEditorCommand<object> RedoCommand
         {
             get;
-        }
-
-        /// <summary>
-        /// Property to set or return the new name.
-        /// </summary>
-        public string NewName
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FileExplorerNodeRenameArgs"/> class.
-        /// </summary>
-        /// <param name="node">The node being renamed.</param>
-        /// <param name="oldName">The old name.</param>
-        /// <param name="newName">The new name.</param>
-        public FileExplorerNodeRenameArgs(IFileExplorerNodeVm node, string oldName, string newName)
-            : base(false)
-        {
-            NodePath = node.FullPath;
-            OldName = oldName;
-            NewName = newName;
         }
         #endregion
     }

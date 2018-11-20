@@ -31,16 +31,19 @@ namespace Gorgon.Editor.ViewModels
     /// <summary>
     /// Arguments for the <see cref="IFileExplorerVm.CreateNodeCommand"/>.
     /// </summary>
-    public class CreateNodeArgs
+    internal class CreateNodeArgs
         : CancelEventArgs
     {
         /// <summary>
-        /// Property to set or return whether to rename the node after creating it.
+        /// Property to return the parent node that of the node being edited.
         /// </summary>
-        public bool RenameAfterCreate
+        public IFileExplorerNodeVm ParentNode
         {
             get;
-            set;
-        } = true;        
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ViewModels.CreateNodeArgs"/> class.</summary>
+        /// <param name="parent">The parent of the new node.</param>
+        public CreateNodeArgs(IFileExplorerNodeVm parent) => ParentNode = parent;
     }
 }

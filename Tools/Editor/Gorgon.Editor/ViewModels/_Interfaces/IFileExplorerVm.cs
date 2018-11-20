@@ -63,7 +63,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the command to execute when including or excluding all nodes.
         /// </summary>
-        IEditorCommand<bool> IncludeExcludeAllCommand
+        IEditorCommand<IncludeExcludeArgs> IncludeExcludeAllCommand
         {
             get;
         }
@@ -71,7 +71,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the command to execute when including or excluding a node.
         /// </summary>
-        IEditorCommand<bool> IncludeExcludeCommand
+        IEditorCommand<IncludeExcludeArgs> IncludeExcludeCommand
         {
             get;
         }
@@ -103,7 +103,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the command used to delete the selected node.
         /// </summary>
-        IEditorCommand<object> DeleteNodeCommand
+        IEditorCommand<DeleteNodeArgs> DeleteNodeCommand
         {
             get;
         }

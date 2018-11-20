@@ -49,7 +49,7 @@ namespace Gorgon.Editor.ViewModels
     /// The file explorer view model.
     /// </summary>
     internal class FileExplorerVm
-        : ViewModelBase<FileExplorerParameters>, IFileExplorerVm, IClipboardHandler
+        : ViewModelBase<FileExplorerParameters>, IFileExplorerVm, IClipboardHandler, IUndoHandler
     {
         #region Events.
         // Event triggered when the clipboard is updated from the file explorer.
@@ -97,7 +97,9 @@ namespace Gorgon.Editor.ViewModels
         // The application settings.
         private EditorSettings _settings;
         // The content plugin service.
-        private IContentPluginManagerService _contentPlugins;        
+        private IContentPluginManagerService _contentPlugins;
+        // The undo/redo service.
+        private IUndoService _undoService;
         #endregion
 
         #region Properties.
@@ -123,7 +125,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the command to execute when including or excluding all nodes.
         /// </summary>
-        public IEditorCommand<bool> IncludeExcludeAllCommand
+        public IEditorCommand<IncludeExcludeArgs> IncludeExcludeAllCommand
         {
             get;
         }
@@ -131,7 +133,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the command to execute when including or excluding a node.
         /// </summary>
-        public IEditorCommand<bool> IncludeExcludeCommand
+        public IEditorCommand<IncludeExcludeArgs> IncludeExcludeCommand
         {
             get;
         }
@@ -172,7 +174,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the command used to delete the selected node.
         /// </summary>
-        public IEditorCommand<object> DeleteNodeCommand
+        public IEditorCommand<DeleteNodeArgs> DeleteNodeCommand
         {
             get;
         }
@@ -233,9 +235,52 @@ namespace Gorgon.Editor.ViewModels
             get;
             set;
         }
+
+        /// <summary>
+        /// Property to return the command to undo an operation.
+        /// </summary>
+        public IEditorCommand<object> UndoCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command to redo an operation.
+        /// </summary>
+        public IEditorCommand<object> RedoCommand
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to record state for an undo and/or redo operation.
+        /// </summary>
+        /// <typeparam name="TU">The type of undo parameters to pass to the undo operation.</typeparam>
+        /// <typeparam name="TR">The type of redo parameters to pass tot he redo operation.</typeparam>
+        /// <param name="desc">A description of the undo action.</param>
+        /// <param name="undoAction">The action to perform when undoing.</param>
+        /// <param name="redoAction">The action to perform when redoing.</param>
+        /// <param name="undoArgs">The arguments to pass to the undo action.</param>
+        /// <param name="redoArgs">The arguments to pass to the redo action.</param>
+        private void RecordUndoState<TU, TR>(string desc, Action<TU> undoAction, Action<TR> redoAction, TU undoArgs, TR redoArgs)
+            where TU : class
+            where TR : class
+        {
+            try
+            {
+                _undoService.Record(desc, undoAction, redoAction, undoArgs, redoArgs);
+                NotifyPropertyChanged(nameof(IUndoHandler.UndoCommand));
+                NotifyPropertyChanged(nameof(IUndoHandler.RedoCommand));
+            }
+            catch (Exception ex)
+            {
+                Program.Log.Print($"Error storing undo state for action '{desc}'.", Diagnostics.LoggingLevel.Simple);
+                Program.Log.LogException(ex);
+            }
+        }
+
         /// <summary>
         /// Function called when the file system was changed.
         /// </summary>
@@ -244,6 +289,18 @@ namespace Gorgon.Editor.ViewModels
             EventHandler handler = FileSystemChanged;
             handler?.Invoke(this, EventArgs.Empty);
         }
+
+        /// <summary>
+        /// Function to determine if the undo operation can be executed.
+        /// </summary>
+        /// <returns><b>true</b> if the operation can execute, <b>false</b> if not.</returns>
+        private bool CanUndoOperation() => _undoService.CanUndo;
+
+        /// <summary>
+        /// Function to determine if the redo operation can be executed.
+        /// </summary>
+        /// <returns><b>true</b> if the operation can execute, <b>false</b> if not.</returns>
+        private bool CanRedoOperation() => _undoService.CanRedo;
 
         /// <summary>
         /// Function to determine if a node can be created under the selected node.
@@ -255,8 +312,9 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to determine if a file system node can be deleted.
         /// </summary>
+        /// <param name="args">The node to delete.</param>
         /// <returns><b>true</b> if the node can be deleted, <b>false</b> if not.</returns>
-        private bool CanDeleteNode() => SelectedNode?.AllowDelete ?? false;
+        private bool CanDeleteNode(DeleteNodeArgs args) => (SelectedNode != null) && (SelectedNode.AllowDelete);
 
         /// <summary>
         /// Function to remove the specified node, and any children from the cache.
@@ -284,41 +342,60 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Function to delete the selected node.
+        /// Function to undo the last file system operation.
         /// </summary>
-        private async void DoDeleteNode()
+        private void DoUndo()
+        {
+            try
+            {
+                _undoService.Undo();
+            }
+            catch (Exception ex)
+            {
+                Program.Log.LogException(ex);
+            }
+            finally
+            {
+                NotifyPropertyChanged(nameof(UndoCommand));
+            }
+        }
+
+        /// <summary>
+        /// Function to redo the previous file system operation.
+        /// </summary>
+        private void DoRedo()
+        {
+            try
+            {
+                _undoService.Redo();
+            }
+            catch (Exception ex)
+            {
+                Program.Log.LogException(ex);
+            }
+            finally
+            {
+                NotifyPropertyChanged(nameof(RedoCommand));
+            }
+        }
+
+        /// <summary>
+        /// Function to destroy a node permenantly.
+        /// </summary>
+        /// <param name="node">The node to destroy.</param>
+        /// <returns>A task for asynchronous operation.</returns>
+        private async Task DestroyNodeAsync(IFileExplorerNodeVm node)
         {
             var cancelSource = new CancellationTokenSource();
+            bool hasChildren = node.Children.Count != 0;
 
             try
             {
-                bool hasChildren = SelectedNode.Children.Count != 0;
-                string message = hasChildren ? string.Format(Resources.GOREDIT_CONFIRM_DELETE_CHILDREN, SelectedNode.FullPath)
-                                                : string.Format(Resources.GOREDIT_CONFIRM_DELETE_NO_CHILDREN, SelectedNode.FullPath);
-
-                // If we have an open node, and it has unsaved changes, prompt with:
-                //
-                // "There is a file open in the editor that has unsaved changes.
-                // Deleting this file will result in the loss of these changes.
-                // 
-                // Are you sure you wish to delete this file?
-                //
-                // Yes/No"
-                if (SelectedNode.IsOpen)
-                {
-                    // TODO: Update the message string.  We'll let the prompt below handle everything.  Better than having multiple prompts.
-                }
-
-                if (_messageService.ShowConfirmation(message) == MessageResponse.No)
-                {
-                    return;
-                }
-
                 if (!hasChildren)
                 {
-                    string path = SelectedNode.FullPath;
+                    string path = node.FullPath;
 
-                    await SelectedNode.DeleteNodeAsync();
+                    await node.DeleteNodeAsync();
 
                     // Remove this item from the metadata.
                     if (_project.ProjectItems.Remove(path))
@@ -336,20 +413,65 @@ namespace Gorgon.Editor.ViewModels
 
                     // Remove this item from the metadata.
                     if (_project.ProjectItems.Remove(path))
-                    {                        
+                    {
                         OnFileSystemChanged();
-                    }                    
+                    }
 
                     // Give our UI time to update.  
                     // We do this here so the user is able to click the Cancel button should they need it.
                     Task.Delay(16).Wait();
                 }
 
-                await SelectedNode.DeleteNodeAsync(UpdateDeleteProgress, cancelSource.Token);                
+                await node.DeleteNodeAsync(UpdateDeleteProgress, cancelSource.Token);
+            }
+            finally
+            {
+                cancelSource?.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Function to delete the selected node.
+        /// </summary>
+        /// <param name="args">The arguments for the command.</param>
+        private async void DoDeleteNode(DeleteNodeArgs args)
+        {
+            var cancelSource = new CancellationTokenSource();
+
+            try
+            {
+                IFileExplorerNodeVm node = _nodePathLookup[args.NodePath];
+                bool hasChildren = node.Children.Count != 0;
+                                
+                if (!args.SuppressConfirm)
+                {
+                    string message = hasChildren ? string.Format(Resources.GOREDIT_CONFIRM_DELETE_CHILDREN, node.FullPath)
+                                                    : string.Format(Resources.GOREDIT_CONFIRM_DELETE_NO_CHILDREN, node.FullPath);
+
+                    // If we have an open node, and it has unsaved changes, prompt with:
+                    //
+                    // "There is a file open in the editor that has unsaved changes.
+                    // Deleting this file will result in the loss of these changes.
+                    // 
+                    // Are you sure you wish to delete this file?
+                    //
+                    // Yes/No"
+                    if (node.IsOpen)
+                    {
+                        // TODO: Update the message string.  We'll let the prompt below handle everything.  Better than having multiple prompts.
+                    }
+
+                    if (_messageService.ShowConfirmation(message) == MessageResponse.No)
+                    {
+                        return;
+                    }
+                }
+
+                await DestroyNodeAsync(node);
             }
             catch (Exception ex)
             {
-                _messageService.ShowError(ex, string.Format(Resources.GOREDIT_ERR_DELETE, SelectedNode.FullPath));
+                _messageService.ShowError(ex, string.Format(Resources.GOREDIT_ERR_DELETE, args.NodePath));
             }
             finally
             {
@@ -364,24 +486,57 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="args">Arguments for the command.</param>
         private void DoCreateNode(CreateNodeArgs args)
         {
-            IFileExplorerNodeVm node = SelectedNode ?? RootNode;
+            IFileExplorerNodeVm newNode = null;
 
-            try
+            void CreateNode(CreateNodeArgs createArgs)
             {
-                DirectoryInfo newDir = _fileSystemService.CreateDirectory(node.PhysicalPath);
+                try
+                {
+                    DirectoryInfo newDir = _fileSystemService.CreateDirectory(createArgs.ParentNode.PhysicalPath);
 
-                // Create the node for the directory.
-                IFileExplorerNodeVm newNode = _factory.CreateFileExplorerDirectoryNodeVm(_project, _fileSystemService, node, newDir);
-                newNode.Metadata = new ProjectItemMetadata();
-                _project.ProjectItems[newNode.FullPath] = newNode.Metadata;
+                    // Create the node for the directory.
+                    ref IFileExplorerNodeVm node = ref newNode;
+                    node = _factory.CreateFileExplorerDirectoryNodeVm(_project, _fileSystemService, createArgs.ParentNode, newDir);
+                    newNode.Metadata = new ProjectItemMetadata();
+                    _project.ProjectItems[newNode.FullPath] = newNode.Metadata;
 
-                node.Children.Add(newNode);
+                    createArgs.ParentNode.Children.Add(newNode);
+                }
+                catch (Exception ex)
+                {
+                    _messageService.ShowError(ex, Resources.GOREDIT_ERR_CANNOT_CREATE_DIR);
+                    createArgs.Cancel = true;
+                }
             }
-            catch (Exception ex)
+
+            async void UndoCreate(DeleteNodeArgs deleteArgs)
             {
-                _messageService.ShowError(ex, Resources.GOREDIT_ERR_CANNOT_CREATE_DIR);
-                args.Cancel = true;
+                try
+                {
+                    if (!_nodePathLookup.TryGetValue(deleteArgs.NodePath, out IFileExplorerNodeVm node))
+                    {
+                        return;
+                    }
+
+                    await DestroyNodeAsync(node);
+                }
+                catch (Exception ex)
+                {
+                    _messageService.ShowError(ex, Resources.GOREDIT_ERR_DELETE, deleteArgs.NodePath);
+                }
+                finally
+                {
+                    HideProgress();
+                }
             }
+
+            CreateNode(args);
+
+            // Do not record a cancelled operation.
+            if (!args.Cancel)
+            {
+                RecordUndoState(Resources.GOREDIT_UNDO_CREATE_DIR, UndoCreate, CreateNode, new DeleteNodeArgs(args.ParentNode, newNode.FullPath), args);
+            }            
         }
 
         /// <summary>
@@ -411,7 +566,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="include">Not used.</param>
         /// <returns><b>true</b> if all nodes can be included or excluded, <b>false</b> if not.</returns>
-        private bool CanIncludeExcludeAll(bool include) => (RootNode.Children.Count != 0) && ((include) || (_project.ProjectItems.Count != 0));
+        private bool CanIncludeExcludeAll(IncludeExcludeArgs args) => (RootNode.Children.Count != 0) && ((args.Include) || (_project.ProjectItems.Count != 0));
 
         /// <summary>
         /// Function to update the metadata state for a node.
@@ -425,7 +580,7 @@ namespace Gorgon.Editor.ViewModels
                 _project.ProjectItems.Remove(node.FullPath);
             }
 
-            node.Metadata = metaData;            
+            node.Metadata = metaData;
 
             if (metaData != null)
             {
@@ -445,101 +600,191 @@ namespace Gorgon.Editor.ViewModels
                 OnFileSystemChanged();
             }
         }
-
+                
         /// <summary>
         /// Function to include or exclude all nodes in the project.
         /// </summary>
-        /// <param name="include"><b>true</b> to include, <b>false</b> to exclude.</param>
-        private void DoIncludeExcludeAll(bool include)
+        /// <param name="args"><b>true</b> to include, <b>false</b> to exclude.</param>
+        private void DoIncludeExcludeAll(IncludeExcludeArgs args)
         {
-            _busyService.SetBusy();
-            try
+            void IncludeExcludeAll(IncludeExcludeArgs includeExclude)
             {
-                // Add child nodes.
-                foreach (IFileExplorerNodeVm child in RootNode.Children.Traverse(n => n.Children))
+                _busyService.SetBusy();
+                try
                 {
-                    if ((child.IsOpen) && (!include))
+                    // Add child nodes.
+                    foreach (IFileExplorerNodeVm child in RootNode.Children.Traverse(n => n.Children))
                     {
-                        // TODO: Ask for permission to exclude if we have changes.
+                        if ((child.IsOpen) && (!includeExclude.Include))
+                        {
+                            // TODO: Ask for permission to exclude if we have changes.
+                        }
+
+                        UpdateMetadataForNode(child, includeExclude.Include ? new ProjectItemMetadata() : null);
                     }
 
-                    UpdateMetadataForNode(child, include ? new ProjectItemMetadata() : null);
-                }
+                    // Remove all nodes if we're not showing excluded items.
+                    if ((!includeExclude.Include) && (!_project.ShowExternalItems))
+                    {
+                        RootNode.Children.Clear();
+                    }
 
-                // Remove all nodes if we're not showing excluded items.
-                if ((!include) && (!_project.ShowExternalItems))
+                    OnFileSystemChanged();
+                }
+                catch (Exception ex)
                 {
-                    RootNode.Children.Clear();
+                    _messageService.ShowError(ex, Resources.GOREDIT_ERR_INCLUDE_ALL);
+                }
+                finally
+                {
+                    _busyService.SetIdle();
+                }
+            }
+
+            // Function to undo the include/exclude all.
+            void UndoIncludeExclude(IncludeExcludeArgs includeExcludeArgs)
+            {
+                _busyService.SetBusy();
+
+                try
+                {
+                    // If we have no nodes included, then we have to retrieve them before we can update them.
+                    // When updated by user, this is not necessary, but for undo it's automated and needs to be refreshed.
+                    if ((!_project.ShowExternalItems) && (includeExcludeArgs.Include))
+                    {
+                        try
+                        {
+                            _project.ShowExternalItems = true;
+                            RefreshNode(RootNode, true);
+                        }
+                        finally
+                        {
+                            _project.ShowExternalItems = false;
+                        }
+                    }                    
+                }
+                catch (Exception ex)
+                {
+                    _messageService.ShowError(ex, Resources.GOREDIT_ERR_INCLUDE_ALL);
+                }
+                finally
+                {
+                    _busyService.SetIdle();
                 }
 
-                OnFileSystemChanged();
+                IncludeExcludeAll(includeExcludeArgs);
             }
-            catch (Exception ex)
-            {
-                _messageService.ShowError(ex, Resources.GOREDIT_ERR_INCLUDE_ALL);
-            }
-            finally
-            {
-                _busyService.SetIdle();
-            }
+
+            IncludeExcludeAll(args);
+
+            RecordUndoState(Resources.GOREDIT_UNDO_INCLUDE_EXCLUDE, UndoIncludeExclude, IncludeExcludeAll, new IncludeExcludeArgs(RootNode, !args.Include), args);
         }
 
         /// <summary>
         /// Function to include or exclude a node from the project.
         /// </summary>
-        /// <param name="include"><b>true</b> to include, <b>false</b> to exclude.</param>
-        private void DoIncludeExcludeNode(bool include)
+        /// <param name="args">The arguments for the command.</param>
+        private void DoIncludeExcludeNode(IncludeExcludeArgs args)
         {
-            IFileExplorerNodeVm node = SelectedNode ?? RootNode;
-            
-            _busyService.SetBusy();
-            try
-            {                
-                if (node != RootNode)
-                {
-                    UpdateMetadataForNode(node, include ? new ProjectItemMetadata() : null);
-                                        
-                    if ((node.IsOpen) && (!include))
-                    {
-                        // TODO: Ask for permission to exclude if we have changes.
-                    }
-                }
+            IFileExplorerNodeVm node;
 
-                // If our parent node is not included, and we've included this node, then we'll include it now.
-                // If we exclude the node, we'll leave the parent included. This is the behavior in Visual Studio, so we'll mimic that here.
-                if ((node.Parent != null) && (node.Parent.Metadata == null) && (include))
-                {
-                    UpdateMetadataForNode(node.Parent, include ? new ProjectItemMetadata() : null);
-                }
-
-                // Add child nodes.
-                foreach (IFileExplorerNodeVm child in node.Children.Traverse(n => n.Children))
-                {
-                    UpdateMetadataForNode(child, include ? new ProjectItemMetadata() : null);                    
-                }
-
-                if ((!include) && (!_project.ShowExternalItems))
-                {
-                    if (node == RootNode)
-                    {
-                        RootNode.Children.Clear();
-                    }
-                    else
-                    {
-                        node.Parent.Children.Remove(node);
-                    }
-                }
-
-                OnFileSystemChanged();
-            }
-            catch (Exception ex)
+            void IncludeExclude(IncludeExcludeArgs includeExcludeArgs)
             {
-                _messageService.ShowError(ex, string.Format(Resources.GOREDIT_ERR_INCLUDE_NODE, node?.Name));
+                if (includeExcludeArgs.NodePath == "/")
+                {
+                    node = RootNode;
+                }
+                else if (!_nodePathLookup.TryGetValue(includeExcludeArgs.NodePath, out node))
+                {
+                    return;
+                }
+
+                _busyService.SetBusy();
+                try
+                {
+                    if (node != RootNode)
+                    {
+                        UpdateMetadataForNode(node, includeExcludeArgs.Include ? new ProjectItemMetadata() : null);
+
+                        if ((node.IsOpen) && (!includeExcludeArgs.Include))
+                        {
+                            // TODO: Ask for permission to exclude if we have changes.
+                        }
+                    }
+
+                    // If our parent node is not included, and we've included this node, then we'll include it now.
+                    // If we exclude the node, we'll leave the parent included. This is the behavior in Visual Studio, so we'll mimic that here.
+                    if ((node.Parent != null) && (node.Parent.Metadata == null) && (includeExcludeArgs.Include))
+                    {
+                        UpdateMetadataForNode(node.Parent, includeExcludeArgs.Include ? new ProjectItemMetadata() : null);
+                    }
+
+                    // Add child nodes.
+                    foreach (IFileExplorerNodeVm child in node.Children.Traverse(n => n.Children))
+                    {
+                        UpdateMetadataForNode(child, includeExcludeArgs.Include ? new ProjectItemMetadata() : null);
+                    }
+
+                    if ((!includeExcludeArgs.Include) && (!_project.ShowExternalItems))
+                    {
+                        if (node == RootNode)
+                        {
+                            RootNode.Children.Clear();
+                        }
+                        else
+                        {
+                            node.Parent.Children.Remove(node);
+                        }
+                    }
+
+                    OnFileSystemChanged();
+                }
+                catch (Exception ex)
+                {
+                    _messageService.ShowError(ex, string.Format(Resources.GOREDIT_ERR_INCLUDE_NODE, node?.Name));
+                }
+                finally
+                {
+                    _busyService.SetIdle();
+                }
             }
-            finally
+
+            // Function to undo the include/exclude all.
+            void UndoIncludeExclude(IncludeExcludeArgs includeExcludeArgs)
             {
-                _busyService.SetIdle();
+                _busyService.SetBusy();
+
+                try
+                {
+                    // If we have no nodes included, then we have to retrieve them before we can update them.
+                    // When updated by user, this is not necessary, but for undo it's automated and needs to be refreshed.
+                    if ((!_project.ShowExternalItems) && (includeExcludeArgs.Include))
+                    {
+                        try
+                        {
+                            _project.ShowExternalItems = true;
+                            RefreshNode(RootNode, false);
+                        }
+                        finally
+                        {
+                            _project.ShowExternalItems = false;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _messageService.ShowError(ex, Resources.GOREDIT_ERR_INCLUDE_ALL);
+                }
+                finally
+                {
+                    _busyService.SetIdle();
+                }
+
+                IncludeExclude(includeExcludeArgs);
             }
+
+            IncludeExclude(args);
+            RecordUndoState(Resources.GOREDIT_UNDO_INCLUDE_EXCLUDE, UndoIncludeExclude, IncludeExclude, new IncludeExcludeArgs(node, !args.Include), args);
         }
 
         /// <summary>
@@ -557,49 +802,61 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="args">The arguments for renaming.</param>
         private void DoRenameNode(FileExplorerNodeRenameArgs args)
         {
-            IFileExplorerNodeVm selected = SelectedNode;
+            IFileExplorerNodeVm node;
 
-            _busyService.SetBusy();
-
-            try
+            // Function to rename a node.
+            void RenameNode(FileExplorerNodeRenameArgs renameArgs)
             {
-                // We need to update the cache so that all paths are changed for children under the selected nodes.
-                RemoveFromCache(selected);
-
-                // Ensure the name is valid.
-                if (args.NewName.Any(item => _illegalChars.Contains(item)))
+                if (!_nodePathLookup.TryGetValue(renameArgs.NodePath, out node))
                 {
-                    _messageService.ShowError(string.Format(Resources.GOREDIT_ERR_NODE_ILLEGAL_CHARS, string.Join(", ", _illegalChars)));
-                    args.Cancel = true;
                     return;
                 }
 
-                // Check for other files or subdirectories with the same name.
-                IFileExplorerNodeVm sibling = SelectedNode.Parent.Children.FirstOrDefault(item => (string.Equals(item.Name, args.NewName, StringComparison.CurrentCultureIgnoreCase)) && (item != this));
+                _busyService.SetBusy();
 
-                if (sibling != null)
+                try
                 {
-                    _messageService.ShowError(string.Format(Resources.GOREDIT_ERR_NODE_EXISTS, args.NewName));
-                    args.Cancel = true;
-                    return;
+                    // We need to update the cache so that all paths are changed for children under the selected nodes.
+                    RemoveFromCache(node);
+
+                    // Ensure the name is valid.
+                    if (renameArgs.NewName.Any(item => _illegalChars.Contains(item)))
+                    {
+                        _messageService.ShowError(string.Format(Resources.GOREDIT_ERR_NODE_ILLEGAL_CHARS, string.Join(", ", _illegalChars)));
+                        renameArgs.Cancel = true;
+                        return;
+                    }
+
+                    // Check for other files or subdirectories with the same name.
+                    IFileExplorerNodeVm sibling = node.Parent.Children.FirstOrDefault(item => (string.Equals(item.Name, renameArgs.NewName, StringComparison.CurrentCultureIgnoreCase)) && (item != node));
+
+                    if (sibling != null)
+                    {
+                        _messageService.ShowError(string.Format(Resources.GOREDIT_ERR_NODE_EXISTS, renameArgs.NewName));
+                        renameArgs.Cancel = true;
+                        return;
+                    }
+
+                    string oldPath = node.FullPath;
+
+                    node.RenameNode(renameArgs.NewName, _project.ProjectItems);
+                    EnumerateChildren(node);
+
+                    OnFileSystemChanged();
                 }
+                catch (Exception ex)
+                {
+                    _messageService.ShowError(ex, Resources.GOREDIT_ERR_RENAMING_FILE);
+                    renameArgs.Cancel = true;
+                }
+                finally
+                {
+                    _busyService.SetIdle();
+                }
+            }
 
-                string oldPath = SelectedNode.FullPath;
-
-                SelectedNode.RenameNode(args.NewName, _project.ProjectItems);
-                                
-                OnFileSystemChanged();
-            }
-            catch (Exception ex)
-            {
-                _messageService.ShowError(ex, Resources.GOREDIT_ERR_RENAMING_FILE);
-                args.Cancel = true;
-            }
-            finally
-            {
-                EnumerateChildren(selected);
-                _busyService.SetIdle();
-            }
+            RenameNode(args);
+            RecordUndoState(Resources.GOREDIT_UNDO_RENAME, RenameNode, RenameNode, new FileExplorerNodeRenameArgs(node, args.NewName, args.OldName), args);
         }
 
         /// <summary>
@@ -627,7 +884,7 @@ namespace Gorgon.Editor.ViewModels
                     changedFilePaths.Add(child.FullPath);
                 }
             }
-                        
+
             nodeToRefresh.Children.Clear();
 
             var parent = new DirectoryInfo(nodeToRefresh == RootNode ? _project.ProjectWorkSpace.FullName : nodeToRefresh.PhysicalPath);
@@ -732,8 +989,8 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="node">The node to evaluate.</param>
         /// <returns><b>true</b> if the node can be exported, <b>false</b> if not.</returns>
-        private bool CanExportNode(IFileExplorerNodeVm node) => ((node == null) && (RootNode.Children.Count > 0)) 
-                                                                || (node.Children.Count > 0) 
+        private bool CanExportNode(IFileExplorerNodeVm node) => ((node == null) && (RootNode.Children.Count > 0))
+                                                                || (node.Children.Count > 0)
                                                                 || ((node != null) && (!node.AllowChildCreation));
 
         /// <summary>
@@ -802,7 +1059,7 @@ namespace Gorgon.Editor.ViewModels
                     if (!_project.ProjectItems.ContainsKey(fsPath))
                     {
                         _project.ProjectItems[fsPath] = new ProjectItemMetadata();
-                    }                    
+                    }
                 }
 
                 var importArgs = new ImportArgs(items, node.PhysicalPath)
@@ -933,13 +1190,13 @@ namespace Gorgon.Editor.ViewModels
                 cancelSource.Dispose();
                 HideProgress();
             }
-    }
+        }
 
-    /// <summary>
-    /// Function to copy a node.
-    /// </summary>
-    /// <param name="args">The arguments for the command.</param>
-    private async void DoCopyNode(CopyNodeArgs args)
+        /// <summary>
+        /// Function to copy a node.
+        /// </summary>
+        /// <param name="args">The arguments for the command.</param>
+        private async void DoCopyNode(CopyNodeArgs args)
         {
             try
             {
@@ -1092,9 +1349,9 @@ namespace Gorgon.Editor.ViewModels
                     {
                         newOpenFile.IsOpen = true;
                         openFile.NotifyParentMoved(newOpenFile);
-                    }                    
-                }                
-            }            
+                    }
+                }
+            }
 
             SelectedNode = dest;
 
@@ -1110,7 +1367,7 @@ namespace Gorgon.Editor.ViewModels
                 dest.Children.Add(newNode);
                 prevNode = newNode;
             }
-            
+
             // Delete this node now that we've got our item moved.
             source.Parent.Children.Remove(source);
 
@@ -1132,7 +1389,7 @@ namespace Gorgon.Editor.ViewModels
             var cancelSource = new CancellationTokenSource();
 
             try
-            {   
+            {
                 IFileExplorerNodeVm newNode = null;
 
                 // Locate the next level that allows child creation if this one cannot.
@@ -1179,7 +1436,7 @@ namespace Gorgon.Editor.ViewModels
                 newNode = await source.CopyNodeAsync(dest, UpdateCopyProgress, cancelSource.Token);
 
                 if (newNode == null)
-                {                    
+                {
                     return;
                 }
 
@@ -1215,7 +1472,7 @@ namespace Gorgon.Editor.ViewModels
                 newNode.AssignContentPlugin(_contentPlugins);
                 OnFileSystemChanged();
 
-                SelectedNode = prevNode;                
+                SelectedNode = prevNode;
             }
             finally
             {
@@ -1247,7 +1504,7 @@ namespace Gorgon.Editor.ViewModels
                 if (node.Metadata != null)
                 {
                     node.AssignContentPlugin(_contentPlugins);
-                }                
+                }
             }
 
             parent.Children.CollectionChanged += Children_CollectionChanged;
@@ -1258,14 +1515,14 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="nodeToClear">The node to clear.</param>
         private void ClearFromCache(IFileExplorerNodeVm nodeToClear)
-        {            
-            IFileExplorerNodeVm[] nodes = _nodePathLookup.Where(item => (item.Key.StartsWith(nodeToClear.FullPath, StringComparison.OrdinalIgnoreCase)) 
-                                                                    && (item.Value != nodeToClear))                
+        {
+            IFileExplorerNodeVm[] nodes = _nodePathLookup.Where(item => (item.Key.StartsWith(nodeToClear.FullPath, StringComparison.OrdinalIgnoreCase))
+                                                                    && (item.Value != nodeToClear))
                                             .Select(item => item.Value)
                                             .ToArray();
 
             foreach (IFileExplorerNodeVm node in nodes)
-            {                
+            {
                 node.Children.CollectionChanged -= Children_CollectionChanged;
                 _nodePathLookup.Remove(node.FullPath);
             }
@@ -1305,7 +1562,7 @@ namespace Gorgon.Editor.ViewModels
         {
             _settings = injectionParameters.Settings ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.Settings), nameof(injectionParameters));
             _factory = injectionParameters.ViewModelFactory ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.ViewModelFactory), nameof(injectionParameters));
-            _project = injectionParameters.Project ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.Project), nameof(injectionParameters));            
+            _project = injectionParameters.Project ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.Project), nameof(injectionParameters));
             _fileSystemService = injectionParameters.FileSystemService ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.FileSystemService), nameof(injectionParameters));
             _messageService = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.MessageDisplay), nameof(injectionParameters));
             _busyService = injectionParameters.BusyService ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.BusyService), nameof(injectionParameters));
@@ -1313,6 +1570,7 @@ namespace Gorgon.Editor.ViewModels
             _clipboard = injectionParameters.ClipboardService ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.ClipboardService), nameof(injectionParameters));
             _directoryLocator = injectionParameters.DirectoryLocator ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.DirectoryLocator), nameof(injectionParameters));
             _contentPlugins = injectionParameters.ContentPlugins ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.ContentPlugins), nameof(injectionParameters));
+            _undoService = injectionParameters.UndoService ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.UndoService), nameof(injectionParameters));
 
             EnumerateChildren(RootNode);
 
@@ -1348,7 +1606,7 @@ namespace Gorgon.Editor.ViewModels
 
             FileSystemClipboardData data = _clipboard.GetData<FileSystemClipboardData>();
 
-            return !string.IsNullOrWhiteSpace(data.FullPath);            
+            return !string.IsNullOrWhiteSpace(data.FullPath);
         }
 
         /// <summary>
@@ -1551,7 +1809,7 @@ namespace Gorgon.Editor.ViewModels
                 Program.Log.LogException(ex);
                 return false;
             }
-        }        
+        }
         #endregion
 
         #region Constructor/Finalizer.
@@ -1563,15 +1821,17 @@ namespace Gorgon.Editor.ViewModels
             SelectNodeCommand = new EditorCommand<IFileExplorerNodeVm>(DoSelectNode);
             CreateNodeCommand = new EditorCommand<CreateNodeArgs>(DoCreateNode, CanCreateNode);
             RenameNodeCommand = new EditorCommand<FileExplorerNodeRenameArgs>(DoRenameNode, CanRenameNode);
-            DeleteNodeCommand = new EditorCommand<object>(DoDeleteNode, CanDeleteNode);
-            IncludeExcludeCommand = new EditorCommand<bool>(DoIncludeExcludeNode);
+            DeleteNodeCommand = new EditorCommand<DeleteNodeArgs>(DoDeleteNode, CanDeleteNode);
+            IncludeExcludeCommand = new EditorCommand<IncludeExcludeArgs>(DoIncludeExcludeNode);
             RefreshNodeCommand = new EditorCommand<IFileExplorerNodeVm>(DoRefreshSelectedNode);
             CopyNodeCommand = new EditorCommand<CopyNodeArgs>(DoCopyNode, CanCopyNode);
             ExportNodeToCommand = new EditorCommand<IFileExplorerNodeVm>(DoExportNodeAsync, CanExportNode);
             MoveNodeCommand = new EditorCommand<CopyNodeArgs>(DoMoveNode, CanMoveNode);
-            IncludeExcludeAllCommand = new EditorCommand<bool>(DoIncludeExcludeAll, CanIncludeExcludeAll);
+            IncludeExcludeAllCommand = new EditorCommand<IncludeExcludeArgs>(DoIncludeExcludeAll, CanIncludeExcludeAll);
             DeleteFileSystemCommand = new EditorCommand<object>(DoDeleteFileSystemAsync, CanDeleteFileSystem);
             ImportIntoNodeCommand = new EditorCommand<IFileExplorerNodeVm>(DoImportIntoNodeAsync, CanImportIntoNode);
+            UndoCommand = new EditorCommand<object>(DoUndo, CanUndoOperation);
+            RedoCommand = new EditorCommand<object>(DoRedo, CanRedoOperation);
         }
         #endregion
     }

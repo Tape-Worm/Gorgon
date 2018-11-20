@@ -20,61 +20,58 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: September 5, 2018 9:09:28 AM
+// Created: November 18, 2018 12:04:42 AM
 // 
 #endregion
-
-using System.ComponentModel;
 
 namespace Gorgon.Editor.ViewModels
 {
     /// <summary>
-    /// Arguments for the <see cref="IFileExplorerNodeVm.RenameCommand"/>.
+    /// The arguments to pass to the <see cref="IFileExplorerVm.DeleteNodeCommand"/>.
     /// </summary>
-    internal class FileExplorerNodeRenameArgs
-        : CancelEventArgs
+    internal class DeleteNodeArgs
     {
-        #region Properties.
         /// <summary>
-        /// Property to return the path to the node that is being renamed.
+        /// Property to set or return whether to suppress the confirmation prompt when deleting.
+        /// </summary>
+        public bool SuppressConfirm
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return whether or not the recycle the item being deleted.
+        /// </summary>
+        public bool Recycle
+        {
+            get;
+            set;
+        } = true;
+
+        /// <summary>
+        /// Property to return the parent node that of the node being edited.
+        /// </summary>
+        public IFileExplorerNodeVm ParentNode
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the path to the node that is being edited.
         /// </summary>
         public string NodePath
         {
             get;
         }
 
-        /// <summary>
-        /// Property to return the old name.
-        /// </summary>
-        public string OldName
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ViewModels.DeletNodeArgs"/> class.</summary>
+        /// <param name="parent">The parent of the new node.</param>
+        /// <param name="path">The path to the node to delete.</param>
+        public DeleteNodeArgs(IFileExplorerNodeVm parent, string path)
         {
-            get;
+            ParentNode = parent;
+            NodePath = path;
         }
-
-        /// <summary>
-        /// Property to set or return the new name.
-        /// </summary>
-        public string NewName
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FileExplorerNodeRenameArgs"/> class.
-        /// </summary>
-        /// <param name="node">The node being renamed.</param>
-        /// <param name="oldName">The old name.</param>
-        /// <param name="newName">The new name.</param>
-        public FileExplorerNodeRenameArgs(IFileExplorerNodeVm node, string oldName, string newName)
-            : base(false)
-        {
-            NodePath = node.FullPath;
-            OldName = oldName;
-            NewName = newName;
-        }
-        #endregion
     }
 }

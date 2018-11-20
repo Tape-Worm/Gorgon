@@ -95,6 +95,7 @@
     <Compile Include="Rendering\GraphicsContext.cs" />
     <Compile Include="EditorSettings.cs" />
     <Compile Include="Services\ImportArgs.cs" />
+    <Compile Include="Services\UndoService.cs" />
     <Compile Include="Services\WorkspaceTester.cs" />
     <Compile Include="Services\_Interfaces\IContentPluginManagerService.cs" />
     <Compile Include="Services\_Interfaces\IEditorFileSaveAsDialogService.cs" />
@@ -105,6 +106,9 @@
     <Compile Include="ViewModels\AppCloseArgs.cs" />
     <Compile Include="ViewModels\CopyNodeArgs.cs" />
     <Compile Include="ViewModels\CreateNodeArgs.cs" />
+    <Compile Include="ViewModels\DeleteNodeArgs.cs" />
+    <Compile Include="ViewModels\IncludeExcludeAllArgs.cs" />
+    <Compile Include="ViewModels\UndoCommand.cs" />
     <Compile Include="ViewModels\FileExplorerFileNodeVm.cs" />
     <Compile Include="ViewModels\FileExplorerDirectoryNodeVm.cs" />
     <Compile Include="ViewModels\FileExplorerNodeCommon.cs" />
@@ -225,6 +229,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\undo_16x16.png" />
+    <None Include="Resources\redo_48x48.png" />
+    <None Include="Resources\redo_16x16.png" />
+    <None Include="Resources\undo_48x48.png" />
     <None Include="Resources\openproject_24x24.png" />
     <None Include="Resources\recent_24x24.png" />
     <None Include="Resources\newproject_24x24.png" />

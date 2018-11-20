@@ -76,6 +76,8 @@ namespace Gorgon.Editor
         private SynchronizationContext _syncContext;
         // The context for a clipboard handler object.
         private IClipboardHandler _clipboardContext;
+        // The context for an undo operation.
+        private IUndoHandler _undoContext;
         // The flag to indicate that the application is already closing.
         private CloseStates _closeFlag;
         #endregion
@@ -115,18 +117,12 @@ namespace Gorgon.Editor
         /// <summary>Handles the RibbonAdded event of the PanelProject control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The [ContentRibbonEventArgs] instance containing the event data.</param>
-        private void PanelProject_RibbonAdded(object sender, ContentRibbonEventArgs e)
-        {
-            RibbonMerger.Merge(e.Ribbon);
-        }
+        private void PanelProject_RibbonAdded(object sender, ContentRibbonEventArgs e) => RibbonMerger.Merge(e.Ribbon);
 
         /// <summary>Handles the RibbonRemoved event of the PanelProject control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The [ContentRibbonEventArgs] instance containing the event data.</param>
-        private void PanelProject_RibbonRemoved(object sender, ContentRibbonEventArgs e)
-        {
-            RibbonMerger.Unmerge(e.Ribbon);
-        }
+        private void PanelProject_RibbonRemoved(object sender, ContentRibbonEventArgs e) => RibbonMerger.Unmerge(e.Ribbon);
 
         /// <summary>
         /// Handles the Click event of the ButtonExport control.
@@ -194,15 +190,7 @@ namespace Gorgon.Editor
         {
             try
             {
-                IFileExplorerVm fileExplorer = DataContext?.CurrentProject?.FileExplorer;
-
-                if ((fileExplorer?.IncludeExcludeAllCommand == null)
-                    || (!fileExplorer.IncludeExcludeAllCommand.CanExecute(true)))
-                {
-                    return;
-                }
-
-                fileExplorer.IncludeExcludeAllCommand.Execute(true);
+                PanelProject.FileExplorer.IncludeAll();
             }
             finally
             {
@@ -219,15 +207,7 @@ namespace Gorgon.Editor
         {
             try
             {
-                IFileExplorerVm fileExplorer = DataContext?.CurrentProject?.FileExplorer;
-
-                if ((fileExplorer?.IncludeExcludeAllCommand == null)
-                    || (!fileExplorer.IncludeExcludeAllCommand.CanExecute(false)))
-                {
-                    return;
-                }
-
-                fileExplorer.IncludeExcludeAllCommand.Execute(false);
+                PanelProject.FileExplorer.ExcludeAll();
             }
             finally
             {
@@ -244,16 +224,7 @@ namespace Gorgon.Editor
         {
             try
             {
-                IFileExplorerVm fileExplorer = DataContext?.CurrentProject?.FileExplorer;
-
-                if ((fileExplorer?.SelectedNode == null)
-                    || (fileExplorer.IncludeExcludeCommand == null)
-                    || (!fileExplorer.IncludeExcludeCommand.CanExecute(MenuItemInclude.Checked)))
-                {
-                    return;
-                }
-
-                fileExplorer.IncludeExcludeCommand.Execute(MenuItemInclude.Checked);
+                PanelProject.FileExplorer.IncludeOrExcludeItem();
             }
             finally
             {
@@ -419,11 +390,14 @@ namespace Gorgon.Editor
             ButtonImport.Enabled = fileExplorer.ImportIntoNodeCommand?.CanExecute(fileExplorer.SelectedNode ?? fileExplorer.RootNode) ?? false;
             ButtonExport.Enabled = fileExplorer.ExportNodeToCommand?.CanExecute(fileExplorer.SelectedNode ?? fileExplorer.RootNode) ?? false;
 
-            MenuItemInclude.Enabled = fileExplorer.IncludeExcludeCommand.CanExecute(MenuItemInclude.Checked);
+            MenuItemInclude.Enabled = fileExplorer.IncludeExcludeCommand?.CanExecute(new IncludeExcludeArgs(fileExplorer.SelectedNode ?? fileExplorer.RootNode, MenuItemInclude.Checked)) ?? false;
             MenuItemInclude.Checked = (fileExplorer.SelectedNode != null) && (fileExplorer.SelectedNode.Metadata != null);
-            MenuItemIncludeAll.Enabled = fileExplorer.IncludeExcludeAllCommand?.CanExecute(true) ?? false;
-            MenuItemExcludeAll.Enabled = fileExplorer.IncludeExcludeAllCommand?.CanExecute(false) ?? false;
+            MenuItemIncludeAll.Enabled = fileExplorer.IncludeExcludeAllCommand?.CanExecute(new IncludeExcludeArgs(fileExplorer.RootNode, true)) ?? false;
+            MenuItemExcludeAll.Enabled = fileExplorer.IncludeExcludeAllCommand?.CanExecute(new IncludeExcludeArgs(fileExplorer.RootNode, false)) ?? false;
             ButtonInclude.Enabled = MenuItemInclude.Enabled || MenuItemIncludeAll.Enabled || MenuItemExcludeAll.Enabled;
+
+            ButtonFileSystemUndo.Enabled = _undoContext?.UndoCommand?.CanExecute(null) ?? false;
+            ButtonFileSystemRedo.Enabled = _undoContext?.RedoCommand?.CanExecute(null) ?? false;
 
             CheckShowAllFiles.Enabled = true;
             CheckShowAllFiles.Checked = project.ShowExternalItems;
@@ -498,6 +472,7 @@ namespace Gorgon.Editor
             StageLive.Visible = true;
             StageLauncher.Visible = false;
             _clipboardContext = null;
+            _undoContext = null;
             RibbonMain.Visible = false;
             PanelWorkSpace.Visible = false;
 
@@ -514,6 +489,7 @@ namespace Gorgon.Editor
             StageLive.Visible = false;
             StageLauncher.Visible = true;
             _clipboardContext = null;
+            _undoContext = null;
             RibbonMain.Visible = false;
             PanelWorkSpace.Visible = false;
 
@@ -644,8 +620,10 @@ namespace Gorgon.Editor
 
                     // Unload this view model since we're about to replace it.
                     PanelProject.SetDataContext(null);
+
+                    ValidateRibbonButtons();
                     break;
-            }
+            }            
         }
 
         /// <summary>
@@ -656,8 +634,10 @@ namespace Gorgon.Editor
         private void FileExplorer_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
-            {
-                case nameof(IFileExplorerVm.SelectedNode):                    
+            {                
+                case nameof(IUndoHandler.UndoCommand):
+                case nameof(IUndoHandler.RedoCommand):
+                case nameof(IFileExplorerVm.SelectedNode):
                     ValidateRibbonButtons();
                     break;
             }
@@ -681,6 +661,10 @@ namespace Gorgon.Editor
             {
                 case nameof(IMain.Text):
                     Text = DataContext.Text;
+                    ValidateRibbonButtons();
+                    break;
+                case nameof(IMain.UndoContext):
+                    _undoContext = DataContext.UndoContext;
                     break;
                 case nameof(IMain.ClipboardContext):
                     if (_clipboardContext != null)
@@ -702,7 +686,7 @@ namespace Gorgon.Editor
                     {
                         DataContext.CurrentProject.FileExplorer.PropertyChanged += FileExplorer_PropertyChanged;
                     }
-
+                    ValidateRibbonButtons();
                     break;
             }
 
@@ -718,12 +702,14 @@ namespace Gorgon.Editor
             if (dataContext == null)
             {
                 _clipboardContext = null;
+                _undoContext = null;
                 Text = Resources.GOREDIT_CAPTION_NO_FILE;
                 return;
             }
 
             Text = dataContext.Text;
             _clipboardContext = dataContext.CurrentProject?.ClipboardContext;
+            _undoContext = dataContext.CurrentProject?.UndoContext;
 
             if (_clipboardContext != null)
             {
@@ -771,7 +757,7 @@ namespace Gorgon.Editor
         {
             try
             {
-                PanelProject.FileExplorer.CreateDirectory();
+                PanelProject.FileExplorer.CreateDirectory();                
             }
             finally
             {
@@ -845,6 +831,32 @@ namespace Gorgon.Editor
             {
                 ValidateRibbonButtons();
             }
+        }
+
+        /// <summary>Handles the Click event of the ButtonFileSystemUndo control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonFileSystemUndo_Click(object sender, EventArgs e)
+        {
+            if ((_undoContext?.UndoCommand == null) || (!_undoContext.UndoCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            _undoContext.UndoCommand.Execute(null);
+        }
+
+        /// <summary>Handles the Click event of the ButtonFileSystemRedo control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonFileSystemRedo_Click(object sender, EventArgs e)
+        {
+            if ((_undoContext?.RedoCommand == null) || (!_undoContext.RedoCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            _undoContext.RedoCommand.Execute(null);
         }
 
         /// <summary>
