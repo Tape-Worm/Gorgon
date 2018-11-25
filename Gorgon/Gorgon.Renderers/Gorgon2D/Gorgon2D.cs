@@ -1179,10 +1179,10 @@ namespace Gorgon.Renderers
             {
                 var innerRect = new DX.RectangleF(thickness, thickness, region.Width - (thickness * 2), region.Height - (thickness * 2));
 
-                innerRect.Left = (innerRect.Left / region.Width) + textureRegion.Value.Left;
-                innerRect.Top = (innerRect.Top / region.Height) + textureRegion.Value.Top;
-                innerRect.Right = innerRect.Right / region.Width;
-                innerRect.Bottom = innerRect.Bottom / region.Height;
+                innerRect.Left = ((innerRect.Left / region.Width) * textureRegion.Value.Width) + textureRegion.Value.Left;
+                innerRect.Top = ((innerRect.Top / region.Height) * textureRegion.Value.Height) + textureRegion.Value.Top;
+                innerRect.Right = (innerRect.Right / region.Width) * textureRegion.Value.Right;
+                innerRect.Bottom = (innerRect.Bottom / region.Height) * textureRegion.Value.Bottom;
 
                 topAcross = new DX.RectangleF
                             {
