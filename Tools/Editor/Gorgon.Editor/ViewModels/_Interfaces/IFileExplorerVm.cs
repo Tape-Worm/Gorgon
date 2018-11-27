@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.ObjectModel;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.UI;
 
@@ -44,6 +45,15 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to set or return whether to show excluded nodes or not.
+        /// </summary>
+        bool ShowExcluded
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Property to return the currently selected node for the file system.
         /// </summary>

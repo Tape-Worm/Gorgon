@@ -32,46 +32,15 @@ namespace Gorgon.Editor.ViewModels
     internal class DeleteNodeArgs
     {
         /// <summary>
-        /// Property to set or return whether to suppress the confirmation prompt when deleting.
-        /// </summary>
-        public bool SuppressConfirm
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return whether or not the recycle the item being deleted.
-        /// </summary>
-        public bool Recycle
-        {
-            get;
-            set;
-        } = true;
-
-        /// <summary>
-        /// Property to return the parent node that of the node being edited.
-        /// </summary>
-        public IFileExplorerNodeVm ParentNode
-        {
-            get;
-        }
-
-        /// <summary>
         /// Property to return the path to the node that is being edited.
         /// </summary>
-        public string NodePath
+        public IFileExplorerNodeVm Node
         {
             get;
         }
 
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ViewModels.DeletNodeArgs"/> class.</summary>
-        /// <param name="parent">The parent of the new node.</param>
-        /// <param name="path">The path to the node to delete.</param>
-        public DeleteNodeArgs(IFileExplorerNodeVm parent, string path)
-        {
-            ParentNode = parent;
-            NodePath = path;
-        }
+        /// <param name="node">The node being deleted.</param>
+        public DeleteNodeArgs(IFileExplorerNodeVm node) => Node = node;
     }
 }

@@ -28,7 +28,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.UI
 {
@@ -38,6 +40,14 @@ namespace Gorgon.Editor.UI
     public interface IUndoCommand
     {
         #region Properties.
+        /// <summary>
+        /// Property to return the service that owns this command.
+        /// </summary>
+        IUndoService Service
+        {
+            get;
+        }
+
         /// <summary>
         /// Property to return whether or not the undo operation is executing.
         /// </summary>
@@ -59,12 +69,16 @@ namespace Gorgon.Editor.UI
         /// <summary>
         /// Function to undo the changes performed by this command.
         /// </summary>
-        void Undo();
+        /// <param name="cancelToken">A cancellation token for canceling the operation.</param>
+        /// <returns>A the task representing the executing undo operation.</returns>        
+        Task Undo(CancellationToken cancelToken);
 
         /// <summary>
         /// Function to redo the changes that were previously undone.
         /// </summary>
-        void Redo();
+        /// <param name="cancelToken">A cancellation token for canceling the operation.</param>
+        /// <returns>A the task representing the executing redo operation.</returns>
+        Task Redo(CancellationToken cancelToken);
         #endregion
     }
 }

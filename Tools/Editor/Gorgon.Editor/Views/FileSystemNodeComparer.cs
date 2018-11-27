@@ -27,9 +27,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ComponentFactory.Krypton.Toolkit;
 using Gorgon.Editor.ViewModels;
 
@@ -58,6 +55,11 @@ namespace Gorgon.Editor.Views
         /// <exception cref="System.NotImplementedException"></exception>
         public int Compare(KryptonTreeNode x, KryptonTreeNode y)
         {
+            if (x == y)
+            {
+                return 0;
+            }
+
             if ((!_nodeLookup.TryGetValue(x, out IFileExplorerNodeVm leftNode))
                 || (!_nodeLookup.TryGetValue(y, out IFileExplorerNodeVm rightNode)))
             {
@@ -105,10 +107,8 @@ namespace Gorgon.Editor.Views
         #region Constructor.
         /// <summary>Initializes a new instance of the FileSystemNodeComparer class.</summary>
         /// <param name="nodeLookup">The node lookup.</param>
-        public FileSystemNodeComparer(IReadOnlyDictionary<KryptonTreeNode, IFileExplorerNodeVm> nodeLookup)
-        {
-            _nodeLookup = nodeLookup;
-        }
+        /// <param name="recycleNode">The recycle bin node.</param>
+        public FileSystemNodeComparer(IReadOnlyDictionary<KryptonTreeNode, IFileExplorerNodeVm> nodeLookup) => _nodeLookup = nodeLookup;
         #endregion
     }
 }

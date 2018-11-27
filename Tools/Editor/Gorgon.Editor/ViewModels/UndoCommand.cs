@@ -31,6 +31,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Core;
+using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.UI
 {
@@ -51,17 +52,21 @@ namespace Gorgon.Editor.UI
         private readonly TU _undoArgs;
         // The redo command parameters.
         private readonly TR _redoArgs;
-        // The command to execute when undoing.
-        private readonly IEditorCommand<TU> _undoCommand;
-        // The command to execute when redoing.
-        private readonly IEditorCommand<TR> _redoCommand;
         // The action to execute when undoing  instead of a command.
-        private readonly Action<TU> _undoAction;
+        private readonly Func<TU, CancellationToken, Task> _undoAction;
         // The action to execute when redoing instead of a command.
-        private readonly Action<TR> _redoAction;
+        private readonly Func<TR, CancellationToken, Task> _redoAction;
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return the service that owns this command.
+        /// </summary>
+        public IUndoService Service
+        {
+            get;
+        }
+
         /// <summary>Property to return whether or not the undo operation is executing.</summary>
         /// <value>
         ///   <c>true</c> if this instance is executing; otherwise, <c>false</c>.</value>
@@ -78,7 +83,9 @@ namespace Gorgon.Editor.UI
 
         #region Methods.
         /// <summary>Function to undo the changes performed by this command.</summary>
-        public void Undo()
+        /// <param name="cancelToken">A cancellation token for canceling the operation.</param>
+        /// <returns>A the task representing the executing undo operation.</returns>
+        public async Task Undo(CancellationToken cancelToken)
         {
             if (Interlocked.Exchange(ref _isExecuting, 1) == 1)
             {
@@ -86,19 +93,8 @@ namespace Gorgon.Editor.UI
             }
 
             try
-            {
-                if (_undoCommand == null)
-                {
-                    _undoAction(_undoArgs);
-                    return;
-                }
-
-                if (!_undoCommand.CanExecute(_undoArgs))
-                {
-                    return;
-                }
-
-                _undoCommand.Execute(_undoArgs);
+            {                
+                await _undoAction(_undoArgs, cancelToken);
             }
             finally
             {
@@ -107,7 +103,9 @@ namespace Gorgon.Editor.UI
         }
 
         /// <summary>Function to redo the changes that were previously undone.</summary>
-        public void Redo()
+        /// <param name="cancelToken">A cancellation token for canceling the operation.</param>
+        /// <returns>A the task representing the executing redo operation.</returns>
+        public async Task Redo(CancellationToken cancelToken)
         {
             if (Interlocked.Exchange(ref _isExecuting, 1) == 1)
             {
@@ -116,18 +114,7 @@ namespace Gorgon.Editor.UI
 
             try
             {
-                if (_redoCommand == null)
-                {
-                    _redoAction(_redoArgs);
-                    return;
-                }
-
-                if (!_redoCommand.CanExecute(_redoArgs))
-                {
-                    return;
-                }
-
-                _redoCommand.Execute(_redoArgs);
+                await _redoAction(_redoArgs, cancelToken);
             }
             finally
             {
@@ -139,44 +126,19 @@ namespace Gorgon.Editor.UI
         #region Constructor/Finalizer.
         /// <summary>
         /// Initializes a new instance of the <see cref="EditorCommand{T}"/> class.
-        /// </summary>
-        /// <param name="desc">The description of the action.</param>
-        /// <param name="undoCommand">The command to execute the undo functionality.</param>
-        /// <param name="redoCommand">The command to execute the redo functionality.</param>
-        /// <param name="redoArgs">The arguments to pass to the redo functionality.</param>
-        /// <param name="undoArgs">The arguments to pass to the undo functionality.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="desc"/>, <paramref name="undoCommand"/>, or the <paramref name="redoCommand"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="desc"/> parameter is empty.</exception>
-        public UndoCommand(string desc, IEditorCommand<TU> undoCommand, IEditorCommand<TR> redoCommand, TR redoArgs, TU undoArgs)
-        {
-            if (desc == null)
-            {
-                throw new ArgumentNullException(nameof(desc));
-            }
-
-            if (string.IsNullOrWhiteSpace(desc))
-            {
-                throw new ArgumentEmptyException(nameof(desc));
-            }
-
-            Description = desc;
-            _undoCommand = undoCommand ?? throw new ArgumentNullException(nameof(undoCommand));
-            _redoCommand = redoCommand ?? throw new ArgumentNullException(nameof(redoCommand));
-            _redoArgs = redoArgs;
-            _undoArgs = undoArgs;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EditorCommand{T}"/> class.
-        /// </summary>
+        /// </summary>        
+        /// <param name="service">The undo service that owns this command.</param>
         /// <param name="desc">The description of the action.</param>
         /// <param name="undoAction">The undo action execute.</param>
+        /// <param name="redoAction">The redo action to execute.</param>
         /// <param name="redoArgs">The arguments to pass to the redo functionality.</param>
         /// <param name="undoArgs">The arguments to pass to the undo functionality.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="desc"/>, <paramref name="undoAction"/>, or the <paramref name="redoAction"/> parameter is <b>null</b>.</exception>        
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="service"/>, <paramref name="desc"/>, <paramref name="undoAction"/>, or the <paramref name="redoAction"/> parameter is <b>null</b>.</exception>        
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="desc"/> parameter is empty.</exception>
-        public UndoCommand(string desc, Action<TU> undoAction, Action<TR> redoAction, TR redoArgs, TU undoArgs)
+        public UndoCommand(IUndoService service, string desc, Func<TU, CancellationToken, Task> undoAction, Func<TR, CancellationToken, Task> redoAction, TR redoArgs, TU undoArgs)
         {
+            Service = service ?? throw new ArgumentNullException(nameof(service));
+
             if (desc == null)
             {
                 throw new ArgumentNullException(nameof(desc));

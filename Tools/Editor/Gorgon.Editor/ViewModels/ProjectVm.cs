@@ -185,16 +185,16 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         public bool ShowExternalItems
         {
-            get => _projectData.ShowExternalItems;
+            get => FileExplorer.ShowExcluded;
             set
             {
-                if (_projectData.ShowExternalItems == value)
+                if (FileExplorer.ShowExcluded == value)
                 {
                     return;
                 }
 
                 OnPropertyChanging();
-                _projectData.ShowExternalItems = value;
+                FileExplorer.ShowExcluded = value;
                 OnPropertyChanged();
             }
         }

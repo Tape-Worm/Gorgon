@@ -118,9 +118,7 @@ namespace Gorgon.Editor.ViewModels
                     return;
                 }
                 
-                OnPropertyChanging();
                 base.Metadata = value;
-                OnPropertyChanged();
 
                 if (value == null)
                 {

@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -49,6 +50,8 @@ namespace Gorgon.Editor.Services
         private int _undoIndex = -1;
         // The stack of undo items.
         private List<IUndoCommand> _undoStack = new List<IUndoCommand>();
+        // The cancellation source cancelling the undo/redo operation.
+        private CancellationTokenSource _cancelSource;
         #endregion
 
         #region Properties.
@@ -75,6 +78,12 @@ namespace Gorgon.Editor.Services
         /// <param name="undoCommand">The command to add to the stack.</param>
         private void AssignUndoStack(IUndoCommand undoCommand)
         {
+            // Trim to 256 entries from the top of the stack.
+            while (_undoStack.Count >= 256)
+            {
+                _undoStack.RemoveAt(0);
+            }
+
             if (_undoIndex < 0)
             {
                 _undoStack.Clear();
@@ -95,9 +104,21 @@ namespace Gorgon.Editor.Services
             _undoStack.Add(undoCommand);
         }
 
+        /// <summary>Function to cancel the currently executing undo/redo operation.</summary>
+        public void Cancel()
+        {
+            if (_cancelSource == null)
+            {
+                return;
+            }
+
+            _cancelSource.Cancel();
+        }
+
         /// <summary>Function to clear the undo/redo stacks.</summary>
         public void ClearStack()
         {
+            Cancel();
             _undoStack.Clear();
             _undoIndex = -1;
 
@@ -121,7 +142,7 @@ namespace Gorgon.Editor.Services
         /// This method will do nothing if an undo or redo operation is executing.
         /// </para>
         /// </remarks>
-        public void Record<TU, TR>(string desc, Action<TU> undoAction, Action<TR> redoAction, TU undoArgs, TR redoArgs)
+        public void Record<TU, TR>(string desc, Func<TU, CancellationToken, Task> undoAction, Func<TR, CancellationToken, Task> redoAction, TU undoArgs, TR redoArgs)
             where TU : class
             where TR : class
         {            
@@ -132,65 +153,81 @@ namespace Gorgon.Editor.Services
             }
 
             _log.Print($"Adding undo command '{desc}' to stack.", LoggingLevel.Verbose);
-            AssignUndoStack(new UndoCommand<TU, TR>(desc, undoAction, redoAction, redoArgs, undoArgs));
-        }
-
-        /// <summary>
-        /// Function to record an undo/redo state.
-        /// </summary>
-        /// <typeparam name="TU">The type of parameters to pass to the undo command.</typeparam>
-        /// <typeparam name="TR">The type of parameters to pass to the redo command.</typeparam>
-        /// <param name="desc">The description of the action being recorded.</param>
-        /// <param name="undoCommand">The command to execute when undoing.</param>
-        /// <param name="redoCommand">The command to execute when redoing.</param>
-        /// <param name="undoArgs">The parameters to pass to the undo operation.</param>
-        /// <param name="redoArgs">The parameters to pass to the redo oprtation.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="desc"/>, <paramref name="undoCommand"/>, or the <paramref name="redoAction"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="desc"/> parameter is empty.</exception>
-        /// <remarks>
-        /// <para>
-        /// This method will do nothing if an undo or redo operation is executing.
-        /// </para>
-        /// </remarks>
-        public void Record<TU, TR>(string desc, IEditorCommand<TU> undoCommand, IEditorCommand<TR> redoCommand, TU undoArgs, TR redoArgs)
-            where TU : class
-            where TR : class
-        {
-            // Do not register if we're in the middle of an undo/redo operation.
-            if (_undoStack.Any(item => item.IsExecuting))
-            {
-                return;
-            }
-
-            _log.Print($"Adding undo command '{desc}' to stack.", LoggingLevel.Verbose);
-            AssignUndoStack(new UndoCommand<TU, TR>(desc, undoCommand, redoCommand, redoArgs, undoArgs));
+            AssignUndoStack(new UndoCommand<TU, TR>(this, desc, undoAction, redoAction, redoArgs, undoArgs));
         }
 
         /// <summary>Function to perform a redo operation.</summary>
-        public void Redo()
+        /// <returns>A task representing the currently executing redo operation.</returns>
+        public Task Redo()
         {
             if ((_undoStack.Count == 0) || (_undoIndex >= _undoStack.Count - 1))
             {
-                return;
+                _undoIndex = _undoStack.Count - 1;
+                return Task.FromResult<object>(null);
             }
 
-            IUndoCommand redo = _undoStack[++_undoIndex];
-            _log.Print($"Executing redo for '{redo.Description}' command.", LoggingLevel.Simple);
-            redo?.Redo();
+            try
+            {
+                IUndoCommand redo = _undoStack[++_undoIndex];
+
+                if (redo == null)
+                {
+                    return Task.FromResult<object>(null);
+                }
+
+                _cancelSource = new CancellationTokenSource();
+                _log.Print($"Executing redo for '{redo.Description}' command.", LoggingLevel.Simple);
+                Task task = redo.Redo(_cancelSource.Token);
+
+                if (_cancelSource.Token.IsCancellationRequested)
+                {
+                    --_undoIndex;
+                }
+
+                return task;
+            }
+            finally
+            {
+                _cancelSource?.Dispose();
+                _cancelSource = null;
+            }
         }
 
         /// <summary>Function to perform an undo operation.</summary>
-        public void Undo()
+        /// <returns>A task representing the currently executing undo operation.</returns>
+        public Task Undo()
         {
             if ((_undoStack.Count == 0) || (_undoIndex < 0))
             {
                 _undoIndex = -1;
-                return;
+                return Task.FromResult<object>(null);
             }
 
-            IUndoCommand undo = _undoStack[_undoIndex--];
-            _log.Print($"Executing undo command for '{undo.Description}'.", LoggingLevel.Simple);
-            undo?.Undo();
+            try
+            {
+                IUndoCommand undo = _undoStack[_undoIndex--];
+
+                if (undo == null)
+                {
+                    return Task.FromResult<object>(null);
+                }
+
+                _cancelSource = new CancellationTokenSource();
+                _log.Print($"Executing undo command for '{undo.Description}'.", LoggingLevel.Simple);
+                Task task = undo.Undo(_cancelSource.Token);
+
+                if (_cancelSource.Token.IsCancellationRequested)
+                {
+                    ++_undoIndex;
+                }
+
+                return task;
+            }
+            finally
+            {
+                _cancelSource?.Dispose();
+                _cancelSource = null;
+            }
         }
         #endregion
 

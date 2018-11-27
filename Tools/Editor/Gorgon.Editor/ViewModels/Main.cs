@@ -114,6 +114,8 @@ namespace Gorgon.Editor.ViewModels
                 OnPropertyChanged();
 
                 NotifyPropertyChanged(nameof(Text));
+                NotifyPropertyChanged(nameof(ClipboardContext));
+                NotifyPropertyChanged(nameof(UndoContext));
 
                 if (_currentProject == null)
                 {
@@ -542,6 +544,8 @@ namespace Gorgon.Editor.ViewModels
                     panelUpdateArgs.PercentageComplete = (float)currentItem / totalItems;
                     UpdateProgress(panelUpdateArgs);
                 }
+
+                
 
                 await CurrentProject.PersistProjectAsync(projectTitle, path, writer, SaveProgress, cancelSource.Token);
 

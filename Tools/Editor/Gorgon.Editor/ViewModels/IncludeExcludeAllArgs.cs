@@ -24,7 +24,7 @@
 // 
 #endregion
 
-using System;
+using System.ComponentModel;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -32,13 +32,13 @@ namespace Gorgon.Editor.ViewModels
     /// Command arguments for the <see cref="IFileExplorerVm.IncludeExcludeAllCommand"/> or the <see cref="IFileExplorerVm.IncludeExcludeCommand"/>.
     /// </summary>
     internal class IncludeExcludeArgs
-        : EventArgs
+        : CancelEventArgs
     {
         #region Properties.
         /// <summary>
         /// Property to return the path to the node being included/excluded.
         /// </summary>
-        public string NodePath
+        public IFileExplorerNodeVm Node
         {
             get;
         }
@@ -58,7 +58,7 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="include"><b>true</b> to include the node, <b>false</b> to exclude.</param>
         public IncludeExcludeArgs(IFileExplorerNodeVm node, bool include)
         {
-            NodePath = node.FullPath;
+            Node = node;
             Include = include;
         }            
         #endregion

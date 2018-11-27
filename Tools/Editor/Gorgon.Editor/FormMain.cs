@@ -396,9 +396,6 @@ namespace Gorgon.Editor
             MenuItemExcludeAll.Enabled = fileExplorer.IncludeExcludeAllCommand?.CanExecute(new IncludeExcludeArgs(fileExplorer.RootNode, false)) ?? false;
             ButtonInclude.Enabled = MenuItemInclude.Enabled || MenuItemIncludeAll.Enabled || MenuItemExcludeAll.Enabled;
 
-            ButtonFileSystemUndo.Enabled = _undoContext?.UndoCommand?.CanExecute(null) ?? false;
-            ButtonFileSystemRedo.Enabled = _undoContext?.RedoCommand?.CanExecute(null) ?? false;
-
             CheckShowAllFiles.Enabled = true;
             CheckShowAllFiles.Checked = project.ShowExternalItems;
 
@@ -873,8 +870,7 @@ namespace Gorgon.Editor
                     return;
                 }
 
-                DataContext.CurrentProject.ShowExternalItems = CheckShowAllFiles.Checked;
-                PanelProject.FileExplorer.RefreshFileSystem();
+                DataContext.CurrentProject.ShowExternalItems = CheckShowAllFiles.Checked;                
             }
             finally
             {

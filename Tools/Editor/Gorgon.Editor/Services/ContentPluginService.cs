@@ -234,12 +234,6 @@ namespace Gorgon.Editor.Services
             // Do not query association data for excluded file paths.
             if (contentFile.Metadata == null)
             {
-                if ((contentFile != null) && (contentFile.Metadata == null))
-                {
-                    contentFile.Metadata.ContentMetadata = null;
-                    return true;
-                }
-
                 return false;
             }
 

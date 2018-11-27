@@ -26,6 +26,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.Services
@@ -63,14 +65,21 @@ namespace Gorgon.Editor.Services
 
         #region Methods.
         /// <summary>
+        /// Function to cancel the currently executing undo/redo operation.
+        /// </summary>
+        void Cancel();
+
+        /// <summary>
         /// Function to perform an undo operation.
         /// </summary>
-        void Undo();
+        /// <returns>A task representing the currently executing undo operation.</returns>
+        Task Undo();
 
         /// <summary>
         /// Function to perform a redo operation.
         /// </summary>
-        void Redo();
+        /// <returns>A task representing the currently executing redo operation.</returns>
+        Task Redo();
 
         /// <summary>
         /// Function to record an undo/redo state.
@@ -87,30 +96,10 @@ namespace Gorgon.Editor.Services
         /// This method will do nothing if an undo or redo operation is executing.
         /// </para>
         /// </remarks>
-        void Record<TU, TR>(string desc, Action<TU> undoAction, Action<TR> redoAction, TU undoArgs, TR redoArgs)
+        void Record<TU, TR>(string desc, Func<TU, CancellationToken, Task> undoAction, Func<TR, CancellationToken, Task> redoAction, TU undoArgs, TR redoArgs)
             where TU : class
             where TR : class;
-
-
-        /// <summary>
-        /// Function to record an undo/redo state.
-        /// </summary>
-        /// <typeparam name="TU">The type of undo parameters to pass. Must be a reference type.</typeparam>
-        /// <typeparam name="TR">The type of redo parameters to pass. Must be a reference type.</typeparam>
-        /// <param name="desc">The description of the action being recorded.</param>
-        /// <param name="undoCommand">The command to execute when undoing.</param>
-        /// <param name="redoCommand">The command to execute when redoing.</param>
-        /// <param name="undoArgs">The parameters to pass to the undo operation.</param>
-        /// <param name="redoArgs">The parameters to pass to the redo oprtation.</param>
-        /// <remarks>
-        /// <para>
-        /// This method will do nothing if an undo or redo operation is executing.
-        /// </para>
-        /// </remarks>
-        void Record<TU, TR>(string desc, IEditorCommand<TU> undoCommand, IEditorCommand<TR> redoCommand, TU undoArgs, TR redoArgs)
-            where TU : class
-            where TR : class;
-
+        
         /// <summary>
         /// Function to clear the undo/redo stacks.
         /// </summary>

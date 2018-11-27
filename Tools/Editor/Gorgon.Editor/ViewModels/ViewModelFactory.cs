@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -132,23 +133,44 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="project">The project being evaluated.</param>
         /// <param name="fileSystemService">The file system service used to retrieve file system data.</param>
         /// <param name="parent">The parent of the nodes.</param>
-        /// <param name="nodes">The node list to update.</param>                
-        private void DoEnumerateFileSystemObjects(string path, IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parent, ObservableCollection<IFileExplorerNodeVm> nodes)
+        private void DoEnumerateFileSystemObjects(string path, IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parent)
         {
-            foreach (DirectoryInfo dir in fileSystemService.GetDirectories(path, true))
+            var directoryNodes = new Dictionary<string, IFileExplorerNodeVm>(StringComparer.OrdinalIgnoreCase);
+            string parentPhysicalPath;
+
+            if (parent.Parent == null)
             {
-                if ((project.ShowExternalItems) || (project.ProjectItems.ContainsKey(dir.ToFileSystemPath(project.ProjectWorkSpace))))
-                {
-                    nodes.Add(CreateFileExplorerDirectoryNodeVm(project, fileSystemService, parent, dir));
-                }
+                parentPhysicalPath = project.ProjectWorkSpace.FullName;
+                directoryNodes[parentPhysicalPath] = parent;
+            }
+            else
+            {
+                parentPhysicalPath = parent.PhysicalPath;
+                directoryNodes[parentPhysicalPath] = parent;
             }
 
-            foreach (FileInfo file in fileSystemService.GetFiles(path, false))
+            foreach (DirectoryInfo directory in fileSystemService.GetDirectories(parentPhysicalPath).OrderBy(item => item.FullName.Length))
             {
-                if ((project.ShowExternalItems) || (project.ProjectItems.ContainsKey(file.ToFileSystemPath(project.ProjectWorkSpace))))
+                if (!directoryNodes.TryGetValue(directory.Parent.FullName, out IFileExplorerNodeVm parentNode))
                 {
-                    nodes.Add(CreateFileExplorerFileNodeVm(project, fileSystemService, parent, file));
+                    Program.Log.Print($"ERROR: Directory '{directory.Parent.FullName}' is the parent of '{directory.Name}', but is not found in the index list.", LoggingLevel.Simple);
+                    continue;
                 }
+
+                IFileExplorerNodeVm node = CreateFileExplorerDirectoryNodeVm(project, fileSystemService, parentNode, directory);
+                directoryNodes[directory.FullName] = node;
+
+                // Get files for this directory.
+                foreach (FileInfo file in fileSystemService.GetFiles(directory.FullName, false))
+                {
+                    CreateFileExplorerFileNodeVm(project, fileSystemService, node, file);
+                }                
+            }
+
+            // Get files for this directory.
+            foreach (FileInfo file in fileSystemService.GetFiles(parentPhysicalPath, false))
+            {
+                CreateFileExplorerFileNodeVm(project, fileSystemService, parent, file);
             }
         }
 
@@ -159,11 +181,10 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="project">The project being evaluated.</param>
         /// <param name="fileSystemService">The file system service used to retrieve file system data.</param>
         /// <param name="parent">The parent of the nodes.</param>
-        /// <param name="nodes">The node list to update.</param>
         /// <returns>A hierarchy of nodes representing the physical file system.</returns>
         /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
-        public void EnumerateFileSystemObjects(string path, IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parent, ObservableCollection<IFileExplorerNodeVm> nodes)
+        public void EnumerateFileSystemObjects(string path, IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parent)
         {
             if (path == null)
             {
@@ -190,12 +211,7 @@ namespace Gorgon.Editor.ViewModels
                 throw new ArgumentNullException(nameof(parent));
             }
 
-            if (nodes == null)
-            {
-                throw new ArgumentNullException(nameof(nodes));
-            }
-
-            DoEnumerateFileSystemObjects(path, project, fileSystemService, parent, nodes);
+            DoEnumerateFileSystemObjects(path, project, fileSystemService, parent);
         }
 
         /// <summary>
@@ -259,7 +275,11 @@ namespace Gorgon.Editor.ViewModels
             result.Initialize(new FileExplorerNodeParameters(file.Name, file.FullName, project, this, fileSystemService)
             {
                 Parent = parent
-            });            
+            });
+
+            parent.Children.Add(result);
+
+            result.Metadata = project.ProjectItems.FirstOrDefault(item => string.Equals(item.Key, result.FullPath, StringComparison.OrdinalIgnoreCase)).Value;
 
             return result;
         }
@@ -307,7 +327,9 @@ namespace Gorgon.Editor.ViewModels
                 Children = children
             });
 
-            DoEnumerateFileSystemObjects(directory.FullName, project, fileSystemService, result, children);
+            parentNode.Children.Add(result);
+
+            result.Metadata = project.ProjectItems.FirstOrDefault(item => string.Equals(item.Key, result.FullPath, StringComparison.OrdinalIgnoreCase)).Value;
 
             return result;
         }
@@ -335,31 +357,22 @@ namespace Gorgon.Editor.ViewModels
                 Metadata = new ProjectItemMetadata()
             };
 
-            bool showUnknown = project.ShowExternalItems;
-            project.ShowExternalItems = autoInclude;
+            // This is a special node, used internally.
+            root.Initialize(new FileExplorerNodeParameters("/", project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar), project, this, fileSystemService));
 
             var nodes = new ObservableCollection<IFileExplorerNodeVm>();
-            DoEnumerateFileSystemObjects(project.ProjectWorkSpace.FullName, project, fileSystemService, root, nodes);
-
-            project.ShowExternalItems = showUnknown;
-
-            // This is a special node, used internally.
-            root.Initialize(new FileExplorerNodeParameters("/", project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar), project, this, fileSystemService)
-            {                
-                Children = nodes
-            });
+            DoEnumerateFileSystemObjects(project.ProjectWorkSpace.FullName, project, fileSystemService, root);
 
             if (autoInclude)
             {
                 // We'll rebuild the include list because it should be empty at this point.
-                foreach (IFileExplorerNodeVm node in nodes.Traverse(p => p.Children))
-                {
+                foreach (IFileExplorerNodeVm node in root.Children.Traverse(p => p.Children))
+                {                    
                     project.ProjectItems[node.FullPath] = node.Metadata = new ProjectItemMetadata();
                 }
             }
 
             result.Initialize(new FileExplorerParameters(fileSystemService,
-                                                        _undoService,
                                                         root,
                                                         project,
                                                         this));
@@ -380,6 +393,9 @@ namespace Gorgon.Editor.ViewModels
             {
                 throw new ArgumentNullException(nameof(projectData));
             }
+
+            // Reset on project creation/load.
+            _undoService.ClearStack();
             
             var result = new ProjectVm();
             var fileSystemService = new FileSystemService(projectData.ProjectWorkSpace);

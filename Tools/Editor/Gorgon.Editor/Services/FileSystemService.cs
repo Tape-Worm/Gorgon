@@ -502,14 +502,48 @@ namespace Gorgon.Editor.Services
 
             var directory = new DirectoryInfo(path.FormatDirectory(Path.DirectorySeparatorChar));
 
+            if (!directory.Exists)
+            {
+                return new DirectoryInfo[0];
+            }
+
             CheckRootOfPath(directory);
 
-            return !directory.Exists
-                ? (new DirectoryInfo[0])
-                : directory.GetDirectories("*", recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
-                .Where(item => (item.Attributes & FileAttributes.Directory) == FileAttributes.Directory
-                            && (item.Attributes & FileAttributes.System) != FileAttributes.System
-                            && (item.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden).ToArray();
+            var directories = directory.GetDirectories("*", recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly).ToList();
+            var excluded = new List<DirectoryInfo>();
+
+            foreach (DirectoryInfo item in directories)
+            {
+                if (((item.Attributes & FileAttributes.Directory) != FileAttributes.Directory)
+                            || ((item.Attributes & FileAttributes.System) == FileAttributes.System)
+                            || ((item.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden))
+                {
+                    excluded.Add(item);
+                }
+
+                // Check the parents to ensure none of them are hidden.
+                DirectoryInfo parent = item.Parent;
+
+                // An ancestor is hidden or a system directory, then exclude any children.
+                while (!string.Equals(parent.FullName.FormatDirectory(Path.DirectorySeparatorChar), directory.FullName, StringComparison.OrdinalIgnoreCase))
+                {
+                    if (((parent.Attributes & FileAttributes.Directory) != FileAttributes.Directory)
+                                || ((parent.Attributes & FileAttributes.System) == FileAttributes.System)
+                                || ((parent.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden))
+                    {
+                        excluded.Add(item);
+                    }
+
+                    parent = parent.Parent;
+                }
+            }
+
+            foreach (DirectoryInfo item in excluded)
+            {
+                directories.Remove(item);
+            }
+
+            return directories;
         }
 
         /// <summary>
@@ -737,6 +771,14 @@ namespace Gorgon.Editor.Services
 
             var directory = new DirectoryInfo(directoryPath);
             CheckRootOfPath(directory);
+
+            // Since windows uses a case insensitive file system, we need to ensure we're not just changing the case of the name.
+            // And if we are, we need to allow the rename to happen regardless.
+            if (string.Equals(directory.Name, newName, StringComparison.CurrentCultureIgnoreCase))
+            {
+                directory.MoveTo(Path.Combine(directory.Parent.FullName, Guid.NewGuid().ToString("N")));
+                directory.Refresh();
+            }
 
             directory.MoveTo(Path.Combine(directory.Parent.FullName, newName));
 

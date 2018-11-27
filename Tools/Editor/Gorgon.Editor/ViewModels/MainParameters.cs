@@ -67,9 +67,18 @@ namespace Gorgon.Editor.ViewModels
             get;
         }
 
+        /// <summary>
+        /// Property to return the undo service for the application.
+        /// </summary>
+        public IUndoService UndoService
+        {
+            get;
+        }
+
         /// <summary>Initializes a new instance of the MainParameters class.</summary>
         /// <param name="newProject">The new project view model.</param>
         /// <param name="recent">The recent files view model.</param>
+        /// <param name="undoService">The undo service for the application.</param>
         /// <param name="viewModelFactory">The view model factory for creating view models.</param>
         /// <param name="openDialog">A dialog service used for opening files.</param>
         /// <param name="saveDialog">A dialog service used for saving files.</param>

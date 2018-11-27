@@ -64,14 +64,6 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the service used for undo/redo functionality.
-        /// </summary>
-        public IUndoService UndoService
-        {
-            get;
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="FileExplorerParameters" /> class.
         /// </summary>
         /// <param name="fileSystemService">The file system service to use for manipulating the virtual file system.</param>
@@ -80,11 +72,10 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="viewModelFactory">The view model factory.</param>
         /// <param name="project">The project data.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public FileExplorerParameters(IFileSystemService fileSystemService, IUndoService undoService, IFileExplorerNodeVm rootNode, IProject project, ViewModelFactory viewModelFactory)
+        public FileExplorerParameters(IFileSystemService fileSystemService, IFileExplorerNodeVm rootNode, IProject project, ViewModelFactory viewModelFactory)
             : base(viewModelFactory)
         {
-            Project = project ?? throw new ArgumentNullException(nameof(project));
-            UndoService = undoService ?? throw new ArgumentNullException(nameof(undoService));
+            Project = project ?? throw new ArgumentNullException(nameof(project));            
             FileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
             RootNode = rootNode ?? throw new ArgumentNullException(nameof(rootNode));
         }

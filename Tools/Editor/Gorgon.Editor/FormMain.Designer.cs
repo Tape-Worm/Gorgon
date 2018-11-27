@@ -60,9 +60,6 @@ namespace Gorgon.Editor
             this.ButtonFileSystemCopy = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.ButtonFileSystemCut = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.kryptonRibbonGroupSeparator4 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
-            this.kryptonRibbonGroupLines4 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
-            this.ButtonFileSystemUndo = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.ButtonFileSystemRedo = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.RibbonGroupFileSystemOrganize = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
             this.kryptonRibbonGroupTriple2 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
             this.ButtonFileSystemDelete = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
@@ -815,7 +812,6 @@ namespace Gorgon.Editor
             this.RibbonMain.RibbonAppButton.AppButtonShowRecentDocs = false;
             this.RibbonMain.RibbonTabs.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab[] {
             this.TabFileSystem});
-            this.RibbonMain.SelectedContext = null;
             this.RibbonMain.SelectedTab = this.TabFileSystem;
             this.RibbonMain.ShowMinimizeButton = false;
             this.RibbonMain.Size = new System.Drawing.Size(1264, 115);
@@ -898,8 +894,7 @@ namespace Gorgon.Editor
             this.GroupFileSystemEdit.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupContainer[] {
             this.kryptonRibbonGroupTriple3,
             this.kryptonRibbonGroupLines2,
-            this.kryptonRibbonGroupSeparator4,
-            this.kryptonRibbonGroupLines4});
+            this.kryptonRibbonGroupSeparator4});
             this.GroupFileSystemEdit.KeyTipGroup = "E";
             this.GroupFileSystemEdit.TextLine1 = "Edit";
             // 
@@ -946,33 +941,6 @@ namespace Gorgon.Editor
             this.ButtonFileSystemCut.TextLine1 = "Cut";
             this.ButtonFileSystemCut.ToolTipBody = "Cut the selected file or directory into the clipboard.";
             this.ButtonFileSystemCut.Click += new System.EventHandler(this.ButtonFileSystemCut_Click);
-            // 
-            // kryptonRibbonGroupLines4
-            // 
-            this.kryptonRibbonGroupLines4.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
-            this.ButtonFileSystemUndo,
-            this.ButtonFileSystemRedo});
-            // 
-            // ButtonFileSystemUndo
-            // 
-            this.ButtonFileSystemUndo.ImageLarge = global::Gorgon.Editor.Properties.Resources.undo_48x48;
-            this.ButtonFileSystemUndo.ImageSmall = global::Gorgon.Editor.Properties.Resources.undo_16x16;
-            this.ButtonFileSystemUndo.KeyTip = "Z";
-            this.ButtonFileSystemUndo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.ButtonFileSystemUndo.TextLine1 = "Undo";
-            this.ButtonFileSystemUndo.ToolTipBody = "Restores the results of the previous operation.";
-            this.ButtonFileSystemUndo.ToolTipTitle = "Undo";
-            this.ButtonFileSystemUndo.Click += new System.EventHandler(this.ButtonFileSystemUndo_Click);
-            // 
-            // ButtonFileSystemRedo
-            // 
-            this.ButtonFileSystemRedo.ImageLarge = global::Gorgon.Editor.Properties.Resources.redo_48x48;
-            this.ButtonFileSystemRedo.ImageSmall = global::Gorgon.Editor.Properties.Resources.redo_16x16;
-            this.ButtonFileSystemRedo.KeyTip = "Y";
-            this.ButtonFileSystemRedo.TextLine1 = "Redo";
-            this.ButtonFileSystemRedo.ToolTipBody = "Restores a previously undone operation.";
-            this.ButtonFileSystemRedo.ToolTipTitle = "Redo";
-            this.ButtonFileSystemRedo.Click += new System.EventHandler(this.ButtonFileSystemRedo_Click);
             // 
             // RibbonGroupFileSystemOrganize
             // 
@@ -1218,9 +1186,6 @@ namespace Gorgon.Editor
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonQATButton ButtonSave;
         private StageLive StageLive;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator4;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines4;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemUndo;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemRedo;
     }
 }
 

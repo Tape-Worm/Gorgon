@@ -83,15 +83,19 @@ namespace Gorgon.Editor.Views
             /// </returns>
             public int Compare(ListViewItem x, ListViewItem y)
             {
-                ListViewItem.ListViewSubItem leftItem = x.SubItems[SortColumn.DisplayIndex];
-                ListViewItem.ListViewSubItem rightItem = y.SubItems[SortColumn.DisplayIndex];
+                var xItem = (RecentItem)x.Tag;
+                var yItem = (RecentItem)y.Tag;
 
-                if (Order == SortOrder.Ascending)
+                if (SortColumn.DisplayIndex != 0)
                 {
-                    return string.Compare(leftItem.Text, rightItem.Text, StringComparison.CurrentCultureIgnoreCase);
+                    return Order == SortOrder.Ascending
+                        ? DateTime.Compare(xItem.LastUsedDate, yItem.LastUsedDate)
+                        : DateTime.Compare(xItem.LastUsedDate, yItem.LastUsedDate) * -1;
                 }
 
-                return string.Compare(leftItem.Text, rightItem.Text, StringComparison.CurrentCultureIgnoreCase) * -1;
+                return Order == SortOrder.Ascending
+                    ? string.Compare(xItem.FilePath, yItem.FilePath, StringComparison.CurrentCultureIgnoreCase)
+                    : string.Compare(xItem.FilePath, yItem.FilePath, StringComparison.CurrentCultureIgnoreCase) * -1;
             }
 
             /// <summary>Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.</summary>
@@ -244,7 +248,8 @@ namespace Gorgon.Editor.Views
                     {
                         Name = file.FilePath,
                         UseItemStyleForSubItems = false,
-                        Font = _itemFont
+                        Font = _itemFont,
+                        Tag = file
                     };
                     ListViewItem.ListViewSubItem subItem = item.SubItems.Add(file.LastUsedDate.ToString(CultureInfo.CurrentCulture));
                     subItem.Font = _subItemFont;
@@ -289,7 +294,8 @@ namespace Gorgon.Editor.Views
                         {
                             Name = recentItem.FilePath,
                             UseItemStyleForSubItems = false,
-                            Font = _itemFont
+                            Font = _itemFont,
+                            Tag = recentItem
                         };
                         ListViewItem.ListViewSubItem subItem = listItem.SubItems.Add(recentItem.LastUsedDate.ToString(CultureInfo.CurrentCulture));
                         subItem.Font = _subItemFont;

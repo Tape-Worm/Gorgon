@@ -38,7 +38,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the path to the node that is being renamed.
         /// </summary>
-        public string NodePath
+        public IFileExplorerNodeVm Node
         {
             get;
         }
@@ -71,7 +71,7 @@ namespace Gorgon.Editor.ViewModels
         public FileExplorerNodeRenameArgs(IFileExplorerNodeVm node, string oldName, string newName)
             : base(false)
         {
-            NodePath = node.FullPath;
+            Node = node;
             OldName = oldName;
             NewName = newName;
         }
