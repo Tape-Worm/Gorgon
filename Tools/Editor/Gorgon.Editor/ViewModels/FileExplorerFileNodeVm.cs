@@ -284,6 +284,9 @@ namespace Gorgon.Editor.ViewModels
         /// <para>
         /// The <paramref name="onDeleted"/> parameter is not used for this type.
         /// </para>
+        /// <para>
+        /// This implmentation does not delete the underlying file outright, it instead moves it into the recycle bin so the user can undo the delete if needed.
+        /// </para>
         /// </remarks>
         public override Task DeleteNodeAsync(Action<FileSystemInfo> onDeleted = null, CancellationToken? cancelToken = null)
         {

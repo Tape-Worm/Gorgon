@@ -207,6 +207,9 @@ namespace Gorgon.Editor.ViewModels
         /// <para>
         /// The <paramref name="onDeleted"/> parameter passes a file system information that contains name of the node being deleted, so callers can use that information for their own purposes.
         /// </para>
+        /// <para>
+        /// This implmentation does not delete the underlying directory outright, it instead moves it into the recycle bin so the user can undo the delete if needed.
+        /// </para>
         /// </remarks>
         public override async Task DeleteNodeAsync(Action<FileSystemInfo> onDeleted = null, CancellationToken? cancelToken = null)
         {

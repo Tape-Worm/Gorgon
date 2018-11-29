@@ -292,8 +292,7 @@ namespace Gorgon.Editor.ViewModels
                 return;
             }
 
-            IFileExplorerNodeVm[] children = node.Children.Traverse(n => n.Children)
-                                                          .ToArray();
+            IEnumerable<IFileExplorerNodeVm> children = node.Children.Traverse(n => n.Children);
 
             foreach (IFileExplorerNodeVm child in children)
             {
@@ -301,12 +300,14 @@ namespace Gorgon.Editor.ViewModels
                 child.PropertyChanging -= Node_PropertyChanging;
                 child.PropertyChanged -= Node_PropertyChanged;
                 _nodePathLookup.Remove(child.FullPath);
+                _project.ProjectItems.Remove(child.FullPath);
             }
 
             node.Children.CollectionChanged -= Children_CollectionChanged;
             node.PropertyChanging -= Node_PropertyChanging;
             node.PropertyChanged -= Node_PropertyChanged;
             _nodePathLookup.Remove(node.FullPath);
+            _project.ProjectItems.Remove(node.FullPath);
         }
 
         /// <summary>
@@ -1279,14 +1280,19 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="nodeToClear">The node to clear.</param>
         private void ClearFromCache(IFileExplorerNodeVm nodeToClear)
         {
-            IFileExplorerNodeVm[] nodes = _nodePathLookup.Where(item => (item.Key.StartsWith(nodeToClear.FullPath, StringComparison.OrdinalIgnoreCase))
-                                                                    && (item.Value != nodeToClear))
+            // Use the cache because the observable collection will have been cleared by this time, and this is the 
+            // only way to locate the children of the cleared node.
+            IFileExplorerNodeVm[] nodes = _nodePathLookup.Where(item => nodeToClear.IsAncestorOf(item.Value))
                                             .Select(item => item.Value)
                                             .ToArray();
 
             foreach (IFileExplorerNodeVm node in nodes)
             {
                 node.Children.CollectionChanged -= Children_CollectionChanged;
+                node.PropertyChanging -= Node_PropertyChanging;
+                node.PropertyChanged -= Node_PropertyChanged;
+                _project.ProjectItems.Remove(node.FullPath);
+
                 _nodePathLookup.Remove(node.FullPath);
             }
         }
