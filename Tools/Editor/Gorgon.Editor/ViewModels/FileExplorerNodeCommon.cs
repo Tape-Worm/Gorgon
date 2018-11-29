@@ -343,10 +343,8 @@ namespace Gorgon.Editor.ViewModels
             // Optional.
             _parent = injectionParameters.Parent;
 
+            _metadata = injectionParameters.Metadata;
             Children = injectionParameters.Children ?? new ObservableCollection<IFileExplorerNodeVm>();
-
-            // Determine if we are included in the project or not.
-            injectionParameters.Project.ProjectItems.TryGetValue(FullPath, out _metadata);
         }
 
         /// <summary>

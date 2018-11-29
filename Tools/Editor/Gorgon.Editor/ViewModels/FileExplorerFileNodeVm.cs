@@ -261,16 +261,15 @@ namespace Gorgon.Editor.ViewModels
             }
 
             NotifyPropertyChanging(nameof(Name));
-            NotifyPropertyChanging(nameof(FullPath));
-            NotifyPropertyChanging(nameof(PhysicalPath));
 
             try
             {
                 FileSystemService.RenameFile(_fileInfo, newName);
+                Refresh();
             }
             finally
             {
-                Refresh();
+                NotifyPropertyChanged(nameof(Name));
             }            
         }
 

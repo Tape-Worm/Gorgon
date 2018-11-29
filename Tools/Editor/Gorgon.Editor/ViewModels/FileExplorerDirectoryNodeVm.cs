@@ -255,7 +255,7 @@ namespace Gorgon.Editor.ViewModels
             try
             {
                 FileSystemService.RenameDirectory(_directoryInfo, newName);
-                DoRefresh();                
+                DoRefresh();
             }
             finally
             {

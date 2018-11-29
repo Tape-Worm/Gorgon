@@ -762,29 +762,22 @@ namespace Gorgon.Editor.Services
         /// <param name="parentDirectory">The parent directory on the physical file system.</param>
         /// <returns>A new directory information object for the new directory.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="parentDirectory"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="parentDirectory"/> parameter is empty.</exception>
-        public DirectoryInfo CreateDirectory(string parentDirectory)
+        public DirectoryInfo CreateDirectory(DirectoryInfo parentDirectory)
         {
             if (parentDirectory == null)
             {
                 throw new ArgumentNullException(nameof(parentDirectory));
             }
 
-            if (string.IsNullOrWhiteSpace(parentDirectory))
-            {
-                throw new ArgumentEmptyException(nameof(parentDirectory));
-            }
-
-            var parent = new DirectoryInfo(parentDirectory);
-            CheckRootOfPath(parent);
+            CheckRootOfPath(parentDirectory);
 
             int count = 0;
-            string newDirName = Path.Combine(parent.FullName, Resources.GOREDIT_NEW_DIR_NAME);
+            string newDirName = Path.Combine(parentDirectory.FullName, Resources.GOREDIT_NEW_DIR_NAME);
 
             // Ensure the new directory name is avaialble.
             while (Directory.Exists(newDirName))
             {
-                newDirName = $"{Path.Combine(parentDirectory, Resources.GOREDIT_NEW_DIR_NAME)} ({++count})";
+                newDirName = $"{Path.Combine(parentDirectory.FullName, Resources.GOREDIT_NEW_DIR_NAME)} ({++count})";
             }
 
             var directory = new DirectoryInfo(newDirName);

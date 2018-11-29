@@ -1385,7 +1385,7 @@ namespace Gorgon.Editor.Views
             // Turn off events for this nodes children since they'll be destroyed anyway, and we really don't want to trigger the events during a refresh.
             UnassignNodeEvents(parentNode.Children);
 
-            FillTree(e.Node.Nodes, parentNode.Children, DataContext?.ShowExcluded ?? false);
+            FillTree(e.Node.Nodes, parentNode.Children, DataContext?.ShowExcluded ?? false, true);
 
             AssignNodeEvents(parentNode.Children);
         }
@@ -1477,7 +1477,7 @@ namespace Gorgon.Editor.Views
                     DataContext.RefreshNodeCommand.Execute(DataContext.RootNode);
                 }
 
-                FillTree(TreeFileSystem.Nodes, DataContext.RootNode.Children, DataContext.ShowExcluded);                
+                FillTree(TreeFileSystem.Nodes, DataContext.RootNode.Children, DataContext.ShowExcluded, true);
 
                 AssignNodeEvents(DataContext.RootNode.Children);
                 return;
@@ -1509,7 +1509,8 @@ namespace Gorgon.Editor.Views
         /// <param name="treeNodes">The node collection on the tree to update.</param>
         /// <param name="nodes">The nodes used to populate.</param>
         /// <param name="showExcluded"><b>true</b> to show excluded items, <b>false</b> to hide.</param>
-        private void FillTree(TreeNodeCollection treeNodes, IReadOnlyList<IFileExplorerNodeVm> nodes, bool showExcluded)
+        /// <param name="doNotExpand"><b>true</b> to keep nodes from expanding if their node state is set to expanded, <b>false</b> to automatically expand.</param>
+        private void FillTree(TreeNodeCollection treeNodes, IReadOnlyList<IFileExplorerNodeVm> nodes, bool showExcluded, bool doNotExpand)
         {
             TreeFileSystem.BeginUpdate();
 
@@ -1524,12 +1525,7 @@ namespace Gorgon.Editor.Views
 
                 // Sort the nodes so that directories are on top, and files are on bottom.
                 // Also sort by name.
-                IEnumerable<IFileExplorerNodeVm> sortedNodes = nodes.Where(item => item.NodeType == NodeType.Directory)
-                                                                    .OrderBy(item => item.Name)
-                                                                    .Concat(nodes.Where(item => item.NodeType == NodeType.File)
-                                                                                 .OrderBy(item => item.Name));
-
-                foreach (IFileExplorerNodeVm node in sortedNodes)
+                foreach (IFileExplorerNodeVm node in nodes)
                 {
                     if ((!showExcluded) && (node.Metadata == null))
                     {
@@ -1549,7 +1545,14 @@ namespace Gorgon.Editor.Views
 
                     if (node.IsExpanded)
                     {
-                        treeNode.Expand();
+                        if (doNotExpand)
+                        {
+                            node.IsExpanded = false;
+                        }
+                        else
+                        {
+                            treeNode.Expand();
+                        }                        
                     }
 
                     _nodeLinks[treeNode] = node;
@@ -1587,7 +1590,7 @@ namespace Gorgon.Editor.Views
                     return;
                 }
 
-                FillTree(TreeFileSystem.Nodes, DataContext.RootNode.Children, DataContext.ShowExcluded);                
+                FillTree(TreeFileSystem.Nodes, DataContext.RootNode.Children, DataContext.ShowExcluded, true);
 
                 AssignNodeEvents(DataContext.RootNode.Children);
             }
@@ -1697,7 +1700,7 @@ namespace Gorgon.Editor.Views
                 TreeFileSystem.Nodes.Clear();
 
                 // We do not add the root node (really no point).
-                FillTree(TreeFileSystem.Nodes, dataContext.RootNode.Children, dataContext.ShowExcluded);
+                FillTree(TreeFileSystem.Nodes, dataContext.RootNode.Children, dataContext.ShowExcluded, false);
 
                 AssignNodeEvents(dataContext.RootNode.Children);
             }

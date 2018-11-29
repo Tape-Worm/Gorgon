@@ -300,14 +300,12 @@ namespace Gorgon.Editor.ViewModels
                 child.PropertyChanging -= Node_PropertyChanging;
                 child.PropertyChanged -= Node_PropertyChanged;
                 _nodePathLookup.Remove(child.FullPath);
-                _project.ProjectItems.Remove(child.FullPath);
             }
 
             node.Children.CollectionChanged -= Children_CollectionChanged;
             node.PropertyChanging -= Node_PropertyChanging;
             node.PropertyChanged -= Node_PropertyChanged;
             _nodePathLookup.Remove(node.FullPath);
-            _project.ProjectItems.Remove(node.FullPath);
         }
 
         /// <summary>
@@ -352,7 +350,6 @@ namespace Gorgon.Editor.ViewModels
                     await args.Node.DeleteNodeAsync();
 
                     // Remove this item from the metadata.
-                    _project.ProjectItems.Remove(path);
                     itemsDeleted = true;
                     return;
                 }                               
@@ -364,7 +361,6 @@ namespace Gorgon.Editor.ViewModels
                     UpdateMarequeeProgress($"{path}", Resources.GOREDIT_TEXT_DELETING, cancelSource.Cancel);
 
                     // Remove this item from the metadata.
-                    _project.ProjectItems.Remove(path);
                     itemsDeleted = true;
 
                     // Give our UI time to update.  
@@ -402,12 +398,7 @@ namespace Gorgon.Editor.ViewModels
             try
             {
                 IFileExplorerNodeVm parent = args.ParentNode ?? RootNode;
-
-                DirectoryInfo newDir = _fileSystemService.CreateDirectory(parent.PhysicalPath);
-
-                // Create the node for the directory.
-                IFileExplorerNodeVm node = _factory.CreateFileExplorerDirectoryNodeVm(_project, _fileSystemService, parent, newDir);
-                _project.ProjectItems[node.FullPath] = node.Metadata = new ProjectItemMetadata();
+                _factory.CreateNewDirectoryNode(_project, _fileSystemService, parent);                
 
                 OnFileSystemChanged();
             }
@@ -445,7 +436,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="include">Not used.</param>
         /// <returns><b>true</b> if all nodes can be included or excluded, <b>false</b> if not.</returns>
-        private bool CanIncludeExcludeAll(IncludeExcludeArgs args) => (RootNode.Children.Count != 0) && ((args.Include) || (_project.ProjectItems.Count != 0));
+        private bool CanIncludeExcludeAll(IncludeExcludeArgs args) => (RootNode.Children.Count != 0);
 
         /// <summary>
         /// Function to update the metadata state for a node.
@@ -454,17 +445,7 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="metaData">The metadata to assign or remove.</param>
         private void UpdateMetadataForNode(IFileExplorerNodeVm node, ProjectItemMetadata metaData)
         {
-            if (metaData == null)
-            {
-                _project.ProjectItems.Remove(node.FullPath);
-            }
-
             node.Metadata = metaData;
-
-            if (metaData != null)
-            {
-                _project.ProjectItems[node.FullPath] = metaData;
-            }
 
             if ((node.Metadata != null) && (node.IsContent))
             {
@@ -528,7 +509,8 @@ namespace Gorgon.Editor.ViewModels
             _busyService.SetBusy();
             try
             {
-                if ((!args.Include) && ((args.Node.IsOpen) || (args.Node.Children.Any(item => item.IsOpen))))
+                if ((!args.Include) && (((args.Node.IsOpen) && (args.Node.IsChanged)) 
+                                        || (args.Node.Children.Any(item => (item.IsOpen) && (item.IsChanged)))))
                 {
                     // TODO: Ask for permission to exclude if we have changes.
                     args.Cancel = true;
@@ -627,8 +609,16 @@ namespace Gorgon.Editor.ViewModels
             string openContentPath = null;
             var changedFilePaths = new HashSet<string>();
 
+            // Reset the metadata list.  The enumeration method requires that we have this list up to date.
+            _project.ProjectItems.Clear();
+
             foreach (IFileExplorerNodeVm child in nodeToRefresh.Children.Traverse(n => n.Children))
             {
+                if (child.Metadata != null)
+                {
+                    _project.ProjectItems[child.FullPath] = child.Metadata;
+                }
+
                 if (child.IsOpen)
                 {
                     openContentPath = child.FullPath;
@@ -650,6 +640,9 @@ namespace Gorgon.Editor.ViewModels
             }
 
             _factory.EnumerateFileSystemObjects(parent.FullName, _project, _fileSystemService, nodeToRefresh);
+
+            // We don't need the metadata list now, all objects have their metadata assigned at this point.
+            _project.ProjectItems.Clear();
 
             // Rebuild file associations.
             foreach (IFileExplorerNodeVm child in nodeToRefresh.Children.Traverse(n => n.Children))
@@ -808,13 +801,6 @@ namespace Gorgon.Editor.ViewModels
                         Message = sourceItem.FullName.Ellipses(65, true),
                         PercentageComplete = percent
                     });
-
-                    string fsPath = destItem.ToFileSystemPath(_project.ProjectWorkSpace);
-
-                    if (!_project.ProjectItems.ContainsKey(fsPath))
-                    {
-                        _project.ProjectItems[fsPath] = new ProjectItemMetadata();
-                    }
                 }
 
                 var importArgs = new ImportArgs(items, node.PhysicalPath)
@@ -1042,7 +1028,6 @@ namespace Gorgon.Editor.ViewModels
             if ((source.AllowChildCreation) && (source.Children.Count > 0))
             {
                 originalChildPaths = source.Children.Traverse(n => n.Children)
-                                                    .Where(item => (item.Metadata != null) && (_project.ProjectItems.ContainsKey(item.FullPath)))
                                                     .Select(item => (item.FullPath, item))
                                                     .ToArray();
             }
@@ -1055,12 +1040,6 @@ namespace Gorgon.Editor.ViewModels
             
             _nodePathLookup.Remove(originalPath);
 
-            if ((source.Metadata != null) && (!_project.ProjectItems.ContainsKey(source.FullPath)))
-            {
-                _project.ProjectItems.Remove(originalPath);
-                _project.ProjectItems[source.FullPath] = source.Metadata;                
-            }            
-
             if ((originalChildPaths != null) && (originalChildPaths.Length > 0))
             {
                 foreach ((string path, IFileExplorerNodeVm node) in originalChildPaths)
@@ -1070,13 +1049,9 @@ namespace Gorgon.Editor.ViewModels
                         node.NotifyParentMoved(node);
                     }
 
-                    _project.ProjectItems.Remove(path);
-                    if (_project.ProjectItems.ContainsKey(node.FullPath))
-                    {
-                        continue;
-                    }
-
-                    _project.ProjectItems[node.FullPath] = node.Metadata;
+                    _nodePathLookup.Remove(path);
+                    node.Refresh();
+                    _nodePathLookup[node.FullPath] = node;
                 }
             }
 
@@ -1143,11 +1118,6 @@ namespace Gorgon.Editor.ViewModels
                         Message = sourceItemPath.Ellipses(65, true),
                         PercentageComplete = percent
                     });
-
-                    if ((sourceNode.Metadata != null) && (!_project.ProjectItems.ContainsKey(destItemPath)))
-                    {
-                        _project.ProjectItems[destItemPath] = new ProjectItemMetadata(sourceNode.Metadata);
-                    }
                 }
 
                 newNode = await source.CopyNodeAsync(dest, UpdateCopyProgress, cancelSource.Token);
@@ -1243,9 +1213,13 @@ namespace Gorgon.Editor.ViewModels
             switch (e.PropertyName)
             {
                 case nameof(IFileExplorerNodeVm.FullPath):
-                case nameof(IFileExplorerNodeVm.PhysicalPath):
                 case nameof(IFileExplorerNodeVm.Name):
-                    _project.ProjectItems.Remove(node.FullPath);
+                    // Remove any children at this point.  They'll be re-added after the rename is complete.
+                    foreach (IFileExplorerNodeVm child in node.Children.Traverse(n => n.Children))
+                    {
+                        _nodePathLookup.Remove(child.FullPath);
+                    }
+
                     _nodePathLookup.Remove(node.FullPath);
                     break;
             }
@@ -1263,13 +1237,14 @@ namespace Gorgon.Editor.ViewModels
             switch (e.PropertyName)
             {
                 case nameof(IFileExplorerNodeVm.FullPath):
-                case nameof(IFileExplorerNodeVm.PhysicalPath):
                 case nameof(IFileExplorerNodeVm.Name):
                     _nodePathLookup[node.FullPath] = node;
-                    if (node.Metadata != null)
+
+                    // Re-add any children at this point.
+                    foreach (IFileExplorerNodeVm child in node.Children.Traverse(n => n.Children))
                     {
-                        _project.ProjectItems[node.FullPath] = node.Metadata;
-                    }                    
+                        _nodePathLookup[child.FullPath] = child;
+                    }
                     break;
             }
         }
@@ -1291,7 +1266,6 @@ namespace Gorgon.Editor.ViewModels
                 node.Children.CollectionChanged -= Children_CollectionChanged;
                 node.PropertyChanging -= Node_PropertyChanging;
                 node.PropertyChanged -= Node_PropertyChanged;
-                _project.ProjectItems.Remove(node.FullPath);
 
                 _nodePathLookup.Remove(node.FullPath);
             }

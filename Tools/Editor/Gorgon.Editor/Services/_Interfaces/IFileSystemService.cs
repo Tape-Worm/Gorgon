@@ -132,7 +132,7 @@ namespace Gorgon.Editor.Services
         /// </summary>
         /// <param name="parentDirectory">The parent directory on the physical file system.</param>
         /// <returns>A new directory information object for the new directory.</returns>
-        DirectoryInfo CreateDirectory(string parentDirectory);
+        DirectoryInfo CreateDirectory(DirectoryInfo parentDirectory);
 
         /// <summary>
         /// Function to rename a directory.

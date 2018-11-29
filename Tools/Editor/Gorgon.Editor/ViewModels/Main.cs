@@ -543,9 +543,7 @@ namespace Gorgon.Editor.ViewModels
                     panelUpdateArgs.CancelAction = allowCancellation ? CancelOperation : (Action)null;
                     panelUpdateArgs.PercentageComplete = (float)currentItem / totalItems;
                     UpdateProgress(panelUpdateArgs);
-                }
-
-                
+                }                
 
                 await CurrentProject.PersistProjectAsync(projectTitle, path, writer, SaveProgress, cancelSource.Token);
 

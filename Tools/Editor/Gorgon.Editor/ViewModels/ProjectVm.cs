@@ -29,6 +29,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
@@ -493,6 +494,14 @@ namespace Gorgon.Editor.ViewModels
             {
                 Program.Log.Print("Saving files...", LoggingLevel.Verbose);
                 _projectData.AssignWriter(writer);
+
+                // Rebuild the project item metadata list.
+                _projectData.ProjectItems.Clear();
+                foreach (IFileExplorerNodeVm node in _fileExplorer.RootNode.Children.Traverse(n => n.Children).Where(n => n.Metadata != null))
+                {
+                    _projectData.ProjectItems[node.FullPath] = node.Metadata;
+                }
+
                 _projectManager.SaveProject(_projectData, path, writer, progressCallback, cancelToken);
             }, cancelToken);
         }

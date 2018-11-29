@@ -164,7 +164,7 @@ namespace Gorgon.Editor.ViewModels
                 foreach (FileInfo file in fileSystemService.GetFiles(directory.FullName, false))
                 {
                     CreateFileExplorerFileNodeVm(project, fileSystemService, node, file);
-                }                
+                }
             }
 
             // Get files for this directory.
@@ -250,9 +250,10 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="fileSystemService">The file system service used to manipulate the underlying physical file system.</param>
         /// <param name="parent">The parent for the node.</param>
         /// <param name="file">The file system file to wrap in the view model.</param>
+        /// <param name="metaData">[Optional] The metadata for the file.</param>
         /// <returns>The new file explorer node view model.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, <paramref name="metadataManager"/>, <paramref name="fileSystemService"/> or the <paramref name="file"/> parameter is <b>null</b>.</exception>
-        public IFileExplorerNodeVm CreateFileExplorerFileNodeVm(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parent, FileInfo file)
+        public IFileExplorerNodeVm CreateFileExplorerFileNodeVm(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parent, FileInfo file, ProjectItemMetadata metaData = null)
         {
             if (project == null)
             {
@@ -274,12 +275,16 @@ namespace Gorgon.Editor.ViewModels
             // TODO: Add links as children.            
             result.Initialize(new FileExplorerNodeParameters(file.FullName, project, this, fileSystemService)
             {
-                Parent = parent
+                Parent = parent,
+                Metadata = metaData
             });
 
             parent.Children.Add(result);
 
-            result.Metadata = project.ProjectItems.FirstOrDefault(item => string.Equals(item.Key, result.FullPath, StringComparison.OrdinalIgnoreCase)).Value;
+            if (result.Metadata == null)
+            {
+                result.Metadata = project.ProjectItems.FirstOrDefault(item => string.Equals(item.Key, result.FullPath, StringComparison.OrdinalIgnoreCase)).Value;
+            }
 
             return result;
         }
@@ -295,7 +300,26 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="rootDirectory">The root directory.</param>
         /// <returns>The new file explorer node view model.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, <paramref name="fileSystemService"/>, <paramref name="parentNode"/>, or the <paramref name="directory"/> parameter is <b>null</b>.</exception>
-        public IFileExplorerNodeVm CreateFileExplorerDirectoryNodeVm(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parentNode, DirectoryInfo directory)
+        public IFileExplorerNodeVm CreateNewDirectoryNode(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parentNode)
+        {
+            var parent = new DirectoryInfo(parentNode.PhysicalPath);
+            DirectoryInfo directory = fileSystemService.CreateDirectory(parent);
+
+            return CreateFileExplorerDirectoryNodeVm(project, fileSystemService, parentNode, directory, new ProjectItemMetadata());
+        }
+
+        /// <summary>
+        /// Function to create a file explorer node view model for a directory.
+        /// </summary>
+        /// <param name="project">The project data.</param>
+        /// <param name="fileSystemService">The file system service used to manipulate the underlying physical file system.</param>
+        /// <param name="parentNode">The parent for the node.</param>
+        /// <param name="metadataManager">The metadata manager to use.</param>
+        /// <param name="directory">The file system directory to wrap in the view model.</param>
+        /// <param name="metadata">[Optional] The metadata to assign to the node.</param>
+        /// <returns>The new file explorer node view model.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, <paramref name="fileSystemService"/>, <paramref name="parentNode"/>, or the <paramref name="directory"/> parameter is <b>null</b>.</exception>
+        public IFileExplorerNodeVm CreateFileExplorerDirectoryNodeVm(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parentNode, DirectoryInfo directory, ProjectItemMetadata metadata = null)
         {
             if (project == null)
             {
@@ -319,17 +343,21 @@ namespace Gorgon.Editor.ViewModels
 
             var result = new FileExplorerDirectoryNodeVm();
 
-            var children = new ObservableCollection<IFileExplorerNodeVm>();
+            var children = new ObservableCollection<IFileExplorerNodeVm>();            
 
-            result.Initialize(new FileExplorerNodeParameters(directory.FullName.FormatDirectory(Path.DirectorySeparatorChar), project, this, fileSystemService)
+            result.Initialize(new FileExplorerNodeParameters(directory.FullName, project, this, fileSystemService)
             {
+                Metadata = metadata,
                 Parent = parentNode,
                 Children = children
             });
 
             parentNode.Children.Add(result);
 
-            result.Metadata = project.ProjectItems.FirstOrDefault(item => string.Equals(item.Key, result.FullPath, StringComparison.OrdinalIgnoreCase)).Value;
+            if (result.Metadata == null)
+            {
+                result.Metadata = project.ProjectItems.FirstOrDefault(item => string.Equals(item.Key, result.FullPath, StringComparison.OrdinalIgnoreCase)).Value;
+            }
 
             return result;
         }
@@ -362,7 +390,7 @@ namespace Gorgon.Editor.ViewModels
                 // We'll rebuild the include list because it should be empty at this point.
                 foreach (IFileExplorerNodeVm node in root.Children.Traverse(p => p.Children))
                 {                    
-                    project.ProjectItems[node.FullPath] = node.Metadata = new ProjectItemMetadata();
+                    node.Metadata = new ProjectItemMetadata();
                 }
             }
 
@@ -396,6 +424,9 @@ namespace Gorgon.Editor.ViewModels
 
             result.FileExplorer = CreateFileExplorerViewModel(projectData, fileSystemService, autoInclude);
             result.Initialize(new ProjectVmParameters(projectData, this));
+
+            // Empty this list, it will be rebuilt when we save, and having it lying around is a waste.
+            projectData.ProjectItems.Clear();
 
             return result;
         }

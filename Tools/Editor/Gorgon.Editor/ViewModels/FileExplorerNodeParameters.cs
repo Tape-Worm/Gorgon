@@ -27,6 +27,7 @@
 using System;
 using System.Collections.ObjectModel;
 using Gorgon.Core;
+using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Services;
 
@@ -73,6 +74,15 @@ namespace Gorgon.Editor.ViewModels
         /// This parameter is optional for <see cref="FileExplorerDirectoryNodeVm"/> types, but required for <see cref="FileExplorerFileNodeVm"/>.
         /// </remarks>
         public IFileExplorerNodeVm Parent
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the metadata to assign to the node.
+        /// </summary>
+        public ProjectItemMetadata Metadata
         {
             get;
             set;
