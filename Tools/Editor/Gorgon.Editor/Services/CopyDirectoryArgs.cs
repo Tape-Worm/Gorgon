@@ -76,8 +76,7 @@ namespace Gorgon.Editor.Services
         /// <param name="sourceDirectory">The path to the source directory to copy.</param>
         /// <param name="destDirectory">The path to the destination directory that will receive the copy.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceDirectory"/>, or the <paramref name="destDirectory"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="sourceDirectory"/>, or the <paramref name="destDirectory"/> parameter is empty.</exception>
-        public CopyDirectoryArgs(string sourceDirectory, string destDirectory)
+        public CopyDirectoryArgs(DirectoryInfo sourceDirectory, DirectoryInfo destDirectory)
         {
             if (sourceDirectory == null)
             {
@@ -89,18 +88,8 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentNullException(nameof(destDirectory));
             }
 
-            if (string.IsNullOrWhiteSpace(sourceDirectory))
-            {
-                throw new ArgumentEmptyException(nameof(sourceDirectory));
-            }
-
-            if (string.IsNullOrWhiteSpace(destDirectory))
-            {
-                throw new ArgumentEmptyException(nameof(destDirectory));
-            }
-
-            SourceDirectory = new DirectoryInfo(sourceDirectory.FormatDirectory(Path.DirectorySeparatorChar));
-            DestinationDirectory = new DirectoryInfo(destDirectory.FormatDirectory(Path.DirectorySeparatorChar));
+            SourceDirectory = sourceDirectory;
+            DestinationDirectory = destDirectory;
         }
     }
 }

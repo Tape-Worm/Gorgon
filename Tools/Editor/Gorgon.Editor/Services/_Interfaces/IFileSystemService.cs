@@ -140,15 +140,14 @@ namespace Gorgon.Editor.Services
         /// <param name="directoryPath">The physical file system path to the directory to rename.</param>
         /// <param name="newName">The new directory name.</param>
         /// <returns>The full physical file system path of the new directory name.</returns>
-        string RenameDirectory(string directoryPath, string newName);
+        void RenameDirectory(DirectoryInfo directoryPath, string newName);
 
         /// <summary>
         /// Function to rename a file.
         /// </summary>
         /// <param name="filePath">The physical file system path to the file to rename.</param>
-        /// <param name="newName">The new name of the file.</param>
-        /// <returns>The full physical file system path of the new file name.</returns>
-        string RenameFile(string filePath, string newName);
+        /// <param name="newName">The new name of the file.</param>        
+        void RenameFile(FileInfo filePath, string newName);
 
         /// <summary>
         /// Function to delete a directory.
@@ -162,21 +161,21 @@ namespace Gorgon.Editor.Services
         /// The <paramref name="onDelete"/> parameter sends a file system information object that contains the name of the item currently being deleted.
         /// </para>
         /// </remarks>
-        bool DeleteDirectory(string directoryPath, Action<FileSystemInfo> onDelete, CancellationToken cancelToken);
+        bool DeleteDirectory(DirectoryInfo directoryPath, Action<FileSystemInfo> onDelete, CancellationToken cancelToken);
 
         /// <summary>
         /// Function to copy a directory, and all of its child items to the specified path.
         /// </summary>
         /// <param name="copySettings">The settings used for the directory copy.</param>
         /// <param name="cancelToken">The token used to cancel the process.</param>
-        /// <returns><b>true</b> if the copy was successful, <b>false</b> if it was canceled.</returns>
-        Task<bool> CopyDirectoryAsync(CopyDirectoryArgs copySettings, CancellationToken cancelToken);
+        /// <returns>The directory object for the copied directory, or <b>null</b> if nothing was copied (e.g. the operation was cancelled).</returns>
+        Task<DirectoryInfo> CopyDirectoryAsync(CopyDirectoryArgs copySettings, CancellationToken cancelToken);
 
         /// <summary>
         /// Function to delete a file.
         /// </summary>
         /// <param name="filePath">The path to the file on the physical file system to delete.</param>
-        void DeleteFile(string filePath);
+        void DeleteFile(FileInfo filePath);
 
         /// <summary>
         /// Function to export a file to a directory on the physical file system.
@@ -191,21 +190,21 @@ namespace Gorgon.Editor.Services
         /// </summary>
         /// <param name="filePath">The path to the file.</param>
         /// <param name="destFileNamePath">The destination file name and path.</param>        
-        void CopyFile(string filePath, string destFileNamePath);
+        void CopyFile(FileInfo filePath, string destFileNamePath);
 
         /// <summary>
         /// Function to move a file to another location.
         /// </summary>
         /// <param name="filePath">The path to the file.</param>
         /// <param name="destFileNamePath">The destination file name and path.</param>        
-        void MoveFile(string filePath, string destFileNamePath);
+        void MoveFile(FileInfo filePath, string destFileNamePath);
 
         /// <summary>
         /// Function to move a directory to another location.
         /// </summary>
         /// <param name="directoryPath">The path to the directory.</param>
         /// <param name="destDirectoryPath">The destination name and path.</param>        
-        void MoveDirectory(string directoryPath, string destDirectoryPath);
+        void MoveDirectory(DirectoryInfo directoryPath, string destDirectoryPath);
 
         /// <summary>
         /// Function to delete all files and directories in the file system.

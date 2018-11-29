@@ -31,6 +31,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Core;
+using Gorgon.Editor.Native;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
 
@@ -43,7 +44,6 @@ namespace Gorgon.Editor.Services
         : IFileSystemService
     {
         #region Classes.
-
         /// <summary>
         /// Arguments to pass the copy task.
         /// </summary>
@@ -158,6 +158,11 @@ namespace Gorgon.Editor.Services
         }
         #endregion
 
+        #region Constants.
+        // Flags used to recycle deleted files/directories.
+        private const Shell32.FileOperationFlags RecycleFlags = Shell32.FileOperationFlags.FOF_SILENT | Shell32.FileOperationFlags.FOF_NOCONFIRMATION | Shell32.FileOperationFlags.FOF_WANTNUKEWARNING;
+        #endregion
+
         #region Properties.
         /// <summary>
         /// Property to return the root directory for the file system.
@@ -250,26 +255,15 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Function to create the task used to copy file/directory data from one place to another.
         /// </summary>
-        /// <param name="root">The common root directory for the directories.</param>
-        /// <param name="directories">The list of directories to copy.</param>
-        /// <param name="destDir">The destination for the file/directory data.</param>
-        /// <param name="lastItemCount">The current number of items copied.</param>
-        /// <param name="totalItemCount">The total number of files/directories to copy.</param>
-        /// <param name="lastResolution">The previous conflict resolution answer from the user.</param>
-        /// <param name="onCopy">The method to call when a file is about to be copied.</param>
+        /// <param name="args">The arguments used to copy.</param>
         /// <param name="cancelToken">The token used to cancel the process.</param>
-        /// <param name="conflictResolver">A callback method used to resolve a file copy conflict.</param>
-        /// <returns><b>true</b> if the copy was successful, <b>false</b> if it was canceled.</returns>
+        /// <returns><b>true</b> if the items were copied, <b>false</b> if not.</returns>
         private async Task<bool> CreateCopyTask(CopyTaskArgs args, CancellationToken cancelToken)
         {
-            if (cancelToken.IsCancellationRequested)
+            if ((cancelToken.IsCancellationRequested)
+                || (args.Directories.Count == 0))
             {
                 return false;
-            }
-
-            if (args.Directories.Count == 0)
-            {
-                return true;
             }
 
             bool result = false;
@@ -338,14 +332,50 @@ namespace Gorgon.Editor.Services
         }
 
         /// <summary>
+        /// Function used to clean up a directory if an operation is cancelled, or an error occurs.
+        /// </summary>
+        /// <param name="directory">The directory to clean up.</param>
+        /// <returns>A task for asynchronous operation.</returns>
+        private void CleanupDirectory(DirectoryInfo directory)
+        {
+            bool tryMove = false;
+
+            while (directory.Exists)
+            {
+                try
+                {
+                    // Sometimes, if we cannot move the directory (because some outside force has locked it), we can move it and then delete it.
+                    if (tryMove)
+                    {
+                        directory.MoveTo(Path.Combine(directory.Parent.FullName, Guid.NewGuid().ToString("N")));
+                        directory.Refresh();
+                    }
+
+                    directory.Delete(true);
+                }
+                catch
+                {
+                    if (!tryMove)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        tryMove = true;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Function to copy a directory, and all of its child items to the specified path.
         /// </summary>
         /// <param name="args">The arguments used for copying.</param>
         /// <param name="destDir">The path to the destination directory for the copy.</param>
         /// <param name="cancelToken">The token used to cancel the process.</param>
         /// <param name="includeSourceDirectory"><b>true</b> to include the source directory in the copy, or <b>false</b> to only use the contents of the source directory only.</param>
-        /// <returns><b>true</b> if the copy was successful, <b>false</b> if it was canceled.</returns>
-        private Task<bool> CreateDirectoryCopyTask(CopyDirectoryArgs args, CancellationToken cancelToken, bool includeSourceDirectory)
+        /// <returns>The directory object for the copied directory, or <b>null</b> if nothing was copied (e.g. the operation was cancelled).</returns>
+        private async Task<DirectoryInfo> CreateDirectoryCopyTask(CopyDirectoryArgs args, CancellationToken cancelToken, bool includeSourceDirectory)
         {
             var directories = new List<DirectoryInfo>();
             {
@@ -359,7 +389,7 @@ namespace Gorgon.Editor.Services
 
             if ((cancelToken.IsCancellationRequested) || (totalItemCount < 1))
             {
-                return Task.FromResult(false);
+                return null;
             }
 
             DirectoryInfo source = args.SourceDirectory;
@@ -375,7 +405,33 @@ namespace Gorgon.Editor.Services
                 Directories = directories
             };
 
-            return CreateCopyTask(copyArgs, cancelToken);
+            var destDir = new DirectoryInfo(Path.Combine(args.DestinationDirectory.FullName, args.SourceDirectory.Name));
+
+            try
+            {
+                bool result = await CreateCopyTask(copyArgs, cancelToken);
+
+                destDir.Refresh();
+
+                if (!result)
+                {
+                    if (destDir.Exists)
+                    {
+                        await Task.Run(() => CleanupDirectory(destDir));
+                    }
+                    return null;
+                }
+            }
+            catch
+            {
+                if (destDir.Exists)
+                {
+                    await Task.Run(() => CleanupDirectory(destDir));
+                }
+                throw;
+            }
+
+            return destDir;
         }
 
         /// <summary>
@@ -576,7 +632,8 @@ namespace Gorgon.Editor.Services
                             .Where(item => (item.Attributes & FileAttributes.Directory) != FileAttributes.Directory
                                         && (item.Attributes & FileAttributes.System) != FileAttributes.System
                                         && (item.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden
-                                        && !string.Equals(item.Name, CommonEditorConstants.EditorMetadataFileName, StringComparison.OrdinalIgnoreCase)).ToArray();
+                                        && (!string.Equals(item.Name, CommonEditorConstants.EditorMetadataFileName, StringComparison.OrdinalIgnoreCase)))
+                            .ToArray();
         }
 
         /// <summary>
@@ -746,8 +803,8 @@ namespace Gorgon.Editor.Services
         /// <param name="newName">The new directory name.</param>
         /// <returns>The full physical file system path of the new directory name.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryPath"/>, or the <paramref name="newName"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="directoryPath"/>, or the <paramref name="newName"/> parameter is empty.</exception>
-        public string RenameDirectory(string directoryPath, string newName)
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="newName"/> parameter is empty.</exception>
+        public void RenameDirectory(DirectoryInfo directoryPath, string newName)
         {
             if (directoryPath == null)
             {
@@ -759,41 +816,34 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentNullException(nameof(newName));
             }
 
-            if (string.IsNullOrWhiteSpace(directoryPath))
-            {
-                throw new ArgumentEmptyException(nameof(directoryPath));
-            }
-
             if (string.IsNullOrWhiteSpace(newName))
             {
                 throw new ArgumentEmptyException(nameof(newName));
             }
 
-            var directory = new DirectoryInfo(directoryPath);
-            CheckRootOfPath(directory);
+            CheckRootOfPath(directoryPath);
 
             // Since windows uses a case insensitive file system, we need to ensure we're not just changing the case of the name.
             // And if we are, we need to allow the rename to happen regardless.
-            if (string.Equals(directory.Name, newName, StringComparison.CurrentCultureIgnoreCase))
+            if ((string.Equals(directoryPath.Name, newName, StringComparison.CurrentCultureIgnoreCase))
+                && (!string.Equals(directoryPath.Name, newName, StringComparison.CurrentCulture)))
             {
-                directory.MoveTo(Path.Combine(directory.Parent.FullName, Guid.NewGuid().ToString("N")));
-                directory.Refresh();
+                directoryPath.MoveTo(Path.Combine(directoryPath.Parent.FullName, Guid.NewGuid().ToString("N")));
+                directoryPath.Refresh();
             }
 
-            directory.MoveTo(Path.Combine(directory.Parent.FullName, newName));
-
-            return directory.FullName;
+            directoryPath.MoveTo(Path.Combine(directoryPath.Parent.FullName, newName));
+            directoryPath.Refresh();
         }
 
         /// <summary>
         /// Function to rename a file.
         /// </summary>
         /// <param name="filePath">The physical file system path to the file to rename.</param>
-        /// <param name="newName">The new name of the file.</param>
         /// <returns>The full physical file system path of the new file name.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/>, or the <paramref name="newName"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/>, or the <paramref name="newName"/> parameter is empty.</exception>
-        public string RenameFile(string filePath, string newName)
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="newName"/> parameter is empty.</exception>
+        public void RenameFile(FileInfo filePath, string newName)
         {
             if (filePath == null)
             {
@@ -805,22 +855,24 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentNullException(nameof(newName));
             }
 
-            if (string.IsNullOrWhiteSpace(filePath))
-            {
-                throw new ArgumentEmptyException(nameof(filePath));
-            }
-
             if (string.IsNullOrWhiteSpace(newName))
             {
                 throw new ArgumentEmptyException(nameof(newName));
             }
 
-            var file = new FileInfo(filePath);
-            CheckRootOfPath(file.Directory);
+            CheckRootOfPath(filePath.Directory);
 
-            file.MoveTo(Path.Combine(file.Directory.FullName, newName));
+            // Since windows uses a case insensitive file system, we need to ensure we're not just changing the case of the name.
+            // And if we are, we need to allow the rename to happen regardless.
+            if ((string.Equals(filePath.Name, newName, StringComparison.CurrentCultureIgnoreCase))
+                && (!string.Equals(filePath.Name, newName, StringComparison.CurrentCulture)))
+            {
+                filePath.MoveTo(Path.Combine(filePath.Directory.FullName, Guid.NewGuid().ToString("N")));
+                filePath.Refresh();
+            }
 
-            return file.FullName;
+            filePath.MoveTo(Path.Combine(filePath.Directory.FullName, newName));
+            filePath.Refresh();
         }
 
         /// <summary>
@@ -828,29 +880,20 @@ namespace Gorgon.Editor.Services
         /// </summary>
         /// <param name="filePath">The path to the file on the physical file system to delete.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
-        public void DeleteFile(string filePath)
+        public void DeleteFile(FileInfo filePath)
         {
             if (filePath == null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
 
-            if (string.IsNullOrWhiteSpace(filePath))
+            CheckRootOfPath(filePath.Directory);
+
+            // Send the file to the recycle bin.
+            if (!Shell32.SendToRecycleBin(filePath.FullName, RecycleFlags))
             {
-                throw new ArgumentEmptyException(nameof(filePath));
+                throw new IOException(string.Format(Resources.GOREDIT_ERR_DELETE, filePath));
             }
-
-            var file = new FileInfo(filePath);
-            CheckRootOfPath(file.Directory);
-
-            // If the directory is already gone, then we don't care.  
-            if (!file.Exists)
-            {
-                return;
-            }
-
-            file.Delete();
         }
 
         /// <summary>
@@ -861,37 +904,31 @@ namespace Gorgon.Editor.Services
         /// <param name="cancelToken">A token used to cancel the operation.</param>
         /// <returns><b>true</b> if the directory was deleted, <b>false</b> if not.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryPath"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="directoryPath"/> parameter is empty.</exception>
         /// <remarks>
         /// <para>
         /// The <paramref name="onDelete"/> parameter sends a file system information object that contains the name of the item currently being deleted.
         /// </para>
         /// </remarks>
-        public bool DeleteDirectory(string directoryPath, Action<FileSystemInfo> onDelete, CancellationToken cancelToken)
+        public bool DeleteDirectory(DirectoryInfo directoryPath, Action<FileSystemInfo> onDelete, CancellationToken cancelToken)
         {
             if (directoryPath == null)
             {
                 throw new ArgumentNullException(nameof(directoryPath));
             }
 
-            if (string.IsNullOrWhiteSpace(directoryPath))
-            {
-                throw new ArgumentEmptyException(nameof(directoryPath));
-            }
-
-            var directory = new DirectoryInfo(directoryPath);
-            CheckRootOfPath(directory);
-
-            IEnumerable<FileSystemInfo> subItems = directory.GetFiles("*", SearchOption.AllDirectories)
-                .Cast<FileSystemInfo>()
-                .Concat(directory.GetDirectories("*", SearchOption.AllDirectories).OrderByDescending(item => item.FullName.Length));
-
             // If the directory is already gone, then we don't care.  
-            if (!directory.Exists)
+            if (!directoryPath.Exists)
             {
                 return true;
             }
 
+            CheckRootOfPath(directoryPath);
+
+            IEnumerable<FileSystemInfo> subItems = directoryPath.GetFiles("*", SearchOption.AllDirectories)
+                .Cast<FileSystemInfo>()
+                .Concat(directoryPath.GetDirectories("*", SearchOption.AllDirectories)
+                                     .OrderByDescending(item => item.FullName.Length));
+            
             foreach (FileSystemInfo info in subItems)
             {
                 if (cancelToken.IsCancellationRequested)
@@ -901,7 +938,10 @@ namespace Gorgon.Editor.Services
 
                 onDelete?.Invoke(info);
 
-                info.Delete();
+                if (!Shell32.SendToRecycleBin(info.FullName, RecycleFlags))
+                {
+                    return false;
+                }                
             }
 
             if (cancelToken.IsCancellationRequested)
@@ -909,10 +949,15 @@ namespace Gorgon.Editor.Services
                 return false;
             }
 
-            onDelete?.Invoke(directory);
-            directory.Delete(true);
+            onDelete?.Invoke(directoryPath);
 
-            return true;
+            if (!Shell32.SendToRecycleBin(directoryPath.FullName, RecycleFlags))
+            {
+                return false;
+            }
+
+            directoryPath.Refresh();
+            return !directoryPath.Exists;
         }
 
         /// <summary>
@@ -920,10 +965,10 @@ namespace Gorgon.Editor.Services
         /// </summary>
         /// <param name="copySettings">The settings used for the directory copy.</param>
         /// <param name="cancelToken">The token used to cancel the process.</param>
-        /// <returns><b>true</b> if the copy was successful, <b>false</b> if it was canceled.</returns>
+        /// <returns>The directory object for the copied directory, or <b>null</b> if nothing was copied (e.g. the operation was cancelled).</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="copySettings" /> parameter is <b>null</b>.</exception>
         /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by <see cref="CopyDirectoryArgs.SourceDirectoryPath"/>, or the <see cref="CopyDirectoryArgs.DestinationDirectoryPath"/> was not found.</exception>
-        public Task<bool> CopyDirectoryAsync(CopyDirectoryArgs copySettings, CancellationToken cancelToken)
+        public Task<DirectoryInfo> CopyDirectoryAsync(CopyDirectoryArgs copySettings, CancellationToken cancelToken)
         {
             if (copySettings == null)
             {
@@ -1086,10 +1131,10 @@ namespace Gorgon.Editor.Services
         /// <param name="filePath">The path to the file.</param>
         /// <param name="destFileNamePath">The destination file name and path.</param>        
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/>, or the <paramref name="destFileNamePath"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/>, or the <paramref name="destFileNamePath"/> parameter is empty.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="destFileNamePath"/> parameter is empty.</exception>
         /// <exception cref="FileNotFoundException">Thrown when the file specified by <paramref name="filePath"/> was not found.</exception>
         /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by <paramref name="destFileNamePath"/> was not found.</exception>
-        public void CopyFile(string filePath, string destFileNamePath)
+        public void CopyFile(FileInfo filePath, string destFileNamePath)
         {
             if (filePath == null)
             {
@@ -1101,23 +1146,17 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentNullException(nameof(destFileNamePath));
             }
 
-            if (string.IsNullOrWhiteSpace(filePath))
-            {
-                throw new ArgumentEmptyException(nameof(filePath));
-            }
-
             if (string.IsNullOrWhiteSpace(destFileNamePath))
             {
                 throw new ArgumentEmptyException(nameof(destFileNamePath));
             }
 
-            var sourceFile = new FileInfo(filePath);
             var destFile = new FileInfo(destFileNamePath);
 
-            CheckRootOfPath(sourceFile.Directory);
+            CheckRootOfPath(filePath.Directory);
             CheckRootOfPath(destFile.Directory);
 
-            if (!sourceFile.Exists)
+            if (!filePath.Exists)
             {
                 throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, filePath));
             }
@@ -1127,7 +1166,7 @@ namespace Gorgon.Editor.Services
                 throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, destFileNamePath));
             }
 
-            sourceFile.CopyTo(destFile.FullName, true);
+            filePath.CopyTo(destFile.FullName, true);
         }
 
         /// <summary>
@@ -1136,9 +1175,9 @@ namespace Gorgon.Editor.Services
         /// <param name="directoryPath">The path to the directory.</param>
         /// <param name="destDirectoryPath">The destination name and path.</param>        
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryPath"/>, or the <paramref name="destDirectoryPath"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="directoryPath"/>, or the <paramref name="destDirectoryPath"/> parameter is empty.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="destDirectoryPath"/> parameter is empty.</exception>
         /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by <paramref name="directoryPath"/>, or the parent directory for <paramref name="destDirectoryPath"/> was not found.</exception>
-        public void MoveDirectory(string directoryPath, string destDirectoryPath)
+        public void MoveDirectory(DirectoryInfo directoryPath, string destDirectoryPath)
         {
             if (directoryPath == null)
             {
@@ -1150,23 +1189,17 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentNullException(nameof(destDirectoryPath));
             }
 
-            if (string.IsNullOrWhiteSpace(directoryPath))
-            {
-                throw new ArgumentEmptyException(nameof(directoryPath));
-            }
-
             if (string.IsNullOrWhiteSpace(destDirectoryPath))
             {
                 throw new ArgumentEmptyException(nameof(destDirectoryPath));
             }
 
-            var source = new DirectoryInfo(directoryPath);
             var dest = new DirectoryInfo(destDirectoryPath);
 
-            CheckRootOfPath(source);
+            CheckRootOfPath(directoryPath);
             CheckRootOfPath(dest);
 
-            if (!source.Exists)
+            if (!directoryPath.Exists)
             {
                 throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, directoryPath));
             }
@@ -1177,7 +1210,7 @@ namespace Gorgon.Editor.Services
             }
 
             // If we're moving to the same place, then we cannot proceed.
-            if (string.Equals(source.FullName, dest.FullName, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(directoryPath.FullName, dest.FullName, StringComparison.OrdinalIgnoreCase))
             {
                 if ((dest.Attributes & FileAttributes.Directory) == FileAttributes.Directory)
                 {
@@ -1189,7 +1222,20 @@ namespace Gorgon.Editor.Services
                 }
             }
 
-            source.MoveTo(dest.FullName);
+            try
+            {
+                directoryPath.MoveTo(dest.FullName);
+                directoryPath.Refresh();
+            }
+            catch
+            {
+                if (dest.Exists)
+                {
+                    CleanupDirectory(dest);
+                }
+                
+                throw;
+            }
         }
 
 
@@ -1199,10 +1245,10 @@ namespace Gorgon.Editor.Services
         /// <param name="filePath">The path to the file.</param>
         /// <param name="destFileNamePath">The destination file name and path.</param>        
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/>, or the <paramref name="destFileNamePath"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/>, or the <paramref name="destFileNamePath"/> parameter is empty.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="destFileNamePath"/> parameter is empty.</exception>
         /// <exception cref="FileNotFoundException">Thrown when the file specified by <paramref name="filePath"/> was not found.</exception>
         /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by <paramref name="destFileNamePath"/> was not found.</exception>
-        public void MoveFile(string filePath, string destFileNamePath)
+        public void MoveFile(FileInfo filePath, string destFileNamePath)
         {
             if (filePath == null)
             {
@@ -1214,23 +1260,17 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentNullException(nameof(destFileNamePath));
             }
 
-            if (string.IsNullOrWhiteSpace(filePath))
-            {
-                throw new ArgumentEmptyException(nameof(filePath));
-            }
-
             if (string.IsNullOrWhiteSpace(destFileNamePath))
             {
                 throw new ArgumentEmptyException(nameof(destFileNamePath));
             }
 
-            var sourceFile = new FileInfo(filePath);
             var destFile = new FileInfo(destFileNamePath);
 
-            CheckRootOfPath(sourceFile.Directory);
+            CheckRootOfPath(filePath.Directory);
             CheckRootOfPath(destFile.Directory);
 
-            if (!sourceFile.Exists)
+            if (!filePath.Exists)
             {
                 throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, filePath));
             }
@@ -1241,7 +1281,7 @@ namespace Gorgon.Editor.Services
             }
 
             // If we're moving to the same place, then we don't need to do anything.
-            if (string.Equals(sourceFile.FullName, destFile.FullName, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(filePath.FullName, destFile.FullName, StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
@@ -1252,7 +1292,8 @@ namespace Gorgon.Editor.Services
                 destFile.Delete();
             }
 
-            sourceFile.MoveTo(destFile.FullName);
+            filePath.MoveTo(destFile.FullName);
+            filePath.Refresh();
         }
 
         /// <summary>
@@ -1261,7 +1302,9 @@ namespace Gorgon.Editor.Services
         public void DeleteAll()
         {
             FileInfo[] files = RootDirectory.GetFiles("*", SearchOption.AllDirectories)
-                                            .Where(item => (item.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden)
+                                            .Where(item => ((item.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden)
+                                                        && ((item.Attributes & FileAttributes.System) != FileAttributes.System)
+                                                        && (!string.Equals(item.Name, CommonEditorConstants.EditorMetadataFileName, StringComparison.OrdinalIgnoreCase)))
                                             .ToArray();
 
             DirectoryInfo[] subDirs = RootDirectory.GetDirectories("*", SearchOption.AllDirectories)
@@ -1271,14 +1314,15 @@ namespace Gorgon.Editor.Services
 
             foreach (FileInfo file in files)
             {
-                file.Delete();
-                file.Refresh();
+                Shell32.SendToRecycleBin(file.FullName, RecycleFlags);
             }
 
             foreach (DirectoryInfo dir in subDirs)
             {
-                dir.Delete(true);
-                dir.Refresh();
+                if (dir.Exists)
+                {
+                    Shell32.SendToRecycleBin(dir.FullName, RecycleFlags);
+                }                
             }
         }
         #endregion

@@ -28,14 +28,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Editor.Metadata;
-using Gorgon.Editor.Plugins;
-using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 
@@ -50,10 +46,6 @@ namespace Gorgon.Editor.ViewModels
         #region Variables.
         // The parent for this node.
         private IFileExplorerNodeVm _parent;
-        // The name of the file.
-        private string _name;
-        // The physical file system path to the node.
-        private string _physicalPath;
         // Flag to indicate whether this node is expanded or not.
         private bool _isExpanded;
         // Flag to indicate that the node is cut.
@@ -62,6 +54,8 @@ namespace Gorgon.Editor.ViewModels
         private ProjectItemMetadata _metadata;
         // Flag to indicate that the file was changed.
         private bool _isChanged;
+        // The physical file system object represented by this node.
+        private FileSystemInfo _physicalFileSystemObject;
         #endregion
 
         #region Properties.
@@ -197,21 +191,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the name for the node.
         /// </summary>
-        public string Name
-        {
-            get => _name;
-            protected set
-            {
-                if (string.Equals(value, _name, StringComparison.OrdinalIgnoreCase))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _name = value;
-                OnPropertyChanged();
-            }
-        }
+        public string Name => _physicalFileSystemObject?.Name;
 
         /// <summary>
         /// Property to return the full path to the node.
@@ -240,20 +220,9 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the physical path to the node.
         /// </summary>        
-        public string PhysicalPath
+        public abstract string PhysicalPath
         {
-            get => _physicalPath;
-            protected set
-            {
-                if (string.Equals(_physicalPath, value, StringComparison.OrdinalIgnoreCase))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _physicalPath = value;
-                OnPropertyChanged();
-            }
+            get;
         }
 
         /// <summary>
@@ -294,6 +263,13 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to retrieve the physical file system object for this node.
+        /// </summary>
+        /// <param name="path">The path to the physical file system object.</param>
+        /// <returns>Information about the physical file system object.</returns>
+        protected abstract FileSystemInfo GetFileSystemObject(string path);
+
         /// <summary>
         /// Function to return the root parent node for this node.
         /// </summary>
@@ -340,6 +316,11 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Function called to refresh the underlying data for the node.
+        /// </summary>
+        public abstract void Refresh();
+
+        /// <summary>
         /// Function to inject dependencies for the view model.
         /// </summary>
         /// <param name="injectionParameters">The parameters to inject.</param>
@@ -353,10 +334,9 @@ namespace Gorgon.Editor.ViewModels
 
             FileSystemService = injectionParameters.FileSystemService ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.FileSystemService), nameof(injectionParameters));
             ViewModelFactory = injectionParameters.ViewModelFactory ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.ViewModelFactory), nameof(injectionParameters));
-            _physicalPath = injectionParameters.PhysicalPath ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.PhysicalPath), nameof(injectionParameters));
 
-            // This is the root node if we have no parent.
-            _name = injectionParameters.Parent == null ? "/" : (injectionParameters.Name ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.Name), nameof(injectionParameters)));
+            // This is the root node if we have no parent.    
+            _physicalFileSystemObject = GetFileSystemObject(injectionParameters.PhysicalPath ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.PhysicalPath), nameof(injectionParameters)));
             MessageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.MessageDisplay), nameof(injectionParameters));
             BusyService = injectionParameters.BusyService ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.BusyService), nameof(injectionParameters));
 
@@ -401,10 +381,9 @@ namespace Gorgon.Editor.ViewModels
         /// Function to rename the node.
         /// </summary>
         /// <param name="newName">The new name for the node.</param>
-        /// <param name="projectItems">The list of items in the project.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="newName"/>, or the <paramref name="projectItems"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="newName"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="newName"/> parameter is empty.</exception>
-        public abstract void RenameNode(string newName, IDictionary<string, ProjectItemMetadata> projectItems);
+        public abstract void RenameNode(string newName);
 
         /// <summary>
         /// Function to determine if this node is an ancestor of the specified parent node.
@@ -445,14 +424,12 @@ namespace Gorgon.Editor.ViewModels
         /// </remarks>
         public abstract Task<IFileExplorerNodeVm> CopyNodeAsync(IFileExplorerNodeVm destNode, Action<FileSystemInfo, FileSystemInfo, int, int> onCopy = null, CancellationToken? cancelToken = null);
 
-        /// <summary>
-        /// Function to move this node to another node.
-        /// </summary>
-        /// <param name="newPath">The node that will receive the the copy of this node.</param>
-        /// <returns>The new node for the copied node.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destNode"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="GorgonException">Thrown if the <paramref name="destNode"/> is unable to create child nodes.</exception>
-        public abstract IFileExplorerNodeVm MoveNode(IFileExplorerNodeVm destNode);
+        /// <summary>Function to move this node to another node.</summary>
+        /// <param name="destNode">The node that will receive this node as a child.</param>
+        /// <returns><b>true</b> if the node was moved, <b>false</b> if it was cancelled or had an error moving.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destNode" /> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="destNode" /> is unable to create child nodes.</exception>
+        public abstract bool MoveNode(IFileExplorerNodeVm destNode);
 
         /// <summary>
         /// Function to export the contents of this node to the physical file system.
@@ -493,10 +470,8 @@ namespace Gorgon.Editor.ViewModels
         {
             BusyService = copy.BusyService;
             MessageDisplay = copy.MessageDisplay;
-            Name = copy.Name;
             IsExpanded = copy.IsExpanded;
             Metadata = copy.Metadata;
-            PhysicalPath = copy.PhysicalPath;
             Parent = copy.Parent;
             FileSystemService = copy.FileSystemService;
             ViewModelFactory = copy.ViewModelFactory;

@@ -206,11 +206,10 @@ namespace Gorgon.Editor.ViewModels
         /// Function to rename the node.
         /// </summary>
         /// <param name="newName">The new name for the node.</param>
-        /// <param name="projectItems">The list of items in the project.</param>
-        void RenameNode(string newName, IDictionary<string, ProjectItemMetadata> projectItems);
+        void RenameNode(string newName);
 
         /// <summary>
-        /// Function to delete the node.
+        /// Function to delete this node.
         /// </summary>
         /// <param name="onDeleted">[Optional] A function to call when a node or a child node is deleted.</param>
         /// <param name="cancelToken">[Optional] A cancellation token used to cancel the operation.</param>
@@ -225,7 +224,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to copy this node to another node.
         /// </summary>
-        /// <param name="newPath">The node that will receive the the copy of this node.</param>
+        /// <param name="destNode">The destination node that will receive the copy.</param>
         /// <param name="onCopy">[Optional] The method to call when a file is about to be copied.</param>
         /// <param name="cancelToken">[Optional] A token used to cancel the operation.</param>
         /// <returns>The new node for the copied node.</returns>
@@ -239,9 +238,9 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to move this node to another node.
         /// </summary>
-        /// <param name="newPath">The node that will receive the the copy of this node.</param>
-        /// <returns>The new node for the copied node.</returns>
-        IFileExplorerNodeVm MoveNode(IFileExplorerNodeVm destNode);
+        /// <param name="destNode">The node that will receive this node as a child.</param>
+        /// <returns><b>true</b> if the node was moved, <b>false</b> if it was cancelled or had an error moving.</returns>
+        bool MoveNode(IFileExplorerNodeVm destNode);
 
         /// <summary>
         /// Function to export the contents of this node to the physical file system.
@@ -270,6 +269,11 @@ namespace Gorgon.Editor.ViewModels
         /// </para>
         /// </remarks>
         bool AssignContentPlugin(IContentPluginManagerService contentPlugins, bool deepScan = false);
+
+        /// <summary>
+        /// Function to refresh the node's underlying data.
+        /// </summary>
+        void Refresh();
         #endregion
     }
 }

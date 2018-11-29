@@ -47,6 +47,8 @@ namespace Gorgon.Editor.ViewModels
         #region Variables.
         // Flag to indicate whether the node is open for editing.
         private bool _isOpen;
+        // The file system information object.
+        private FileInfo _fileInfo;
         #endregion
 
         #region Events.
@@ -117,7 +119,7 @@ namespace Gorgon.Editor.ViewModels
                 {
                     return;
                 }
-                
+
                 base.Metadata = value;
 
                 if (value == null)
@@ -129,7 +131,7 @@ namespace Gorgon.Editor.ViewModels
                 NotifyPropertyChanged(nameof(ImageName));
             }
         }
-        
+
         /// <summary>Property to set or return whether the node is open for editing.</summary>
         public override bool IsOpen
         {
@@ -146,6 +148,9 @@ namespace Gorgon.Editor.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        /// <summary>Property to return the physical path to the node.</summary>
+        public override string PhysicalPath => Parent == null ? null : Path.Combine(Parent.PhysicalPath, Name);
         #endregion
 
         #region Methods.
@@ -209,23 +214,45 @@ namespace Gorgon.Editor.ViewModels
         /// </remarks>
         protected override bool OnAssignContentPlugin(IContentPluginManagerService plugins, bool deepScan) => plugins.AssignContentPlugin(this, !deepScan);
 
+        /// <summary>Function to retrieve the physical file system object for this node.</summary>
+        /// <param name="path">The path to the physical file system object.</param>
+        /// <returns>Information about the physical file system object.</returns>
+        protected override FileSystemInfo GetFileSystemObject(string path)
+        {
+            _fileInfo = new FileInfo(path);
+            return _fileInfo;
+        }
+
+        /// <summary>Function called to refresh the underlying data for the node.</summary>
+        public override void Refresh()
+        {
+            NotifyPropertyChanging(nameof(PhysicalPath));
+
+            try
+            {
+                _fileInfo.Refresh();
+            }
+            catch (Exception ex)
+            {
+                Log.LogException(ex);
+            }
+            finally
+            {
+                NotifyPropertyChanged(nameof(PhysicalPath));
+            }
+        }
+
         /// <summary>
         /// Function to rename the node.
         /// </summary>
         /// <param name="newName">The new name for the node.</param>
-        /// <param name="projectItems">The list of items in the project.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="newName"/>, or the <paramref name="projectItems"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="newName"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="newName"/> parameter is empty.</exception>
-        public override void RenameNode(string newName, IDictionary<string, ProjectItemMetadata> projectItems)
+        public override void RenameNode(string newName)
         {
             if (newName == null)
             {
                 throw new ArgumentNullException(nameof(newName));
-            }
-
-            if (projectItems == null)
-            {
-                throw new ArgumentNullException(nameof(projectItems));
             }
 
             if (string.IsNullOrWhiteSpace(newName))
@@ -233,15 +260,18 @@ namespace Gorgon.Editor.ViewModels
                 throw new ArgumentEmptyException(nameof(newName));
             }
 
-            projectItems.Remove(FullPath);
-            PhysicalPath = FileSystemService.RenameFile(PhysicalPath, newName);
-            Name = newName;
+            NotifyPropertyChanging(nameof(Name));
+            NotifyPropertyChanging(nameof(FullPath));
+            NotifyPropertyChanging(nameof(PhysicalPath));
 
-            if (Metadata != null)
+            try
             {
-                projectItems[FullPath] = Metadata;
+                FileSystemService.RenameFile(_fileInfo, newName);
             }
-            NotifyPropertyChanged(nameof(FullPath));            
+            finally
+            {
+                Refresh();
+            }            
         }
 
         /// <summary>
@@ -257,35 +287,32 @@ namespace Gorgon.Editor.ViewModels
         /// </remarks>
         public override Task DeleteNodeAsync(Action<FileSystemInfo> onDeleted = null, CancellationToken? cancelToken = null)
         {
-            // There's no need to make this asynchronous, nor have a status display associated with it.  
-            var tcs = new TaskCompletionSource<object>();
-
             try
             {
                 // Delete the physical object first. If we fail here, our node will survive.
-                FileSystemService.DeleteFile(PhysicalPath);
+                FileSystemService.DeleteFile(_fileInfo);
+                
+                NotifyPropertyChanging(nameof(FullPath));
 
                 // Drop us from the parent list.
                 // This will begin a chain reaction that will remove us from the UI.
                 Parent.Children.Remove(this);
                 Parent = null;
-
+                
+                // If this node is open in an editor, then we need to notify the editor that we just deleted the node.
                 if (IsOpen)
                 {
                     EventHandler deleteEvent = Deleted;
                     Deleted?.Invoke(this, EventArgs.Empty);
                     IsOpen = false;
                 }
-
-                // Mark as completed.
-                tcs.SetResult(null);
             }
             catch (Exception ex)
             {
-                tcs.SetException(ex);
+                return Task.FromException(ex);
             }
 
-            return tcs.Task;
+            return Task.FromResult<object>(null);
         }
 
         /// <summary>
@@ -321,10 +348,9 @@ namespace Gorgon.Editor.ViewModels
 
             var result = new FileExplorerFileNodeVm(this)
             {                
+                _fileInfo = new FileInfo(newPath),
                 IsExpanded = false,
-                Name = Name,
                 Parent = destNode,
-                PhysicalPath = newPath,
                 Metadata = Metadata != null ? new ProjectItemMetadata(Metadata) : null
             };
 
@@ -333,8 +359,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 string newName = FileSystemService.GenerateFileName(result.PhysicalPath);
                 newPath = Path.Combine(destNode.PhysicalPath, newName);
-                result.Name = newName;
-                result.PhysicalPath = newPath;
+                result._fileInfo = new FileInfo(newPath);
             }
 
             // If we're trying to copy over ourselves (which is not possible obviously), then just auto-rename.
@@ -360,7 +385,7 @@ namespace Gorgon.Editor.ViewModels
                 }
             }
 
-            FileSystemService.CopyFile(PhysicalPath, result.PhysicalPath);
+            FileSystemService.CopyFile(_fileInfo, result.PhysicalPath);
 
             // TODO: Create a copy of any links for this node.
             // TODO: Can we make use of the onCopy method?
@@ -369,14 +394,12 @@ namespace Gorgon.Editor.ViewModels
             return tcs.Task;
         }
 
-        /// <summary>
-        /// Function to move this node to another node.
-        /// </summary>
-        /// <param name="newPath">The node that will receive the the copy of this node.</param>
-        /// <returns>The new node for the copied node.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destNode"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="GorgonException">Thrown if the <paramref name="destNode"/> is unable to create child nodes.</exception>
-        public override IFileExplorerNodeVm MoveNode(IFileExplorerNodeVm destNode)
+        /// <summary>Function to move this node to another node.</summary>
+        /// <param name="destNode">The node that will receive this node as a child.</param>
+        /// <returns><b>true</b> if the node was moved, <b>false</b> if it was cancelled or had an error moving.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destNode" /> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="destNode" /> is unable to create child nodes.</exception>
+        public override bool MoveNode(IFileExplorerNodeVm destNode)
         {
             if (destNode == null)
             {
@@ -390,47 +413,40 @@ namespace Gorgon.Editor.ViewModels
 
             if (string.Equals(Parent.FullPath, destNode.FullPath, StringComparison.OrdinalIgnoreCase))
             {
-                return null;
+                return false;
             }
 
             FileSystemConflictResolution resolution = FileSystemConflictResolution.Exception;
             string newPath = Path.Combine(destNode.PhysicalPath, Name);
 
-            var result = new FileExplorerFileNodeVm(this)
-            {
-                IsExpanded = false,
-                Name = Name,
-                Parent = destNode,
-                PhysicalPath = newPath,
-                Metadata = Metadata,
-                IsOpen = IsOpen
-            };
-
             if (FileSystemService.FileExists(newPath))
             {
-                resolution = FileSystemConflictHandler(FullPath, result.FullPath, false);
+                resolution = FileSystemConflictHandler(FullPath, newPath, false);
 
                 switch (resolution)
                 {
                     case FileSystemConflictResolution.Rename:
                     case FileSystemConflictResolution.RenameAll:
                     case FileSystemConflictResolution.Cancel:
-                        return null;
+                        return false;
                     case FileSystemConflictResolution.Exception:
                         throw new IOException(string.Format(Resources.GOREDIT_ERR_NODE_EXISTS, Name));
                 }
             }
 
-            FileSystemService.MoveFile(PhysicalPath, result.PhysicalPath);
+            FileSystemService.MoveFile(_fileInfo, newPath);
 
             if (IsOpen)
             {
-                var args = new ContentFileMovedEventArgs(result);
+                var args = new ContentFileMovedEventArgs(this);
                 EventHandler<ContentFileMovedEventArgs> handler = Moved;
                 Moved?.Invoke(this, args);
             }
 
-            return result;
+            NotifyPropertyChanged(FullPath);
+            NotifyPropertyChanged(PhysicalPath);
+
+            return true;
         }
 
         /// <summary>

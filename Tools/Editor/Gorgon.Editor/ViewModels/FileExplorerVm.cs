@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -297,10 +298,14 @@ namespace Gorgon.Editor.ViewModels
             foreach (IFileExplorerNodeVm child in children)
             {
                 child.Children.CollectionChanged -= Children_CollectionChanged;
+                child.PropertyChanging -= Node_PropertyChanging;
+                child.PropertyChanged -= Node_PropertyChanged;
                 _nodePathLookup.Remove(child.FullPath);
             }
 
             node.Children.CollectionChanged -= Children_CollectionChanged;
+            node.PropertyChanging -= Node_PropertyChanging;
+            node.PropertyChanged -= Node_PropertyChanged;
             _nodePathLookup.Remove(node.FullPath);
         }
 
@@ -342,8 +347,8 @@ namespace Gorgon.Editor.ViewModels
                 {
                     ShowWaitPanel(Resources.GOREDIT_TEXT_DELETING);
                     string path = args.Node.FullPath;
-
-                    await args.Node.DeleteNodeAsync(cancelToken: cancelSource.Token);
+                                        
+                    await args.Node.DeleteNodeAsync();
 
                     // Remove this item from the metadata.
                     _project.ProjectItems.Remove(path);
@@ -375,6 +380,7 @@ namespace Gorgon.Editor.ViewModels
             finally
             {
                 HideProgress();
+                HideWaitPanel();
 
                 // We have to use this flag because the callback is on a separate thread and we'll end up with a cross thread call if we trigger this event from there.
                 if (itemsDeleted)
@@ -592,13 +598,7 @@ namespace Gorgon.Editor.ViewModels
                     return;
                 }
 
-                string oldPath = args.Node.FullPath;
-
-                // We need to update the cache so that all paths are changed for children under the selected nodes.
-                RemoveFromCache(args.Node);
-
-                args.Node.RenameNode(args.NewName, _project.ProjectItems);
-                EnumerateChildren(args.Node);
+                args.Node.RenameNode(args.NewName);
 
                 OnFileSystemChanged();
             }
@@ -1001,6 +1001,7 @@ namespace Gorgon.Editor.ViewModels
                 await Task.Run(() => _fileSystemService.DeleteAll());
 
                 RootNode.Children.Clear();
+                OnFileSystemChanged();
             }
             catch (Exception ex)
             {
@@ -1013,17 +1014,6 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Function to remap a node to the a node path.
-        /// </summary>
-        /// <param name="source">The source node to remap.</param>
-        /// <param name="dest">The base node used to replace.</param>
-        /// <param name="root">The root of the node being remapped.</param>
-        /// <returns>The remapped path.</returns>
-        private string RemapNodePath(IFileExplorerNodeVm source, IFileExplorerNodeVm dest, IFileExplorerNodeVm root) => string.Equals(source.FullPath, dest.FullPath, StringComparison.OrdinalIgnoreCase)
-                ? source.FullPath
-                : Path.Combine(dest.FullPath, source.FullPath.Substring(root.FullPath.Length));
-
-        /// <summary>
         /// Function to copy a node to another node.
         /// </summary>
         /// <param name="source">The source node to copy.</param>
@@ -1031,8 +1021,6 @@ namespace Gorgon.Editor.ViewModels
         /// <returns><b>true</b> if the node was moved, <b>false</b> if not.</returns>
         private bool MoveNode(IFileExplorerNodeVm source, IFileExplorerNodeVm dest)
         {
-            IFileExplorerNodeVm newNode = null;
-
             // Locate the next level that allows child creation if this one cannot.
             while (!dest.AllowChildCreation)
             {
@@ -1047,85 +1035,59 @@ namespace Gorgon.Editor.ViewModels
                 return true;
             }
 
-            newNode = source.MoveNode(dest);
+            string originalPath = source.FullPath;
+            (string path, IFileExplorerNodeVm node)[] originalChildPaths = null;
 
-            if (newNode == null)
+            if ((source.AllowChildCreation) && (source.Children.Count > 0))
+            {
+                originalChildPaths = source.Children.Traverse(n => n.Children)
+                                                    .Where(item => (item.Metadata != null) && (_project.ProjectItems.ContainsKey(item.FullPath)))
+                                                    .Select(item => (item.FullPath, item))
+                                                    .ToArray();
+            }
+
+            // If we cancelled, or there was an error, then leave.
+            if (!source.MoveNode(dest))
             {
                 return false;
             }
+            
+            _nodePathLookup.Remove(originalPath);
 
-            newNode.Metadata = source.Metadata;
-
-            if ((source.Metadata != null) && (!_project.ProjectItems.ContainsKey(newNode.FullPath)))
+            if ((source.Metadata != null) && (!_project.ProjectItems.ContainsKey(source.FullPath)))
             {
-                _project.ProjectItems[newNode.FullPath] = source.Metadata;
-                _project.ProjectItems.Remove(source.FullPath);
-                source.Metadata = null;
-            }
+                _project.ProjectItems.Remove(originalPath);
+                _project.ProjectItems[source.FullPath] = source.Metadata;                
+            }            
 
-            IFileExplorerNodeVm openFile = null;
-            string newOpenFilePath = null;
-
-            if (source.AllowChildCreation)
+            if ((originalChildPaths != null) && (originalChildPaths.Length > 0))
             {
-                foreach (IFileExplorerNodeVm childNode in source.Children.Traverse(n => n.Children).Where(item => item.Metadata != null))
+                foreach ((string path, IFileExplorerNodeVm node) in originalChildPaths)
                 {
-                    string destPath = RemapNodePath(childNode, newNode, source);
-
-                    if (childNode.IsOpen)
+                    if (node.IsOpen)
                     {
-                        openFile = childNode;
-                        newOpenFilePath = destPath;
+                        node.NotifyParentMoved(node);
                     }
 
-                    _project.ProjectItems.Remove(childNode.FullPath);
-
-                    if (_project.ProjectItems.ContainsKey(destPath))
+                    _project.ProjectItems.Remove(path);
+                    if (_project.ProjectItems.ContainsKey(node.FullPath))
                     {
                         continue;
                     }
 
-                    _project.ProjectItems[destPath] = childNode.Metadata;
-                    childNode.Metadata = null;
-                }
-            }
-
-            // Refresh the new node so we can capture the child nodes.
-            if (source.Children.Count > 0)
-            {
-                RefreshNode(newNode, false);
-
-                if (openFile != null)
-                {
-                    IFileExplorerNodeVm newOpenFile = newNode.Children.Traverse(n => n.Children).FirstOrDefault(n => string.Equals(n.FullPath, newOpenFilePath, StringComparison.OrdinalIgnoreCase));
-
-                    if (newOpenFile != null)
-                    {
-                        newOpenFile.IsOpen = true;
-                        openFile.NotifyParentMoved(newOpenFile);
-                    }
+                    _project.ProjectItems[node.FullPath] = node.Metadata;
                 }
             }
 
             SelectedNode = dest;
 
             // This will refresh the nodes under the destination.
-            if (!dest.IsExpanded)
-            {
-                newNode.Parent.IsExpanded = true;
-            }
+            dest.IsExpanded = true;
 
             // If this node is not registered, then add it now.
-            if (!_nodePathLookup.TryGetValue(newNode.FullPath, out IFileExplorerNodeVm prevNode))
-            {
-                dest.Children.Add(newNode);
-                prevNode = newNode;
-            }
+            _nodePathLookup[source.FullPath] = source;
 
-            // Delete this node now that we've got our item moved.
-            source.Parent.Children.Remove(source);
-
-            SelectedNode = prevNode;
+            SelectedNode = source;
 
             OnFileSystemChanged();
 
@@ -1254,6 +1216,8 @@ namespace Gorgon.Editor.ViewModels
             {
                 _nodePathLookup[node.FullPath] = node;
                 node.Children.CollectionChanged += Children_CollectionChanged;
+                node.PropertyChanged += Node_PropertyChanged;
+                node.PropertyChanging += Node_PropertyChanging;
 
                 if (node.Metadata != null)
                 {
@@ -1262,6 +1226,51 @@ namespace Gorgon.Editor.ViewModels
             }
 
             parent.Children.CollectionChanged += Children_CollectionChanged;
+            parent.PropertyChanged += Node_PropertyChanged;
+            parent.PropertyChanging += Node_PropertyChanging;
+        }
+
+        /// <summary>
+        /// Function called when a property changes on a node.
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The event parameters.</param>
+        private void Node_PropertyChanging(object sender, PropertyChangingEventArgs e)
+        {
+            var node = (IFileExplorerNodeVm)sender;
+
+            switch (e.PropertyName)
+            {
+                case nameof(IFileExplorerNodeVm.FullPath):
+                case nameof(IFileExplorerNodeVm.PhysicalPath):
+                case nameof(IFileExplorerNodeVm.Name):
+                    _project.ProjectItems.Remove(node.FullPath);
+                    _nodePathLookup.Remove(node.FullPath);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Function called when a property changes on a node.
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The event parameters.</param>
+        private void Node_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var node = (IFileExplorerNodeVm)sender;
+
+            switch (e.PropertyName)
+            {
+                case nameof(IFileExplorerNodeVm.FullPath):
+                case nameof(IFileExplorerNodeVm.PhysicalPath):
+                case nameof(IFileExplorerNodeVm.Name):
+                    _nodePathLookup[node.FullPath] = node;
+                    if (node.Metadata != null)
+                    {
+                        _project.ProjectItems[node.FullPath] = node.Metadata;
+                    }                    
+                    break;
+            }
         }
 
         /// <summary>

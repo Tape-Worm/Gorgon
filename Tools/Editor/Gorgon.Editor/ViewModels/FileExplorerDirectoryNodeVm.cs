@@ -31,6 +31,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Plugins;
@@ -46,6 +47,11 @@ namespace Gorgon.Editor.ViewModels
     internal class FileExplorerDirectoryNodeVm
         : FileExplorerNodeCommon
     {
+        #region Variables.
+        // The physical directory represented by this node.
+        private DirectoryInfo _directoryInfo;
+        #endregion
+
         #region Properties.
         /// <summary>
         /// Property to return whether to allow child node creation for this node.
@@ -75,6 +81,9 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>Property to return whether this node represents content or not.</summary>
         public override bool IsContent => false;
 
+        /// <summary>Property to return the physical path to the node.</summary>
+        public override string PhysicalPath => Parent == null ? null : Path.Combine(Parent.PhysicalPath, Name).FormatDirectory(Path.DirectorySeparatorChar);
+
         /// <summary>Property to set or return whether the node is open for editing.</summary>
         /// <remarks>Directory nodes cannot be opened for editing, thus this property will always return <strong>false</strong>.</remarks>
         public override bool IsOpen
@@ -88,6 +97,20 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to perform a refresh of this node and any children.
+        /// </summary>
+        private void DoRefresh()
+        {
+            _directoryInfo?.Refresh();
+
+            // Refresh all child nodes.
+            foreach (IFileExplorerNodeVm node in Children.Traverse(n => n.Children))
+            {
+                node.Refresh();
+            }
+        }
+
         /// <summary>
         /// Function to allow a user to resolve a confict between files with the same name.
         /// </summary>
@@ -146,6 +169,34 @@ namespace Gorgon.Editor.ViewModels
             }
         }
 
+        /// <summary>Function to retrieve the physical file system object for this node.</summary>
+        /// <param name="path">The path to the physical file system object.</param>
+        /// <returns>Information about the physical file system object.</returns>
+        protected override FileSystemInfo GetFileSystemObject(string path)
+        {
+            _directoryInfo = new DirectoryInfo(path);
+            return _directoryInfo;
+        }
+
+        /// <summary>Function called to refresh the underlying data for the node.</summary>
+        public override void Refresh()
+        {
+            NotifyPropertyChanging(nameof(PhysicalPath));
+
+            try
+            {
+                DoRefresh();
+            }
+            catch (Exception ex)
+            {
+                Log.LogException(ex);
+            }
+            finally
+            {
+                NotifyPropertyChanged(nameof(PhysicalPath));
+            }
+        }
+
         /// <summary>
         /// Function to delete the node.
         /// </summary>
@@ -161,13 +212,15 @@ namespace Gorgon.Editor.ViewModels
         {
             // Delete the physical objects first. If we fail here, our node will survive.
             // We do this asynchronously because deleting a directory with a lot of files may take a while.
-            bool dirDeleted = await Task.Run(() => FileSystemService.DeleteDirectory(PhysicalPath, onDeleted, cancelToken ?? CancellationToken.None));
+            bool dirDeleted = await Task.Run(() => FileSystemService.DeleteDirectory(_directoryInfo, onDeleted, cancelToken ?? CancellationToken.None));
 
             // If, for some reason, our directory was not deleted, then do not remove the node.
             if (!dirDeleted)
             {
                 return;
             }
+
+            NotifyPropertyChanging(nameof(FullPath));
 
             // Drop us from the parent list.
             // This will begin a chain reaction that will remove us from the UI.
@@ -179,19 +232,13 @@ namespace Gorgon.Editor.ViewModels
         /// Function to rename the node.
         /// </summary>
         /// <param name="newName">The new name for the node.</param>
-        /// <param name="projectItems">The list of items in the project.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="newName"/>, or the <paramref name="projectItems"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="newName"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="newName"/> parameter is empty.</exception>
-        public override void RenameNode(string newName, IDictionary<string, ProjectItemMetadata> projectItems)
+        public override void RenameNode(string newName)
         {
             if (newName == null)
             {
                 throw new ArgumentNullException(nameof(newName));
-            }
-
-            if (projectItems == null)
-            {
-                throw new ArgumentNullException(nameof(projectItems));
             }
 
             if (string.IsNullOrWhiteSpace(newName))
@@ -199,19 +246,18 @@ namespace Gorgon.Editor.ViewModels
                 throw new ArgumentEmptyException(nameof(newName));
             }
 
+            NotifyPropertyChanging(nameof(Name));
+
             // Remove the previous project item.
-            projectItems.Remove(FullPath);
-
-            PhysicalPath = FileSystemService.RenameDirectory(PhysicalPath, newName);
-            Name = newName;
-
-            // Update with the new path.
-            if (Metadata != null)
+            try
             {
-                projectItems[FullPath] = Metadata;
+                FileSystemService.RenameDirectory(_directoryInfo, newName);
+                DoRefresh();                
             }
-            
-            NotifyPropertyChanged(nameof(FullPath));
+            finally
+            {
+                NotifyPropertyChanged(nameof(Name));
+            }            
         }
 
         /// <summary>
@@ -236,23 +282,25 @@ namespace Gorgon.Editor.ViewModels
             }
 
             string name = Name;
-            string newPath = destNode.PhysicalPath.FormatDirectory(Path.DirectorySeparatorChar);
+            string newPath = destNode.PhysicalPath;
             string newPhysicalPath = Path.Combine(newPath, Name);
             IFileExplorerNodeVm dupeNode = null;
+            DirectoryInfo newDir = null;
 
             // Find out if this node already exists. We'll have to get rid of it.
             dupeNode = destNode.Children.FirstOrDefault(item => string.Equals(newPath, item.PhysicalPath, StringComparison.OrdinalIgnoreCase));
 
             try
             {
-                var args = new CopyDirectoryArgs(PhysicalPath, newPath)
+                var args = new CopyDirectoryArgs(_directoryInfo, new DirectoryInfo(newPath))
                 {
                     OnCopyProgress = onCopy,
                     OnResolveConflict = ResolveConflict
                 };
-                bool copied = await FileSystemService.CopyDirectoryAsync(args, cancelToken ?? CancellationToken.None);
 
-                if (!copied)
+                newDir = await FileSystemService.CopyDirectoryAsync(args, cancelToken ?? CancellationToken.None);
+                
+                if ((newDir == null) || (!newDir.Exists))
                 {
                     return null;
                 }                
@@ -262,36 +310,27 @@ namespace Gorgon.Editor.ViewModels
                 MessageDisplay.ShowError(ex);
             }
 
-            // This can happen if an exception occurs if we fail to create any directory.
-            if (!Directory.Exists(newPhysicalPath))
-            {
-                return null;
-            }
-
             if (dupeNode != null)
             {
                 dupeNode.Parent.Children.Remove(dupeNode);
                 dupeNode = null;
-            }
+            }            
 
             return new FileExplorerDirectoryNodeVm(this)
             {
+                _directoryInfo = newDir,
                 IsExpanded = false,
-                Name = name,
                 Parent = destNode,
-                PhysicalPath = newPhysicalPath,
                 Metadata = new ProjectItemMetadata(Metadata)
             };
         }
 
-        /// <summary>
-        /// Function to move this node to another node.
-        /// </summary>
-        /// <param name="destNode">The dest node.</param>
-        /// <returns>The new node for the copied node.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destNode"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="GorgonException">Thrown if the <paramref name="destNode"/> is incapable of creating child nodes.</exception>
-        public override IFileExplorerNodeVm MoveNode(IFileExplorerNodeVm destNode)
+        /// <summary>Function to move this node to another node.</summary>
+        /// <param name="destNode">The node that will receive this node as a child.</param>
+        /// <returns><b>true</b> if the node was moved, <b>false</b> if it was cancelled or had an error moving.</returns>
+        /// <exception cref="ArgumentNullException">destNode</exception>
+        /// <exception cref="GorgonException"></exception>
+        public override bool MoveNode(IFileExplorerNodeVm destNode)
         {
             if (destNode == null)
             {
@@ -305,23 +344,26 @@ namespace Gorgon.Editor.ViewModels
 
             if (string.Equals(Parent.FullPath, destNode.FullPath, StringComparison.OrdinalIgnoreCase))
             {
-                return null;
+                return false;
             }
 
             string newPath = Path.Combine(destNode.PhysicalPath, Name);
+#warning Should check for siblings with same name in destination?
+            FileSystemService.MoveDirectory(_directoryInfo, newPath);
 
-            IFileExplorerNodeVm result = new FileExplorerDirectoryNodeVm(this)
+            // Move us to a new residence under the destination node.
+            if ((!Parent.Children.Contains(this))
+                || (destNode.Children.Contains(this)))
             {
-                IsExpanded = false,
-                Name = Name,
-                Parent = destNode,
-                PhysicalPath = newPath,
-                Metadata = Metadata
-            };
+                return false;
+            }
 
-            FileSystemService.MoveDirectory(PhysicalPath, result.PhysicalPath);
+            destNode.Children.Add(this);
 
-            return result;
+            NotifyPropertyChanged(nameof(FullPath));
+            NotifyPropertyChanged(nameof(PhysicalPath));
+
+            return true;
         }
 
         /// <summary>
@@ -350,7 +392,7 @@ namespace Gorgon.Editor.ViewModels
                 throw new ArgumentEmptyException(nameof(destPath));
             }
 
-            var args = new CopyDirectoryArgs(PhysicalPath, destPath)
+            var args = new CopyDirectoryArgs(_directoryInfo, new DirectoryInfo(destPath))
             {
                 OnCopyProgress = onCopy,
                 OnResolveConflict = ResolveExportConflict

@@ -36,7 +36,7 @@ namespace Gorgon.Editor.ViewModels
     /// Parameters to inject into a <see cref="IFileExplorerNodeVm"/> concrete type.
     /// </summary>
     internal class FileExplorerNodeParameters
-        : ViewModelCommonParameters, IGorgonNamedObject
+        : ViewModelCommonParameters
     {
         /// <summary>
         /// Property to return the file system service used to manipulate the underlying file system.
@@ -79,33 +79,17 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the name of this object.
-        /// </summary>
-        public string Name
-        {
-            get;
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="FileExplorerNodeParameters"/> class.
         /// </summary>
-        /// <param name="name">The name of the node.</param>
         /// <param name="physicalPath">The physical file system object that the node represents.</param>
         /// <param name="project">The project data.</param>
         /// <param name="viewModelFactory">The view model factory for creating view models.</param>
         /// <param name="fileSystemService">The file system service used to manipulate the underlying file system.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public FileExplorerNodeParameters(string name, string physicalPath, IProject project, ViewModelFactory viewModelFactory, IFileSystemService fileSystemService)
+        public FileExplorerNodeParameters(string physicalPath, IProject project, ViewModelFactory viewModelFactory, IFileSystemService fileSystemService)
             : base(viewModelFactory)
         {
             Project = project ?? throw new ArgumentNullException(nameof(project));
-
-            Name = name ?? throw new ArgumentNullException(nameof(name));
-
-            if (string.IsNullOrWhiteSpace(Name))
-            {
-                throw new ArgumentEmptyException(nameof(name));
-            }
 
             PhysicalPath = physicalPath ?? throw new ArgumentNullException(nameof(physicalPath));
 

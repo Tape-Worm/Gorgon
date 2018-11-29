@@ -271,8 +271,8 @@ namespace Gorgon.Editor.ViewModels
 
             var result = new FileExplorerFileNodeVm();
 
-            // TODO: Add links as children.
-            result.Initialize(new FileExplorerNodeParameters(file.Name, file.FullName, project, this, fileSystemService)
+            // TODO: Add links as children.            
+            result.Initialize(new FileExplorerNodeParameters(file.FullName, project, this, fileSystemService)
             {
                 Parent = parent
             });
@@ -321,7 +321,7 @@ namespace Gorgon.Editor.ViewModels
 
             var children = new ObservableCollection<IFileExplorerNodeVm>();
 
-            result.Initialize(new FileExplorerNodeParameters(directory.Name, directory.FullName.FormatDirectory(Path.DirectorySeparatorChar), project, this, fileSystemService)
+            result.Initialize(new FileExplorerNodeParameters(directory.FullName.FormatDirectory(Path.DirectorySeparatorChar), project, this, fileSystemService)
             {
                 Parent = parentNode,
                 Children = children
@@ -349,18 +349,12 @@ namespace Gorgon.Editor.ViewModels
                 throw new DirectoryNotFoundException();
             }
 
-            var result = new FileExplorerVm();
-            
-            var root = new FileExplorerDirectoryNodeVm
-            {
-                IsExpanded = true,
-                Metadata = new ProjectItemMetadata()
-            };
+            var result = new FileExplorerVm();            
+            var root = new FileExplorerRootNode();
 
             // This is a special node, used internally.
-            root.Initialize(new FileExplorerNodeParameters("/", project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar), project, this, fileSystemService));
+            root.Initialize(new FileExplorerNodeParameters(project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar), project, this, fileSystemService));
 
-            var nodes = new ObservableCollection<IFileExplorerNodeVm>();
             DoEnumerateFileSystemObjects(project.ProjectWorkSpace.FullName, project, fileSystemService, root);
 
             if (autoInclude)
