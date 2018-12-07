@@ -39,8 +39,6 @@ namespace Gorgon.Editor
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.AppThemeManager = new ComponentFactory.Krypton.Toolkit.KryptonManager(this.components);
             this.AppPalette = new ComponentFactory.Krypton.Toolkit.KryptonPalette(this.components);
-            this.PanelWorkSpace = new ComponentFactory.Krypton.Toolkit.KryptonPanel();
-            this.PanelProject = new Gorgon.Editor.Views.EditorProject();
             this.ProgressScreen = new Gorgon.UI.GorgonProgressScreenPanel();
             this.WaitScreen = new Gorgon.UI.GorgonWaitScreenPanel();
             this.RibbonMain = new ComponentFactory.Krypton.Ribbon.KryptonRibbon();
@@ -59,7 +57,6 @@ namespace Gorgon.Editor
             this.kryptonRibbonGroupLines2 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
             this.ButtonFileSystemCopy = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.ButtonFileSystemCut = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.kryptonRibbonGroupSeparator4 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
             this.RibbonGroupFileSystemOrganize = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
             this.kryptonRibbonGroupTriple2 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
             this.ButtonFileSystemDelete = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
@@ -78,12 +75,12 @@ namespace Gorgon.Editor
             this.CheckShowAllFiles = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.ButtonExpand = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.ButtonCollapse = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.StageLauncher = new Gorgon.Editor.Views.StageLaunch();
-            this.StageLive = new Gorgon.Editor.Views.StageLive();
-            ((System.ComponentModel.ISupportInitialize)(this.PanelWorkSpace)).BeginInit();
-            this.PanelWorkSpace.SuspendLayout();
+            this.Stage = new Gorgon.Editor.Views.Stage();
+            this.PanelProject = new Gorgon.Editor.Views.EditorProject();
+            this.PanelWorkSpace = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.RibbonMain)).BeginInit();
             this.MenuInclude.SuspendLayout();
+            this.PanelWorkSpace.SuspendLayout();
             this.SuspendLayout();
             // 
             // AppThemeManager
@@ -459,10 +456,10 @@ namespace Gorgon.Editor
             this.AppPalette.Common.StateCommon.Back.GraphicsHint = ComponentFactory.Krypton.Toolkit.PaletteGraphicsHint.AntiAlias;
             this.AppPalette.Common.StateCommon.Content.LongText.Color1 = System.Drawing.Color.White;
             this.AppPalette.Common.StateCommon.Content.LongText.Color2 = System.Drawing.Color.White;
-            this.AppPalette.Common.StateCommon.Content.LongText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.AppPalette.Common.StateCommon.Content.LongText.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.AppPalette.Common.StateCommon.Content.ShortText.Color1 = System.Drawing.Color.White;
             this.AppPalette.Common.StateCommon.Content.ShortText.Color2 = System.Drawing.Color.White;
-            this.AppPalette.Common.StateCommon.Content.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.AppPalette.Common.StateCommon.Content.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.AppPalette.Common.StateDisabled.Back.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(104)))), ((int)(((byte)(104)))), ((int)(((byte)(104)))));
             this.AppPalette.Common.StateDisabled.Back.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(104)))), ((int)(((byte)(104)))), ((int)(((byte)(104)))));
             this.AppPalette.Common.StateDisabled.Back.ColorAlign = ComponentFactory.Krypton.Toolkit.PaletteRectangleAlign.Form;
@@ -570,7 +567,7 @@ namespace Gorgon.Editor
             this.AppPalette.ControlStyles.ControlCustom1.StateDisabled.Border.Color1 = System.Drawing.Color.DimGray;
             this.AppPalette.ControlStyles.ControlCustom1.StateDisabled.Border.Color2 = System.Drawing.Color.DimGray;
             this.AppPalette.ControlStyles.ControlCustom1.StateDisabled.Border.DrawBorders = ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Right;
-            this.AppPalette.FilePath = "";
+            this.AppPalette.CustomisedKryptonPaletteFilePath = null;
             this.AppPalette.FormStyles.FormCommon.StateCommon.Back.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.AppPalette.FormStyles.FormCommon.StateCommon.Back.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.AppPalette.FormStyles.FormCommon.StateCommon.Border.Color1 = System.Drawing.Color.SteelBlue;
@@ -593,14 +590,23 @@ namespace Gorgon.Editor
             this.AppPalette.FormStyles.FormCommon.StateInactive.Border.GraphicsHint = ComponentFactory.Krypton.Toolkit.PaletteGraphicsHint.AntiAlias;
             this.AppPalette.FormStyles.FormCommon.StateInactive.Border.Rounding = 0;
             this.AppPalette.FormStyles.FormCommon.StateInactive.Border.Width = 1;
+            this.AppPalette.HeaderStyles.HeaderCommon.StateCommon.Border.Draw = ComponentFactory.Krypton.Toolkit.InheritBool.False;
+            this.AppPalette.HeaderStyles.HeaderCommon.StateCommon.Border.DrawBorders = ((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders)((((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Top | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Bottom) 
+            | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Left) 
+            | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Right)));
             this.AppPalette.HeaderStyles.HeaderForm.StateCommon.Back.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.AppPalette.HeaderStyles.HeaderForm.StateCommon.Back.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.HeaderStyles.HeaderForm.StateCommon.Back.Image = global::Gorgon.Editor.Properties.Resources.windo_deco_129x39;
+            this.AppPalette.HeaderStyles.HeaderForm.StateCommon.Back.ImageStyle = ComponentFactory.Krypton.Toolkit.PaletteImageStyle.BottomRight;
             this.AppPalette.HeaderStyles.HeaderForm.StateCommon.ButtonEdgeInset = 8;
             this.AppPalette.HeaderStyles.HeaderForm.StateCommon.ButtonPadding = new System.Windows.Forms.Padding(3);
-            this.AppPalette.HeaderStyles.HeaderForm.StateCommon.Content.Padding = new System.Windows.Forms.Padding(3, -1, -1, -1);
             this.AppPalette.HeaderStyles.HeaderForm.StateCommon.Content.ShortText.Font = new System.Drawing.Font("Segoe UI", 14F);
             this.AppPalette.HeaderStyles.HeaderForm.StateDisabled.Content.ShortText.Color1 = System.Drawing.Color.DimGray;
             this.AppPalette.HeaderStyles.HeaderForm.StateDisabled.Content.ShortText.Color2 = System.Drawing.Color.DimGray;
+            this.AppPalette.HeaderStyles.HeaderPrimary.StateCommon.Border.Draw = ComponentFactory.Krypton.Toolkit.InheritBool.False;
+            this.AppPalette.HeaderStyles.HeaderPrimary.StateCommon.Border.DrawBorders = ((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders)((((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Top | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Bottom) 
+            | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Left) 
+            | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Right)));
             this.AppPalette.InputControlStyles.InputControlCommon.StateActive.Back.Color1 = System.Drawing.Color.White;
             this.AppPalette.InputControlStyles.InputControlCommon.StateActive.Back.Color2 = System.Drawing.Color.White;
             this.AppPalette.InputControlStyles.InputControlCommon.StateActive.Border.Color1 = System.Drawing.Color.Gray;
@@ -640,12 +646,15 @@ namespace Gorgon.Editor
             this.AppPalette.LabelStyles.LabelCustom3.StateCommon.ShortText.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.AppPalette.LabelStyles.LabelCustom3.StateCommon.ShortText.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.AppPalette.LabelStyles.LabelCustom3.StateCommon.ShortText.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.AppPalette.LabelStyles.LabelKeyTip.StateCommon.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.AppPalette.LabelStyles.LabelNormalControl.StateCommon.Padding = new System.Windows.Forms.Padding(0);
             this.AppPalette.LabelStyles.LabelNormalControl.StateCommon.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.AppPalette.LabelStyles.LabelSuperTip.StateCommon.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.AppPalette.LabelStyles.LabelTitleControl.StateCommon.DrawFocus = ComponentFactory.Krypton.Toolkit.InheritBool.False;
             this.AppPalette.LabelStyles.LabelTitleControl.StateCommon.ShortText.Font = new System.Drawing.Font("Segoe UI", 18F);
             this.AppPalette.LabelStyles.LabelTitlePanel.StateCommon.ShortText.Color1 = System.Drawing.Color.Silver;
             this.AppPalette.LabelStyles.LabelTitlePanel.StateCommon.ShortText.Color2 = System.Drawing.Color.Silver;
+            this.AppPalette.LabelStyles.LabelToolTip.StateCommon.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.AppPalette.PanelStyles.PanelClient.StateCommon.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.AppPalette.PanelStyles.PanelClient.StateCommon.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.AppPalette.PanelStyles.PanelClient.StateCommon.Draw = ComponentFactory.Krypton.Toolkit.InheritBool.True;
@@ -751,51 +760,25 @@ namespace Gorgon.Editor
             this.AppPalette.ToolMenuStatus.ToolStrip.ToolStripText = System.Drawing.Color.White;
             this.AppPalette.ToolMenuStatus.UseRoundedEdges = ComponentFactory.Krypton.Toolkit.InheritBool.False;
             // 
-            // PanelWorkSpace
-            // 
-            this.PanelWorkSpace.Controls.Add(this.PanelProject);
-            this.PanelWorkSpace.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PanelWorkSpace.Location = new System.Drawing.Point(0, 0);
-            this.PanelWorkSpace.Name = "PanelWorkSpace";
-            this.PanelWorkSpace.Size = new System.Drawing.Size(1264, 761);
-            this.PanelWorkSpace.TabIndex = 0;
-            // 
-            // PanelProject
-            // 
-            this.PanelProject.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.PanelProject.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PanelProject.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.PanelProject.GraphicsContext = null;
-            this.PanelProject.Location = new System.Drawing.Point(0, 0);
-            this.PanelProject.Name = "PanelProject";
-            this.PanelProject.Size = new System.Drawing.Size(1264, 761);
-            this.PanelProject.TabIndex = 0;
-            this.PanelProject.RibbonAdded += new System.EventHandler<Gorgon.Editor.ContentRibbonEventArgs>(this.PanelProject_RibbonAdded);
-            this.PanelProject.RibbonRemoved += new System.EventHandler<Gorgon.Editor.ContentRibbonEventArgs>(this.PanelProject_RibbonRemoved);
-            this.PanelProject.RenameBegin += new System.EventHandler(this.PanelProject_RenameBegin);
-            this.PanelProject.RenameEnd += new System.EventHandler(this.PanelProject_RenameEnd);
-            // 
             // ProgressScreen
             // 
             this.ProgressScreen.AllowCancellation = true;
             this.ProgressScreen.CurrentValue = 0F;
-            this.ProgressScreen.Location = new System.Drawing.Point(560, 120);
+            this.ProgressScreen.Location = new System.Drawing.Point(521, 307);
             this.ProgressScreen.Name = "ProgressScreen";
             this.ProgressScreen.ProgressMessage = resources.GetString("ProgressScreen.ProgressMessage");
             this.ProgressScreen.ProgressMessageFont = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ProgressScreen.ProgressTitle = resources.GetString("ProgressScreen.ProgressTitle");
             this.ProgressScreen.Size = new System.Drawing.Size(640, 200);
             this.ProgressScreen.TabIndex = 1;
-            this.ProgressScreen.TabStop = true;
             this.ProgressScreen.Visible = false;
             // 
             // WaitScreen
             // 
-            this.WaitScreen.Location = new System.Drawing.Point(320, 240);
+            this.WaitScreen.Location = new System.Drawing.Point(328, 260);
             this.WaitScreen.Name = "WaitScreen";
             this.WaitScreen.Size = new System.Drawing.Size(281, 145);
             this.WaitScreen.TabIndex = 0;
-            this.WaitScreen.TabStop = true;
             this.WaitScreen.Visible = false;
             this.WaitScreen.WaitMessage = "Loading...";
             this.WaitScreen.WaitTitle = "Please wait";
@@ -814,7 +797,7 @@ namespace Gorgon.Editor
             this.TabFileSystem});
             this.RibbonMain.SelectedTab = this.TabFileSystem;
             this.RibbonMain.ShowMinimizeButton = false;
-            this.RibbonMain.Size = new System.Drawing.Size(1264, 115);
+            this.RibbonMain.Size = new System.Drawing.Size(1280, 115);
             this.RibbonMain.TabIndex = 0;
             this.RibbonMain.Visible = false;
             this.RibbonMain.AppButtonMenuOpening += new System.ComponentModel.CancelEventHandler(this.RibbonMain_AppButtonMenuOpening);
@@ -825,6 +808,7 @@ namespace Gorgon.Editor
             this.ButtonSave.Image = global::Gorgon.Editor.Properties.Resources.save_16x16;
             this.ButtonSave.Text = "Save";
             this.ButtonSave.ToolTipBody = "Saves the current project.";
+            this.ButtonSave.Click += new System.EventHandler(this.ButtonSave_Click);
             // 
             // TabFileSystem
             // 
@@ -893,8 +877,7 @@ namespace Gorgon.Editor
             this.GroupFileSystemEdit.DialogBoxLauncher = false;
             this.GroupFileSystemEdit.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupContainer[] {
             this.kryptonRibbonGroupTriple3,
-            this.kryptonRibbonGroupLines2,
-            this.kryptonRibbonGroupSeparator4});
+            this.kryptonRibbonGroupLines2});
             this.GroupFileSystemEdit.KeyTipGroup = "E";
             this.GroupFileSystemEdit.TextLine1 = "Edit";
             // 
@@ -1085,72 +1068,77 @@ namespace Gorgon.Editor
             this.ButtonCollapse.ToolTipBody = "Collapse the currently selected file/directory.";
             this.ButtonCollapse.Click += new System.EventHandler(this.ButtonCollapse_Click);
             // 
-            // StageLauncher
+            // Stage
             // 
-            this.StageLauncher.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.StageLauncher.CanOpen = true;
-            this.StageLauncher.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.StageLauncher.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.StageLauncher.Location = new System.Drawing.Point(0, 115);
-            this.StageLauncher.Name = "StageLauncher";
-            this.StageLauncher.Size = new System.Drawing.Size(1264, 646);
-            this.StageLauncher.TabIndex = 0;
-            this.StageLauncher.OpenClicked += new System.EventHandler(this.StageLauncher_OpenClicked);
+            this.Stage.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.Stage.CanOpen = true;
+            this.Stage.CanSave = true;
+            this.Stage.CanSaveAs = true;
+            this.Stage.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Stage.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.Stage.IsStartup = true;
+            this.Stage.Location = new System.Drawing.Point(0, 115);
+            this.Stage.Name = "Stage";
+            this.Stage.Size = new System.Drawing.Size(1280, 685);
+            this.Stage.TabIndex = 1;
+            this.Stage.BackClicked += new System.EventHandler(this.StageLive_BackClicked);
+            this.Stage.OpenClicked += new System.EventHandler(this.StageLive_OpenClicked);
+            this.Stage.Save += new System.EventHandler<Gorgon.Editor.Views.SaveEventArgs>(this.StageLive_Save);
             // 
-            // StageLive
+            // PanelProject
             // 
-            this.StageLive.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.StageLive.CanOpen = true;
-            this.StageLive.CanSave = false;
-            this.StageLive.CanSaveAs = false;
-            this.StageLive.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.StageLive.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.StageLive.Location = new System.Drawing.Point(0, 115);
-            this.StageLive.Name = "StageLive";
-            this.StageLive.Size = new System.Drawing.Size(1264, 646);
-            this.StageLive.TabIndex = 1;
-            this.StageLive.BackClicked += new System.EventHandler(this.StageLive_BackClicked);
-            this.StageLive.OpenClicked += new System.EventHandler(this.StageLive_OpenClicked);
-            this.StageLive.Save += new System.EventHandler<Gorgon.Editor.Views.SaveEventArgs>(this.StageLive_Save);
+            this.PanelProject.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.PanelProject.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PanelProject.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.PanelProject.GraphicsContext = null;
+            this.PanelProject.Location = new System.Drawing.Point(0, 0);
+            this.PanelProject.Name = "PanelProject";
+            this.PanelProject.Size = new System.Drawing.Size(1280, 800);
+            this.PanelProject.TabIndex = 0;
+            this.PanelProject.RibbonAdded += new System.EventHandler<Gorgon.Editor.ContentRibbonEventArgs>(this.PanelProject_RibbonAdded);
+            this.PanelProject.RibbonRemoved += new System.EventHandler<Gorgon.Editor.ContentRibbonEventArgs>(this.PanelProject_RibbonRemoved);
+            this.PanelProject.RenameBegin += new System.EventHandler(this.PanelProject_RenameBegin);
+            this.PanelProject.RenameEnd += new System.EventHandler(this.PanelProject_RenameEnd);
+            // 
+            // PanelWorkSpace
+            // 
+            this.PanelWorkSpace.Controls.Add(this.PanelProject);
+            this.PanelWorkSpace.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PanelWorkSpace.Location = new System.Drawing.Point(0, 0);
+            this.PanelWorkSpace.Name = "PanelWorkSpace";
+            this.PanelWorkSpace.Size = new System.Drawing.Size(1280, 800);
+            this.PanelWorkSpace.TabIndex = 0;
             // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.ClientSize = new System.Drawing.Size(1264, 761);
+            this.ClientSize = new System.Drawing.Size(1280, 800);
             this.Controls.Add(this.ProgressScreen);
-            this.Controls.Add(this.StageLauncher);
-            this.Controls.Add(this.StageLive);
+            this.Controls.Add(this.Stage);
             this.Controls.Add(this.WaitScreen);
             this.Controls.Add(this.RibbonMain);
             this.Controls.Add(this.PanelWorkSpace);
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormMain";
-            this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-            this.Text = "Gorgon Editor";
             this.Activated += new System.EventHandler(this.FormMain_Activated);
-            ((System.ComponentModel.ISupportInitialize)(this.PanelWorkSpace)).EndInit();
-            this.PanelWorkSpace.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.RibbonMain)).EndInit();
             this.MenuInclude.ResumeLayout(false);
+            this.PanelWorkSpace.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
-
         #endregion
 
         private ComponentFactory.Krypton.Toolkit.KryptonManager AppThemeManager;
         private ComponentFactory.Krypton.Toolkit.KryptonPalette AppPalette;
-        private ComponentFactory.Krypton.Toolkit.KryptonPanel PanelWorkSpace;
-        private Views.StageLaunch StageLauncher;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbon RibbonMain;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonTab TabFileSystem;
         private Gorgon.UI.GorgonWaitScreenPanel WaitScreen;
-        private EditorProject PanelProject;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup RibbonGroupFileSystemNew;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple1;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemNewDirectory;
@@ -1184,8 +1172,9 @@ namespace Gorgon.Editor
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonExport;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator3;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonQATButton ButtonSave;
-        private StageLive StageLive;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator4;
+        private Stage Stage;
+        private EditorProject PanelProject;
+        private System.Windows.Forms.Panel PanelWorkSpace;
     }
 }
 

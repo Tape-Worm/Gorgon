@@ -26,12 +26,22 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text;
 using System.Windows.Forms;
+using System.Xml;
+using ComponentFactory.Krypton.Docking;
+using ComponentFactory.Krypton.Navigator;
 using ComponentFactory.Krypton.Ribbon;
+using ComponentFactory.Krypton.Workspace;
+using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Editor.ViewModels;
+using Gorgon.IO;
 
 namespace Gorgon.Editor.Views
 {
@@ -41,6 +51,13 @@ namespace Gorgon.Editor.Views
     internal partial class EditorProject 
         : EditorBaseControl, IDataContext<IProjectVm>
     {
+        #region Constants.
+        // The file system panel unique ID.
+        private const string FileSystemID = "__FS_ID__QaIT-CQPZVwp4bV1zgyzp76KKy-et4Ft0sza971XT9IONmXAsTPQdqLk3OkCvCIB";
+        // The content panel unique ID.
+        private const string ContentID = "__CONTENT_ID__6jBgPRNH8W5BeUa3q-TCzJ8MSQiIZJq-dKMR2WMDLhOApFe3MbgPKMR9DtUTuspb";
+        #endregion
+
         #region Events.
         /// <summary>
         /// Event triggered when a ribbon is added.
@@ -90,6 +107,10 @@ namespace Gorgon.Editor.Views
         private bool _deferDataContextLoad = true;
         // The current ribbon for the current content.
         private KryptonRibbon _currentContentRibbon;
+        // The page used to host the file system explorer.
+        private KryptonPage _fileSystemPage;
+        // The page used to host the content.
+        private KryptonPage _contentPage;
         #endregion
         
         #region Properties.
@@ -115,6 +136,11 @@ namespace Gorgon.Editor.Views
         #endregion
 
         #region Methods.
+        /// <summary>Handles the DockspaceAdding event of the Dock control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DockspaceEventArgs"/> instance containing the event data.</param>
+        private void Dock_DockspaceAdding(object sender, DockspaceEventArgs e) => e.DockspaceControl.Width = 384;
+
         /// <summary>
         /// Handles the PropertyChanged event of the DataContext control.
         /// </summary>
@@ -164,17 +190,16 @@ namespace Gorgon.Editor.Views
             }
 
             // Remove all controls.
-            while (SplitProject.Panel1.Controls.Count > 0)
+            while (PanelContent.Controls.Count > 0)
             {
                 // Leave this here for now, just in case we need it later.
                 //var contentControl = SplitProject.Panel1.Controls[SplitProject.Panel1.Controls.Count - 1] as ContentBaseControl;
-                SplitProject.Panel1.Controls[SplitProject.Panel1.Controls.Count - 1].Dispose();
+                PanelContent.Controls[PanelContent.Controls.Count - 1].Dispose();
             }
 
             // No content, so we can go now.
             if (dataContext?.CurrentContent == null)
-            {
-                SplitProject.Panel1Collapsed = true;
+            {                
                 return;
             }
 
@@ -182,8 +207,7 @@ namespace Gorgon.Editor.Views
             ContentBaseControl control = ViewFactory.CreateView<ContentBaseControl>(dataContext.CurrentContent);
             ViewFactory.AssignViewModel(dataContext.CurrentContent, control);
             control.Dock = DockStyle.Fill;
-            SplitProject.Panel1.Controls.Add(control);
-            SplitProject.Panel1Collapsed = false;
+            PanelContent.Controls.Add(control);            
 
             // Set up the graphics context.
             control.SetupGraphics(GraphicsContext);
@@ -231,6 +255,7 @@ namespace Gorgon.Editor.Views
             DataContext.PropertyChanging -= DataContext_PropertyChanging;
             DataContext.PropertyChanged -= DataContext_PropertyChanged;
 
+            SaveLayoutToDataContext();
             DataContext.OnUnload();
         }
 
@@ -248,6 +273,117 @@ namespace Gorgon.Editor.Views
             }
         }
 
+        /// <summary>
+        /// Function to save the layout to the data context.
+        /// </summary>
+        private void SaveLayoutToDataContext()
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            try
+            {
+                // The guy who wrote this is useless.
+                byte[] fuckedupData = DockManager.SaveConfigToArray(Encoding.UTF8);
+
+                // Sanitize the array.
+                byte[] cleanData = fuckedupData.Where(item => item != 0).ToArray();
+
+                DataContext.Layout = cleanData;
+            }
+            catch(Exception)
+            {
+                // We don't care if this fails.
+            }
+        }
+
+        /// <summary>
+        /// Function to load the layout from the data context.
+        /// </summary>
+        private void LoadLayoutFromDataContext()
+        {
+            if (DataContext?.Layout == null)
+            {
+                return;
+            }
+
+            try
+            {                
+
+                DockManager.LoadConfigFromArray(DataContext.Layout);
+
+                if ((DockManager.CellsWorkspace.Length == 0) || (!DockManager.CellsWorkspace[0].Contains(_contentPage)))
+                {
+                    if (!_contentPage.Controls.Contains(PanelContent))
+                    {
+                        _contentPage.Controls.Add(PanelContent);
+                    }
+
+                    DockManager.AddToWorkspace("Workspace", new[] { _contentPage });
+                    // Update the main workspace area to hide the tab and buttons.
+                    DockManager.CellsWorkspace[0].NavigatorMode = NavigatorMode.Panel;
+                }
+            }
+            catch
+            {
+                // We don't care if this fails.
+            }
+        }
+
+        /// <summary>
+        /// Function to build the content page dock panel.
+        /// </summary>
+        private void CreateContentPageDockPanel()
+        {
+
+        }
+
+        /// <summary>
+        /// Function to build up the default docking scheme.
+        /// </summary>
+        private void CreateDefaultDockingScheme()
+        {
+            DockManager.ManageControl("Control", this, DockManager.ManageWorkspace("Workspace", DockSpace));
+            DockManager.ManageFloating(ParentForm);
+            DockManager.DefaultCloseRequest = DockingCloseRequest.None;
+
+            // Setup content area.
+            _contentPage = new KryptonPage
+            {
+                Name = ContentID,
+                TextTitle = "N/A",
+                UniqueName = ContentID,
+                Visible = true
+            };
+            _contentPage.ClearFlags(KryptonPageFlags.All);
+
+            Controls.Remove(PanelContent);
+            _contentPage.Controls.Add(PanelContent);
+            PanelContent.Dock = DockStyle.Fill;
+
+            // Setup file explorer area.
+            _fileSystemPage = new KryptonPage
+            {
+                Name = FileSystemID,
+                TextTitle = Resources.GOREDIT_TEXT_FILESYSTEM,
+                UniqueName = FileSystemID,
+            };
+            _fileSystemPage.ClearFlags(KryptonPageFlags.DockingAllowClose | KryptonPageFlags.DockingAllowDropDown | KryptonPageFlags.DockingAllowWorkspace);
+
+            Controls.Remove(FileExplorer);
+            _fileSystemPage.Controls.Add(FileExplorer);
+            FileExplorer.Dock = DockStyle.Fill;
+
+            // Link to dock manager.
+            DockManager.AddDockspace("Control", DockingEdge.Right, new[] { _fileSystemPage });
+            DockManager.AddToWorkspace("Workspace", new[] { _contentPage });           
+
+            // Update the main workspace area to hide the tab and buttons.
+            DockManager.CellsWorkspace[0].NavigatorMode = NavigatorMode.Panel;
+        }
+
         /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load" /> event.</summary>
         /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data. </param>
         protected override void OnLoad(EventArgs e)
@@ -259,8 +395,10 @@ namespace Gorgon.Editor.Views
             {
                 return;
             }
-            
+
+            CreateDefaultDockingScheme();
             DataContext?.OnLoad();
+            LoadLayoutFromDataContext();
         }
 
         /// <summary>

@@ -75,17 +75,12 @@
             this.MenuSepNew = new System.Windows.Forms.ToolStripSeparator();
             this.MenuItemCreateDirectory = new System.Windows.Forms.ToolStripMenuItem();
             this.TreeImages = new System.Windows.Forms.ImageList(this.components);
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.panel4 = new System.Windows.Forms.Panel();
-            this.LabelHeader = new ComponentFactory.Krypton.Toolkit.KryptonLabel();
             this.MenuItemCopyTo = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItemMoveTo = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.MenuItemCancel = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuCopyMove = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.MenuOptions.SuspendLayout();
-            this.panel3.SuspendLayout();
-            this.panel4.SuspendLayout();
             this.MenuCopyMove.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -103,7 +98,7 @@
             this.TreeFileSystem.ImageList = this.TreeImages;
             this.TreeFileSystem.ItemHeight = 24;
             this.TreeFileSystem.LabelEdit = true;
-            this.TreeFileSystem.Location = new System.Drawing.Point(0, 26);
+            this.TreeFileSystem.Location = new System.Drawing.Point(0, 0);
             this.TreeFileSystem.Name = "TreeFileSystem";
             treeNode1.Name = "Node4";
             treeNode1.Text = "Node4";
@@ -131,7 +126,7 @@
             this.TreeFileSystem.PathSeparator = "/";
             this.TreeFileSystem.SelectedImageIndex = 0;
             this.TreeFileSystem.ShowLines = false;
-            this.TreeFileSystem.Size = new System.Drawing.Size(600, 442);
+            this.TreeFileSystem.Size = new System.Drawing.Size(600, 468);
             this.TreeFileSystem.Sorted = true;
             this.TreeFileSystem.TabIndex = 0;
             this.TreeFileSystem.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.TreeFileSystem_AfterCollapse);
@@ -277,39 +272,6 @@
             this.TreeImages.Images.SetKeyName(0, "folder_20x20.png");
             this.TreeImages.Images.SetKeyName(1, "generic_file_20x20.png");
             // 
-            // panel3
-            // 
-            this.panel3.AutoSize = true;
-            this.panel3.BackColor = System.Drawing.Color.SteelBlue;
-            this.panel3.Controls.Add(this.panel4);
-            this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel3.Location = new System.Drawing.Point(0, 0);
-            this.panel3.Name = "panel3";
-            this.panel3.Padding = new System.Windows.Forms.Padding(6, 0, 0, 0);
-            this.panel3.Size = new System.Drawing.Size(600, 26);
-            this.panel3.TabIndex = 6;
-            // 
-            // panel4
-            // 
-            this.panel4.AutoSize = true;
-            this.panel4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(204)))), ((int)(((byte)(204)))));
-            this.panel4.Controls.Add(this.LabelHeader);
-            this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel4.Location = new System.Drawing.Point(6, 0);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(594, 26);
-            this.panel4.TabIndex = 1;
-            // 
-            // LabelHeader
-            // 
-            this.LabelHeader.Dock = System.Windows.Forms.DockStyle.Top;
-            this.LabelHeader.LabelStyle = ComponentFactory.Krypton.Toolkit.LabelStyle.Custom3;
-            this.LabelHeader.Location = new System.Drawing.Point(0, 0);
-            this.LabelHeader.Name = "LabelHeader";
-            this.LabelHeader.Size = new System.Drawing.Size(594, 26);
-            this.LabelHeader.TabIndex = 0;
-            this.LabelHeader.Values.Text = "File system";
-            // 
             // MenuItemCopyTo
             // 
             this.MenuItemCopyTo.Name = "MenuItemCopyTo";
@@ -352,16 +314,10 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.TreeFileSystem);
-            this.Controls.Add(this.panel3);
             this.Name = "FileExploder";
             this.MenuOptions.ResumeLayout(false);
-            this.panel3.ResumeLayout(false);
-            this.panel3.PerformLayout();
-            this.panel4.ResumeLayout(false);
-            this.panel4.PerformLayout();
             this.MenuCopyMove.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -369,9 +325,6 @@
 
         private ComponentFactory.Krypton.Toolkit.KryptonTreeView TreeFileSystem;
         private System.Windows.Forms.ImageList TreeImages;
-        private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.Panel panel4;
-        private ComponentFactory.Krypton.Toolkit.KryptonLabel LabelHeader;
         private System.Windows.Forms.ContextMenuStrip MenuOptions;
         private System.Windows.Forms.ToolStripMenuItem MenuItemDelete;
         private System.Windows.Forms.ToolStripSeparator MenuSepOrganize;

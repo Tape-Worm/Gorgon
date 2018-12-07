@@ -669,8 +669,8 @@ namespace Gorgon.Editor.ViewModels
                 // No changes?  The we can just go.
                 if ((CurrentProject == null) || (CurrentProject.ProjectState == ProjectState.Unmodified) || (_saveDialog.Providers.Writers.Count == 0))
                 {
-                    SaveSettings();
                     OnUnload();
+                    SaveSettings();                    
                     return;
                 }
 
@@ -691,9 +691,9 @@ namespace Gorgon.Editor.ViewModels
                         }
                         break;                    
                 }
-
-                SaveSettings();
+                                
                 OnUnload();
+                SaveSettings();
             }
             catch (Exception ex)
             {

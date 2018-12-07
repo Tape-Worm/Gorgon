@@ -2,7 +2,7 @@
 <!--Created by exporting the settings of a KryptonPalette instance.-->
 <!--For more information about Krypton visit www.ComponentFactory.com-->
 <!--WARNING: Modifying this file may render it invalid for importing.-->
-<KryptonPalette Version="18" Generated="Friday, 28 September 2018, 17:04">
+<KryptonPalette Version="18" Generated="Thursday, 06 December 2018, 09:05">
   <Properties>
     <ButtonStyles>
       <ButtonCommon>
@@ -563,6 +563,7 @@
             <Color2 Type="Color" Value="Silver" />
           </Back>
           <Border>
+            <DrawBorders Type="PaletteDrawBorders" Value="Top,Bottom,Left,Right" />
             <Width Type="Int" Value="0" />
             <Rounding Type="Int" Value="2" />
           </Border>
@@ -1059,6 +1060,13 @@
           </ShortText>
         </StateCommon>
       </LabelTitlePanel>
+      <LabelToolTip>
+        <StateCommon>
+          <ShortText>
+            <Font Type="Font" Value="Segoe UI, 9pt" />
+          </ShortText>
+        </StateCommon>
+      </LabelToolTip>
       <LabelCustom1>
         <StateCommon>
           <ShortText>

@@ -153,17 +153,11 @@
     </Compile>
     <Compile Include="Views\FileSystemNodeComparer.cs" />
     <Compile Include="Views\SaveEventArgs.cs" />
-    <Compile Include="Views\StageLaunch.cs">
+    <Compile Include="Views\Stage.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\StageLaunch.Designer.cs">
-      <DependentUpon>StageLaunch.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\StageLive.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Views\StageLive.Designer.cs">
-      <DependentUpon>StageLive.cs</DependentUpon>
+    <Compile Include="Views\Stage.Designer.cs">
+      <DependentUpon>Stage.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\StageNew.cs">
       <SubType>UserControl</SubType>
@@ -201,11 +195,8 @@
     <EmbeddedResource Include="Views\FileExploder.resx">
       <DependentUpon>FileExploder.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\StageLaunch.resx">
-      <DependentUpon>StageLaunch.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\StageLive.resx">
-      <DependentUpon>StageLive.cs</DependentUpon>
+    <EmbeddedResource Include="Views\Stage.resx">
+      <DependentUpon>Stage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\StageNew.resx">
       <DependentUpon>StageNew.cs</DependentUpon>
@@ -231,6 +222,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\windo_deco_129x39.png" />
+    <None Include="Resources\stage_save_as_48x48.png" />
+    <None Include="Resources\stage_save_48x48.png" />
+    <None Include="Resources\Gorgon_2.x_Logo_Small.png" />
+    <None Include="Resources\Gorgon_2.x_Logo_Full_Site.png" />
     <None Include="Resources\undo_16x16.png" />
     <None Include="Resources\redo_48x48.png" />
     <None Include="Resources\redo_16x16.png" />
@@ -340,7 +336,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="KryptonToolkitSuite5470">
-      <Version>5.470.700</Version>
+      <Version>5.470.701</Version>
     </PackageReference>
     <PackageReference Include="SharpDX">
       <Version>4.2.0</Version>

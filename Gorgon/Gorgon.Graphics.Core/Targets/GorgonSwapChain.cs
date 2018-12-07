@@ -357,12 +357,55 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Methods.
-		/// <summary>
-		/// Handles the Activated event of the ParentForm control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void ParentForm_Activated(object sender, EventArgs e)
+        /// <summary>
+        /// Function to locate the form for the owning control.
+        /// </summary>
+        /// <param name="control">The control owned by the form.</param>
+        /// <returns>The form that owns the control.</returns>
+        private Form FindForm(Control control)
+        {
+            var result = control as Form;
+
+            if (result != null)
+            {
+                return result;
+            }
+
+            result = control.FindForm();
+
+            if (result == null)
+            {
+                result = Form.ActiveForm;
+
+                if ((result != null) && (result.DisplayRectangle.IntersectsWith(control.RectangleToScreen(control.ClientRectangle))))
+                {
+                    return result;
+                }
+            }
+
+            if ((result == null) && (Application.OpenForms.Count > 0))
+            {
+                foreach (Form form in Application.OpenForms)
+                {
+                    if (!form.DisplayRectangle.IntersectsWith(control.RectangleToScreen(control.ClientRectangle)))
+                    {
+                        continue;
+                    }
+
+                    result = form;
+                    break;
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Handles the Activated event of the ParentForm control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ParentForm_Activated(object sender, EventArgs e)
 		{
             if ((!ExitFullScreenModeOnFocusLoss) 
 				|| (!IsWindowed)
@@ -1152,7 +1195,7 @@ namespace Gorgon.Graphics.Core
             Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
             ValidateSwapChainInfo(info);
             Window = control ?? throw new ArgumentNullException(nameof(control));
-            ParentForm = (control as Form) ?? control.FindForm();
+            ParentForm = FindForm(control);
 
             Debug.Assert(ParentForm != null, "No parent form found for control.");
 

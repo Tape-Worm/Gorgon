@@ -83,15 +83,27 @@ namespace Gorgon.Editor.Views
             /// </returns>
             public int Compare(ListViewItem x, ListViewItem y)
             {
+                if ((x == null) || (y == null))
+                {
+                    return 0;
+                }
+
                 var xItem = (RecentItem)x.Tag;
                 var yItem = (RecentItem)y.Tag;
 
+                if ((xItem == null) || (yItem == null))
+                {
+                    return 0;
+                }
+
+#pragma warning disable IDE0046 // Convert to conditional expression
                 if (SortColumn.DisplayIndex != 0)
                 {
                     return Order == SortOrder.Ascending
                         ? DateTime.Compare(xItem.LastUsedDate, yItem.LastUsedDate)
                         : DateTime.Compare(xItem.LastUsedDate, yItem.LastUsedDate) * -1;
                 }
+#pragma warning restore IDE0046 // Convert to conditional expression
 
                 return Order == SortOrder.Ascending
                     ? string.Compare(xItem.FilePath, yItem.FilePath, StringComparison.CurrentCultureIgnoreCase)

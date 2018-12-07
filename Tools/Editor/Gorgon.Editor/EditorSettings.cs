@@ -30,6 +30,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using Newtonsoft.Json;
 using DX = SharpDX;
 
@@ -40,6 +41,15 @@ namespace Gorgon.Editor
     /// </summary>
     internal class EditorSettings
     {
+        /// <summary>
+        /// Property to set or return the window layout for the application.
+        /// </summary>
+        public string WindowLayout
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Property to set or return the window boundaries.
         /// </summary>

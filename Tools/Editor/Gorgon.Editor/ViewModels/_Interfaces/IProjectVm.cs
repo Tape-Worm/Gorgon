@@ -62,6 +62,15 @@ namespace Gorgon.Editor.ViewModels
     {
         #region Properties.
         /// <summary>
+        /// Property to set or return the layout for the window.
+        /// </summary>
+        byte[] Layout
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to set or return the current file writer plugin used to write the project out to a file.
         /// </summary>
         FileWriterPlugin WriterPlugin

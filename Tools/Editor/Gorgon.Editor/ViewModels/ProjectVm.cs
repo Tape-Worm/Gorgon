@@ -27,13 +27,15 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Linq;
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
-using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Plugins;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
@@ -72,10 +74,34 @@ namespace Gorgon.Editor.ViewModels
         // The content plugin service.
         private IContentPluginManagerService _contentPlugins;        
         // The currently active content.
-        private IEditorContent _currentContent;        
+        private IEditorContent _currentContent;
+        // The window layout XML.
+        private byte[] _layout;
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to set or return the layout for the window.
+        /// </summary>
+        public byte[] Layout
+        {
+            get => _layout;
+            set
+            {
+                OnPropertyChanging();
+                _layout = value;
+                if ((value == null) || (value.Length == 0))
+                {
+                    _viewModelFactory.Settings.WindowLayout = null;
+                }
+                else
+                {
+                    _viewModelFactory.Settings.WindowLayout = Encoding.UTF8.GetString(value);
+                }
+                OnPropertyChanged();
+            }
+        }
+
         /// <summary>Property to return the current content for the project.</summary>
         public IEditorContent CurrentContent
         {
@@ -108,21 +134,6 @@ namespace Gorgon.Editor.ViewModels
                     CurrentContent.ProgressDeactivated += FileExplorer_ProgressDeactivated;
                     CurrentContent.CloseContent += CurrentContent_CloseContent;
                 }
-            }
-        }
-
-        /// <summary>Handles the CloseContent event of the CurrentContent control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The [EventArgs] instance containing the event data.</param>
-        private void CurrentContent_CloseContent(object sender, EventArgs e) 
-        {
-            try
-            {
-                CurrentContent = null;
-            }
-            catch (Exception ex)
-            {
-                _messageService.ShowError(ex, Resources.GOREDIT_ERR_CLOSING_CONTENT);
             }
         }
 
@@ -272,6 +283,22 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Methods.
+
+        /// <summary>Handles the CloseContent event of the CurrentContent control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The [EventArgs] instance containing the event data.</param>
+        private void CurrentContent_CloseContent(object sender, EventArgs e)
+        {
+            try
+            {
+                CurrentContent = null;
+            }
+            catch (Exception ex)
+            {
+                _messageService.ShowError(ex, Resources.GOREDIT_ERR_CLOSING_CONTENT);
+            }
+        }
+
         /// <summary>
         /// Handles the ProgressDeactivated event of the FileExplorer control.
         /// </summary>
@@ -450,6 +477,16 @@ namespace Gorgon.Editor.ViewModels
             _contentPlugins = injectionParameters.ContentPlugins ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.ContentPlugins), nameof(injectionParameters));
 
             FileExplorer.OpenContentFile = new EditorCommand<IContentFile>(DoOpenContent, CanOpenContent);
+
+            if (string.IsNullOrWhiteSpace(_viewModelFactory.Settings.WindowLayout))
+            {
+                return;
+            }
+
+            using (var data = new MemoryStream())
+            {
+                _layout = Encoding.UTF8.GetBytes(_viewModelFactory.Settings.WindowLayout);
+            }                
         }
 
         /// <summary>

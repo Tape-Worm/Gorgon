@@ -300,7 +300,7 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Gorgon Editor - {0}.
+        ///   Looks up a localized string similar to {0}.
         /// </summary>
         internal static string GOREDIT_CAPTION_FILE {
             get {
@@ -1003,6 +1003,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to File System.
+        /// </summary>
+        internal static string GOREDIT_TEXT_FILESYSTEM {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_FILESYSTEM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Select a directory to import....
         /// </summary>
         internal static string GOREDIT_TEXT_IMPORT_FROM {
@@ -1161,6 +1170,26 @@ namespace Gorgon.Editor.Properties {
         internal static System.Drawing.Bitmap Gorgon_2_x_Logo_Full {
             get {
                 object obj = ResourceManager.GetObject("Gorgon_2_x_Logo_Full", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Gorgon_2_x_Logo_Full_Site {
+            get {
+                object obj = ResourceManager.GetObject("Gorgon_2.x_Logo_Full_Site", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Gorgon_2_x_Logo_Small {
+            get {
+                object obj = ResourceManager.GetObject("Gorgon_2.x_Logo_Small", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1418,6 +1447,26 @@ namespace Gorgon.Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap stage_save_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("stage_save_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap stage_save_as_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("stage_save_as_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap undo_16x16 {
             get {
                 object obj = ResourceManager.GetObject("undo_16x16", resourceCulture);
@@ -1431,6 +1480,16 @@ namespace Gorgon.Editor.Properties {
         internal static System.Drawing.Bitmap undo_48x48 {
             get {
                 object obj = ResourceManager.GetObject("undo_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap windo_deco_129x39 {
+            get {
+                object obj = ResourceManager.GetObject("windo_deco_129x39", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

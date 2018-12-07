@@ -16,6 +16,8 @@
             if (disposing)
             {
                 UnassignEvents();
+                _fileSystemPage?.Dispose();
+                _contentPage?.Dispose();
             }
 
             if (disposing && (components != null))
@@ -33,64 +35,106 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.SplitProject = new ComponentFactory.Krypton.Toolkit.KryptonSplitContainer();
+            this.DockSpace = new ComponentFactory.Krypton.Docking.KryptonDockableWorkspace();
             this.FileExplorer = new Gorgon.Editor.Views.FileExploder();
-            ((System.ComponentModel.ISupportInitialize)(this.SplitProject)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.SplitProject.Panel1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.SplitProject.Panel2)).BeginInit();
-            this.SplitProject.Panel2.SuspendLayout();
-            this.SplitProject.SuspendLayout();
+            this.DockManager = new ComponentFactory.Krypton.Docking.KryptonDockingManager();
+            this.kryptonPage2 = new ComponentFactory.Krypton.Navigator.KryptonPage();
+            this.kryptonPage3 = new ComponentFactory.Krypton.Navigator.KryptonPage();
+            this.PanelContent = new System.Windows.Forms.Panel();
+            ((System.ComponentModel.ISupportInitialize)(this.DockSpace)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.kryptonPage2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.kryptonPage3)).BeginInit();
             this.SuspendLayout();
             // 
-            // SplitProject
+            // DockSpace
             // 
-            this.SplitProject.Cursor = System.Windows.Forms.Cursors.Default;
-            this.SplitProject.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SplitProject.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
-            this.SplitProject.Location = new System.Drawing.Point(0, 0);
-            this.SplitProject.Name = "SplitProject";
-            this.SplitProject.Panel1Collapsed = true;
-            this.SplitProject.Panel1MinSize = 640;
+            this.DockSpace.AutoHiddenHost = false;
+            this.DockSpace.CompactFlags = ((ComponentFactory.Krypton.Workspace.CompactFlags)(((ComponentFactory.Krypton.Workspace.CompactFlags.RemoveEmptyCells | ComponentFactory.Krypton.Workspace.CompactFlags.RemoveEmptySequences) 
+            | ComponentFactory.Krypton.Workspace.CompactFlags.PromoteLeafs)));
+            this.DockSpace.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.DockSpace.Location = new System.Drawing.Point(0, 0);
+            this.DockSpace.Name = "DockSpace";
             // 
-            // SplitProject.Panel2
             // 
-            this.SplitProject.Panel2.Controls.Add(this.FileExplorer);
-            this.SplitProject.Panel2MinSize = 256;
-            this.SplitProject.Size = new System.Drawing.Size(976, 596);
-            this.SplitProject.SplitterDistance = 683;
-            this.SplitProject.TabIndex = 0;
+            // 
+            this.DockSpace.Root.UniqueName = "D313416FEECA4A58B8AF8BFBE6EF84D5";
+            this.DockSpace.Root.WorkspaceControl = this.DockSpace;
+            this.DockSpace.ShowMaximizeButton = false;
+            this.DockSpace.Size = new System.Drawing.Size(976, 596);
+            this.DockSpace.TabIndex = 0;
+            this.DockSpace.TabStop = true;
             // 
             // FileExplorer
             // 
             this.FileExplorer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.FileExplorer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.FileExplorer.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.FileExplorer.Location = new System.Drawing.Point(0, 0);
             this.FileExplorer.Name = "FileExplorer";
-            this.FileExplorer.Size = new System.Drawing.Size(976, 596);
+            this.FileExplorer.Size = new System.Drawing.Size(245, 192);
             this.FileExplorer.TabIndex = 0;
             this.FileExplorer.Enter += new System.EventHandler(this.FileExplorer_Enter);
             this.FileExplorer.Leave += new System.EventHandler(this.FileExplorer_Enter);
+            // 
+            // DockManager
+            // 
+            this.DockManager.DefaultCloseRequest = ComponentFactory.Krypton.Docking.DockingCloseRequest.None;
+            this.DockManager.DockspaceAdding += new System.EventHandler<ComponentFactory.Krypton.Docking.DockspaceEventArgs>(this.Dock_DockspaceAdding);
+            // 
+            // kryptonPage2
+            // 
+            this.kryptonPage2.AutoHiddenSlideSize = new System.Drawing.Size(200, 200);
+            this.kryptonPage2.Flags = 65534;
+            this.kryptonPage2.LastVisibleSet = true;
+            this.kryptonPage2.MinimumSize = new System.Drawing.Size(50, 50);
+            this.kryptonPage2.Name = "kryptonPage2";
+            this.kryptonPage2.Size = new System.Drawing.Size(100, 100);
+            this.kryptonPage2.Text = "kryptonPage2";
+            this.kryptonPage2.ToolTipTitle = "Page ToolTip";
+            this.kryptonPage2.UniqueName = "07FFC2A616D74D8729B9B3673C313097";
+            // 
+            // kryptonPage3
+            // 
+            this.kryptonPage3.AutoHiddenSlideSize = new System.Drawing.Size(200, 200);
+            this.kryptonPage3.Flags = 65534;
+            this.kryptonPage3.LastVisibleSet = true;
+            this.kryptonPage3.MinimumSize = new System.Drawing.Size(50, 50);
+            this.kryptonPage3.Name = "kryptonPage3";
+            this.kryptonPage3.Size = new System.Drawing.Size(100, 100);
+            this.kryptonPage3.Text = "kryptonPage3";
+            this.kryptonPage3.ToolTipTitle = "Page ToolTip";
+            this.kryptonPage3.UniqueName = "4F06F41F32E94EABF69FF7075971C345";
+            // 
+            // PanelContent
+            // 
+            this.PanelContent.BackgroundImage = global::Gorgon.Editor.Properties.Resources.Gorgon_2_x_Logo_Full_Site;
+            this.PanelContent.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.PanelContent.Location = new System.Drawing.Point(293, 243);
+            this.PanelContent.Name = "PanelContent";
+            this.PanelContent.Size = new System.Drawing.Size(417, 100);
+            this.PanelContent.TabIndex = 0;
             // 
             // EditorProject
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.SplitProject);
+            this.Controls.Add(this.PanelContent);
+            this.Controls.Add(this.FileExplorer);
+            this.Controls.Add(this.DockSpace);
             this.Name = "EditorProject";
             this.Size = new System.Drawing.Size(976, 596);
-            ((System.ComponentModel.ISupportInitialize)(this.SplitProject.Panel1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.SplitProject.Panel2)).EndInit();
-            this.SplitProject.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.SplitProject)).EndInit();
-            this.SplitProject.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.DockSpace)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.kryptonPage2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.kryptonPage3)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private ComponentFactory.Krypton.Toolkit.KryptonSplitContainer SplitProject;
         public FileExploder FileExplorer;
+        private ComponentFactory.Krypton.Docking.KryptonDockingManager DockManager;
+        private ComponentFactory.Krypton.Docking.KryptonDockableWorkspace DockSpace;
+        private ComponentFactory.Krypton.Navigator.KryptonPage kryptonPage2;
+        private ComponentFactory.Krypton.Navigator.KryptonPage kryptonPage3;
+        private System.Windows.Forms.Panel PanelContent;
     }
 }

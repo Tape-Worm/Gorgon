@@ -50,9 +50,9 @@
             // PanelPresenter
             // 
             this.PanelPresenter.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PanelPresenter.Location = new System.Drawing.Point(0, 26);
+            this.PanelPresenter.Location = new System.Drawing.Point(0, 27);
             this.PanelPresenter.Name = "PanelPresenter";
-            this.PanelPresenter.Size = new System.Drawing.Size(600, 442);
+            this.PanelPresenter.Size = new System.Drawing.Size(600, 441);
             this.PanelPresenter.TabIndex = 0;
             // 
             // PanelContentName
@@ -63,18 +63,19 @@
             this.PanelContentName.Dock = System.Windows.Forms.DockStyle.Top;
             this.PanelContentName.Location = new System.Drawing.Point(0, 0);
             this.PanelContentName.Name = "PanelContentName";
-            this.PanelContentName.Padding = new System.Windows.Forms.Padding(6, 0, 0, 0);
-            this.PanelContentName.Size = new System.Drawing.Size(600, 26);
+            this.PanelContentName.Padding = new System.Windows.Forms.Padding(6, 0, 0, 1);
+            this.PanelContentName.Size = new System.Drawing.Size(600, 27);
             this.PanelContentName.TabIndex = 7;
             this.PanelContentName.Visible = false;
             // 
             // panel4
             // 
             this.panel4.AutoSize = true;
-            this.panel4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(204)))), ((int)(((byte)(204)))));
+            this.panel4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(75)))), ((int)(((byte)(75)))));
             this.panel4.Controls.Add(this.LabelHeader);
             this.panel4.Controls.Add(this.panel1);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.panel4.Location = new System.Drawing.Point(6, 0);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(594, 26);
@@ -87,6 +88,7 @@
             this.LabelHeader.Location = new System.Drawing.Point(0, 0);
             this.LabelHeader.Name = "LabelHeader";
             this.LabelHeader.Size = new System.Drawing.Size(574, 26);
+            this.LabelHeader.StateCommon.ShortText.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.LabelHeader.TabIndex = 0;
             this.LabelHeader.Values.Text = "(Content)";
             // 
@@ -119,7 +121,7 @@
             this.ButtonClose.StateCommon.Content.ShortText.Font = new System.Drawing.Font("Marlett", 9.5F);
             this.ButtonClose.StateCommon.Content.ShortText.TextH = ComponentFactory.Krypton.Toolkit.PaletteRelativeAlign.Center;
             this.ButtonClose.StateCommon.Content.ShortText.TextV = ComponentFactory.Krypton.Toolkit.PaletteRelativeAlign.Center;
-            this.ButtonClose.StateNormal.Content.ShortText.Color1 = System.Drawing.Color.Black;
+            this.ButtonClose.StateNormal.Content.ShortText.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ButtonClose.TabIndex = 0;
             this.ButtonClose.TabStop = false;
             this.TipButton.SetToolTip(this.ButtonClose, "Closes this content.");

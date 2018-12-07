@@ -26,6 +26,7 @@
 
 using System;
 using System.ComponentModel;
+using Drawing = System.Drawing;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI;
@@ -213,5 +214,42 @@ namespace Gorgon.Editor.Views
         /// </summary>
         public StageNew() => InitializeComponent();
         #endregion
+
+        private void TextName_MouseEnter(object sender, EventArgs e)
+        {
+            if (TextName.Focused)
+            {
+                return;
+            }
+
+            TextName.BackColor = Drawing.Color.FromKnownColor(Drawing.KnownColor.SteelBlue);            
+        }
+
+        private void TextName_MouseLeave(object sender, EventArgs e)
+        {
+            if (TextName.Focused)
+            {
+                return;
+            }
+
+            TextName.BackColor = TextName.Parent.BackColor;
+        }
+
+        private void TextName_Enter(object sender, EventArgs e)
+        {
+            TextName.Parent.BackColor = TextName.BackColor = Drawing.Color.White;
+            TextName.ForeColor = Drawing.Color.FromArgb(64,64,64);
+            TextName.SelectAll();
+            PanelUnderline.BackColor = Drawing.Color.Black;
+        }
+
+        private void TextName_Leave(object sender, EventArgs e)
+        {
+            TextName.Parent.BackColor = BackColor;
+            PanelUnderline.BackColor = TextName.Parent.BackColor;
+            TextName.BackColor = TextName.Parent.BackColor;
+            TextName.ForeColor = TextName.Parent.ForeColor;
+            PanelUnderline.Visible = false;
+        }
     }
 }

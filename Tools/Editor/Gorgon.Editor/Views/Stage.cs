@@ -20,20 +20,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: September 28, 2018 5:07:27 PM
+// Created: December 5, 2018 9:37:55 PM
 // 
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 using Gorgon.Editor.UI.Views;
+using Gorgon.Editor.UI;
+using Gorgon.Editor.ViewModels;
 
 namespace Gorgon.Editor.Views
 {
     /// <summary>
-    /// A staging view used after the app is launched.
+    /// The main staging view for accessing file operations, settings, etc...
     /// </summary>
-    internal partial class StageLive 
+    internal partial class Stage 
         : EditorBaseControl
     {
         #region Events.
@@ -48,14 +57,29 @@ namespace Gorgon.Editor.Views
         /// <summary>
         /// Event triggered when the Save As button is clicked, or a new project is saved for the first time.
         /// </summary>
-        public event EventHandler<SaveEventArgs> Save;        
+        public event EventHandler<SaveEventArgs> Save;
         #endregion
 
         #region Variables.
-
+        // Flag to indicate that we're in start up mode.
+        private bool _isStartup = true;
         #endregion
-                
+
         #region Properties.
+        /// <summary>
+        /// Property to set or return whether the stage should be shown in start up configuration or not.
+        /// </summary>
+        [Browsable(false)]
+        public bool IsStartup
+        {
+            get => _isStartup;
+            set
+            {
+                ButtonSave.Visible = ButtonSaveAs.Visible = PanelBack.Visible = !value;
+                _isStartup = value;
+            }
+        }
+
         /// <summary>
         /// Property to set or return whether the application can save at this time.
         /// </summary>
@@ -82,12 +106,28 @@ namespace Gorgon.Editor.Views
         [Browsable(false)]
         public bool CanOpen
         {
-            get => ButtonOpenProject.Enabled;
-            set => ButtonOpenProject.Enabled = value;
+            get => ButtonBrowse.Enabled;
+            set => ButtonBrowse.Enabled = value;
         }
         #endregion
 
         #region Methods.
+        /// <summary>Function to update the current view state.</summary>
+        private void SetViewState()
+        {
+            NewProject.Visible = CheckNew.Checked;
+            Recent.Visible = CheckRecent.Checked;
+        }
+
+        /// <summary>Handles the Click event of the CheckNew control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void CheckNew_Click(object sender, EventArgs e) => SetViewState();
+
+        /// <summary>Handles the Click event of the CheckRecent control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void CheckRecent_Click(object sender, EventArgs e) => SetViewState();
 
         /// <summary>
         /// Handles the Click event of the ButtonSave control.
@@ -130,32 +170,12 @@ namespace Gorgon.Editor.Views
             EventHandler handler = OpenClicked;
             handler?.Invoke(this, EventArgs.Empty);
         }
-
-        /// <summary>Handles the CheckedButtonChanged event of the ButtonGroup control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The [EventArgs] instance containing the event data.</param>
-        private void ButtonGroup_CheckedButtonChanged(object sender, EventArgs e)
-        {
-            if (CheckNewProject.Checked)
-            {
-                StageRecent.Visible = false;
-                StageNewProject.Visible = true;
-                StageNewProject.BringToFront();
-            }
-            else if (CheckRecent.Checked)
-            {
-                StageNewProject.Visible = false;
-                StageRecent.Visible = true;
-                StageRecent.BringToFront();
-            }
-        }
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StageLive"/> class.
-        /// </summary>
-        public StageLive() => InitializeComponent();
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.Views.Stage"/> class.</summary>
+        public Stage() => InitializeComponent();
         #endregion
+
     }
 }

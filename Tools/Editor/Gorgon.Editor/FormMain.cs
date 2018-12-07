@@ -37,6 +37,7 @@ using Gorgon.Editor.ViewModels;
 using Gorgon.Editor.Views;
 using Gorgon.Timing;
 using Gorgon.Editor.Rendering;
+using Gorgon.Math;
 
 namespace Gorgon.Editor
 {
@@ -270,21 +271,6 @@ namespace Gorgon.Editor
         }
 
         /// <summary>
-        /// Handles the OpenClicked event of the StageLauncher control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void StageLauncher_OpenClicked(object sender, EventArgs e)
-        {
-            if ((DataContext?.OpenProjectCommand == null) || (!DataContext.OpenProjectCommand.CanExecute(null)))
-            {
-                return;
-            }
-
-            DataContext.OpenProjectCommand.Execute(null);
-        }
-
-        /// <summary>
         /// Handles the Activated event of the FormMain control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -297,6 +283,20 @@ namespace Gorgon.Editor
             }
 
             ValidateRibbonButtons();
+        }
+
+        /// <summary>Handles the Click event of the ButtonSave control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonSave_Click(object sender, EventArgs e)
+        {
+            if (DataContext?.CurrentProject == null)
+            {
+                return;
+            }
+
+            var args = new SaveEventArgs(false);
+            StageLive_Save(this, args);
         }
 
         /// <summary>
@@ -402,6 +402,8 @@ namespace Gorgon.Editor
             ButtonFileSystemCopy.Enabled = _clipboardContext?.CanCopy() ?? false;
             ButtonFileSystemCut.Enabled = _clipboardContext?.CanCut() ?? false;
             ButtonFileSystemPaste.Enabled = _clipboardContext?.CanPaste() ?? false;
+
+            ButtonSave.Enabled = (DataContext.CurrentProject != null) && (DataContext.CurrentProject.ProjectState != ProjectState.Unmodified);
         }
 
         /// <summary>
@@ -428,10 +430,10 @@ namespace Gorgon.Editor
         /// <param name="dataContext">The data context to use.</param>
         private void NavigateToProjectView(IMain dataContext)
         {
-            StageLive.Visible = false;
-            StageLauncher.Visible = false;
+            Stage.Visible = false;
             RibbonMain.Visible = true;
             PanelWorkSpace.Visible = true;
+            Text = DataContext.Text;
 
             PanelWorkSpace.BringToFront();
             KeepWaitPanelOnTop();
@@ -456,41 +458,25 @@ namespace Gorgon.Editor
             {
                 var saveAsArgs = new SaveProjectArgs(true, DataContext.CurrentProject);
                 var saveArgs = new SaveProjectArgs(false, DataContext.CurrentProject);
-                StageLive.CanSaveAs = DataContext.SaveProjectCommand.CanExecute(saveAsArgs);
-                StageLive.CanSave = DataContext.SaveProjectCommand.CanExecute(saveArgs);                
+                Stage.CanSaveAs = DataContext.SaveProjectCommand.CanExecute(saveAsArgs);
+                Stage.CanSave = DataContext.SaveProjectCommand.CanExecute(saveArgs);                
             }
             else
             {
-                StageLive.CanSave = StageLive.CanSaveAs = false;
+                Stage.CanSave = Stage.CanSaveAs = false;
             }
 
-            StageLive.CanOpen = (DataContext.OpenProjectCommand != null) && (DataContext.OpenProjectCommand.CanExecute(null));
+            Text = string.Empty;
+            Stage.IsStartup = false;
+            Stage.CanOpen = (DataContext.OpenProjectCommand != null) && (DataContext.OpenProjectCommand.CanExecute(null));
 
-            StageLive.Visible = true;
-            StageLauncher.Visible = false;
+            Stage.Visible = true;
             _clipboardContext = null;
             _undoContext = null;
             RibbonMain.Visible = false;
             PanelWorkSpace.Visible = false;
 
-            StageLive.BringToFront();
-
-            KeepWaitPanelOnTop();
-        }
-
-        /// <summary>
-        /// Function to navigate to the launch view control.
-        /// </summary>
-        private void NavigateToLaunchView()
-        {
-            StageLive.Visible = false;
-            StageLauncher.Visible = true;
-            _clipboardContext = null;
-            _undoContext = null;
-            RibbonMain.Visible = false;
-            PanelWorkSpace.Visible = false;
-
-            StageLauncher.BringToFront();
+            Stage.BringToFront();
 
             KeepWaitPanelOnTop();
         }
@@ -704,7 +690,7 @@ namespace Gorgon.Editor
                 return;
             }
 
-            Text = dataContext.Text;
+            Text = string.Empty;
             _clipboardContext = dataContext.CurrentProject?.ClipboardContext;
             _undoContext = dataContext.CurrentProject?.UndoContext;
 
@@ -830,32 +816,6 @@ namespace Gorgon.Editor
             }
         }
 
-        /// <summary>Handles the Click event of the ButtonFileSystemUndo control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonFileSystemUndo_Click(object sender, EventArgs e)
-        {
-            if ((_undoContext?.UndoCommand == null) || (!_undoContext.UndoCommand.CanExecute(null)))
-            {
-                return;
-            }
-
-            _undoContext.UndoCommand.Execute(null);
-        }
-
-        /// <summary>Handles the Click event of the ButtonFileSystemRedo control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonFileSystemRedo_Click(object sender, EventArgs e)
-        {
-            if ((_undoContext?.RedoCommand == null) || (!_undoContext.RedoCommand.CanExecute(null)))
-            {
-                return;
-            }
-
-            _undoContext.RedoCommand.Execute(null);
-        }
-
         /// <summary>
         /// Handles the Click event of the CheckShowAllFiles control.
         /// </summary>
@@ -923,7 +883,7 @@ namespace Gorgon.Editor
 
             _clipboardContext.Copy();
         }
-        
+
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.</summary>
         /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data. </param>
         protected override void OnLoad(EventArgs e)
@@ -937,7 +897,7 @@ namespace Gorgon.Editor
             
             DataContext.OnLoad();
 
-            StageLauncher.CanOpen = (DataContext.OpenProjectCommand != null) && (DataContext.OpenProjectCommand.CanExecute(null));
+            Stage.CanOpen = (DataContext.OpenProjectCommand != null) && (DataContext.OpenProjectCommand.CanExecute(null));            
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.</summary>
@@ -1017,10 +977,9 @@ namespace Gorgon.Editor
                 UnassignEvents();
 
                 // Assign the data context to the new view.
-                StageLauncher.StageNewProject.SetDataContext(dataContext.NewProject);
-                StageLive.StageNewProject.SetDataContext(dataContext.NewProject);
-                StageLauncher.StageRecent.SetDataContext(dataContext.RecentFiles);
-                StageLive.StageRecent.SetDataContext(dataContext.RecentFiles);
+                Stage.NewProject.SetDataContext(dataContext.NewProject);                
+                Stage.Recent.SetDataContext(dataContext.RecentFiles);
+                Stage.IsStartup = true;
 
                 InitializeFromDataContext(dataContext);
                 DataContext = dataContext;
