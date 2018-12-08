@@ -1016,7 +1016,6 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <returns><b>true</b> if the codec can read the file, <b>false</b> if not.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
-		/// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
 		public override bool IsReadable(Stream stream)
         {
 			TgaHeader header;

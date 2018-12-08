@@ -55,6 +55,19 @@ namespace Gorgon.Editor.UI.Views
         private IEditorContent _dataContext;
         #endregion
 
+        #region Events.
+        /// <summary>
+        /// Event triggered when a drag enter operation is to be bubbled up to its parent.
+        /// </summary>
+        [Category("Drag Drop"), Description("Notifies the parent control that the drag enter event has been passed to it from this control.")]
+        public event EventHandler<DragEventArgs> BubbleDragEnter;
+        /// <summary>
+        /// Event triggered when a drag enter operation is to be bubbled up to its parent.
+        /// </summary>
+        [Category("Drag Drop"), Description("Notifies the parent control that the drag drop event has been passed to it from this control.")]
+        public event EventHandler<DragEventArgs> BubbleDragDrop;
+        #endregion
+
         #region Properties.
         /// <summary>
         /// Property to set or return the idle method for rendering on the control.
@@ -217,6 +230,36 @@ namespace Gorgon.Editor.UI.Views
 
             LabelHeader.Text = $"{dataContext.File.Name}{(dataContext.ContentState == ContentState.Unmodified ? string.Empty : "*")}";
             PanelContentName.Visible = true;
+        }
+
+        /// <summary>
+        /// Function to bubble up the drag enter event up to the main project window.
+        /// </summary>
+        /// <param name="e">The drag event parameters.</param>
+        /// <remarks>
+        /// <para>
+        /// Implementors can use this method to notify the parent of this control that a drag enter event is being passed on from this control.
+        /// </para>
+        /// </remarks>
+        protected virtual void OnBubbleDragEnter(DragEventArgs e)
+        {
+            EventHandler<DragEventArgs> handler = BubbleDragEnter;
+            handler?.Invoke(this, e);
+        }
+
+        /// <summary>
+        /// Function to bubble up the drag drop event up to the main project window.
+        /// </summary>
+        /// <param name="e">The drag event parameters.</param>
+        /// <remarks>
+        /// <para>
+        /// Implementors can use this method to notify the parent of this control that a drag drop event is being passed on from this control.
+        /// </para>
+        /// </remarks>
+        protected virtual void OnBubbleDragDrop(DragEventArgs e)
+        {
+            EventHandler<DragEventArgs> handler = BubbleDragDrop;
+            handler?.Invoke(this, e);
         }
 
         /// <summary>

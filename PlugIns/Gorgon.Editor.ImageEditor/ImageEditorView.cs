@@ -83,6 +83,16 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Methods.
+        /// <summary>Handles the DragDrop event of the ImageEditorView control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+        private void ImageEditorView_DragDrop(object sender, DragEventArgs e) => OnBubbleDragDrop(e);
+
+        /// <summary>Handles the DragEnter event of the ImageEditorView control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+        private void ImageEditorView_DragEnter(object sender, DragEventArgs e) => OnBubbleDragEnter(e);
+
         /// <summary>Function called when a property is changed on the data context.</summary>
         /// <param name="e">The event parameters.</param>
         /// <remarks>Implementors should override this method in order to handle a property change notification from their data context.</remarks>

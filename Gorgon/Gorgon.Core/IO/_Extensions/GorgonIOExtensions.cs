@@ -80,49 +80,101 @@ namespace Gorgon.IO
 		/// </remarks>
 		public static int CopyToStream(this Stream stream, Stream destination, int count, int bufferSize = 81920)
 		{
-			if (stream == null)
-			{
-				throw new ArgumentNullException(nameof(stream));
-			}
+            if (stream.Length <= stream.Position)
+            {
+                return 0;
+            }
 
-			if (!stream.CanRead)
-			{
-				throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_WRITEONLY, nameof(stream));
-			}
+            byte[] buffer = System.Buffers.ArrayPool<byte>.Shared.Rent(bufferSize);
 
-			if (destination == null)
-			{
-				throw new ArgumentNullException(nameof(destination));
-			}
+            try
+            {
+                return count < 1 ? 0 : CopyToStream(stream, destination, count, buffer);
+            }
+            finally
+            {
+                System.Buffers.ArrayPool<byte>.Shared.Return(buffer);
+            }
+        }
 
-			if (!destination.CanWrite)
-			{
-				throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_READONLY, nameof(destination));
-			}
+        /// <summary>
+        /// Function to copy the contents of this stream into another stream, up to a specified byte count.
+        /// </summary>
+        /// <param name="stream">The source stream that will be copied from.</param>
+        /// <param name="destination">The stream that will receive the copy of the data.</param>
+        /// <param name="count">The number of bytes to copy.</param>
+        /// <param name="buffer">The buffer to use for reading and writing the chunks of the file.</param>
+        /// <returns>The number of bytes copied, or 0 if no data was copied or at the end of a stream.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/>,<paramref name="stream"/>, or the <paramref name="buffer"/> parameters are <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="buffer"/> is less than 1 byte.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="stream"/> is write-only.
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="destination"/> is read-only.</para>
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// This method is an extension of the <see cref="Stream.CopyTo(System.IO.Stream,int)"/> method. But unlike that method, it will copy up to the number of bytes specified by <paramref name="count"/>. 
+        /// </para>
+        /// <para>
+        /// The <paramref name="buffer"/> is used to copy data in blocks, rather than attempt to copy byte-by-byte. This may improve performance significantly. It is not recommended that the buffer 
+        /// exceeds than 85,000 bytes. A value under this will ensure that the internal buffer will remain on the small object heap and be collected quickly when done. 
+        /// </para>
+        /// </remarks>
+        public static int CopyToStream(this Stream stream, Stream destination, int count, byte[] buffer)
+        {
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
 
-			if (stream.Length <= stream.Position)
-			{
-				return 0;
-			}
+            if (!stream.CanRead)
+            {
+                throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_WRITEONLY, nameof(stream));
+            }
 
-			if (count < 1)
-			{
-				return 0;
-			}
+            if (destination == null)
+            {
+                throw new ArgumentNullException(nameof(destination));
+            }
 
-			byte[] buffer = new byte[bufferSize];
-			int result = 0;
-			int bytesRead;
+            if (!destination.CanWrite)
+            {
+                throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_READONLY, nameof(destination));
+            }
 
-			while ((count > 0) && ((bytesRead = stream.Read(buffer, 0, count.Min(bufferSize))) != 0))
-			{
-				destination.Write(buffer, 0, bytesRead);
-				result += bytesRead;
-				count -= bytesRead;
-			}
+            if (buffer == null)
+            {
+                throw new ArgumentNullException(nameof(buffer));
+            }
 
-			return result;
-		}
+            if (buffer.Length == 0)
+            {
+                throw new ArgumentEmptyException(nameof(buffer));
+            }
+
+            if (stream.Length <= stream.Position)
+            {
+                return 0;
+            }
+
+            if (count < 1)
+            {
+                return 0;
+            }
+            
+            int bufferSize = buffer.Length;
+            int result = 0;
+            int bytesRead;
+
+            while ((count > 0) && ((bytesRead = stream.Read(buffer, 0, count.Min(bufferSize))) != 0))
+            {
+                destination.Write(buffer, 0, bytesRead);
+                result += bytesRead;
+                count -= bytesRead;
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Function to write a string into a stream with UTF-8 encoding.

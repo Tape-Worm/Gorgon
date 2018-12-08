@@ -28,8 +28,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Services;
@@ -56,6 +58,8 @@ namespace Gorgon.Editor.ViewModels
         private bool _isChanged;
         // The physical file system object represented by this node.
         private FileSystemInfo _physicalFileSystemObject;
+        // Flag to indicate that this node is visible.
+        private bool _isVisible = true;
         #endregion
 
         #region Properties.
@@ -93,6 +97,23 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
             private set;
+        }
+
+        /// <summary>Property to set or return whether this node is visible.</summary>                
+        public bool Visible
+        {
+            get => Parent == null ? true : (!Parent.Visible ? false : _isVisible);
+            set
+            {
+                if (_isVisible == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _isVisible = value;
+                OnPropertyChanged();
+            }
         }
 
         /// <summary>Property to set or return whether the file has changes.</summary>

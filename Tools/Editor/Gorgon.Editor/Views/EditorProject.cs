@@ -27,6 +27,7 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -36,12 +37,14 @@ using ComponentFactory.Krypton.Docking;
 using ComponentFactory.Krypton.Navigator;
 using ComponentFactory.Krypton.Ribbon;
 using ComponentFactory.Krypton.Workspace;
+using Gorgon.Editor.Content;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Editor.ViewModels;
 using Gorgon.IO;
+using Gorgon.Math;
 
 namespace Gorgon.Editor.Views
 {
@@ -111,8 +114,12 @@ namespace Gorgon.Editor.Views
         private KryptonPage _fileSystemPage;
         // The page used to host the content.
         private KryptonPage _contentPage;
+        // The drag drop handler to use for handling content files dropped on to the project surface.
+        private IDragDropHandler<IContentFile> _dragDropHandler;
+        // The current content control.
+        private ContentBaseControl _contentControl;
         #endregion
-        
+
         #region Properties.
         /// <summary>
         /// Property to set or return the application graphics context.
@@ -136,6 +143,73 @@ namespace Gorgon.Editor.Views
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to retrieve the content file contained in drag data.
+        /// </summary>
+        /// <param name="data">The drag/drop data.</param>
+        /// <returns>The content file if dropping is allowed, or <b>null</b> if not.</returns>
+        private IContentFile GetContentFileDragData(IDataObject data)
+        {
+            if ((_dragDropHandler == null)
+                || (data == null)
+                || (!data.GetDataPresent(typeof(TreeNodeDragData))))
+            {
+                return null;
+            }
+
+            var dragData = (IFileExplorerNodeDragData)data.GetData(typeof(TreeNodeDragData));
+
+            if (dragData?.Node == null)
+            {                
+                return null;
+            }
+
+            return dragData.Node as IContentFile;
+            
+        }
+
+        /// <summary>Handles the DragDrop event of the PanelContent control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+        private void PanelContent_DragDrop(object sender, DragEventArgs e)
+        {
+            if (_dragDropHandler == null)
+            {
+                return;
+            }
+
+            IContentFile contentFile = GetContentFileDragData(e.Data);
+
+            if (contentFile == null)
+            {
+                return;
+            }
+
+            _dragDropHandler.Drop(contentFile);
+        }
+
+        /// <summary>Handles the DragEnter event of the PanelContent control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+        private void PanelContent_DragEnter(object sender, DragEventArgs e)
+        {
+            if (_dragDropHandler == null)
+            {
+                e.Effect = DragDropEffects.None;
+                return;
+            }
+
+            IContentFile contentFile = GetContentFileDragData(e.Data);
+
+            if (!_dragDropHandler.CanDrop(contentFile))
+            {
+                e.Effect = DragDropEffects.None;
+                return;
+            }
+
+            e.Effect = DragDropEffects.Copy;
+        }
+
         /// <summary>Handles the DockspaceAdding event of the Dock control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="DockspaceEventArgs"/> instance containing the event data.</param>
@@ -166,13 +240,26 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="PropertyChangingEventArgs"/> instance containing the event data.</param>
         private void DataContext_PropertyChanging(object sender, PropertyChangingEventArgs e)
         {
-            
+            switch (e.PropertyName)
+            {
+                case nameof(IProjectVm.CurrentContent):
+                    if (_contentControl != null)
+                    {
+                        _contentControl.BubbleDragEnter -= ContentControl_BubbleDragEnter;
+                        _contentControl.BubbleDragDrop -= ContentControl_BubbleDragDrop;
+                    }
+                    break;
+            }
         }
 
         /// <summary>
         /// Function to reset the view to its default state when the data context is reset.
         /// </summary>
-        private void ResetDataContext() => FileExplorer.SetDataContext(null);
+        private void ResetDataContext()
+        {
+            FileExplorer.SetDataContext(null);
+            _dragDropHandler = null;
+        }
 
         /// <summary>
         /// Function to set up the currently active content.
@@ -199,30 +286,44 @@ namespace Gorgon.Editor.Views
 
             // No content, so we can go now.
             if (dataContext?.CurrentContent == null)
-            {                
+            {
+                _contentControl = null;
                 return;
             }
 
             // Get our view from the content.
-            ContentBaseControl control = ViewFactory.CreateView<ContentBaseControl>(dataContext.CurrentContent);
-            ViewFactory.AssignViewModel(dataContext.CurrentContent, control);
-            control.Dock = DockStyle.Fill;
-            PanelContent.Controls.Add(control);            
+            _contentControl = ViewFactory.CreateView<ContentBaseControl>(dataContext.CurrentContent);
+            ViewFactory.AssignViewModel(dataContext.CurrentContent, _contentControl);
+            _contentControl.Dock = DockStyle.Fill;
+            PanelContent.Controls.Add(_contentControl);
 
             // Set up the graphics context.
-            control.SetupGraphics(GraphicsContext);
+            _contentControl.SetupGraphics(GraphicsContext);
 
-            if (control.Ribbon != null)
+            if (_contentControl.Ribbon != null)
             {
-                var args = new ContentRibbonEventArgs(control.Ribbon);
+                var args = new ContentRibbonEventArgs(_contentControl.Ribbon);
                 EventHandler<ContentRibbonEventArgs> handler = RibbonAdded;
                 handler?.Invoke(this, args);
 
-                _currentContentRibbon = control.Ribbon;
+                _currentContentRibbon = _contentControl.Ribbon;
             }
 
-            control.Start();
+            _contentControl.Start();
+
+            _contentControl.BubbleDragEnter += ContentControl_BubbleDragEnter;
+            _contentControl.BubbleDragDrop += ContentControl_BubbleDragDrop;
         }
+
+        /// <summary>Handles the BubbleDragDrop event of the ContentControl control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+        private void ContentControl_BubbleDragDrop(object sender, DragEventArgs e) => PanelContent_DragDrop(sender, e);
+
+        /// <summary>Handles the BubbleDragEnter event of the ContentControl control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+        private void ContentControl_BubbleDragEnter(object sender, DragEventArgs e) => PanelContent_DragEnter(sender, e);
 
         /// <summary>
         /// Function to initialize the view with the data context.
@@ -237,6 +338,7 @@ namespace Gorgon.Editor.Views
             }
 
             FileExplorer.SetDataContext(dataContext.FileExplorer);
+            _dragDropHandler = dataContext as IDragDropHandler<IContentFile>;
         }
 
         /// <summary>
@@ -244,6 +346,12 @@ namespace Gorgon.Editor.Views
         /// </summary>
         private void UnassignEvents()
         {
+            if (_contentControl != null)
+            {
+                _contentControl.BubbleDragEnter -= ContentControl_BubbleDragEnter;
+                _contentControl.BubbleDragDrop -= ContentControl_BubbleDragDrop;
+            }
+
             // Close the current content control.
             SetupContent(null);
 
@@ -300,6 +408,61 @@ namespace Gorgon.Editor.Views
         }
 
         /// <summary>
+        /// Function to assign the default controls to the specified pages.
+        /// </summary>
+        private void AssignControlsToPages()
+        {
+
+            if (Controls.Contains(PanelContent))
+            {
+                Controls.Remove(PanelContent);
+            }
+            if (Controls.Contains(FileExplorer))
+            {
+                Controls.Remove(FileExplorer);
+            }
+
+            _contentPage.Controls.Add(PanelContent);
+            PanelContent.Dock = DockStyle.Fill;
+            _fileSystemPage.Controls.Add(FileExplorer);
+            FileExplorer.Dock = DockStyle.Fill;
+        }
+
+        /// <summary>
+        /// Function to create the default pages.
+        /// </summary>
+        private void CreateDefaultPages()
+        {
+            _contentPage?.Dispose();
+            _fileSystemPage?.Dispose();
+
+            // Setup content area.
+            _contentPage = new KryptonPage
+            {
+                Name = ContentID,                
+                Text = "Content Panel",
+                TextTitle = "Content Panel",                
+                UniqueName = ContentID
+            };
+            _contentPage.ClearFlags(KryptonPageFlags.DockingAllowAutoHidden | 
+                KryptonPageFlags.DockingAllowDocked | 
+                KryptonPageFlags.AllowPageDrag |
+                KryptonPageFlags.AllowPageReorder |
+                KryptonPageFlags.DockingAllowDropDown |
+                KryptonPageFlags.DockingAllowFloating |
+                KryptonPageFlags.DockingAllowNavigator);
+            
+            // Setup file explorer area.
+            _fileSystemPage = new KryptonPage
+            {
+                Name = FileSystemID,
+                TextTitle = Resources.GOREDIT_TEXT_FILESYSTEM,
+                UniqueName = FileSystemID,
+            };
+            _fileSystemPage.ClearFlags(KryptonPageFlags.DockingAllowClose | KryptonPageFlags.DockingAllowDropDown | KryptonPageFlags.DockingAllowWorkspace);
+        }
+
+        /// <summary>
         /// Function to load the layout from the data context.
         /// </summary>
         private void LoadLayoutFromDataContext()
@@ -311,33 +474,29 @@ namespace Gorgon.Editor.Views
 
             try
             {                
-
                 DockManager.LoadConfigFromArray(DataContext.Layout);
-
-                if ((DockManager.CellsWorkspace.Length == 0) || (!DockManager.CellsWorkspace[0].Contains(_contentPage)))
-                {
-                    if (!_contentPage.Controls.Contains(PanelContent))
-                    {
-                        _contentPage.Controls.Add(PanelContent);
-                    }
-
-                    DockManager.AddToWorkspace("Workspace", new[] { _contentPage });
-                    // Update the main workspace area to hide the tab and buttons.
-                    DockManager.CellsWorkspace[0].NavigatorMode = NavigatorMode.Panel;
-                }
+                DockManager.CellsWorkspace[0].NavigatorMode = NavigatorMode.Panel;
             }
             catch
             {
+                if (_contentPage.Controls.Contains(PanelContent))
+                {
+                    _contentPage.Controls.Remove(PanelContent);
+                }
+
+                if (_fileSystemPage.Controls.Contains(FileExplorer))
+                {
+                    _fileSystemPage.Controls.Remove(FileExplorer);
+                }
+
+                DockManager.RemoveAllPages(false);
+
+                _contentPage?.Dispose();
+                _fileSystemPage?.Dispose();
+
                 // We don't care if this fails.
+                CreateDefaultDockingScheme();
             }
-        }
-
-        /// <summary>
-        /// Function to build the content page dock panel.
-        /// </summary>
-        private void CreateContentPageDockPanel()
-        {
-
         }
 
         /// <summary>
@@ -345,40 +504,13 @@ namespace Gorgon.Editor.Views
         /// </summary>
         private void CreateDefaultDockingScheme()
         {
-            DockManager.ManageControl("Control", this, DockManager.ManageWorkspace("Workspace", DockSpace));
-            DockManager.ManageFloating(ParentForm);
-            DockManager.DefaultCloseRequest = DockingCloseRequest.None;
+            CreateDefaultPages();
 
-            // Setup content area.
-            _contentPage = new KryptonPage
-            {
-                Name = ContentID,
-                TextTitle = "N/A",
-                UniqueName = ContentID,
-                Visible = true
-            };
-            _contentPage.ClearFlags(KryptonPageFlags.All);
-
-            Controls.Remove(PanelContent);
-            _contentPage.Controls.Add(PanelContent);
-            PanelContent.Dock = DockStyle.Fill;
-
-            // Setup file explorer area.
-            _fileSystemPage = new KryptonPage
-            {
-                Name = FileSystemID,
-                TextTitle = Resources.GOREDIT_TEXT_FILESYSTEM,
-                UniqueName = FileSystemID,
-            };
-            _fileSystemPage.ClearFlags(KryptonPageFlags.DockingAllowClose | KryptonPageFlags.DockingAllowDropDown | KryptonPageFlags.DockingAllowWorkspace);
-
-            Controls.Remove(FileExplorer);
-            _fileSystemPage.Controls.Add(FileExplorer);
-            FileExplorer.Dock = DockStyle.Fill;
+            AssignControlsToPages();
 
             // Link to dock manager.
             DockManager.AddDockspace("Control", DockingEdge.Right, new[] { _fileSystemPage });
-            DockManager.AddToWorkspace("Workspace", new[] { _contentPage });           
+            DockManager.AddToWorkspace("Workspace", new[] { _contentPage });
 
             // Update the main workspace area to hide the tab and buttons.
             DockManager.CellsWorkspace[0].NavigatorMode = NavigatorMode.Panel;
@@ -396,9 +528,13 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
+            DockManager.ManageControl("Control", this, DockManager.ManageWorkspace("Workspace", DockSpace));
+            DockManager.ManageFloating(ParentForm);
+            DockManager.DefaultCloseRequest = DockingCloseRequest.None;
+
             CreateDefaultDockingScheme();
+
             DataContext?.OnLoad();
-            LoadLayoutFromDataContext();
         }
 
         /// <summary>
@@ -427,6 +563,15 @@ namespace Gorgon.Editor.Views
             if (!_deferDataContextLoad)
             {
                 DataContext.OnLoad();
+            }
+
+            if ((DataContext.Layout == null) || (DataContext.Layout.Length == 0))
+            {
+                //CreateDefaultDockingScheme();
+            }
+            else
+            {
+                LoadLayoutFromDataContext();
             }
 
             DataContext.PropertyChanging += DataContext_PropertyChanging;

@@ -155,19 +155,11 @@ namespace Gorgon.Editor
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonImport_Click(object sender, EventArgs e)
-        {
+        private async void ButtonImport_Click(object sender, EventArgs e)
+        {            
             try
             {
-                IFileExplorerVm fileExplorer = DataContext?.CurrentProject?.FileExplorer;
-
-                if ((fileExplorer?.ImportIntoNodeCommand == null) 
-                    || (!fileExplorer.ImportIntoNodeCommand.CanExecute(fileExplorer.SelectedNode ?? fileExplorer.RootNode)))
-                {
-                    return;
-                }
-
-                fileExplorer.ImportIntoNodeCommand.Execute(fileExplorer.SelectedNode ?? fileExplorer.RootNode);
+                await PanelProject.FileExplorer.ImportFilesAsync();
             }
             finally
             {

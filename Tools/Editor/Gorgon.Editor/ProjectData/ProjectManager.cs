@@ -25,9 +25,11 @@
 #endregion
 
 using System;
+using System.Buffers;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SQLite;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -40,6 +42,7 @@ using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.IO;
 using Gorgon.IO.Providers;
+using Gorgon.Math;
 using Newtonsoft.Json;
 
 namespace Gorgon.Editor.ProjectData
@@ -171,29 +174,13 @@ namespace Gorgon.Editor.ProjectData
         }
 
         /// <summary>
-        /// Function to retrieve the connection to the metadata database file.
-        /// </summary>
-        /// <param name="workspace">The workspace directory.</param>
-        /// <returns>The connection object for the database file.</returns>
-        private static SQLiteConnection GetConnection(DirectoryInfo workspace)
-        {
-            // Build a SQLite database.
-            var fileLocation = new FileInfo(Path.Combine(workspace.FullName, CommonEditorConstants.EditorMetadataFileName));
-            var conn = new SQLiteConnection($"Data Source={fileLocation.FullName}");
-
-            conn.Open();
-
-            return conn;
-        }
-
-        /// <summary>
         /// Function to copy the file system data from a file system file.
         /// </summary>
         /// <param name="fileSystemFile">The file system file to copy.</param>
         /// <param name="provider">The provider to use.</param>
         /// <param name="projectWorkspace">The workspace directory to copy the files into.</param>
         /// <returns>The path to the metadata file.</returns>
-        private FileInfo CopyFileSystem(FileInfo fileSystemFile, IGorgonFileSystemProvider provider, DirectoryInfo projectWorkspace)
+        private async Task<FileInfo> CopyFileSystemAsync(FileInfo fileSystemFile, IGorgonFileSystemProvider provider, DirectoryInfo projectWorkspace)
         {
             IGorgonFileSystem fileSystem = new GorgonFileSystem(provider, Program.Log);
 
@@ -218,19 +205,56 @@ namespace Gorgon.Editor.ProjectData
             }
 
             // Copy all files into the directories we just created.
-            IEnumerable<IGorgonVirtualFile> files = fileSystem.FindFiles("/", "*")
-                                                    .Where(item => item != metaData);
+            var files = fileSystem.FindFiles("/", "*")
+                                .Where(item => item != metaData)
+                                .OrderByDescending(item => item.Size)
+                                .ToList();
 
-            foreach (IGorgonVirtualFile file in files)
+            var copyJobs = new List<Task<IGorgonVirtualFile>>();
+
+            IGorgonVirtualFile CopyFile(IGorgonVirtualFile file)
             {
                 var fileInfo = new FileInfo(Path.Combine(projectWorkspace.FullName, file.Directory.FullPath.FormatDirectory(Path.DirectorySeparatorChar).Substring(1), file.Name));
 
                 using (Stream readStream = file.OpenStream())
                 using (Stream writeStream = fileInfo.OpenWrite())
                 {
-                    readStream.CopyTo(writeStream);
+                    readStream.CopyToStream(writeStream, (int)readStream.Length);
                 }
+
+                return file;
             }
+
+            // Spin up several jobs so we can copy multiple files at the same time.
+            int maxJobCount = (Environment.ProcessorCount * 2).Min(24);
+            int fileIndex = files.Count - 1;
+            Task<IGorgonVirtualFile> deadJob = null;
+
+            do
+            {
+                if ((fileIndex < 0) || (files.Count == 0))
+                {
+                    break;
+                }
+
+                if (deadJob != null)
+                {
+                    copyJobs.Remove(deadJob);
+                }
+
+                while ((fileIndex >= 0) && (copyJobs.Count < Environment.ProcessorCount * 2))
+                {
+                    IGorgonVirtualFile file = files[fileIndex];
+                    files.Remove(file);
+                    copyJobs.Add(Task.Run(() => CopyFile(file)));
+                    --fileIndex;
+                }                
+
+                // When the job queue is empty
+                deadJob = await Task.WhenAny(copyJobs);
+                files.Remove(deadJob.Result);                
+            }
+            while (copyJobs.Count > 0);
 
             var metaDataOutput = new FileInfo(Path.Combine(projectWorkspace.FullName, CommonEditorConstants.EditorMetadataFileName));
 
@@ -298,12 +322,12 @@ namespace Gorgon.Editor.ProjectData
         /// <param name="provider">The provider to use.</param>
         /// <param name="workspace">The workspace directory to copy the files into.</param>
         /// <returns>A new project file.</returns>
-        private (IProject project, bool hasMetadata, bool isUpgraded) OpenProject(FileInfo fileSystemFile, IGorgonFileSystemProvider provider, DirectoryInfo workspace)
+        private async Task<(IProject project, bool hasMetadata, bool isUpgraded)> OpenProjectTask(FileInfo fileSystemFile, IGorgonFileSystemProvider provider, DirectoryInfo workspace)
         {
             DirectoryInfo projectWorkspace = GetProjectWorkspace(workspace);
             DirectoryInfo scratchDir = GetScratchDirectory(workspace);
 
-            FileInfo metaData = CopyFileSystem(fileSystemFile, provider, projectWorkspace);
+            FileInfo metaData = await CopyFileSystemAsync(fileSystemFile, provider, projectWorkspace);
 
             // Create the project using the metadata (if we have any).
             Project result = null;
@@ -523,7 +547,13 @@ namespace Gorgon.Editor.ProjectData
                 throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_NO_PROVIDER, file.Name));
             }
 
-            return await Task.Run(() => OpenProject(file, provider, workspace));
+            Stopwatch timer = Stopwatch.StartNew();
+            var result = await OpenProjectTask(file, provider, workspace);
+            timer.Stop();
+
+            Debug.Print($"Time to copy file: {timer.ElapsedMilliseconds / 1000.0:0.0}");
+
+            return result;
         }
         #endregion
 

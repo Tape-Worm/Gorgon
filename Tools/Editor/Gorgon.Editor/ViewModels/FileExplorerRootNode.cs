@@ -53,6 +53,18 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Properties.
+        /// <summary>Property to set or return whether this node is visible.</summary>
+        /// <value>
+        ///   <c>true</c> if visible; otherwise, <c>false</c>.</value>
+        public bool Visible
+        {
+            get => true;
+            set
+            {
+                // Cannot hide root node.
+            }
+        }
+
         /// <summary>Property to set or return the metadata for the node.</summary>
         public ProjectItemMetadata Metadata
         {

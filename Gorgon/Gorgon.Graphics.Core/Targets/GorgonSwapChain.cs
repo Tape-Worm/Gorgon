@@ -363,7 +363,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="control">The control owned by the form.</param>
         /// <returns>The form that owns the control.</returns>
         private Form FindForm(Control control)
-        {
+        {            
             var result = control as Form;
 
             if (result != null)
@@ -372,6 +372,11 @@ namespace Gorgon.Graphics.Core
             }
 
             result = control.FindForm();
+
+            if (result == null)
+            {
+                result = control.TopLevelControl as Form;
+            }
 
             if (result == null)
             {

@@ -161,7 +161,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the command used to import files and directories into the specified node.
         /// </summary>
-        IEditorCommand<IFileExplorerNodeVm> ImportIntoNodeCommand
+        IEditorAsyncCommand<IFileExplorerNodeVm> ImportIntoNodeCommand
         {
             get;
         }

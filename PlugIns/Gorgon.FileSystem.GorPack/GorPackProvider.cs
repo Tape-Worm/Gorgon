@@ -124,7 +124,7 @@ namespace Gorgon.IO.GorPack
 				// We need these nodes.
 				if ((fileNameNode == null) || (fileOffsetNode == null)
 					|| (fileSizeNode == null) || (fileDateNode == null)
-					|| (string.IsNullOrWhiteSpace(fileNameNode.Value))
+					|| ((string.IsNullOrWhiteSpace(fileNameNode.Value)) && (string.IsNullOrWhiteSpace(fileExtensionNode.Value)))
 					|| (string.IsNullOrWhiteSpace(fileDateNode.Value))
 					|| (string.IsNullOrWhiteSpace(parentDirectoryPath)))
 				{
@@ -159,12 +159,16 @@ namespace Gorgon.IO.GorPack
 					throw new FileLoadException(Resources.GORFS_GORPACK_ERR_FILEINDEX_CORRUPT);
 				}
 
-				string fileExtension = fileExtensionNode?.Value;
+				string fileExtension = fileExtensionNode.Value ?? string.Empty;
 
-				if (!string.IsNullOrWhiteSpace(fileExtension) && (!string.IsNullOrWhiteSpace(fileName)))
-				{
-					fileName += fileExtension;
-				}
+                if (!string.IsNullOrWhiteSpace(fileName))
+                {
+                    fileName += fileExtension;
+                }
+                else
+                {
+                    fileName = fileExtension;
+                }
 
 				// If the file is compressed, then add it to a special list.
 				if (fileCompressedSizeNode != null)

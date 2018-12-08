@@ -25,6 +25,8 @@
 #endregion
 
 
+using System;
+
 namespace Gorgon.Editor.ViewModels
 {
     /// <summary>
@@ -42,6 +44,7 @@ namespace Gorgon.Editor.ViewModels
         /// Function to drop the payload for a drag drop operation.
         /// </summary>
         /// <param name="dragData">The drag/drop data.</param>
-        void Drop(T dragData);
+        /// <param name="afterDrop">[Optional] The method to execute after the drop operation is completed.</param>
+        void Drop(T dragData, Action afterDrop = null);
     }
 }

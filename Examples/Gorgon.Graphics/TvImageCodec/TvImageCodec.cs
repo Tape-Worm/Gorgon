@@ -358,7 +358,7 @@ namespace Gorgon.Graphics.Example
 
             if (stream.Position + TvHeader.SizeInBytes >= stream.Length)
             {
-                throw new EndOfStreamException();
+                return false;
             }
 
             // Remember the stream position.

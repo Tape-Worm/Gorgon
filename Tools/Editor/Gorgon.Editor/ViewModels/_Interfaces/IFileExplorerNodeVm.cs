@@ -42,13 +42,13 @@ namespace Gorgon.Editor.ViewModels
     internal enum NodeType
     {
         /// <summary>
-        /// The node is a file.
-        /// </summary>
-        File = 0,
-        /// <summary>
         /// The node is a directory.
         /// </summary>
-        Directory = 1,
+        Directory = 0,
+        /// <summary>
+        /// The node is a file.
+        /// </summary>
+        File = 1,
         /// <summary>
         /// The node is a link to another file.
         /// </summary>
@@ -66,6 +66,15 @@ namespace Gorgon.Editor.ViewModels
         /// Property to set or return the metadata for the node.
         /// </summary>
         ProjectItemMetadata Metadata
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return whether this node is visible.
+        /// </summary>
+        bool Visible
         {
             get;
             set;

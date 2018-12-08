@@ -27,8 +27,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -39,6 +41,7 @@ using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.IO;
+using Gorgon.Timing;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -280,10 +283,11 @@ namespace Gorgon.Editor.ViewModels
             });
 
             parent.Children.Add(result);
+            string fullPath = result.FullPath;
 
             if (result.Metadata == null)
             {
-                result.Metadata = project.ProjectItems.FirstOrDefault(item => string.Equals(item.Key, result.FullPath, StringComparison.OrdinalIgnoreCase)).Value;
+                result.Metadata = project.ProjectItems.FirstOrDefault(item => string.Equals(item.Key, fullPath, StringComparison.OrdinalIgnoreCase)).Value;
             }
 
             return result;
@@ -353,10 +357,10 @@ namespace Gorgon.Editor.ViewModels
             });
 
             parentNode.Children.Add(result);
-
+            string fullPath = result.FullPath;
             if (result.Metadata == null)
             {
-                result.Metadata = project.ProjectItems.FirstOrDefault(item => string.Equals(item.Key, result.FullPath, StringComparison.OrdinalIgnoreCase)).Value;
+                result.Metadata = project.ProjectItems.FirstOrDefault(item => string.Equals(item.Key, fullPath, StringComparison.OrdinalIgnoreCase)).Value;
             }
 
             return result;
@@ -409,7 +413,7 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="autoInclude"><b>true</b> to automatically include any and all file system objects in the project, or <b>false</b> to only use what is in the metadata.</param>
         /// <returns>The project view model.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="projectData"/> parameter is <b>null</b>.</exception>
-        public IProjectVm CreateProjectViewModel(IProject projectData, bool autoInclude)
+        public async Task<IProjectVm> CreateProjectViewModelAsync(IProject projectData, bool autoInclude)
         {
             if (projectData == null)
             {
@@ -422,7 +426,8 @@ namespace Gorgon.Editor.ViewModels
             var result = new ProjectVm();
             var fileSystemService = new FileSystemService(projectData.ProjectWorkSpace);
 
-            result.FileExplorer = CreateFileExplorerViewModel(projectData, fileSystemService, autoInclude);
+            await Task.Run(() => result.FileExplorer = CreateFileExplorerViewModel(projectData, fileSystemService, autoInclude));
+
             result.Initialize(new ProjectVmParameters(projectData, this));
 
             // Empty this list, it will be rebuilt when we save, and having it lying around is a waste.

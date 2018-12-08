@@ -48,7 +48,7 @@ namespace Gorgon.Editor.ViewModels
     /// The view model for the project editor interface.
     /// </summary>
     internal class ProjectVm
-        : ViewModelBase<ProjectVmParameters>, IProjectVm
+        : ViewModelBase<ProjectVmParameters>, IProjectVm, IDragDropHandler<IContentFile>
     {
         #region Variables.
         // The factory used to create view models.
@@ -582,6 +582,17 @@ namespace Gorgon.Editor.ViewModels
             CurrentContent?.OnUnload();
             CurrentContent = null;
         }
+
+        /// <summary>Function to determine if an object can be dropped.</summary>
+        /// <param name="dragData">The drag/drop data.</param>
+        /// <returns>
+        ///   <c>true</c> if this instance can drop the specified drag data; otherwise, <c>false</c>.</returns>
+        bool IDragDropHandler<IContentFile>.CanDrop(IContentFile dragData) => (dragData != null) && (!dragData.IsOpen) && (CanOpenContent(dragData));
+
+        /// <summary>Function to drop the payload for a drag drop operation.</summary>
+        /// <param name="dragData">The drag/drop data.</param>
+        /// <param name="afterDrop">[Optional] The method to execute after the drop operation is completed.</param>
+        void IDragDropHandler<IContentFile>.Drop(IContentFile dragData, Action afterDrop) => DoOpenContent(dragData);                    
         #endregion
     }
 }

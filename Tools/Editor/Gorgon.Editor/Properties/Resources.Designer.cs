@@ -1102,6 +1102,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Scanning files....
+        /// </summary>
+        internal static string GOREDIT_TEXT_SCANNING {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_SCANNING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Select a workspace directory....
         /// </summary>
         internal static string GOREDIT_TEXT_SELECT_WORKSPACE {

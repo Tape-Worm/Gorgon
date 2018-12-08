@@ -33,78 +33,78 @@ using Gorgon.Math;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// A special array type that is used to monitor and track changes to itself.
-	/// </summary>
-	/// <returns>
-	/// <para>
-	/// Due to how the array determines dirty indices, the maximum size of the the array is 64 items.
-	/// </para>
-	/// </returns>
-	public class GorgonArray<T>
-		: IList<T>, IGorgonReadOnlyArray<T>
-		where T : IEquatable<T>
-	{
-		#region Variables.
-	    // The indices that are dirty.
-		private int _dirtyIndices;
+    /// <summary>
+    /// A special array type that is used to monitor and track changes to itself.
+    /// </summary>
+    /// <returns>
+    /// <para>
+    /// Due to how the array determines dirty indices, the maximum size of the the array is 64 items.
+    /// </para>
+    /// </returns>
+    public class GorgonArray<T>
+        : IList<T>, IGorgonReadOnlyArray<T>
+        where T : IEquatable<T>
+    {
+        #region Variables.
+        // The indices that are dirty.
+        private int _dirtyIndices;
 
-		// The last set of dirty items.
-		private (int Start, int Count) _dirtyItems;
-		#endregion
+        // The last set of dirty items.
+        private (int Start, int Count) _dirtyItems;
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to return the backing store to objects that need it.
-		/// </summary>
-		protected T[] BackingArray
-		{
-		    get;
-	    }
+        #region Properties.
+        /// <summary>
+        /// Property to return the backing store to objects that need it.
+        /// </summary>
+        protected T[] BackingArray
+        {
+            get;
+        }
 
         /// <summary>
         /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
         /// </summary>
         int IReadOnlyCollection<T>.Count => Length;
 
-	    /// <summary>Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
-		/// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
-		int ICollection<T>.Count => Length;
+        /// <summary>Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+        /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
+        int ICollection<T>.Count => Length;
 
         /// <summary>
         /// Property to return the length of the array.
         /// </summary>
 	    public int Length => BackingArray.Length;
 
-	    /// <summary>Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</summary>
-	    /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
-	    bool ICollection<T>.IsReadOnly => false;
+        /// <summary>Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</summary>
+        /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
+        bool ICollection<T>.IsReadOnly => false;
 
-		/// <summary>
-		/// Property to return whether or not the list is dirty.
-		/// </summary>
-		public bool IsDirty => _dirtyIndices != 0;
+        /// <summary>
+        /// Property to return whether or not the list is dirty.
+        /// </summary>
+        public bool IsDirty => _dirtyIndices != 0;
 
-		/// <summary>Gets or sets the element at the specified index.</summary>
-		/// <returns>The element at the specified index.</returns>
-		public T this[int index]
-		{
-			get => BackingArray[index];
-			set
-			{
-			    if (((value == null) && (BackingArray[index] == null))
+        /// <summary>Gets or sets the element at the specified index.</summary>
+        /// <returns>The element at the specified index.</returns>
+        public T this[int index]
+        {
+            get => BackingArray[index];
+            set
+            {
+                if (((value == null) && (BackingArray[index] == null))
                     || ((BackingArray[index] != null) && (value != null) && (value.Equals(BackingArray[index]))))
-			    {
-			        return;
-			    }
+                {
+                    return;
+                }
 
-			    T oldValue = BackingArray[index];
+                T oldValue = BackingArray[index];
                 BackingArray[index] = value;
-				_dirtyIndices |= 1 << index;
+                _dirtyIndices |= 1 << index;
 
-				OnItemSet(index, value, oldValue);
-			}
-		}
+                OnItemSet(index, value, oldValue);
+            }
+        }
         #endregion
 
         #region Methods.
@@ -114,16 +114,16 @@ namespace Gorgon.Graphics.Core
         /// <param name="dirtyIndex">The index that is considered dirty.</param>
         /// <param name="value">The dirty value.</param>
 	    protected virtual void OnDirtyItemAdded(int dirtyIndex, T value)
-	    {
-	    }
+        {
+        }
 
         /// <summary>
         /// Function called when a dirty item was not found, and is removed from the dirty list.
         /// </summary>
         /// <param name="dirtyIndex">The index that is considered dirty.</param>
 	    protected virtual void OnDirtyItemCleaned(int dirtyIndex)
-	    {
-	    }
+        {
+        }
 
         /// <summary>
         /// Function called when an item is assigned to an index.
@@ -132,39 +132,42 @@ namespace Gorgon.Graphics.Core
         /// <param name="value">The value that was assigned.</param>
         /// <param name="oldItem">The previous item in the slot.</param>
         protected virtual void OnItemSet(int index, T value, T oldItem)
-		{
-		}
+        {
+        }
 
-	    /// <summary>
-	    /// Function called when an item is reset at an index.
-	    /// </summary>
-	    /// <param name="index">The index of the item that was assigned.</param>
-	    /// <param name="oldItem">The previous item in the slot.</param>
-	    protected virtual void OnItemReset(int index, T oldItem)
-	    {
-	    }
+        /// <summary>
+        /// Function called when an item is reset at an index.
+        /// </summary>
+        /// <param name="index">The index of the item that was assigned.</param>
+        /// <param name="oldItem">The previous item in the slot.</param>
+        protected virtual void OnItemReset(int index, T oldItem)
+        {
+        }
 
-		/// <summary>
-		/// Function called when the array is cleared.
-		/// </summary>
-		protected virtual void OnClear()
-		{
-		}
+        /// <summary>
+        /// Function called when the array is cleared.
+        /// </summary>
+        protected virtual void OnClear()
+        {
+        }
 
-		/// <summary>
-		/// Function to validate an item being assigned to a slot.
-		/// </summary>
-		protected virtual void OnValidate()
-		{
-		}
+        /// <summary>
+        /// Function to validate an item being assigned to a slot.
+        /// </summary>
+        protected virtual void OnValidate()
+        {
+        }
 
         /// <summary>
         /// Function to perform validation on this list prior to applying it.
         /// </summary>
         [Conditional("DEBUG")]
-        internal void Validate() =>
+        internal void Validate()
 #if DEBUG
-            OnValidate();
+         => OnValidate();
+#else
+        {
+        }
 #endif
 
 

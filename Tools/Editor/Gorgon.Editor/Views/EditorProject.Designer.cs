@@ -106,12 +106,15 @@
             // 
             // PanelContent
             // 
+            this.PanelContent.AllowDrop = true;
             this.PanelContent.BackgroundImage = global::Gorgon.Editor.Properties.Resources.Gorgon_2_x_Logo_Full_Site;
             this.PanelContent.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.PanelContent.Location = new System.Drawing.Point(293, 243);
             this.PanelContent.Name = "PanelContent";
             this.PanelContent.Size = new System.Drawing.Size(417, 100);
             this.PanelContent.TabIndex = 0;
+            this.PanelContent.DragDrop += new System.Windows.Forms.DragEventHandler(this.PanelContent_DragDrop);
+            this.PanelContent.DragEnter += new System.Windows.Forms.DragEventHandler(this.PanelContent_DragEnter);
             // 
             // EditorProject
             // 

@@ -50,9 +50,9 @@
             // PanelPresenter
             // 
             this.PanelPresenter.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PanelPresenter.Location = new System.Drawing.Point(0, 27);
+            this.PanelPresenter.Location = new System.Drawing.Point(0, 21);
             this.PanelPresenter.Name = "PanelPresenter";
-            this.PanelPresenter.Size = new System.Drawing.Size(600, 441);
+            this.PanelPresenter.Size = new System.Drawing.Size(600, 447);
             this.PanelPresenter.TabIndex = 0;
             // 
             // PanelContentName
@@ -64,21 +64,21 @@
             this.PanelContentName.Location = new System.Drawing.Point(0, 0);
             this.PanelContentName.Name = "PanelContentName";
             this.PanelContentName.Padding = new System.Windows.Forms.Padding(6, 0, 0, 1);
-            this.PanelContentName.Size = new System.Drawing.Size(600, 27);
+            this.PanelContentName.Size = new System.Drawing.Size(600, 21);
             this.PanelContentName.TabIndex = 7;
             this.PanelContentName.Visible = false;
             // 
             // panel4
             // 
             this.panel4.AutoSize = true;
-            this.panel4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(75)))), ((int)(((byte)(75)))));
+            this.panel4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(104)))), ((int)(((byte)(104)))), ((int)(((byte)(104)))));
             this.panel4.Controls.Add(this.LabelHeader);
             this.panel4.Controls.Add(this.panel1);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.panel4.Location = new System.Drawing.Point(6, 0);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(594, 26);
+            this.panel4.Size = new System.Drawing.Size(594, 20);
             this.panel4.TabIndex = 1;
             // 
             // LabelHeader
@@ -87,8 +87,9 @@
             this.LabelHeader.LabelStyle = ComponentFactory.Krypton.Toolkit.LabelStyle.Custom3;
             this.LabelHeader.Location = new System.Drawing.Point(0, 0);
             this.LabelHeader.Name = "LabelHeader";
-            this.LabelHeader.Size = new System.Drawing.Size(574, 26);
+            this.LabelHeader.Size = new System.Drawing.Size(575, 20);
             this.LabelHeader.StateCommon.ShortText.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.LabelHeader.StateCommon.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LabelHeader.TabIndex = 0;
             this.LabelHeader.Values.Text = "(Content)";
             // 
@@ -99,9 +100,9 @@
             this.panel1.BackColor = System.Drawing.Color.Transparent;
             this.panel1.Controls.Add(this.ButtonClose);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel1.Location = new System.Drawing.Point(574, 0);
+            this.panel1.Location = new System.Drawing.Point(575, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(20, 26);
+            this.panel1.Size = new System.Drawing.Size(19, 20);
             this.panel1.TabIndex = 0;
             // 
             // ButtonClose
@@ -112,13 +113,13 @@
             this.ButtonClose.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ButtonClose.Location = new System.Drawing.Point(0, 0);
             this.ButtonClose.Name = "ButtonClose";
-            this.ButtonClose.Size = new System.Drawing.Size(20, 26);
+            this.ButtonClose.Size = new System.Drawing.Size(19, 20);
             this.ButtonClose.StateCommon.Back.GraphicsHint = ComponentFactory.Krypton.Toolkit.PaletteGraphicsHint.None;
             this.ButtonClose.StateCommon.Border.DrawBorders = ((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders)((((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Top | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Bottom) 
             | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Left) 
             | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Right)));
             this.ButtonClose.StateCommon.Border.GraphicsHint = ComponentFactory.Krypton.Toolkit.PaletteGraphicsHint.None;
-            this.ButtonClose.StateCommon.Content.ShortText.Font = new System.Drawing.Font("Marlett", 9.5F);
+            this.ButtonClose.StateCommon.Content.ShortText.Font = new System.Drawing.Font("Marlett", 9F);
             this.ButtonClose.StateCommon.Content.ShortText.TextH = ComponentFactory.Krypton.Toolkit.PaletteRelativeAlign.Center;
             this.ButtonClose.StateCommon.Content.ShortText.TextV = ComponentFactory.Krypton.Toolkit.PaletteRelativeAlign.Center;
             this.ButtonClose.StateNormal.Content.ShortText.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));

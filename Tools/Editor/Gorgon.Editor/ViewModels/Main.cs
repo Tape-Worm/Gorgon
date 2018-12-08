@@ -317,7 +317,7 @@ namespace Gorgon.Editor.ViewModels
                 return;
             }
 
-            IProjectVm projectVm = _viewModelFactory.CreateProjectViewModel(project, !hasMetadata);
+            IProjectVm projectVm = await _viewModelFactory.CreateProjectViewModelAsync(project, !hasMetadata);
             projectVm.ProjectFile = new FileInfo(path);
 
             // The project should not be in a modified state.
@@ -627,7 +627,7 @@ namespace Gorgon.Editor.ViewModels
                 _settings.LastProjectWorkingDirectory = string.Empty;
                 _settings.LastProjectScratchDirectory = string.Empty;
 
-                CurrentProject = _viewModelFactory.CreateProjectViewModel(project, false);
+                CurrentProject = await _viewModelFactory.CreateProjectViewModelAsync(project, false);
                 _settings.LastProjectWorkingDirectory = project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
                 _settings.LastProjectScratchDirectory = project.ProjectScratchSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
             }
