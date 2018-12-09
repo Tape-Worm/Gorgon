@@ -214,12 +214,13 @@ namespace Gorgon.Editor.ProjectData
 
             IGorgonVirtualFile CopyFile(IGorgonVirtualFile file)
             {
+                byte[] buffer = new byte[81920];
                 var fileInfo = new FileInfo(Path.Combine(projectWorkspace.FullName, file.Directory.FullPath.FormatDirectory(Path.DirectorySeparatorChar).Substring(1), file.Name));
 
                 using (Stream readStream = file.OpenStream())
                 using (Stream writeStream = fileInfo.OpenWrite())
                 {
-                    readStream.CopyToStream(writeStream, (int)readStream.Length);
+                    readStream.CopyToStream(writeStream, (int)readStream.Length, buffer);
                 }
 
                 return file;
@@ -484,10 +485,7 @@ namespace Gorgon.Editor.ProjectData
             PersistMetadata(project);
 
             var outputFile = new FileInfo(path);
-            using (FileStream stream = outputFile.Open(FileMode.Create, FileAccess.Write, FileShare.None))
-            {
-                writer.Write(stream, project.ProjectWorkSpace, progressCallback, cancelToken);
-            }
+            writer.Write(outputFile, project.ProjectWorkSpace, progressCallback, cancelToken);
             outputFile.Refresh();
 
             // If we cancelled the operation, we should delete the file.
@@ -548,7 +546,7 @@ namespace Gorgon.Editor.ProjectData
             }
 
             Stopwatch timer = Stopwatch.StartNew();
-            var result = await OpenProjectTask(file, provider, workspace);
+            (IProject project, bool hasMetadata, bool isUpgraded) result = await OpenProjectTask(file, provider, workspace);
             timer.Stop();
 
             Debug.Print($"Time to copy file: {timer.ElapsedMilliseconds / 1000.0:0.0}");

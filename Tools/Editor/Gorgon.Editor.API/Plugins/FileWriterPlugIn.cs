@@ -64,7 +64,7 @@ namespace Gorgon.Editor.Plugins
 	{
         #region Variables.
         // Default compression amount.
-        private float _compressAmount = 0.05f;
+        private float _compressAmount = 0.5f;
         #endregion
 
         #region Properties.
@@ -140,7 +140,7 @@ namespace Gorgon.Editor.Plugins
         /// <summary>
         /// Function to write the file to the specified path.
         /// </summary>
-        /// <param name="stream">The stream to save the data into.</param>
+        /// <param name="file">The file to save the data into.</param>
         /// <param name="workspace">The directory that represents the workspace for our file system data.</param> 
         /// <param name="progressCallback">The method used to report progress back to the application.</param>
         /// <param name="cancelToken">The token used for cancelling the operation.</param>
@@ -161,7 +161,7 @@ namespace Gorgon.Editor.Plugins
         /// This progress method is optional, and if <b>null</b> is passed, then no progress is reported.
         /// </para>
         /// </remarks>
-        protected abstract void OnWrite(Stream stream, DirectoryInfo workspace, Action<int, int, bool> progressCallback, CancellationToken cancelToken);
+        protected abstract void OnWrite(FileInfo file, DirectoryInfo workspace, Action<int, int, bool> progressCallback, CancellationToken cancelToken);
 
         /// <summary>
         /// Function to determine if the type of file specified can be written by this plug in.
@@ -202,7 +202,7 @@ namespace Gorgon.Editor.Plugins
         /// <summary>
         /// Function to write the application data into a stream.
         /// </summary>
-        /// <param name="stream">The stream to save the data into.</param>
+        /// <param name="file">The file to save the data into.</param>
         /// <param name="workspace">The directory that represents the workspace for our file system data.</param>
         /// <param name="progressCallback">The method used to report progress back to the application.</param>
         /// <param name="cancelToken">The token used for cancelling the operation.</param>
@@ -226,11 +226,11 @@ namespace Gorgon.Editor.Plugins
         /// This progress method is optional, and if <b>null</b> is passed, then no progress is reported.
         /// </para>
         /// </remarks>
-        public void Write(Stream stream, DirectoryInfo workspace, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
+        public void Write(FileInfo file, DirectoryInfo workspace, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
 		{
-            if (stream == null)
+            if (file == null)
             {
-                throw new ArgumentNullException(nameof(stream));
+                throw new ArgumentNullException(nameof(file));
             }
 
             if (workspace == null)
@@ -242,13 +242,8 @@ namespace Gorgon.Editor.Plugins
             {
                 throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIR_NOT_FOUND, workspace.FullName));
             }
-             
-            if (!stream.CanWrite) 
-            {
-                throw new IOException(Resources.GOREDIT_ERR_STREAM_READ_ONLY);
-            }
 
-            OnWrite(stream, workspace, progressCallback, cancelToken);            
+            OnWrite(file, workspace, progressCallback, cancelToken);            
 		}
 		#endregion
 
