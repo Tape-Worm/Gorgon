@@ -475,11 +475,16 @@ namespace Gorgon.Editor.Services
                 Files = sourceFiles
             };
 
-            bool result = await CreateCopyTask(directoryCopyArgs, cancelToken);
+            bool result;
 
-            if (!result)
+            if (directoryCopyArgs.Directories.Count > 0)
             {
-                return false;
+                result = await CreateCopyTask(directoryCopyArgs, cancelToken);
+
+                if (!result)
+                {
+                    return false;
+                }
             }
 
             fileCopyArgs.CurrentCount = directoryCopyArgs.CurrentCount;

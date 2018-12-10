@@ -75,7 +75,8 @@ namespace Gorgon.Editor.ProjectData
         /// <param name="writer">The writer plug in used to write the file data.</param>
         /// <param name="progressCallback">The callback method that reports the saving progress to the UI.</param>
         /// <param name="cancelToken">The token used for cancellation of the operation.</param>
-        void SaveProject(IProject project, string path, FileWriterPlugin writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken);
+        /// <returns>A task for asynchronous operation.</returns>
+        Task SaveProjectAsync(IProject project, string path, FileWriterPlugin writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken);
 
         /// <summary>
         /// Function to close the project and clean up its working data.

@@ -525,22 +525,19 @@ namespace Gorgon.Editor.ViewModels
             if (string.IsNullOrWhiteSpace(path))
             {
                 throw new ArgumentEmptyException(nameof(path));
-            } 
- 
-            return Task.Run(() =>
+            }
+
+            Program.Log.Print("Saving files...", LoggingLevel.Verbose);
+            _projectData.AssignWriter(writer);
+
+            // Rebuild the project item metadata list.
+            _projectData.ProjectItems.Clear();
+            foreach (IFileExplorerNodeVm node in _fileExplorer.RootNode.Children.Traverse(n => n.Children).Where(n => n.Metadata != null))
             {
-                Program.Log.Print("Saving files...", LoggingLevel.Verbose);
-                _projectData.AssignWriter(writer);
+                _projectData.ProjectItems[node.FullPath] = node.Metadata;
+            }
 
-                // Rebuild the project item metadata list.
-                _projectData.ProjectItems.Clear();
-                foreach (IFileExplorerNodeVm node in _fileExplorer.RootNode.Children.Traverse(n => n.Children).Where(n => n.Metadata != null))
-                {
-                    _projectData.ProjectItems[node.FullPath] = node.Metadata;
-                }
-
-                _projectManager.SaveProject(_projectData, path, writer, progressCallback, cancelToken);
-            }, cancelToken);
+            return _projectManager.SaveProjectAsync(_projectData, path, writer, progressCallback, cancelToken);
         }
 
         /// <summary>

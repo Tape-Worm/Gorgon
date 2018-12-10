@@ -93,29 +93,18 @@ namespace Gorgon.IO
 			set;
 		}
 
-		/// <summary>
-		/// Property to return the full path to the file in the <see cref="IGorgonFileSystem"/>.
-		/// </summary>
-		public string FullPath
-		{
-			get
-			{
-			    if (Directory == null)
-			    {
-			        return Name;
-			    }
+        /// <summary>
+        /// Property to return the full path to the file in the <see cref="IGorgonFileSystem"/>.
+        /// </summary>
+        public string FullPath => Directory == null ? Name : Directory.FullPath + Name;
 
-			    return Directory.FullPath + Name;
-			}
-		}
-
-		/// <summary>
-		/// Property to return the mount point for this file.
-		/// </summary>
-		/// <remarks>
-		/// This will show where the file is mounted within the <see cref="IGorgonFileSystem"/>, the physical path to the file, and the <see cref="IGorgonFileSystemProvider"/> used to import the file information.
-		/// </remarks>
-		public GorgonFileSystemMountPoint MountPoint
+        /// <summary>
+        /// Property to return the mount point for this file.
+        /// </summary>
+        /// <remarks>
+        /// This will show where the file is mounted within the <see cref="IGorgonFileSystem"/>, the physical path to the file, and the <see cref="IGorgonFileSystemProvider"/> used to import the file information.
+        /// </remarks>
+        public GorgonFileSystemMountPoint MountPoint
 		{
 			get;
 			set;

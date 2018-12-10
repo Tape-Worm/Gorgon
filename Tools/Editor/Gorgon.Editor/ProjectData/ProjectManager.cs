@@ -228,32 +228,31 @@ namespace Gorgon.Editor.ProjectData
 
             // Spin up several jobs so we can copy multiple files at the same time.
             int maxJobCount = (Environment.ProcessorCount * 2).Min(24);
-            int fileIndex = files.Count - 1;
             Task<IGorgonVirtualFile> deadJob = null;
 
             do
             {
-                if ((fileIndex < 0) || (files.Count == 0))
-                {
-                    break;
-                }
-
                 if (deadJob != null)
                 {
+                    if (deadJob.IsFaulted)
+                    {
+                        throw deadJob.Exception;
+                    }
                     copyJobs.Remove(deadJob);
                 }
 
-                while ((fileIndex >= 0) && (copyJobs.Count < Environment.ProcessorCount * 2))
+                while ((files.Count > 0) && (copyJobs.Count < maxJobCount))
                 {
-                    IGorgonVirtualFile file = files[fileIndex];
+                    IGorgonVirtualFile file = files[files.Count - 1];
                     files.Remove(file);
                     copyJobs.Add(Task.Run(() => CopyFile(file)));
-                    --fileIndex;
-                }                
+                }
 
                 // When the job queue is empty
-                deadJob = await Task.WhenAny(copyJobs);
-                files.Remove(deadJob.Result);                
+                if (copyJobs.Count > 0)
+                {
+                    deadJob = await Task.WhenAny(copyJobs);
+                }
             }
             while (copyJobs.Count > 0);
 
@@ -459,8 +458,9 @@ namespace Gorgon.Editor.ProjectData
         /// <param name="writer">The writer plug in used to write the file data.</param>
         /// <param name="progressCallback">The callback method that reports the saving progress to the UI.</param>
         /// <param name="cancelToken">The token used for cancellation of the operation.</param>
+        /// <returns>A task for asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, <paramref name="path"/>, or the <paramref name="writer"/> parameter is <b>null</b>.</exception>        
-        public void SaveProject(IProject project, string path, FileWriterPlugin writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
+        public async Task SaveProjectAsync(IProject project, string path, FileWriterPlugin writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
         {
             if (project == null)
             {
@@ -485,7 +485,7 @@ namespace Gorgon.Editor.ProjectData
             PersistMetadata(project);
 
             var outputFile = new FileInfo(path);
-            writer.Write(outputFile, project.ProjectWorkSpace, progressCallback, cancelToken);
+            await writer.WriteAsync(outputFile, project.ProjectWorkSpace, progressCallback, cancelToken);
             outputFile.Refresh();
 
             // If we cancelled the operation, we should delete the file.
@@ -545,11 +545,7 @@ namespace Gorgon.Editor.ProjectData
                 throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_NO_PROVIDER, file.Name));
             }
 
-            Stopwatch timer = Stopwatch.StartNew();
             (IProject project, bool hasMetadata, bool isUpgraded) result = await OpenProjectTask(file, provider, workspace);
-            timer.Stop();
-
-            Debug.Print($"Time to copy file: {timer.ElapsedMilliseconds / 1000.0:0.0}");
 
             return result;
         }

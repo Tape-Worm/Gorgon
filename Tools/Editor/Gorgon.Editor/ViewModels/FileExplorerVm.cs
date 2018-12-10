@@ -844,7 +844,6 @@ namespace Gorgon.Editor.ViewModels
                         return;
                     }
                     
-                    IGorgonTimer timer = new GorgonTimerQpc();
                     foreach (IFileExplorerNodeVm child in node.Children.Traverse(n => n.Children))
                     {
                         if (cancelSource.Token.IsCancellationRequested)
@@ -856,7 +855,6 @@ namespace Gorgon.Editor.ViewModels
 
                         if (child.IsContent)
                         {
-                            timer.Reset();
                             UpdateMarequeeProgress(child.Name.Ellipses(65, true), Resources.GOREDIT_TEXT_SCANNING);
                             child.AssignContentPlugin(_contentPlugins, true);
                         }

@@ -159,13 +159,8 @@ namespace Gorgon.Editor.Views
 
             var dragData = (IFileExplorerNodeDragData)data.GetData(typeof(TreeNodeDragData));
 
-            if (dragData?.Node == null)
-            {                
-                return null;
-            }
+            return dragData?.Node == null ? null : dragData.Node as IContentFile;
 
-            return dragData.Node as IContentFile;
-            
         }
 
         /// <summary>Handles the DragDrop event of the PanelContent control.</summary>

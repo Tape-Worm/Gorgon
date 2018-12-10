@@ -66,17 +66,14 @@ namespace Gorgon.Editor.Views
                 return 0;
             }
 
+#pragma warning disable IDE0046 // Convert to conditional expression
             if ((leftNode.NodeType == NodeType.Directory) && (rightNode.NodeType != NodeType.Directory))
             {
                 return -1;
             }
+#pragma warning restore IDE0046 // Convert to conditional expression
 
-            if ((leftNode.NodeType != NodeType.Directory) && (rightNode.NodeType == NodeType.Directory))
-            {
-                return 1;
-            }
-
-            return string.Compare(x.Text, y.Text, StringComparison.OrdinalIgnoreCase);
+            return ((leftNode.NodeType != NodeType.Directory) && (rightNode.NodeType == NodeType.Directory)) ? 1 : string.Compare(x.Text, y.Text, StringComparison.OrdinalIgnoreCase);
         }
         #endregion
 
@@ -91,16 +88,12 @@ namespace Gorgon.Editor.Views
         /// </returns>
         public int Compare(object x, object y)
         {
+#pragma warning disable IDE0019 // Use pattern matching
             var xNode = x as KryptonTreeNode;
             var yNode = y as KryptonTreeNode;
+#pragma warning restore IDE0019 // Use pattern matching
 
-            if ((xNode == null)
-                || (yNode == null))
-            {
-                return 0;
-            }
-
-            return Compare(xNode, yNode);
+            return ((xNode == null) || (yNode == null)) ? 0 : Compare(xNode, yNode);
         }
         #endregion
 
