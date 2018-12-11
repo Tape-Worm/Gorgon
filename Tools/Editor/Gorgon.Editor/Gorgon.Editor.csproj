@@ -79,6 +79,7 @@
     </Compile>
     <Compile Include="Native\Shell32.cs" />
     <Compile Include="Plugins\DisabledPlugin.cs" />
+    <Compile Include="ProjectData\FileCopyJob.cs" />
     <Compile Include="ProjectData\V2MetadataImporter.cs" />
     <Compile Include="RecentItem.cs" />
     <Compile Include="RibbonMerger.cs" />

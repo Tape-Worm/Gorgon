@@ -210,51 +210,54 @@ namespace Gorgon.Editor.ProjectData
                                 .OrderByDescending(item => item.Size)
                                 .ToList();
 
-            var copyJobs = new List<Task<IGorgonVirtualFile>>();
+            int maxJobCount = (Environment.ProcessorCount * 2).Min(32).Max(1);
+            int filesPerJob = (int)((float)files.Count / maxJobCount).FastCeiling();
+            var jobs = new List<Task>();
 
-            IGorgonVirtualFile CopyFile(IGorgonVirtualFile file)
+            if ((files.Count <= 100) || (maxJobCount < 2))
             {
-                byte[] buffer = new byte[81920];
-                var fileInfo = new FileInfo(Path.Combine(projectWorkspace.FullName, file.Directory.FullPath.FormatDirectory(Path.DirectorySeparatorChar).Substring(1), file.Name));
-
-                using (Stream readStream = file.OpenStream())
-                using (Stream writeStream = fileInfo.OpenWrite())
-                {
-                    readStream.CopyToStream(writeStream, (int)readStream.Length, buffer);
-                }
-
-                return file;
+                filesPerJob = files.Count;
             }
 
-            // Spin up several jobs so we can copy multiple files at the same time.
-            int maxJobCount = (Environment.ProcessorCount * 2).Min(24);
-            Task<IGorgonVirtualFile> deadJob = null;
-
-            do
+            void CopyFile(FileCopyJob job)
             {
-                if (deadJob != null)
+                foreach (IGorgonVirtualFile file in job.Files)
                 {
-                    if (deadJob.IsFaulted)
+                    var fileInfo = new FileInfo(Path.Combine(projectWorkspace.FullName, file.Directory.FullPath.FormatDirectory(Path.DirectorySeparatorChar).Substring(1), file.Name));
+
+                    using (Stream readStream = file.OpenStream())
+                    using (Stream writeStream = fileInfo.OpenWrite())
                     {
-                        throw deadJob.Exception;
+                        readStream.CopyToStream(writeStream, (int)readStream.Length, job.ReadBuffer);
                     }
-                    copyJobs.Remove(deadJob);
-                }
-
-                while ((files.Count > 0) && (copyJobs.Count < maxJobCount))
-                {
-                    IGorgonVirtualFile file = files[files.Count - 1];
-                    files.Remove(file);
-                    copyJobs.Add(Task.Run(() => CopyFile(file)));
-                }
-
-                // When the job queue is empty
-                if (copyJobs.Count > 0)
-                {
-                    deadJob = await Task.WhenAny(copyJobs);
                 }
             }
-            while (copyJobs.Count > 0);
+
+            // Build up the tasks for our jobs.
+            while (files.Count > 0)
+            {
+                try
+                {
+                    var jobData = new FileCopyJob();
+
+                    // Copy the file information to the file copy job data.
+                    int length = filesPerJob.Min(files.Count);
+                    for (int i = 0; i < length; ++i)
+                    {
+                        jobData.Files.Add(files[i]);
+                    }
+                    files.RemoveRange(0, length);
+
+                    jobs.Add(Task.Run(() => CopyFile(jobData)));
+                }
+                catch
+                {
+                    throw;
+                }
+            }
+
+            // Wait for the file copy to finish.
+            await Task.WhenAll(jobs);
 
             var metaDataOutput = new FileInfo(Path.Combine(projectWorkspace.FullName, CommonEditorConstants.EditorMetadataFileName));
 
@@ -262,11 +265,12 @@ namespace Gorgon.Editor.ProjectData
             {                
                 return metaDataOutput;
             }
-                        
+
+            byte[] writeBuffer = new byte[81920];
             using (Stream readStream = metaData.OpenStream())
             using (Stream writeStream = metaDataOutput.OpenWrite())
             {
-                readStream.CopyTo(writeStream);
+                readStream.CopyToStream(writeStream, (int)readStream.Length, writeBuffer);
             }
 
             metaDataOutput.Attributes = FileAttributes.Archive | FileAttributes.Normal;

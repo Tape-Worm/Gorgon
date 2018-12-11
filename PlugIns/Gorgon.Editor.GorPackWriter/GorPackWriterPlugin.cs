@@ -39,10 +39,7 @@ using Gorgon.IO;
 using Gorgon.Math;
 using ICSharpCode.SharpZipLib.BZip2;
 using Gorgon.Core;
-using Gorgon.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using System.Collections.Concurrent;
 
 namespace Gorgon.Editor.GorPackWriterPlugIn
 {
@@ -53,6 +50,8 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
         : FileWriterPlugin
 	{
         #region Constants.
+        // The maximum size of a write transfer buffer, in bytes.  Sized to avoid the LOH.
+        private const int MaxBufferSize = 81920;
         // The header for the file.
         private const string FileHeader = "GORPACK1.SharpZip.BZ2";
         // The type name for v2 of the Gorgon file writer plugin.
@@ -60,8 +59,8 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
         #endregion
 
         #region Variables.
-        // Computer information used to determine how to best compress data.
-        private readonly IGorgonComputerInfo _computerInfo = new GorgonComputerInfo();
+        // The global buffer used to write out data to a stream.
+        private readonly byte[] _globalWriteBuffer = new byte[MaxBufferSize];
         #endregion
 
         #region Properties.
@@ -114,13 +113,12 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
         /// </summary>
         /// <param name="inStream">Input stream.</param>
         /// <param name="outStream">Output stream.</param>
+        /// <param name="writeBuffer">The buffer used to transfer data from one stream to another.</param>
         /// <param name="compressionRate">The value used to define how well to compress the data.</param>
         /// <param name="token">The token used to cancel the operation.</param>
-        private void CompressData(Stream inStream, Stream outStream, int compressionRate, CancellationToken token)
+        private void CompressData(Stream inStream, Stream outStream, byte[] writeBuffer, int compressionRate, CancellationToken token)
 		{
 			Debug.Assert(outStream != null, "outStream != null");
-
-            byte[] writeBuffer = new byte[81920];
 
 			using (var bzStream = new BZip2OutputStream(outStream, compressionRate))
 			{
@@ -228,19 +226,28 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
         }
 
         /// <summary>
-        /// Function to perform a block copy of a file from stream to another.
+        /// Function to perform a block copy of a large (> 2GB) file from stream to another.
         /// </summary>
         /// <param name="inStream">The input stream to copy.</param>
         /// <param name="outStream">The output stream to write into.</param>
+        /// <param name="writeBuffer">The buffer used to facilitate transfer of data in blocks.</param>
         /// <param name="cancelToken">The token used to cancel the operation.</param>
-        private void BlockCopyStream(Stream inStream, Stream outStream, CancellationToken cancelToken)
+        private void BlockCopyStream(Stream inStream, Stream outStream, byte[] writeBuffer, CancellationToken cancelToken)
         {
+            const long maxBlockSize = int.MaxValue - 1;
             long inSize = inStream.Length;
-            long blockSize = 1048000L.Min(inSize);
-            byte[] buffer = new byte[81920];
+
+            // If we're under 2GB, then we can copy as-is.
+            if (inSize <= maxBlockSize)
+            {
+                inStream.CopyToStream(outStream, (int)inSize, writeBuffer);
+                return;
+            }
+
+            // Otherwise, we need to break up the file into 2GB chunks to get around the int32 limitation.
+            int blockSize = (int)(maxBlockSize.Min(inSize));
             inStream.Position = 0;
 
-            // Copy in ~1MB chunks.
             while (inSize > 0)
             {
                 if (cancelToken.IsCancellationRequested)
@@ -248,9 +255,9 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
                     return;
                 }
 
-                inStream.CopyToStream(outStream, (int)blockSize, buffer);
+                inStream.CopyToStream(outStream, blockSize, writeBuffer);
                 inSize -= blockSize;
-                blockSize = 1048000L.Min(inSize);
+                blockSize = (int)(maxBlockSize.Min(inSize));
             }
         }
 
@@ -259,11 +266,12 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
         /// </summary>
         /// <param name="outDirectory">The directory used to temporarily store the compressed file.</param>
         /// <param name="file">The file to compress.</param>
+        /// <param name="writeBuffer">The buffer used to transfer blocks of data from one stream to the next.</param>
         /// <param name="compressedSizeNode">The node containing the size of the file, in bytes, when compressed.</param>
         /// <param name="compressionRate">The value used to define how well to compress the data.</param>
         /// <param name="cancelToken">The token used to cancel the process.</param>
         /// <returns>The path to the compressed file.</returns>
-        private FileInfo CompressFile(DirectoryInfo outDirectory, FileInfo file, XElement compressedSizeNode, int compressionRate, CancellationToken cancelToken)
+        private FileInfo CompressFile(DirectoryInfo outDirectory, FileInfo file, byte[] writeBuffer, XElement compressedSizeNode, int compressionRate, CancellationToken cancelToken)
         {
             if (cancelToken.IsCancellationRequested)
             {
@@ -271,7 +279,6 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
             }
 
             long compressSize = 0;
-
             string filePath = Path.Combine(outDirectory.FullName, Path.GetFileNameWithoutExtension(file.Name) + Guid.NewGuid().ToString("N") + file.Extension);
             var result = new FileInfo(filePath);
             Stream outputFile = null;
@@ -290,11 +297,11 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
                 // Just copy if we have no compression, or if the file is less than 1K - Not much sense to compress something so small.
                 if (compressionRate == 0)
                 {
-                    BlockCopyStream(fileStream, outputFile, cancelToken);
+                    BlockCopyStream(fileStream, outputFile, writeBuffer, cancelToken);
                 }
                 else
                 {
-                    CompressData(fileStream, outputFile, compressionRate, cancelToken);
+                    CompressData(fileStream, outputFile, writeBuffer, compressionRate, cancelToken);
                     compressSize = outputFile.Length;
                 }
 
@@ -312,7 +319,7 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
                     outputFile = result.Open(FileMode.Create, FileAccess.Write, FileShare.None);
                     fileStream = file.Open(FileMode.Open, FileAccess.Read, FileShare.Read);
                     compressSize = 0;                    
-                    BlockCopyStream(fileStream, outputFile, cancelToken);
+                    BlockCopyStream(fileStream, outputFile, writeBuffer, cancelToken);
                 }
 
                 compressedSizeNode.Value = compressSize.ToString(CultureInfo.InvariantCulture);                
@@ -333,10 +340,11 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
         /// </summary>
         /// <param name="tempFile">The temporary file representing the data blob.</param>
         /// <param name="files">The list of compressed files to process.</param>
+        /// <param name="writeBuffer">The write buffer used to transfer data from one stream to the next.</param>
         /// <param name="progressCallback">The method used to report save progress.</param>
         /// <param name="cancelToken">The cancellation token.</param>
         /// <returns>A task for asynchronous operation.</returns>
-        private Task CompileFileDataTask(FileInfo tempFile, IEnumerable<(FileInfo file, XElement node)> files, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
+        private Task CompileFileDataTask(FileInfo tempFile, IEnumerable<(XElement node, FileInfo file)> files, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
         {
             // This is the last step, so show a full bar.
             progressCallback?.Invoke(1, 1, true);
@@ -344,10 +352,12 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
             return Task.Run(() =>
                 {
                     long offset = 0;
+                    Stream outputStream = null;
 
-                    using (Stream outputStream = tempFile.Open(FileMode.Create, FileAccess.Write, FileShare.None))
+                    try
                     {
-                        foreach ((FileInfo file, XElement node) in files.OrderByDescending(item => item.file.Length))
+                        outputStream = tempFile.Open(FileMode.Create, FileAccess.Write, FileShare.None);
+                        foreach ((XElement node, FileInfo file) in files.OrderByDescending(item => item.file.Length))
                         {
                             if (cancelToken.IsCancellationRequested)
                             {
@@ -359,13 +369,17 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
 
                             using (Stream inputStream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None))
                             {
-                                BlockCopyStream(inputStream, outputStream, cancelToken);
+                                BlockCopyStream(inputStream, outputStream, _globalWriteBuffer, cancelToken);
                             }
 
                             offset = outputStream.Position;
 
                             file.Delete();
                         }
+                    }
+                    finally
+                    {
+                        outputStream?.Dispose();
                     }
                 }, cancelToken);
         }
@@ -386,14 +400,14 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
             }
 
             // Initialize our file allocation table.
-            var fat = new XDocument(new XDeclaration("1.0", "utf-8", "yes"), 
+            var fat = new XDocument(new XDeclaration("1.0", "utf-8", "yes"),
                                  new XElement("FileSystem",
                                      new XElement("Header", "GORFS1.0")));
 
-			if (cancelToken.IsCancellationRequested)
-			{
-				return null;
-			}
+            if (cancelToken.IsCancellationRequested)
+            {
+                return null;
+            }
 
             // Build up our file layout XML document, and return all nodes that represent files (for compression purposes).
             List<(XElement fileNode, FileInfo physicalPath)> fileNodes = BuildFatXml(workspace, fat.Element("FileSystem"), cancelToken);
@@ -403,77 +417,93 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
                 return null;
             }
 
-            // The jobs to process.
-            var jobs = new List<Task<(XElement, FileInfo)>>();
-            int maxJobCount = (Environment.ProcessorCount * 2).Max(1).Min(24);
-            Task<(XElement, FileInfo)> deadJob = null;
-            var compressedFiles = new ConcurrentBag<(FileInfo, XElement)>();
-            int outputIndex = 0;
+            // The jobs to process.            
+            int maxJobCount = (Environment.ProcessorCount).Min(16).Max(1);            
             int fileCount = 0;
             int totalFileCount = fileNodes.Count;
+            int filesPerJob = (int)((float)totalFileCount / maxJobCount).FastCeiling();
+            var jobs = new List<Task<CompressJob>>();
 
-            // Build a job list of files to compress.
-            do
+            if ((totalFileCount <= 100) || (maxJobCount < 2))
             {
-                if (deadJob != null)
+                filesPerJob = totalFileCount;
+            }
+
+            // Function to perform the compression on the background thread.
+            CompressJob Compressor(CompressJob jobData)
+            {
+                while (jobData.Files.Count > 0)
                 {
-                    jobs.Remove(deadJob);
-                }
-
-                while ((fileNodes.Count > 0) && (jobs.Count < maxJobCount))
-                {
-                    outputIndex = fileNodes.Count - 1;
-                    (XElement fileNode, FileInfo physicalPath) = fileNodes[outputIndex];
-                    fileNodes.RemoveAt(outputIndex);
-                    
-                    jobs.Add(Task.Run(() =>
-                    {
-                        int fileIndex = outputIndex;
-                        XElement compressedSizeNode = fileNode.Element("CompressedSize");
-                        FileInfo compressedFile = CompressFile(tempFile.Directory, physicalPath, compressedSizeNode, (int)(Compression * 9), cancelToken);
-
-                        if ((compressedFile == null) || (cancelToken.IsCancellationRequested))
-                        {
-                            return (null, null);
-                        }
-
-                        if ((compressedFile == null) || (fileNode == null))
-                        {
-                            Debugger.Break();
-                        }
-                        
-                        compressedFiles.Add((compressedFile, fileNode));
-
-                        Interlocked.Increment(ref fileCount);
-                        progressCallback?.Invoke(fileCount, totalFileCount, true);
-
-                        return (fileNode, physicalPath);
-                    }, cancelToken));
-                }
-
-                if (jobs.Count > 0)
-                {
-                    deadJob = await Task.WhenAny(jobs);
-                    (XElement, FileInfo) jobItem = await deadJob;
-
-                    if (jobItem.Item1 == null)
+                    if (cancelToken.IsCancellationRequested)
                     {
                         return null;
-                    }                    
+                    }
+
+                    (XElement fileNode, FileInfo physicalPath) = jobData.Files[0];
+                    jobData.Files.RemoveAt(0);
+
+                    XElement compressedSizeNode = fileNode.Element("CompressedSize");
+                    FileInfo compressedFile = CompressFile(tempFile.Directory,
+                                                        physicalPath,
+                                                        jobData.WriteBuffer,
+                                                        compressedSizeNode,
+                                                        (int)(Compression * 9),
+                                                        cancelToken);
+
+                    if ((compressedFile == null) || (cancelToken.IsCancellationRequested))
+                    {
+                        return null;
+                    }
+
+                    jobData.CompressedFiles.Add((fileNode, compressedFile));
+
+                    progressCallback?.Invoke(Interlocked.Increment(ref fileCount), totalFileCount, true);
+                }
+
+                return jobData;
+            }
+                        
+            // Build up the tasks for our jobs.
+            while (fileNodes.Count > 0)
+            {
+                try
+                {
+                    var jobData = new CompressJob();
+
+                    // Copy the file information to the compression job data.
+                    int length = filesPerJob.Min(fileNodes.Count);
+                    for (int i = 0; i < length; ++i)
+                    {
+                        jobData.Files.Add(fileNodes[i]);                        
+                    }
+                    fileNodes.RemoveRange(0, length);
+
+                    jobs.Add(Task.Run(() => Compressor(jobData), cancelToken));
+                }
+                catch
+                {
+                    throw;
                 }
             }
-            while (jobs.Count > 0);
 
+            CompressJob[] finishedTasks = await Task.WhenAll(jobs);
+
+            if ((finishedTasks.Length == 0) || (finishedTasks.Any(item => item == null)) || (cancelToken.IsCancellationRequested))
+            {
+                return null;
+            }
+
+            IEnumerable<(XElement node, FileInfo file)> compressedFiles = finishedTasks.SelectMany(item => item.CompressedFiles);
             // Validate.
-            Debug.Assert(compressedFiles.All(item => item.Item1 != null), "File info not found in compression list.");
-            Debug.Assert(compressedFiles.All(item => item.Item2 != null), "XElement node not found in compression list.");
+            Debug.Assert(compressedFiles.All(item => item.node != null), "File info not found in compression list.");
+            Debug.Assert(compressedFiles.All(item => item.file != null), "XElement node not found in compression list.");
             Debug.Assert(compressedFiles.All(item =>
             {
-                XElement fileName = item.Item2.Element("Filename");
-                return item.Item1.Name.StartsWith(fileName.Value, StringComparison.OrdinalIgnoreCase);
+                XElement fileName = item.node.Element("Filename");
+                return item.file.Name.StartsWith(fileName.Value, StringComparison.OrdinalIgnoreCase);
             }), "File node and file info are not the same.");
 
-            await CompileFileDataTask(tempFile, compressedFiles, progressCallback, cancelToken);
+            await CompileFileDataTask(tempFile, finishedTasks.SelectMany(item => item.CompressedFiles), progressCallback, cancelToken);
 
             return fat;
         }
@@ -559,12 +589,12 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
 
                 tempFile.Refresh();
 
-                // Copy file layout.
+                // Copy file layout to a compressed data block.
                 byte[] fatData = Encoding.UTF8.GetBytes(fat.ToStringWithDeclaration());
                 fatStream = new MemoryStream(fatData);
                 compressedFatStream = new MemoryStream();
 
-                CompressData(fatStream, compressedFatStream, (int)(Compression * 9), cancelToken);
+                CompressData(fatStream, compressedFatStream, _globalWriteBuffer, (int)(Compression * 9), cancelToken);
 
                 if (cancelToken.IsCancellationRequested)
                 {
@@ -579,12 +609,12 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
                 writer = new GorgonBinaryWriter(outStream);
                 writer.Write(FileHeader);
                 writer.Write((int)compressedFatStream.Length);
-
+                                
                 compressedFatStream.Position = 0;
-                compressedFatStream.CopyToStream(outStream, (int)compressedFatStream.Length);
+                compressedFatStream.CopyToStream(outStream, (int)compressedFatStream.Length, _globalWriteBuffer);
 
                 // Copy temp file into our final file.
-                BlockCopyStream(inStream, outStream, CancellationToken.None);
+                BlockCopyStream(inStream, outStream, _globalWriteBuffer, CancellationToken.None);
             }
             finally
             {
