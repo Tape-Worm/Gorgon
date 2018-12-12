@@ -25,7 +25,7 @@
 #endregion
 
 using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.UI;
 
@@ -69,7 +69,15 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
         }
-
+        
+        /// <summary>
+        /// Property to return the list of search results for a filtered node list.
+        /// </summary>
+        IReadOnlyList<IFileExplorerNodeVm> SearchResults
+        {
+            get;
+        }
+        
         /// <summary>
         /// Property to return the command to execute when including or excluding all nodes.
         /// </summary>
@@ -173,6 +181,14 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
             set;
+        }
+
+        /// <summary>
+        /// Property to return the command used to perform a search for files.
+        /// </summary>
+        IEditorCommand<string> SearchCommand
+        {
+            get;
         }
         #endregion
     }

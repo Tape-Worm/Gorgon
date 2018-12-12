@@ -25,11 +25,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Gorgon.Core;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Plugins;
 
@@ -39,6 +36,7 @@ namespace Gorgon.Editor.Content
     /// A data structure representing a file containing content.
     /// </summary>
     public interface IContentFile
+        : IGorgonNamedObject
     {
         #region Events.
         /// <summary>
@@ -71,14 +69,6 @@ namespace Gorgon.Editor.Content
         /// Property to return the path to the file.
         /// </summary>
         string Path
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the name for the file.
-        /// </summary>
-        string Name
         {
             get;
         }

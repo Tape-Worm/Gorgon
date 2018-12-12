@@ -143,25 +143,27 @@ namespace Gorgon.Editor.ViewModels
 
             if (parent.Parent == null)
             {
-                parentPhysicalPath = project.ProjectWorkSpace.FullName;
+                parentPhysicalPath = project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
                 directoryNodes[parentPhysicalPath] = parent;
             }
             else
             {
-                parentPhysicalPath = parent.PhysicalPath;
+                parentPhysicalPath = parent.PhysicalPath.FormatDirectory(Path.DirectorySeparatorChar);
                 directoryNodes[parentPhysicalPath] = parent;
             }
 
             foreach (DirectoryInfo directory in fileSystemService.GetDirectories(parentPhysicalPath).OrderBy(item => item.FullName.Length))
             {
-                if (!directoryNodes.TryGetValue(directory.Parent.FullName, out IFileExplorerNodeVm parentNode))
+                string directoryParentPath = directory.Parent.FullName.FormatDirectory(Path.DirectorySeparatorChar);
+                string directoryPath = directory.FullName.FormatDirectory(Path.DirectorySeparatorChar);
+                if (!directoryNodes.TryGetValue(directoryParentPath, out IFileExplorerNodeVm parentNode))
                 {
-                    Program.Log.Print($"ERROR: Directory '{directory.Parent.FullName}' is the parent of '{directory.Name}', but is not found in the index list.", LoggingLevel.Simple);
+                    Program.Log.Print($"ERROR: Directory '{directoryParentPath}' is the parent of '{directory.Name}', but is not found in the index list.", LoggingLevel.Simple);
                     continue;
                 }
 
                 IFileExplorerNodeVm node = CreateFileExplorerDirectoryNodeVm(project, fileSystemService, parentNode, directory);
-                directoryNodes[directory.FullName] = node;
+                directoryNodes[directoryPath] = node;
 
                 // Get files for this directory.
                 foreach (FileInfo file in fileSystemService.GetFiles(directory.FullName, false))
@@ -398,10 +400,19 @@ namespace Gorgon.Editor.ViewModels
                 }
             }
 
+            var search = new FileSystemSearchSystem(root);
+
             result.Initialize(new FileExplorerParameters(fileSystemService,
+                                                        search,
                                                         root,
                                                         project,
                                                         this));
+
+            // Walk through the content plug ins and register custom search keywords.
+            foreach (ContentPlugin plugin in ContentPlugins.Plugins.Values)
+            {
+                plugin.RegisterSearchKeywords(search);
+            }
 
             return result;
         }

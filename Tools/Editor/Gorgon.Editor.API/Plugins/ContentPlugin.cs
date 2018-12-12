@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -52,6 +53,15 @@ namespace Gorgon.Editor.Plugins
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return the file search service.
+        /// </summary>
+        protected ISearchService<IGorgonNamedObject> FileSearchService
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// Property to return the graphics context for the application.
         /// </summary>
@@ -112,6 +122,30 @@ namespace Gorgon.Editor.Plugins
         /// </para>
         /// </remarks>
         protected abstract Task<IEditorContent> OnOpenContentAsync(IContentFile file, IViewModelInjection injector, IGorgonFileSystemWriter<Stream> scratchArea, IGorgonLog log);
+
+        /// <summary>
+        /// Function to register plug in specific search keywords with the system search.
+        /// </summary>
+        /// <typeparam name="T">The type of object being searched, must implement <see cref="IGorgonNamedObject"/>.</typeparam>
+        /// <param name="searchService">The search service to use for registration.</param>
+        protected abstract void OnRegisterSearchKeywords<T>(ISearchService<T> searchService) where T : IGorgonNamedObject;
+
+        /// <summary>
+        /// Function to register plug in specific search keywords with the system search.
+        /// </summary>
+        /// <typeparam name="T">The type of object being searched, must implement <see cref="IGorgonNamedObject"/>.</typeparam>
+        /// <param name="searchService">The search service to use for registration.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="searchService"/> parameter is <b>null</b>.</exception>
+        public void RegisterSearchKeywords<T>(ISearchService<T> searchService)
+            where T : IGorgonNamedObject
+        {
+            if (searchService == null)
+            {
+                throw new ArgumentNullException(nameof(searchService));
+            }
+
+            OnRegisterSearchKeywords(searchService);
+        }
 
         /// <summary>
         /// Function to open a content object from this plugin.
@@ -180,7 +214,7 @@ namespace Gorgon.Editor.Plugins
         /// <param name="pluginService">The plugin service used to access other plugins.</param>                
         /// <param name="graphicsContext">The graphics context for the application.</param>
         /// <param name="log">The logging interface for debug messages.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginService"/>, or the <paramref name="graphicsContext"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginService"/>, <paramref name="fileSearch"/>, or the <paramref name="graphicsContext"/> parameter is <b>null</b>.</exception>
         /// <remarks>
         /// <para>
         /// This method is only called when the plugin is loaded at startup.

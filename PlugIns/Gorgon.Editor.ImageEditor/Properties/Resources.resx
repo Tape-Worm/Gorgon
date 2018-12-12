@@ -212,4 +212,7 @@ Please try again.</value>
   <data name="right_20x20" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\right_20x20.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="GORIMG_SEARCH_KEYWORD_CODEC" xml:space="preserve">
+    <value>codec</value>
+  </data>
 </root>

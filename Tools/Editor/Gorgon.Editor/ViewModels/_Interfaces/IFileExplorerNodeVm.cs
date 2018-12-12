@@ -30,6 +30,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Gorgon.Core;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
@@ -59,7 +60,7 @@ namespace Gorgon.Editor.ViewModels
     /// A node view model for the file explorer.
     /// </summary>
     internal interface IFileExplorerNodeVm
-        : IViewModel
+        : IViewModel, IGorgonNamedObject
     {
         #region Properties.
         /// <summary>
@@ -135,14 +136,6 @@ namespace Gorgon.Editor.ViewModels
         /// Property to return the type of node.
         /// </summary>
         NodeType NodeType
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the name for the node.
-        /// </summary>
-        string Name
         {
             get;
         }

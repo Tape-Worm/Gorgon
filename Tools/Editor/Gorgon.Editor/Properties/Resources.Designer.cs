@@ -868,6 +868,17 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error searching for &apos;{0}&apos;.
+        ///
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_SEARCH {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_SEARCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot copy .
         /// </summary>
         internal static string GOREDIT_ERR_SOURCE_IS_ANCESTOR {
@@ -936,6 +947,15 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_NEW_PROJECT {
             get {
                 return ResourceManager.GetString("GOREDIT_NEW_PROJECT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to content-type.
+        /// </summary>
+        internal static string GOREDIT_SEARCH_KEYWORD_CONTENT_TYPE {
+            get {
+                return ResourceManager.GetString("GOREDIT_SEARCH_KEYWORD_CONTENT_TYPE", resourceCulture);
             }
         }
         

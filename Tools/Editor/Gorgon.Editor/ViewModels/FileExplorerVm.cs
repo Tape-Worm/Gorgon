@@ -102,6 +102,10 @@ namespace Gorgon.Editor.ViewModels
         private EditorSettings _settings;
         // The content plugin service.
         private IContentPluginManagerService _contentPlugins;
+        // The search results for a search query.
+        private List<IFileExplorerNodeVm> _searchResults;
+        // The system used to search through the file system.
+        private ISearchService<IFileExplorerNodeVm> _searchSystem;
         #endregion
 
         #region Properties.
@@ -256,6 +260,19 @@ namespace Gorgon.Editor.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        /// <summary>
+        /// Property to return the list of search results for a filtered node list.
+        /// </summary>
+        public IReadOnlyList<IFileExplorerNodeVm> SearchResults => _searchResults;
+
+        /// <summary>
+        /// Property to return the command used to perform a search for files.
+        /// </summary>
+        public IEditorCommand<string> SearchCommand
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
@@ -273,7 +290,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="args">Arguments for the command.</param>
         /// <returns><b>true</b> if the node can be created, <b>false</b> if not.</returns>
-        private bool CanCreateNode(CreateNodeArgs args) => (SelectedNode == null) || (SelectedNode.AllowChildCreation);
+        private bool CanCreateNode(CreateNodeArgs args) => (SearchResults == null) && ((SelectedNode == null) || (SelectedNode.AllowChildCreation));
 
         /// <summary>
         /// Function to determine if a file system node can be deleted.
@@ -351,6 +368,11 @@ namespace Gorgon.Editor.ViewModels
                                         
                     await args.Node.DeleteNodeAsync();
 
+                    if ((_searchResults != null) && (_searchResults.Contains(args.Node)))
+                    {
+                        _searchResults.Remove(args.Node);
+                    }
+
                     // Remove this item from the metadata.
                     itemsDeleted = true;
                     return;
@@ -370,7 +392,31 @@ namespace Gorgon.Editor.ViewModels
                     Thread.Sleep(16);
                 }
 
+                var deletedNodes = new List<IFileExplorerNodeVm>();
+
+                if (_searchResults != null)
+                {
+                    foreach (IFileExplorerNodeVm node in args.Node.Children.Traverse(n => n.Children))
+                    {
+                        if (_searchResults.Contains(node))
+                        {
+                            deletedNodes.Add(node);
+                        }
+                    }
+                }
+
                 await args.Node.DeleteNodeAsync(UpdateDeleteProgress, cancelSource.Token);
+
+                // Update the search list.
+                if (_searchResults == null)
+                {
+                    return;
+                }
+
+                foreach (IFileExplorerNodeVm node in deletedNodes)
+                {
+                    _searchResults.Remove(node);
+                }
             }
             catch (Exception ex)
             {
@@ -610,12 +656,18 @@ namespace Gorgon.Editor.ViewModels
             // Check for open content.
             string openContentPath = null;
             var changedFilePaths = new HashSet<string>();
+            var searchNodes = new List<string>();
 
             // Reset the metadata list.  The enumeration method requires that we have this list up to date.
             _project.ProjectItems.Clear();
 
             foreach (IFileExplorerNodeVm child in nodeToRefresh.Children.Traverse(n => n.Children))
             {
+                if (_searchResults?.Remove(child) ?? false)
+                {
+                    searchNodes.Add(child.FullPath);
+                }                
+
                 if (child.Metadata != null)
                 {
                     _project.ProjectItems[child.FullPath] = child.Metadata;
@@ -649,6 +701,16 @@ namespace Gorgon.Editor.ViewModels
             // Rebuild file associations.
             foreach (IFileExplorerNodeVm child in nodeToRefresh.Children.Traverse(n => n.Children))
             {
+                if (searchNodes.Any(item => string.Equals(child.FullPath, item, StringComparison.OrdinalIgnoreCase)))
+                {
+                    if (_searchResults == null)
+                    {
+                        _searchResults = new List<IFileExplorerNodeVm>();
+                    }
+
+                    _searchResults.Add(child);
+                }
+
                 if (child.Metadata != null)
                 {
                     child.AssignContentPlugin(_contentPlugins, deepScanForAssociation);
@@ -739,7 +801,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="node">The node to evaluate.</param>
         /// <returns><b>true</b> if the node can be exported, <b>false</b> if not.</returns>
-        private bool CanExportNode(IFileExplorerNodeVm node) => ((node == null) && (RootNode.Children.Count > 0))
+        private bool CanExportNode(IFileExplorerNodeVm node) => ((node == null) && (RootNode.Children.Count > 0) && (_searchResults == null))
                                                                 || (node.Children.Count > 0)
                                                                 || ((node != null) && (!node.AllowChildCreation));
 
@@ -1028,6 +1090,8 @@ namespace Gorgon.Editor.ViewModels
                 await Task.Run(() => _fileSystemService.DeleteAll());
 
                 RootNode.Children.Clear();
+                _searchResults = null;
+                NotifyPropertyChanged(nameof(SearchResults));
                 OnFileSystemChanged();
             }
             catch (Exception ex)
@@ -1037,6 +1101,39 @@ namespace Gorgon.Editor.ViewModels
             finally
             {
                 HideProgress();
+            }
+        }
+
+        /// <summary>
+        /// Function to perform a basic search for files.
+        /// </summary>
+        /// <param name="searchText">The text to search for.</param>
+        private void DoSearch(string searchText)
+        {
+            _busyService.SetBusy();
+
+            try
+            {
+                // Reset the selected node
+                IFileExplorerNodeVm selected = SelectedNode;
+                SelectedNode = null;
+
+                NotifyPropertyChanging(nameof(SearchResults));
+                _searchResults = _searchSystem.Search(searchText)?.ToList();                
+                NotifyPropertyChanged(nameof(SearchResults));
+
+                if ((selected != null) && ((_searchResults == null) || (_searchResults.Contains(selected))))
+                {
+                    SelectedNode = selected;
+                }
+            }
+            catch (Exception ex)
+            {
+                _messageService.ShowError(ex, string.Format(Resources.GOREDIT_ERR_SEARCH, searchText));
+            }
+            finally
+            {
+                _busyService.SetIdle();
             }
         }
 
@@ -1353,6 +1450,7 @@ namespace Gorgon.Editor.ViewModels
             _clipboard = injectionParameters.ClipboardService ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.ClipboardService), nameof(injectionParameters));
             _directoryLocator = injectionParameters.DirectoryLocator ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.DirectoryLocator), nameof(injectionParameters));
             _contentPlugins = injectionParameters.ContentPlugins ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.ContentPlugins), nameof(injectionParameters));
+            _searchSystem = injectionParameters.FileSearch ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.FileSearch), nameof(injectionParameters));
 
             EnumerateChildren(RootNode);
 
@@ -1360,7 +1458,7 @@ namespace Gorgon.Editor.ViewModels
             foreach (IFileExplorerNodeVm node in RootNode.Children.Traverse(n => n.Children))
             {
                 node.AssignContentPlugin(_contentPlugins, true);
-            }
+            }            
         }
 
         /// <summary>
@@ -1381,7 +1479,7 @@ namespace Gorgon.Editor.ViewModels
         /// <returns><b>true</b> if the clipboard handler can paste an item, <b>false</b> if not.</returns>
         bool IClipboardHandler.CanPaste()
         {
-            if (!_clipboard.IsType<FileSystemClipboardData>())
+            if ((SearchResults != null) || (!_clipboard.IsType<FileSystemClipboardData>()))
             {
                 return false;
             }
@@ -1534,6 +1632,11 @@ namespace Gorgon.Editor.ViewModels
         {
             try
             {
+                if (_searchResults != null)
+                {
+                    return false;
+                }
+
                 // We cannot drop on ourselves, if we're in move mode.
                 return !dragData.TargetNode.AllowChildCreation
                     ? false
@@ -1589,7 +1692,9 @@ namespace Gorgon.Editor.ViewModels
         {
             try
             {
-                return !dragData.TargetNode.AllowChildCreation ? false : !dragData.ExplorerPaths.Any(item => item.StartsWith(RootNode.PhysicalPath));
+                return _searchResults != null
+                    ? false
+                    : !dragData.TargetNode.AllowChildCreation ? false : !dragData.ExplorerPaths.Any(item => item.StartsWith(RootNode.PhysicalPath));
             }
             catch (Exception ex)
             {
@@ -1617,6 +1722,7 @@ namespace Gorgon.Editor.ViewModels
             IncludeExcludeAllCommand = new EditorCommand<IncludeExcludeArgs>(DoIncludeExcludeAll, CanIncludeExcludeAll);
             DeleteFileSystemCommand = new EditorCommand<object>(DoDeleteFileSystemAsync, CanDeleteFileSystem);
             ImportIntoNodeCommand = new EditorAsyncCommand<IFileExplorerNodeVm>(DoImportIntoNodeAsync, CanImportIntoNode);
+            SearchCommand = new EditorCommand<string>(DoSearch);
         }
         #endregion
     }

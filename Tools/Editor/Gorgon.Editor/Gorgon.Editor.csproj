@@ -88,6 +88,7 @@
     <Compile Include="Services\EditorFileSaveDialogService.cs" />
     <Compile Include="Services\EditorFileOpenDialogService.cs" />
     <Compile Include="Services\FileSystemProviders.cs" />
+    <Compile Include="Services\FileSystemSearchSystem.cs" />
     <Compile Include="Services\FileSystemService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProjectData\Project.cs" />

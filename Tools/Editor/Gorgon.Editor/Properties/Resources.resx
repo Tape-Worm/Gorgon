@@ -620,4 +620,12 @@ Please try again.</value>
   <data name="GOREDIT_TEXT_SCANNING" xml:space="preserve">
     <value>Scanning files...</value>
   </data>
+  <data name="GOREDIT_ERR_SEARCH" xml:space="preserve">
+    <value>There was an error searching for '{0}'.
+
+Please try again.</value>
+  </data>
+  <data name="GOREDIT_SEARCH_KEYWORD_CONTENT_TYPE" xml:space="preserve">
+    <value>content-type</value>
+  </data>
 </root>

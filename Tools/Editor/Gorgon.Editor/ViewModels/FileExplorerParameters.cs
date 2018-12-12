@@ -64,20 +64,29 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Property to return the service used to search through the file system.
+        /// </summary>
+        public ISearchService<IFileExplorerNodeVm> FileSearch
+        {
+            get;
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="FileExplorerParameters" /> class.
         /// </summary>
         /// <param name="fileSystemService">The file system service to use for manipulating the virtual file system.</param>
-        /// <param name="undoService">The service used for undo/redo functionality.</param>
+        /// <param name="fileSearch">The service used to search for files in the file explorer.</param>
         /// <param name="rootNode">The root node for the file system tree.</param>
         /// <param name="viewModelFactory">The view model factory.</param>
         /// <param name="project">The project data.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public FileExplorerParameters(IFileSystemService fileSystemService, IFileExplorerNodeVm rootNode, IProject project, ViewModelFactory viewModelFactory)
+        public FileExplorerParameters(IFileSystemService fileSystemService, ISearchService<IFileExplorerNodeVm> fileSearch, IFileExplorerNodeVm rootNode, IProject project, ViewModelFactory viewModelFactory)
             : base(viewModelFactory)
         {
             Project = project ?? throw new ArgumentNullException(nameof(project));            
-            FileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
+            FileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));            
             RootNode = rootNode ?? throw new ArgumentNullException(nameof(rootNode));
+            FileSearch = fileSearch ?? throw new ArgumentNullException(nameof(fileSearch));
         }
     }
 }

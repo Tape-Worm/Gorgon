@@ -98,11 +98,6 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>Property to return the path to the file.</summary>
         string IContentFile.Path => FullPath;
 
-        /// <summary>
-        /// Property to return the name for the file.
-        /// </summary>
-        string IContentFile.Name => Name;
-
         /// <summary>Property to return the extension for the file.</summary>
         string IContentFile.Extension => Path.GetExtension(Name);
 

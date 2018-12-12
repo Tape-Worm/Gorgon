@@ -266,10 +266,7 @@ namespace Gorgon.Editor.UI
 
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the EditorContentCommon class.</summary>
-        protected EditorContentCommon()
-        {
-            CloseContentCommand = new EditorCommand<object>(DoCloseContent);
-        }
+        protected EditorContentCommon() => CloseContentCommand = new EditorCommand<object>(DoCloseContent);
         #endregion
     }
 }

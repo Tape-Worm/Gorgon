@@ -179,6 +179,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to codec.
+        /// </summary>
+        internal static string GORIMG_SEARCH_KEYWORD_CODEC {
+            get {
+                return ResourceManager.GetString("GORIMG_SEARCH_KEYWORD_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Codec.
         /// </summary>
         internal static string GORIMG_TEXT_CODEC {

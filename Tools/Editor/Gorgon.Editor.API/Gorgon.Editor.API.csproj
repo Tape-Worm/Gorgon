@@ -53,6 +53,7 @@
     </Compile>
     <Compile Include="CommonEditorConstants.cs" />
     <Compile Include="Content\ContentFileMovedEventArgs.cs" />
+    <Compile Include="Services\_Interfaces\ISearchService.cs" />
     <Compile Include="Services\_Interfaces\IUndoService.cs" />
     <Compile Include="UI\ViewFactory.cs" />
     <Compile Include="UI\ViewModels\EditorContentCommon.cs" />

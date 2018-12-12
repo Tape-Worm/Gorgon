@@ -71,8 +71,18 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="UI\_Controls\GorgonProgressScreenPanel.cs">
+    <Compile Include="UI\_Controls\GorgonSearchBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\_Controls\GorgonSearchBox.Designer.cs">
+      <DependentUpon>GorgonSearchBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\GorgonSearchEventArgs.cs" />
+    <Compile Include="UI\_Controls\GorgonCueTextBox.cs">
       <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\_Controls\GorgonProgressScreenPanel.cs">
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="UI\_Controls\_Internal\ProgressPanel.cs">
       <SubType>UserControl</SubType>
@@ -110,13 +120,13 @@
     <Compile Include="UI\GorgonApplication.cs" />
     <Compile Include="UI\GorgonDialogs.cs" />
     <Compile Include="UI\_Controls\GorgonOverlayPanel.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="UI\_Controls\GorgonSelectablePanel.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="UI\_Controls\GorgonWaitScreenPanel.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="UI\_Extensions\GorgonControlExtensions.cs" />
     <Compile Include="UI\_Extensions\GorgonListViewExtensions.cs" />
@@ -171,6 +181,12 @@
     <None Include="Resources\Maximize.png" />
     <None Include="Resources\Info_48x48.png" />
     <None Include="Resources\Info_16x16.png" />
+    <EmbeddedResource Include="UI\_Controls\GorgonSearchBox.resx">
+      <DependentUpon>GorgonSearchBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\_Controls\GorgonCueTextBox.resx">
+      <DependentUpon>GorgonCueTextBox.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\_Controls\_Internal\ProgressPanel.resx">
       <DependentUpon>ProgressPanel.cs</DependentUpon>
     </EmbeddedResource>

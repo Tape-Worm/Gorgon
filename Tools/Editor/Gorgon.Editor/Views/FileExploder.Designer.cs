@@ -63,7 +63,7 @@
             this.MenuItemIncludeInProject = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItemIncludeAll = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItemExcludeAll = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuSep = new System.Windows.Forms.ToolStripSeparator();
+            this.MenuSepExport = new System.Windows.Forms.ToolStripSeparator();
             this.MenuItemExportTo = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuSepEdit = new System.Windows.Forms.ToolStripSeparator();
             this.MenuItemCut = new System.Windows.Forms.ToolStripMenuItem();
@@ -80,8 +80,11 @@
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.MenuItemCancel = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuCopyMove = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.PanelSearch = new System.Windows.Forms.Panel();
+            this.TextSearch = new Gorgon.Windows.UI.GorgonSearchBox();
             this.MenuOptions.SuspendLayout();
             this.MenuCopyMove.SuspendLayout();
+            this.PanelSearch.SuspendLayout();
             this.SuspendLayout();
             // 
             // TreeFileSystem
@@ -98,7 +101,7 @@
             this.TreeFileSystem.ImageList = this.TreeImages;
             this.TreeFileSystem.ItemHeight = 24;
             this.TreeFileSystem.LabelEdit = true;
-            this.TreeFileSystem.Location = new System.Drawing.Point(0, 0);
+            this.TreeFileSystem.Location = new System.Drawing.Point(0, 24);
             this.TreeFileSystem.Name = "TreeFileSystem";
             treeNode1.Name = "Node4";
             treeNode1.Text = "Node4";
@@ -126,7 +129,7 @@
             this.TreeFileSystem.PathSeparator = "/";
             this.TreeFileSystem.SelectedImageIndex = 0;
             this.TreeFileSystem.ShowLines = false;
-            this.TreeFileSystem.Size = new System.Drawing.Size(600, 468);
+            this.TreeFileSystem.Size = new System.Drawing.Size(600, 444);
             this.TreeFileSystem.Sorted = true;
             this.TreeFileSystem.TabIndex = 0;
             this.TreeFileSystem.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.TreeFileSystem_AfterCollapse);
@@ -151,7 +154,7 @@
             this.MenuItemIncludeInProject,
             this.MenuItemIncludeAll,
             this.MenuItemExcludeAll,
-            this.MenuSep,
+            this.MenuSepExport,
             this.MenuItemExportTo,
             this.MenuSepEdit,
             this.MenuItemCut,
@@ -190,10 +193,10 @@
             this.MenuItemExcludeAll.Text = "&Exclude all from project";
             this.MenuItemExcludeAll.Click += new System.EventHandler(this.MenuItemExcludeAll_Click);
             // 
-            // MenuSep
+            // MenuSepExport
             // 
-            this.MenuSep.Name = "MenuSep";
-            this.MenuSep.Size = new System.Drawing.Size(195, 6);
+            this.MenuSepExport.Name = "MenuSepExport";
+            this.MenuSepExport.Size = new System.Drawing.Size(195, 6);
             // 
             // MenuItemExportTo
             // 
@@ -309,15 +312,43 @@
             this.MenuCopyMove.Name = "MenuOptions";
             this.MenuCopyMove.Size = new System.Drawing.Size(136, 76);
             // 
+            // PanelSearch
+            // 
+            this.PanelSearch.AutoSize = true;
+            this.PanelSearch.Controls.Add(this.TextSearch);
+            this.PanelSearch.Dock = System.Windows.Forms.DockStyle.Top;
+            this.PanelSearch.Location = new System.Drawing.Point(0, 0);
+            this.PanelSearch.Name = "PanelSearch";
+            this.PanelSearch.Size = new System.Drawing.Size(600, 24);
+            this.PanelSearch.TabIndex = 1;
+            // 
+            // TextSearch
+            // 
+            this.TextSearch.AutoSize = true;
+            this.TextSearch.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.TextSearch.Dock = System.Windows.Forms.DockStyle.Top;
+            this.TextSearch.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.TextSearch.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.TextSearch.Location = new System.Drawing.Point(0, 0);
+            this.TextSearch.Name = "TextSearch";
+            this.TextSearch.Size = new System.Drawing.Size(600, 24);
+            this.TextSearch.TabIndex = 2;
+            this.TextSearch.Search += new System.EventHandler<Gorgon.Windows.UI.GorgonSearchEventArgs>(this.TextSearch_Search);
+            this.TextSearch.Leave += new System.EventHandler(this.TextSearch_Leave);
+            // 
             // FileExploder
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.TreeFileSystem);
+            this.Controls.Add(this.PanelSearch);
             this.Name = "FileExploder";
             this.MenuOptions.ResumeLayout(false);
             this.MenuCopyMove.ResumeLayout(false);
+            this.PanelSearch.ResumeLayout(false);
+            this.PanelSearch.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -343,7 +374,9 @@
         private System.Windows.Forms.ContextMenuStrip MenuCopyMove;
         private System.Windows.Forms.ToolStripMenuItem MenuItemIncludeAll;
         private System.Windows.Forms.ToolStripMenuItem MenuItemExcludeAll;
-        private System.Windows.Forms.ToolStripSeparator MenuSep;
+        private System.Windows.Forms.ToolStripSeparator MenuSepExport;
         private System.Windows.Forms.ToolStripMenuItem MenuItemExportTo;
+        private System.Windows.Forms.Panel PanelSearch;
+        private Windows.UI.GorgonSearchBox TextSearch;
     }
 }

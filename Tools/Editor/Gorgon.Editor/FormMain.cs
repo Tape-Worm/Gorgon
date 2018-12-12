@@ -609,7 +609,8 @@ namespace Gorgon.Editor
         private void FileExplorer_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
-            {                
+            {
+                case nameof(IFileExplorerVm.SearchResults):
                 case nameof(IUndoHandler.UndoCommand):
                 case nameof(IUndoHandler.RedoCommand):
                 case nameof(IFileExplorerVm.SelectedNode):

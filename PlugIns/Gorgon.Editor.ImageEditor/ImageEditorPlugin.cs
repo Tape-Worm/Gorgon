@@ -199,6 +199,14 @@ namespace Gorgon.Editor.ImageEditor
             return null;
         }
 
+        /// <summary>Function to register plug in specific search keywords with the system search.</summary>
+        /// <typeparam name="T">The type of object being searched, must implement <see cref="T:Gorgon.Core.IGorgonNamedObject"/>.</typeparam>
+        /// <param name="searchService">The search service to use for registration.</param>
+        protected override void OnRegisterSearchKeywords<T>(ISearchService<T> searchService)
+        {
+            searchService.MapKeywordToContentAttribute(Resources.GORIMG_SEARCH_KEYWORD_CODEC, ImageContent.CodecAttr);
+        }
+
         /// <summary>Function to open a content object from this plugin.</summary>
         /// <param name="file">The file that contains the content.</param>
         /// <param name="scratchAreaDirectory">The directory for the temporary working directory.</param>
