@@ -34,6 +34,7 @@ using Gorgon.Core;
 using Gorgon.Editor.Native;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
+using Gorgon.Math;
 
 namespace Gorgon.Editor.Services
 {
@@ -147,7 +148,7 @@ namespace Gorgon.Editor.Services
             /// <param name="destDir">The dest directory to copy into.</param>
             /// <param name="copyArguments">The copy arguments.</param>
             /// <param name="totalItemCount">The total item count.</param>
-            public CopyTaskArgs(DirectoryInfo root, DirectoryInfo destDir, CopyDirectoryArgs copyArguments, int totalItemCount)
+            public CopyTaskArgs(DirectoryInfo root, DirectoryInfo destDir, CopyDirectoryData copyArguments, int totalItemCount)
             {
                 TotalItemCount = totalItemCount;
                 RootDirectory = root;
@@ -375,7 +376,7 @@ namespace Gorgon.Editor.Services
         /// <param name="cancelToken">The token used to cancel the process.</param>
         /// <param name="includeSourceDirectory"><b>true</b> to include the source directory in the copy, or <b>false</b> to only use the contents of the source directory only.</param>
         /// <returns>The directory object for the copied directory, or <b>null</b> if nothing was copied (e.g. the operation was cancelled).</returns>
-        private async Task<DirectoryInfo> CreateDirectoryCopyTask(CopyDirectoryArgs args, CancellationToken cancelToken, bool includeSourceDirectory)
+        private async Task<DirectoryInfo> CreateDirectoryCopyTask(CopyDirectoryData args, CancellationToken cancelToken, bool includeSourceDirectory)
         {
             var directories = new List<DirectoryInfo>();
             {
@@ -717,23 +718,17 @@ namespace Gorgon.Editor.Services
         /// <param name="path">The path to the directory.</param>
         /// <returns><b>true</b> if the directory exists, <b>false</b> if not.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
-        public bool DirectoryExists(string path)
+        /// <exception cref="GorgonException">Thrown if the <paramref name="path"/> is not under the file system root.</exception>
+        public bool DirectoryExists(DirectoryInfo path)
         {
             if (path == null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
 
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentEmptyException(nameof(path));
-            }
+            CheckRootOfPath(path);
 
-            var dir = new DirectoryInfo(path);
-            CheckRootOfPath(dir);
-
-            return dir.Exists;
+            return path.Exists;
         }
 
         /// <summary>
@@ -742,23 +737,17 @@ namespace Gorgon.Editor.Services
         /// <param name="path">The path to the file.</param>
         /// <returns><b>true</b> if the file exists, <b>false</b> if not.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
-        public bool FileExists(string path)
+        /// <exception cref="GorgonException">Thrown if the <paramref name="path"/> is not under the file system root.</exception>
+        public bool FileExists(FileInfo path)
         {
             if (path == null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
 
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentEmptyException(nameof(path));
-            }
+            CheckRootOfPath(path.Directory);
 
-            var file = new FileInfo(path);
-            CheckRootOfPath(file.Directory);
-
-            return file.Exists;
+            return path.Exists;
         }
 
         /// <summary>
@@ -959,37 +948,6 @@ namespace Gorgon.Editor.Services
         }
 
         /// <summary>
-        /// Function to copy a directory, and all of its child items to the specified path.
-        /// </summary>
-        /// <param name="copySettings">The settings used for the directory copy.</param>
-        /// <param name="cancelToken">The token used to cancel the process.</param>
-        /// <returns>The directory object for the copied directory, or <b>null</b> if nothing was copied (e.g. the operation was cancelled).</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="copySettings" /> parameter is <b>null</b>.</exception>
-        /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by <see cref="CopyDirectoryArgs.SourceDirectoryPath"/>, or the <see cref="CopyDirectoryArgs.DestinationDirectoryPath"/> was not found.</exception>
-        public Task<DirectoryInfo> CopyDirectoryAsync(CopyDirectoryArgs copySettings, CancellationToken cancelToken)
-        {
-            if (copySettings == null)
-            {
-                throw new ArgumentNullException(nameof(copySettings));
-            }
-
-            CheckRootOfPath(copySettings.SourceDirectory);
-            CheckRootOfPath(copySettings.DestinationDirectory);
-
-            if (!copySettings.SourceDirectory.Exists)
-            {
-                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, copySettings.SourceDirectory.FullName));
-            }
-
-            if (!copySettings.DestinationDirectory.Parent.Exists)
-            {
-                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, copySettings.DestinationDirectory.Parent.FullName));
-            }
-
-            return CreateDirectoryCopyTask(copySettings, cancelToken, true);
-        }
-
-        /// <summary>
         /// Function to import the specified paths into a virtual file system location.
         /// </summary>
         /// <param name="importSettings">The import settings.</param>
@@ -1047,8 +1005,8 @@ namespace Gorgon.Editor.Services
         /// <param name="cancelToken">A token used to cancel the operation.</param>
         /// <returns>A task for asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="exportSettings"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by <see cref="CopyDirectoryArgs.SourceDirectory"/> was not found.</exception>
-        public Task ExportDirectoryAsync(CopyDirectoryArgs exportSettings, CancellationToken cancelToken)
+        /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by <see cref="CopyDirectoryData.SourceDirectory"/> was not found.</exception>
+        public Task ExportDirectoryAsync(CopyDirectoryData exportSettings, CancellationToken cancelToken)
         {
             if (exportSettings == null)
             {
@@ -1123,33 +1081,31 @@ namespace Gorgon.Editor.Services
             return Task.Run(() => sourceFile.CopyTo(Path.Combine(dir.FullName, sourceFile.Name), true));
         }
 
-        /// <summary>
-        /// Function to copy a file to another location.
-        /// </summary>
+        /// <summary>Function to copy a file to another location.</summary>
         /// <param name="filePath">The path to the file.</param>
-        /// <param name="destFileNamePath">The destination file name and path.</param>        
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/>, or the <paramref name="destFileNamePath"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="destFileNamePath"/> parameter is empty.</exception>
+        /// <param name="destFile">The destination file.</param>
+        /// <param name="progressCallback">The method that reports the file copy progress back.</param>
+        /// <param name="cancelToken">The token used to cancel the operation.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/>, <paramref name="destFile"/>, or the <paramref name="progressCallback"/> method is <b>null</b>.</exception>
         /// <exception cref="FileNotFoundException">Thrown when the file specified by <paramref name="filePath"/> was not found.</exception>
-        /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by <paramref name="destFileNamePath"/> was not found.</exception>
-        public void CopyFile(FileInfo filePath, string destFileNamePath)
+        /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by <paramref name="destFile"/> was not found.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="filePath"/>, or the <paramref name="destFile"/> are not in under the file system.</exception>
+        public void CopyFile(FileInfo filePath, FileInfo destFile, Action<long, long> progressCallback, CancellationToken cancelToken)
         {
             if (filePath == null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
 
-            if (destFileNamePath == null)
+            if (destFile == null)
             {
-                throw new ArgumentNullException(nameof(destFileNamePath));
+                throw new ArgumentNullException(nameof(destFile));
             }
 
-            if (string.IsNullOrWhiteSpace(destFileNamePath))
+            if (progressCallback == null)
             {
-                throw new ArgumentEmptyException(nameof(destFileNamePath));
+                throw new ArgumentNullException(nameof(progressCallback));
             }
-
-            var destFile = new FileInfo(destFileNamePath);
 
             CheckRootOfPath(filePath.Directory);
             CheckRootOfPath(destFile.Directory);
@@ -1161,10 +1117,47 @@ namespace Gorgon.Editor.Services
 
             if (!destFile.Directory.Exists)
             {
-                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, destFileNamePath));
+                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, destFile.Directory.Name));
             }
 
-            filePath.CopyTo(destFile.FullName, true);
+            long fileSize = filePath.Length;
+            long maxBlockSize = 4096L.Min(fileSize);
+            long copied = 0;
+            byte[] writeBuffer = new byte[maxBlockSize];
+
+            progressCallback(0, fileSize);
+
+            using (Stream inStream = filePath.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                using (Stream outStream = destFile.Open(FileMode.Create, FileAccess.Write, FileShare.None))
+                {
+                    // If we're under 4096 BYTES, then we can copy as-is, and we can report a 1:1 file copy.
+                    if (fileSize <= maxBlockSize)
+                    {                        
+                        inStream.CopyToStream(outStream, (int)fileSize, writeBuffer);
+                        progressCallback(fileSize, fileSize);
+                        return;
+                    }
+
+                    // Otherwise, we need to break up the file into 1MB chunks to get reporting of file copy progress.
+                    int blockSize = (int)(maxBlockSize.Min(fileSize));
+
+                    while (fileSize > 0)
+                    {
+                        if (cancelToken.IsCancellationRequested)
+                        {
+                            return;
+                        }
+
+                        inStream.CopyToStream(outStream, blockSize, writeBuffer);
+                        fileSize -= blockSize;
+                        copied += blockSize;
+                        blockSize = (int)(maxBlockSize.Min(fileSize));
+
+                        progressCallback(copied, filePath.Length);
+                    }
+                }
+            }            
         }
 
         /// <summary>

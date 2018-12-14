@@ -60,7 +60,11 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// An exception should be thrown.
         /// </summary>
-        Exception = 5
+        Exception = 5,
+        /// <summary>
+        /// The operation should skip this item.
+        /// </summary>
+        Skip = 6
     }
 
 
@@ -118,14 +122,14 @@ namespace Gorgon.Editor.Services
         /// </summary>
         /// <param name="path">The path to the file.</param>
         /// <returns><b>true</b> if the file exists, <b>false</b> if not.</returns>
-        bool FileExists(string path);
+        bool FileExists(FileInfo path);
 
         /// <summary>
         /// Function to determine if a directory exists or not.
         /// </summary>
         /// <param name="path">The path to the directory.</param>
         /// <returns><b>true</b> if the directory exists, <b>false</b> if not.</returns>
-        bool DirectoryExists(string path);
+        bool DirectoryExists(DirectoryInfo path);
 
         /// <summary>
         /// Function to create a new directory.
@@ -164,14 +168,6 @@ namespace Gorgon.Editor.Services
         bool DeleteDirectory(DirectoryInfo directoryPath, Action<FileSystemInfo> onDelete, CancellationToken cancelToken);
 
         /// <summary>
-        /// Function to copy a directory, and all of its child items to the specified path.
-        /// </summary>
-        /// <param name="copySettings">The settings used for the directory copy.</param>
-        /// <param name="cancelToken">The token used to cancel the process.</param>
-        /// <returns>The directory object for the copied directory, or <b>null</b> if nothing was copied (e.g. the operation was cancelled).</returns>
-        Task<DirectoryInfo> CopyDirectoryAsync(CopyDirectoryArgs copySettings, CancellationToken cancelToken);
-
-        /// <summary>
         /// Function to delete a file.
         /// </summary>
         /// <param name="filePath">The path to the file on the physical file system to delete.</param>
@@ -189,8 +185,10 @@ namespace Gorgon.Editor.Services
         /// Function to copy a file to another location.
         /// </summary>
         /// <param name="filePath">The path to the file.</param>
-        /// <param name="destFileNamePath">The destination file name and path.</param>        
-        void CopyFile(FileInfo filePath, string destFileNamePath);
+        /// <param name="destFile">The destination file.</param>
+        /// <param name="progressCallback">The method that reports the file copy progress back.</param>
+        /// <param name="cancelToken">The token used to cancel the operation.</param>
+        void CopyFile(FileInfo filePath, FileInfo destFile, Action<long, long> progressCallback, CancellationToken cancelToken);
 
         /// <summary>
         /// Function to move a file to another location.
@@ -217,7 +215,7 @@ namespace Gorgon.Editor.Services
         /// <param name="exportSettings">The settings used for the export.</param>
         /// <param name="cancelToken">A token used to cancel the operation.</param>
         /// <returns>A task for asynchronous operation.</returns>
-        Task ExportDirectoryAsync(CopyDirectoryArgs exportSettings, CancellationToken cancelToken);
+        Task ExportDirectoryAsync(CopyDirectoryData exportSettings, CancellationToken cancelToken);
 
         /// <summary>
         /// Function to import the specified paths into a virtual file system location.

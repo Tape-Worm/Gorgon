@@ -25,15 +25,13 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Editor.Metadata;
+using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 
@@ -63,6 +61,15 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return the currently active project that this node is in.
+        /// </summary>
+        protected IProject Project
+        {
+            get;
+            private set;                
+        }
+
         /// <summary>
         /// Property to return the factory used to build view models.
         /// </summary>
@@ -348,11 +355,7 @@ namespace Gorgon.Editor.ViewModels
         /// <remarks>Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.</remarks>
         protected override void OnInitialize(FileExplorerNodeParameters injectionParameters)
         {
-            if (injectionParameters.Project == null)
-            {
-                throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.Project), nameof(injectionParameters));
-            }
-
+            Project = injectionParameters.Project ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.Project), nameof(injectionParameters));
             FileSystemService = injectionParameters.FileSystemService ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.FileSystemService), nameof(injectionParameters));
             ViewModelFactory = injectionParameters.ViewModelFactory ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.ViewModelFactory), nameof(injectionParameters));
 
@@ -427,22 +430,6 @@ namespace Gorgon.Editor.ViewModels
             return parentOfMe != null;
         }
 
-        /// <summary>
-        /// Function to copy this node to another node.
-        /// </summary>
-        /// <param name="destNode">The dest node.</param>
-        /// <param name="onCopy">[Optional] The method to call when a file is about to be copied.</param>
-        /// <param name="cancelToken">[Optional] A token used to cancel the operation.</param>
-        /// <returns>The new node for the copied node.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destNode" /> parameter is <b>null</b>.</exception>
-        /// <exception cref="GorgonException">Thrown if the <paramref name="destNode" /> is unable to create child nodes.</exception>
-        /// <remarks>
-        /// <para>
-        /// The <paramref name="onCopy" /> callback method sends the file system item being copied, the destination file system item, the current item #, and the total number of items to copy.
-        /// </para>
-        /// </remarks>
-        public abstract Task<IFileExplorerNodeVm> CopyNodeAsync(IFileExplorerNodeVm destNode, Action<FileSystemInfo, FileSystemInfo, int, int> onCopy = null, CancellationToken? cancelToken = null);
-
         /// <summary>Function to move this node to another node.</summary>
         /// <param name="destNode">The node that will receive this node as a child.</param>
         /// <returns><b>true</b> if the node was moved, <b>false</b> if it was cancelled or had an error moving.</returns>
@@ -478,6 +465,24 @@ namespace Gorgon.Editor.ViewModels
 
             return !IsContent ? false : OnAssignContentPlugin(contentPlugins, deepScan);
         }
+
+        /// <summary>
+        /// Function to copy the file node into another node.
+        /// </summary>
+        /// <param name="copyNodeData">The data containing information about what to copy.</param>
+        /// <returns>The newly copied node.</returns>
+        public abstract Task<IFileExplorerNodeVm> CopyNodeAsync(CopyNodeData copyNodeData);
+
+        /// <summary>
+        /// Function to retrieve the size of the data on the physical file system.
+        /// </summary>        
+        /// <returns>The size of the data on the physical file system, in bytes.</returns>
+        /// <remarks>
+        /// <para>
+        /// For nodes with children, this will sum up the size of each item in the <see cref="Children"/> list.  For items that do not have children, then only the size of the immediate item is returned.
+        /// </para>
+        /// </remarks>
+        public abstract long GetSizeInBytes();
         #endregion
 
         #region Constructor.
@@ -487,6 +492,7 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="copy">The node to copy.</param>
         internal FileExplorerNodeCommon(FileExplorerNodeCommon copy)
         {
+            Project = copy.Project;
             BusyService = copy.BusyService;
             MessageDisplay = copy.MessageDisplay;
             IsExpanded = copy.IsExpanded;

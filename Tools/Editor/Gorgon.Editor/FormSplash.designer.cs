@@ -44,7 +44,7 @@ namespace Gorgon.Editor
 			// 
 			// panel1
 			// 
-			this.panel1.BackgroundImage = global::Gorgon.Editor.Properties.Resources.Gorgon_2_x_Logo_Full;
+			this.panel1.BackgroundImage = global::Gorgon.Editor.Properties.Resources.Gorgon_Logo_Full;
 			resources.ApplyResources(this.panel1, "panel1");
 			this.panel1.Name = "panel1";
 			// 

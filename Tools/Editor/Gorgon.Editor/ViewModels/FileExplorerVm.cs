@@ -1208,6 +1208,65 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Function called when there is a conflict when copying or moving files.
+        /// </summary>
+        /// <param name="sourceItem">The file being copied/moved.</param>
+        /// <param name="destItem">The destination file that is conflicting.</param>
+        /// <param name="allowCancel"><b>true</b> to allow cancel support, or <b>false</b> to only use yes/no prompts.</param>
+        /// <param name="toAll"><b>true</b> to apply the resolution to all items after the first resolution is decided, or <b>false</b> to prompt the user each time a conflict arises.</param>
+        /// <returns>A resolution for the conflict.</returns>
+        private FileSystemConflictResolution FileSystemConflictHandler(IFileExplorerNodeVm sourceItem, IFileExplorerNodeVm destItem, bool allowCancel, bool toAll)
+        {
+            bool isBusy = _busyService.IsBusy;
+
+            // Reset the busy state.  The dialog will disrupt it anyway.
+            _busyService.SetIdle();
+            MessageResponse response;
+
+            try
+            {
+                if (destItem.IsOpen)
+                {
+                    response = _messageService.ShowConfirmation(string.Format(Resources.GOREDIT_MSG_OPEN_CONTENT_CANT_OVERWRITE, sourceItem.Name), allowCancel: allowCancel);
+
+                    switch (response)
+                    {
+                        case MessageResponse.Yes:
+                            return FileSystemConflictResolution.Rename;
+                        case MessageResponse.No:
+                            return FileSystemConflictResolution.Skip;
+                        default:
+                            return FileSystemConflictResolution.Cancel;
+                    }
+                }
+
+                response = _messageService.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_FILE_EXISTS, sourceItem.Name, destItem.Parent.FullPath.Ellipses(65, true)), toAll: toAll, allowCancel: allowCancel);
+
+                switch (response)
+                {
+                    case MessageResponse.Yes:
+                        return FileSystemConflictResolution.Overwrite;
+                    case MessageResponse.YesToAll:
+                        return FileSystemConflictResolution.OverwriteAll;
+                    case MessageResponse.No:
+                        return FileSystemConflictResolution.Rename;
+                    case MessageResponse.NoToAll:
+                        return FileSystemConflictResolution.RenameAll;
+                    default:
+                        return FileSystemConflictResolution.Cancel;
+                }
+            }
+            finally
+            {
+                // Restore the busy state if we originally had it active.
+                if (isBusy)
+                {
+                    _busyService.SetBusy();
+                }
+            }
+        }
+
+        /// <summary>
         /// Function to copy a node to another node.
         /// </summary>
         /// <param name="source">The source node to copy.</param>
@@ -1219,8 +1278,6 @@ namespace Gorgon.Editor.ViewModels
 
             try
             {
-                IFileExplorerNodeVm newNode = null;
-
                 // Locate the next level that allows child creation if this one cannot.
                 while (!dest.AllowChildCreation)
                 {
@@ -1239,64 +1296,59 @@ namespace Gorgon.Editor.ViewModels
                     Message = string.Empty
                 });
 
-                // Function to update our progress meter and provide updates to our caching (and inclusion functionality).
-                void UpdateCopyProgress(FileSystemInfo sourceItem, FileSystemInfo destItem, int currentItemNumber, int totalItemNumber)
+                // Collapse the node during copy.
+                dest.IsExpanded = false;
+
+                void CopyProgress(IFileExplorerNodeVm sourceItem, long bytesCopied, long totalBytes)
                 {
-                    string sourceItemPath = sourceItem.ToFileSystemPath(_project.ProjectWorkSpace);
-                    string destItemPath = destItem.ToFileSystemPath(_project.ProjectWorkSpace);
+                    float percent = bytesCopied / (float)totalBytes;
 
-                    IFileExplorerNodeVm sourceNode = _nodePathLookup[sourceItemPath];
-
-                    float percent = currentItemNumber / (float)totalItemNumber;
                     UpdateProgress(new ProgressPanelUpdateArgs
                     {
                         Title = Resources.GOREDIT_TEXT_COPYING,
                         CancelAction = CancelAction,
-                        Message = sourceItemPath.Ellipses(65, true),
+                        Message = sourceItem.FullPath.Ellipses(65, true),
                         PercentageComplete = percent
                     });
                 }
 
-                newNode = await source.CopyNodeAsync(dest, UpdateCopyProgress, cancelSource.Token);
+                var data = new CopyNodeData
+                {
+                    CancelToken = cancelSource.Token,
+                    CopyProgress = CopyProgress,
+                    DefaultResolution = null,
+                    Destination = dest,
+                    ConflictHandler = FileSystemConflictHandler,
+                    UseToAllInConflictHandler = source.AllowChildCreation
+                };
 
-                if (newNode == null)
+                IFileExplorerNodeVm fileNode = await source.CopyNodeAsync(data);
+
+                if ((fileNode == null) || (cancelSource.Token.IsCancellationRequested))
                 {
                     return;
                 }
 
-                // If the source has children, then rescan our new node to pick up any children that were copied.
-                if (source.Children.Count > 0)
+                _nodePathLookup[fileNode.FullPath] = fileNode;
+
+                if (!fileNode.Parent.IsExpanded)
                 {
-                    RefreshNode(newNode, false);
+                    fileNode.Parent.IsExpanded = true;
                 }
 
-                SelectedNode = dest;
-
-                // This will refresh the nodes under the destination.
-                if ((!dest.IsExpanded) && (dest.Children.Count > 0))
+                if (fileNode.Children.Count > 0)
                 {
-                    dest.IsExpanded = true;
-                }
-
-                // If this node is not registered, then add it now.
-                if (!_nodePathLookup.TryGetValue(newNode.FullPath, out IFileExplorerNodeVm prevNode))
-                {
-                    dest.Children.Add(newNode);
-                    prevNode = newNode;
-                }
-
-                if (newNode.Children.Count > 0)
-                {
-                    foreach (IFileExplorerNodeVm child in newNode.Children.Traverse(n => n.Children))
+                    foreach (IFileExplorerNodeVm child in fileNode.Children.Traverse(n => n.Children))
                     {
                         child.AssignContentPlugin(_contentPlugins);
                     }
                 }
 
-                newNode.AssignContentPlugin(_contentPlugins);
-                OnFileSystemChanged();
+                fileNode.AssignContentPlugin(_contentPlugins);
 
-                SelectedNode = prevNode;
+                SelectedNode = fileNode;
+
+                OnFileSystemChanged();
             }
             finally
             {

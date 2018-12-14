@@ -25,7 +25,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading;
@@ -200,15 +200,6 @@ namespace Gorgon.Editor.ViewModels
         /// </remarks>
         public bool AssignContentPlugin(IContentPluginManagerService contentPlugins, bool deepScan = false) => false;
 
-        /// <summary>Function to copy this node to another node.</summary>
-        /// <param name="destNode">The destination node that will receive the copy.</param>
-        /// <param name="onCopy">[Optional] The method to call when a file is about to be copied.</param>
-        /// <param name="cancelToken">[Optional] A token used to cancel the operation.</param>
-        /// <returns><b>null</b> since root nodes cannot be copied.</returns>
-        /// <remarks>The <paramref name="onCopy" /> callback method sends the file system node being copied, the destination file system node, the current item #, and the total number of items to copy.</remarks>
-        public Task<IFileExplorerNodeVm> CopyNodeAsync(IFileExplorerNodeVm destNode, Action<FileSystemInfo, FileSystemInfo, int, int> onCopy = null, CancellationToken? cancelToken = null) => Task.FromResult<IFileExplorerNodeVm>(null);
-
-
         /// <summary>Function to delete the node.</summary>
         /// <param name="onDeleted">[Optional] A function to call when a node or a child node is deleted.</param>
         /// <param name="cancelToken">[Optional] A cancellation token used to cancel the operation.</param>
@@ -248,6 +239,22 @@ namespace Gorgon.Editor.ViewModels
         {
             // Do nothing.  Root nodes cannot be renamed.
         }
+
+        /// <summary>
+        /// Function to retrieve the size of the data on the physical file system.
+        /// </summary>        
+        /// <returns>The size of the data on the physical file system, in bytes.</returns>
+        /// <remarks>
+        /// <para>
+        /// For nodes with children, this will sum up the size of each item in the <see cref="Children"/> list.  For items that do not have children, then only the size of the immediate item is returned.
+        /// </para>
+        /// </remarks>
+        public long GetSizeInBytes() => Children.Count == 0 ? 0 : Children.Traverse(n => n.Children).Sum(n => n.GetSizeInBytes());
+
+        /// <summary>Function to copy the file node into another node.</summary>
+        /// <param name="copyNodeData">The data containing information about what to copy.</param>
+        /// <returns>The newly copied node.</returns>
+        public Task<IFileExplorerNodeVm> CopyNodeAsync(CopyNodeData copyNodeData) => Task.FromCanceled<IFileExplorerNodeVm>(CancellationToken.None);        
         #endregion
     }
 }

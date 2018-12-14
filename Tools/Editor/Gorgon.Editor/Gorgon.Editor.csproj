@@ -84,7 +84,8 @@
     <Compile Include="RecentItem.cs" />
     <Compile Include="RibbonMerger.cs" />
     <Compile Include="Services\ContentPluginService.cs" />
-    <Compile Include="Services\CopyDirectoryArgs.cs" />
+    <Compile Include="Services\CopyDirectoryData.cs" />
+    <Compile Include="Services\CopyDirectoryResult.cs" />
     <Compile Include="Services\EditorFileSaveDialogService.cs" />
     <Compile Include="Services\EditorFileOpenDialogService.cs" />
     <Compile Include="Services\FileSystemProviders.cs" />
@@ -108,6 +109,7 @@
     <Compile Include="Services\_Interfaces\IWorkspaceTester.cs" />
     <Compile Include="ViewModels\AppCloseArgs.cs" />
     <Compile Include="ViewModels\CopyNodeArgs.cs" />
+    <Compile Include="ViewModels\CopyNodeData.cs" />
     <Compile Include="ViewModels\CreateNodeArgs.cs" />
     <Compile Include="ViewModels\DeleteNodeArgs.cs" />
     <Compile Include="ViewModels\FileExplorerRootNode.cs" />

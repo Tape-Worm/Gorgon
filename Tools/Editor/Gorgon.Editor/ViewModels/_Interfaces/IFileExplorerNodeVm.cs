@@ -192,6 +192,17 @@ namespace Gorgon.Editor.ViewModels
 
         #region Methods.
         /// <summary>
+        /// Function to retrieve the size of the data on the physical file system.
+        /// </summary>        
+        /// <returns>The size of the data on the physical file system, in bytes.</returns>
+        /// <remarks>
+        /// <para>
+        /// For nodes with children, this will sum up the size of each item in the <see cref="Children"/> list.  For items that do not have children, then only the size of the immediate item is returned.
+        /// </para>
+        /// </remarks>
+        long GetSizeInBytes();
+
+        /// <summary>
         /// Function to notify that the parent of this node was moved.
         /// </summary>
         /// <param name="newNode">The new node representing this node under the new parent.</param>
@@ -224,18 +235,11 @@ namespace Gorgon.Editor.ViewModels
         Task DeleteNodeAsync(Action<FileSystemInfo> onDeleted = null, CancellationToken? cancelToken = null);
 
         /// <summary>
-        /// Function to copy this node to another node.
+        /// Function to copy the file node into another node.
         /// </summary>
-        /// <param name="destNode">The destination node that will receive the copy.</param>
-        /// <param name="onCopy">[Optional] The method to call when a file is about to be copied.</param>
-        /// <param name="cancelToken">[Optional] A token used to cancel the operation.</param>
-        /// <returns>The new node for the copied node.</returns>
-        /// <remarks>
-        /// <para>
-        /// The <paramref name="onCopy"/> callback method sends the file system node being copied, the destination file system node, the current item #, and the total number of items to copy.
-        /// </para>
-        /// </remarks>
-        Task<IFileExplorerNodeVm> CopyNodeAsync(IFileExplorerNodeVm destNode, Action<FileSystemInfo, FileSystemInfo, int, int> onCopy = null, CancellationToken? cancelToken = null);
+        /// <param name="copyNodeData">The data containing information about what to copy.</param>
+        /// <returns>The newly copied node.</returns>
+        Task<IFileExplorerNodeVm> CopyNodeAsync(CopyNodeData copyNodeData);
 
         /// <summary>
         /// Function to move this node to another node.

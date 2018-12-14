@@ -225,7 +225,7 @@ Please try again.</value>
   <data name="add_directory_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\add_directory_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Gorgon_2_x_Logo_Full" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="Gorgon_Logo_Full" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Gorgon_2.x_Logo_Full.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GOREDIT_ERR_NODE_ILLEGAL_CHARS" xml:space="preserve">
@@ -419,7 +419,7 @@ Please try again.</value>
   <data name="save_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\save_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Gorgon_2.x_Logo_Small" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="Gorgon_Logo_Small" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Gorgon_2.x_Logo_Small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="icons8_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -476,7 +476,7 @@ Please try again.</value>
   <data name="add_directory_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\add_directory_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Gorgon_2.x_Logo_Full_Site" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="Gorgon_Logo_Full_Site" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Gorgon_2.x_Logo_Full_Site.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GOREDIT_ERR_PATH_NOT_INCLUDED" xml:space="preserve">
@@ -627,5 +627,10 @@ Please try again.</value>
   </data>
   <data name="GOREDIT_SEARCH_KEYWORD_CONTENT_TYPE" xml:space="preserve">
     <value>content-type</value>
+  </data>
+  <data name="GOREDIT_MSG_OPEN_CONTENT_CANT_OVERWRITE" xml:space="preserve">
+    <value>The file '{0}' is open in the editor and cannot be overwritten.
+
+Would you like to make a copy with a different name?</value>
   </data>
 </root>

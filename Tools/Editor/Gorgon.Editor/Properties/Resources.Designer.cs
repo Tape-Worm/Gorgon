@@ -933,6 +933,17 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; is open in the editor and cannot be overwritten.
+        ///
+        ///Would you like to make a copy with a different name?.
+        /// </summary>
+        internal static string GOREDIT_MSG_OPEN_CONTENT_CANT_OVERWRITE {
+            get {
+                return ResourceManager.GetString("GOREDIT_MSG_OPEN_CONTENT_CANT_OVERWRITE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to New Folder.
         /// </summary>
         internal static string GOREDIT_NEW_DIR_NAME {
@@ -1196,9 +1207,9 @@ namespace Gorgon.Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Gorgon_2_x_Logo_Full {
+        internal static System.Drawing.Bitmap Gorgon_Logo_Full {
             get {
-                object obj = ResourceManager.GetObject("Gorgon_2_x_Logo_Full", resourceCulture);
+                object obj = ResourceManager.GetObject("Gorgon_Logo_Full", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1206,9 +1217,9 @@ namespace Gorgon.Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Gorgon_2_x_Logo_Full_Site {
+        internal static System.Drawing.Bitmap Gorgon_Logo_Full_Site {
             get {
-                object obj = ResourceManager.GetObject("Gorgon_2.x_Logo_Full_Site", resourceCulture);
+                object obj = ResourceManager.GetObject("Gorgon_Logo_Full_Site", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1216,9 +1227,9 @@ namespace Gorgon.Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Gorgon_2_x_Logo_Small {
+        internal static System.Drawing.Bitmap Gorgon_Logo_Small {
             get {
-                object obj = ResourceManager.GetObject("Gorgon_2.x_Logo_Small", resourceCulture);
+                object obj = ResourceManager.GetObject("Gorgon_Logo_Small", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

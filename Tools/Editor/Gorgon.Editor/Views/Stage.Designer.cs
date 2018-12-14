@@ -209,7 +209,7 @@
             // PictureLogo
             // 
             this.PictureLogo.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PictureLogo.Image = global::Gorgon.Editor.Properties.Resources.Gorgon_2_x_Logo_Small;
+            this.PictureLogo.Image = global::Gorgon.Editor.Properties.Resources.Gorgon_Logo_Small;
             this.PictureLogo.Location = new System.Drawing.Point(0, 0);
             this.PictureLogo.Name = "PictureLogo";
             this.PictureLogo.Size = new System.Drawing.Size(310, 41);

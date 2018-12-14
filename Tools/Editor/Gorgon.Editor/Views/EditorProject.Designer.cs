@@ -107,7 +107,7 @@
             // PanelContent
             // 
             this.PanelContent.AllowDrop = true;
-            this.PanelContent.BackgroundImage = global::Gorgon.Editor.Properties.Resources.Gorgon_2_x_Logo_Full_Site;
+            this.PanelContent.BackgroundImage = global::Gorgon.Editor.Properties.Resources.Gorgon_Logo_Full_Site;
             this.PanelContent.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.PanelContent.Location = new System.Drawing.Point(293, 243);
             this.PanelContent.Name = "PanelContent";

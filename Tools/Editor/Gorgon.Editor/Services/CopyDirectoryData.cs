@@ -26,15 +26,13 @@
 
 using System;
 using System.IO;
-using Gorgon.Core;
-using Gorgon.IO;
 
 namespace Gorgon.Editor.Services
 {
     /// <summary>
-    /// Arguments to pass to the <see cref="IFileSystemService.CopyDirectoryAsync(CopyDirectoryArgs, System.Threading.CancellationToken)"/> method.
+    /// Arguments to pass to the <see cref="IFileSystemService.CopyDirectoryAsync(CopyDirectoryData, System.Threading.CancellationToken)"/> method.
     /// </summary>
-    internal class CopyDirectoryArgs
+    internal class CopyDirectoryData
     {
         /// <summary>
         /// Property to return the directory to use as the source.
@@ -54,7 +52,7 @@ namespace Gorgon.Editor.Services
 
         /// <summary>
         /// Property to set or return the action to execute to report progress for the copy.
-        /// </summary>
+        /// </summary>        
         public Action<FileSystemInfo, FileSystemInfo, int, int> OnCopyProgress
         {
             get;
@@ -71,25 +69,15 @@ namespace Gorgon.Editor.Services
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CopyDirectoryArgs"/> class.
+        /// Initializes a new instance of the <see cref="CopyDirectoryData"/> class.
         /// </summary>
         /// <param name="sourceDirectory">The path to the source directory to copy.</param>
         /// <param name="destDirectory">The path to the destination directory that will receive the copy.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceDirectory"/>, or the <paramref name="destDirectory"/> parameter is <b>null</b>.</exception>
-        public CopyDirectoryArgs(DirectoryInfo sourceDirectory, DirectoryInfo destDirectory)
+        public CopyDirectoryData(DirectoryInfo sourceDirectory, DirectoryInfo destDirectory)
         {
-            if (sourceDirectory == null)
-            {
-                throw new ArgumentNullException(nameof(sourceDirectory));
-            }
-
-            if (destDirectory == null)
-            {
-                throw new ArgumentNullException(nameof(destDirectory));
-            }
-
-            SourceDirectory = sourceDirectory;
-            DestinationDirectory = destDirectory;
+            SourceDirectory = sourceDirectory ?? throw new ArgumentNullException(nameof(sourceDirectory));
+            DestinationDirectory = destDirectory ?? throw new ArgumentNullException(nameof(destDirectory));
         }
     }
 }

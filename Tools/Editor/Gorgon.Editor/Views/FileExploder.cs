@@ -133,6 +133,21 @@ namespace Gorgon.Editor.Views
             return imageIndex;
         }
 
+        /// <summary>
+        /// Function to unassign the linkages for a node.
+        /// </summary>
+        /// <param name="node"></param>
+        private void RemoveNodeLinks(IFileExplorerNodeVm node)
+        {
+            if (node == null)
+            {
+                return;
+            }
+
+            UnassignNodeEvents(node.Children);
+            node.PropertyChanged -= Node_PropertyChanged;
+            _revNodeLinks.Remove(node);
+        }
 
         /// <summary>
         /// Function to delete a node from the tree.
@@ -152,12 +167,11 @@ namespace Gorgon.Editor.Views
             try
             {
                 // Immediately turn off events for this node.  We don't need some phantom event ruining everything.
-                UnassignNodeEvents(deleteNode.Children);
-                deleteNode.PropertyChanged -= Node_PropertyChanged;
+                RemoveNodeLinks(deleteNode);
 
                 var parentTreeNode = deleteTreeNode.Parent as KryptonTreeNode;
                 var nextSibling = deleteTreeNode.NextNode as KryptonTreeNode;
-#pragma warning disable IDE0019 // Use pattern matching  Seriously, this break so very fucking badly.  Did no one test these idiotic suggestions??
+#pragma warning disable IDE0019 // Use pattern matching  Seriously, this breaks so very fucking badly.  Did no one test these idiotic suggestions??
                 var prevSibling = deleteTreeNode.PrevNode as KryptonTreeNode;
 #pragma warning restore IDE0019 // Use pattern matching
 
@@ -166,7 +180,6 @@ namespace Gorgon.Editor.Views
 
                 // Remove from linkage.
                 _nodeLinks.Remove(deleteTreeNode);
-                _revNodeLinks.Remove(deleteNode);
 
                 // Figure out who gets selected next.
                 if ((parentTreeNode != null) && (parentTreeNode.Nodes.Count == 0))
@@ -200,6 +213,11 @@ namespace Gorgon.Editor.Views
         /// <param name="autoExpand"><b>true</b> to auto expand the parent node, <b>false</b> to leave it alone.</param>
         private void AddNode(IFileExplorerNodeVm newNode, bool autoExpand = true)
         {
+            if ((!newNode.Visible) || ((!_showExcluded) && (newNode.Metadata == null)))
+            {
+                return;
+            }
+
             // Locate the tree node that has our parent node.
             KryptonTreeNode parentTreeNode = null;
             IFileExplorerNodeVm parent = newNode.Parent ?? DataContext.RootNode;
@@ -210,18 +228,14 @@ namespace Gorgon.Editor.Views
             }
             TreeNodeCollection nodes = parentTreeNode?.Nodes ?? TreeFileSystem.Nodes;
 
-            int imageIndex = FindImageIndexFromNode(newNode);
             KryptonTreeNode newTreeNode = null;
 
-            // Since this could be an excluded node, we need to ensure we don't double-assign the event.
-            newNode.PropertyChanged -= Node_PropertyChanged;
-            newNode.Children.CollectionChanged -= Nodes_CollectionChanged;
-
-            newNode.PropertyChanged += Node_PropertyChanged;
-            newNode.Children.CollectionChanged += Nodes_CollectionChanged;
-
-            if ((parentTreeNode == null) || (parentTreeNode.IsExpanded))
+            if (((parentTreeNode == null) && (parent == DataContext.RootNode)) || (parentTreeNode?.IsExpanded ?? false))
             {
+                newNode.PropertyChanged += Node_PropertyChanged;
+                newNode.Children.CollectionChanged += Nodes_CollectionChanged;
+
+                int imageIndex = FindImageIndexFromNode(newNode);
                 newTreeNode = new KryptonTreeNode(newNode.Name, imageIndex, imageIndex);
 
                 UpdateNodeVisualState(newTreeNode, newNode);
@@ -349,7 +363,7 @@ namespace Gorgon.Editor.Views
                     }
                     break;
                 case nameof(IFileExplorerNodeVm.Metadata):
-                    if ((DataContext.ShowExcluded) || (node.Metadata != null))
+                    if ((_showExcluded) || (node.Metadata != null))
                     {
                         // If the tree node is present, then we just recolor it.
                         if (treeNode != null)
@@ -365,13 +379,7 @@ namespace Gorgon.Editor.Views
                     // Turn off the node in question.
                     if (node.Metadata == null)
                     {
-                        if (treeNode != null)
-                        {
-                            _nodeLinks.Remove(treeNode);
-                        }
-
-                        _revNodeLinks.Remove(node);
-                        treeNode?.Remove();
+                        RemoveNode(node);
                     }
                     break;
                 case nameof(IFileExplorerNodeVm.Visible):
@@ -852,6 +860,7 @@ namespace Gorgon.Editor.Views
             // Do not rebuild the tree while importing, that's way too slow.
             TreeFileSystem.BeforeExpand -= TreeFileSystem_BeforeExpand;
             TreeFileSystem.AfterSelect -= TreeFileSystem_AfterSelect;
+#warning This is suspect.
             DataContext.RootNode.Children.CollectionChanged -= Nodes_CollectionChanged;
 
             try
@@ -1446,11 +1455,7 @@ namespace Gorgon.Editor.Views
                 _nodeLinks.TryGetValue(treeNode, out IFileExplorerNodeVm fsNode);
                 // Remove from our tree node linkage so we don't keep old nodes alive.                
                 _nodeLinks.Remove(treeNode);
-
-                if (fsNode != null)
-                {
-                    _revNodeLinks.Remove(fsNode);
-                }
+                RemoveNodeLinks(fsNode);
             }
 
             e.Node.Nodes.Clear();
@@ -1784,7 +1789,10 @@ namespace Gorgon.Editor.Views
                         _revNodeLinks[node] = treeNode;
                     }
 
-                    treeNodes.Add(treeNode);
+                    if (!treeNodes.Contains(treeNode))
+                    {
+                        treeNodes.Add(treeNode);
+                    }                    
 
                     if (node.IsExpanded)
                     {

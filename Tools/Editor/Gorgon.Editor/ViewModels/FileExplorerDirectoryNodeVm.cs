@@ -34,7 +34,6 @@ using System.Threading.Tasks;
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Editor.Metadata;
-using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.IO;
@@ -263,69 +262,103 @@ namespace Gorgon.Editor.ViewModels
             }            
         }
 
-        /// <summary>
-        /// Function to copy this node to another node.
-        /// </summary>
-        /// <param name="newPath">The node that will receive the the copy of this node.</param>
-        /// <param name="onCopy">[Optional] The method to call when a file is about to be copied.</param>
-        /// <param name="cancelToken">[Optional] A token used to cancel the operation.</param>
-        /// <returns>The new node for the copied node.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the the <paramref name="destNode"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="GorgonException">Thrown if the <paramref name="destNode"/> is unable to create child nodes.</exception>
-        /// <remarks>
-        /// <para>
-        /// The <paramref name="onCopy" /> callback method sends the file system item being copied, the destination file system item, the current item #, and the total number of items to copy.
-        /// </para>
-        /// </remarks>
-        public override async Task<IFileExplorerNodeVm> CopyNodeAsync(IFileExplorerNodeVm destNode, Action<FileSystemInfo, FileSystemInfo, int, int> onCopy, CancellationToken? cancelToken = null)
+        /// <summary>Function to copy the file node into another node.</summary>
+        /// <param name="copyNodeData">The data containing information about what to copy.</param>
+        /// <returns>The newly copied node.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="copyNodeData"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentMissingException">Thrown when the the <see cref="CopyNodeData.Destination"/> member of the <paramref name="copyNodeData"/> parameter are <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the destination node in <paramref name="copyNodeData"/> is unable to create child nodes.</exception>
+        public override async Task<IFileExplorerNodeVm> CopyNodeAsync(CopyNodeData copyNodeData)
         {
-            if (destNode == null)
+            if (copyNodeData == null)
             {
-                throw new ArgumentNullException(nameof(destNode));
+                throw new ArgumentNullException(nameof(copyNodeData));
             }
 
-            string name = Name;
-            string newPath = destNode.PhysicalPath;
-            string newPhysicalPath = Path.Combine(newPath, Name);
-            IFileExplorerNodeVm dupeNode = null;
-            DirectoryInfo newDir = null;
+            if (copyNodeData.Destination == null)
+            {
+                throw new ArgumentMissingException(nameof(CopyNodeData.Destination), nameof(copyNodeData));
+            }
 
-            // Find out if this node already exists. We'll have to get rid of it.
-            dupeNode = destNode.Children.FirstOrDefault(item => string.Equals(newPath, item.PhysicalPath, StringComparison.OrdinalIgnoreCase));
+            if (!copyNodeData.Destination.AllowChildCreation)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GOREDIT_ERR_NODE_CANNOT_CREATE_CHILDREN, copyNodeData.Destination.Name));
+            }
+
+            string newPath = Path.Combine(copyNodeData.Destination.PhysicalPath, Name);
+            var destDir = new DirectoryInfo(newPath);
+            IFileExplorerNodeVm result = null;
+            long bytesTotal = copyNodeData.TotalSize ?? GetSizeInBytes();
 
             try
             {
-                var args = new CopyDirectoryArgs(_directoryInfo, new DirectoryInfo(newPath))
+                // If the directory does not exist, then create it now.
+                if (!FileSystemService.DirectoryExists(destDir))
                 {
-                    OnCopyProgress = onCopy,
-                    OnResolveConflict = ResolveConflict
-                };
+                    destDir.Create();
+                    destDir.Refresh();
 
-                newDir = await FileSystemService.CopyDirectoryAsync(args, cancelToken ?? CancellationToken.None);
-                
-                if ((newDir == null) || (!newDir.Exists))
+                    result = ViewModelFactory.CreateFileExplorerDirectoryNodeVm(Project, FileSystemService, copyNodeData.Destination, destDir, false, Metadata);
+                    result.IsExpanded = false;
+                }
+                else
                 {
-                    return null;
-                }                
-            }
-            catch (Exception ex)
-            {
-                MessageDisplay.ShowError(ex);
-            }
+                    result = copyNodeData.Destination.Children.First(item => string.Equals(item.Name, Name, StringComparison.OrdinalIgnoreCase));
+                }
 
-            if (dupeNode != null)
-            {
-                dupeNode.Parent.Children.Remove(dupeNode);
-                dupeNode = null;
-            }            
+                foreach (IFileExplorerNodeVm child in Children.Traverse(n => n.Children).OrderBy(n => n.NodeType))
+                {
+                    if ((copyNodeData.CancelToken.IsCancellationRequested)
+                        || (copyNodeData.DefaultResolution == FileSystemConflictResolution.Cancel))
+                    {
+                        return result;
+                    }
 
-            return new FileExplorerDirectoryNodeVm(this)
+                    var childCopyData = new CopyNodeData
+                    {
+                        Destination = result,
+                        CancelToken = copyNodeData.CancelToken,
+                        ConflictHandler = copyNodeData.ConflictHandler,
+                        CopyProgress = copyNodeData.CopyProgress,
+                        DefaultResolution = copyNodeData.DefaultResolution,
+                        TotalSize = bytesTotal,
+                        UseToAllInConflictHandler = true
+                    };
+
+                    await child.CopyNodeAsync(childCopyData);
+
+                    switch (childCopyData.DefaultResolution)
+                    {
+                        case FileSystemConflictResolution.OverwriteAll:
+                        case FileSystemConflictResolution.RenameAll:
+                        case FileSystemConflictResolution.Cancel:
+                            copyNodeData.DefaultResolution = childCopyData.DefaultResolution;
+                            break;
+                        default:
+                            copyNodeData.DefaultResolution = null;
+                            break;
+                    }
+                }
+
+                // Only after we're done copying will we update the collection of our parent.
+                if (!copyNodeData.Destination.Children.Contains(result))
+                {
+                    copyNodeData.Destination.Children.Add(result);
+                }
+
+                return result;
+            }
+            catch
             {
-                _directoryInfo = newDir,
-                IsExpanded = false,
-                Parent = destNode,
-                Metadata = new ProjectItemMetadata(Metadata)
-            };
+                // If we screw up, then undo our change.
+                destDir.Refresh();
+                if ((destDir.Exists) 
+                    && (!copyNodeData.Destination.Children.Any(item => string.Equals(item.PhysicalPath, destDir.FullName.FormatDirectory(Path.DirectorySeparatorChar), StringComparison.OrdinalIgnoreCase))))
+                {
+                    destDir.Delete(true);
+                }
+                throw;
+            }
         }
 
         /// <summary>Function to move this node to another node.</summary>
@@ -370,6 +403,17 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Function to retrieve the size of the data on the physical file system.
+        /// </summary>        
+        /// <returns>The size of the data on the physical file system, in bytes.</returns>
+        /// <remarks>
+        /// <para>
+        /// For nodes with children, this will sum up the size of each item in the <see cref="Children"/> list.  For items that do not have children, then only the size of the immediate item is returned.
+        /// </para>
+        /// </remarks>
+        public override long GetSizeInBytes() => Children.Count == 0 ? 0 : Children.Traverse(n => n.Children).Sum(n => n.GetSizeInBytes());
+
+        /// <summary>
         /// Function to export the contents of this node to the physical file system.
         /// </summary>
         /// <param name="destPath">The path to the directory on the physical file system that will receive the contents.</param>
@@ -395,7 +439,7 @@ namespace Gorgon.Editor.ViewModels
                 throw new ArgumentEmptyException(nameof(destPath));
             }
 
-            var args = new CopyDirectoryArgs(_directoryInfo, new DirectoryInfo(destPath))
+            var args = new CopyDirectoryData(_directoryInfo, new DirectoryInfo(destPath))
             {
                 OnCopyProgress = onCopy,
                 OnResolveConflict = ResolveExportConflict

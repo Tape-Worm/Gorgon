@@ -214,7 +214,7 @@ namespace Gorgon.Editor.Plugins
         /// <param name="pluginService">The plugin service used to access other plugins.</param>                
         /// <param name="graphicsContext">The graphics context for the application.</param>
         /// <param name="log">The logging interface for debug messages.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginService"/>, <paramref name="fileSearch"/>, or the <paramref name="graphicsContext"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginService"/>, or the <paramref name="graphicsContext"/> parameter is <b>null</b>.</exception>
         /// <remarks>
         /// <para>
         /// This method is only called when the plugin is loaded at startup.
