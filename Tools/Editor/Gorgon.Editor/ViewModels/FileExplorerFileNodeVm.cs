@@ -179,7 +179,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>Function to retrieve the physical file system object for this node.</summary>
         /// <param name="path">The path to the physical file system object.</param>
         /// <returns>Information about the physical file system object.</returns>
-        protected override FileSystemInfo GetFileSystemObject(string path)
+        protected override FileSystemInfo OnGetFileSystemObject(string path)
         {
             _fileInfo = new FileInfo(path);
             return _fileInfo;
@@ -192,7 +192,15 @@ namespace Gorgon.Editor.ViewModels
 
             try
             {
-                _fileInfo.Refresh();
+                // If the node is desynced with the actual physical path, then we need to refresh based on where the parent is located.
+                if (!Parent.PhysicalPath.StartsWith(_fileInfo.FullName, StringComparison.OrdinalIgnoreCase))
+                {
+                    GetFileSystemObject(Path.Combine(Parent.PhysicalPath, Name));
+                }
+                else
+                {
+                    _fileInfo.Refresh();
+                }
             }
             catch (Exception ex)
             {
@@ -339,8 +347,8 @@ namespace Gorgon.Editor.ViewModels
                     // Otherwise, determine how to resolve the conflict.
                     // If the file is open in the editor then we have no choice but to force the resolver to run because we cannot mess with an open file.
                     isConflictDueToOpenFile = (dupeNode.IsOpen) && (conflictResolution == FileSystemConflictResolution.OverwriteAll);
-                    if ((copyNodeData.ConflictHandler != null) && (isConflictDueToOpenFile) 
-                        || ((conflictResolution != FileSystemConflictResolution.OverwriteAll) && (conflictResolution != FileSystemConflictResolution.RenameAll)))
+                    if ((copyNodeData.ConflictHandler != null) && ((isConflictDueToOpenFile) 
+                        || ((conflictResolution != FileSystemConflictResolution.OverwriteAll) && (conflictResolution != FileSystemConflictResolution.RenameAll))))
                     {                       
                         conflictResolution = copyNodeData.ConflictHandler(this, dupeNode, true, copyNodeData.UseToAllInConflictHandler);
                     }
@@ -421,60 +429,141 @@ namespace Gorgon.Editor.ViewModels
             return dupeNode;
         }
 
-        /// <summary>Function to move this node to another node.</summary>
-        /// <param name="destNode">The node that will receive this node as a child.</param>
-        /// <returns><b>true</b> if the node was moved, <b>false</b> if it was cancelled or had an error moving.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destNode" /> parameter is <b>null</b>.</exception>
-        /// <exception cref="GorgonException">Thrown if the <paramref name="destNode" /> is unable to create child nodes.</exception>
-        public override bool MoveNode(IFileExplorerNodeVm destNode)
+        /// <summary>
+        /// Function to move this node into another node.
+        /// </summary>
+        /// <param name="copyNodeData">The parameters used for moving the node.</param>
+        /// <returns>The udpated node.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="copyNodeData"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentMissingException">Thrown when the <see cref="CopyNodeData.Destination"/> in the <paramref name="copyNodeData"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <see cref="CopyNodeData.Destination"/> in the <paramref name="copyNodeData"/> parameter is unable to create child nodes.</exception>
+        public override IFileExplorerNodeVm MoveNode(CopyNodeData copyNodeData)
         {
-            if (destNode == null)
+            if (copyNodeData == null)
             {
-                throw new ArgumentNullException(nameof(destNode));
+                throw new ArgumentNullException(nameof(copyNodeData));
             }
 
-            if (destNode == null)
+            if (copyNodeData.Destination == null)
             {
-                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GOREDIT_ERR_NODE_CANNOT_CREATE_CHILDREN, destNode.Name));
+                throw new ArgumentMissingException(nameof(CopyNodeData.Destination), nameof(copyNodeData));
             }
 
-            if (string.Equals(Parent.FullPath, destNode.FullPath, StringComparison.OrdinalIgnoreCase))
+            if (!copyNodeData.Destination.AllowChildCreation)
             {
-                return false;
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GOREDIT_ERR_NODE_CANNOT_CREATE_CHILDREN, copyNodeData.Destination.Name));
             }
 
-            FileSystemConflictResolution resolution = FileSystemConflictResolution.Exception;
-            string newPath = Path.Combine(destNode.PhysicalPath, Name);
+            FileSystemConflictResolution? conflictResolution = copyNodeData.DefaultResolution;
+            string newPath = Path.Combine(copyNodeData.Destination.PhysicalPath, Name);
+            bool isConflictDueToOpenFile = false;
 
-#warning Broken.
-            if (FileSystemService.FileExists(null))
+            // Renames a node that is in conflict when the file is the same in the source and dest, or if the user chooses to not overwrite.
+            string RenameNodeInConflict(string path)
             {
-                //resolution = FileSystemConflictHandler(FullPath, newPath, false);
+                string newName = FileSystemService.GenerateFileName(path);
+                return Path.Combine(copyNodeData.Destination.PhysicalPath, newName);
+            }
 
-                switch (resolution)
+            // If we attempt to copy over ourselves, just cancel.
+            if (string.Equals(newPath, _fileInfo.FullName, StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
+
+            var destFile = new FileInfo(newPath);
+            // A duplicate node that we are conflicting with.
+            IFileExplorerNodeVm dupeNode = null;
+
+            // Check for a duplicate file and determine how to proceed.
+            if (FileSystemService.FileExists(destFile))
+            {
+                // If we choose to overwrite.
+                dupeNode = copyNodeData.Destination.Children.FirstOrDefault(item => string.Equals(item.Name, Name, StringComparison.OrdinalIgnoreCase));
+
+                // If by some weird circumstance we can't find the node with the same name, then just default to overwrite it as it's not managed by the application, and if it's under 
+                // the file system root, it really should be ours.
+                if (dupeNode != null)
+                {
+                    // If we previously gave a conflict resolution, and it indicated all operations should continue then skip the call back since we have our answer.
+                    // Otherwise, determine how to resolve the conflict.
+                    // If the file is open in the editor then we have no choice but to force the resolver to run because we cannot mess with an open file.
+                    isConflictDueToOpenFile = (dupeNode.IsOpen) && (conflictResolution == FileSystemConflictResolution.OverwriteAll);
+                    if ((copyNodeData.ConflictHandler != null) && ((isConflictDueToOpenFile)
+                        || ((conflictResolution != FileSystemConflictResolution.OverwriteAll) && (conflictResolution != FileSystemConflictResolution.RenameAll))))
+                    {
+                        conflictResolution = copyNodeData.ConflictHandler(this, dupeNode, true, copyNodeData.UseToAllInConflictHandler);
+                    }
+                    else if (copyNodeData.ConflictHandler == null)
+                    {
+                        // Default to exception if we have a conflict.
+                        conflictResolution = FileSystemConflictResolution.Exception;
+                    }
+                }
+                else
+                {
+                    conflictResolution = FileSystemConflictResolution.Overwrite;
+                }
+
+                switch (conflictResolution)
                 {
                     case FileSystemConflictResolution.Rename:
                     case FileSystemConflictResolution.RenameAll:
+                        newPath = RenameNodeInConflict(newPath);
+                        destFile = new FileInfo(newPath);
+                        dupeNode = null;
+                        break;
+                    case FileSystemConflictResolution.Skip:
+                        if (isConflictDueToOpenFile)
+                        {
+                            // Reset back to overwrite if we hit an open file (just so we don't get the resolver again).
+                            copyNodeData.DefaultResolution = FileSystemConflictResolution.OverwriteAll;
+                        }
+                        else
+                        {
+                            copyNodeData.DefaultResolution = conflictResolution;
+                        }
+                        return null;
                     case FileSystemConflictResolution.Cancel:
-                        return false;
+                        copyNodeData.DefaultResolution = conflictResolution;
+                        return null;
                     case FileSystemConflictResolution.Exception:
+                    case null:
                         throw new IOException(string.Format(Resources.GOREDIT_ERR_NODE_EXISTS, Name));
                 }
             }
 
-            FileSystemService.MoveFile(_fileInfo, newPath);
-
-            if (IsOpen)
+            if ((conflictResolution == FileSystemConflictResolution.RenameAll)
+                || (conflictResolution == FileSystemConflictResolution.OverwriteAll))
             {
-                var args = new ContentFileMovedEventArgs(this);
-                EventHandler<ContentFileMovedEventArgs> handler = Moved;
-                Moved?.Invoke(this, args);
+                copyNodeData.DefaultResolution = conflictResolution;
             }
 
-            NotifyPropertyChanged(FullPath);
-            NotifyPropertyChanged(PhysicalPath);
+            FileSystemService.MoveFile(_fileInfo, destFile);
+            destFile.Refresh();
 
-            return true;
+            // Extract us from our parent.
+            Parent.Children.Remove(this);
+
+            // Update our parent.
+            Parent = copyNodeData.Destination;
+
+            // If we don't have a conflict, then just place us under the parent.
+            if (dupeNode == null)
+            {
+                copyNodeData.Destination.Children.Add(this);
+                Refresh();
+                NotifyPropertyChanged(nameof(FullPath));
+                NotifyPropertyChanged(nameof(PhysicalPath));
+                // Once the file is actually on the file system, make a node and attach it to the parent.            
+                return this;
+            }
+
+            // If we've overwritten a node, then just refresh its state and return it.  There's no need to re-add it to the list at this point.
+            dupeNode.Refresh();
+            NotifyPropertyChanged(nameof(FullPath));
+            NotifyPropertyChanged(nameof(PhysicalPath));
+            return dupeNode;
         }
 
         /// <summary>

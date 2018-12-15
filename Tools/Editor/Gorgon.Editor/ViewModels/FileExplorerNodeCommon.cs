@@ -295,8 +295,29 @@ namespace Gorgon.Editor.ViewModels
         /// Function to retrieve the physical file system object for this node.
         /// </summary>
         /// <param name="path">The path to the physical file system object.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+        protected void GetFileSystemObject(string path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentEmptyException(nameof(path));
+            }
+
+            _physicalFileSystemObject = OnGetFileSystemObject(path);
+        }
+
+        /// <summary>
+        /// Function to retrieve the physical file system object for this node.
+        /// </summary>
+        /// <param name="path">The path to the physical file system object.</param>
         /// <returns>Information about the physical file system object.</returns>
-        protected abstract FileSystemInfo GetFileSystemObject(string path);
+        protected abstract FileSystemInfo OnGetFileSystemObject(string path);
 
         /// <summary>
         /// Function to return the root parent node for this node.
@@ -360,7 +381,7 @@ namespace Gorgon.Editor.ViewModels
             ViewModelFactory = injectionParameters.ViewModelFactory ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.ViewModelFactory), nameof(injectionParameters));
 
             // This is the root node if we have no parent.    
-            _physicalFileSystemObject = GetFileSystemObject(injectionParameters.PhysicalPath ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.PhysicalPath), nameof(injectionParameters)));
+            GetFileSystemObject(injectionParameters.PhysicalPath ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.PhysicalPath), nameof(injectionParameters)));
             MessageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.MessageDisplay), nameof(injectionParameters));
             BusyService = injectionParameters.BusyService ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.BusyService), nameof(injectionParameters));
 
@@ -408,34 +429,39 @@ namespace Gorgon.Editor.ViewModels
         public abstract void RenameNode(string newName);
 
         /// <summary>
-        /// Function to determine if this node is an ancestor of the specified parent node.
+        /// Function to determine if this node is an ancestor of the specified node.
         /// </summary>
-        /// <param name="parent">The parent node to look for.</param>
+        /// <param name="node">The node to look for.</param>
         /// <returns><b>true</b> if the node is an ancestor, <b>false</b> if not.</returns>
-        public bool IsAncestorOf(IFileExplorerNodeVm parent)
+        public bool IsAncestorOf(IFileExplorerNodeVm node)
         {
-            IFileExplorerNodeVm parentOfMe = Parent;
+            IFileExplorerNodeVm parentOfNode = node.Parent;
 
             // We're at the root, so we have nothing.
-            if (parentOfMe == null)
+            if (parentOfNode == null)
             {
                 return false;
             }
 
-            while ((parentOfMe != null) && (parent != parentOfMe))
+            while ((parentOfNode != null) && (parentOfNode.Parent != Parent))
             {
-                parentOfMe = parentOfMe.Parent;
+                parentOfNode = parentOfNode.Parent;
+
+                if (parentOfNode == this)
+                {
+                    return true;
+                }
             }
 
-            return parentOfMe != null;
+            return parentOfNode == this;
         }
 
-        /// <summary>Function to move this node to another node.</summary>
-        /// <param name="destNode">The node that will receive this node as a child.</param>
-        /// <returns><b>true</b> if the node was moved, <b>false</b> if it was cancelled or had an error moving.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destNode" /> parameter is <b>null</b>.</exception>
-        /// <exception cref="GorgonException">Thrown if the <paramref name="destNode" /> is unable to create child nodes.</exception>
-        public abstract bool MoveNode(IFileExplorerNodeVm destNode);
+        /// <summary>
+        /// Function to move this node into another node.
+        /// </summary>
+        /// <param name="copyNodeData">The parameters used for moving the node.</param>
+        /// <returns>The udpated node.</returns>
+        public abstract IFileExplorerNodeVm MoveNode(CopyNodeData copyNodeData);
 
         /// <summary>
         /// Function to export the contents of this node to the physical file system.

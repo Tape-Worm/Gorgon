@@ -194,8 +194,8 @@ namespace Gorgon.Editor.Services
         /// Function to move a file to another location.
         /// </summary>
         /// <param name="filePath">The path to the file.</param>
-        /// <param name="destFileNamePath">The destination file name and path.</param>        
-        void MoveFile(FileInfo filePath, string destFileNamePath);
+        /// <param name="destFile">The destination file.</param>        
+        void MoveFile(FileInfo filePath, FileInfo destFile);
 
         /// <summary>
         /// Function to move a directory to another location.

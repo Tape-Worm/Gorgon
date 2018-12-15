@@ -1234,41 +1234,33 @@ namespace Gorgon.Editor.Services
         /// Function to move a file to another location.
         /// </summary>
         /// <param name="filePath">The path to the file.</param>
-        /// <param name="destFileNamePath">The destination file name and path.</param>        
+        /// <param name="destFile">The destination file.</param>        
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/>, or the <paramref name="destFileNamePath"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="destFileNamePath"/> parameter is empty.</exception>
         /// <exception cref="FileNotFoundException">Thrown when the file specified by <paramref name="filePath"/> was not found.</exception>
         /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by <paramref name="destFileNamePath"/> was not found.</exception>
-        public void MoveFile(FileInfo filePath, string destFileNamePath)
+        public void MoveFile(FileInfo filePath, FileInfo destFile)
         {
             if (filePath == null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
 
-            if (destFileNamePath == null)
+            if (destFile == null)
             {
-                throw new ArgumentNullException(nameof(destFileNamePath));
+                throw new ArgumentNullException(nameof(destFile));
             }
-
-            if (string.IsNullOrWhiteSpace(destFileNamePath))
-            {
-                throw new ArgumentEmptyException(nameof(destFileNamePath));
-            }
-
-            var destFile = new FileInfo(destFileNamePath);
 
             CheckRootOfPath(filePath.Directory);
             CheckRootOfPath(destFile.Directory);
 
             if (!filePath.Exists)
             {
-                throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, filePath));
+                throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, filePath.FullName));
             }
 
             if (!destFile.Directory.Exists)
             {
-                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, destFileNamePath));
+                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, destFile.FullName));
             }
 
             // If we're moving to the same place, then we don't need to do anything.

@@ -277,6 +277,52 @@ namespace Gorgon.Editor.ViewModels
 
         #region Methods.
         /// <summary>
+        /// Function to ensure that a node can be moved (or copied).
+        /// </summary>
+        /// <param name="node">The node being moved/copied.</param>
+        /// <param name="targetNode">The target node for the moved/copied node.</param>
+        /// <param name="isCopy"><b>true</b> if the operation is a copy operation, <b>false</b> if it is a move operation.</param>
+        /// <returns><b>true</b> if the node can be moved/copied, <b>false</b> if not.</returns>
+        private bool CheckNodeMovement(IFileExplorerNodeVm node, IFileExplorerNodeVm targetNode, bool isCopy)
+        {
+            if ((_searchResults != null)
+                || (node == null)
+                || (targetNode == null))
+            {
+                return false;
+            }
+
+            if (!targetNode.AllowChildCreation)
+            {
+                return false;
+            }
+
+            if (isCopy)
+            {
+                return true;
+            }
+
+            if (targetNode == node)
+            {
+                return false;
+            }
+
+            if (node.Parent == targetNode)
+            {
+                return false;
+            }
+
+#pragma warning disable IDE0046 // Convert to conditional expression
+            if (node.IsAncestorOf(targetNode))
+            {
+                return false;
+            }
+#pragma warning restore IDE0046 // Convert to conditional expression
+
+            return true;
+        }
+
+        /// <summary>
         /// Function called when the file system was changed.
         /// </summary>
         private void OnFileSystemChanged()
@@ -756,16 +802,14 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="args">The arguments for the command.</param>
         /// <returns><b>true</b> if the node can be copied, <b>false</b> if not.</returns>
-        private bool CanCopyNode(CopyNodeArgs args) => args?.Source != null;
+        private bool CanCopyNode(CopyNodeArgs args) => CheckNodeMovement(args?.Source, args?.Dest, true);
 
         /// <summary>
         /// Function to determine if a node can be moved.
         /// </summary>
         /// <param name="args">The arguments for the command.</param>
         /// <returns><b>true</b> if the node can be moved, <b>false</b> if not.</returns>
-        private bool CanMoveNode(CopyNodeArgs args) => (args.Source == args.Dest) || (string.Equals(args.Source.FullPath, args.Dest.FullPath, StringComparison.OrdinalIgnoreCase))
-                ? false
-                : !args.Dest.IsAncestorOf(args.Source);
+        private bool CanMoveNode(CopyNodeArgs args) => CheckNodeMovement(args?.Source, args?.Dest, false);
 
         /// <summary>
         /// Function to move a node.
@@ -1159,6 +1203,7 @@ namespace Gorgon.Editor.ViewModels
                 return true;
             }
 
+            bool sourceIsExpanded = (source.AllowChildCreation) && (source.Children.Count > 0) && (source.IsExpanded);
             string originalPath = source.FullPath;
             (string path, IFileExplorerNodeVm node)[] originalChildPaths = null;
 
@@ -1169,8 +1214,22 @@ namespace Gorgon.Editor.ViewModels
                                                     .ToArray();
             }
 
+            // Collapse the node prior to moving it.
+            // This is just to mitigate the possibility of event oversubscription (shouldn't happen, but paranoia being what it is...)
+            if (sourceIsExpanded)
+            {
+                source.IsExpanded = false;
+            }
+
+            IFileExplorerNodeVm updatedNode = source.MoveNode(new CopyNodeData()
+            {
+                Destination = dest,
+                UseToAllInConflictHandler = (source.Children.Count > 0) && (dest.AllowChildCreation),
+                ConflictHandler = FileSystemConflictHandler
+            });
+
             // If we cancelled, or there was an error, then leave.
-            if (!source.MoveNode(dest))
+            if (updatedNode == null)
             {
                 return false;
             }
@@ -1192,15 +1251,18 @@ namespace Gorgon.Editor.ViewModels
                 }
             }
 
-            SelectedNode = dest;
-
-            // This will refresh the nodes under the destination.
+            // Expand our destination parent.
             dest.IsExpanded = true;
 
             // If this node is not registered, then add it now.
             _nodePathLookup[source.FullPath] = source;
 
             SelectedNode = source;
+
+            if (sourceIsExpanded)
+            {
+                source.IsExpanded = true;
+            }
 
             OnFileSystemChanged();
 
@@ -1531,14 +1593,33 @@ namespace Gorgon.Editor.ViewModels
         /// <returns><b>true</b> if the clipboard handler can paste an item, <b>false</b> if not.</returns>
         bool IClipboardHandler.CanPaste()
         {
-            if ((SearchResults != null) || (!_clipboard.IsType<FileSystemClipboardData>()))
+            if ((_searchResults != null) || (!_clipboard.IsType<FileSystemClipboardData>()))
+            {
+                return false;
+            }
+
+            IFileExplorerNodeVm targetNode = _selectedNode ?? RootNode;
+
+            if (!targetNode.AllowChildCreation)
             {
                 return false;
             }
 
             FileSystemClipboardData data = _clipboard.GetData<FileSystemClipboardData>();
 
-            return !string.IsNullOrWhiteSpace(data.FullPath);
+            if (data.Copy)
+            {
+                return !string.IsNullOrWhiteSpace(data.FullPath);
+            }
+
+#pragma warning disable IDE0046 // Convert to conditional expression
+            if (!_nodePathLookup.TryGetValue(data.FullPath, out IFileExplorerNodeVm pasteNode))
+            {
+                return false;
+            }
+#pragma warning restore IDE0046 // Convert to conditional expression
+
+            return CheckNodeMovement(pasteNode, targetNode, data.Copy);
         }
 
         /// <summary>
@@ -1684,20 +1765,7 @@ namespace Gorgon.Editor.ViewModels
         {
             try
             {
-                if (_searchResults != null)
-                {
-                    return false;
-                }
-
-                // We cannot drop on ourselves, if we're in move mode.
-                return !dragData.TargetNode.AllowChildCreation
-                    ? false
-                    : dragData.DragOperation == DragOperation.Copy
-                    ? true
-                    : (dragData.TargetNode != dragData.Node)
-                     || ((dragData.Node.Parent != dragData.TargetNode)
-                            && (!dragData.TargetNode.Children.Contains(dragData.Node))
-                            && (!dragData.TargetNode.IsAncestorOf(dragData.Node)));
+                return CheckNodeMovement(dragData.Node, dragData.TargetNode, dragData.DragOperation == DragOperation.Copy);
             }
             catch (Exception ex)
             {

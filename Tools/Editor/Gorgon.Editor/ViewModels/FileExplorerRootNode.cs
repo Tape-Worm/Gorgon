@@ -221,10 +221,12 @@ namespace Gorgon.Editor.ViewModels
         /// <returns><b>true</b> if the node is an ancestor, <b>false</b> if not.</returns>        
         public bool IsAncestorOf(IFileExplorerNodeVm parent) => parent != this;
 
-        /// <summary>Function to move this node to another node.</summary>
-        /// <param name="destNode">The node that will receive this node as a child.</param>
-        /// <returns><b>false</b> since root nodes cannot be moved.</returns>
-        public bool MoveNode(IFileExplorerNodeVm destNode) => false;
+        /// <summary>
+        /// Function to move this node into another node.
+        /// </summary>
+        /// <param name="copyNodeData">The parameters used for moving the node.</param>
+        /// <returns>The udpated node.</returns>
+        public IFileExplorerNodeVm MoveNode(CopyNodeData copyNodeData) => this;
 
         /// <summary>Function to notify that the parent of this node was moved.</summary>
         /// <param name="newNode">The new node representing this node under the new parent.</param>

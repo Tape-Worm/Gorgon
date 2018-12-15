@@ -209,11 +209,11 @@ namespace Gorgon.Editor.ViewModels
         void NotifyParentMoved(IFileExplorerNodeVm newNode);
 
         /// <summary>
-        /// Function to determine if this node is an ancestor of the specified parent node.
+        /// Function to determine if this node is an ancestor of the specified node.
         /// </summary>
-        /// <param name="parent">The parent node to look for.</param>
+        /// <param name="node">The node to look for.</param>
         /// <returns><b>true</b> if the node is an ancestor, <b>false</b> if not.</returns>
-        bool IsAncestorOf(IFileExplorerNodeVm parent);
+        bool IsAncestorOf(IFileExplorerNodeVm node);
 
         /// <summary>
         /// Function to rename the node.
@@ -242,11 +242,11 @@ namespace Gorgon.Editor.ViewModels
         Task<IFileExplorerNodeVm> CopyNodeAsync(CopyNodeData copyNodeData);
 
         /// <summary>
-        /// Function to move this node to another node.
+        /// Function to move this node into another node.
         /// </summary>
-        /// <param name="destNode">The node that will receive this node as a child.</param>
-        /// <returns><b>true</b> if the node was moved, <b>false</b> if it was cancelled or had an error moving.</returns>
-        bool MoveNode(IFileExplorerNodeVm destNode);
+        /// <param name="copyNodeData">The parameters used for moving the node.</param>
+        /// <returns>The udpated node.</returns>
+        IFileExplorerNodeVm MoveNode(CopyNodeData copyNodeData);
 
         /// <summary>
         /// Function to export the contents of this node to the physical file system.

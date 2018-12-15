@@ -290,13 +290,15 @@ namespace Gorgon.Editor.Views
 
                 if (treeNode.IsExpanded)
                 {
+                    // When the node is collapsed, all cached child nodes will be removed, and all events unassigned.
+                    // Thus, there is no need for us to manually clean up here.
                     treeNode.Collapse();
                 }
 
                 treeNode.Nodes.Clear();
             }
             else
-            {
+            {                
                 UnassignNodeEvents(DataContext.RootNode.Children);
                 AssignNodeEvents(DataContext.RootNode.Children);
                 _revNodeLinks.Clear();

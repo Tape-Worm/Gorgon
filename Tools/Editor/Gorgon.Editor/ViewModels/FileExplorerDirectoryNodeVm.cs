@@ -101,7 +101,15 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         private void DoRefresh()
         {
-            _directoryInfo?.Refresh();
+            // If the node is desynced with the actual physical path
+            if (!Parent.PhysicalPath.StartsWith(_directoryInfo.FullName, StringComparison.OrdinalIgnoreCase))
+            {
+                GetFileSystemObject(Path.Combine(Parent.PhysicalPath, Name));
+            }
+            else
+            {
+                _directoryInfo?.Refresh();
+            }            
 
             // Refresh all child nodes.
             foreach (IFileExplorerNodeVm node in Children.Traverse(n => n.Children))
@@ -171,7 +179,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>Function to retrieve the physical file system object for this node.</summary>
         /// <param name="path">The path to the physical file system object.</param>
         /// <returns>Information about the physical file system object.</returns>
-        protected override FileSystemInfo GetFileSystemObject(string path)
+        protected override FileSystemInfo OnGetFileSystemObject(string path)
         {
             _directoryInfo = new DirectoryInfo(path);
             return _directoryInfo;
@@ -361,45 +369,58 @@ namespace Gorgon.Editor.ViewModels
             }
         }
 
-        /// <summary>Function to move this node to another node.</summary>
-        /// <param name="destNode">The node that will receive this node as a child.</param>
-        /// <returns><b>true</b> if the node was moved, <b>false</b> if it was cancelled or had an error moving.</returns>
-        /// <exception cref="ArgumentNullException">destNode</exception>
-        /// <exception cref="GorgonException"></exception>
-        public override bool MoveNode(IFileExplorerNodeVm destNode)
+        /// <summary>Function to move this node into another node.</summary>
+        /// <param name="copyNodeData">The parameters used for moving the node.</param>
+        /// <returns>The udpated node.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="copyNodeData"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentMissingException">Thrown when the <see cref="CopyNodeData.Destination"/> in the <paramref name="copyNodeData"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <see cref="CopyNodeData.Destination"/> in the <paramref name="copyNodeData"/> parameter is unable to create child nodes.</exception>
+        public override IFileExplorerNodeVm MoveNode(CopyNodeData copyNodeData)
         {
-            if (destNode == null)
+            if (copyNodeData == null)
             {
-                throw new ArgumentNullException(nameof(destNode));
+                throw new ArgumentNullException(nameof(copyNodeData));
             }
 
-            if (destNode == null)
+            if (copyNodeData.Destination == null)
             {
-                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GOREDIT_ERR_NODE_CANNOT_CREATE_CHILDREN, destNode.Name));
+                throw new ArgumentMissingException(nameof(CopyNodeData.Destination), nameof(copyNodeData));
             }
 
-            if (string.Equals(Parent.FullPath, destNode.FullPath, StringComparison.OrdinalIgnoreCase))
+            if (!copyNodeData.Destination.AllowChildCreation)
             {
-                return false;
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GOREDIT_ERR_NODE_CANNOT_CREATE_CHILDREN, copyNodeData.Destination.Name));
             }
 
-            string newPath = Path.Combine(destNode.PhysicalPath, Name);
-#warning Should check for siblings with same name in destination?
+            // No point in moving the node onto itself.
+            if (string.Equals(Parent.FullPath, copyNodeData.Destination.FullPath, StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
+
+            string newPath = Path.Combine(copyNodeData.Destination.PhysicalPath, Name);
+            var destDir = new DirectoryInfo(newPath);
+            IFileExplorerNodeVm dupeNode = null;
             FileSystemService.MoveDirectory(_directoryInfo, newPath);
 
-            // Move us to a new residence under the destination node.
-            if ((!Parent.Children.Contains(this))
-                || (destNode.Children.Contains(this)))
+            if (FileSystemService.DirectoryExists(destDir))
             {
-                return false;
+                dupeNode = copyNodeData.Destination.Children.FirstOrDefault(item => string.Equals(Name, item.Name, StringComparison.OrdinalIgnoreCase));
             }
 
-            destNode.Children.Add(this);
+            Parent.Children.Remove(this);
+            Parent = copyNodeData.Destination;
+            if (dupeNode == null)
+            {
+                copyNodeData.Destination.Children.Add(this);
+                Refresh();
+            }
+            else
+            {
+                dupeNode.Refresh();
+            }            
 
-            NotifyPropertyChanged(nameof(FullPath));
-            NotifyPropertyChanged(nameof(PhysicalPath));
-
-            return true;
+            return dupeNode ?? this;
         }
 
         /// <summary>
