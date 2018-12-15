@@ -43,20 +43,22 @@ namespace Gorgon.Editor.ViewModels
     /// The root node for the file system.
     /// </summary>
     internal class FileExplorerRootNode
-        : ViewModelBase<ViewModelCommonParameters>, IFileExplorerNodeVm
+        : FileExplorerDirectoryNodeVm
     {
         #region Variables.
         // Metadata for the root node.
         private readonly ProjectItemMetadata _metadata = new ProjectItemMetadata();
         // The root directory.
         private DirectoryInfo _directory;
+        // The path to the root node.
+        private string _physicalPath;
         #endregion
 
         #region Properties.
         /// <summary>Property to set or return whether this node is visible.</summary>
         /// <value>
         ///   <c>true</c> if visible; otherwise, <c>false</c>.</value>
-        public bool Visible
+        public override bool Visible
         {
             get => true;
             set
@@ -66,7 +68,7 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>Property to set or return the metadata for the node.</summary>
-        public ProjectItemMetadata Metadata
+        public override ProjectItemMetadata Metadata
         {
             get => _metadata;
             set
@@ -75,31 +77,8 @@ namespace Gorgon.Editor.ViewModels
             }
         }
 
-        /// <summary>Property to set or return whether the file has changes.</summary>
-        public bool IsChanged
-        {
-            get => false;
-            set
-            {
-                // Cannot change the root node.
-            }
-        }
-
-        /// <summary>Property to return whether this node represents content or not.</summary>
-        public bool IsContent => false;
-
-        /// <summary>Property to set or return whether to mark this node as "cut" or not.</summary>
-        public bool IsCut
-        {
-            get => false;
-            set
-            {
-                // The root node cannot be cut.
-            }
-        }
-
         /// <summary>Property to set or return whether the node is open for editing.</summary>
-        public bool IsOpen
+        public override bool IsOpen
         {
             get => false;
             set
@@ -108,42 +87,23 @@ namespace Gorgon.Editor.ViewModels
             }
         }
 
-        /// <summary>Property to return the child nodes for this node.</summary>
-        public ObservableCollection<IFileExplorerNodeVm> Children
-        {
-            get;
-        } = new ObservableCollection<IFileExplorerNodeVm>();
-
         /// <summary>Property to return the parent node for this node.</summary>
-        public IFileExplorerNodeVm Parent => null;
-
-        /// <summary>Property to return the type of node.</summary>
-        public NodeType NodeType => NodeType.Directory;
+        public override IFileExplorerNodeVm Parent => null;
 
         /// <summary>Property to return the name for the node.</summary>
-        public string Name => "/";
+        public override string Name => "/";
 
         /// <summary>Property to return the full path to the node.</summary>
-        public string FullPath => "/";
+        public override string FullPath => "/";
 
         /// <summary>Property to return the physical path to the node.</summary>
-        public string PhysicalPath
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>Property to return the image name to use for the node type.</summary>
-        public string ImageName => "folder_20x20.png";
-
-        /// <summary>Property to return whether to allow child node creation for this node.</summary>
-        public bool AllowChildCreation => true;
+        public override string PhysicalPath => _physicalPath;
 
         /// <summary>Property to return whether or not the allow this node to be deleted.</summary>
-        public bool AllowDelete => false;
+        public override bool AllowDelete => false;
 
         /// <summary>Property to set or return whether the node is in an expanded state or not (if it has children).</summary>
-        public bool IsExpanded
+        public override bool IsExpanded
         {
             get => true;
             set
@@ -159,7 +119,7 @@ namespace Gorgon.Editor.ViewModels
         /// <remarks>
         /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
         /// </remarks>
-        protected override void OnInitialize(ViewModelCommonParameters injectionParameters)
+        protected override void OnInitialize(FileExplorerNodeParameters injectionParameters)
         {
             if (injectionParameters.Project == null)
             {
@@ -172,16 +132,35 @@ namespace Gorgon.Editor.ViewModels
             }
 
             _directory = injectionParameters.Project.ProjectWorkSpace;
-            PhysicalPath = _directory.FullName.FormatDirectory(Path.DirectorySeparatorChar);
+            _physicalPath = _directory.FullName.FormatDirectory(Path.DirectorySeparatorChar);
+        }
+
+        /// <summary>Function to assign the appropriate content plug in to a node.</summary>
+        /// <param name="plugins">The plugins.</param>
+        /// <param name="deepScan">
+        ///   <b>true</b> to perform a more in depth scan for the associated plug in type, <b>false</b> to use the node metadata exclusively.</param>
+        /// <returns>
+        ///   <b>true</b> if a plug in was assigned, <b>false</b> if not.</returns>
+        /// <remarks>
+        /// If the <paramref name="deepScan" /> parameter is set to <b>true</b>, then the lookup for the plug ins will involve opening the file using each plug in to find a matching plug in for the node
+        /// file type. This, obviously, is much slower, so should only be used when the node metadata is not sufficient for association information.
+        /// </remarks>
+        protected override bool OnAssignContentPlugin(IContentPluginManagerService plugins, bool deepScan) => false;
+
+        /// <summary>Function called when the parent of this node is moved.</summary>
+        /// <param name="newNode">The new node representing this node under the new parent.</param>
+        protected override void OnNotifyParentMoved(IFileExplorerNodeVm newNode)
+        {
+            // Do nothing, root nodes cannot move.
         }
 
         /// <summary>
         /// Function to refresh the node's underlying data.
         /// </summary>
-        public void Refresh()
+        public override void Refresh()
         {
             _directory?.Refresh();
-            PhysicalPath = _directory?.FullName.FormatDirectory(Path.DirectorySeparatorChar);
+            _physicalPath = _directory?.FullName.FormatDirectory(Path.DirectorySeparatorChar);
 
             foreach (IFileExplorerNodeVm node in Children.Traverse(n => n.Children))
             {
@@ -189,55 +168,23 @@ namespace Gorgon.Editor.ViewModels
             }
         }
 
-        /// <summary>Function to assign the appropriate content plug in to a node.</summary>
-        /// <param name="contentPlugins">The plug ins to evaluate.</param>
-        /// <param name="deepScan">[Optional] <b>true</b> to perform a more in depth scan for the associated plug in type, <b>false</b> to use the node metadata exclusively.</param>
-        /// <returns>
-        ///   <b>true</b> if a plug in was associated, <b>false</b> if not.</returns>
-        /// <remarks>
-        /// If the <paramref name="deepScan" /> parameter is set to <b>true</b>, then the lookup for the plug ins will involve opening the file using each plug in to find a matching plug in for the node
-        /// file type. This, obviously, is much slower, so should only be used when the node metadata is not sufficient for association information.
-        /// </remarks>
-        public bool AssignContentPlugin(IContentPluginManagerService contentPlugins, bool deepScan = false) => false;
-
         /// <summary>Function to delete the node.</summary>
         /// <param name="onDeleted">[Optional] A function to call when a node or a child node is deleted.</param>
         /// <param name="cancelToken">[Optional] A cancellation token used to cancel the operation.</param>
         /// <returns>A task for asynchronous operation.</returns>
         /// <remarks>The <paramref name="onDeleted" /> parameter passes a file system information that contains name of the node being deleted, so callers can use that information for their own purposes.</remarks>
-        public Task DeleteNodeAsync(Action<FileSystemInfo> onDeleted = null, CancellationToken? cancelToken = null) => Task.FromResult<object>(null);
-
-        /// <summary>Function to export the contents of this node to the physical file system.</summary>
-        /// <param name="destPath">The path to the directory on the physical file system that will receive the contents.</param>
-        /// <param name="onCopy">[Optional] The method to call when a file is about to be copied.</param>
-        /// <param name="cancelToken">[Optional] A token used to cancel the operation.</param>
-        /// <returns>A task for asynchronous operation.</returns>
-        /// <remarks>The <paramref name="onCopy" /> callback method sends the file system node being copied, the destination file system node, the current item #, and the total number of items to copy.</remarks>
-#warning We should actually put this in.
-        public Task ExportAsync(string destPath, Action<FileSystemInfo, FileSystemInfo, int, int> onCopy = null, CancellationToken? cancelToken = null) => Task.FromResult<object>(null);
-
-        /// <summary>Function to determine if this node is an ancestor of the specified parent node.</summary>
-        /// <param name="parent">The parent node to look for.</param>
-        /// <returns><b>true</b> if the node is an ancestor, <b>false</b> if not.</returns>        
-        public bool IsAncestorOf(IFileExplorerNodeVm parent) => parent != this;
+        public override Task DeleteNodeAsync(Action<FileSystemInfo> onDeleted = null, CancellationToken? cancelToken = null) => Task.FromResult<object>(null);
 
         /// <summary>
         /// Function to move this node into another node.
         /// </summary>
         /// <param name="copyNodeData">The parameters used for moving the node.</param>
         /// <returns>The udpated node.</returns>
-        public IFileExplorerNodeVm MoveNode(CopyNodeData copyNodeData) => this;
-
-        /// <summary>Function to notify that the parent of this node was moved.</summary>
-        /// <param name="newNode">The new node representing this node under the new parent.</param>
-        public void NotifyParentMoved(IFileExplorerNodeVm newNode)
-        {
-            // Do nothing.  Root nodes will never move.
-        }
+        public override IFileExplorerNodeVm MoveNode(CopyNodeData copyNodeData) => this;
 
         /// <summary>Function to rename the node.</summary>
         /// <param name="newName">The new name for the node.</param>
-        public void RenameNode(string newName)
+        public override void RenameNode(string newName)
         {
             // Do nothing.  Root nodes cannot be renamed.
         }
@@ -251,12 +198,7 @@ namespace Gorgon.Editor.ViewModels
         /// For nodes with children, this will sum up the size of each item in the <see cref="Children"/> list.  For items that do not have children, then only the size of the immediate item is returned.
         /// </para>
         /// </remarks>
-        public long GetSizeInBytes() => Children.Count == 0 ? 0 : Children.Traverse(n => n.Children).Sum(n => n.GetSizeInBytes());
-
-        /// <summary>Function to copy the file node into another node.</summary>
-        /// <param name="copyNodeData">The data containing information about what to copy.</param>
-        /// <returns>The newly copied node.</returns>
-        public Task<IFileExplorerNodeVm> CopyNodeAsync(CopyNodeData copyNodeData) => Task.FromCanceled<IFileExplorerNodeVm>(CancellationToken.None);        
+        public override long GetSizeInBytes() => Children.Count == 0 ? 0 : Children.Traverse(n => n.Children).Sum(n => n.GetSizeInBytes());
         #endregion
     }
 }

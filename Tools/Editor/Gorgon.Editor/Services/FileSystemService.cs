@@ -345,7 +345,7 @@ namespace Gorgon.Editor.Services
             {
                 try
                 {
-                    // Sometimes, if we cannot move the directory (because some outside force has locked it), we can move it and then delete it.
+                    // Sometimes, if we cannot delete the directory (because some outside force has locked it), we can move it and then delete it.
                     if (tryMove)
                     {
                         directory.MoveTo(Path.Combine(directory.Parent.FullName, Guid.NewGuid().ToString("N")));
@@ -366,73 +366,6 @@ namespace Gorgon.Editor.Services
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Function to copy a directory, and all of its child items to the specified path.
-        /// </summary>
-        /// <param name="args">The arguments used for copying.</param>
-        /// <param name="destDir">The path to the destination directory for the copy.</param>
-        /// <param name="cancelToken">The token used to cancel the process.</param>
-        /// <param name="includeSourceDirectory"><b>true</b> to include the source directory in the copy, or <b>false</b> to only use the contents of the source directory only.</param>
-        /// <returns>The directory object for the copied directory, or <b>null</b> if nothing was copied (e.g. the operation was cancelled).</returns>
-        private async Task<DirectoryInfo> CreateDirectoryCopyTask(CopyDirectoryData args, CancellationToken cancelToken, bool includeSourceDirectory)
-        {
-            var directories = new List<DirectoryInfo>();
-            {
-                directories.Add(args.SourceDirectory);
-            }
-
-            directories.AddRange(GetDirectories(args.SourceDirectory.FullName));
-
-            // For progress, we'll need to get the total number of files.
-            int totalItemCount = directories.Concat<FileSystemInfo>(GetFiles(args.SourceDirectory.FullName)).Count();
-
-            if ((cancelToken.IsCancellationRequested) || (totalItemCount < 1))
-            {
-                return null;
-            }
-
-            DirectoryInfo source = args.SourceDirectory;
-
-            if (!string.Equals(source.FullName.FormatDirectory(Path.DirectorySeparatorChar), 
-                                    RootDirectory.FullName.FormatDirectory(Path.DirectorySeparatorChar), StringComparison.OrdinalIgnoreCase))
-            {
-                source = source.Parent;
-            }
-
-            var copyArgs = new CopyTaskArgs(source, args.DestinationDirectory, args, totalItemCount)
-            {                
-                Directories = directories
-            };
-
-            var destDir = new DirectoryInfo(Path.Combine(args.DestinationDirectory.FullName, args.SourceDirectory.Name));
-
-            try
-            {
-                bool result = await CreateCopyTask(copyArgs, cancelToken);
-
-                destDir.Refresh();
-
-                if (!result)
-                {
-                    if (destDir.Exists)
-                    {
-                        await Task.Run(() => CleanupDirectory(destDir));
-                    }
-                    return null;
-                }
-            }
-            catch
-            {
-                if (destDir.Exists)
-                {
-                    await Task.Run(() => CleanupDirectory(destDir));
-                }
-                throw;
-            }
-
-            return destDir;
         }
 
         /// <summary>
@@ -999,86 +932,100 @@ namespace Gorgon.Editor.Services
         }
 
         /// <summary>
-        /// Function to export the specified directory into a physical file system location.
-        /// </summary>
-        /// <param name="exportSettings">The settings used for the export.</param>
-        /// <param name="cancelToken">A token used to cancel the operation.</param>
-        /// <returns>A task for asynchronous operation.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="exportSettings"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by <see cref="CopyDirectoryData.SourceDirectory"/> was not found.</exception>
-        public Task ExportDirectoryAsync(CopyDirectoryData exportSettings, CancellationToken cancelToken)
-        {
-            if (exportSettings == null)
-            {
-                throw new ArgumentNullException(nameof(exportSettings));
-            }
-
-            if (!exportSettings.SourceDirectory.Exists)
-            {
-                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, exportSettings.SourceDirectory.FullName));
-            }
-
-            CheckRootOfPath(exportSettings.SourceDirectory);
-
-            if (!exportSettings.DestinationDirectory.Exists)
-            {
-                exportSettings.DestinationDirectory.Create();
-                exportSettings.DestinationDirectory.Refresh();
-            }
-
-            return CreateDirectoryCopyTask(exportSettings, cancelToken, false);
-        }
-
-        /// <summary>
         /// Function to export a file to a directory on the physical file system.
         /// </summary>
         /// <param name="filePath">The path to the file.</param>
-        /// <param name="destDirPath">The destination directory path.</param>        
+        /// <param name="destPath">The destination directory path.</param>        
         /// <param name="onCopy">The method to call when a file is about to be copied.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/>, or the <paramref name="destDirPath"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/>, or the <paramref name="destDirPath"/> parameter is empty.</exception>
+        /// <param name="cancelToken">A token used to cancel the operation.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/>, or the <paramref name="destPath"/> parameter is <b>null</b>.</exception>
         /// <exception cref="FileNotFoundException">Thrown when the file specified by <paramref name="filePath"/> was not found.</exception>
-        /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by <paramref name="destDirPath"/> was not found.</exception>
-        public Task ExportFileAsync(string filePath, string destDirPath, Action<FileSystemInfo> onCopy)
+        /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by <paramref name="destPath"/> was not found.</exception>
+        /// <exception cref="GorgonException">Thrown when the <paramref name="filePath"/> is not located under the file system root.</exception>
+        public void ExportFile(FileInfo filePath, FileInfo destPath, Action<long, long> exportProgress, CancellationToken cancelToken, byte[] writeBuffer = null)
         {
             if (filePath == null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
 
-            if (destDirPath == null)
+            if (destPath == null)
             {
-                throw new ArgumentNullException(nameof(destDirPath));
+                throw new ArgumentNullException(nameof(destPath));
             }
 
-            if (string.IsNullOrWhiteSpace(filePath))
+            if (!filePath.Exists)
             {
-                throw new ArgumentEmptyException(nameof(filePath));
+                throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, filePath.Name));
             }
-
-            if (string.IsNullOrWhiteSpace(destDirPath))
-            {
-                throw new ArgumentEmptyException(nameof(destDirPath));
-            }
-
-            var sourceFile = new FileInfo(filePath);
-            var dir = new DirectoryInfo(destDirPath);
             
-            if (!dir.Exists)
+            if (!destPath.Directory.Exists)
             {
-                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, destDirPath));
+                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, destPath.Directory.FullName));
             }
 
-            CheckRootOfPath(sourceFile.Directory);
+            CheckRootOfPath(filePath.Directory);
 
-            if (!sourceFile.Exists)
+            BlockCopyFile(filePath, destPath, exportProgress, cancelToken, writeBuffer);
+        }
+
+        /// <summary>
+        /// Function to perform the copy of a file.
+        /// </summary>
+        /// <param name="filePath">The path to the file.</param>
+        /// <param name="destFile">The destination file.</param>
+        /// <param name="progressCallback">The method that reports the file copy progress back.</param>
+        /// <param name="cancelToken">The token used to cancel the operation.</param>
+        /// <param name="writeBuffer">The buffer used to write out the file in chunks.</param>
+        private void BlockCopyFile(FileInfo filePath, FileInfo destFile, Action<long, long> progressCallback, CancellationToken cancelToken, byte[] writeBuffer)
+        {
+            long fileSize = filePath.Length;
+            long maxBlockSize;
+            long copied = 0;
+
+            if ((writeBuffer == null) || (writeBuffer.Length == 0))
             {
-                throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, filePath));
+                maxBlockSize = 81920L.Min(fileSize);
+                writeBuffer = new byte[maxBlockSize];
+            }
+            else
+            {
+                maxBlockSize = writeBuffer.Length;
             }
 
-            onCopy?.Invoke(sourceFile);
+            progressCallback(0, fileSize);
 
-            return Task.Run(() => sourceFile.CopyTo(Path.Combine(dir.FullName, sourceFile.Name), true));
+            using (Stream inStream = filePath.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                using (Stream outStream = destFile.Open(FileMode.Create, FileAccess.Write, FileShare.None))
+                {
+                    // If we're under 4096 BYTES, then we can copy as-is, and we can report a 1:1 file copy.
+                    if (fileSize <= maxBlockSize)
+                    {
+                        inStream.CopyToStream(outStream, (int)fileSize, writeBuffer);
+                        progressCallback(fileSize, fileSize);
+                        return;
+                    }
+
+                    // Otherwise, we need to break up the file into chunks to get reporting of file copy progress.
+                    int blockSize = (int)(maxBlockSize.Min(fileSize));
+
+                    while (fileSize > 0)
+                    {
+                        if (cancelToken.IsCancellationRequested)
+                        {
+                            return;
+                        }
+
+                        inStream.CopyToStream(outStream, blockSize, writeBuffer);
+                        fileSize -= blockSize;
+                        copied += blockSize;
+                        blockSize = (int)(maxBlockSize.Min(fileSize));
+
+                        progressCallback(copied, filePath.Length);
+                    }
+                }
+            }
         }
 
         /// <summary>Function to copy a file to another location.</summary>
@@ -1086,11 +1033,12 @@ namespace Gorgon.Editor.Services
         /// <param name="destFile">The destination file.</param>
         /// <param name="progressCallback">The method that reports the file copy progress back.</param>
         /// <param name="cancelToken">The token used to cancel the operation.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/>, <paramref name="destFile"/>, or the <paramref name="progressCallback"/> method is <b>null</b>.</exception>
-        /// <exception cref="FileNotFoundException">Thrown when the file specified by <paramref name="filePath"/> was not found.</exception>
-        /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by <paramref name="destFile"/> was not found.</exception>
-        /// <exception cref="GorgonException">Thrown if the <paramref name="filePath"/>, or the <paramref name="destFile"/> are not in under the file system.</exception>
-        public void CopyFile(FileInfo filePath, FileInfo destFile, Action<long, long> progressCallback, CancellationToken cancelToken)
+        /// <param name="writeBuffer">[Optional] The buffer used to write out the file in chunks.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath" />, <paramref name="destFile" />, or the <paramref name="progressCallback" /> method is <b>null</b>.</exception>
+        /// <exception cref="FileNotFoundException">Thrown when the file specified by <paramref name="filePath" /> was not found.</exception>
+        /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by <paramref name="destFile" /> was not found.</exception>
+        /// <exception cref="GorgonException">Thrown when the <paramref name="filePath" />, <paramref name="destFile" />, or the <paramref name="progressCallback" /> method is <b>null</b>.</exception>
+        public void CopyFile(FileInfo filePath, FileInfo destFile, Action<long, long> progressCallback, CancellationToken cancelToken, byte[] writeBuffer = null)
         {
             if (filePath == null)
             {
@@ -1120,44 +1068,7 @@ namespace Gorgon.Editor.Services
                 throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, destFile.Directory.Name));
             }
 
-            long fileSize = filePath.Length;
-            long maxBlockSize = 4096L.Min(fileSize);
-            long copied = 0;
-            byte[] writeBuffer = new byte[maxBlockSize];
-
-            progressCallback(0, fileSize);
-
-            using (Stream inStream = filePath.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                using (Stream outStream = destFile.Open(FileMode.Create, FileAccess.Write, FileShare.None))
-                {
-                    // If we're under 4096 BYTES, then we can copy as-is, and we can report a 1:1 file copy.
-                    if (fileSize <= maxBlockSize)
-                    {                        
-                        inStream.CopyToStream(outStream, (int)fileSize, writeBuffer);
-                        progressCallback(fileSize, fileSize);
-                        return;
-                    }
-
-                    // Otherwise, we need to break up the file into 1MB chunks to get reporting of file copy progress.
-                    int blockSize = (int)(maxBlockSize.Min(fileSize));
-
-                    while (fileSize > 0)
-                    {
-                        if (cancelToken.IsCancellationRequested)
-                        {
-                            return;
-                        }
-
-                        inStream.CopyToStream(outStream, blockSize, writeBuffer);
-                        fileSize -= blockSize;
-                        copied += blockSize;
-                        blockSize = (int)(maxBlockSize.Min(fileSize));
-
-                        progressCallback(copied, filePath.Length);
-                    }
-                }
-            }            
+            BlockCopyFile(filePath, destFile, progressCallback, cancelToken, writeBuffer);
         }
 
         /// <summary>

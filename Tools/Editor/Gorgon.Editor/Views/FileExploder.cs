@@ -259,7 +259,10 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            parentTreeNode.Expand();
+            if (!parentTreeNode.IsExpanded)
+            {
+                parentTreeNode.Expand();
+            }            
 
             if (!_revNodeLinks.TryGetValue(newNode, out newTreeNode))
             {
@@ -299,11 +302,11 @@ namespace Gorgon.Editor.Views
             }
             else
             {                
-                UnassignNodeEvents(DataContext.RootNode.Children);
-                AssignNodeEvents(DataContext.RootNode.Children);
+                UnassignNodeEvents(DataContext.RootNode.Children);                
                 _revNodeLinks.Clear();
                 _nodeLinks.Clear();
                 TreeFileSystem.Nodes.Clear();
+                AssignNodeEvents(DataContext.RootNode.Children);
             }
 
             ValidateMenuItems(DataContext);
@@ -1393,7 +1396,6 @@ namespace Gorgon.Editor.Views
             }
 
             // Turn off notification so we don't get a doubling up effect.
-            // Turn off notification so we don't get a doubling up effect.
             if (!_nodeLinks.TryGetValue((KryptonTreeNode)e.Node, out IFileExplorerNodeVm node))
             {
                 return;
@@ -1454,10 +1456,13 @@ namespace Gorgon.Editor.Views
             // Do not hang on to tree nodes that don't need to be kept.
             foreach (KryptonTreeNode treeNode in e.Node.Nodes.OfType<KryptonTreeNode>().Traverse(n => n.Nodes.OfType<KryptonTreeNode>()))
             {
-                _nodeLinks.TryGetValue(treeNode, out IFileExplorerNodeVm fsNode);
-                // Remove from our tree node linkage so we don't keep old nodes alive.                
+                if (_nodeLinks.TryGetValue(treeNode, out IFileExplorerNodeVm fsNode))
+                {
+                    // Remove from our tree node linkage so we don't keep old nodes alive.                                                        
+                    RemoveNodeLinks(fsNode);
+                }
+
                 _nodeLinks.Remove(treeNode);
-                RemoveNodeLinks(fsNode);
             }
 
             e.Node.Nodes.Clear();
@@ -1542,7 +1547,7 @@ namespace Gorgon.Editor.Views
             }
 
             // Turn off events for this nodes children since they'll be destroyed anyway, and we really don't want to trigger the events during a refresh.
-            UnassignNodeEvents(parentNode.Children);
+            UnassignNodeEvents(parentNode.Children);            
 
             FillTree(e.Node.Nodes, parentNode.Children, false);
 
@@ -1699,7 +1704,6 @@ namespace Gorgon.Editor.Views
             bool isExpanded = TreeFileSystem.SelectedNode.IsExpanded;
             TreeFileSystem.SelectedNode.Collapse();
 
-            // Collapsing the node will clear all links for any children.
             if ((TreeFileSystem.SelectedNode.Nodes.Count == 0) || (!isExpanded))
             {
                 return;
@@ -1884,6 +1888,11 @@ namespace Gorgon.Editor.Views
 
             foreach (IFileExplorerNodeVm node in nodes.Traverse(n => n.Children))
             {
+                if (!_revNodeLinks.ContainsKey(node))
+                {
+                    continue;
+                }
+
                 node.PropertyChanged += Node_PropertyChanged;
                 node.Children.CollectionChanged += Nodes_CollectionChanged;
             }
@@ -1906,6 +1915,11 @@ namespace Gorgon.Editor.Views
 
             foreach (IFileExplorerNodeVm node in nodes.Traverse(n => n.Children))
             {
+                if (!_revNodeLinks.ContainsKey(node))
+                {
+                    continue;
+                }
+
                 node.Children.CollectionChanged -= Nodes_CollectionChanged;
                 node.PropertyChanged -= Node_PropertyChanged;
             }

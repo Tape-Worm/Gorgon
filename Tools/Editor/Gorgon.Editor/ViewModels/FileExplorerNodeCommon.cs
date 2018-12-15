@@ -107,7 +107,7 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>Property to set or return whether this node is visible.</summary>                
-        public bool Visible
+        public virtual bool Visible
         {
             get => Parent == null ? true : (!Parent.Visible ? false : _isVisible);
             set
@@ -192,7 +192,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the parent node for this node.
         /// </summary>
-        public IFileExplorerNodeVm Parent
+        public virtual IFileExplorerNodeVm Parent
         {
             get => _parent;
             protected set
@@ -219,7 +219,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the name for the node.
         /// </summary>
-        public string Name => _physicalFileSystemObject?.Name;
+        public virtual string Name => _physicalFileSystemObject?.Name;
 
         /// <summary>
         /// Property to return the full path to the node.
@@ -256,7 +256,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to set or return whether the node is in an expanded state or not (if it has children).
         /// </summary>
-        public bool IsExpanded
+        public virtual bool IsExpanded
         {
             get => _isExpanded;
             set
@@ -466,12 +466,9 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to export the contents of this node to the physical file system.
         /// </summary>
-        /// <param name="destPath">The path to the directory on the physical file system that will receive the contents.</param>
-        /// <param name="onCopy">[Optional] The method to call when a file is about to be copied.</param>
-        /// <param name="cancelToken">[Optional] A token used to cancel the operation.</param>
+        /// <param name="exportNodeData">The parameters ued for exporting the node.</param>
         /// <returns>A task for asynchronous operation.</returns>
-        /// <remarks>The <paramref name="onCopy" /> callback method sends the file system node being copied, the destination file system node, the current item #, and the total number of items to copy.</remarks>
-        public abstract Task ExportAsync(string destPath, Action<FileSystemInfo, FileSystemInfo, int, int> onCopy = null, CancellationToken? cancelToken = null);
+        public abstract Task ExportAsync(ExportNodeData exportNodeData);
 
         /// <summary>Function to assign the appropriate content plug in to a node.</summary>
         /// <param name="contentPlugins">The plug ins to evaluate.</param>

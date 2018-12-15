@@ -297,6 +297,8 @@ namespace Gorgon.Editor.ViewModels
             var destDir = new DirectoryInfo(newPath);
             IFileExplorerNodeVm result = null;
             long bytesTotal = copyNodeData.TotalSize ?? GetSizeInBytes();
+            // Define a write buffer here so we don't create a new one for each file copied.
+            byte[] writeBuffer = new byte[81920]; 
 
             try
             {
@@ -314,7 +316,7 @@ namespace Gorgon.Editor.ViewModels
                     result = copyNodeData.Destination.Children.First(item => string.Equals(item.Name, Name, StringComparison.OrdinalIgnoreCase));
                 }
 
-                foreach (IFileExplorerNodeVm child in Children.Traverse(n => n.Children).OrderBy(n => n.NodeType))
+                foreach (IFileExplorerNodeVm child in Children.OrderBy(n => n.NodeType))
                 {
                     if ((copyNodeData.CancelToken.IsCancellationRequested)
                         || (copyNodeData.DefaultResolution == FileSystemConflictResolution.Cancel))
@@ -330,7 +332,8 @@ namespace Gorgon.Editor.ViewModels
                         CopyProgress = copyNodeData.CopyProgress,
                         DefaultResolution = copyNodeData.DefaultResolution,
                         TotalSize = bytesTotal,
-                        UseToAllInConflictHandler = true
+                        UseToAllInConflictHandler = true,
+                        WriteBuffer = writeBuffer
                     };
 
                     await child.CopyNodeAsync(childCopyData);
@@ -433,40 +436,82 @@ namespace Gorgon.Editor.ViewModels
         /// </para>
         /// </remarks>
         public override long GetSizeInBytes() => Children.Count == 0 ? 0 : Children.Traverse(n => n.Children).Sum(n => n.GetSizeInBytes());
-
+        
         /// <summary>
         /// Function to export the contents of this node to the physical file system.
         /// </summary>
-        /// <param name="destPath">The path to the directory on the physical file system that will receive the contents.</param>
-        /// <param name="onCopy">[Optional] The method to call when a file is about to be copied.</param>
-        /// <param name="cancelToken">[Optional] A token used to cancel the operation.</param>
+        /// <param name="exportNodeData">The parameters ued for exporting the node.</param>
         /// <returns>A task for asynchronous operation.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the the <paramref name="destPath"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="GorgonException">Thrown if the <paramref name="destPath"/> is unable to create child nodes.</exception>
-        /// <remarks>
-        /// <para>
-        /// The <paramref name="onCopy" /> callback method sends the file system item being copied, the destination file system item, the current item #, and the total number of items to copy.
-        /// </para>
-        /// </remarks>
-        public override Task ExportAsync(string destPath, Action<FileSystemInfo, FileSystemInfo, int, int> onCopy, CancellationToken? cancelToken = null)
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="exportNodeData"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentMissingException">Thrown when the the <see cref="CopyNodeData.Destination"/> member of the <paramref name="exportNodeData"/> parameter are <b>null</b>.</exception>
+        public async override Task ExportAsync(ExportNodeData exportNodeData)
         {
-            if (destPath == null)
+            if (exportNodeData == null)
             {
-                throw new ArgumentNullException(nameof(destPath));
+                throw new ArgumentNullException(nameof(exportNodeData));
             }
 
-            if (string.IsNullOrWhiteSpace(destPath))
+            if (exportNodeData.Destination == null)
             {
-                throw new ArgumentEmptyException(nameof(destPath));
+                throw new ArgumentMissingException(nameof(CopyNodeData.Destination), nameof(exportNodeData));
             }
 
-            var args = new CopyDirectoryData(_directoryInfo, new DirectoryInfo(destPath))
-            {
-                OnCopyProgress = onCopy,
-                OnResolveConflict = ResolveExportConflict
-            };
+            string newPath;
 
-            return FileSystemService.ExportDirectoryAsync(args, cancelToken ?? CancellationToken.None);
+            if (Parent != null)
+            {
+                newPath = Path.Combine(exportNodeData.Destination.FullName, Name);
+            }
+            else
+            {
+                newPath = exportNodeData.Destination.FullName;
+            }
+            
+            var destDir = new DirectoryInfo(newPath);
+            long bytesTotal = exportNodeData.TotalSize ?? GetSizeInBytes();
+            // Define a write buffer here so we don't create a new one for each file copied.
+            byte[] writeBuffer = new byte[81920];
+
+            // If the directory does not exist, then create it now.
+            if (!destDir.Exists)
+            {
+                destDir.Create();
+                destDir.Refresh();
+            }
+
+            foreach (IFileExplorerNodeVm child in Children.OrderBy(n => n.NodeType))
+            {
+                if (exportNodeData.CancelToken.IsCancellationRequested)
+                {
+                    return;
+                }
+
+                var childCopyData = new ExportNodeData
+                {
+                    Destination = destDir,
+                    CancelToken = exportNodeData.CancelToken,
+                    ConflictHandler = exportNodeData.ConflictHandler,
+                    CopyProgress = exportNodeData.CopyProgress,
+                    DefaultResolution = exportNodeData.DefaultResolution,
+                    TotalSize = bytesTotal,
+                    UseToAllInConflictHandler = true,
+                    WriteBuffer = writeBuffer
+                };
+
+                await child.ExportAsync(childCopyData);
+
+                switch (childCopyData.DefaultResolution)
+                {
+                    case FileSystemConflictResolution.OverwriteAll:
+                    case FileSystemConflictResolution.RenameAll:
+                    case FileSystemConflictResolution.Cancel:
+                        exportNodeData.DefaultResolution = childCopyData.DefaultResolution;
+                        break;
+                    default:
+                        exportNodeData.DefaultResolution = null;
+                        break;
+                }
+            }
         }
         #endregion
 

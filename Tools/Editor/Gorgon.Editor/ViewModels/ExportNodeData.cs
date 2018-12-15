@@ -25,11 +25,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
 using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.ViewModels
@@ -37,7 +34,7 @@ namespace Gorgon.Editor.ViewModels
     /// <summary>
     /// Data used to copy a node from one location to another.
     /// </summary>
-    internal class CopyNodeData
+    internal class ExportNodeData
     {
         /// <summary>
         /// Property to set or return the default conflict resolution to provide when a conflict is encountered.
@@ -53,9 +50,9 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the destination node that will receive the copy.
+        /// Property to return the directory that will receive the exported items.
         /// </summary>
-        public IFileExplorerNodeVm Destination
+        public DirectoryInfo Destination
         {
             get;
             set;
@@ -81,7 +78,7 @@ namespace Gorgon.Editor.ViewModels
         /// cancelled by the user, and another flag to indicate that the resolution can apply to multiple items.  The method will return a <see cref="FileSystemConflictResolution"/> indicating which 
         /// resolution was chosen.
         /// </remarks>
-        public Func<IFileExplorerNodeVm, IFileExplorerNodeVm, bool, bool, FileSystemConflictResolution> ConflictHandler
+        public Func<IFileExplorerNodeVm, FileInfo, bool, bool, FileSystemConflictResolution> ConflictHandler
         {
             get;
             set;

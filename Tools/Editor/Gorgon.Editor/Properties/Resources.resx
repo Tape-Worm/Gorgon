@@ -633,4 +633,7 @@ Please try again.</value>
 
 Would you like to make a copy with a different name?</value>
   </data>
+  <data name="GOREDIT_TEXT_EXPORTING" xml:space="preserve">
+    <value>Exporting...</value>
+  </data>
 </root>

@@ -150,6 +150,19 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Methods.
+        // 
+        /// <summary>
+        /// Function to rename a node that is in conflict when the file is the same in the source and dest, or if the user chooses to not overwrite.
+        /// </summary>
+        /// <param name="path">The original path to the file.</param>
+        /// <param name="destPath">The destination path.</param>
+        /// <returns>The updated file path.</returns>
+        public string RenameNodeInConflict(string path, string destPath)
+        {
+            string newName = FileSystemService.GenerateFileName(path);
+            return Path.Combine(destPath, newName);
+        }
+
         /// <summary>Function called when the parent of this node is moved.</summary>
         /// <param name="newNode">The new node representing this node under the new parent.</param>
         protected override void OnNotifyParentMoved(IFileExplorerNodeVm newNode)
@@ -316,17 +329,10 @@ namespace Gorgon.Editor.ViewModels
             string newPath = Path.Combine(copyNodeData.Destination.PhysicalPath, Name);
             bool isConflictDueToOpenFile = false;
 
-            // Renames a node that is in conflict when the file is the same in the source and dest, or if the user chooses to not overwrite.
-            string RenameNodeInConflict(string path)
-            {
-                string newName = FileSystemService.GenerateFileName(path);
-                return Path.Combine(copyNodeData.Destination.PhysicalPath, newName);                
-            }
-
             // If we attempt to copy over ourselves, just default to rename.
             if (string.Equals(newPath, _fileInfo.FullName, StringComparison.OrdinalIgnoreCase))
             {
-                newPath = RenameNodeInConflict(newPath);
+                newPath = RenameNodeInConflict(newPath, copyNodeData.Destination.PhysicalPath);
             }
 
             var destFile = new FileInfo(newPath);
@@ -367,7 +373,7 @@ namespace Gorgon.Editor.ViewModels
                 {
                     case FileSystemConflictResolution.Rename:
                     case FileSystemConflictResolution.RenameAll:
-                        newPath = RenameNodeInConflict(newPath);
+                        newPath = RenameNodeInConflict(newPath, copyNodeData.Destination.PhysicalPath);
                         destFile = new FileInfo(newPath);
                         dupeNode = null;
                         break;
@@ -404,7 +410,7 @@ namespace Gorgon.Editor.ViewModels
 
             try
             {
-                await Task.Run(() => FileSystemService.CopyFile(_fileInfo, destFile, ReportProgress, copyNodeData.CancelToken));
+                await Task.Run(() => FileSystemService.CopyFile(_fileInfo, destFile, ReportProgress, copyNodeData.CancelToken, copyNodeData.WriteBuffer));
                 destFile.Refresh();
             }
             catch
@@ -569,27 +575,91 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to export the contents of this node to the physical file system.
         /// </summary>
-        /// <param name="destPath">The path to the directory on the physical file system that will receive the contents.</param>
-        /// <param name="onCopy">[Optional] The method to call when a file is about to be copied.</param>
-        /// <param name="cancelToken">[Optional] A token used to cancel the operation.</param>
+        /// <param name="exportNodeData">The parameters ued for exporting the node.</param>
         /// <returns>A task for asynchronous operation.</returns>
-        /// <remarks>The <paramref name="onCopy" /> callback method sends the file system node being copied, the destination file system node, the current item #, and the total number of items to copy.</remarks>
-        public override Task ExportAsync(string destPath, Action<FileSystemInfo, FileSystemInfo, int, int> onCopy = null, CancellationToken? cancelToken = null)
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="exportNodeData"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentMissingException">Thrown when the the <see cref="CopyNodeData.Destination"/> member of the <paramref name="exportNodeData"/> parameter are <b>null</b>.</exception>
+        public async override Task ExportAsync(ExportNodeData exportNodeData)
         {
-            if (destPath == null)
+            if (exportNodeData == null)
             {
-                throw new ArgumentNullException(nameof(destPath));
+                throw new ArgumentNullException(nameof(exportNodeData));
             }
 
-            if (string.IsNullOrWhiteSpace(destPath))
+            if (exportNodeData.Destination == null)
             {
-                throw new ArgumentEmptyException(nameof(destPath));
+                throw new ArgumentMissingException(nameof(CopyNodeData.Destination), nameof(exportNodeData));
             }
 
-            // Progress update
-            void ProgressUpdate(FileSystemInfo file) => onCopy?.Invoke(file, null, 1, 1);
+            FileSystemConflictResolution? conflictResolution = exportNodeData.DefaultResolution;
+            string newPath = Path.Combine(exportNodeData.Destination.FullName, Name);
 
-            return FileSystemService.ExportFileAsync(PhysicalPath, destPath, ProgressUpdate);
+            // If we attempt to copy over ourselves, just default to rename.
+            if (string.Equals(newPath, _fileInfo.FullName, StringComparison.OrdinalIgnoreCase))
+            {
+                newPath = RenameNodeInConflict(newPath, exportNodeData.Destination.FullName);
+            }
+
+            var destFile = new FileInfo(newPath);
+
+            // Check for a duplicate file and determine how to proceed.
+            if (destFile.Exists)
+            {
+                // If we previously gave a conflict resolution, and it indicated all operations should continue then skip the call back since we have our answer.
+                // Otherwise, determine how to resolve the conflict.
+                // If the file is open in the editor then we have no choice but to force the resolver to run because we cannot mess with an open file.                
+                if ((exportNodeData.ConflictHandler != null) && (conflictResolution != FileSystemConflictResolution.OverwriteAll) && (conflictResolution != FileSystemConflictResolution.RenameAll))
+                {
+                    conflictResolution = exportNodeData.ConflictHandler(this, destFile, true, exportNodeData.UseToAllInConflictHandler);
+                }
+                else if (exportNodeData.ConflictHandler == null)
+                {
+                    // Default to exception if we have a conflict.
+                    conflictResolution = FileSystemConflictResolution.Exception;
+                }
+
+                switch (conflictResolution)
+                {
+                    case FileSystemConflictResolution.Rename:
+                    case FileSystemConflictResolution.RenameAll:
+                        newPath = RenameNodeInConflict(newPath, exportNodeData.Destination.FullName);
+                        destFile = new FileInfo(newPath);
+                        break;
+                    case FileSystemConflictResolution.Cancel:
+                        exportNodeData.DefaultResolution = conflictResolution;
+                        return;
+                    case FileSystemConflictResolution.Exception:
+                    case null:
+                        throw new IOException(string.Format(Resources.GOREDIT_ERR_NODE_EXISTS, Name));
+                }
+            }
+
+            if ((conflictResolution == FileSystemConflictResolution.RenameAll)
+                || (conflictResolution == FileSystemConflictResolution.OverwriteAll))
+            {
+                exportNodeData.DefaultResolution = conflictResolution;
+            }
+
+            // Now that the duplicate check is done, we can actually copy the file.
+            // Unlike copying directories, we don't have to worry about digging down through the hierarchy and reporting back.
+            // However, if the file is large, it will take time to copy, so we'll send notifcation back to indicate how much data we've copied.
+            void ReportProgress(long bytesCopied, long bytesTotal) => exportNodeData.CopyProgress?.Invoke(this, bytesCopied, exportNodeData.TotalSize ?? bytesTotal);
+
+            try
+            {
+                await Task.Run(() => FileSystemService.ExportFile(_fileInfo, destFile, ReportProgress, exportNodeData.CancelToken, exportNodeData.WriteBuffer));
+                destFile.Refresh();
+            }
+            catch
+            {
+                destFile.Refresh();
+                // Clean up the partially copied file.
+                if (destFile.Exists)
+                {
+                    destFile.Delete();
+                }
+                throw;
+            }
         }
 
         /// <summary>Function to open the file for reading.</summary>

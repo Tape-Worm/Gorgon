@@ -1034,6 +1034,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Exporting....
+        /// </summary>
+        internal static string GOREDIT_TEXT_EXPORTING {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_EXPORTING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to File System.
         /// </summary>
         internal static string GOREDIT_TEXT_FILESYSTEM {

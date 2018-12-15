@@ -1044,27 +1044,25 @@ namespace Gorgon.Editor.ViewModels
                 });
 
                 // Function to update our progress meter and provide updates to our caching (and inclusion functionality).
-                void UpdateCopyProgress(FileSystemInfo sourceItem, FileSystemInfo destItem, int currentItemNumber, int totalItemNumber)
+                void ExportProgress(IFileExplorerNodeVm sourceItem, long bytesCopied, long totalBytes)
                 {
-                    float percent = currentItemNumber / (float)totalItemNumber;
-
-                    if ((destItem == null) || (destItem == sourceItem))
+                    float percent = bytesCopied / (float)totalBytes;
+                    UpdateProgress(new ProgressPanelUpdateArgs
                     {
-                        UpdateMarequeeProgress(sourceItem.ToFileSystemPath(_project.ProjectWorkSpace).Ellipses(65, true), Resources.GOREDIT_TEXT_COPYING);
-                    }
-                    else
-                    {
-                        UpdateProgress(new ProgressPanelUpdateArgs
-                        {
-                            Title = Resources.GOREDIT_TEXT_COPYING,
-                            CancelAction = cancelAction,
-                            Message = sourceItem.ToFileSystemPath(_project.ProjectWorkSpace).Ellipses(65, true),
-                            PercentageComplete = percent
-                        });
-                    }
+                        Title = Resources.GOREDIT_TEXT_EXPORTING,
+                        CancelAction = cancelAction,
+                        Message = sourceItem.FullPath.Ellipses(65, true),
+                        PercentageComplete = percent
+                    });
                 }
 
-                await node.ExportAsync(destDir.FullName, UpdateCopyProgress, cancelSource.Token);
+                await node.ExportAsync(new ExportNodeData
+                {
+                    CancelToken = cancelSource.Token,
+                    ConflictHandler = ExportSystemConflictHandler,
+                    CopyProgress = ExportProgress,
+                    Destination = destDir                    
+                });
 
                 _settings.LastOpenSavePath = destDir.FullName.FormatDirectory(Path.DirectorySeparatorChar);
             }
@@ -1303,6 +1301,50 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 response = _messageService.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_FILE_EXISTS, sourceItem.Name, destItem.Parent.FullPath.Ellipses(65, true)), toAll: toAll, allowCancel: allowCancel);
+
+                switch (response)
+                {
+                    case MessageResponse.Yes:
+                        return FileSystemConflictResolution.Overwrite;
+                    case MessageResponse.YesToAll:
+                        return FileSystemConflictResolution.OverwriteAll;
+                    case MessageResponse.No:
+                        return FileSystemConflictResolution.Rename;
+                    case MessageResponse.NoToAll:
+                        return FileSystemConflictResolution.RenameAll;
+                    default:
+                        return FileSystemConflictResolution.Cancel;
+                }
+            }
+            finally
+            {
+                // Restore the busy state if we originally had it active.
+                if (isBusy)
+                {
+                    _busyService.SetBusy();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Function called when there is a conflict when copying or moving files.
+        /// </summary>
+        /// <param name="sourceItem">The file being copied/moved.</param>
+        /// <param name="destItem">The destination file that is conflicting.</param>
+        /// <param name="allowCancel"><b>true</b> to allow cancel support, or <b>false</b> to only use yes/no prompts.</param>
+        /// <param name="toAll"><b>true</b> to apply the resolution to all items after the first resolution is decided, or <b>false</b> to prompt the user each time a conflict arises.</param>
+        /// <returns>A resolution for the conflict.</returns>
+        private FileSystemConflictResolution ExportSystemConflictHandler(IFileExplorerNodeVm sourceItem, FileInfo destItem, bool allowCancel, bool toAll)
+        {
+            bool isBusy = _busyService.IsBusy;
+
+            // Reset the busy state.  The dialog will disrupt it anyway.
+            _busyService.SetIdle();
+            MessageResponse response;
+
+            try
+            {
+                response = _messageService.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_FILE_EXISTS, sourceItem.Name, destItem.Directory.FullName.Ellipses(65, true)), toAll: toAll, allowCancel: allowCancel);
 
                 switch (response)
                 {

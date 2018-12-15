@@ -177,9 +177,11 @@ namespace Gorgon.Editor.Services
         /// Function to export a file to a directory on the physical file system.
         /// </summary>
         /// <param name="filePath">The path to the file.</param>
-        /// <param name="destDirPath">The destination directory path.</param>        
-        /// <param name="onCopy">The method to call when a file is about to be copied.</param>
-        Task ExportFileAsync(string filePath, string destDirPath, Action<FileSystemInfo> onCopy);
+        /// <param name="destPath">The destination file path.</param>        
+        /// <param name="exportProgress">The callback method used to report how much of the file has been exported.</param>
+        /// <param name="cancelToken">A token used to cancel the operation.</param>
+        /// <param name="writeBuffer">[Optional] The buffer used to write out the file in chunks.</param>
+        void ExportFile(FileInfo filePath, FileInfo destPath, Action<long, long> exportProgress, CancellationToken cancelToken, byte[] writeBuffer = null);
 
         /// <summary>
         /// Function to copy a file to another location.
@@ -188,7 +190,8 @@ namespace Gorgon.Editor.Services
         /// <param name="destFile">The destination file.</param>
         /// <param name="progressCallback">The method that reports the file copy progress back.</param>
         /// <param name="cancelToken">The token used to cancel the operation.</param>
-        void CopyFile(FileInfo filePath, FileInfo destFile, Action<long, long> progressCallback, CancellationToken cancelToken);
+        /// <param name="writeBuffer">[Optional] The buffer used to write out the file in chunks.</param>
+        void CopyFile(FileInfo filePath, FileInfo destFile, Action<long, long> progressCallback, CancellationToken cancelToken, byte[] writeBuffer = null);
 
         /// <summary>
         /// Function to move a file to another location.
@@ -208,14 +211,6 @@ namespace Gorgon.Editor.Services
         /// Function to delete all files and directories in the file system.
         /// </summary>
         void DeleteAll();
-
-        /// <summary>
-        /// Function to export the specified directory into a physical file system location.
-        /// </summary>
-        /// <param name="exportSettings">The settings used for the export.</param>
-        /// <param name="cancelToken">A token used to cancel the operation.</param>
-        /// <returns>A task for asynchronous operation.</returns>
-        Task ExportDirectoryAsync(CopyDirectoryData exportSettings, CancellationToken cancelToken);
 
         /// <summary>
         /// Function to import the specified paths into a virtual file system location.

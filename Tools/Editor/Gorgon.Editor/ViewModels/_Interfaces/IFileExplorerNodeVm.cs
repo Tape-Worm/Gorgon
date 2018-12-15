@@ -251,16 +251,9 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to export the contents of this node to the physical file system.
         /// </summary>
-        /// <param name="destPath">The path to the directory on the physical file system that will receive the contents.</param>
-        /// <param name="onCopy">[Optional] The method to call when a file is about to be copied.</param>
-        /// <param name="cancelToken">[Optional] A token used to cancel the operation.</param>
+        /// <param name="exportNodeData">The parameters ued for exporting the node.</param>
         /// <returns>A task for asynchronous operation.</returns>
-        /// <remarks>
-        /// <para>
-        /// The <paramref name="onCopy"/> callback method sends the file system node being copied, the destination file system node, the current item #, and the total number of items to copy.
-        /// </para>
-        /// </remarks>
-        Task ExportAsync(string destPath, Action<FileSystemInfo, FileSystemInfo, int, int> onCopy = null, CancellationToken? cancelToken = null);
+        Task ExportAsync(ExportNodeData exportNodeData);
 
         /// <summary>
         /// Function to assign the appropriate content plug in to a node.
