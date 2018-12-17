@@ -1546,6 +1546,11 @@ namespace Gorgon.Editor.Views
                     TreeImages.Images.Add(node.ImageName, icon);
                 }
             }
+            else if (node.IsContent)
+            {
+                treeNode.NodeFont = _excludedFont;
+                treeNode.ForeColor = Color.DimGray;
+            }
 
             int imageIndex = FindImageIndexFromNode(node);
             if (imageIndex != -1)

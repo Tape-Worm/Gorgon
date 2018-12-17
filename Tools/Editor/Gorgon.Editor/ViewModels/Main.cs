@@ -300,16 +300,16 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The e.</param>
-        private void NewProject_WaitPanelActivated(object sender, WaitPanelActivateArgs e) => ShowWaitPanel(e.Message, e.Title);
+        private void NewProject_WaitPanelActivated(object sender, WaitPanelActivateArgs e) => ShowWaitPanel(e.Message, e.Title);               
 
         /// <summary>
         /// Function to open a project.
         /// </summary>
         /// <param name="path">The path to the project.</param>
-        /// <returns>A task for asynchronous operation.</returns>
+        /// <returns>The project view model.</returns>
         private async Task OpenProjectAsync(string path)
         {
-            (IProject project, bool hasMetadata, bool isUpgraded) = await _projectManager.OpenProjectAsync(path, NewProject.WorkspacePath);
+            (IProject project, bool isUpgraded) = await _projectManager.OpenProjectAsync(path, NewProject.WorkspacePath);
 
             if (project == null)
             {
@@ -317,7 +317,7 @@ namespace Gorgon.Editor.ViewModels
                 return;
             }
 
-            IProjectVm projectVm = await _viewModelFactory.CreateProjectViewModelAsync(project, !hasMetadata);
+            IProjectVm projectVm = await _viewModelFactory.CreateProjectViewModelAsync(project);
             projectVm.ProjectFile = new FileInfo(path);
 
             // The project should not be in a modified state.
@@ -333,8 +333,38 @@ namespace Gorgon.Editor.ViewModels
             _settings.LastProjectWorkingDirectory = string.Empty;
             _settings.LastProjectScratchDirectory = string.Empty;
 
-            CurrentProject = projectVm;
+            // Begin file scanning.
+            HideWaitPanel();
 
+            UpdateProgress(new ProgressPanelUpdateArgs
+            {
+                CancelAction = null,
+                IsMarquee = false,
+                Title = Resources.GOREDIT_TEXT_SCANNING
+            });
+
+            void UpdateScanProgress(string node, int fileNumber, int totalFileCount)
+            {
+                float percentComplete = (float)fileNumber / totalFileCount;
+                UpdateProgress(new ProgressPanelUpdateArgs
+                {
+                    PercentageComplete = percentComplete,
+                    CancelAction = null,
+                    IsMarquee = false,
+                    Title = Resources.GOREDIT_TEXT_SCANNING,
+                    Message = node.Ellipses(65, true)
+                });
+            }
+                        
+            bool wasUpdated = await Task.Run(() => _viewModelFactory.FileScanService.Scan(projectVm.FileExplorer.RootNode, UpdateScanProgress, true));
+
+            // If we changed the project due to some files having plugins associated, then mark as modified so we can save those changes.
+            if (wasUpdated)
+            {
+                projectVm.ProjectState = ProjectState.Modified;
+            }            
+
+            CurrentProject = projectVm;
             _settings.LastOpenSavePath = Path.GetDirectoryName(path).FormatDirectory(Path.DirectorySeparatorChar);
             _settings.LastProjectWorkingDirectory = project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
             _settings.LastProjectScratchDirectory = project.ProjectScratchSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
@@ -428,6 +458,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 PersistSettings();
                 HideWaitPanel();
+                HideProgress();
             }
         }
 
@@ -466,6 +497,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 PersistSettings();
                 HideWaitPanel();
+                HideProgress();
             }
         }
 
@@ -627,7 +659,7 @@ namespace Gorgon.Editor.ViewModels
                 _settings.LastProjectWorkingDirectory = string.Empty;
                 _settings.LastProjectScratchDirectory = string.Empty;
 
-                CurrentProject = await _viewModelFactory.CreateProjectViewModelAsync(project, false);
+                CurrentProject = await _viewModelFactory.CreateProjectViewModelAsync(project);
                 _settings.LastProjectWorkingDirectory = project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
                 _settings.LastProjectScratchDirectory = project.ProjectScratchSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
             }

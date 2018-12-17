@@ -188,11 +188,6 @@ namespace Gorgon.Editor.ImageEditor
             }
             finally
             {
-                // If metadata has been changed, we need to update.
-                if (UpdateFileMetadataAttributes(file.Metadata.Attributes, result))
-                {
-                    file.RefreshMetadata();
-                }
                 stream?.Dispose();
             }
 

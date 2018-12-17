@@ -65,7 +65,7 @@ namespace Gorgon.Editor.ProjectData
         /// <param name="workspace">The workspace directory that will receive the files from the project file.</param>
         /// <param name="metadataManager">The metadata manager to use for accessing project metadata.</param>
         /// <returns>A new project based on the file that was read.</returns>
-        Task<(IProject project, bool hasMetadata, bool isUpgraded)> OpenProjectAsync(string path, DirectoryInfo workspace);
+        Task<(IProject project, bool isUpgraded)> OpenProjectAsync(string path, DirectoryInfo workspace);
 
         /// <summary>
         /// Function to save a project to a file on the disk.

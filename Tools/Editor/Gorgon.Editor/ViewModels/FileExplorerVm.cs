@@ -106,6 +106,8 @@ namespace Gorgon.Editor.ViewModels
         private List<IFileExplorerNodeVm> _searchResults;
         // The system used to search through the file system.
         private ISearchService<IFileExplorerNodeVm> _searchSystem;
+        // The file scanning service used to determine if a file is associated with a plugin or not.
+        private IFileScanService _fileScanner;
         #endregion
 
         #region Properties.
@@ -491,29 +493,6 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Function to update the metadata state for a node.
-        /// </summary>
-        /// <param name="node">The node to update.</param>
-        /// <param name="metaData">The metadata to assign or remove.</param>
-        private void UpdateMetadataForNode(IFileExplorerNodeVm node, ProjectItemMetadata metaData)
-        {
-            node.Metadata = metaData;
-
-            if ((node.Metadata != null) && (node.IsContent))
-            {
-                if (node.AssignContentPlugin(_contentPlugins, true))
-                {
-                    OnFileSystemChanged();
-                }
-            }
-            else if (node.Metadata?.ContentMetadata != null)
-            {
-                node.Metadata.ContentMetadata = null;
-                OnFileSystemChanged();
-            }
-        }
-
-        /// <summary>
         /// Function to determine if a node can be renamed or not.
         /// </summary>
         /// <param name="args">The arguments for renaming.</param>
@@ -570,8 +549,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="node">The node to refresh.</param>
         /// <param name="deepScanForAssociation"><b>true</b> to force a deep scan for file associations (much slower), <b>false</b> to do a surface scan.</param>
-        /// <param name="createMetaData">[Optional] <b>true</b> to create a metadata object for the file (if non exists), or <b>false</b> to leave as-is.</param>
-        private void RefreshNode(IFileExplorerNodeVm node, bool deepScanForAssociation, bool createMetaData = false)
+        private void RefreshNode(IFileExplorerNodeVm node, bool deepScanForAssociation)
         {
             IFileExplorerNodeVm nodeToRefresh = node ?? RootNode;
 
@@ -633,19 +611,6 @@ namespace Gorgon.Editor.ViewModels
                     _searchResults.Add(child);
                 }
 
-                if ((child.Metadata != null) || (createMetaData))
-                {
-                    if (child.Metadata == null)
-                    {
-                        child.Metadata = new ProjectItemMetadata();
-                    }
-
-                    if (child.IsContent)
-                    {
-                        child.AssignContentPlugin(_contentPlugins, deepScanForAssociation);
-                    }                    
-                }
-
                 // Restore the open flag.
                 if ((openContentPath != null) && (string.Equals(child.FullPath, openContentPath, StringComparison.OrdinalIgnoreCase)))
                 {
@@ -663,13 +628,17 @@ namespace Gorgon.Editor.ViewModels
         /// Function to refresh the nodes under the specified node, or for the entire tree.
         /// </summary>
         /// <param name="node">The node to refresh.</param>
-        private void DoRefreshSelectedNode(IFileExplorerNodeVm node)
+        private async void DoRefreshSelectedNodeAsync(IFileExplorerNodeVm node)
         {
             _busyService.SetBusy();
 
             try
             {
                 RefreshNode(node, false);
+                _busyService.SetIdle();
+
+                // Scan the files now for updated plugin information.
+                await ScanFilesAsync(node);
             }
             catch (Exception ex)
             {
@@ -949,18 +918,22 @@ namespace Gorgon.Editor.ViewModels
                     await Task.Run(() => _fileSystemService.ImportFile(file, newFile, UpdateImportProgress, cancelSource.Token, writeBuffer));
                     totalBytesCopied += file.Length;
                 }
-                HideProgress();
 
-                ShowWaitPanel(Resources.GOREDIT_TEXT_SCANNING);
+                UpdateProgress(new ProgressPanelUpdateArgs
+                {
+                    CancelAction = null,
+                    Title = Resources.GOREDIT_TEXT_IMPORTING,
+                    PercentageComplete = 1
+                });
 
                 // Give a little delay so we can update the UI.
-                await Task.Delay(500);
-
-                _busyService.SetBusy();
+                await Task.Delay(500);                
 
                 // This will probably take a while to run for large file systems. But, because it modifies the UI, we can't put it on background thread.
                 // We may have to refactor this later so we can thread it and give feed back.
-                RefreshNode(node, true, true);
+                RefreshNode(node, true);
+
+                await ScanFilesAsync(node);
 
                 node.IsExpanded = true;
                 SelectedNode = node;
@@ -969,8 +942,6 @@ namespace Gorgon.Editor.ViewModels
             }
             finally
             {
-                _busyService.SetIdle();
-                HideWaitPanel();
                 HideProgress();
                 cancelSource?.Dispose();
             }
@@ -1443,16 +1414,6 @@ namespace Gorgon.Editor.ViewModels
                     fileNode.Parent.IsExpanded = true;
                 }
 
-                if (fileNode.Children.Count > 0)
-                {
-                    foreach (IFileExplorerNodeVm child in fileNode.Children.Traverse(n => n.Children))
-                    {
-                        child.AssignContentPlugin(_contentPlugins);
-                    }
-                }
-
-                fileNode.AssignContentPlugin(_contentPlugins);
-
                 SelectedNode = fileNode;
 
                 OnFileSystemChanged();
@@ -1485,11 +1446,6 @@ namespace Gorgon.Editor.ViewModels
                 node.Children.CollectionChanged += Children_CollectionChanged;
                 node.PropertyChanged += Node_PropertyChanged;
                 node.PropertyChanging += Node_PropertyChanging;
-
-                if (node.Metadata != null)
-                {
-                    node.AssignContentPlugin(_contentPlugins);
-                }
             }
 
             parent.Children.CollectionChanged += Children_CollectionChanged;
@@ -1568,6 +1524,69 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Function to scan the files added to the file system for plugin association.
+        /// </summary>
+        /// <param name="node">The node that was added to the file system.</param>
+        /// <returns><b>true</b> if an association was made, or <b>false</b> if there were no changes.</returns>
+        private async Task ScanFilesAsync(IFileExplorerNodeVm node)
+        {            
+            try
+            {
+                // If we sent a non-content node, and there are no children to process, then move on.
+                if ((!node.IsContent) && (node.Children.Count == 0))
+                {
+                    return;
+                }
+
+                UpdateProgress(new ProgressPanelUpdateArgs
+                {
+                    CancelAction = null,
+                    IsMarquee = false,
+                    Title = Resources.GOREDIT_TEXT_SCANNING
+                });
+
+                void UpdateScanProgress(string scanNode, int fileNumber, int fileCount)
+                {
+                    float percentComplete = (float)fileNumber / fileCount;
+                    UpdateProgress(new ProgressPanelUpdateArgs
+                    {
+                        CancelAction = null,
+                        IsMarquee = false,
+                        Message = scanNode.Ellipses(65, true),
+                        Title = Resources.GOREDIT_TEXT_SCANNING,
+                        PercentageComplete = percentComplete
+                    });
+                }
+
+                bool result = await Task.Run(() => _fileScanner.Scan(node, UpdateScanProgress, true));                
+
+                if (!result)
+                {
+                    return;                    
+                }
+
+                // Update the node display to ensure that we see the changes.
+                if (node is IContentFile contentFile)
+                {
+                    contentFile.RefreshMetadata();
+                }
+                else
+                {
+                    foreach (IContentFile file in node.Children.Traverse(n => n.Children).OfType<IContentFile>())
+                    {
+                        file.RefreshMetadata();
+                    }
+                }
+
+                OnFileSystemChanged();
+            }
+            finally
+            {
+                HideProgress();
+            }
+        }
+
+        /// <summary>
         /// Function called when a child node collection is updated.
         /// </summary>
         /// <param name="sender">The sender.</param>
@@ -1610,14 +1629,9 @@ namespace Gorgon.Editor.ViewModels
             _directoryLocator = injectionParameters.DirectoryLocator ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.DirectoryLocator), nameof(injectionParameters));
             _contentPlugins = injectionParameters.ContentPlugins ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.ContentPlugins), nameof(injectionParameters));
             _searchSystem = injectionParameters.FileSearch ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.FileSearch), nameof(injectionParameters));
+            _fileScanner = injectionParameters.ViewModelFactory.FileScanService;
 
             EnumerateChildren(RootNode);
-
-            // Scan for associations.  If this file was upgraded, then we'll need to add new associations.
-            foreach (IFileExplorerNodeVm node in RootNode.Children.Traverse(n => n.Children))
-            {
-                node.AssignContentPlugin(_contentPlugins, true);
-            }            
         }
 
         /// <summary>
@@ -1888,7 +1902,7 @@ namespace Gorgon.Editor.ViewModels
             CreateNodeCommand = new EditorCommand<CreateNodeArgs>(DoCreateNode, CanCreateNode);
             RenameNodeCommand = new EditorCommand<FileExplorerNodeRenameArgs>(DoRenameNode, CanRenameNode);
             DeleteNodeCommand = new EditorCommand<DeleteNodeArgs>(DoDeleteNode, CanDeleteNode);
-            RefreshNodeCommand = new EditorCommand<IFileExplorerNodeVm>(DoRefreshSelectedNode);
+            RefreshNodeCommand = new EditorCommand<IFileExplorerNodeVm>(DoRefreshSelectedNodeAsync);
             CopyNodeCommand = new EditorCommand<CopyNodeArgs>(DoCopyNode, CanCopyNode);
             ExportNodeToCommand = new EditorCommand<IFileExplorerNodeVm>(DoExportNodeAsync, CanExportNode);
             MoveNodeCommand = new EditorCommand<CopyNodeArgs>(DoMoveNode, CanMoveNode);

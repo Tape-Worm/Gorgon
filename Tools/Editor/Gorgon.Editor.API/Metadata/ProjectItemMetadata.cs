@@ -107,6 +107,11 @@ namespace Gorgon.Editor.Metadata
                         
             _contentMetadata = metadata.ContentMetadata;
             PluginName = metadata.PluginName;
+
+            foreach (KeyValuePair<string, string> attribute in metadata.Attributes)
+            {
+                Attributes[attribute.Key] = attribute.Value;
+            }
         }
 
         /// <summary>

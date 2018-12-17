@@ -31,6 +31,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using Gorgon.Editor.Content;
+using Gorgon.Core;
 
 namespace Gorgon.Editor.Plugins
 {

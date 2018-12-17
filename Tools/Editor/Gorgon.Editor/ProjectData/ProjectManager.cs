@@ -326,7 +326,7 @@ namespace Gorgon.Editor.ProjectData
         /// <param name="provider">The provider to use.</param>
         /// <param name="workspace">The workspace directory to copy the files into.</param>
         /// <returns>A new project file.</returns>
-        private async Task<(IProject project, bool hasMetadata, bool isUpgraded)> OpenProjectTask(FileInfo fileSystemFile, IGorgonFileSystemProvider provider, DirectoryInfo workspace)
+        private async Task<(IProject project, bool isUpgraded)> OpenProjectTask(FileInfo fileSystemFile, IGorgonFileSystemProvider provider, DirectoryInfo workspace)
         {
             DirectoryInfo projectWorkspace = GetProjectWorkspace(workspace);
             DirectoryInfo scratchDir = GetScratchDirectory(workspace);
@@ -351,15 +351,12 @@ namespace Gorgon.Editor.ProjectData
                     
                     var importer = new V2MetadataImporter(v2Metadata, Providers);
                     importer.Import(result);
-
-                    // No autoimport needed if we imported everything.
-                    return (result, true, true);
                 }
 
-                return (result, false, true);
+                return (result, true);
             }
 
-            return (CreateFromMetadata(metaData, scratchDir), true, false);
+            return (CreateFromMetadata(metaData, scratchDir), false);
         }
 
         /// <summary>
@@ -518,7 +515,7 @@ namespace Gorgon.Editor.ProjectData
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
         /// <exception cref="FileNotFoundException">Thrown if the file specified by the <paramref name="path"/> does not exist.</exception>
         /// <exception cref="GorgonException">Thrown if no provider could be found to load the file.</exception>
-        public async Task<(IProject project, bool hasMetadata, bool isUpgraded)> OpenProjectAsync(string path, DirectoryInfo workspace)
+        public async Task<(IProject project, bool isUpgraded)> OpenProjectAsync(string path, DirectoryInfo workspace)
         {
             if (path == null)
             {
@@ -549,7 +546,7 @@ namespace Gorgon.Editor.ProjectData
                 throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_NO_PROVIDER, file.Name));
             }
 
-            (IProject project, bool hasMetadata, bool isUpgraded) result = await OpenProjectTask(file, provider, workspace);
+            (IProject project, bool isUpgraded) result = await OpenProjectTask(file, provider, workspace);
 
             return result;
         }

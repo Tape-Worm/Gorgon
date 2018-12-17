@@ -177,18 +177,6 @@ namespace Gorgon.Editor.ViewModels
             Moved?.Invoke(this, args);
         }
 
-        /// <summary>Function to assign the appropriate content plug in to a node.</summary>
-        /// <param name="plugins">The plugins.</param>
-        /// <param name="deepScan"><b>true</b> to perform a more in depth scan for the associated plug in type, <b>false</b> to use the node metadata exclusively.</param>
-        /// <returns><b>true</b> if a plug in was assigned, <b>false</b> if not.</returns>
-        /// <remarks>
-        /// <para>
-        /// If the <paramref name="deepScan" /> parameter is set to <b>true</b>, then the lookup for the plug ins will involve opening the file using each plug in to find a matching plug in for the node
-        /// file type. This, obviously, is much slower, so should only be used when the node metadata is not sufficient for association information.
-        /// </para>
-        /// </remarks>
-        protected override bool OnAssignContentPlugin(IContentPluginManagerService plugins, bool deepScan) => plugins.AssignContentPlugin(this, !deepScan);
-
         /// <summary>Function to retrieve the physical file system object for this node.</summary>
         /// <param name="path">The path to the physical file system object.</param>
         /// <returns>Information about the physical file system object.</returns>
@@ -429,7 +417,7 @@ namespace Gorgon.Editor.ViewModels
             if (dupeNode == null)
             {
                 // Once the file is actually on the file system, make a node and attach it to the parent.            
-                return ViewModelFactory.CreateFileExplorerFileNodeVm(Project, FileSystemService, copyNodeData.Destination, destFile, Metadata);
+                return ViewModelFactory.CreateFileExplorerFileNodeVm(Project, FileSystemService, copyNodeData.Destination, destFile, new ProjectItemMetadata(Metadata));
             }
 
             // If we've overwritten a node, then just refresh its state and return it.  There's no need to re-add it to the list at this point.

@@ -65,6 +65,8 @@ namespace Gorgon.Editor.ViewModels
         private readonly DirectoryLocateService _dirLocator;
         // The service used for undo/redo functionality.
         private readonly UndoService _undoService;
+        // The service used to scan content files for content plug in associations.
+        private readonly FileScanService _fileScanService;
         #endregion
 
         #region Properties.
@@ -75,6 +77,11 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the file scanning service used to scan content files for content plugin associations.
+        /// </summary>
+        public IFileScanService FileScanService => _fileScanService;
 
         /// <summary>
         /// Property to return the file system providers used to read/write project files.
@@ -283,12 +290,19 @@ namespace Gorgon.Editor.ViewModels
                 Parent = parent,
                 Metadata = metaData
             });
-
+            
             string fullPath = result.FullPath;
 
             if (result.Metadata == null)
             {
-                result.Metadata = project.ProjectItems.FirstOrDefault(item => string.Equals(item.Key, fullPath, StringComparison.OrdinalIgnoreCase)).Value;
+                if (project.ProjectItems.TryGetValue(result.FullPath, out ProjectItemMetadata existingMetaData))
+                {
+                    result.Metadata = existingMetaData;
+                }
+                else
+                {
+                    result.Metadata = new ProjectItemMetadata();
+                }
             }
 
             parent.Children.Add(result);
@@ -310,7 +324,7 @@ namespace Gorgon.Editor.ViewModels
             var parent = new DirectoryInfo(parentNode.PhysicalPath);
             DirectoryInfo directory = fileSystemService.CreateDirectory(parent);
 
-            return CreateFileExplorerDirectoryNodeVm(project, fileSystemService, parentNode, directory, true, new ProjectItemMetadata());
+            return CreateFileExplorerDirectoryNodeVm(project, fileSystemService, parentNode, directory, true);
         }
 
         /// <summary>
@@ -322,10 +336,9 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="metadataManager">The metadata manager to use.</param>
         /// <param name="directory">The file system directory to wrap in the view model.</param>
         /// <param name="addToParent"><b>true</b> to automatically add the node to the parent, <b>false</b> to just return the node without adding to the parent.</param>
-        /// <param name="metadata">[Optional] The metadata to assign to the node.</param>
         /// <returns>The new file explorer node view model.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, <paramref name="fileSystemService"/>, <paramref name="parentNode"/>, or the <paramref name="directory"/> parameter is <b>null</b>.</exception>
-        public IFileExplorerNodeVm CreateFileExplorerDirectoryNodeVm(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parentNode, DirectoryInfo directory, bool addToParent, ProjectItemMetadata metadata = null)
+        public IFileExplorerNodeVm CreateFileExplorerDirectoryNodeVm(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parentNode, DirectoryInfo directory, bool addToParent)
         {
             if (project == null)
             {
@@ -353,17 +366,11 @@ namespace Gorgon.Editor.ViewModels
 
             result.Initialize(new FileExplorerNodeParameters(directory.FullName, project, this, fileSystemService)
             {
-                Metadata = metadata,
+                Metadata = new ProjectItemMetadata(),
                 Parent = parentNode,
                 Children = children
             });
             
-            string fullPath = result.FullPath;
-            if (result.Metadata == null)
-            {
-                result.Metadata = project.ProjectItems.FirstOrDefault(item => string.Equals(item.Key, fullPath, StringComparison.OrdinalIgnoreCase)).Value;
-            }
-
             if (addToParent)
             {
                 parentNode.Children.Add(result);
@@ -377,9 +384,8 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="project">The project data.</param>
         /// <param name="fileSystemService">The file system service for the project.</param>
-        /// <param name="autoInclude"><b>true</b> to automatically include any and all file system objects in the project, or <b>false</b> to only use what is in the metadata.</param>
         /// <returns>The file explorer view model.</returns>
-        private IFileExplorerVm CreateFileExplorerViewModel(IProject project, IFileSystemService fileSystemService, bool autoInclude)
+        private IFileExplorerVm CreateFileExplorerViewModel(IProject project, IFileSystemService fileSystemService)
         {
             project.ProjectWorkSpace.Refresh();
             if (!project.ProjectWorkSpace.Exists)
@@ -394,14 +400,6 @@ namespace Gorgon.Editor.ViewModels
             root.Initialize(new FileExplorerNodeParameters(project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar), project, this, fileSystemService));
 
             DoEnumerateFileSystemObjects(project.ProjectWorkSpace.FullName, project, fileSystemService, root);
-
-            if (autoInclude)
-            {
-                foreach (IFileExplorerNodeVm node in root.Children.Traverse(n => n.Children))
-                {
-                    node.Metadata = new ProjectItemMetadata();
-                }
-            }
 
             var search = new FileSystemSearchSystem(root);
 
@@ -424,10 +422,9 @@ namespace Gorgon.Editor.ViewModels
         /// Function to create a project view model.
         /// </summary>
         /// <param name="projectData">The project data to assign to the project view model.</param>
-        /// <param name="autoInclude"><b>true</b> to automatically include any and all file system objects in the project, or <b>false</b> to only use what is in the metadata.</param>
         /// <returns>The project view model.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="projectData"/> parameter is <b>null</b>.</exception>
-        public async Task<IProjectVm> CreateProjectViewModelAsync(IProject projectData, bool autoInclude)
+        public async Task<IProjectVm> CreateProjectViewModelAsync(IProject projectData)
         {
             if (projectData == null)
             {
@@ -440,7 +437,7 @@ namespace Gorgon.Editor.ViewModels
             var result = new ProjectVm();
             var fileSystemService = new FileSystemService(projectData.ProjectWorkSpace);
 
-            await Task.Run(() => result.FileExplorer = CreateFileExplorerViewModel(projectData, fileSystemService, autoInclude));
+            await Task.Run(() => result.FileExplorer = CreateFileExplorerViewModel(projectData, fileSystemService));
 
             result.Initialize(new ProjectVmParameters(projectData, this));
 
@@ -463,7 +460,8 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="messages">The message dialog service.</param>
         /// <param name="waitState">The wait state service.</param>
         /// <param name="clipboardService">The application clipboard service.</param>
-        ///<param name="dirLocatorService">The directory locator service.</param>
+        /// <param name="dirLocatorService">The directory locator service.</param>
+        /// <param name="fileScanService">The file scanning service used to scan content files for content plugin associations.</param>
         /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
         public ViewModelFactory(EditorSettings settings, 
                                 FileSystemProviders providers, 
@@ -473,7 +471,8 @@ namespace Gorgon.Editor.ViewModels
                                 MessageBoxService messages, 
                                 WaitCursorBusyState waitState, 
                                 ClipboardService clipboardService, 
-                                DirectoryLocateService dirLocatorService)
+                                DirectoryLocateService dirLocatorService,
+                                FileScanService fileScanService)
         {
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             FileSystemProviders = providers ?? throw new ArgumentNullException(nameof(providers));
@@ -484,6 +483,7 @@ namespace Gorgon.Editor.ViewModels
             _waitCursorService = waitState ?? throw new ArgumentNullException(nameof(waitState));
             _clipboard = clipboardService ?? throw new ArgumentNullException(nameof(clipboardService));
             _dirLocator = dirLocatorService ?? throw new ArgumentNullException(nameof(dirLocatorService));
+            _fileScanService = fileScanService ?? throw new ArgumentNullException(nameof(fileScanService));
         }
         #endregion
     }

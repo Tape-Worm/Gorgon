@@ -546,7 +546,8 @@ namespace Gorgon.Editor
                                                    new MessageBoxService(),
                                                    new WaitCursorBusyState(),
                                                    new ClipboardService(),
-                                                   _dirLocator);
+                                                   _dirLocator,
+                                                   new FileScanService(_contentPlugins));
 
                 FormWindowState windowState;
                 // Ensure the window state values fall into an acceptable range.

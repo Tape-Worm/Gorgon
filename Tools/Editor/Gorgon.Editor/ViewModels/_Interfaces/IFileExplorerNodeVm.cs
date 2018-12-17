@@ -256,20 +256,6 @@ namespace Gorgon.Editor.ViewModels
         Task ExportAsync(ExportNodeData exportNodeData);
 
         /// <summary>
-        /// Function to assign the appropriate content plug in to a node.
-        /// </summary>
-        /// <param name="contentPlugins">The plug ins to evaluate.</param>
-        /// <param name="deepScan">[Optional] <b>true</b> to perform a more in depth scan for the associated plug in type, <b>false</b> to use the node metadata exclusively.</param>
-        /// <returns><b>true</b> if a plug in was associated, <b>false</b> if not.</returns>
-        /// <remarks>
-        /// <para>
-        /// If the <paramref name="deepScan"/> parameter is set to <b>true</b>, then the lookup for the plug ins will involve opening the file using each plug in to find a matching plug in for the node 
-        /// file type. This, obviously, is much slower, so should only be used when the node metadata is not sufficient for association information.
-        /// </para>
-        /// </remarks>
-        bool AssignContentPlugin(IContentPluginManagerService contentPlugins, bool deepScan = false);
-
-        /// <summary>
         /// Function to refresh the node's underlying data.
         /// </summary>
         void Refresh();

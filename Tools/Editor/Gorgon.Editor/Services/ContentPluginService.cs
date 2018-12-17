@@ -252,11 +252,9 @@ namespace Gorgon.Editor.Services
                 case MetadataPluginState.NotFound:
                     contentFile.Metadata.ContentMetadata = null;
                     contentFile.Metadata.PluginName = string.Empty;
-                    contentFile.RefreshMetadata();
                     return true;
                 case MetadataPluginState.Assigned:
                     contentFile.Metadata.ContentMetadata = plugin as IContentPluginMetadata;
-                    contentFile.RefreshMetadata();
                     return true;
             }
 
@@ -281,7 +279,6 @@ namespace Gorgon.Editor.Services
                 break;
             }
 
-            contentFile.RefreshMetadata();
             return true;
         }
 

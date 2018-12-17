@@ -308,7 +308,7 @@ namespace Gorgon.Editor.ViewModels
                     destDir.Create();
                     destDir.Refresh();
 
-                    result = ViewModelFactory.CreateFileExplorerDirectoryNodeVm(Project, FileSystemService, copyNodeData.Destination, destDir, false, Metadata);
+                    result = ViewModelFactory.CreateFileExplorerDirectoryNodeVm(Project, FileSystemService, copyNodeData.Destination, destDir, false);
                     result.IsExpanded = false;
                 }
                 else
