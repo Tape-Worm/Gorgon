@@ -338,6 +338,7 @@ namespace Gorgon.Editor.ViewModels
             var destFile = new FileInfo(newPath);
             // A duplicate node that we are conflicting with.
             IFileExplorerNodeVm dupeNode = null;
+            long copied = copyNodeData.BytesCopied;
 
             // Check for a duplicate file and determine how to proceed.
             if (FileSystemService.FileExists(destFile))
@@ -406,11 +407,12 @@ namespace Gorgon.Editor.ViewModels
             // Now that the duplicate check is done, we can actually copy the file.
             // Unlike copying directories, we don't have to worry about digging down through the hierarchy and reporting back.
             // However, if the file is large, it will take time to copy, so we'll send notifcation back to indicate how much data we've copied.
-            void ReportProgress(long bytesCopied, long bytesTotal) => copyNodeData.CopyProgress?.Invoke(this, bytesCopied, copyNodeData.TotalSize ?? bytesTotal);
+            void ReportProgress(long bytesCopied, long bytesTotal) => copyNodeData.CopyProgress?.Invoke(this, copied + bytesCopied, copyNodeData.TotalSize ?? bytesTotal);
 
             try
             {
                 await Task.Run(() => FileSystemService.CopyFile(_fileInfo, destFile, ReportProgress, copyNodeData.CancelToken, copyNodeData.WriteBuffer));
+                copyNodeData.BytesCopied += _fileInfo.Length;
                 destFile.Refresh();
             }
             catch
@@ -593,6 +595,7 @@ namespace Gorgon.Editor.ViewModels
 
             FileSystemConflictResolution? conflictResolution = exportNodeData.DefaultResolution;
             string newPath = Path.Combine(exportNodeData.Destination.FullName, Name);
+            long copied = exportNodeData.BytesCopied;
 
             // If we attempt to copy over ourselves, just default to rename.
             if (string.Equals(newPath, _fileInfo.FullName, StringComparison.OrdinalIgnoreCase))
@@ -643,11 +646,12 @@ namespace Gorgon.Editor.ViewModels
             // Now that the duplicate check is done, we can actually copy the file.
             // Unlike copying directories, we don't have to worry about digging down through the hierarchy and reporting back.
             // However, if the file is large, it will take time to copy, so we'll send notifcation back to indicate how much data we've copied.
-            void ReportProgress(long bytesCopied, long bytesTotal) => exportNodeData.CopyProgress?.Invoke(this, bytesCopied, exportNodeData.TotalSize ?? bytesTotal);
+            void ReportProgress(long bytesCopied, long bytesTotal) => exportNodeData.CopyProgress?.Invoke(this, copied + bytesCopied, exportNodeData.TotalSize ?? bytesTotal);
 
             try
             {
                 await Task.Run(() => FileSystemService.ExportFile(_fileInfo, destFile, ReportProgress, exportNodeData.CancelToken, exportNodeData.WriteBuffer));
+                exportNodeData.BytesCopied += _fileInfo.Length;
                 destFile.Refresh();
             }
             catch

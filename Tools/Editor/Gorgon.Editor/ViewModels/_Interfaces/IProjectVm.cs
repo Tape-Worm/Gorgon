@@ -98,15 +98,6 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to set or return whether to show external items that are not included in the project file system.
-        /// </summary>
-        bool ShowExternalItems
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Property to set or return the current state of the project.
         /// </summary>
         ProjectState ProjectState

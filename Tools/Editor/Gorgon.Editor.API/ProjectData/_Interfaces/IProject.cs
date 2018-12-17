@@ -90,15 +90,6 @@ namespace Gorgon.Editor.ProjectData
         }
 
         /// <summary>
-        /// Property to set or return whether file system objects like directories and files should be shown in the project even when they're not included.
-        /// </summary>
-        bool ShowExternalItems
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Property to return the list of project items.
         /// </summary>
         Dictionary<string, ProjectItemMetadata> ProjectItems

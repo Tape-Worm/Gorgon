@@ -332,11 +332,13 @@ namespace Gorgon.Editor.ViewModels
                         CopyProgress = copyNodeData.CopyProgress,
                         DefaultResolution = copyNodeData.DefaultResolution,
                         TotalSize = bytesTotal,
+                        BytesCopied = copyNodeData.BytesCopied,
                         UseToAllInConflictHandler = true,
                         WriteBuffer = writeBuffer
                     };
 
                     await child.CopyNodeAsync(childCopyData);
+                    copyNodeData.BytesCopied = childCopyData.BytesCopied;
 
                     switch (childCopyData.DefaultResolution)
                     {
@@ -494,11 +496,13 @@ namespace Gorgon.Editor.ViewModels
                     CopyProgress = exportNodeData.CopyProgress,
                     DefaultResolution = exportNodeData.DefaultResolution,
                     TotalSize = bytesTotal,
+                    BytesCopied = exportNodeData.BytesCopied,
                     UseToAllInConflictHandler = true,
                     WriteBuffer = writeBuffer
                 };
 
                 await child.ExportAsync(childCopyData);
+                exportNodeData.BytesCopied = childCopyData.BytesCopied;
 
                 switch (childCopyData.DefaultResolution)
                 {

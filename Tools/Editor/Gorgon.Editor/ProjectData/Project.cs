@@ -84,15 +84,6 @@ namespace Gorgon.Editor.ProjectData
         }
 
         /// <summary>
-        /// Property to set or return whether file system objects like directories and files should be shown in the project even when they're not included.
-        /// </summary>
-        public bool ShowExternalItems
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Property to set or return the writer used to write to the project file.
         /// </summary>
         [JsonIgnore]

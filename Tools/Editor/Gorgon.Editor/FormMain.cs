@@ -168,64 +168,6 @@ namespace Gorgon.Editor
         }
 
         /// <summary>
-        /// Handles the Click event of the ButtonInclude control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonInclude_Click(object sender, EventArgs e) => MenuItemInclude.PerformClick();
-
-        /// <summary>
-        /// Handles the Click event of the MenuItemIncludeAll control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void MenuItemIncludeAll_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                PanelProject.FileExplorer.IncludeAll();
-            }
-            finally
-            {
-                ValidateRibbonButtons();
-            }
-        }
-
-        /// <summary>
-        /// Handles the Click event of the MenuItemExcludeAll control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void MenuItemExcludeAll_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                PanelProject.FileExplorer.ExcludeAll();
-            }
-            finally
-            {
-                ValidateRibbonButtons();
-            }
-        }
-
-        /// <summary>
-        /// Handles the Click event of the MenuItemInclude control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void MenuItemInclude_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                PanelProject.FileExplorer.IncludeOrExcludeItem();
-            }
-            finally
-            {
-                ValidateRibbonButtons();
-            }
-        }
-
-        /// <summary>
         /// Handles the Click event of the ButtonFileSystemDeleteAll control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -381,15 +323,6 @@ namespace Gorgon.Editor
 
             ButtonImport.Enabled = fileExplorer.ImportIntoNodeCommand?.CanExecute(fileExplorer.SelectedNode ?? fileExplorer.RootNode) ?? false;
             ButtonExport.Enabled = fileExplorer.ExportNodeToCommand?.CanExecute(fileExplorer.SelectedNode ?? fileExplorer.RootNode) ?? false;
-
-            MenuItemInclude.Enabled = fileExplorer.IncludeExcludeCommand?.CanExecute(new IncludeExcludeArgs(fileExplorer.SelectedNode ?? fileExplorer.RootNode, MenuItemInclude.Checked)) ?? false;
-            MenuItemInclude.Checked = (fileExplorer.SelectedNode != null) && (fileExplorer.SelectedNode.Metadata != null);
-            MenuItemIncludeAll.Enabled = fileExplorer.IncludeExcludeAllCommand?.CanExecute(new IncludeExcludeArgs(fileExplorer.RootNode, true)) ?? false;
-            MenuItemExcludeAll.Enabled = fileExplorer.IncludeExcludeAllCommand?.CanExecute(new IncludeExcludeArgs(fileExplorer.RootNode, false)) ?? false;
-            ButtonInclude.Enabled = MenuItemInclude.Enabled || MenuItemIncludeAll.Enabled || MenuItemExcludeAll.Enabled;
-
-            CheckShowAllFiles.Enabled = true;
-            CheckShowAllFiles.Checked = project.ShowExternalItems;
 
             ButtonFileSystemCopy.Enabled = _clipboardContext?.CanCopy() ?? false;
             ButtonFileSystemCut.Enabled = _clipboardContext?.CanCut() ?? false;
@@ -802,28 +735,6 @@ namespace Gorgon.Editor
             try
             {
                 PanelProject.FileExplorer.Collapse();
-            }
-            finally
-            {
-                ValidateRibbonButtons();
-            }
-        }
-
-        /// <summary>
-        /// Handles the Click event of the CheckShowAllFiles control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void CheckShowAllFiles_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (DataContext?.CurrentProject == null)
-                {
-                    return;
-                }
-
-                DataContext.CurrentProject.ShowExternalItems = CheckShowAllFiles.Checked;                
             }
             finally
             {

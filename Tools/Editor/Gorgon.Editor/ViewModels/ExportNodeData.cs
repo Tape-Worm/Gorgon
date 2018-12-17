@@ -103,6 +103,15 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Property to set or return the total number of bytes copied.
+        /// </summary>
+        public long BytesCopied
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to set or return whether the conflict handler should reuse the resolution given for all items after the first conflict arises.
         /// </summary>
         public bool UseToAllInConflictHandler

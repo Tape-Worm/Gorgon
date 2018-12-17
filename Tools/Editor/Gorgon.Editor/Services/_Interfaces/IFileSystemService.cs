@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Gorgon.Editor.ViewModels;
 
 namespace Gorgon.Editor.Services
 {
@@ -213,17 +214,14 @@ namespace Gorgon.Editor.Services
         void DeleteAll();
 
         /// <summary>
-        /// Function to import the specified paths into a virtual file system location.
+        /// Function to import a file from the external physical file system.
         /// </summary>
-        /// <param name="importSettings">The import settings.</param>
-        /// <param name="cancelToken">A token used to cancel the operation.</param>
-        /// <returns><b>true</b> if the operation was completed successfully, <b>false</b> if not.</returns>
-        /// <remarks>
-        /// <para>
-        /// This method copies the file (and directory) data for a list of physical file system paths to a virtual file system physical location.
-        /// </para>
-        /// </remarks>
-        Task<bool> ImportIntoDirectoryAsync(ImportArgs importSettings, CancellationToken cancelToken);
+        /// <param name="file">The file being imported.</param>
+        /// <param name="dest">The destination for the imported file.</param>
+        /// <param name="importProgress">The method used to report the progress of the import.</param>
+        /// <param name="cancelToken">The token used to cancel the operation.</param>
+        /// <param name="writeBuffer">[Optional] The buffer used to copy the file in blocks.</param>
+        void ImportFile(FileInfo file, FileInfo dest, Action<long, long> importProgress, CancellationToken cancelToken, byte[] writeBuffer = null);
         #endregion
     }
 }

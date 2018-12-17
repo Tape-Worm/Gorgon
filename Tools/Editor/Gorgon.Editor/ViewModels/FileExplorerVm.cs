@@ -129,22 +129,6 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the command to execute when including or excluding all nodes.
-        /// </summary>
-        public IEditorCommand<IncludeExcludeArgs> IncludeExcludeAllCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command to execute when including or excluding a node.
-        /// </summary>
-        public IEditorCommand<IncludeExcludeArgs> IncludeExcludeCommand
-        {
-            get;
-        }
-
-        /// <summary>
         /// Property to return the command to execute when a node is selected.
         /// </summary>
         public IEditorCommand<IFileExplorerNodeVm> SelectNodeCommand
@@ -240,25 +224,6 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
             set;
-        }
-
-        /// <summary>
-        /// Property to set or return whether to show excluded nodes or not.
-        /// </summary>
-        public bool ShowExcluded
-        {
-            get => _project.ShowExternalItems;
-            set
-            {
-                if (_project.ShowExternalItems == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _project.ShowExternalItems = value;
-                OnPropertyChanged();
-            }
         }
 
         /// <summary>
@@ -526,13 +491,6 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Function to determine if all nodes can be included/excluded.
-        /// </summary>
-        /// <param name="include">Not used.</param>
-        /// <returns><b>true</b> if all nodes can be included or excluded, <b>false</b> if not.</returns>
-        private bool CanIncludeExcludeAll(IncludeExcludeArgs args) => (RootNode.Children.Count != 0);
-
-        /// <summary>
         /// Function to update the metadata state for a node.
         /// </summary>
         /// <param name="node">The node to update.</param>
@@ -552,89 +510,6 @@ namespace Gorgon.Editor.ViewModels
             {
                 node.Metadata.ContentMetadata = null;
                 OnFileSystemChanged();
-            }
-        }
-                
-        /// <summary>
-        /// Function to include or exclude all nodes in the project.
-        /// </summary>
-        /// <param name="args"><b>true</b> to include, <b>false</b> to exclude.</param>
-        private void DoIncludeExcludeAll(IncludeExcludeArgs args)
-        {
-            _busyService.SetBusy();
-            try
-            {
-                if (!args.Include)
-                {
-                    IFileExplorerNodeVm openContent = RootNode.Children.Traverse(n => n.Children).FirstOrDefault(item => item.IsOpen);
-                    // TODO: Ask for permission to exclude if we have changes.
-                    if ((openContent != null) && (openContent.IsChanged))
-                    {
-                        args.Cancel = true;
-                        return;
-                    }
-                }
-
-                // Add child nodes.
-                foreach (IFileExplorerNodeVm child in RootNode.Children.Traverse(n => n.Children))
-                {
-                    UpdateMetadataForNode(child, args.Include ? new ProjectItemMetadata() : null);
-                }
-
-                OnFileSystemChanged();
-            }
-            catch (Exception ex)
-            {
-                _messageService.ShowError(ex, Resources.GOREDIT_ERR_INCLUDE_ALL);
-                args.Cancel = true;
-            }
-            finally
-            {
-                _busyService.SetIdle();
-            }
-        }
-
-        /// <summary>
-        /// Function to include or exclude a node from the project.
-        /// </summary>
-        /// <param name="args">The arguments for the command.</param>
-        private void DoIncludeExcludeNode(IncludeExcludeArgs args)
-        {
-            _busyService.SetBusy();
-            try
-            {
-                if ((!args.Include) && (((args.Node.IsOpen) && (args.Node.IsChanged)) 
-                                        || (args.Node.Children.Any(item => (item.IsOpen) && (item.IsChanged)))))
-                {
-                    // TODO: Ask for permission to exclude if we have changes.
-                    args.Cancel = true;
-                    return;
-                }
-
-                UpdateMetadataForNode(args.Node, args.Include ? new ProjectItemMetadata() : null);
-
-                // If our parent node is not included, and we've included this node, then we'll include it now.
-                // If we exclude the node, we'll leave the parent included. This is the behavior in Visual Studio, so we'll mimic that here.
-                if ((args.Node.Parent != null) && (args.Node.Parent.Metadata == null) && (args.Include))
-                {
-                    UpdateMetadataForNode(args.Node.Parent, args.Include ? new ProjectItemMetadata() : null);
-                }
-
-                // Add child nodes.
-                foreach (IFileExplorerNodeVm child in args.Node.Children.Traverse(n => n.Children))
-                {
-                    UpdateMetadataForNode(child, args.Include ? new ProjectItemMetadata() : null);
-                }
-
-                OnFileSystemChanged();
-            }
-            catch (Exception ex)
-            {
-                _messageService.ShowError(ex, string.Format(Resources.GOREDIT_ERR_INCLUDE_NODE, args.Node.Name));
-            }
-            finally
-            {
-                _busyService.SetIdle();
             }
         }
 
@@ -695,7 +570,8 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="node">The node to refresh.</param>
         /// <param name="deepScanForAssociation"><b>true</b> to force a deep scan for file associations (much slower), <b>false</b> to do a surface scan.</param>
-        private void RefreshNode(IFileExplorerNodeVm node, bool deepScanForAssociation)
+        /// <param name="createMetaData">[Optional] <b>true</b> to create a metadata object for the file (if non exists), or <b>false</b> to leave as-is.</param>
+        private void RefreshNode(IFileExplorerNodeVm node, bool deepScanForAssociation, bool createMetaData = false)
         {
             IFileExplorerNodeVm nodeToRefresh = node ?? RootNode;
 
@@ -712,7 +588,7 @@ namespace Gorgon.Editor.ViewModels
                 if (_searchResults?.Remove(child) ?? false)
                 {
                     searchNodes.Add(child.FullPath);
-                }                
+                }
 
                 if (child.Metadata != null)
                 {
@@ -737,8 +613,8 @@ namespace Gorgon.Editor.ViewModels
             if (!parent.Exists)
             {
                 return;
-            }                       
-                       
+            }                                             
+            
             _factory.EnumerateFileSystemObjects(parent.FullName, _project, _fileSystemService, nodeToRefresh);
 
             // We don't need the metadata list now, all objects have their metadata assigned at this point.
@@ -757,9 +633,17 @@ namespace Gorgon.Editor.ViewModels
                     _searchResults.Add(child);
                 }
 
-                if (child.Metadata != null)
+                if ((child.Metadata != null) || (createMetaData))
                 {
-                    child.AssignContentPlugin(_contentPlugins, deepScanForAssociation);
+                    if (child.Metadata == null)
+                    {
+                        child.Metadata = new ProjectItemMetadata();
+                    }
+
+                    if (child.IsContent)
+                    {
+                        child.AssignContentPlugin(_contentPlugins, deepScanForAssociation);
+                    }                    
                 }
 
                 // Restore the open flag.
@@ -876,100 +760,219 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Function to prepare the file import by retrieving all of the file system objects, and their children, in the paths list.
+        /// </summary>
+        /// <param name="paths">The list of paths to import.</param>
+        /// <returns>A tuple containing the list of directories to import, and the list of files to import.</returns>
+        private (List<DirectoryInfo> directories, List<FileInfo> files) PrepFileImport(IReadOnlyList<string> paths)
+        {
+            var directories = new List<DirectoryInfo>();
+            var files = new List<FileInfo>();
+
+            bool IsDirectoryValid(DirectoryInfo directory) => (((directory.Attributes & FileAttributes.Directory) == FileAttributes.Directory)
+                                                            && ((directory.Attributes & FileAttributes.System) != FileAttributes.System)
+                                                            && ((directory.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden));
+            bool IsFileValid(FileInfo file) => ((!string.Equals(file.Name, CommonEditorConstants.EditorMetadataFileName, StringComparison.OrdinalIgnoreCase))
+                                                            && ((file.Attributes & FileAttributes.Directory) != FileAttributes.Directory)
+                                                            && ((file.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden)
+                                                            && ((file.Attributes & FileAttributes.System) != FileAttributes.System));
+
+            // Convert the list of paths into file system objects so we can easily manipulate them.
+            foreach (string path in paths.OrderBy(item => item.Length))
+            {
+                // Convert the path to either a directory or file object.
+                if (Directory.Exists(path))
+                {
+                    var directory = new DirectoryInfo(path);
+
+                    if (!IsDirectoryValid(directory))
+                    {
+                        continue;
+                    }
+
+                    directories.Add(directory);
+
+                    // Get all files and sub directories under this single directory.
+                    foreach (DirectoryInfo subDir in directory.GetDirectories("*", SearchOption.AllDirectories))
+                    {
+                        if (IsDirectoryValid(subDir))
+                        {
+                            directories.Add(subDir);
+                        }
+                    }
+
+                    foreach (FileInfo file in directory.GetFiles("*", SearchOption.AllDirectories))
+                    {
+                        if (IsFileValid(file))
+                        {
+                            files.Add(file);
+                        }
+                    }
+                }
+                else if (File.Exists(path))
+                {
+                    var file = new FileInfo(path);
+
+                    if (IsFileValid(file))
+                    {
+                        files.Add(file);
+                    }
+                }
+            }
+
+            return (directories, files);
+        }
+
+        /// <summary>
         /// Function to perform the import of the directories/files into the specified node.
         /// </summary>
         /// <param name="node">The node that will recieve the import.</param>
+        /// <param name="parentDir">The parent directory for all imported items.</param>
         /// <param name="items">The paths to the items to import.</param>
         /// <returns>A task for asynchronous operation.</returns>
-        private async Task ImportAsync(IFileExplorerNodeVm node, IReadOnlyList<string> items)
+        private async Task ImportAsync(IFileExplorerNodeVm node, DirectoryInfo parentDir, IReadOnlyList<string> items)
         {
+            byte[] writeBuffer = new byte[81920];
+            FileInfo currentFile = null;
+            long totalByteCount = 0;
+            long totalBytesCopied = 0;
             var cancelSource = new CancellationTokenSource();
-            var metadata = new Dictionary<string, ProjectItemMetadata>();
+
+            void cancelAction() => cancelSource.Cancel();
+
+            void UpdateImportProgress(long bytesCopied, long totalBytes)
+            {
+                if (currentFile == null)
+                {
+                    return;
+                }
+                                
+                float percent = (totalBytesCopied + bytesCopied) / (float)totalByteCount;
+                UpdateProgress(new ProgressPanelUpdateArgs
+                {
+                    Title = Resources.GOREDIT_TEXT_IMPORTING,
+                    CancelAction = cancelAction,
+                    Message = currentFile.FullName.Ellipses(65, true),
+                    PercentageComplete = percent
+                });
+            }
 
             try
             {
-                void cancelAction() => cancelSource.Cancel();
-
                 UpdateProgress(new ProgressPanelUpdateArgs
                 {
                     CancelAction = cancelAction,
-                    Title = Resources.GOREDIT_TEXT_COPYING,
+                    Title = Resources.GOREDIT_TEXT_IMPORTING,
                     PercentageComplete = 0,
                     Message = string.Empty
                 });
 
-                // Function to update our progress meter.
-                void UpdateCopyProgress(FileSystemInfo sourceItem, FileSystemInfo destItem, int currentItemNumber, int totalItemNumber)
-                {
-                    float percent = currentItemNumber / (float)totalItemNumber;
-                    UpdateProgress(new ProgressPanelUpdateArgs
-                    {
-                        Title = Resources.GOREDIT_TEXT_COPYING,
-                        CancelAction = cancelAction,
-                        Message = sourceItem.FullName.Ellipses(65, true),
-                        PercentageComplete = percent
-                    });
-                }
+                (List<DirectoryInfo> directories, List<FileInfo> files) = PrepFileImport(items);
 
-                var importArgs = new ImportArgs(items, node.PhysicalPath)
-                {
-                    ConflictResolver = ResolveImportConflict,
-                    OnImportFile = UpdateCopyProgress,
-                };
-
-                await _fileSystemService.ImportIntoDirectoryAsync(importArgs, cancelSource.Token);
-
-                if (cancelSource.Token.IsCancellationRequested)
+                // No directories or files to import, so we're done.
+                if ((directories.Count == 0) && (files.Count == 0))
                 {
                     return;
                 }
 
-                HideProgress();
+                totalByteCount = files.Count > 0 ? files.Sum(item => item.Length) : 0;
 
-                UpdateMarequeeProgress(Resources.GOREDIT_TEXT_SCANNING);                
+                // Allow some time for the UI to update.
+                await Task.Delay(500);
 
-                if (node.Metadata == null)
+                // Collapse the destination node prior to importing.
+                // This allows us to update the file system without updating the UI, which will keep us from having cross threading issues.
+                node.IsExpanded = false;
+
+                // Create the directory structure first.
+                foreach (DirectoryInfo directory in directories)
                 {
-                    UpdateMetadataForNode(node, new ProjectItemMetadata());
-                }
-
-                await Task.Run(() =>
-                {
-                    // Retrieve the nodes generated by the import.  None of these will have metadata, so we don't need to scan the items yet.
-                    if (node != RootNode)
-                    {
-                        RefreshNode(node, false);
-                    }
-                    else
-                    {
-                        RefreshNode(null, false);
-                    }
+                    // Create the directory (if needed).
+                    var newDir = new DirectoryInfo(directory.FullName.Replace(parentDir.FullName.FormatDirectory(Path.DirectorySeparatorChar), node.PhysicalPath));
+                    newDir.Create();
 
                     if (cancelSource.Token.IsCancellationRequested)
                     {
                         return;
                     }
-                    
-                    foreach (IFileExplorerNodeVm child in node.Children.Traverse(n => n.Children))
+                }
+
+                FileSystemConflictResolution resolution = FileSystemConflictResolution.Skip;
+
+                // Finally, copy the files.
+                foreach (FileInfo file in files)
+                {
+                    if (cancelSource.Token.IsCancellationRequested)
                     {
-                        if (cancelSource.Token.IsCancellationRequested)
+                        return;
+                    }
+
+                    currentFile = file;
+                    var newFile = new FileInfo(file.FullName.Replace(parentDir.FullName.FormatDirectory(Path.DirectorySeparatorChar), node.PhysicalPath));
+
+                    // We have a conflict, try to find the node that is conflict.
+                    if (newFile.Exists)
+                    {
+                        IFileExplorerNodeVm dupeNode = node.Children.Traverse(n => n.Children).FirstOrDefault(n => string.Equals(n.PhysicalPath, newFile.FullName, StringComparison.OrdinalIgnoreCase));
+                        FileSystemConflictResolution currentResolution = resolution;
+
+                        if ((dupeNode != null) 
+                            && (((dupeNode.IsOpen) && (resolution == FileSystemConflictResolution.OverwriteAll))
+                                || ((resolution != FileSystemConflictResolution.OverwriteAll) && (resolution != FileSystemConflictResolution.RenameAll))))
                         {
-                            return;
+                            currentResolution = FileSystemConflictHandler(dupeNode, dupeNode, true, true);
+                        }
+                        
+                        switch (currentResolution)
+                        {
+                            case FileSystemConflictResolution.Overwrite:
+                            case FileSystemConflictResolution.OverwriteAll:
+                                break;
+                            case FileSystemConflictResolution.Rename:
+                            case FileSystemConflictResolution.RenameAll:
+                                string newFilePath = _fileSystemService.GenerateFileName(newFile.FullName);
+                                newFile = new FileInfo(Path.Combine(newFile.Directory.FullName, newFilePath));
+                                break;
+                            case FileSystemConflictResolution.Skip:
+                                currentResolution = FileSystemConflictResolution.OverwriteAll;
+                                continue;
+                            case FileSystemConflictResolution.Cancel:
+                                return;
                         }
 
-                        child.Metadata = new ProjectItemMetadata();
-
-                        if (child.IsContent)
+                        if ((currentResolution == FileSystemConflictResolution.OverwriteAll) || (currentResolution == FileSystemConflictResolution.RenameAll))
                         {
-                            UpdateMarequeeProgress(child.Name.Ellipses(65, true), Resources.GOREDIT_TEXT_SCANNING);
-                            child.AssignContentPlugin(_contentPlugins, true);
+                            resolution = currentResolution;
                         }
                     }
-                }, cancelSource.Token);
+
+                    await Task.Run(() => _fileSystemService.ImportFile(file, newFile, UpdateImportProgress, cancelSource.Token, writeBuffer));
+                    totalBytesCopied += file.Length;
+                }
+                HideProgress();
+
+                ShowWaitPanel(Resources.GOREDIT_TEXT_SCANNING);
+
+                // Give a little delay so we can update the UI.
+                await Task.Delay(500);
+
+                _busyService.SetBusy();
+
+                // This will probably take a while to run for large file systems. But, because it modifies the UI, we can't put it on background thread.
+                // We may have to refactor this later so we can thread it and give feed back.
+                RefreshNode(node, true, true);
+
+                node.IsExpanded = true;
+                SelectedNode = node;
+
+                OnFileSystemChanged();
             }
             finally
             {
-                cancelSource.Dispose();                
+                _busyService.SetIdle();
+                HideWaitPanel();
+                HideProgress();
+                cancelSource?.Dispose();
             }
         }
 
@@ -995,7 +998,7 @@ namespace Gorgon.Editor.ViewModels
                     return;
                 }
 
-                await ImportAsync(node, sourceDir.GetFileSystemInfos().Select(item => item.FullName).ToArray());
+                await ImportAsync(node, sourceDir, sourceDir.GetFileSystemInfos().Select(item => item.FullName).ToArray());
 
                 OnFileSystemChanged();
             }
@@ -1832,7 +1835,16 @@ namespace Gorgon.Editor.ViewModels
                     return;
                 }
 
-                await ImportAsync(dragData.TargetNode, dragData.ExplorerPaths);
+                // Get the list of paths, ordered from shortest to longest and formatted without a trailing separator.
+                string[] orderedPaths = dragData.ExplorerPaths.OrderBy(item => item.Length)
+                    .Select(item => (item.EndsWith(Path.DirectorySeparatorChar.ToString()))|| (item.EndsWith(Path.AltDirectorySeparatorChar.ToString()))
+                                        ? item.Substring(0, item.Length - 1) : item)
+                    .ToArray();
+
+                // Get the common directory name.
+                var parentDirectory = new DirectoryInfo(Path.GetDirectoryName(dragData.ExplorerPaths[0]));
+
+                await ImportAsync(dragData.TargetNode, parentDirectory, dragData.ExplorerPaths);
                 afterDrop?.Invoke();
             }
             catch (Exception ex)
@@ -1876,12 +1888,10 @@ namespace Gorgon.Editor.ViewModels
             CreateNodeCommand = new EditorCommand<CreateNodeArgs>(DoCreateNode, CanCreateNode);
             RenameNodeCommand = new EditorCommand<FileExplorerNodeRenameArgs>(DoRenameNode, CanRenameNode);
             DeleteNodeCommand = new EditorCommand<DeleteNodeArgs>(DoDeleteNode, CanDeleteNode);
-            IncludeExcludeCommand = new EditorCommand<IncludeExcludeArgs>(DoIncludeExcludeNode, _ => SelectedNode != null);
             RefreshNodeCommand = new EditorCommand<IFileExplorerNodeVm>(DoRefreshSelectedNode);
             CopyNodeCommand = new EditorCommand<CopyNodeArgs>(DoCopyNode, CanCopyNode);
             ExportNodeToCommand = new EditorCommand<IFileExplorerNodeVm>(DoExportNodeAsync, CanExportNode);
             MoveNodeCommand = new EditorCommand<CopyNodeArgs>(DoMoveNode, CanMoveNode);
-            IncludeExcludeAllCommand = new EditorCommand<IncludeExcludeArgs>(DoIncludeExcludeAll, CanIncludeExcludeAll);
             DeleteFileSystemCommand = new EditorCommand<object>(DoDeleteFileSystemAsync, CanDeleteFileSystem);
             ImportIntoNodeCommand = new EditorAsyncCommand<IFileExplorerNodeVm>(DoImportIntoNodeAsync, CanImportIntoNode);
             SearchCommand = new EditorCommand<string>(DoSearch);

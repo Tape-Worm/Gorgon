@@ -60,10 +60,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FileExploder));
             this.TreeFileSystem = new ComponentFactory.Krypton.Toolkit.KryptonTreeView();
             this.MenuOptions = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.MenuItemIncludeInProject = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuItemIncludeAll = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuItemExcludeAll = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuSepExport = new System.Windows.Forms.ToolStripSeparator();
             this.MenuItemExportTo = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuSepEdit = new System.Windows.Forms.ToolStripSeparator();
             this.MenuItemCut = new System.Windows.Forms.ToolStripMenuItem();
@@ -151,10 +147,6 @@
             // 
             this.MenuOptions.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.MenuOptions.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MenuItemIncludeInProject,
-            this.MenuItemIncludeAll,
-            this.MenuItemExcludeAll,
-            this.MenuSepExport,
             this.MenuItemExportTo,
             this.MenuSepEdit,
             this.MenuItemCut,
@@ -166,55 +158,26 @@
             this.MenuSepNew,
             this.MenuItemCreateDirectory});
             this.MenuOptions.Name = "MenuOptions";
-            this.MenuOptions.Size = new System.Drawing.Size(199, 248);
+            this.MenuOptions.Size = new System.Drawing.Size(181, 198);
             this.MenuOptions.Opening += new System.ComponentModel.CancelEventHandler(this.MenuOperations_Opening);
-            // 
-            // MenuItemIncludeInProject
-            // 
-            this.MenuItemIncludeInProject.CheckOnClick = true;
-            this.MenuItemIncludeInProject.Name = "MenuItemIncludeInProject";
-            this.MenuItemIncludeInProject.Size = new System.Drawing.Size(198, 22);
-            this.MenuItemIncludeInProject.Text = "&In project?";
-            this.MenuItemIncludeInProject.Click += new System.EventHandler(this.ItemIncludeInProject_Click);
-            // 
-            // MenuItemIncludeAll
-            // 
-            this.MenuItemIncludeAll.Enabled = false;
-            this.MenuItemIncludeAll.Name = "MenuItemIncludeAll";
-            this.MenuItemIncludeAll.Size = new System.Drawing.Size(198, 22);
-            this.MenuItemIncludeAll.Text = "&Include all in project";
-            this.MenuItemIncludeAll.Click += new System.EventHandler(this.MenuItemIncludeAll_Click);
-            // 
-            // MenuItemExcludeAll
-            // 
-            this.MenuItemExcludeAll.Enabled = false;
-            this.MenuItemExcludeAll.Name = "MenuItemExcludeAll";
-            this.MenuItemExcludeAll.Size = new System.Drawing.Size(198, 22);
-            this.MenuItemExcludeAll.Text = "&Exclude all from project";
-            this.MenuItemExcludeAll.Click += new System.EventHandler(this.MenuItemExcludeAll_Click);
-            // 
-            // MenuSepExport
-            // 
-            this.MenuSepExport.Name = "MenuSepExport";
-            this.MenuSepExport.Size = new System.Drawing.Size(195, 6);
             // 
             // MenuItemExportTo
             // 
             this.MenuItemExportTo.Name = "MenuItemExportTo";
-            this.MenuItemExportTo.Size = new System.Drawing.Size(198, 22);
+            this.MenuItemExportTo.Size = new System.Drawing.Size(180, 22);
             this.MenuItemExportTo.Text = "E&xport to...";
             this.MenuItemExportTo.Click += new System.EventHandler(this.MenuItemExportTo_Click);
             // 
             // MenuSepEdit
             // 
             this.MenuSepEdit.Name = "MenuSepEdit";
-            this.MenuSepEdit.Size = new System.Drawing.Size(195, 6);
+            this.MenuSepEdit.Size = new System.Drawing.Size(177, 6);
             // 
             // MenuItemCut
             // 
             this.MenuItemCut.Name = "MenuItemCut";
             this.MenuItemCut.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-            this.MenuItemCut.Size = new System.Drawing.Size(198, 22);
+            this.MenuItemCut.Size = new System.Drawing.Size(180, 22);
             this.MenuItemCut.Text = "Cu&t";
             this.MenuItemCut.Click += new System.EventHandler(this.MenuItemCut_Click);
             // 
@@ -222,7 +185,7 @@
             // 
             this.MenuItemCopy.Name = "MenuItemCopy";
             this.MenuItemCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.MenuItemCopy.Size = new System.Drawing.Size(198, 22);
+            this.MenuItemCopy.Size = new System.Drawing.Size(180, 22);
             this.MenuItemCopy.Text = "C&opy";
             this.MenuItemCopy.Click += new System.EventHandler(this.MenuItemCopy_Click);
             // 
@@ -230,21 +193,21 @@
             // 
             this.MenuItemPaste.Name = "MenuItemPaste";
             this.MenuItemPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-            this.MenuItemPaste.Size = new System.Drawing.Size(198, 22);
+            this.MenuItemPaste.Size = new System.Drawing.Size(180, 22);
             this.MenuItemPaste.Text = "&Paste";
             this.MenuItemPaste.Click += new System.EventHandler(this.MenuItemPaste_Click);
             // 
             // MenuSepOrganize
             // 
             this.MenuSepOrganize.Name = "MenuSepOrganize";
-            this.MenuSepOrganize.Size = new System.Drawing.Size(195, 6);
+            this.MenuSepOrganize.Size = new System.Drawing.Size(177, 6);
             // 
             // MenuItemDelete
             // 
             this.MenuItemDelete.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.MenuItemDelete.Name = "MenuItemDelete";
             this.MenuItemDelete.ShortcutKeyDisplayString = "Del";
-            this.MenuItemDelete.Size = new System.Drawing.Size(198, 22);
+            this.MenuItemDelete.Size = new System.Drawing.Size(180, 22);
             this.MenuItemDelete.Text = "&Delete...";
             this.MenuItemDelete.Click += new System.EventHandler(this.ItemDelete_Click);
             // 
@@ -252,19 +215,19 @@
             // 
             this.MenuItemRename.Name = "MenuItemRename";
             this.MenuItemRename.ShortcutKeys = System.Windows.Forms.Keys.F2;
-            this.MenuItemRename.Size = new System.Drawing.Size(198, 22);
+            this.MenuItemRename.Size = new System.Drawing.Size(180, 22);
             this.MenuItemRename.Text = "&Rename...";
             this.MenuItemRename.Click += new System.EventHandler(this.ItemRename_Click);
             // 
             // MenuSepNew
             // 
             this.MenuSepNew.Name = "MenuSepNew";
-            this.MenuSepNew.Size = new System.Drawing.Size(195, 6);
+            this.MenuSepNew.Size = new System.Drawing.Size(177, 6);
             // 
             // MenuItemCreateDirectory
             // 
             this.MenuItemCreateDirectory.Name = "MenuItemCreateDirectory";
-            this.MenuItemCreateDirectory.Size = new System.Drawing.Size(198, 22);
+            this.MenuItemCreateDirectory.Size = new System.Drawing.Size(180, 22);
             this.MenuItemCreateDirectory.Text = "&Create directory...";
             this.MenuItemCreateDirectory.Click += new System.EventHandler(this.ItemCreateDirectory_Click);
             // 
@@ -360,7 +323,6 @@
         private System.Windows.Forms.ToolStripMenuItem MenuItemDelete;
         private System.Windows.Forms.ToolStripSeparator MenuSepOrganize;
         private System.Windows.Forms.ToolStripMenuItem MenuItemRename;
-        private System.Windows.Forms.ToolStripMenuItem MenuItemIncludeInProject;
         private System.Windows.Forms.ToolStripMenuItem MenuItemCreateDirectory;
         private System.Windows.Forms.ToolStripSeparator MenuSepNew;
         private System.Windows.Forms.ToolStripSeparator MenuSepEdit;
@@ -372,9 +334,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem MenuItemCancel;
         private System.Windows.Forms.ContextMenuStrip MenuCopyMove;
-        private System.Windows.Forms.ToolStripMenuItem MenuItemIncludeAll;
-        private System.Windows.Forms.ToolStripMenuItem MenuItemExcludeAll;
-        private System.Windows.Forms.ToolStripSeparator MenuSepExport;
         private System.Windows.Forms.ToolStripMenuItem MenuItemExportTo;
         private System.Windows.Forms.Panel PanelSearch;
         private Windows.UI.GorgonSearchBox TextSearch;

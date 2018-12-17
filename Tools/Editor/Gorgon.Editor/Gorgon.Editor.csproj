@@ -84,7 +84,6 @@
     <Compile Include="RecentItem.cs" />
     <Compile Include="RibbonMerger.cs" />
     <Compile Include="Services\ContentPluginService.cs" />
-    <Compile Include="Services\CopyDirectoryData.cs" />
     <Compile Include="Services\EditorFileSaveDialogService.cs" />
     <Compile Include="Services\EditorFileOpenDialogService.cs" />
     <Compile Include="Services\FileSystemProviders.cs" />
@@ -97,7 +96,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\GraphicsContext.cs" />
     <Compile Include="EditorSettings.cs" />
-    <Compile Include="Services\ImportArgs.cs" />
     <Compile Include="Services\UndoService.cs" />
     <Compile Include="Services\WorkspaceTester.cs" />
     <Compile Include="Services\_Interfaces\IContentPluginManagerService.cs" />
@@ -113,7 +111,6 @@
     <Compile Include="ViewModels\CreateNodeArgs.cs" />
     <Compile Include="ViewModels\DeleteNodeArgs.cs" />
     <Compile Include="ViewModels\FileExplorerRootNode.cs" />
-    <Compile Include="ViewModels\IncludeExcludeAllArgs.cs" />
     <Compile Include="ViewModels\UndoCommand.cs" />
     <Compile Include="ViewModels\FileExplorerFileNodeVm.cs" />
     <Compile Include="ViewModels\FileExplorerDirectoryNodeVm.cs" />
@@ -226,6 +223,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\rename_48x48.png" />
     <Content Include="TODO.txt" />
     <None Include="Resources\windo_deco_129x39.png" />
     <None Include="Resources\stage_save_as_48x48.png" />

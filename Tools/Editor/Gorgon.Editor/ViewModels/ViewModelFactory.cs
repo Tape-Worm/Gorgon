@@ -284,13 +284,14 @@ namespace Gorgon.Editor.ViewModels
                 Metadata = metaData
             });
 
-            parent.Children.Add(result);
             string fullPath = result.FullPath;
 
             if (result.Metadata == null)
             {
                 result.Metadata = project.ProjectItems.FirstOrDefault(item => string.Equals(item.Key, fullPath, StringComparison.OrdinalIgnoreCase)).Value;
             }
+
+            parent.Children.Add(result);
 
             return result;
         }
@@ -301,9 +302,7 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="project">The project data.</param>
         /// <param name="fileSystemService">The file system service used to manipulate the underlying physical file system.</param>
         /// <param name="parentNode">The parent for the node.</param>
-        /// <param name="metadataManager">The metadata manager to use.</param>
-        /// <param name="directory">The file system directory to wrap in the view model.</param>
-        /// <param name="rootDirectory">The root directory.</param>
+        /// <param name="orignalDir">The original directory to wrap in the view model.</param>
         /// <returns>The new file explorer node view model.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, <paramref name="fileSystemService"/>, <paramref name="parentNode"/>, or the <paramref name="directory"/> parameter is <b>null</b>.</exception>
         public IFileExplorerNodeVm CreateNewDirectoryNode(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parentNode)
@@ -358,16 +357,16 @@ namespace Gorgon.Editor.ViewModels
                 Parent = parentNode,
                 Children = children
             });
-
-            if (addToParent)
-            {
-                parentNode.Children.Add(result);
-            }
             
             string fullPath = result.FullPath;
             if (result.Metadata == null)
             {
                 result.Metadata = project.ProjectItems.FirstOrDefault(item => string.Equals(item.Key, fullPath, StringComparison.OrdinalIgnoreCase)).Value;
+            }
+
+            if (addToParent)
+            {
+                parentNode.Children.Add(result);
             }
 
             return result;
@@ -398,9 +397,8 @@ namespace Gorgon.Editor.ViewModels
 
             if (autoInclude)
             {
-                // We'll rebuild the include list because it should be empty at this point.
-                foreach (IFileExplorerNodeVm node in root.Children.Traverse(p => p.Children))
-                {                    
+                foreach (IFileExplorerNodeVm node in root.Children.Traverse(n => n.Children))
+                {
                     node.Metadata = new ProjectItemMetadata();
                 }
             }

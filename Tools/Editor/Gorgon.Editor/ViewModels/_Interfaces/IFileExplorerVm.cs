@@ -46,15 +46,6 @@ namespace Gorgon.Editor.ViewModels
 
         #region Properties.
         /// <summary>
-        /// Property to set or return whether to show excluded nodes or not.
-        /// </summary>
-        bool ShowExcluded
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Property to return the currently selected node for the file system.
         /// </summary>
         IFileExplorerNodeVm SelectedNode
@@ -74,22 +65,6 @@ namespace Gorgon.Editor.ViewModels
         /// Property to return the list of search results for a filtered node list.
         /// </summary>
         IReadOnlyList<IFileExplorerNodeVm> SearchResults
-        {
-            get;
-        }
-        
-        /// <summary>
-        /// Property to return the command to execute when including or excluding all nodes.
-        /// </summary>
-        IEditorCommand<IncludeExcludeArgs> IncludeExcludeAllCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command to execute when including or excluding a node.
-        /// </summary>
-        IEditorCommand<IncludeExcludeArgs> IncludeExcludeCommand
         {
             get;
         }

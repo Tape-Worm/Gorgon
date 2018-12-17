@@ -25,11 +25,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.ViewModels
@@ -100,6 +96,15 @@ namespace Gorgon.Editor.ViewModels
         /// Property to set or return the total size, in bytes, of the items to copy.
         /// </summary>
         public long? TotalSize
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the total number of bytes copied.
+        /// </summary>
+        public long BytesCopied
         {
             get;
             set;

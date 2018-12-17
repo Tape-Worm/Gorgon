@@ -63,23 +63,14 @@ namespace Gorgon.Editor
             this.ButtonFileSystemDeleteAll = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.kryptonRibbonGroupSeparator1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
             this.kryptonRibbonGroupTriple4 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
-            this.ButtonInclude = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.MenuInclude = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.MenuItemInclude = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuSepAll = new System.Windows.Forms.ToolStripSeparator();
-            this.MenuItemIncludeAll = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuItemExcludeAll = new System.Windows.Forms.ToolStripMenuItem();
-            this.kryptonRibbonGroupSeparator2 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
-            this.kryptonRibbonGroupLines1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
             this.ButtonFileSystemRename = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.CheckShowAllFiles = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.kryptonRibbonGroupLines1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
             this.ButtonExpand = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.ButtonCollapse = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.Stage = new Gorgon.Editor.Views.Stage();
             this.PanelProject = new Gorgon.Editor.Views.EditorProject();
             this.PanelWorkSpace = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.RibbonMain)).BeginInit();
-            this.MenuInclude.SuspendLayout();
             this.PanelWorkSpace.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -933,7 +924,6 @@ namespace Gorgon.Editor
             this.kryptonRibbonGroupTriple2,
             this.kryptonRibbonGroupSeparator1,
             this.kryptonRibbonGroupTriple4,
-            this.kryptonRibbonGroupSeparator2,
             this.kryptonRibbonGroupLines1});
             this.RibbonGroupFileSystemOrganize.KeyTipGroup = "O";
             this.RibbonGroupFileSystemOrganize.TextLine1 = "Organize";
@@ -968,69 +958,12 @@ namespace Gorgon.Editor
             // kryptonRibbonGroupTriple4
             // 
             this.kryptonRibbonGroupTriple4.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
-            this.ButtonInclude});
-            // 
-            // ButtonInclude
-            // 
-            this.ButtonInclude.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.Split;
-            this.ButtonInclude.ContextMenuStrip = this.MenuInclude;
-            this.ButtonInclude.Enabled = false;
-            this.ButtonInclude.ImageLarge = global::Gorgon.Editor.Properties.Resources.include_48x48;
-            this.ButtonInclude.KeyTip = "U";
-            this.ButtonInclude.TextLine1 = "Include";
-            this.ButtonInclude.ToolTipBody = "Include files and directories into the project";
-            this.ButtonInclude.Click += new System.EventHandler(this.ButtonInclude_Click);
-            // 
-            // MenuInclude
-            // 
-            this.MenuInclude.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.MenuInclude.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MenuItemInclude,
-            this.MenuSepAll,
-            this.MenuItemIncludeAll,
-            this.MenuItemExcludeAll});
-            this.MenuInclude.Name = "MenuInclude";
-            this.MenuInclude.Size = new System.Drawing.Size(130, 76);
-            // 
-            // MenuItemInclude
-            // 
-            this.MenuItemInclude.CheckOnClick = true;
-            this.MenuItemInclude.Name = "MenuItemInclude";
-            this.MenuItemInclude.Size = new System.Drawing.Size(129, 22);
-            this.MenuItemInclude.Text = "&Include";
-            this.MenuItemInclude.Click += new System.EventHandler(this.MenuItemInclude_Click);
-            // 
-            // MenuSepAll
-            // 
-            this.MenuSepAll.Name = "MenuSepAll";
-            this.MenuSepAll.Size = new System.Drawing.Size(126, 6);
-            // 
-            // MenuItemIncludeAll
-            // 
-            this.MenuItemIncludeAll.Name = "MenuItemIncludeAll";
-            this.MenuItemIncludeAll.Size = new System.Drawing.Size(129, 22);
-            this.MenuItemIncludeAll.Text = "Include &all";
-            this.MenuItemIncludeAll.Click += new System.EventHandler(this.MenuItemIncludeAll_Click);
-            // 
-            // MenuItemExcludeAll
-            // 
-            this.MenuItemExcludeAll.Name = "MenuItemExcludeAll";
-            this.MenuItemExcludeAll.Size = new System.Drawing.Size(129, 22);
-            this.MenuItemExcludeAll.Text = "E&xclude all";
-            this.MenuItemExcludeAll.Click += new System.EventHandler(this.MenuItemExcludeAll_Click);
-            // 
-            // kryptonRibbonGroupLines1
-            // 
-            this.kryptonRibbonGroupLines1.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
-            this.ButtonFileSystemRename,
-            this.CheckShowAllFiles,
-            this.ButtonExpand,
-            this.ButtonCollapse});
+            this.ButtonFileSystemRename});
             // 
             // ButtonFileSystemRename
             // 
             this.ButtonFileSystemRename.Enabled = false;
-            this.ButtonFileSystemRename.ImageLarge = global::Gorgon.Editor.Properties.Resources.rename_16x16;
+            this.ButtonFileSystemRename.ImageLarge = global::Gorgon.Editor.Properties.Resources.rename_48x48;
             this.ButtonFileSystemRename.ImageSmall = global::Gorgon.Editor.Properties.Resources.rename_16x16;
             this.ButtonFileSystemRename.KeyTip = "R";
             this.ButtonFileSystemRename.ShortcutKeys = System.Windows.Forms.Keys.F2;
@@ -1038,15 +971,11 @@ namespace Gorgon.Editor
             this.ButtonFileSystemRename.ToolTipBody = "Rename the selected file system item.";
             this.ButtonFileSystemRename.Click += new System.EventHandler(this.ButtonFileSystemRename_Click);
             // 
-            // CheckShowAllFiles
+            // kryptonRibbonGroupLines1
             // 
-            this.CheckShowAllFiles.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.Check;
-            this.CheckShowAllFiles.ImageLarge = global::Gorgon.Editor.Properties.Resources.show_external_48x48;
-            this.CheckShowAllFiles.ImageSmall = global::Gorgon.Editor.Properties.Resources.show_external_16x16;
-            this.CheckShowAllFiles.KeyTip = "S";
-            this.CheckShowAllFiles.TextLine1 = "Show all";
-            this.CheckShowAllFiles.ToolTipBody = "Show or hide the files/directories that are not included in the project.";
-            this.CheckShowAllFiles.Click += new System.EventHandler(this.CheckShowAllFiles_Click);
+            this.kryptonRibbonGroupLines1.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.ButtonExpand,
+            this.ButtonCollapse});
             // 
             // ButtonExpand
             // 
@@ -1126,7 +1055,6 @@ namespace Gorgon.Editor
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Activated += new System.EventHandler(this.FormMain_Activated);
             ((System.ComponentModel.ISupportInitialize)(this.RibbonMain)).EndInit();
-            this.MenuInclude.ResumeLayout(false);
             this.PanelWorkSpace.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -1144,11 +1072,9 @@ namespace Gorgon.Editor
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemNewDirectory;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup RibbonGroupFileSystemOrganize;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines1;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemRename;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple2;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemDelete;
         private Gorgon.UI.GorgonProgressScreenPanel ProgressScreen;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton CheckShowAllFiles;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonExpand;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonCollapse;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator1;
@@ -1159,14 +1085,6 @@ namespace Gorgon.Editor
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemCopy;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemCut;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemDeleteAll;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple4;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonInclude;
-        private System.Windows.Forms.ContextMenuStrip MenuInclude;
-        private System.Windows.Forms.ToolStripMenuItem MenuItemInclude;
-        private System.Windows.Forms.ToolStripSeparator MenuSepAll;
-        private System.Windows.Forms.ToolStripMenuItem MenuItemIncludeAll;
-        private System.Windows.Forms.ToolStripMenuItem MenuItemExcludeAll;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator2;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines3;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonImport;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonExport;
@@ -1175,6 +1093,8 @@ namespace Gorgon.Editor
         private Stage Stage;
         private EditorProject PanelProject;
         private System.Windows.Forms.Panel PanelWorkSpace;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple4;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemRename;
     }
 }
 

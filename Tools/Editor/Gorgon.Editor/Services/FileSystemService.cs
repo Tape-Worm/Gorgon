@@ -33,6 +33,7 @@ using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Editor.Native;
 using Gorgon.Editor.Properties;
+using Gorgon.Editor.ViewModels;
 using Gorgon.IO;
 using Gorgon.Math;
 
@@ -44,121 +45,6 @@ namespace Gorgon.Editor.Services
     internal class FileSystemService
         : IFileSystemService
     {
-        #region Classes.
-        /// <summary>
-        /// Arguments to pass the copy task.
-        /// </summary>
-        private class CopyTaskArgs
-        {
-            /// <summary>
-            /// Property to return the directory to use as the root of the copy operation.
-            /// </summary>
-            public DirectoryInfo RootDirectory
-            {
-                get;
-            }
-
-            /// <summary>
-            /// Property to set or return the destination for the copy operation.
-            /// </summary>
-            public DirectoryInfo Destination
-            {
-                get;
-                set;
-            }
-
-            /// <summary>
-            /// Property to return the total number of items to copy.
-            /// </summary>
-            public int TotalItemCount
-            {
-                get;
-            }
-
-            /// <summary>
-            /// Property to set or return the current item count.
-            /// </summary>
-            public int CurrentCount
-            {
-                get;
-                set;
-            }
-
-            /// <summary>
-            /// Property to set or return the previously selected conflict resolution option.
-            /// </summary>
-            public FileSystemConflictResolution ConflictResolution
-            {
-                get;
-                set;
-            } = FileSystemConflictResolution.Exception;
-
-            /// <summary>
-            /// Property to return the action to execute to report progress for the copy.
-            /// </summary>
-            public Action<FileSystemInfo, FileSystemInfo, int, int> OnCopyProgress
-            {
-                get;
-            }
-
-            /// <summary>
-            /// Property to return the function to execute to handle a file conflict.
-            /// </summary>
-            public Func<FileSystemInfo, FileSystemInfo, FileSystemConflictResolution> OnResolveConflict
-            {
-                get;
-            }
-
-            /// <summary>
-            /// Property to set or return a list of files to copy.
-            /// </summary>
-            public IReadOnlyList<FileInfo> Files
-            {
-                get;
-                set;
-            }
-
-            /// <summary>
-            /// Property to set or return a list of directories to copy.
-            /// </summary>
-            public IReadOnlyList<DirectoryInfo> Directories
-            {
-                get;
-                set;
-            }
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="CopyTaskArgs"/> class.
-            /// </summary>
-            /// <param name="importArguments">Arguments from an import process.</param>
-            /// <param name="totalItemCount">The number of items to copy.</param>
-            public CopyTaskArgs(ImportArgs importArguments, int totalItemCount)
-            {
-                TotalItemCount = totalItemCount;
-                RootDirectory = importArguments.ImportRoot;
-                Destination = importArguments.DestinationDirectory;
-                OnCopyProgress = importArguments.OnImportFile;
-                OnResolveConflict = importArguments.ConflictResolver;
-            }
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="CopyTaskArgs"/> class.
-            /// </summary>
-            /// <param name="root">The root for the source directory to copy.</param>
-            /// <param name="destDir">The dest directory to copy into.</param>
-            /// <param name="copyArguments">The copy arguments.</param>
-            /// <param name="totalItemCount">The total item count.</param>
-            public CopyTaskArgs(DirectoryInfo root, DirectoryInfo destDir, CopyDirectoryData copyArguments, int totalItemCount)
-            {
-                TotalItemCount = totalItemCount;
-                RootDirectory = root;
-                Destination = destDir;
-                OnCopyProgress = copyArguments.OnCopyProgress;
-                OnResolveConflict = copyArguments.OnResolveConflict;
-            }
-        }
-        #endregion
-
         #region Constants.
         // Flags used to recycle deleted files/directories.
         private const Shell32.FileOperationFlags RecycleFlags = Shell32.FileOperationFlags.FOF_SILENT | Shell32.FileOperationFlags.FOF_NOCONFIRMATION | Shell32.FileOperationFlags.FOF_WANTNUKEWARNING;
@@ -177,161 +63,6 @@ namespace Gorgon.Editor.Services
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function to asynchronously copy files to a destination
-        /// </summary>
-        /// <param name="args">The settings for the file copy operation.</param>
-        /// <param name="destination">The destination for the file/directory data.</param>
-        /// <param name="cancelToken">The token used to cancel the process.</param>
-        /// <returns><b>true</b> if the copy was successful, <b>false</b> if it was canceled.</returns>
-        private async Task<bool> CopyFilesAsync(CopyTaskArgs args, DirectoryInfo destination, CancellationToken cancelToken)
-        {
-            foreach (FileInfo file in args.Files.Where(item => ((item.Attributes & FileAttributes.System) != FileAttributes.System)
-                                                        && ((item.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden)))
-            {
-                if (cancelToken.IsCancellationRequested)
-                {
-                    return false;
-                }
-
-                string newPath = Path.Combine(destination.FullName, file.Name);
-
-                var newFile = new FileInfo(newPath);
-
-                // If the file exists, then we need to resolve this conflict.
-                if (newFile.Exists)
-                {
-                    if ((newFile.Attributes & FileAttributes.Directory) == FileAttributes.Directory)
-                    {
-                        // Automatically rename if we have the same path as a directory. We cannot overwrite a directory with a file.
-                        args.ConflictResolution = FileSystemConflictResolution.Rename;
-                    }
-                    else
-                    {
-                        if ((args.ConflictResolution != FileSystemConflictResolution.OverwriteAll) && (args.ConflictResolution != FileSystemConflictResolution.RenameAll))
-                        {
-                            args.ConflictResolution = args.OnResolveConflict?.Invoke(file, newFile.Directory) ?? FileSystemConflictResolution.Exception;
-                        }
-                    }
-
-                    switch (args.ConflictResolution)
-                    {
-                        case FileSystemConflictResolution.Overwrite:
-                        case FileSystemConflictResolution.OverwriteAll:
-                            break;
-                        case FileSystemConflictResolution.Rename:
-                        case FileSystemConflictResolution.RenameAll:
-                            newFile = new FileInfo(Path.Combine(newFile.DirectoryName, GenerateFileName(newFile.FullName)));
-                            break;
-                        case FileSystemConflictResolution.Cancel:
-                            return false;
-                        default:
-                            throw new GorgonException(GorgonResult.CannotWrite, string.Format(Resources.GOREDIT_ERR_CANNOT_COPY_DUPE, file.FullName));
-                    }
-                }
-
-                args.OnCopyProgress?.Invoke(file, newFile, args.CurrentCount, args.TotalItemCount);
-
-                await Task.Run(() =>
-                {
-                    // This file already exists
-                    if (newFile.Exists)
-                    {
-                        // Just touch the file in this case, to make it appear as though we've overwritten it.
-                        newFile.LastWriteTime = DateTime.Now;
-                        newFile.Refresh();
-                        return;
-                    }
-
-                    file.CopyTo(newFile.FullName, true);
-                    newFile.Refresh();
-                }, cancelToken);
-
-                args.OnCopyProgress?.Invoke(file, newFile, ++args.CurrentCount, args.TotalItemCount);
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Function to create the task used to copy file/directory data from one place to another.
-        /// </summary>
-        /// <param name="args">The arguments used to copy.</param>
-        /// <param name="cancelToken">The token used to cancel the process.</param>
-        /// <returns><b>true</b> if the items were copied, <b>false</b> if not.</returns>
-        private async Task<bool> CreateCopyTask(CopyTaskArgs args, CancellationToken cancelToken)
-        {
-            if ((cancelToken.IsCancellationRequested)
-                || (args.Directories.Count == 0))
-            {
-                return false;
-            }
-
-            bool result = false;
-
-            foreach (DirectoryInfo directory in args.Directories.OrderBy(item => item.FullName.Length))
-            {
-                args.Files = directory.GetFiles("*", SearchOption.TopDirectoryOnly)
-                                      .Where(item => (item.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden
-                                                  && (item.Attributes & FileAttributes.System) != FileAttributes.System)
-                                      .ToArray();
-                DirectoryInfo subDir;
-
-                if (cancelToken.IsCancellationRequested)
-                {
-                    return false;
-                }
-
-                // If we're copying the root of the file system, do not replicate the directory.
-                if (!string.Equals(RootDirectory.FullName.FormatDirectory(Path.DirectorySeparatorChar), directory.FullName.FormatDirectory(Path.DirectorySeparatorChar)))                    
-                {
-                    string newDirPath;
-
-                    // If the source is rooted in the file system, then remap to the new path.
-                    newDirPath = RemapDirectory(directory, args.Destination, args.RootDirectory);
-                    subDir = new DirectoryInfo(newDirPath);
-
-                    args.OnCopyProgress?.Invoke(directory, subDir, args.CurrentCount, args.TotalItemCount);
-
-                    if (!subDir.Exists)
-                    {
-                        subDir.Create();
-                        subDir.Refresh();
-                    }
-                    else
-                    {
-                        // If there's a file in our way, then rename our directory.
-                        while ((subDir.Attributes & FileAttributes.Directory) != FileAttributes.Directory)
-                        {
-                            subDir = new DirectoryInfo(Path.Combine(subDir.Parent.FullName, GenerateDirectoryName(subDir.FullName)));
-
-                            if (!subDir.Exists)
-                            {
-                                subDir.Create();
-                                subDir.Refresh();
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    subDir = args.Destination;
-                }
-
-                ++args.CurrentCount;
-
-                // Give the user a fighting chance to cancel the operation.
-                await Task.Delay(16);
-
-                result = await CopyFilesAsync(args, subDir, cancelToken);
-            }
-
-            // Wait for 500 milliseconds at the end so the animation for the progress bar can actually finish (otherwise the bar never completes).
-            await Task.Delay(500);
-
-            return result;
-        }
-
         /// <summary>
         /// Function used to clean up a directory if an operation is cancelled, or an error occurs.
         /// </summary>
@@ -366,67 +97,6 @@ namespace Gorgon.Editor.Services
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Function to copy a directory, and all of its child items to the specified path.
-        /// </summary>
-        /// <param name="importSettings">The importer settings.</param>
-        /// <param name="sourceDirs">The source directories to import.</param>
-        /// <param name="sourceFiles">The source files to import.</param>
-        /// <param name="cancelToken">The token used to cancel the process.</param>
-        /// <returns><b>true</b> if the copy was successful, <b>false</b> if it was canceled.</returns>
-        private async Task<bool> CreateImportCopyTask(ImportArgs importSettings, IReadOnlyList<DirectoryInfo> sourceDirs, IReadOnlyList<FileInfo> sourceFiles, CancellationToken cancelToken)
-        {
-            var directories = new List<DirectoryInfo>();
-            int totalItemCount = sourceDirs.Count + sourceFiles.Count;
-
-            foreach (DirectoryInfo subDir in sourceDirs)
-            {
-                directories.Add(subDir);
-
-                IReadOnlyList<DirectoryInfo> childDirs = subDir.GetDirectories("*", SearchOption.AllDirectories)
-                                                        .Where(item => ((item.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden)
-                                                                    && ((item.Attributes & FileAttributes.System) != FileAttributes.System))
-                                                        .ToArray();
-                directories.AddRange(childDirs);
-
-                // For progress, we'll need to get the total number of files.
-                totalItemCount += childDirs.Count + subDir.GetFiles("*", SearchOption.AllDirectories)
-                                                        .Where(item => ((item.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden)
-                                                                    && ((item.Attributes & FileAttributes.System) != FileAttributes.System))
-                                                        .Count();
-            }
-
-            // Copy all sub-directories and files.
-            var directoryCopyArgs = new CopyTaskArgs(importSettings, totalItemCount)
-            {
-                Directories = directories                
-            };
-
-            var fileCopyArgs = new CopyTaskArgs(importSettings, totalItemCount)
-            {
-                Files = sourceFiles
-            };
-
-            bool result;
-
-            if (directoryCopyArgs.Directories.Count > 0)
-            {
-                result = await CreateCopyTask(directoryCopyArgs, cancelToken);
-
-                if (!result)
-                {
-                    return false;
-                }
-            }
-
-            fileCopyArgs.CurrentCount = directoryCopyArgs.CurrentCount;
-            fileCopyArgs.ConflictResolution = directoryCopyArgs.ConflictResolution;
-
-            result = await CopyFilesAsync(fileCopyArgs, importSettings.DestinationDirectory, cancelToken);
-
-            return result;
         }
 
         /// <summary>
@@ -605,7 +275,7 @@ namespace Gorgon.Editor.Services
 
                 if (!string.IsNullOrWhiteSpace(file.Extension))
                 {
-                    newPath = Path.ChangeExtension(newPath, file.Extension);
+                    newPath = newPath + file.Extension;
                 }
 
                 file = new FileInfo(newPath);
@@ -812,7 +482,7 @@ namespace Gorgon.Editor.Services
             // Send the file to the recycle bin.
             if (!Shell32.SendToRecycleBin(filePath.FullName, RecycleFlags))
             {
-                throw new IOException(string.Format(Resources.GOREDIT_ERR_DELETE, filePath));
+                throw new IOException(string.Format(Resources.GOREDIT_ERR_DELETE, filePath.Name));
             }
         }
 
@@ -881,57 +551,6 @@ namespace Gorgon.Editor.Services
         }
 
         /// <summary>
-        /// Function to import the specified paths into a virtual file system location.
-        /// </summary>
-        /// <param name="importSettings">The import settings.</param>
-        /// <param name="cancelToken">A token used to cancel the operation.</param>
-        /// <returns><b>true</b> if the operation was completed successfully, <b>false</b> if not.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="importSettings"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="DirectoryNotFoundException">Thrown when the <see cref="ImportArgs.ImportRootPath"/> does not exist.</exception>
-        /// <remarks>
-        /// <para>
-        /// This method copies the file (and directory) data for a list of physical file system paths to a virtual file system physical location.
-        /// </para>
-        /// </remarks>
-        public Task<bool> ImportIntoDirectoryAsync(ImportArgs importSettings, CancellationToken cancelToken)
-        {
-            if (importSettings == null)
-            {
-                throw new ArgumentNullException(nameof(importSettings));
-            }
-
-            CheckRootOfPath(importSettings.DestinationDirectory);
-
-            if (!importSettings.ImportRoot.Exists)
-            {
-                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, importSettings.ImportRoot.FullName));
-            }
-
-            if (importSettings.Items.Count == 0)
-            {
-                return Task.FromResult(true);
-            }
-
-            var subDirs = new List<DirectoryInfo>();
-            var files = new List<FileInfo>();
-
-            // Gather the file system information objects for each path.
-            foreach (string path in importSettings.Items.Where(item => !string.IsNullOrWhiteSpace(item)))
-            {
-                if (Directory.Exists(path))
-                {
-                    subDirs.Add(new DirectoryInfo(path));
-                }
-                else if (File.Exists(path))
-                {
-                    files.Add(new FileInfo(path));
-                }
-            }
-                       
-            return CreateImportCopyTask(importSettings, subDirs, files, cancelToken);            
-        }
-
-        /// <summary>
         /// Function to export a file to a directory on the physical file system.
         /// </summary>
         /// <param name="filePath">The path to the file.</param>
@@ -961,7 +580,7 @@ namespace Gorgon.Editor.Services
             
             if (!destPath.Directory.Exists)
             {
-                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, destPath.Directory.FullName));
+                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, destPath.Directory.Name));
             }
 
             CheckRootOfPath(filePath.Directory);
@@ -977,6 +596,11 @@ namespace Gorgon.Editor.Services
         /// <param name="progressCallback">The method that reports the file copy progress back.</param>
         /// <param name="cancelToken">The token used to cancel the operation.</param>
         /// <param name="writeBuffer">The buffer used to write out the file in chunks.</param>
+        /// <remarks>
+        /// <para>
+        /// This performs a block copy of a file from one location to another. These locations can be anywhere on the physical file system(s) and are not checked.  
+        /// </para>
+        /// </remarks>
         private void BlockCopyFile(FileInfo filePath, FileInfo destFile, Action<long, long> progressCallback, CancellationToken cancelToken, byte[] writeBuffer)
         {
             long fileSize = filePath.Length;
@@ -1060,7 +684,7 @@ namespace Gorgon.Editor.Services
 
             if (!filePath.Exists)
             {
-                throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, filePath));
+                throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, filePath.Name));
             }
 
             if (!destFile.Directory.Exists)
@@ -1103,12 +727,12 @@ namespace Gorgon.Editor.Services
 
             if (!directoryPath.Exists)
             {
-                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, directoryPath));
+                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, directoryPath.Name));
             }
 
             if (!dest.Parent.Exists)
             {
-                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, dest.Parent.FullName));
+                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, dest.Parent.Name));
             }
 
             // If we're moving to the same place, then we cannot proceed.
@@ -1166,12 +790,12 @@ namespace Gorgon.Editor.Services
 
             if (!filePath.Exists)
             {
-                throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, filePath.FullName));
+                throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, filePath.Name));
             }
 
             if (!destFile.Directory.Exists)
             {
-                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, destFile.FullName));
+                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, destFile.Name));
             }
 
             // If we're moving to the same place, then we don't need to do anything.
@@ -1218,6 +842,49 @@ namespace Gorgon.Editor.Services
                     Shell32.SendToRecycleBin(dir.FullName, RecycleFlags);
                 }                
             }
+        }
+
+        /// <summary>
+        /// Function to import a file from the external physical file system.
+        /// </summary>
+        /// <param name="file">The file being imported.</param>
+        /// <param name="dest">The destination for the imported file.</param>
+        /// <param name="importProgress">The method used to report the progress of the import.</param>
+        /// <param name="cancelToken">The token used to cancel the operation.</param>
+        /// <param name="writeBuffer">[Optional] The buffer used to copy the file in blocks.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/>, <paramref name="dest"/>, or the <paramref name="importProgress"/> parameter is <b>null</b></exception>
+        /// <exception cref="DirectoryNotFoundException">Thrown when the directory in the <paramref name="dest"/> does not exist.</exception>
+        /// <exception cref="GorgonException">Thrown when the directory in the <paramref name="dest"/> parameter is not under the file system root.</exception>
+        public void ImportFile(FileInfo file, FileInfo dest, Action<long, long> importProgress, CancellationToken cancelToken, byte[] writeBuffer = null)
+        {
+            if (file == null)
+            {
+                throw new ArgumentNullException(nameof(file));
+            }
+
+            if (dest == null)
+            {
+                throw new ArgumentNullException(nameof(dest));
+            }
+
+            if (importProgress == null)
+            {
+                throw new ArgumentNullException(nameof(importProgress));
+            }
+
+            CheckRootOfPath(dest.Directory);
+
+            if (!file.Exists)
+            {
+                throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, file.Name));
+            }
+
+            if (!dest.Directory.Exists)
+            {
+                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, dest.Directory.Name));
+            }                        
+
+            BlockCopyFile(file, dest, importProgress, cancelToken, writeBuffer);
         }
         #endregion
 

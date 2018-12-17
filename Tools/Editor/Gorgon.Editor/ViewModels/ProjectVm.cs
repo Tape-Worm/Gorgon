@@ -193,25 +193,6 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to set or return whether to show external items that are not included in the project file system.
-        /// </summary>
-        public bool ShowExternalItems
-        {
-            get => FileExplorer.ShowExcluded;
-            set
-            {
-                if (FileExplorer.ShowExcluded == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                FileExplorer.ShowExcluded = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
         /// Property to set or return the file explorer view model for use with the file explorer subview.
         /// </summary>
         public IFileExplorerVm FileExplorer

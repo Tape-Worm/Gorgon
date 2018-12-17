@@ -86,8 +86,6 @@ namespace Gorgon.Editor.Views
         private Color _dragForeColor;
         // The drag data for dropping files from explorer.
         private ExplorerFileDragData _explorerDragData;
-        // Flag to show excluded items.
-        private bool _showExcluded;
         // The nodes returned from a search.
         private IReadOnlyList<IFileExplorerNodeVm> _searchNodes;
         #endregion
@@ -210,10 +208,9 @@ namespace Gorgon.Editor.Views
         /// Function to add a new node to the tree.
         /// </summary>
         /// <param name="newNode">The new node to add.</param>
-        /// <param name="autoExpand"><b>true</b> to auto expand the parent node, <b>false</b> to leave it alone.</param>
-        private void AddNode(IFileExplorerNodeVm newNode, bool autoExpand = true)
+        private void AddNode(IFileExplorerNodeVm newNode)
         {
-            if ((!newNode.Visible) || ((!_showExcluded) && (newNode.Metadata == null)))
+            if (!newNode.Visible)
             {
                 return;
             }
@@ -253,15 +250,9 @@ namespace Gorgon.Editor.Views
                 parentTreeNode.Nodes.Add(new KryptonTreeNode("DUMMY_NODE_SHOULD_NOT_SEE_ME"));
             }
 
-            // This will fill the parent node with children and update our linkages.
-            if (!autoExpand)
-            {
-                return;
-            }
-
             if (!parentTreeNode.IsExpanded)
             {
-                parentTreeNode.Expand();
+                return;
             }            
 
             if (!_revNodeLinks.TryGetValue(newNode, out newTreeNode))
@@ -287,6 +278,8 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
+            nodes.CollectionChanged -= Nodes_CollectionChanged;
+
             if ((node != null) && (_revNodeLinks.TryGetValue(node, out KryptonTreeNode treeNode)))
             {
                 SelectNode(treeNode);
@@ -297,15 +290,34 @@ namespace Gorgon.Editor.Views
                     // Thus, there is no need for us to manually clean up here.
                     treeNode.Collapse();
                 }
+                else
+                {
+                    // Otherwise, if the node is collapsed, then just reassign the event.
+                    nodes.CollectionChanged += Nodes_CollectionChanged;
+                }
 
                 treeNode.Nodes.Clear();
             }
             else
-            {                
-                UnassignNodeEvents(DataContext.RootNode.Children);                
+            {
+                // Ensure all nodes are unassigned from event handlers.
+                // We do this because the node list is cleared at this point, and the only copy of remaining visible nodes 
+                // is stored in the cache.  If we do not do this, we end up with phantom events until the objects are 
+                // garbage collected.
+                foreach (IFileExplorerNodeVm cachedNode in _revNodeLinks.Keys)
+                {
+                    UnassignNodeEvents(cachedNode.Children);
+
+                    if (cachedNode != DataContext.RootNode)
+                    {
+                        cachedNode.PropertyChanged -= Node_PropertyChanged;
+                    }                    
+                }
+
                 _revNodeLinks.Clear();
                 _nodeLinks.Clear();
                 TreeFileSystem.Nodes.Clear();
+                
                 AssignNodeEvents(DataContext.RootNode.Children);
             }
 
@@ -368,23 +380,11 @@ namespace Gorgon.Editor.Views
                     }
                     break;
                 case nameof(IFileExplorerNodeVm.Metadata):
-                    if ((_showExcluded) || (node.Metadata != null))
+                    // If the tree node is present, then we just recolor it.
+                    if (treeNode != null)
                     {
-                        // If the tree node is present, then we just recolor it.
-                        if (treeNode != null)
-                        {
-                            UpdateNodeVisualState(treeNode, node);
-                            break;
-                        }
-
-                        AddNode(node, false);
+                        UpdateNodeVisualState(treeNode, node);
                         break;
-                    }
-
-                    // Turn off the node in question.
-                    if (node.Metadata == null)
-                    {
-                        RemoveNode(node);
                     }
                     break;
                 case nameof(IFileExplorerNodeVm.Visible):
@@ -512,65 +512,6 @@ namespace Gorgon.Editor.Views
 
             DataContext.ExportNodeToCommand.Execute(selectedNode);
 
-        }
-
-        /// <summary>
-        /// Handles the Click event of the MenuItemIncludeAll control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void MenuItemIncludeAll_Click(object sender, EventArgs e)
-        {
-            var args = new IncludeExcludeArgs(DataContext.RootNode, true);
-
-            if ((DataContext?.IncludeExcludeAllCommand == null)
-                || (!DataContext.IncludeExcludeAllCommand.CanExecute(args)))
-            {
-                return;
-            }
-
-            DataContext.IncludeExcludeAllCommand.Execute(args);
-        }
-
-        /// <summary>
-        /// Handles the Click event of the MenuItemExcludeAll control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void MenuItemExcludeAll_Click(object sender, EventArgs e)
-        {
-            var args = new IncludeExcludeArgs(DataContext.RootNode, false);
-
-            if ((DataContext?.IncludeExcludeAllCommand == null)
-                || (!DataContext.IncludeExcludeAllCommand.CanExecute(args)))
-            {
-                return;
-            }
-
-            DataContext.IncludeExcludeAllCommand.Execute(args);
-        }
-
-        /// <summary>
-        /// Handles the Click event of the ItemIncludeInProject control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ItemIncludeInProject_Click(object sender, EventArgs e)
-        {
-            if (DataContext?.SelectedNode == null)
-            {
-                return;
-            }
-
-            var args = new IncludeExcludeArgs(DataContext.SelectedNode, MenuItemIncludeInProject.Checked);
-
-            if ((DataContext?.IncludeExcludeCommand == null)
-                || (!DataContext.IncludeExcludeCommand.CanExecute(args)))
-            {
-                return;
-            }
-
-            DataContext.IncludeExcludeCommand.Execute(args);
         }
 
         /// <summary>
@@ -771,11 +712,7 @@ namespace Gorgon.Editor.Views
 
             if (dataContext.SelectedNode == null)
             {
-                MenuSepExport.Available = MenuItemExportTo.Available = dataContext.SearchResults == null;
-                MenuItemIncludeAll.Available = true;
-                MenuItemIncludeAll.Enabled = dataContext.IncludeExcludeAllCommand?.CanExecute(new IncludeExcludeArgs(dataContext.RootNode, true)) ?? false;
-                MenuItemExcludeAll.Available = true;
-                MenuItemExcludeAll.Enabled = dataContext.IncludeExcludeAllCommand?.CanExecute(new IncludeExcludeArgs(dataContext.RootNode, false)) ?? false;
+                MenuItemExportTo.Available = dataContext.SearchResults == null;
                 MenuItemCopy.Available = false;
                 MenuItemCut.Available = false;
                 MenuSepEdit.Available = MenuItemPaste.Available = _clipboardContext?.CanPaste() ?? false;
@@ -784,20 +721,13 @@ namespace Gorgon.Editor.Views
                 MenuSepNew.Available = MenuItemCreateDirectory.Available = dataContext?.CreateNodeCommand?.CanExecute(null) ?? false;                
                 MenuItemDelete.Available = false;
                 MenuItemRename.Available = false;
-                MenuItemIncludeInProject.Available = false;
                 
                 return;
             }
 
-            MenuItemIncludeAll.Available = false;
-            MenuItemIncludeAll.Enabled = false;
-            MenuItemExcludeAll.Available = false;
-            MenuItemExcludeAll.Enabled = false;
             MenuSepEdit.Available = (_clipboardContext != null) && ((_clipboardContext.CanPaste()) || (_clipboardContext.CanCut()) || (_clipboardContext.CanCopy()));
             MenuSepOrganize.Available = true;
             MenuItemRename.Available = true;
-            MenuItemIncludeInProject.Available = true;
-            MenuSepExport.Available = true;
             MenuItemExportTo.Available = true;
 
             MenuItemCopy.Available = _clipboardContext?.CanCopy() ?? false;
@@ -807,7 +737,6 @@ namespace Gorgon.Editor.Views
 
             MenuItemCreateDirectory.Available = dataContext.CreateNodeCommand?.CanExecute(null) ?? false;
             MenuItemDelete.Available = dataContext.DeleteNodeCommand?.CanExecute(null) ?? false;
-            MenuItemIncludeInProject.Checked = dataContext.SelectedNode.Metadata != null;
 
             MenuSepNew.Visible = MenuItemCreateDirectory.Available;
         }
@@ -862,24 +791,7 @@ namespace Gorgon.Editor.Views
 
             IFileExplorerNodeVm currentNode = DataContext.SelectedNode ?? DataContext.RootNode;
 
-            // Do not rebuild the tree while importing, that's way too slow.
-            TreeFileSystem.BeforeExpand -= TreeFileSystem_BeforeExpand;
-            TreeFileSystem.AfterSelect -= TreeFileSystem_AfterSelect;
-#warning This is suspect.
-            DataContext.RootNode.Children.CollectionChanged -= Nodes_CollectionChanged;
-
-            try
-            {
-                await DataContext.ImportIntoNodeCommand.ExecuteAsync(currentNode);
-            }
-            finally
-            {
-                TreeFileSystem.BeforeExpand += TreeFileSystem_BeforeExpand;
-                TreeFileSystem.AfterSelect += TreeFileSystem_AfterSelect;
-                DataContext.RootNode.Children.CollectionChanged += Nodes_CollectionChanged;
-            }
-
-            RefreshTreeBranch(false);
+            await DataContext.ImportIntoNodeCommand.ExecuteAsync(currentNode);
         }
 
         /// <summary>
@@ -907,29 +819,7 @@ namespace Gorgon.Editor.Views
 
             SelectNode(_explorerDragData.TargetTreeNode);
 
-            // Do not rebuild the tree while importing, that's way too slow.
-            TreeFileSystem.BeforeExpand -= TreeFileSystem_BeforeExpand;
-            TreeFileSystem.AfterSelect -= TreeFileSystem_AfterSelect;
-            if (DataContext != null)
-            {
-                DataContext.RootNode.Children.CollectionChanged -= Nodes_CollectionChanged;
-            }
-
-            void AfterDrop()
-            {
-                TreeFileSystem.BeforeExpand += TreeFileSystem_BeforeExpand;
-                TreeFileSystem.AfterSelect += TreeFileSystem_AfterSelect;
-
-                if (DataContext != null)
-                {
-                    DataContext.RootNode.Children.CollectionChanged += Nodes_CollectionChanged;
-                }
-
-                SelectNode(_explorerDragData.TargetTreeNode);
-                RefreshTreeBranch(false);
-            }
-
-            _explorerDragDropHandler.Drop(_explorerDragData, AfterDrop);
+            _explorerDragDropHandler.Drop(_explorerDragData);
         }
 
         /// <summary>
@@ -1506,9 +1396,6 @@ namespace Gorgon.Editor.Views
                     _searchNodes = DataContext.SearchResults;
                     FillTree(TreeFileSystem.Nodes, DataContext.RootNode.Children, true);
                     break;
-                case nameof(IFileExplorerVm.ShowExcluded):
-                    ShowExcludedNodes(DataContext.ShowExcluded);
-                    break;
                 case nameof(IFileExplorerVm.SelectedNode):
                     if (DataContext.SelectedNode != null)
                     {
@@ -1768,7 +1655,7 @@ namespace Gorgon.Editor.Views
                 // Sort the nodes by type and then by name (I knew that NodeType enum would come in handy one day).
                 foreach (IFileExplorerNodeVm node in nodeList)
                 {
-                    if ((!node.Visible) || ((!_showExcluded) && (node.Metadata == null)))
+                    if (!node.Visible)
                     {
                         continue;
                     }
@@ -1820,46 +1707,6 @@ namespace Gorgon.Editor.Views
         }
 
         /// <summary>
-        /// Function to re-fill the tree with excluded and included tree nodes.
-        /// </summary>
-        /// <param name="showExcluded"><b>true</b> to show excluded items, <b>false</b> to hide excluded items.</param>
-        private void ShowExcludedNodes(bool showExcluded)
-        {
-            _showExcluded = showExcluded;
-            TreeFileSystem.BeforeExpand -= TreeFileSystem_BeforeExpand;
-            TreeFileSystem.AfterCollapse -= TreeFileSystem_AfterCollapse;
-            TreeFileSystem.AfterSelect -= TreeFileSystem_AfterSelect;
-
-            try
-            {
-                SelectNode(null);
-
-                UnassignNodeEvents(DataContext?.RootNode?.Children);
-
-                TreeFileSystem.Nodes.Clear();
-                _nodeLinks.Clear();
-                _revNodeLinks.Clear();
-
-                if (DataContext?.RootNode == null)
-                {
-                    return;
-                }
-
-                FillTree(TreeFileSystem.Nodes, DataContext.RootNode.Children, true);
-
-                AssignNodeEvents(DataContext.RootNode.Children);
-            }
-            finally
-            {
-                TreeFileSystem.BeforeExpand += TreeFileSystem_BeforeExpand;
-                TreeFileSystem.AfterCollapse += TreeFileSystem_AfterCollapse;
-                TreeFileSystem.AfterSelect += TreeFileSystem_AfterSelect;
-
-                ValidateMenuItems(DataContext);
-            }
-        }
-
-        /// <summary>
         /// Function to reset the view back to its original state when the data context is reset.
         /// </summary>
         private void ResetDataContext()
@@ -1868,7 +1715,6 @@ namespace Gorgon.Editor.Views
             _clipboardContext = null;
             _nodeDragDropHandler = null;
             _explorerDragDropHandler = null;
-            _showExcluded = false;
 
             _nodeLinks.Clear();
             _revNodeLinks.Clear();
@@ -1968,7 +1814,6 @@ namespace Gorgon.Editor.Views
 
                 // We do not add the root node (really no point).
                 _searchNodes = dataContext.SearchResults;
-                _showExcluded = dataContext.ShowExcluded;
                 FillTree(TreeFileSystem.Nodes, dataContext.RootNode.Children, false);
 
                 AssignNodeEvents(dataContext.RootNode.Children);
@@ -2011,21 +1856,6 @@ namespace Gorgon.Editor.Views
 
             DataContext?.OnLoad();
         }
-
-        /// <summary>
-        /// Function to include all items in the project.
-        /// </summary>
-        public void IncludeAll() => MenuItemIncludeAll.PerformClick();
-
-        /// <summary>
-        /// Function to include or exclude a specific item in the project.
-        /// </summary>
-        public void IncludeOrExcludeItem() => MenuItemIncludeInProject.PerformClick();
-
-        /// <summary>
-        /// Function to exclude all items in the project.
-        /// </summary>
-        public void ExcludeAll() => MenuItemExcludeAll.PerformClick();
 
         /// <summary>
         /// Function to expand the currently selected file system node.

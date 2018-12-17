@@ -251,7 +251,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to export the contents of this node to the physical file system.
         /// </summary>
-        /// <param name="exportNodeData">The parameters ued for exporting the node.</param>
+        /// <param name="exportNodeData">The parameters used for exporting the node.</param>
         /// <returns>A task for asynchronous operation.</returns>
         Task ExportAsync(ExportNodeData exportNodeData);
 

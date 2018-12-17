@@ -1061,6 +1061,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Importing....
+        /// </summary>
+        internal static string GOREDIT_TEXT_IMPORTING {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_IMPORTING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Initializing....
         /// </summary>
         internal static string GOREDIT_TEXT_INITIALIZING {
@@ -1429,6 +1438,16 @@ namespace Gorgon.Editor.Properties {
         internal static System.Drawing.Bitmap rename_16x16 {
             get {
                 object obj = ResourceManager.GetObject("rename_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap rename_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("rename_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
