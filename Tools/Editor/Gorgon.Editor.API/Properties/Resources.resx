@@ -194,4 +194,7 @@ Some changes may not have been saved.</value>
 
 This content will now close in order to avoid corrupting the file.</value>
   </data>
+  <data name="GOREDIT_ERR_NO_CONTENT_IMPORTER_FROM_PLUGIN" xml:space="preserve">
+    <value>The plug in '{0}' did not produce any importers.</value>
+  </data>
 </root>

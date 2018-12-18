@@ -59,6 +59,9 @@
     <Compile Include="FormRibbon.Designer.cs">
       <DependentUpon>FormRibbon.cs</DependentUpon>
     </Compile>
+    <Compile Include="ImageImporterSettings.cs" />
+    <Compile Include="ImageImporterPlugin.cs" />
+    <Compile Include="Services\DdsImageImporter.cs" />
     <Compile Include="TexConvCompressor.cs" />
     <Compile Include="ViewModels\ImageContentParameters.cs" />
     <Compile Include="ImageEditorCommonConstants.cs" />

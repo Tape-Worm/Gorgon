@@ -20,27 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: October 29, 2018 1:04:03 PM
+// Created: December 17, 2018 10:06:21 PM
 // 
 #endregion
 
 using System.Collections.Generic;
 using Gorgon.Editor.Plugins;
-using Gorgon.Plugins;
 
 namespace Gorgon.Editor.Services
 {
     /// <summary>
-    /// Provides access to the various content specific plugins in the application.
+    /// The service used to manage content import plugins.
     /// </summary>
-    public interface IContentPluginService        
+    public interface IContentImporterPluginService
         : IDisabledPluginService
     {
         #region Properties.
         /// <summary>
         /// Property to return the list of content plugins loaded in to the application.
         /// </summary>
-        IReadOnlyDictionary<string, ContentPlugin> Plugins
+        IReadOnlyDictionary<string, ContentImportPlugin> Plugins
         {
             get;
         }
@@ -48,7 +47,7 @@ namespace Gorgon.Editor.Services
 
         #region Methods.
         /// <summary>
-        /// Funcion to read the settings for a content plug in from a JSON file.
+        /// Function to read the settings for a content importer plug in from a JSON file.
         /// </summary>
         /// <typeparam name="T">The type of settings to read. Must be a reference type.</typeparam>
         /// <param name="plugin">The plug in that owns the settings being read.</param>
@@ -58,10 +57,10 @@ namespace Gorgon.Editor.Services
         /// This will read in the settings for a content plug from the same location where the editor stores its application settings file.
         /// </para>
         /// </remarks>
-        T ReadContentSettings<T>(ContentPlugin plugin) where T : class;
+        T ReadContentSettings<T>(ContentImportPlugin plugin) where T : class;
 
         /// <summary>
-        /// Function to write out the settings for a content plug in as a JSON file.
+        /// Function to write out the settings for a content importer plug in as a JSON file.
         /// </summary>
         /// <typeparam name="T">The type of settings to write. Must be a reference type.</typeparam>
         /// <param name="plugin">The plug in that owns the settings being written.</param>
@@ -71,7 +70,7 @@ namespace Gorgon.Editor.Services
         /// This will write out the settings for a content plug in to the same location where the editor stores its application settings file.
         /// </para>
         /// </remarks>
-        void WriteContentSettings<T>(ContentPlugin plugin, T contentSettings) where T : class;
+        void WriteContentSettings<T>(ContentImportPlugin plugin, T contentSettings) where T : class;
         #endregion
     }
 }

@@ -75,6 +75,8 @@ namespace Gorgon.Editor
         private DirectoryLocateService _dirLocator;
         // The plugin service used to manage content plugins.
         private ContentPluginService _contentPlugins;
+        // The plugin service used to manage content import plugins.
+        private ContentImporterPluginService _contentImporterPlugins;
         // Provides undo functionality to the application.
         private UndoService _undoService;
         #endregion
@@ -90,11 +92,13 @@ namespace Gorgon.Editor
         protected override void Dispose(bool disposing)
         {
             ContentPluginService contentPlugins = Interlocked.Exchange(ref _contentPlugins, null);
+            ContentImporterPluginService contentImporterPlugins = Interlocked.Exchange(ref _contentImporterPlugins, null);
             GraphicsContext context = Interlocked.Exchange(ref _graphicsContext, null);
             GorgonMefPluginCache pluginCache = Interlocked.Exchange(ref _pluginCache, null);
             FormMain mainForm = Interlocked.Exchange(ref _mainForm, null);
             FormSplash splash = Interlocked.Exchange(ref _splash, null);
 
+            contentImporterPlugins?.Dispose();
             contentPlugins?.Dispose();
             context?.Dispose();
             pluginCache?.Dispose();
@@ -254,6 +258,44 @@ namespace Gorgon.Editor
         }
 
         /// <summary>
+        /// Function to load any import content plugins used to create/edit content.
+        /// </summary>
+        /// <returns>The content plugin manager service used to manipulate the loaded content plugins.</returns>
+        private ContentImporterPluginService LoadImportContentPlugins()
+        {
+            var contentPluginsDir = new DirectoryInfo(Path.Combine(_settings.PluginPath, "ContentImporters"));
+            var contentPluginSettingsDir = new DirectoryInfo(Path.Combine(Program.ApplicationUserDirectory.FullName, "ContentImporterPlugins"));
+
+            if (!contentPluginSettingsDir.Exists)
+            {
+                contentPluginSettingsDir.Create();
+                contentPluginSettingsDir.Refresh();
+            }
+
+            var contentPlugins = new ContentImporterPluginService(contentPluginSettingsDir, _graphicsContext);
+
+            try
+            {
+                _splash.InfoText = Resources.GOREDIT_TEXT_LOADING_IMPORT_CONTENT_PLUGINS;
+
+                if (!contentPluginsDir.Exists)
+                {
+                    contentPluginsDir.Create();
+                    contentPluginsDir.Refresh();
+                }
+
+                contentPlugins.LoadContentImporterPlugins(_pluginCache, contentPluginsDir);
+            }
+            catch (Exception ex)
+            {
+                Program.Log.LogException(ex);
+                GorgonDialogs.ErrorBox(_splash, Resources.GOREDIT_ERR_LOADING_PLUGINS, Resources.GOREDIT_ERR_ERROR, ex);
+            }
+
+            return contentPlugins;
+        }
+
+        /// <summary>
         /// Function to load any content plugins used to create/edit content.
         /// </summary>
         /// <returns>The content plugin manager service used to manipulate the loaded content plugins.</returns>
@@ -272,7 +314,7 @@ namespace Gorgon.Editor
 
             try
             {
-                _splash.InfoText = Resources.GOREDIT_TEXT_LOADING_FILESYSTEM_PLUGINS;
+                _splash.InfoText = Resources.GOREDIT_TEXT_LOADING_CONTENT_PLUGINS;
 
                 if (!contentPluginsDir.Exists)
                 {
@@ -506,6 +548,7 @@ namespace Gorgon.Editor
 
                 // Load our content service plugins.
                 _contentPlugins = LoadContentPlugins();
+                _contentImporterPlugins = LoadImportContentPlugins();
 
                 // Create the project manager for the application
                 _projectManager = new ProjectManager(fileSystemProviders);
@@ -531,8 +574,6 @@ namespace Gorgon.Editor
                                 Size = new Size(_settings.WindowBounds.Value.Width, _settings.WindowBounds.Value.Height),
                                 WindowState = FormWindowState.Normal
                             };
-                Program.Log.Print("Applying theme to main window...", LoggingLevel.Verbose);
-                _mainForm.LoadTheme();
 
                 await HideSplashAsync();
 
@@ -540,7 +581,8 @@ namespace Gorgon.Editor
 
                 var factory = new ViewModelFactory(_settings,
                                                    fileSystemProviders,
-                                                   _contentPlugins,                                                   
+                                                   _contentPlugins,
+                                                   _contentImporterPlugins,
                                                    _projectManager,
                                                    _undoService,
                                                    new MessageBoxService(),

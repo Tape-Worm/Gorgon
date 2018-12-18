@@ -356,7 +356,7 @@ namespace Gorgon.Editor.ViewModels
                 });
             }
                         
-            bool wasUpdated = await Task.Run(() => _viewModelFactory.FileScanService.Scan(projectVm.FileExplorer.RootNode, UpdateScanProgress, true));
+            bool wasUpdated = await Task.Run(() => _viewModelFactory.FileScanService.Scan(projectVm.FileExplorer.RootNode, UpdateScanProgress, true, true));
 
             // If we changed the project due to some files having plugins associated, then mark as modified so we can save those changes.
             if (wasUpdated)

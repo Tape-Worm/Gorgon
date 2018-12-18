@@ -199,6 +199,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The plug in &apos;{0}&apos; did not produce any importers..
+        /// </summary>
+        internal static string GOREDIT_ERR_NO_CONTENT_IMPORTER_FROM_PLUGIN {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_NO_CONTENT_IMPORTER_FROM_PLUGIN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Content objects must have a view associated with them..
         /// </summary>
         internal static string GOREDIT_ERR_NO_CONTENT_VIEW {

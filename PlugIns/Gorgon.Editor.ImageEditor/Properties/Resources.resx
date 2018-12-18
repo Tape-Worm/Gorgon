@@ -215,4 +215,7 @@ Please try again.</value>
   <data name="GORIMG_SEARCH_KEYWORD_CODEC" xml:space="preserve">
     <value>codec</value>
   </data>
+  <data name="GORIMG_IMPORT_DESC" xml:space="preserve">
+    <value>Gorgon Image Importer</value>
+  </data>
 </root>

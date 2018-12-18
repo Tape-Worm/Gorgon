@@ -100,6 +100,14 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Property to return the content importer plugins for the application.
+        /// </summary>
+        public IContentImporterPluginManagerService ContentImporterPlugins
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the service that displays messages on the UI.
         /// </summary>
         public IMessageDisplayService MessageDisplay => _messageBoxService;
@@ -455,6 +463,7 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="settings">The settings for the application.</param>
         /// <param name="providers">The providers used to open/save files.</param>
         /// <param name="contentPlugins">The plugins used for content.</param>
+        /// <param name="contentImportPlugins">The plugins used to import content.</param>
         /// <param name="projectManager">The application project manager.</param>
         /// <param name="undoService">The service used for undo/redo functionality.</param>
         /// <param name="messages">The message dialog service.</param>
@@ -466,6 +475,7 @@ namespace Gorgon.Editor.ViewModels
         public ViewModelFactory(EditorSettings settings, 
                                 FileSystemProviders providers, 
                                 ContentPluginService contentPlugins,
+                                ContentImporterPluginService contentImportPlugins,
                                 ProjectManager projectManager, 
                                 UndoService undoService,
                                 MessageBoxService messages, 
@@ -477,6 +487,7 @@ namespace Gorgon.Editor.ViewModels
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             FileSystemProviders = providers ?? throw new ArgumentNullException(nameof(providers));
             ContentPlugins = contentPlugins ?? throw new ArgumentNullException(nameof(contentPlugins));
+            ContentImporterPlugins = contentImportPlugins ?? throw new ArgumentNullException(nameof(contentImportPlugins));
             _undoService = undoService ?? throw new ArgumentNullException(nameof(undoService));
             _projectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
             _messageBoxService = messages ?? throw new ArgumentNullException(nameof(messages));

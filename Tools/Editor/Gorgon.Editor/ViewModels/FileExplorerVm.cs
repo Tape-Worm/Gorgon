@@ -877,7 +877,34 @@ namespace Gorgon.Editor.ViewModels
                     }
 
                     currentFile = file;
-                    var newFile = new FileInfo(file.FullName.Replace(parentDir.FullName.FormatDirectory(Path.DirectorySeparatorChar), node.PhysicalPath));
+                    var newFile = new FileInfo(currentFile.FullName.Replace(parentDir.FullName.FormatDirectory(Path.DirectorySeparatorChar), node.PhysicalPath));
+
+                    IEditorContentImporter importer = _factory.ContentImporterPlugins.GetContentImporter(currentFile);
+
+                    if (importer != null)
+                    {
+                        try
+                        {
+                            currentFile = await Task.Run(() => importer.ImportData(cancelSource.Token), cancelSource.Token);
+
+                            // Do not import the file if we don't process it.
+                            if (currentFile == null)
+                            {
+                                continue;
+                            }
+
+                            // Update the filename of the output file to match whatever we're sending out.
+                            newFile = new FileInfo(Path.Combine(newFile.Directory.FullName, currentFile.Name));
+                        }
+                        catch (Exception ex)
+                        {
+                            // If we failed to import for some reason, log the error and read the file as-is.
+                            Program.Log.Print($"Error importing file '{currentFile.FullName}'.", Diagnostics.LoggingLevel.Simple);
+                            Program.Log.LogException(ex);
+
+                            currentFile = file;
+                        }
+                    }
 
                     // We have a conflict, try to find the node that is conflict.
                     if (newFile.Exists)
@@ -915,7 +942,7 @@ namespace Gorgon.Editor.ViewModels
                         }
                     }
 
-                    await Task.Run(() => _fileSystemService.ImportFile(file, newFile, UpdateImportProgress, cancelSource.Token, writeBuffer));
+                    await Task.Run(() => _fileSystemService.ImportFile(currentFile, newFile, UpdateImportProgress, cancelSource.Token, writeBuffer), cancelSource.Token);
                     totalBytesCopied += file.Length;
                 }
 

@@ -179,6 +179,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Gorgon Image Importer.
+        /// </summary>
+        internal static string GORIMG_IMPORT_DESC {
+            get {
+                return ResourceManager.GetString("GORIMG_IMPORT_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to codec.
         /// </summary>
         internal static string GORIMG_SEARCH_KEYWORD_CODEC {

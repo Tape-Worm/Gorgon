@@ -411,6 +411,16 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An error occurred while loading the importer plug in.
+        ///Exception: {0}.
+        /// </summary>
+        internal static string GOREDIT_DISABLE_CONTENT_IMPORT_PLUGIN_EXCEPTION {
+            get {
+                return ResourceManager.GetString("GOREDIT_DISABLE_CONTENT_IMPORT_PLUGIN_EXCEPTION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to An error occurred while loading the plug in.
         ///Exception: {0}.
         /// </summary>
@@ -1102,6 +1112,15 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_TEXT_LOADING_FILESYSTEM_PLUGINS {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_LOADING_FILESYSTEM_PLUGINS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading content importer plug ins....
+        /// </summary>
+        internal static string GOREDIT_TEXT_LOADING_IMPORT_CONTENT_PLUGINS {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_LOADING_IMPORT_CONTENT_PLUGINS", resourceCulture);
             }
         }
         
