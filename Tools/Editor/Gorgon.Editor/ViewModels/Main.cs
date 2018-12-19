@@ -325,6 +325,7 @@ namespace Gorgon.Editor.ViewModels
 
             if (isUpgraded)
             {
+                await projectVm.FileExplorer.RunImportersAsync(CancellationToken.None);
                 projectVm.ProjectState = ProjectState.Modified;
             }
 

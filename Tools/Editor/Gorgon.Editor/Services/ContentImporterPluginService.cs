@@ -307,7 +307,7 @@ namespace Gorgon.Editor.Services
                 continue;
             }
 
-            return importPlugin.CreateImporter(file, Program.Log);
+            return importPlugin?.CreateImporter(file, Program.Log);
         }
         #endregion
 

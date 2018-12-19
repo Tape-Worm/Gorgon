@@ -26,6 +26,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.UI;
 
@@ -165,6 +167,14 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
         }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to run the custom importers over the files in the file system.
+        /// </summary>
+        /// <param name="cancelToken">The token used to cancel the operation.</param>
+        Task RunImportersAsync(CancellationToken cancelToken);
         #endregion
     }
 }

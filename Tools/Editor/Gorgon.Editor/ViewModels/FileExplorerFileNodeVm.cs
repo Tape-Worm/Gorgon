@@ -194,7 +194,7 @@ namespace Gorgon.Editor.ViewModels
             try
             {
                 // If the node is desynced with the actual physical path, then we need to refresh based on where the parent is located.
-                if (!Parent.PhysicalPath.StartsWith(_fileInfo.FullName, StringComparison.OrdinalIgnoreCase))
+                if (!_fileInfo.FullName.StartsWith(Parent.PhysicalPath, StringComparison.OrdinalIgnoreCase))
                 {
                     GetFileSystemObject(Path.Combine(Parent.PhysicalPath, Name));
                 }

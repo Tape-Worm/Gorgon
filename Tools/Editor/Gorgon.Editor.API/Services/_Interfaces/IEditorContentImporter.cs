@@ -43,6 +43,14 @@ namespace Gorgon.Editor.Services
         }
 
         /// <summary>
+        /// Property to return whether or not the imported file needs to be cleaned up after processing.
+        /// </summary>
+        bool NeedsCleanup
+        {
+            get;
+        }
+
+        /// <summary>
         /// Function to import content.
         /// </summary>
         /// <param name="cancelToken">The token used to cancel the operation.</param>

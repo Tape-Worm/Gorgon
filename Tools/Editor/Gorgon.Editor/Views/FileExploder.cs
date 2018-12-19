@@ -764,7 +764,7 @@ namespace Gorgon.Editor.Views
 
             if (treeNode != null)
             {
-                _nodeLinks.TryGetValue(treeNode, out node);
+                _nodeLinks.TryGetValue(treeNode, out node);                                
             }
 
             if (!DataContext.SelectNodeCommand.CanExecute(node))
@@ -807,8 +807,8 @@ namespace Gorgon.Editor.Views
 
             if (_explorerDragData.TargetTreeNode != null)
             {
+                UpdateNodeVisualState(_explorerDragData.TargetTreeNode, _explorerDragData.TargetNode);
                 _explorerDragData.TargetTreeNode.BackColor = Color.Empty;
-                _explorerDragData.TargetTreeNode.ForeColor = Color.Empty;
             }
 
             // We're not allowed here, so just cancel the operation.
@@ -852,8 +852,8 @@ namespace Gorgon.Editor.Views
 
             if (data.TargetTreeNode != null)
             {
-                data.TargetTreeNode.BackColor = Color.Empty;
-                data.TargetTreeNode.ForeColor = Color.Empty;
+                UpdateNodeVisualState(data.TargetTreeNode, data.TargetNode);
+                data.TargetTreeNode.BackColor = Color.Empty;                
             }
 
             // We're not allowed here, so just cancel the operation.
@@ -888,8 +888,8 @@ namespace Gorgon.Editor.Views
 
             if (_explorerDragData.TargetTreeNode != null)
             {
+                UpdateNodeVisualState(_explorerDragData.TargetTreeNode, _explorerDragData.TargetNode);
                 _explorerDragData.TargetTreeNode.BackColor = Color.Empty;
-                _explorerDragData.TargetTreeNode.ForeColor = Color.Empty;
             }
 
             _explorerDragData = null;
@@ -950,8 +950,8 @@ namespace Gorgon.Editor.Views
 
             if (_explorerDragData.TargetTreeNode != null)
             {
+                UpdateNodeVisualState(_explorerDragData.TargetTreeNode, _explorerDragData.TargetNode);
                 _explorerDragData.TargetTreeNode.BackColor = Color.Empty;
-                _explorerDragData.TargetTreeNode.ForeColor = Color.Empty;
             }
 
             TreeViewHitTestInfo hitResult = TreeFileSystem.HitTest(TreeFileSystem.PointToClient(new Point(e.X, e.Y)));
@@ -1034,8 +1034,8 @@ namespace Gorgon.Editor.Views
             if (data.TargetTreeNode != null)
             {
                 // Reset the background color.
+                UpdateNodeVisualState(data.TargetTreeNode, data.TargetNode);
                 data.TargetTreeNode.BackColor = Color.Empty;
-                data.TargetTreeNode.ForeColor = Color.Empty;
             }
 
             TreeViewHitTestInfo hitResult = TreeFileSystem.HitTest(TreeFileSystem.PointToClient(new Point(e.X, e.Y)));
@@ -1131,8 +1131,28 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
+            if (dragData.TargetNode == null)
+            {
+                dragData.TargetTreeNode.ForeColor = Color.Empty;
+                dragData.TargetTreeNode.BackColor = Color.Empty;
+                return;
+            }
+
+            UpdateNodeVisualState(dragData.TargetTreeNode, dragData.TargetNode);
             dragData.TargetTreeNode.BackColor = Color.Empty;
-            dragData.TargetTreeNode.ForeColor = Color.Empty;
+        }
+
+        /// <summary>Handles the BeforeSelect event of the TreeFileSystem control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="TreeViewCancelEventArgs"/> instance containing the event data.</param>
+        private void TreeFileSystem_BeforeSelect(object sender, TreeViewCancelEventArgs e)
+        {
+            if (!(e.Node is KryptonTreeNode treeNode))
+            {
+                return;
+            }
+
+            UpdateSelectedColor(treeNode);
         }
 
         /// <summary>
@@ -1145,7 +1165,7 @@ namespace Gorgon.Editor.Views
             TreeFileSystem.AfterSelect -= TreeFileSystem_AfterSelect;
             try
             {
-                SelectNode(e.Node as KryptonTreeNode);
+                SelectNode(e.Node as KryptonTreeNode);                
             }
             finally
             {
@@ -1562,6 +1582,30 @@ namespace Gorgon.Editor.Views
             {
                 treeNode.Nodes.Add(new KryptonTreeNode("DUMMY_NODE_SHOULD_NOT_SEE_ME"));
             }
+
+            if (treeNode.IsSelected)
+            {
+                UpdateSelectedColor(treeNode);
+            }
+        }
+
+        /// <summary>
+        /// Function to update the selected color for a node based on state information.
+        /// </summary>
+        /// <param name="node">The node to evaluate.</param>
+        private void UpdateSelectedColor(KryptonTreeNode node)
+        {
+            if (node.NodeFont == _excludedFont)
+            {
+                TreeFileSystem.StateCheckedNormal.Node.Back.Color1 = Color.FromArgb(_dragBackColor.R / 2, _dragBackColor.G / 2, _dragBackColor.B / 2);
+            }
+            else
+            {
+                TreeFileSystem.StateCheckedNormal.Node.Back.Color1 = _dragBackColor;
+            }
+
+            TreeFileSystem.StateCheckedNormal.Node.Content.ShortText.Color1 = node.ForeColor;
+            TreeFileSystem.StateCheckedNormal.Node.Content.ShortText.Font = node.NodeFont;
         }
 
         /// <summary>

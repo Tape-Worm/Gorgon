@@ -488,20 +488,6 @@ namespace Gorgon.Editor.ProjectData
             var outputFile = new FileInfo(path);
             await writer.WriteAsync(outputFile, project.ProjectWorkSpace, progressCallback, cancelToken);
             outputFile.Refresh();
-
-            // If we cancelled the operation, we should delete the file.
-            if ((cancelToken.IsCancellationRequested) && (outputFile.Exists))
-            {
-                try
-                {                        
-                    outputFile.Delete();
-                }
-                catch (Exception ex)
-                {
-                    Program.Log.Print($"ERROR: Could not delete the file '{outputFile.FullName}' while cancelling save operation.", LoggingLevel.Simple);
-                    Program.Log.LogException(ex);
-                }
-            }
         }
 
         /// <summary>

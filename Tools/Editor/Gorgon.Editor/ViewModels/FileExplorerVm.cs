@@ -793,6 +793,44 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Function to perform a custom import on a file.
+        /// </summary>
+        /// <param name="file">The file being imported.</param>
+        /// <param name="cancelToken">The token used to cancel the operation.</param>
+        /// <returns>The importer used to import, and the imported file.</returns>
+        private async Task<(IEditorContentImporter importer, FileInfo importedFile)> CustomImportFileAsync(FileInfo file, CancellationToken cancelToken)
+        {
+            FileInfo result;
+            IEditorContentImporter importer = _factory.ContentImporterPlugins.GetContentImporter(file);
+
+            if (importer == null)
+            {
+                return (null, file);
+            }
+
+            try
+            {
+                result = await Task.Run(() => importer.ImportData(cancelToken), cancelToken);
+
+                // Do not import the file if we don't process it.
+                if (result == null)
+                {
+                    return (null, null);
+                }                
+            }
+            catch (Exception ex)
+            {
+                // If we failed to import for some reason, log the error and read the file as-is.
+                Program.Log.Print($"Error importing file '{file.FullName}'.", Diagnostics.LoggingLevel.Simple);
+                Program.Log.LogException(ex);
+
+                result = file;
+            }
+
+            return (importer, result);
+        }
+
+        /// <summary>
         /// Function to perform the import of the directories/files into the specified node.
         /// </summary>
         /// <param name="node">The node that will recieve the import.</param>
@@ -806,6 +844,7 @@ namespace Gorgon.Editor.ViewModels
             long totalByteCount = 0;
             long totalBytesCopied = 0;
             var cancelSource = new CancellationTokenSource();
+            (IEditorContentImporter importer, FileInfo updatedFile) importResult = default;
 
             void cancelAction() => cancelSource.Cancel();
 
@@ -879,31 +918,25 @@ namespace Gorgon.Editor.ViewModels
                     currentFile = file;
                     var newFile = new FileInfo(currentFile.FullName.Replace(parentDir.FullName.FormatDirectory(Path.DirectorySeparatorChar), node.PhysicalPath));
 
-                    IEditorContentImporter importer = _factory.ContentImporterPlugins.GetContentImporter(currentFile);
+                    importResult = await CustomImportFileAsync(currentFile, cancelSource.Token);
 
-                    if (importer != null)
+                    if (importResult.updatedFile == null)
                     {
-                        try
+                        continue;
+                    }
+
+                    if ((importResult.importer != null) && (importResult.updatedFile != null))
+                    {
+                        // Update the total size by the new imported file.
+                        if (file.Length != importResult.updatedFile.Length)
                         {
-                            currentFile = await Task.Run(() => importer.ImportData(cancelSource.Token), cancelSource.Token);
-
-                            // Do not import the file if we don't process it.
-                            if (currentFile == null)
-                            {
-                                continue;
-                            }
-
-                            // Update the filename of the output file to match whatever we're sending out.
-                            newFile = new FileInfo(Path.Combine(newFile.Directory.FullName, currentFile.Name));
+                            totalByteCount -= file.Length;
+                            totalByteCount += importResult.updatedFile.Length;
                         }
-                        catch (Exception ex)
-                        {
-                            // If we failed to import for some reason, log the error and read the file as-is.
-                            Program.Log.Print($"Error importing file '{currentFile.FullName}'.", Diagnostics.LoggingLevel.Simple);
-                            Program.Log.LogException(ex);
 
-                            currentFile = file;
-                        }
+                        // Update the output and current file to match the newly imported data.
+                        newFile = new FileInfo(Path.Combine(newFile.Directory.FullName, importResult.updatedFile.Name));
+                        currentFile = importResult.updatedFile;
                     }
 
                     // We have a conflict, try to find the node that is conflict.
@@ -944,6 +977,13 @@ namespace Gorgon.Editor.ViewModels
 
                     await Task.Run(() => _fileSystemService.ImportFile(currentFile, newFile, UpdateImportProgress, cancelSource.Token, writeBuffer), cancelSource.Token);
                     totalBytesCopied += file.Length;
+
+                    // Don't leave working files lying around.
+                    if ((importResult.importer != null) && (importResult.updatedFile != null) && (importResult.importer.NeedsCleanup) && (importResult.updatedFile.Exists))
+                    {
+                        importResult.updatedFile.Delete();
+                        importResult.updatedFile.Refresh();
+                    }
                 }
 
                 UpdateProgress(new ProgressPanelUpdateArgs
@@ -969,6 +1009,10 @@ namespace Gorgon.Editor.ViewModels
             }
             finally
             {
+                if ((importResult.importer != null) && (importResult.updatedFile != null) && (importResult.importer.NeedsCleanup) && (importResult.updatedFile.Exists))
+                {
+                    importResult.updatedFile.Delete();
+                }
                 HideProgress();
                 cancelSource?.Dispose();
             }
@@ -1915,6 +1959,59 @@ namespace Gorgon.Editor.ViewModels
             {
                 Program.Log.LogException(ex);
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// Function to run the custom importers over the files in the file system.
+        /// </summary>
+        public async Task RunImportersAsync(CancellationToken cancelToken)
+        {
+            foreach (IFileExplorerNodeVm node in RootNode.Children.Traverse(n => n.Children).Where(item => item.IsContent))
+            {
+                // Do not update nodes that are open in the editor.
+                if (node.IsOpen)
+                {
+                    continue;
+                }
+
+                var content = node as IContentFile;
+                (IEditorContentImporter importer, FileInfo outputFile) importResult = default;
+                try
+                {
+                    if (cancelToken.IsCancellationRequested)
+                    {
+                        return;
+                    }
+
+                    importResult = await CustomImportFileAsync(new FileInfo(node.PhysicalPath), cancelToken);
+
+                    if ((importResult.outputFile == null) || (importResult.importer == null))
+                    {
+                        continue;
+                    }
+
+                    string newName = importResult.outputFile.Name;
+                    // Rename the node to match whatever we imported.
+                    if (node.Parent.Children.Any(item => string.Equals(importResult.outputFile.Name, item.Name, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        newName = _fileSystemService.GenerateFileName(importResult.outputFile.FullName);
+                    }
+
+                    node.RenameNode(newName);
+
+                    // Copy over the contents of the old file.
+                    importResult.outputFile.CopyTo(node.PhysicalPath, true);
+                    // Update the metadata information.
+                    content?.RefreshMetadata();
+                }
+                finally
+                {
+                    if ((importResult.outputFile != null) && (importResult.importer != null) && (importResult.outputFile.Exists) && (importResult.importer.NeedsCleanup))
+                    {
+                        importResult.outputFile.Delete();
+                    }
+                }
             }
         }
         #endregion

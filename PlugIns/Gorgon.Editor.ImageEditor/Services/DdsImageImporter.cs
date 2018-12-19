@@ -58,6 +58,9 @@ namespace Gorgon.Editor.ImageEditor.Services
         {
             get;
         }
+
+        /// <summary>Property to return whether or not the imported file needs to be cleaned up after processing.</summary>
+        public bool NeedsCleanup => true;
         #endregion
 
         #region Methods.
@@ -67,9 +70,12 @@ namespace Gorgon.Editor.ImageEditor.Services
         {
             var ddsCodec = new GorgonCodecDds();
 
+            _log.Print($"Importing file '{SourceFile.FullName}' (Codec: {_codec.Name})...", LoggingLevel.Verbose);
             using (IGorgonImage image = _codec.LoadFromFile(SourceFile.FullName))
             {
                 var tempFile = new FileInfo(Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(SourceFile.Name)));
+
+                _log.Print($"Converting '{SourceFile.FullName}' to DDS file format. Image format [{image.Format}].", LoggingLevel.Verbose);
                 ddsCodec.SaveToFile(image, tempFile.FullName);
 
                 return tempFile;

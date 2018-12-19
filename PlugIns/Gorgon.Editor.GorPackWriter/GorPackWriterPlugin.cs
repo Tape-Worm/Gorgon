@@ -120,43 +120,43 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
 		{
 			Debug.Assert(outStream != null, "outStream != null");
 
-			using (var bzStream = new BZip2OutputStream(outStream, compressionRate))
-			{
-				long streamSize = inStream.Length;
-				bzStream.IsStreamOwner = false;
+            using (var bzStream = new BZip2OutputStream(outStream, compressionRate))
+            {
+                long streamSize = inStream.Length;
+                bzStream.IsStreamOwner = false;
 
-				while (streamSize > 0)
-				{
-					if (token.IsCancellationRequested)
-					{
-						return;
-					}
+                while (streamSize > 0)
+                {
+                    if (token.IsCancellationRequested)
+                    {
+                        return;
+                    }
 
-					int readSize = inStream.Read(writeBuffer, 0, writeBuffer.Length);
+                    int readSize = inStream.Read(writeBuffer, 0, writeBuffer.Length);
 
-					if (token.IsCancellationRequested)
-					{
-						return;
-					}
+                    if (token.IsCancellationRequested)
+                    {
+                        return;
+                    }
 
-					if (readSize > 0)
-					{
-						if (token.IsCancellationRequested)
-						{
-							return;
-						}
+                    if (readSize > 0)
+                    {
+                        if (token.IsCancellationRequested)
+                        {
+                            return;
+                        }
 
-						bzStream.Write(writeBuffer, 0, readSize);
+                        bzStream.Write(writeBuffer, 0, readSize);
 
-						if (token.IsCancellationRequested)
-						{
-							return;
-						}
-					}
+                        if (token.IsCancellationRequested)
+                        {
+                            return;
+                        }
+                    }
 
-					streamSize -= readSize;
-				}
-			}			
+                    streamSize -= readSize;
+                }
+            }
 		}
 
         /// <summary>
@@ -466,27 +466,20 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
             // Build up the tasks for our jobs.
             while (fileNodes.Count > 0)
             {
-                try
-                {
-                    var jobData = new CompressJob();
+                var jobData = new CompressJob();
 
-                    // Copy the file information to the compression job data.
-                    int length = filesPerJob.Min(fileNodes.Count);
-                    for (int i = 0; i < length; ++i)
-                    {
-                        jobData.Files.Add(fileNodes[i]);                        
-                    }
-                    fileNodes.RemoveRange(0, length);
-
-                    jobs.Add(Task.Run(() => Compressor(jobData), cancelToken));
-                }
-                catch
+                // Copy the file information to the compression job data.
+                int length = filesPerJob.Min(fileNodes.Count);
+                for (int i = 0; i < length; ++i)
                 {
-                    throw;
+                    jobData.Files.Add(fileNodes[i]);                        
                 }
+                fileNodes.RemoveRange(0, length);
+
+                jobs.Add(Task.Run(() => Compressor(jobData), cancelToken));
             }
 
-            CompressJob[] finishedTasks = await Task.WhenAll(jobs);
+            CompressJob[] finishedTasks = await Task.WhenAll(jobs);            
 
             if ((finishedTasks.Length == 0) || (finishedTasks.Any(item => item == null)) || (cancelToken.IsCancellationRequested))
             {
@@ -644,7 +637,7 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
         /// </summary>
         public GorPackWriterPlugin()
             : base(Resources.GORPKW_DESC, new[] { new GorgonFileExtension("gorPack", Resources.GORPKW_GORPACK_FILE_EXT_DESC) } )
-        {            
+        {
         }
         #endregion
     }

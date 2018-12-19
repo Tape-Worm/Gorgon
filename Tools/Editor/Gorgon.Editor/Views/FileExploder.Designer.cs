@@ -135,6 +135,7 @@
             this.TreeFileSystem.BeforeCollapse += new System.Windows.Forms.TreeViewCancelEventHandler(this.TreeFileSystem_BeforeCollapse);
             this.TreeFileSystem.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.TreeFileSystem_BeforeExpand);
             this.TreeFileSystem.BeforeLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.TreeFileSystem_BeforeLabelEdit);
+            this.TreeFileSystem.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.TreeFileSystem_BeforeSelect);
             this.TreeFileSystem.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.TreeFileSystem_ItemDrag);
             this.TreeFileSystem.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.TreeFileSystem_NodeMouseDoubleClick);
             this.TreeFileSystem.DragDrop += new System.Windows.Forms.DragEventHandler(this.TreeFileSystem_DragDrop);
@@ -158,26 +159,26 @@
             this.MenuSepNew,
             this.MenuItemCreateDirectory});
             this.MenuOptions.Name = "MenuOptions";
-            this.MenuOptions.Size = new System.Drawing.Size(181, 198);
+            this.MenuOptions.Size = new System.Drawing.Size(168, 176);
             this.MenuOptions.Opening += new System.ComponentModel.CancelEventHandler(this.MenuOperations_Opening);
             // 
             // MenuItemExportTo
             // 
             this.MenuItemExportTo.Name = "MenuItemExportTo";
-            this.MenuItemExportTo.Size = new System.Drawing.Size(180, 22);
+            this.MenuItemExportTo.Size = new System.Drawing.Size(167, 22);
             this.MenuItemExportTo.Text = "E&xport to...";
             this.MenuItemExportTo.Click += new System.EventHandler(this.MenuItemExportTo_Click);
             // 
             // MenuSepEdit
             // 
             this.MenuSepEdit.Name = "MenuSepEdit";
-            this.MenuSepEdit.Size = new System.Drawing.Size(177, 6);
+            this.MenuSepEdit.Size = new System.Drawing.Size(164, 6);
             // 
             // MenuItemCut
             // 
             this.MenuItemCut.Name = "MenuItemCut";
             this.MenuItemCut.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-            this.MenuItemCut.Size = new System.Drawing.Size(180, 22);
+            this.MenuItemCut.Size = new System.Drawing.Size(167, 22);
             this.MenuItemCut.Text = "Cu&t";
             this.MenuItemCut.Click += new System.EventHandler(this.MenuItemCut_Click);
             // 
@@ -185,7 +186,7 @@
             // 
             this.MenuItemCopy.Name = "MenuItemCopy";
             this.MenuItemCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.MenuItemCopy.Size = new System.Drawing.Size(180, 22);
+            this.MenuItemCopy.Size = new System.Drawing.Size(167, 22);
             this.MenuItemCopy.Text = "C&opy";
             this.MenuItemCopy.Click += new System.EventHandler(this.MenuItemCopy_Click);
             // 
@@ -193,21 +194,21 @@
             // 
             this.MenuItemPaste.Name = "MenuItemPaste";
             this.MenuItemPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-            this.MenuItemPaste.Size = new System.Drawing.Size(180, 22);
+            this.MenuItemPaste.Size = new System.Drawing.Size(167, 22);
             this.MenuItemPaste.Text = "&Paste";
             this.MenuItemPaste.Click += new System.EventHandler(this.MenuItemPaste_Click);
             // 
             // MenuSepOrganize
             // 
             this.MenuSepOrganize.Name = "MenuSepOrganize";
-            this.MenuSepOrganize.Size = new System.Drawing.Size(177, 6);
+            this.MenuSepOrganize.Size = new System.Drawing.Size(164, 6);
             // 
             // MenuItemDelete
             // 
             this.MenuItemDelete.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.MenuItemDelete.Name = "MenuItemDelete";
             this.MenuItemDelete.ShortcutKeyDisplayString = "Del";
-            this.MenuItemDelete.Size = new System.Drawing.Size(180, 22);
+            this.MenuItemDelete.Size = new System.Drawing.Size(167, 22);
             this.MenuItemDelete.Text = "&Delete...";
             this.MenuItemDelete.Click += new System.EventHandler(this.ItemDelete_Click);
             // 
@@ -215,19 +216,19 @@
             // 
             this.MenuItemRename.Name = "MenuItemRename";
             this.MenuItemRename.ShortcutKeys = System.Windows.Forms.Keys.F2;
-            this.MenuItemRename.Size = new System.Drawing.Size(180, 22);
+            this.MenuItemRename.Size = new System.Drawing.Size(167, 22);
             this.MenuItemRename.Text = "&Rename...";
             this.MenuItemRename.Click += new System.EventHandler(this.ItemRename_Click);
             // 
             // MenuSepNew
             // 
             this.MenuSepNew.Name = "MenuSepNew";
-            this.MenuSepNew.Size = new System.Drawing.Size(177, 6);
+            this.MenuSepNew.Size = new System.Drawing.Size(164, 6);
             // 
             // MenuItemCreateDirectory
             // 
             this.MenuItemCreateDirectory.Name = "MenuItemCreateDirectory";
-            this.MenuItemCreateDirectory.Size = new System.Drawing.Size(180, 22);
+            this.MenuItemCreateDirectory.Size = new System.Drawing.Size(167, 22);
             this.MenuItemCreateDirectory.Text = "&Create directory...";
             this.MenuItemCreateDirectory.Click += new System.EventHandler(this.ItemCreateDirectory_Click);
             // 
