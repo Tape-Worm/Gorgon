@@ -115,6 +115,7 @@
     <Compile Include="ViewModels\CreateNodeArgs.cs" />
     <Compile Include="ViewModels\DeleteNodeArgs.cs" />
     <Compile Include="ViewModels\FileExplorerRootNode.cs" />
+    <Compile Include="ViewModels\SetProjectWorkspaceArgs.cs" />
     <Compile Include="ViewModels\UndoCommand.cs" />
     <Compile Include="ViewModels\FileExplorerFileNodeVm.cs" />
     <Compile Include="ViewModels\FileExplorerDirectoryNodeVm.cs" />

@@ -318,13 +318,11 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A previous project working directory was found in the &apos;{0}&apos; workspace.  This may have been left over from an application crash. 
-        ///
-        ///Would you like to remove this project working directory now?.
+        ///   Looks up a localized string similar to Select a directory for the project....
         /// </summary>
-        internal static string GOREDIT_CONFIRM_CLEAN_PREV_DIR {
+        internal static string GOREDIT_CAPTION_SELECT_PROJECT_DIR {
             get {
-                return ResourceManager.GetString("GOREDIT_CONFIRM_CLEAN_PREV_DIR", resourceCulture);
+                return ResourceManager.GetString("GOREDIT_CAPTION_SELECT_PROJECT_DIR", resourceCulture);
             }
         }
         
@@ -407,6 +405,19 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_CONFIRM_UNSAVED_PROJ {
             get {
                 return ResourceManager.GetString("GOREDIT_CONFIRM_UNSAVED_PROJ", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The path &apos;{0}&apos; already exists.
+        ///
+        ///Would you like to use it anyway?  
+        ///
+        ///Note that selecting &apos;Yes&apos; will delete the contents of the directory..
+        /// </summary>
+        internal static string GOREDIT_CONFIRM_WORKSPACE_PATH_EXISTS {
+            get {
+                return ResourceManager.GetString("GOREDIT_CONFIRM_WORKSPACE_PATH_EXISTS", resourceCulture);
             }
         }
         
@@ -518,6 +529,17 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_CANNOT_OPEN_CONTENT {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_CANNOT_OPEN_CONTENT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error trying to assign &apos;{0}&apos; as the project workspace.
+        ///
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_CANNOT_SET_WORKSPACE {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CANNOT_SET_WORKSPACE", resourceCulture);
             }
         }
         
@@ -672,6 +694,18 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The path &apos;{0}&apos; is invalid.
+        ///
+        ///The path must not contain the following characters:
+        ///{1}.
+        /// </summary>
+        internal static string GOREDIT_ERR_INVALID_PATH {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_INVALID_PATH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error loading the plugins.
         ///
         ///The application will continue, but some functionality will be unavailable..
@@ -785,6 +819,15 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_NOT_A_PROJECT_FILE {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_NOT_A_PROJECT_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The directory &apos;{0}&apos; is not accessible by this user..
+        /// </summary>
+        internal static string GOREDIT_ERR_NOT_AUTHORIZED {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_NOT_AUTHORIZED", resourceCulture);
             }
         }
         
@@ -912,6 +955,15 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_WORKSPACE_EXCEPTION {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_WORKSPACE_EXCEPTION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The project workspace path &apos;{0}&apos; already exists..
+        /// </summary>
+        internal static string GOREDIT_ERR_WORKSPACE_EXISTS {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_WORKSPACE_EXISTS", resourceCulture);
             }
         }
         
@@ -1175,15 +1227,6 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_TEXT_SCANNING {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_SCANNING", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Select a workspace directory....
-        /// </summary>
-        internal static string GOREDIT_TEXT_SELECT_WORKSPACE {
-            get {
-                return ResourceManager.GetString("GOREDIT_TEXT_SELECT_WORKSPACE", resourceCulture);
             }
         }
         

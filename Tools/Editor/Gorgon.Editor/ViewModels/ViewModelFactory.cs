@@ -237,11 +237,10 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to create the main view model and any child view models.
         /// </summary>
-        /// <param name="workspace">The directory to use for the workspace.</param>
         /// <param name="gpuName">The name of the GPU used by the application.</param>
         /// <returns>A new instance of the main view model.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="workspace"/> parameter is <b>null</b>.</exception>
-        public IMain CreateMainViewModel(DirectoryInfo workspace, string gpuName)
+        public IMain CreateMainViewModel(string gpuName)
         {
             var newProjectVm = new StageNewVm
             {
@@ -251,7 +250,7 @@ namespace Gorgon.Editor.ViewModels
 
             var mainVm = new Main();
                         
-            newProjectVm.Initialize(new StageNewVmParameters(workspace, this));
+            newProjectVm.Initialize(new StageNewVmParameters(this));
             recentFilesVm.Initialize(new RecentVmParameters(this));
 
             mainVm.Initialize(new MainParameters(newProjectVm,

@@ -39,35 +39,40 @@ namespace Gorgon.Editor.Views
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.PanelNew = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.PanelsControls = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.ButtonCreate = new System.Windows.Forms.Button();
             this.panel6 = new System.Windows.Forms.Panel();
-            this.panel5 = new System.Windows.Forms.Panel();
-            this.PanelUnderline = new System.Windows.Forms.Panel();
-            this.TextName = new System.Windows.Forms.TextBox();
+            this.PanelLocateText = new System.Windows.Forms.Panel();
+            this.TextProjectPath = new Gorgon.Windows.UI.GorgonCueTextBox();
+            this.PanelLocate = new System.Windows.Forms.Panel();
+            this.ButtonSelect = new ComponentFactory.Krypton.Toolkit.KryptonButton();
             this.PanelWorkspace = new System.Windows.Forms.FlowLayoutPanel();
-            this.LabelWorkspace = new System.Windows.Forms.Label();
-            this.LabelWorkspaceLocation = new System.Windows.Forms.Label();
             this.kryptonLabel1 = new System.Windows.Forms.Label();
             this.LabelDriveSpace = new System.Windows.Forms.Label();
             this.kryptonLabel2 = new System.Windows.Forms.Label();
             this.LabelActiveGpu = new System.Windows.Forms.Label();
             this.kryptonLabel4 = new System.Windows.Forms.Label();
             this.LabelRam = new System.Windows.Forms.Label();
+            this.PanelTitle = new System.Windows.Forms.Panel();
+            this.LabelProjectTitle = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
             this.LabelHeader = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.TipError = new System.Windows.Forms.ToolTip(this.components);
             this.PanelNew.SuspendLayout();
             this.panel2.SuspendLayout();
             this.PanelsControls.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel6.SuspendLayout();
-            this.panel5.SuspendLayout();
+            this.PanelLocateText.SuspendLayout();
+            this.PanelLocate.SuspendLayout();
             this.PanelWorkspace.SuspendLayout();
+            this.PanelTitle.SuspendLayout();
             this.panel3.SuspendLayout();
             this.panel4.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -104,12 +109,13 @@ namespace Gorgon.Editor.Views
             // 
             // tableLayoutPanel1
             // 
-            this.tableLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.tableLayoutPanel1.AutoSize = true;
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Controls.Add(this.ButtonCreate, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.panel6, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.PanelWorkspace, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.ButtonCreate, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.panel6, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.PanelWorkspace, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.PanelTitle, 0, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
@@ -117,8 +123,8 @@ namespace Gorgon.Editor.Views
             this.tableLayoutPanel1.RowCount = 4;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(712, 551);
             this.tableLayoutPanel1.TabIndex = 9;
             // 
@@ -129,7 +135,7 @@ namespace Gorgon.Editor.Views
             this.ButtonCreate.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
             this.ButtonCreate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ButtonCreate.Font = new System.Drawing.Font("Segoe UI", 10.5F);
-            this.ButtonCreate.Location = new System.Drawing.Point(64, 346);
+            this.ButtonCreate.Location = new System.Drawing.Point(64, 365);
             this.ButtonCreate.Margin = new System.Windows.Forms.Padding(64, 64, 64, 0);
             this.ButtonCreate.Name = "ButtonCreate";
             this.ButtonCreate.Size = new System.Drawing.Size(584, 52);
@@ -140,103 +146,91 @@ namespace Gorgon.Editor.Views
             // panel6
             // 
             this.panel6.AutoSize = true;
-            this.panel6.Controls.Add(this.panel5);
+            this.panel6.Controls.Add(this.PanelLocateText);
+            this.panel6.Controls.Add(this.PanelLocate);
             this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel6.Location = new System.Drawing.Point(3, 3);
+            this.panel6.Location = new System.Drawing.Point(3, 51);
+            this.panel6.Margin = new System.Windows.Forms.Padding(3, 8, 3, 24);
             this.panel6.Name = "panel6";
-            this.panel6.Padding = new System.Windows.Forms.Padding(0, 16, 0, 3);
-            this.panel6.Size = new System.Drawing.Size(706, 44);
+            this.panel6.Size = new System.Drawing.Size(706, 24);
             this.panel6.TabIndex = 1;
             // 
-            // panel5
+            // PanelLocateText
             // 
-            this.panel5.AutoSize = true;
-            this.panel5.Controls.Add(this.PanelUnderline);
-            this.panel5.Controls.Add(this.TextName);
-            this.panel5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel5.Location = new System.Drawing.Point(0, 16);
-            this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(706, 25);
-            this.panel5.TabIndex = 1;
+            this.PanelLocateText.AutoSize = true;
+            this.PanelLocateText.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.PanelLocateText.Controls.Add(this.TextProjectPath);
+            this.PanelLocateText.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PanelLocateText.Location = new System.Drawing.Point(0, 0);
+            this.PanelLocateText.Margin = new System.Windows.Forms.Padding(0, 0, 30, 0);
+            this.PanelLocateText.Name = "PanelLocateText";
+            this.PanelLocateText.Padding = new System.Windows.Forms.Padding(0, 0, 0, 2);
+            this.PanelLocateText.Size = new System.Drawing.Size(662, 24);
+            this.PanelLocateText.TabIndex = 9;
             // 
-            // PanelUnderline
+            // TextProjectPath
             // 
-            this.PanelUnderline.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.PanelUnderline.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.PanelUnderline.Location = new System.Drawing.Point(0, 23);
-            this.PanelUnderline.Name = "PanelUnderline";
-            this.PanelUnderline.Size = new System.Drawing.Size(706, 2);
-            this.PanelUnderline.TabIndex = 1;
-            // 
-            // TextName
-            // 
-            this.TextName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.TextProjectPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.TextName.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.TextName.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.TextName.Font = new System.Drawing.Font("Segoe UI", 12F);
-            this.TextName.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.TextName.Location = new System.Drawing.Point(0, 0);
-            this.TextName.MaxLength = 100;
-            this.TextName.Name = "TextName";
-            this.TextName.Size = new System.Drawing.Size(706, 22);
-            this.TextName.TabIndex = 0;
-            this.TextName.Text = "Untitled";
-            this.TextName.TextChanged += new System.EventHandler(this.TextName_TextChanged);
-            this.TextName.Enter += new System.EventHandler(this.TextName_Enter);
-            this.TextName.Leave += new System.EventHandler(this.TextName_Leave);
-            this.TextName.MouseEnter += new System.EventHandler(this.TextName_MouseEnter);
-            this.TextName.MouseLeave += new System.EventHandler(this.TextName_MouseLeave);
+            this.TextProjectPath.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.TextProjectPath.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.TextProjectPath.CueText = "Enter the directory where your project will be stored...";
+            this.TextProjectPath.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.TextProjectPath.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.TextProjectPath.Location = new System.Drawing.Point(0, 0);
+            this.TextProjectPath.Margin = new System.Windows.Forms.Padding(0);
+            this.TextProjectPath.MaxLength = 100;
+            this.TextProjectPath.Name = "TextProjectPath";
+            this.TextProjectPath.Size = new System.Drawing.Size(662, 22);
+            this.TextProjectPath.TabIndex = 0;
+            this.TextProjectPath.Enter += new System.EventHandler(this.TextName_Enter);
+            this.TextProjectPath.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextProjectPath_KeyDown);
+            this.TextProjectPath.Leave += new System.EventHandler(this.TextName_Leave);
+            this.TextProjectPath.MouseEnter += new System.EventHandler(this.TextName_MouseEnter);
+            this.TextProjectPath.MouseLeave += new System.EventHandler(this.TextName_MouseLeave);
+            // 
+            // PanelLocate
+            // 
+            this.PanelLocate.Controls.Add(this.ButtonSelect);
+            this.PanelLocate.Dock = System.Windows.Forms.DockStyle.Right;
+            this.PanelLocate.Location = new System.Drawing.Point(662, 0);
+            this.PanelLocate.Name = "PanelLocate";
+            this.PanelLocate.Padding = new System.Windows.Forms.Padding(4, 0, 0, 0);
+            this.PanelLocate.Size = new System.Drawing.Size(44, 24);
+            this.PanelLocate.TabIndex = 8;
+            // 
+            // ButtonSelect
+            // 
+            this.ButtonSelect.ButtonStyle = ComponentFactory.Krypton.Toolkit.ButtonStyle.Custom2;
+            this.ButtonSelect.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ButtonSelect.Location = new System.Drawing.Point(4, 0);
+            this.ButtonSelect.Name = "ButtonSelect";
+            this.ButtonSelect.Size = new System.Drawing.Size(40, 24);
+            this.ButtonSelect.TabIndex = 7;
+            this.ButtonSelect.Values.Text = "...";
+            this.ButtonSelect.Click += new System.EventHandler(this.ButtonSelect_Click);
             // 
             // PanelWorkspace
             // 
-            this.PanelWorkspace.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.PanelWorkspace.AutoSize = true;
             this.PanelWorkspace.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.PanelWorkspace.Controls.Add(this.LabelWorkspace);
-            this.PanelWorkspace.Controls.Add(this.LabelWorkspaceLocation);
             this.PanelWorkspace.Controls.Add(this.kryptonLabel1);
             this.PanelWorkspace.Controls.Add(this.LabelDriveSpace);
             this.PanelWorkspace.Controls.Add(this.kryptonLabel2);
             this.PanelWorkspace.Controls.Add(this.LabelActiveGpu);
             this.PanelWorkspace.Controls.Add(this.kryptonLabel4);
             this.PanelWorkspace.Controls.Add(this.LabelRam);
-            this.PanelWorkspace.Location = new System.Drawing.Point(3, 53);
+            this.PanelWorkspace.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PanelWorkspace.Location = new System.Drawing.Point(3, 102);
             this.PanelWorkspace.Name = "PanelWorkspace";
-            this.PanelWorkspace.Size = new System.Drawing.Size(706, 93);
+            this.PanelWorkspace.Size = new System.Drawing.Size(706, 63);
             this.PanelWorkspace.TabIndex = 8;
-            // 
-            // LabelWorkspace
-            // 
-            this.LabelWorkspace.AutoSize = true;
-            this.LabelWorkspace.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LabelWorkspace.Location = new System.Drawing.Point(0, 12);
-            this.LabelWorkspace.Margin = new System.Windows.Forms.Padding(0, 12, 0, 3);
-            this.LabelWorkspace.Name = "LabelWorkspace";
-            this.LabelWorkspace.Size = new System.Drawing.Size(115, 15);
-            this.LabelWorkspace.TabIndex = 6;
-            this.LabelWorkspace.Text = "Workspace location:";
-            // 
-            // LabelWorkspaceLocation
-            // 
-            this.LabelWorkspaceLocation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.LabelWorkspaceLocation.AutoEllipsis = true;
-            this.LabelWorkspaceLocation.AutoSize = true;
-            this.PanelWorkspace.SetFlowBreak(this.LabelWorkspaceLocation, true);
-            this.LabelWorkspaceLocation.Location = new System.Drawing.Point(115, 12);
-            this.LabelWorkspaceLocation.Margin = new System.Windows.Forms.Padding(0, 12, 0, 3);
-            this.LabelWorkspaceLocation.Name = "LabelWorkspaceLocation";
-            this.LabelWorkspaceLocation.Size = new System.Drawing.Size(92, 15);
-            this.LabelWorkspaceLocation.TabIndex = 7;
-            this.LabelWorkspaceLocation.Text = "c:\\temp\\sample";
             // 
             // kryptonLabel1
             // 
             this.kryptonLabel1.AutoSize = true;
             this.kryptonLabel1.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.kryptonLabel1.Location = new System.Drawing.Point(0, 33);
+            this.kryptonLabel1.Location = new System.Drawing.Point(0, 3);
             this.kryptonLabel1.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
             this.kryptonLabel1.Name = "kryptonLabel1";
             this.kryptonLabel1.Size = new System.Drawing.Size(153, 15);
@@ -250,7 +244,7 @@ namespace Gorgon.Editor.Views
             this.LabelDriveSpace.AutoEllipsis = true;
             this.LabelDriveSpace.AutoSize = true;
             this.PanelWorkspace.SetFlowBreak(this.LabelDriveSpace, true);
-            this.LabelDriveSpace.Location = new System.Drawing.Point(153, 33);
+            this.LabelDriveSpace.Location = new System.Drawing.Point(153, 3);
             this.LabelDriveSpace.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
             this.LabelDriveSpace.Name = "LabelDriveSpace";
             this.LabelDriveSpace.Size = new System.Drawing.Size(213, 15);
@@ -261,7 +255,7 @@ namespace Gorgon.Editor.Views
             // 
             this.kryptonLabel2.AutoSize = true;
             this.kryptonLabel2.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.kryptonLabel2.Location = new System.Drawing.Point(0, 54);
+            this.kryptonLabel2.Location = new System.Drawing.Point(0, 24);
             this.kryptonLabel2.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
             this.kryptonLabel2.Name = "kryptonLabel2";
             this.kryptonLabel2.Size = new System.Drawing.Size(69, 15);
@@ -275,7 +269,7 @@ namespace Gorgon.Editor.Views
             this.LabelActiveGpu.AutoEllipsis = true;
             this.LabelActiveGpu.AutoSize = true;
             this.PanelWorkspace.SetFlowBreak(this.LabelActiveGpu, true);
-            this.LabelActiveGpu.Location = new System.Drawing.Point(69, 54);
+            this.LabelActiveGpu.Location = new System.Drawing.Point(69, 24);
             this.LabelActiveGpu.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
             this.LabelActiveGpu.Name = "LabelActiveGpu";
             this.LabelActiveGpu.Size = new System.Drawing.Size(133, 15);
@@ -286,7 +280,7 @@ namespace Gorgon.Editor.Views
             // 
             this.kryptonLabel4.AutoSize = true;
             this.kryptonLabel4.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.kryptonLabel4.Location = new System.Drawing.Point(0, 75);
+            this.kryptonLabel4.Location = new System.Drawing.Point(0, 45);
             this.kryptonLabel4.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
             this.kryptonLabel4.Name = "kryptonLabel4";
             this.kryptonLabel4.Size = new System.Drawing.Size(87, 15);
@@ -299,12 +293,33 @@ namespace Gorgon.Editor.Views
             | System.Windows.Forms.AnchorStyles.Right)));
             this.LabelRam.AutoEllipsis = true;
             this.LabelRam.AutoSize = true;
-            this.LabelRam.Location = new System.Drawing.Point(87, 75);
+            this.LabelRam.Location = new System.Drawing.Point(87, 45);
             this.LabelRam.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
             this.LabelRam.Name = "LabelRam";
             this.LabelRam.Size = new System.Drawing.Size(97, 15);
             this.LabelRam.TabIndex = 13;
             this.LabelRam.Text = "64k (65536 bytes)";
+            // 
+            // PanelTitle
+            // 
+            this.PanelTitle.AutoSize = true;
+            this.PanelTitle.Controls.Add(this.LabelProjectTitle);
+            this.PanelTitle.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PanelTitle.Location = new System.Drawing.Point(3, 8);
+            this.PanelTitle.Margin = new System.Windows.Forms.Padding(3, 8, 3, 3);
+            this.PanelTitle.Name = "PanelTitle";
+            this.PanelTitle.Size = new System.Drawing.Size(706, 32);
+            this.PanelTitle.TabIndex = 9;
+            // 
+            // LabelProjectTitle
+            // 
+            this.LabelProjectTitle.AutoSize = true;
+            this.LabelProjectTitle.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.LabelProjectTitle.Font = new System.Drawing.Font("Segoe UI", 18F);
+            this.LabelProjectTitle.Location = new System.Drawing.Point(0, 0);
+            this.LabelProjectTitle.Name = "LabelProjectTitle";
+            this.LabelProjectTitle.Size = new System.Drawing.Size(0, 32);
+            this.LabelProjectTitle.TabIndex = 0;
             // 
             // panel3
             // 
@@ -351,6 +366,13 @@ namespace Gorgon.Editor.Views
             this.panel1.Size = new System.Drawing.Size(712, 587);
             this.panel1.TabIndex = 1;
             // 
+            // TipError
+            // 
+            this.TipError.BackColor = System.Drawing.Color.White;
+            this.TipError.ShowAlways = true;
+            this.TipError.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Warning;
+            this.TipError.ToolTipTitle = "Invalid Path";
+            // 
             // StageNew
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -363,14 +385,18 @@ namespace Gorgon.Editor.Views
             this.PanelNew.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.PanelsControls.ResumeLayout(false);
+            this.PanelsControls.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.panel6.ResumeLayout(false);
             this.panel6.PerformLayout();
-            this.panel5.ResumeLayout(false);
-            this.panel5.PerformLayout();
+            this.PanelLocateText.ResumeLayout(false);
+            this.PanelLocateText.PerformLayout();
+            this.PanelLocate.ResumeLayout(false);
             this.PanelWorkspace.ResumeLayout(false);
             this.PanelWorkspace.PerformLayout();
+            this.PanelTitle.ResumeLayout(false);
+            this.PanelTitle.PerformLayout();
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
             this.panel4.ResumeLayout(false);
@@ -386,12 +412,10 @@ namespace Gorgon.Editor.Views
         private System.Windows.Forms.Label LabelHeader;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel PanelsControls;
-        private System.Windows.Forms.TextBox TextName;
+        private Gorgon.Windows.UI.GorgonCueTextBox TextProjectPath;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.Button ButtonCreate;
-        private System.Windows.Forms.Label LabelWorkspace;
-        private System.Windows.Forms.Label LabelWorkspaceLocation;
         private TableLayoutPanel tableLayoutPanel1;
         private FlowLayoutPanel PanelWorkspace;
         private System.Windows.Forms.Label kryptonLabel1;
@@ -400,8 +424,12 @@ namespace Gorgon.Editor.Views
         private System.Windows.Forms.Label LabelActiveGpu;
         private System.Windows.Forms.Label kryptonLabel4;
         private System.Windows.Forms.Label LabelRam;
-        private Panel PanelUnderline;
         private Panel panel6;
-        private Panel panel5;
+        private ComponentFactory.Krypton.Toolkit.KryptonButton ButtonSelect;
+        private Panel PanelLocate;
+        private Panel PanelLocateText;
+        private Panel PanelTitle;
+        private Label LabelProjectTitle;
+        private ToolTip TipError;
     }
 }

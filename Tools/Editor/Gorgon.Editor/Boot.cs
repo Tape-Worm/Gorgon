@@ -71,8 +71,6 @@ namespace Gorgon.Editor
         private ProjectManager _projectManager;
         // The cache for plugin assemblies.
         private GorgonMefPluginCache _pluginCache;
-        // The directory locator service.
-        private DirectoryLocateService _dirLocator;
         // The plugin service used to manage content plugins.
         private ContentPluginService _contentPlugins;
         // The plugin service used to manage content import plugins.
@@ -163,7 +161,8 @@ namespace Gorgon.Editor
                                                            defaultSize.Height),
                     WindowState = (int)FormWindowState.Maximized,
                     PluginPath = Path.Combine(GorgonApplication.StartupPath.FullName, "Plugins").FormatDirectory(Path.DirectorySeparatorChar),
-                    LastOpenSavePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).FormatDirectory(Path.DirectorySeparatorChar)
+                    LastOpenSavePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).FormatDirectory(Path.DirectorySeparatorChar),
+                    LastProjectWorkingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).FormatDirectory(Path.DirectorySeparatorChar)
                 };
             }
 
@@ -223,6 +222,11 @@ namespace Gorgon.Editor
                 result.LastOpenSavePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).FormatDirectory(Path.DirectorySeparatorChar);
             }
 
+            if ((string.IsNullOrWhiteSpace(result.LastProjectWorkingDirectory)) || (!Directory.Exists(result.LastProjectWorkingDirectory)))
+            {
+                result.LastProjectWorkingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).FormatDirectory(Path.DirectorySeparatorChar);
+            }            
+
             // If we're not on one of the screens, then default to the main screen.
             if (result.WindowBounds != null)
             {
@@ -230,9 +234,7 @@ namespace Gorgon.Editor
                                          result.WindowBounds.Value.Y,
                                          result.WindowBounds.Value.Width,
                                          result.WindowBounds.Value.Height);
-#pragma warning disable IDE0007 // Use implicit type (how the hell is this explicit Microsoft??  For all I know, this could be returning an IntPtr to a monitor handle!)
-                Screen onScreen = Screen.FromRectangle(rect);
-#pragma warning restore IDE0007 // Use implicit type
+                var onScreen = Screen.FromRectangle(rect);
 
                 // If we detected that we're on the primary screen (meaning we aren't on any of the others), but we don't intersect with the working area,
                 // then we need to reset.
@@ -367,157 +369,6 @@ namespace Gorgon.Editor
         }
 
         /// <summary>
-        /// Function to bring up a dialog to allow the user to select a workspace location directory.
-        /// </summary>
-        /// <param name="initialDirectory">The initial directory.</param>
-        /// <param name="tester">The tester for the work space directory.</param>
-        /// <returns>The directory if selected, or <b>null</b> if canceled.</returns>
-        private DirectoryInfo LocateWorkspaceDirectory(DirectoryInfo initialDirectory, IWorkspaceTester tester)
-        {
-            var result = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
-            DirectoryInfo current = result;
-
-            Cursor.Current = Cursors.Default;
-
-            do
-            {
-                result = _dirLocator.GetDirectory(current, Resources.GOREDIT_TEXT_SELECT_WORKSPACE);
-
-                if (result == null)
-                {
-                    return null;
-                }
-
-                Cursor.Current = Cursors.WaitCursor;
-                (bool acceptable, string reason) = tester.TestForAccessibility(result);
-
-                if (!acceptable)
-                {
-                    GorgonDialogs.ErrorBox(_splash, reason);
-                    current = result;
-                    result = null;
-                }
-            } while (result == null);
-
-            return result;
-        }
-
-        /// <summary>
-        /// Function to retrieve the workspace directory.
-        /// </summary>
-        /// <returns>The directory for the work space.</returns>
-        private DirectoryInfo GetWorkspaceDirectory()
-        {
-            // Get the workspace directory.
-            _splash.InfoText = Resources.GOREDIT_TEXT_CONFIGURE_WORKSPACE;
-
-            IWorkspaceTester workspaceTest = new WorkspaceTester(_projectManager);
-            DirectoryInfo workspaceDir = null;
-
-            // If we haven't configured yet, then prompt and let the user pick a new place.
-            if (string.IsNullOrWhiteSpace(_settings.LastWorkSpacePath))
-            {
-                Program.Log.Print($"No workspace is present. Prompting user to select a new one.", LoggingLevel.Simple);
-                if (GorgonDialogs.ConfirmBox(_splash, Resources.GOREDIT_CONFIRM_NEED_WORKSPACE) == ConfirmationResult.No)
-                {
-                    return null;
-                }
-
-                workspaceDir = LocateWorkspaceDirectory(new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)), workspaceTest);
-
-                // User canceled, exit the app.
-                if (workspaceDir == null)
-                {
-                    Program.Log.Print($"User canceled workspace selection.", LoggingLevel.Verbose);
-                    return null;
-                }
-
-                Cursor.Current = Cursors.WaitCursor;
-
-                Program.Log.Print($"The directory '{workspaceDir.FullName}' is now the application workspace directory.", LoggingLevel.Simple);
-                _settings.LastWorkSpacePath = workspaceDir.FullName.FormatDirectory(Path.DirectorySeparatorChar);
-                return workspaceDir;
-            }
-
-            // Test the last known workspace, and prompt the user if there's a problem.
-            workspaceDir = new DirectoryInfo(_settings.LastWorkSpacePath);
-            (bool acceptable, string reason) = workspaceTest.TestForAccessibility(workspaceDir);
-
-            if (!acceptable)
-            {
-                Program.Log.Print($"ERROR: The previously selected work space '{workspaceDir.FullName}' is not acceptable because: '{reason}'.", LoggingLevel.Simple);
-
-                GorgonDialogs.ErrorBox(_splash, string.Format(Resources.GOREDIT_ERR_CANNOT_USE_WORKSPACE, workspaceDir.FullName, reason));
-
-                workspaceDir = LocateWorkspaceDirectory(workspaceDir, workspaceTest);
-
-                if (workspaceDir == null)
-                {
-                    Program.Log.Print($"User canceled workspace selection.", LoggingLevel.Verbose);
-                    return null;
-                }
-            }
-
-            Cursor.Current = Cursors.WaitCursor;
-
-            Program.Log.Print($"The path '{workspaceDir.FullName}' will be used as the default workspace path.", LoggingLevel.Simple);
-
-            if (!workspaceDir.Exists)
-            {
-                workspaceDir.Create();
-                workspaceDir.Refresh();
-            }            
-
-            return workspaceDir;
-        }
-
-        /// <summary>
-        /// Function to clean up any left over instance of a project working directory from the workspace area.
-        /// </summary>
-        private void CleanPreviousWorkingDir()
-        {
-            ConfirmationResult confirmResult = ConfirmationResult.None;
-
-            string[] paths =
-            {
-                _settings.LastProjectWorkingDirectory,
-                _settings.LastProjectScratchDirectory
-            };
-
-            foreach (DirectoryInfo dir in paths.Where(item => !string.IsNullOrWhiteSpace(item))
-                                        .Select(item => new DirectoryInfo(item))
-                                        .Where(item => item.Exists))
-            {
-                Program.Log.Print($"Found stale project working directory '{dir.FullName}'.", LoggingLevel.Intermediate);
-                
-                if (confirmResult == ConfirmationResult.None)
-                {
-                    confirmResult = GorgonDialogs.ConfirmBox(_splash, string.Format(Resources.GOREDIT_CONFIRM_CLEAN_PREV_DIR, dir.Parent.FullName));
-
-                    if (confirmResult != ConfirmationResult.Yes)
-                    {
-                        Program.Log.Print("WARNING: User opted not to clean the previous working directory. User will have to manually remove it.", LoggingLevel.Verbose);
-                        return;
-                    }
-                }                
-
-                Program.Log.Print($"Purging old project work directory '{dir.FullName}'.", LoggingLevel.Verbose);
-                try
-                {
-                    _projectManager.PurgeStaleDirectories(dir);
-                }
-                catch (Exception ex)
-                {
-                    Program.Log.Print($"ERROR: Could not remove the stale project directory '{dir.FullName}'.", LoggingLevel.Intermediate);
-                    Program.Log.LogException(ex);
-                }
-            }
-
-            _settings.LastProjectScratchDirectory = string.Empty;
-            _settings.LastProjectWorkingDirectory = string.Empty;
-        }
-
-        /// <summary>
         /// Function to perform the boot strapping operation.
         /// </summary>
         /// <returns>The main application window.</returns>
@@ -553,19 +404,6 @@ namespace Gorgon.Editor
                 // Create the project manager for the application
                 _projectManager = new ProjectManager(fileSystemProviders);
 
-                CleanPreviousWorkingDir();
-
-                Debug.Assert(_settings.WindowBounds != null, "Window bounds should not be null.");
-                _dirLocator = new DirectoryLocateService();
-                DirectoryInfo workspaceDir = GetWorkspaceDirectory();
-
-                // If we didn't get a workspace directory, then leave.
-                if (workspaceDir == null)
-                {
-                    GorgonApplication.Quit();
-                    return;
-                }
-
                 _undoService = new UndoService(Program.Log);
                 
                 _mainForm = new FormMain
@@ -588,7 +426,7 @@ namespace Gorgon.Editor
                                                    new MessageBoxService(),
                                                    new WaitCursorBusyState(),
                                                    new ClipboardService(),
-                                                   _dirLocator,
+                                                   new DirectoryLocateService(),
                                                    new FileScanService(_contentPlugins));
 
                 FormWindowState windowState;
@@ -603,7 +441,7 @@ namespace Gorgon.Editor
                 }
 
                 _mainForm.GraphicsContext = _graphicsContext;
-                _mainForm.SetDataContext(factory.CreateMainViewModel(workspaceDir, _graphicsContext.Graphics.VideoAdapter.Name));
+                _mainForm.SetDataContext(factory.CreateMainViewModel(_graphicsContext.Graphics.VideoAdapter.Name));
                 _mainForm.Show();
                 _mainForm.WindowState = windowState;
             }

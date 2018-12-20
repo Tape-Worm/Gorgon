@@ -32,6 +32,9 @@ using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Editor.ViewModels;
+using System.IO;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace Gorgon.Editor.Views
 {
@@ -55,6 +58,120 @@ namespace Gorgon.Editor.Views
 
         #region Methods.
         /// <summary>
+        /// Function to reset the path input textbox to its original color.
+        /// </summary>
+        /// <param name="dataContext">The current data context.</param>
+        private void ResetTextBoxColor(IStageNewVm dataContext)
+        {
+            PanelLocateText.BackColor = BackColor;
+            TextProjectPath.BackColor = string.IsNullOrWhiteSpace(dataContext?.InvalidPathReason) ? TextProjectPath.Parent.BackColor : Color.DarkRed;
+            TextProjectPath.ForeColor = string.IsNullOrWhiteSpace(dataContext?.InvalidPathReason) ? TextProjectPath.Parent.ForeColor : Color.White;
+        }
+
+        /// <summary>Handles the Click event of the ButtonSelect control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonSelect_Click(object sender, EventArgs e)
+        {
+            if ((DataContext?.SelectProjectWorkspaceCommand == null) || (!DataContext.SelectProjectWorkspaceCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            DataContext.SelectProjectWorkspaceCommand.Execute(null);
+        }
+
+        /// <summary>Handles the KeyDown event of the TextProjectPath control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
+        private void TextProjectPath_KeyDown(object sender, KeyEventArgs e)
+        {
+            
+            if (e.KeyCode == Keys.Enter)
+            {
+                TextName_Leave(TextProjectPath, EventArgs.Empty);
+                return;
+            }
+
+            if (e.KeyCode == Keys.Escape)
+            {
+                TextProjectPath.Text = string.Empty;
+                TextName_Leave(TextProjectPath, EventArgs.Empty);
+            }
+        }
+
+        /// <summary>Handles the MouseEnter event of the TextName control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void TextName_MouseEnter(object sender, EventArgs e)
+        {
+            if (TextProjectPath.Focused)
+            {
+                return;
+            }
+
+            TextProjectPath.BackColor = Color.FromKnownColor(KnownColor.SteelBlue);
+        }
+
+        /// <summary>Handles the MouseLeave event of the TextName control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void TextName_MouseLeave(object sender, EventArgs e)
+        {
+            if (TextProjectPath.Focused)
+            {
+                return;
+            }
+
+            ResetTextBoxColor(DataContext);
+        }
+
+        /// <summary>Handles the Enter event of the TextName control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void TextName_Enter(object sender, EventArgs e)
+        {
+            TextProjectPath.Parent.BackColor = TextProjectPath.BackColor = Drawing.Color.White;
+            TextProjectPath.ForeColor = Drawing.Color.FromArgb(64, 64, 64);
+            TextProjectPath.SelectAll();
+            PanelLocateText.BackColor = Drawing.Color.Black;
+        }
+
+        /// <summary>Handles the Leave event of the TextName control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void TextName_Leave(object sender, EventArgs e)
+        {
+            try
+            {
+                // If the path is already set, then do nothing.
+                if (string.Equals(DataContext?.WorkspacePath?.FullName, TextProjectPath.Text, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    return;
+                }
+
+                if (DataContext?.SetProjectWorkspaceCommand == null)
+                {
+                    return;
+                }
+
+                var args = new SetProjectWorkspaceArgs(TextProjectPath.Text);
+
+                if (!DataContext.SetProjectWorkspaceCommand.CanExecute(args))
+                {
+                    return;
+                }
+
+                DataContext.SetProjectWorkspaceCommand.Execute(args);
+            }
+            finally
+            {
+                ResetTextBoxColor(DataContext);
+                ValidateControls();                
+            }
+        }
+
+        /// <summary>
         /// Handles the Click event of the ButtonCreate control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -70,28 +187,6 @@ namespace Gorgon.Editor.Views
         }
 
         /// <summary>
-        /// Handles the TextChanged event of the TextName control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void TextName_TextChanged(object sender, EventArgs e)
-        {
-            try
-            {
-                if (DataContext == null)
-                {
-                    return;
-                }
-
-                DataContext.Title = TextName.Text;
-            }
-            finally
-            {
-                ValidateControls();
-            }
-        }
-
-        /// <summary>
         /// Handles the PropertyChanged event of the DataContext control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -100,11 +195,18 @@ namespace Gorgon.Editor.Views
         {
             switch (e.PropertyName)
             {
+                case nameof(IStageNewVm.AvailableDriveSpace):
+                    LabelDriveSpace.Text = $"{DataContext.AvailableDriveSpace.FormatMemory()} ({DataContext.AvailableDriveSpace:###,##0} bytes)";
+                    break;
                 case nameof(IStageNewVm.Title):
-                    TextName.Text = DataContext.Title;
+                    LabelProjectTitle.Text = DataContext.Title ?? string.Empty;
                     break;
                 case nameof(IStageNewVm.WorkspacePath):
-                    LabelWorkspaceLocation.Text = DataContext.WorkspacePath?.FullName ?? Resources.GOREDIT_ERR_ERROR;
+                    TextProjectPath.Text = DataContext.WorkspacePath?.FullName ?? string.Empty;
+                    break;
+                case nameof(IStageNewVm.InvalidPathReason):
+                    ResetTextBoxColor(DataContext);
+                    TipError.Show(DataContext.InvalidPathReason, TextProjectPath, new Point(8, TextProjectPath.Height + 2));
                     break;
             }
 
@@ -118,7 +220,14 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="PropertyChangingEventArgs"/> instance containing the event data.</param>
         private void DataContext_PropertyChanging(object sender, PropertyChangingEventArgs e)
         {
-
+            switch (e.PropertyName)
+            {
+                case nameof(IStageNewVm.Title):
+                case nameof(IStageNewVm.WorkspacePath):
+                case nameof(IStageNewVm.InvalidPathReason):
+                    TipError.Hide(TextProjectPath);
+                    break;
+            }
         }
 
         /// <summary>
@@ -126,11 +235,12 @@ namespace Gorgon.Editor.Views
         /// </summary>
         private void ResetDataContext()
         {
-            TextName.Text = Resources.GOREDIT_NEW_PROJECT;
-            LabelWorkspaceLocation.Text = string.Empty;
-            LabelRam.Text = $"0 bytes";
-            LabelDriveSpace.Text = $"0 bytes";
+            LabelProjectTitle.Text = Resources.GOREDIT_NEW_PROJECT;
+            TextProjectPath.Text = string.Empty;
+            LabelRam.Text = 0.FormatMemory();
+            LabelDriveSpace.Text = 0.FormatMemory();
             LabelActiveGpu.Text = Resources.GOREDIT_TEXT_UNKNOWN;
+            ResetTextBoxColor(null);
         }
 
         /// <summary>
@@ -145,11 +255,12 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            TextName.Text = dataContext.Title ?? string.Empty;
-            LabelWorkspaceLocation.Text = dataContext.WorkspacePath?.FullName ?? Resources.GOREDIT_ERR_ERROR;
+            TextProjectPath.Text = dataContext.WorkspacePath?.FullName ?? string.Empty;
+            LabelProjectTitle.Text = dataContext.Title;
             LabelRam.Text = $"{dataContext.AvailableRam.FormatMemory()} ({dataContext.AvailableRam:###,##0} bytes)";
             LabelDriveSpace.Text = $"{dataContext.AvailableDriveSpace.FormatMemory()} ({dataContext.AvailableDriveSpace:###,##0} bytes)";
             LabelActiveGpu.Text = dataContext.GPUName;
+            ResetTextBoxColor(dataContext);
         }
 
         /// <summary>
@@ -169,7 +280,7 @@ namespace Gorgon.Editor.Views
         /// <summary>
         /// Function to validate control state.
         /// </summary>
-        private void ValidateControls() => ButtonCreate.Enabled = (DataContext?.CreateProjectCommand?.CanExecute(null) ?? false);
+        private void ValidateControls() => ButtonCreate.Enabled = (DataContext?.CreateProjectCommand?.CanExecute(null) ?? false);        
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load" /> event.</summary>
         /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data. </param>
@@ -214,42 +325,6 @@ namespace Gorgon.Editor.Views
         /// </summary>
         public StageNew() => InitializeComponent();
         #endregion
-
-        private void TextName_MouseEnter(object sender, EventArgs e)
-        {
-            if (TextName.Focused)
-            {
-                return;
-            }
-
-            TextName.BackColor = Drawing.Color.FromKnownColor(Drawing.KnownColor.SteelBlue);            
-        }
-
-        private void TextName_MouseLeave(object sender, EventArgs e)
-        {
-            if (TextName.Focused)
-            {
-                return;
-            }
-
-            TextName.BackColor = TextName.Parent.BackColor;
-        }
-
-        private void TextName_Enter(object sender, EventArgs e)
-        {
-            TextName.Parent.BackColor = TextName.BackColor = Drawing.Color.White;
-            TextName.ForeColor = Drawing.Color.FromArgb(64,64,64);
-            TextName.SelectAll();
-            PanelUnderline.BackColor = Drawing.Color.Black;
-        }
-
-        private void TextName_Leave(object sender, EventArgs e)
-        {
-            TextName.Parent.BackColor = BackColor;
-            PanelUnderline.BackColor = TextName.Parent.BackColor;
-            TextName.BackColor = TextName.Parent.BackColor;
-            TextName.ForeColor = TextName.Parent.ForeColor;
-            PanelUnderline.Visible = false;
-        }
+        
     }
 }

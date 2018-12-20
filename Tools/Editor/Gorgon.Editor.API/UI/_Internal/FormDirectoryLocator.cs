@@ -26,8 +26,11 @@
 
 using System;
 using System.ComponentModel;
+using System.Drawing;
 using System.IO;
+using System.Windows.Forms;
 using ComponentFactory.Krypton.Toolkit;
+using Gorgon.Math;
 using Gorgon.UI;
 
 namespace Gorgon.Editor.UI
@@ -48,6 +51,11 @@ namespace Gorgon.Editor.UI
         /// Event triggered when a folder is entered.
         /// </summary>
         public EventHandler<FolderSelectedArgs> FolderEntered;
+        #endregion
+
+        #region Variables.
+        // The previous window size.
+        private static Rectangle? _prevWindowSize;
         #endregion
 
         #region Properties.
@@ -91,6 +99,29 @@ namespace Gorgon.Editor.UI
 
             EventHandler<FolderSelectedArgs> handler = FolderSelected;
             handler?.Invoke(this, e);
+        }
+
+        /// <summary>Handles the <see cref="E:Load"/> event.</summary>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+
+            if (_prevWindowSize != null)
+            {
+                SetBounds(_prevWindowSize.Value.X, _prevWindowSize.Value.Y, _prevWindowSize.Value.Width.Max(640), _prevWindowSize.Value.Height.Max(480), BoundsSpecified.Size);
+            }
+
+            CenterToParent();
+        }
+
+        /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.FormClosing"/> event.</summary>
+        /// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs"/> that contains the event data.</param>
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+
+            _prevWindowSize = Bounds;
         }
         #endregion
 

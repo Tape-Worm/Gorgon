@@ -60,15 +60,6 @@ namespace Gorgon.Editor
         }
 
         /// <summary>
-        /// Property to set or return the last path used for a workspace.
-        /// </summary>
-        public string LastWorkSpacePath
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Property to set or return the path used for the application plug ins.
         /// </summary>
         public string PluginPath
@@ -90,15 +81,6 @@ namespace Gorgon.Editor
         /// Property to set or return the previous project working directory.
         /// </summary>
         public string LastProjectWorkingDirectory
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the previous project scratch/temporary directory.
-        /// </summary>
-        public string LastProjectScratchDirectory
         {
             get;
             set;

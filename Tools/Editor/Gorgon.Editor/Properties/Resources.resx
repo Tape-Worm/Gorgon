@@ -183,11 +183,6 @@ Please try again.</value>
 
 Are you sure you wish to continue?</value>
   </data>
-  <data name="GOREDIT_CONFIRM_CLEAN_PREV_DIR" xml:space="preserve">
-    <value>A previous project working directory was found in the '{0}' workspace.  This may have been left over from an application crash. 
-
-Would you like to remove this project working directory now?</value>
-  </data>
   <data name="folder_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\folder_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -445,9 +440,6 @@ Please try again.</value>
   <data name="GOREDIT_TEXT_CONFIGURE_WORKSPACE" xml:space="preserve">
     <value>Configuring workspace...</value>
   </data>
-  <data name="GOREDIT_TEXT_SELECT_WORKSPACE" xml:space="preserve">
-    <value>Select a workspace directory...</value>
-  </data>
   <data name="GOREDIT_TEXT_OPEN_EDITOR_FILE" xml:space="preserve">
     <value>Select an editor file to open...</value>
   </data>
@@ -648,5 +640,32 @@ Exception: {0}</value>
   </data>
   <data name="GOREDIT_TEXT_LOADING_IMPORT_CONTENT_PLUGINS" xml:space="preserve">
     <value>Loading content importer plug ins...</value>
+  </data>
+  <data name="GOREDIT_CONFIRM_WORKSPACE_PATH_EXISTS" xml:space="preserve">
+    <value>The path '{0}' already exists.
+
+Would you like to use it anyway?  
+
+Note that selecting 'Yes' will delete the contents of the directory.</value>
+  </data>
+  <data name="GOREDIT_ERR_CANNOT_SET_WORKSPACE" xml:space="preserve">
+    <value>There was an error trying to assign '{0}' as the project workspace.
+
+Please try again.</value>
+  </data>
+  <data name="GOREDIT_ERR_INVALID_PATH" xml:space="preserve">
+    <value>The path '{0}' is invalid.
+
+The path must not contain the following characters:
+{1}</value>
+  </data>
+  <data name="GOREDIT_ERR_WORKSPACE_EXISTS" xml:space="preserve">
+    <value>The project workspace path '{0}' already exists.</value>
+  </data>
+  <data name="GOREDIT_CAPTION_SELECT_PROJECT_DIR" xml:space="preserve">
+    <value>Select a directory for the project...</value>
+  </data>
+  <data name="GOREDIT_ERR_NOT_AUTHORIZED" xml:space="preserve">
+    <value>The directory '{0}' is not accessible by this user.</value>
   </data>
 </root>

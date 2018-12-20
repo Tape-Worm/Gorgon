@@ -992,7 +992,18 @@ namespace Gorgon.UI
             TextDirectory.Text = dir?.FullName ?? string.Empty;
             
             SetError(null);
-            FillList(dir);
+            try
+            {
+                FillList(dir);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // If we do not have the security to read this directory, then allow the control to navigate out to its parent.
+                _activeDirectory = dir;
+                ValidateControls();
+
+                throw;
+            }
 
             _activeDirectory = dir;
             ValidateControls();

@@ -332,7 +332,6 @@ namespace Gorgon.Editor.ViewModels
             // Close the current project.
             CurrentProject = null;
             _settings.LastProjectWorkingDirectory = string.Empty;
-            _settings.LastProjectScratchDirectory = string.Empty;
 
             // Begin file scanning.
             HideWaitPanel();
@@ -368,7 +367,6 @@ namespace Gorgon.Editor.ViewModels
             CurrentProject = projectVm;
             _settings.LastOpenSavePath = Path.GetDirectoryName(path).FormatDirectory(Path.DirectorySeparatorChar);
             _settings.LastProjectWorkingDirectory = project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
-            _settings.LastProjectScratchDirectory = project.ProjectScratchSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
 
             RecentFiles.Files.Add(new RecentItem
             {
@@ -634,7 +632,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="args">The arguments for the command.</param>
         /// <returns><b>true</b> if the project can be created, <b>false</b> if not.</returns>
-        private bool CanCreateProject() => (!string.IsNullOrWhiteSpace(NewProject.Title)) && (NewProject.WorkspacePath != null) && (NewProject.WorkspacePath.Exists);
+        private bool CanCreateProject() => (string.IsNullOrWhiteSpace(NewProject.InvalidPathReason)) && (!string.IsNullOrWhiteSpace(NewProject.Title)) && (NewProject.WorkspacePath != null) && (NewProject.WorkspacePath.Exists);
 
         /// <summary>
         /// Function to create a new project.
@@ -658,11 +656,9 @@ namespace Gorgon.Editor.ViewModels
                 // Unload the current project.
                 CurrentProject = null;
                 _settings.LastProjectWorkingDirectory = string.Empty;
-                _settings.LastProjectScratchDirectory = string.Empty;
 
                 CurrentProject = await _viewModelFactory.CreateProjectViewModelAsync(project);
                 _settings.LastProjectWorkingDirectory = project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
-                _settings.LastProjectScratchDirectory = project.ProjectScratchSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
             }
             catch (Exception ex)
             {

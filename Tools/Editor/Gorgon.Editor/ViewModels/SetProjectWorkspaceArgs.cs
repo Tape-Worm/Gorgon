@@ -20,46 +20,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: September 17, 2018 8:44:42 AM
+// Created: December 19, 2018 1:53:07 PM
 // 
 #endregion
-
-using System;
-using System.IO;
-using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.ViewModels
 {
     /// <summary>
-    /// Parameters for the <see cref="IStageNewVm"/> view model.
+    /// Arguments for the <see cref="IStageNewVm.SetProjectWorkspaceCommand"/>.
     /// </summary>
-    internal class StageNewVmParameters
-        : ViewModelCommonParameters
+    internal class SetProjectWorkspaceArgs
     {
         /// <summary>
-        /// Property to return the editor settings.
+        /// Property to return the path to the project workspace.
         /// </summary>
-        public EditorSettings EditorSettings
+        public string WorkspacePath
         {
             get;
         }
 
-        /// <summary>
-        /// Property to return the directory locator service.
-        /// </summary>
-        public IDirectoryLocateService DirectoryLocator => ViewModelFactory.DirectoryLocator;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StageNewVmParameters"/> class.
-        /// </summary>
-        /// <param name="projectManager">The project manager for the application.</param>
-        /// <param name="viewModelFactory">The view model factory for creating view models.</param>
-        /// <param name="settings">The settings for the editor.</param>
-        /// <param name="messageDisplay">The message display service to use.</param>
-        /// <param name="busyService">The busy state service to use.</param>
-        public StageNewVmParameters(ViewModelFactory viewModelFactory)
-            : base(viewModelFactory)
-        {
-        }
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ViewModels.SetProjectWorkspaceArgs"/> class.</summary>
+        /// <param name="projectWorkspace">The path to the project workspace.</param>
+        public SetProjectWorkspaceArgs(string projectWorkspace) => WorkspacePath = projectWorkspace;
     }
 }

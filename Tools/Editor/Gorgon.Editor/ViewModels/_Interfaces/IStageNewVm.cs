@@ -37,21 +37,19 @@ namespace Gorgon.Editor.ViewModels
     {
         #region Properties.
         /// <summary>
-        /// Property to set or return the title for the project.
+        /// Property to return the title of the project.
         /// </summary>
         string Title
         {
             get;
-            set;
         }
 
         /// <summary>
-        /// Property to set or return the workspace path.
+        /// Property to return the workspace path.
         /// </summary>
         DirectoryInfo WorkspacePath
         {
             get;
-            set;
         }
 
         /// <summary>
@@ -80,6 +78,14 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Property to return the reason that a workspace path may be invalid.
+        /// </summary>
+        string InvalidPathReason
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to set or return the currently active project.
         /// </summary>
         IProjectVm CurrentProject
@@ -95,6 +101,22 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
             set;
+        }
+
+        /// <summary>
+        /// Property to return the command to execute when the project workspace is set.
+        /// </summary>
+        IEditorCommand<SetProjectWorkspaceArgs> SetProjectWorkspaceCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command to execute when the project workspace should be selected.
+        /// </summary>
+        IEditorCommand<object> SelectProjectWorkspaceCommand
+        {
+            get;
         }
         #endregion
     }
