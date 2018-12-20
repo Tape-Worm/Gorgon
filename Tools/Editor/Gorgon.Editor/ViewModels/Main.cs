@@ -28,6 +28,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -300,7 +301,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The e.</param>
-        private void NewProject_WaitPanelActivated(object sender, WaitPanelActivateArgs e) => ShowWaitPanel(e.Message, e.Title);               
+        private void NewProject_WaitPanelActivated(object sender, WaitPanelActivateArgs e) => ShowWaitPanel(e.Message, e.Title);
 
         /// <summary>
         /// Function to open a project.
@@ -333,7 +334,6 @@ namespace Gorgon.Editor.ViewModels
 
             // Close the current project.
             CurrentProject = null;
-            _settings.LastProjectWorkingDirectory = string.Empty;
 
             // Begin file scanning.
             HideWaitPanel();
@@ -364,7 +364,14 @@ namespace Gorgon.Editor.ViewModels
             await projectVm.SaveProjectMetadataAsync();
             CurrentProject = projectVm;
             
-            _settings.LastOpenSavePath = path.FormatDirectory(Path.DirectorySeparatorChar);            
+            _settings.LastProjectWorkingDirectory = project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
+
+            RecentItem dupe = RecentFiles.Files.FirstOrDefault(item => string.Equals(_settings.LastProjectWorkingDirectory, item.FilePath, StringComparison.OrdinalIgnoreCase));
+
+            if (dupe != null)
+            {
+                RecentFiles.Files.Remove(dupe);
+            }
 
             RecentFiles.Files.Add(new RecentItem
             {
@@ -629,7 +636,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="args">The arguments for the command.</param>
         /// <returns><b>true</b> if the project can be created, <b>false</b> if not.</returns>
-        private bool CanCreateProject() => (string.IsNullOrWhiteSpace(NewProject.InvalidPathReason)) && (!string.IsNullOrWhiteSpace(NewProject.Title)) && (NewProject.WorkspacePath != null) && (NewProject.WorkspacePath.Exists);
+        private bool CanCreateProject() => (string.IsNullOrWhiteSpace(NewProject.InvalidPathReason)) && (!string.IsNullOrWhiteSpace(NewProject.Title)) && (NewProject.WorkspacePath != null);
 
         /// <summary>
         /// Function to create a new project.
@@ -657,6 +664,13 @@ namespace Gorgon.Editor.ViewModels
                 CurrentProject = await _viewModelFactory.CreateProjectViewModelAsync(project);
                 _settings.LastProjectWorkingDirectory = project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
 
+                RecentItem dupe = RecentFiles.Files.FirstOrDefault(item => string.Equals(item.FilePath, _settings.LastProjectWorkingDirectory, StringComparison.OrdinalIgnoreCase));
+
+                if (dupe != null)
+                {
+                    RecentFiles.Files.Remove(dupe);
+                }
+                                
                 RecentFiles.Files.Add(new RecentItem
                 {
                     FilePath = _settings.LastProjectWorkingDirectory,
@@ -743,6 +757,8 @@ namespace Gorgon.Editor.ViewModels
 
             NewProject.WaitPanelActivated += NewProject_WaitPanelActivated;
             NewProject.WaitPanelDeactivated += NewProject_WaitPanelDeactivated;
+            RecentFiles.WaitPanelActivated += NewProject_WaitPanelActivated;
+            RecentFiles.WaitPanelDeactivated += NewProject_WaitPanelDeactivated;
         }
 
         /// <summary>
@@ -755,7 +771,9 @@ namespace Gorgon.Editor.ViewModels
             CurrentProject = null;
 
             NewProject.WaitPanelActivated -= NewProject_WaitPanelActivated;
-            NewProject.WaitPanelDeactivated -= NewProject_WaitPanelDeactivated;           
+            NewProject.WaitPanelDeactivated -= NewProject_WaitPanelDeactivated;
+            RecentFiles.WaitPanelActivated -= NewProject_WaitPanelActivated;
+            RecentFiles.WaitPanelDeactivated -= NewProject_WaitPanelDeactivated;
         }
         #endregion
 

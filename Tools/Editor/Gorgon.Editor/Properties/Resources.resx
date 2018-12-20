@@ -673,4 +673,18 @@ The path must not contain the following characters:
 
 Please select another location for your project.</value>
   </data>
+  <data name="GOREDIT_CONFIRM_DELETE_PROJECT_ITEM" xml:space="preserve">
+    <value>This will delete the project at '{0}'.
+
+This action will delete all files and folders from the directory.
+Are you sure you want to do this?</value>
+  </data>
+  <data name="GOREDIT_ERR_DELETING_PROJECT_ITEM" xml:space="preserve">
+    <value>There was an error deleting '{0}'.
+
+Please try again.</value>
+  </data>
+  <data name="GOREDIT_TEXT_DELETING_PROJECT" xml:space="preserve">
+    <value>Deleting '{0}'...</value>
+  </data>
 </root>

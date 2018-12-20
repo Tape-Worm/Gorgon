@@ -29,6 +29,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using Gorgon.Editor.UI;
+using Gorgon.Editor.ProjectData;
+using System;
+using Gorgon.Editor.Services;
+using Gorgon.Editor.Properties;
+using System.Threading.Tasks;
+using System.IO;
+using Gorgon.Editor.Native;
+using Gorgon.Core;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -41,6 +49,8 @@ namespace Gorgon.Editor.ViewModels
         #region Variables.
         // The recent items from the editor settings.
         private List<RecentItem> _recentItems;
+        // The message display service.
+        private IMessageDisplayService _messageDisplay;
         #endregion
 
         #region Properties.
@@ -56,9 +66,52 @@ namespace Gorgon.Editor.ViewModels
             get;
             set;
         }
+
+        /// <summary>Property to set or return the command used to delete a project.</summary>        
+        public IEditorCommand<RecentItemDeleteEventArgs> DeleteItemCommand
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to delete a project item.
+        /// </summary>
+        /// <param name="args">The arguments for the command.</param>
+        private async void DoDeleteItemAsync(RecentItemDeleteEventArgs args)
+        {
+            try
+            {
+                if (_messageDisplay.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_DELETE_PROJECT_ITEM, args.Item.FilePath)) == MessageResponse.No)
+                {
+                    args.Cancel = true;
+                    return;
+                }
+
+                ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_DELETING_PROJECT, args.Item.FilePath.Ellipses(40, true)));
+
+                // We will send the project to the recycle bin so it can be recovered if need be.
+                await Task.Run(() =>
+                {
+                    if (Directory.Exists(args.Item.FilePath))
+                    {
+                        Shell32.SendToRecycleBin(args.Item.FilePath, Shell32.FileOperationFlags.FOF_SILENT | Shell32.FileOperationFlags.FOF_NOCONFIRMATION | Shell32.FileOperationFlags.FOF_WANTNUKEWARNING);
+                    }
+                });
+
+                Files.Remove(args.Item);
+            }
+            catch (Exception ex)
+            {
+                _messageDisplay.ShowError(ex, string.Format(Resources.GOREDIT_ERR_DELETING_PROJECT_ITEM, args.Item.FilePath));
+            }
+            finally
+            {
+                HideWaitPanel();
+            }
+        }
+
         /// <summary>Handles the CollectionChanged event of the Files list.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The [NotifyCollectionChangedEventArgs] instance containing the event data.</param>
@@ -68,7 +121,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 foreach (RecentItem recentItem in e.NewItems.OfType<RecentItem>())
                 {
-                    RecentItem listItem = _recentItems.FirstOrDefault(item => string.Equals(item.FilePath, recentItem.FilePath, System.StringComparison.OrdinalIgnoreCase));
+                    RecentItem listItem = _recentItems.FirstOrDefault(item => string.Equals(item.FilePath, recentItem.FilePath, StringComparison.OrdinalIgnoreCase));
 
                     if (listItem != null)
                     {
@@ -88,7 +141,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 foreach (RecentItem recentItem in e.OldItems.OfType<RecentItem>())
                 {
-                    RecentItem listItem = _recentItems.FirstOrDefault(item => string.Equals(item.FilePath, recentItem.FilePath, System.StringComparison.OrdinalIgnoreCase));
+                    RecentItem listItem = _recentItems.FirstOrDefault(item => string.Equals(item.FilePath, recentItem.FilePath, StringComparison.OrdinalIgnoreCase));
 
                     if (listItem == null)
                     {
@@ -130,6 +183,7 @@ namespace Gorgon.Editor.ViewModels
         protected override void OnInitialize(RecentVmParameters injectionParameters)
         {
             _recentItems = injectionParameters.Settings?.RecentFiles ?? throw new ArgumentMissingException(nameof(RecentVmParameters.Settings), nameof(injectionParameters));
+            _messageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(RecentVmParameters.MessageDisplay), nameof(injectionParameters));
             
             // Only capture up to 150 items.
             Files = new ObservableCollection<RecentItem>(_recentItems.OrderByDescending(item => item.LastUsedDate).Take(150));
@@ -150,6 +204,11 @@ namespace Gorgon.Editor.ViewModels
             base.OnUnload();
             Files.CollectionChanged -= Files_CollectionChanged;
         }
+        #endregion
+
+        #region Constructor.
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ViewModels.RecentVm"/> class.</summary>
+        public RecentVm() => DeleteItemCommand = new EditorCommand<RecentItemDeleteEventArgs>(DoDeleteItemAsync, args => args?.Item != null);
         #endregion
     }
 }

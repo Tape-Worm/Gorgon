@@ -33,6 +33,7 @@ using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
+using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Editor.ViewModels;
@@ -47,98 +48,20 @@ namespace Gorgon.Editor.Views
     internal partial class StageRecent 
         : EditorBaseControl, IDataContext<IRecentVm>
     {
-        #region Classes.
-        /// <summary>
-        /// A comparer used to sort the list view.
-        /// </summary>
-        private class ListSorter
-            : IComparer<ListViewItem>, IComparer
-        {
-            /// <summary>
-            /// Property to set or return the column to sort.
-            /// </summary>
-            public ColumnHeader SortColumn
-            {
-                get;
-                set;
-            }
-
-            /// <summary>
-            /// Property to set or return the order of sorting.
-            /// </summary>
-            public SortOrder Order
-            {
-                get;
-                set;
-            }
-
-            /// <summary>Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.</summary>
-            /// <param name="x">The first object to compare.</param>
-            /// <param name="y">The second object to compare.</param>
-            /// <returns>
-            /// A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />, as shown in the following table.Value Meaning Less than zero
-            /// <paramref name="x" /> is less than <paramref name="y" />.Zero
-            /// <paramref name="x" /> equals <paramref name="y" />.Greater than zero
-            /// <paramref name="x" /> is greater than <paramref name="y" />.
-            /// </returns>
-            public int Compare(ListViewItem x, ListViewItem y)
-            {
-                if ((x == null) || (y == null))
-                {
-                    return 0;
-                }
-
-                var xItem = (RecentItem)x.Tag;
-                var yItem = (RecentItem)y.Tag;
-
-                if ((xItem == null) || (yItem == null))
-                {
-                    return 0;
-                }
-
-#pragma warning disable IDE0046 // Convert to conditional expression
-                if (SortColumn.DisplayIndex != 0)
-                {
-                    return Order == SortOrder.Ascending
-                        ? DateTime.Compare(xItem.LastUsedDate, yItem.LastUsedDate)
-                        : DateTime.Compare(xItem.LastUsedDate, yItem.LastUsedDate) * -1;
-                }
-#pragma warning restore IDE0046 // Convert to conditional expression
-
-                return Order == SortOrder.Ascending
-                    ? string.Compare(xItem.FilePath, yItem.FilePath, StringComparison.CurrentCultureIgnoreCase)
-                    : string.Compare(xItem.FilePath, yItem.FilePath, StringComparison.CurrentCultureIgnoreCase) * -1;
-            }
-
-            /// <summary>Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.</summary>
-            /// <param name="x">The first object to compare.</param>
-            /// <param name="y">The second object to compare.</param>
-            /// <returns>
-            /// A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />, as shown in the following table.Value Meaning Less than zero
-            /// <paramref name="x" /> is less than <paramref name="y" />. Zero
-            /// <paramref name="x" /> equals <paramref name="y" />. Greater than zero
-            /// <paramref name="x" /> is greater than <paramref name="y" />.
-            /// </returns>
-            public int Compare(object x, object y) => Compare((ListViewItem)x, (ListViewItem)y);
-        }
-        #endregion
-
-        #region Variables.
-        // The list item sorter
-        private ListSorter _sorter;
-        // The font used for sub items in the list
-        private Font _subItemFont;
-        // The font used for items in the list
-        private Font _itemFont;
-        #endregion
-
         #region Properties.
         /// <summary>Property to return the data context assigned to this view.</summary>        
+        [Browsable(false)]
         public IRecentVm DataContext
         {
             get;
             private set;
         }
+
+        /// <summary>
+        /// Property to return whether or not the recent items list has any items in it.
+        /// </summary>
+        [Browsable(false)]
+        public bool HasItems => DataContext?.Files.Count > 0;
         #endregion
 
         #region Methods.
@@ -158,60 +81,35 @@ namespace Gorgon.Editor.Views
 
         }
 
-
-        /// <summary>Handles the ItemActivate event of the ListFiles control.</summary>
+        /// <summary>Handles the DeleteItem event of the RecentFiles control.</summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The [EventArgs] instance containing the event data.</param>
-        private void ListFiles_ItemActivate(object sender, EventArgs e)
+        /// <param name="e">The <see cref="RecentItemDeleteEventArgs"/> instance containing the event data.</param>
+        private void RecentFiles_DeleteItem(object sender, RecentItemDeleteEventArgs e)
         {
-            if ((DataContext?.OpenProjectCommand == null) || (ListFiles.SelectedItems.Count != 1))
+            if ((DataContext?.DeleteItemCommand == null) || (!DataContext.DeleteItemCommand.CanExecute(e)))
             {
                 return;
             }
 
-            // Locate the item we've activated.
-            ListViewItem selected = ListFiles.SelectedItems[0];
-
-            if (selected == null)
-            {
-                return;
-            }
-
-            RecentItem recentItem = DataContext.Files.FirstOrDefault(item => string.Equals(item.FilePath, selected.Name, StringComparison.OrdinalIgnoreCase));
-
-            if ((recentItem == null) || (!DataContext.OpenProjectCommand.CanExecute(recentItem)))
-            {
-                return;
-            }
-
-            DataContext.OpenProjectCommand.Execute(recentItem);
+            DataContext.DeleteItemCommand.Execute(e);
         }
 
-        /// <summary>Handles the ColumnClick event of the ListFiles control.</summary>
+        /// <summary>Handles the RecentItemClick event of the RecentFiles control.</summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The [ColumnClickEventArgs] instance containing the event data.</param>
-        private void ListFiles_ColumnClick(object sender, ColumnClickEventArgs e)
+        /// <param name="e">The <see cref="RecentItemClickEventArgs"/> instance containing the event data.</param>
+        private void RecentFiles_RecentItemClick(object sender, RecentItemClickEventArgs e)
         {
-            if (DataContext == null)
+            if ((DataContext?.OpenProjectCommand == null) || (e.Item == null))
+            {
+                return;
+            }
+                        
+            if (!DataContext.OpenProjectCommand.CanExecute(e.Item))
             {
                 return;
             }
 
-            int columnIndex = e.Column.Max(0).Min(ListFiles.Columns.Count - 1);
-            ColumnHeader sortColumn = ListFiles.Columns[columnIndex];
-
-            _sorter.SortColumn = sortColumn;
-            _sorter.Order = _sorter.Order == SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending;
-            try
-            {
-                ListFiles.BeginUpdate();
-                ListFiles.Sort();
-            }
-            finally
-            {
-                ListFiles.EndUpdate();
-                ListFiles.SetSortIcon(sortColumn.Index, _sorter.Order);
-            }
+            DataContext.OpenProjectCommand.Execute(e.Item);
         }
 
         /// <summary>
@@ -224,115 +122,11 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            DataContext.Files.CollectionChanged -= Files_CollectionChanged;
             DataContext.PropertyChanging -= DataContext_PropertyChanging;
             DataContext.PropertyChanged -= DataContext_PropertyChanged;
 
             DataContext.OnUnload();
             DataContext = null;
-        }
-
-        /// <summary>
-        /// Function to reset the control back to its original state when no data context is assigned.
-        /// </summary>
-        private void ResetDataContext() => ListFiles.Items.Clear();
-
-        /// <summary>
-        /// Function to populate the list of files.
-        /// </summary>
-        /// <param name="dataContext">The current data context.</param>
-        private void PopulateFileList(IRecentVm dataContext)
-        {
-            try
-            {
-                ListFiles.BeginUpdate();
-
-                ListFiles.Items.Clear();
-
-                if (dataContext.Files.Count == 0)
-                {
-                    return;
-                }
-
-                foreach (RecentItem file in dataContext.Files)
-                {
-                    var item = new ListViewItem(file.FilePath)
-                    {
-                        Name = file.FilePath,
-                        UseItemStyleForSubItems = false,
-                        Font = _itemFont,
-                        Tag = file
-                    };
-                    ListViewItem.ListViewSubItem subItem = item.SubItems.Add(file.LastUsedDate.ToString(CultureInfo.CurrentCulture));
-                    subItem.Font = _subItemFont;
-                    subItem.ForeColor = Color.FromKnownColor(KnownColor.Gray);
-                    ListFiles.Items.Add(item);
-                }
-
-                ListFiles.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
-                ListFiles.Sort();
-            }
-            finally
-            {
-                ListFiles.EndUpdate();
-                ListFiles.SetSortIcon(_sorter.SortColumn.Index, _sorter.Order);
-            }
-        }
-
-        /// <summary>Handles the CollectionChanged event of the Files control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The [System.Collections.Specialized.NotifyCollectionChangedEventArgs] instance containing the event data.</param>
-        private void Files_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            switch (e.Action)
-            {
-                case NotifyCollectionChangedAction.Add:
-                    foreach (RecentItem recentItem in e.NewItems.OfType<RecentItem>())
-                    {
-                        ListViewItem listItem = null;
-
-                        if (ListFiles.Items.ContainsKey(recentItem.FilePath))
-                        {
-                            listItem = ListFiles.Items[recentItem.FilePath];
-                        }                        
-
-                        if (listItem != null)
-                        {
-                            listItem.SubItems[1].Text = recentItem.LastUsedDate.ToString(CultureInfo.CurrentCulture);
-                            continue;
-                        }
-
-                        listItem = new ListViewItem(recentItem.FilePath)
-                        {
-                            Name = recentItem.FilePath,
-                            UseItemStyleForSubItems = false,
-                            Font = _itemFont,
-                            Tag = recentItem
-                        };
-                        ListViewItem.ListViewSubItem subItem = listItem.SubItems.Add(recentItem.LastUsedDate.ToString(CultureInfo.CurrentCulture));
-                        subItem.Font = _subItemFont;
-                        subItem.ForeColor = Color.FromKnownColor(KnownColor.Gray);
-                        ListFiles.Items.Add(listItem);
-                    }
-                    break;
-                case NotifyCollectionChangedAction.Remove:
-                    foreach (RecentItem recentItem in e.OldItems.OfType<RecentItem>())
-                    {
-                        if (!ListFiles.Items.ContainsKey(recentItem.FilePath))
-                        {
-                            continue;
-                        }
-
-                        ListFiles.Items.RemoveByKey(recentItem.FilePath);
-                    }
-                    break;
-                case NotifyCollectionChangedAction.Reset:
-                    PopulateFileList(DataContext);
-                    break;
-            }
-
-            // TODO: Re-sort the list.
-            ListFiles.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
         }
 
         /// <summary>
@@ -343,11 +137,10 @@ namespace Gorgon.Editor.Views
         {
             if (dataContext == null)
             {
-                ResetDataContext();
                 return;
             }
 
-            PopulateFileList(dataContext);
+            RecentFiles.RecentItems = dataContext.Files;
         }
 
         /// <summary>Raises the <a href="http://msdn.microsoft.com/en-us/library/system.windows.forms.usercontrol.load.aspx" target="_blank">Load</a> event.</summary>
@@ -376,7 +169,6 @@ namespace Gorgon.Editor.Views
 
             DataContext.PropertyChanging += DataContext_PropertyChanging;
             DataContext.PropertyChanged += DataContext_PropertyChanged;
-            DataContext.Files.CollectionChanged += Files_CollectionChanged;
         }
         #endregion
 
@@ -384,18 +176,7 @@ namespace Gorgon.Editor.Views
         /// <summary>
         /// Initializes a new instance of the <see cref="StageRecent"/> class.
         /// </summary>
-        public StageRecent()
-        {
-            InitializeComponent();
-            _sorter = new ListSorter
-            {
-                Order = SortOrder.Descending,
-                SortColumn = ColumnDate
-            };
-            ListFiles.ListViewItemSorter = _sorter;
-            _itemFont = new Font(Font.FontFamily, 10.0f, FontStyle.Regular, Font.Unit);
-            _subItemFont = new Font(Font.FontFamily, 10.0f, FontStyle.Regular, Font.Unit);
-        }
+        public StageRecent() => InitializeComponent();
         #endregion
     }
 }

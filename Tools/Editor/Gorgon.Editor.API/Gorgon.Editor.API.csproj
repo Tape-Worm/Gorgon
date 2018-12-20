@@ -54,9 +54,18 @@
     <Compile Include="CommonEditorConstants.cs" />
     <Compile Include="Content\ContentFileMovedEventArgs.cs" />
     <Compile Include="Plugins\ContentImportPlugin.cs" />
+    <Compile Include="ProjectData\RecentItem.cs" />
     <Compile Include="Services\_Interfaces\IContentImporterPluginService.cs" />
     <Compile Include="Services\_Interfaces\ISearchService.cs" />
     <Compile Include="Services\_Interfaces\IUndoService.cs" />
+    <Compile Include="UI\RecentFilesControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\RecentFilesControl.Designer.cs">
+      <DependentUpon>RecentFilesControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\RecentItemDeleteEventArgs.cs" />
+    <Compile Include="UI\RecentItemClickEventArgs.cs" />
     <Compile Include="UI\ViewFactory.cs" />
     <Compile Include="UI\ViewModels\EditorContentCommon.cs" />
     <Compile Include="Content\_Interfaces\IContentFile.cs" />
@@ -127,10 +136,18 @@
     <Compile Include="UI\_Internal\FormDirectoryLocator.Designer.cs">
       <DependentUpon>FormDirectoryLocator.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\_Internal\RecentItemButton.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\_Internal\RecentItemButton.Designer.cs">
+      <DependentUpon>RecentItemButton.cs</DependentUpon>
+    </Compile>
     <Compile Include="_Extensions\IOExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\recent_item_badge_48x48.png" />
+    <None Include="Resources\recent_item_badge_64x64.png" />
     <None Include="Resources\Pattern.dds" />
     <None Include="Resources\folder_48x48.png" />
     <None Include="Resources\file_48x48.png" />
@@ -145,6 +162,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\RecentFilesControl.resx">
+      <DependentUpon>RecentFilesControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\Views\ContentBaseControl.resx">
       <DependentUpon>ContentBaseControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -153,6 +173,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\_Internal\FormDirectoryLocator.resx">
       <DependentUpon>FormDirectoryLocator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\_Internal\RecentItemButton.resx">
+      <DependentUpon>RecentItemButton.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -81,7 +81,6 @@
     <Compile Include="Plugins\DisabledPlugin.cs" />
     <Compile Include="ProjectData\FileCopyJob.cs" />
     <Compile Include="ProjectData\V2MetadataImporter.cs" />
-    <Compile Include="RecentItem.cs" />
     <Compile Include="RibbonMerger.cs" />
     <Compile Include="Services\ContentImporterPluginService.cs" />
     <Compile Include="Services\ContentPluginService.cs" />

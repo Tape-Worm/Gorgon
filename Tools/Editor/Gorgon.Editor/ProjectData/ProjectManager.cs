@@ -166,17 +166,28 @@ namespace Gorgon.Editor.ProjectData
         {
             int count = 0;
 
+            if (!prevDirectory.Exists)
+            {
+                return;
+            }
+
+            var deleteDir = new DirectoryInfo(prevDirectory.FullName);
+
+            // To avoid issues with delete being an asynchronous operation, we will first rename the directory, and then delete it.
+            // This way we can recreate the directory structure without interference (one would hope at least).
+            deleteDir.MoveTo(Path.Combine(deleteDir.Parent.FullName, Guid.NewGuid().ToString("N")));
+
             // Attempt to delete multiple times if the directory is locked (explorer is a jerk sometimes).
             while (count < 4)
             {
                 try
                 {
-                    if (!prevDirectory.Exists)
+                    if (!deleteDir.Exists)
                     {
                         return;
                     }
 
-                    prevDirectory.Delete(true);
+                    deleteDir.Delete(true);
                     break;
                 }
                 catch (Exception ex)
@@ -188,6 +199,8 @@ namespace Gorgon.Editor.ProjectData
                     Thread.Sleep(250);
                 }
             }
+
+            prevDirectory.Refresh();
         }
 
         /// <summary>

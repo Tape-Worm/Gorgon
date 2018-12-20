@@ -91,7 +91,7 @@
             this.ButtonSave.Padding = new System.Windows.Forms.Padding(0, 0, 0, 3);
             this.ButtonSave.Size = new System.Drawing.Size(310, 57);
             this.ButtonSave.TabIndex = 3;
-            this.ButtonSave.Text = "&Save \'untitled\'";
+            this.ButtonSave.Text = "&Save";
             this.ButtonSave.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.ButtonSave.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.ButtonSave.UseVisualStyleBackColor = true;
@@ -166,7 +166,7 @@
             this.CheckRecent.Padding = new System.Windows.Forms.Padding(0, 0, 0, 3);
             this.CheckRecent.Size = new System.Drawing.Size(310, 57);
             this.CheckRecent.TabIndex = 4;
-            this.CheckRecent.Text = "&Recent files";
+            this.CheckRecent.Text = "&Recent projects";
             this.CheckRecent.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.CheckRecent.UseVisualStyleBackColor = true;
             this.CheckRecent.Click += new System.EventHandler(this.CheckRecent_Click);

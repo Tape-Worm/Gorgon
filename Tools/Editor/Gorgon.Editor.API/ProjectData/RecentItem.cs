@@ -20,45 +20,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: October 28, 2018 3:44:09 PM
+// Created: October 28, 2018 3:57:27 PM
 // 
 #endregion
 
-using System.Collections.ObjectModel;
-using Gorgon.Editor.ProjectData;
-using Gorgon.Editor.UI;
+using System;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ProjectData
 {
     /// <summary>
-    /// View model for the recent files list.
+    /// A recent item value.
     /// </summary>
-    internal interface IRecentVm
-        : IViewModel
+    public class RecentItem
     {
         /// <summary>
-        /// Property to return the list of recent files.
+        /// Property to set or return the last time the file was used.
         /// </summary>
-        ObservableCollection<RecentItem> Files
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set or return the command used to open a project.
-        /// </summary>
-        IEditorCommand<RecentItem> OpenProjectCommand
+        public DateTime LastUsedDate
         {
             get;
             set;
         }
 
         /// <summary>
-        /// Property to set or return the command used to delete a project.
+        /// Property to set or return the file path.
         /// </summary>
-        IEditorCommand<RecentItemDeleteEventArgs> DeleteItemCommand
+        public string FilePath
         {
             get;
+            set;
         }
     }
 }

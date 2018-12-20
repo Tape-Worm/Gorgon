@@ -20,35 +20,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: October 28, 2018 3:57:27 PM
+// Created: December 20, 2018 2:04:25 AM
 // 
 #endregion
 
 using System;
+using System.ComponentModel;
+using Gorgon.Editor.ProjectData;
 
-namespace Gorgon.Editor
+namespace Gorgon.Editor.UI
 {
     /// <summary>
-    /// A recent item value.
+    /// Event arguments for the <see cref="RecentFilesControl.DeleteItem"/> event.
     /// </summary>
-    internal class RecentItem
+    public class RecentItemDeleteEventArgs
+        : CancelEventArgs
     {
         /// <summary>
-        /// Property to set or return the last time the file was used.
+        /// Property to return the item that was clicked.
         /// </summary>
-        public DateTime LastUsedDate
+        public RecentItem Item
         {
             get;
-            set;
         }
 
-        /// <summary>
-        /// Property to set or return the file path.
-        /// </summary>
-        public string FilePath
-        {
-            get;
-            set;
-        }
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.UI.RecentItemDeleteEventArgs"/> class.</summary>
+        /// <param name="item">The item.</param>
+        public RecentItemDeleteEventArgs(RecentItem item) => Item = item;
     }
 }

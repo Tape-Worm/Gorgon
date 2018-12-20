@@ -359,6 +359,18 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This will delete the project at &apos;{0}&apos;.
+        ///
+        ///This action will delete all files and folders from the directory.
+        ///Are you sure you want to do this?.
+        /// </summary>
+        internal static string GOREDIT_CONFIRM_DELETE_PROJECT_ITEM {
+            get {
+                return ResourceManager.GetString("GOREDIT_CONFIRM_DELETE_PROJECT_ITEM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This directory already contains an editor project named &apos;{0}&apos;.
         ///
         ///Would you like to overwrite it?.
@@ -612,6 +624,17 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_DELETE_ALL {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_DELETE_ALL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error deleting &apos;{0}&apos;.
+        ///
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_DELETING_PROJECT_ITEM {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_DELETING_PROJECT_ITEM", resourceCulture);
             }
         }
         
@@ -1085,6 +1108,15 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_TEXT_DELETING {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_DELETING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deleting &apos;{0}&apos;....
+        /// </summary>
+        internal static string GOREDIT_TEXT_DELETING_PROJECT {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_DELETING_PROJECT", resourceCulture);
             }
         }
         

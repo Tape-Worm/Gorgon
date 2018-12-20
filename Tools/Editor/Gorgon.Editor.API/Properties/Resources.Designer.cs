@@ -296,5 +296,25 @@ namespace Gorgon.Editor.Properties {
                 return ResourceManager.GetString("GOREDIT_TITLE_SAVE_FILE", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap recent_item_badge_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("recent_item_badge_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap recent_item_badge_64x64 {
+            get {
+                object obj = ResourceManager.GetObject("recent_item_badge_64x64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

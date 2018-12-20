@@ -20,45 +20,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: October 28, 2018 3:44:09 PM
+// Created: December 20, 2018 2:04:25 AM
 // 
 #endregion
 
-using System.Collections.ObjectModel;
+using System;
 using Gorgon.Editor.ProjectData;
-using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.UI
 {
     /// <summary>
-    /// View model for the recent files list.
+    /// Event arguments for the <see cref="RecentFilesControl.RecentItemClick"/> event.
     /// </summary>
-    internal interface IRecentVm
-        : IViewModel
+    public class RecentItemClickEventArgs
+        : EventArgs
     {
         /// <summary>
-        /// Property to return the list of recent files.
+        /// Property to return the item that was clicked.
         /// </summary>
-        ObservableCollection<RecentItem> Files
+        public RecentItem Item
         {
             get;
         }
 
-        /// <summary>
-        /// Property to set or return the command used to open a project.
-        /// </summary>
-        IEditorCommand<RecentItem> OpenProjectCommand
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the command used to delete a project.
-        /// </summary>
-        IEditorCommand<RecentItemDeleteEventArgs> DeleteItemCommand
-        {
-            get;
-        }
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.UI.RecentItemClickEventArgs"/> class.</summary>
+        /// <param name="item">The item.</param>
+        public RecentItemClickEventArgs(RecentItem item) => Item = item;
     }
 }

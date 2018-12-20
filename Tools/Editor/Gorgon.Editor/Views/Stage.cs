@@ -75,8 +75,10 @@ namespace Gorgon.Editor.Views
             get => _isStartup;
             set
             {
+                SuspendLayout();
                 ButtonSave.Visible = ButtonSaveAs.Visible = PanelBack.Visible = !value;
                 _isStartup = value;
+                ResumeLayout(true);
             }
         }
 
@@ -169,6 +171,19 @@ namespace Gorgon.Editor.Views
         {
             EventHandler handler = OpenClicked;
             handler?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
+        /// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+
+            // If we have recent items, then start with the recent items list instead of the new project item.
+            if (Recent.HasItems)
+            {
+                CheckRecent.PerformClick();
+            }
         }
         #endregion
 

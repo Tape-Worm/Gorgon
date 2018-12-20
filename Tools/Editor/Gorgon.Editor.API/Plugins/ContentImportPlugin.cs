@@ -46,6 +46,13 @@ namespace Gorgon.Editor.Plugins
     public abstract class ContentImportPlugin
         : EditorPlugin
     {
+        #region Constants.
+        /// <summary>
+        /// An attribute name for the file metadata to indicate that this item was imported.
+        /// </summary>
+        public const string ImportOriginalFileNameAttr = "ImportOriginalName";
+        #endregion
+
         #region Variables.
         // Flag to indicate that the plugin is initialized.
         private int _initialized;

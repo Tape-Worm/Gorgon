@@ -39,6 +39,7 @@ using Gorgon.Core;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Data;
 using Gorgon.Editor.Metadata;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
@@ -906,6 +907,7 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 FileSystemConflictResolution resolution = FileSystemConflictResolution.Skip;
+                var importedFiles = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
                 // Finally, copy the files.
                 foreach (FileInfo file in files)
@@ -979,10 +981,20 @@ namespace Gorgon.Editor.ViewModels
                     totalBytesCopied += file.Length;
 
                     // Don't leave working files lying around.
-                    if ((importResult.importer != null) && (importResult.updatedFile != null) && (importResult.importer.NeedsCleanup) && (importResult.updatedFile.Exists))
+                    if ((importResult.importer != null) && (importResult.updatedFile != null))
                     {
-                        importResult.updatedFile.Delete();
-                        importResult.updatedFile.Refresh();
+                        // This is the destination file for our backup of the imported file.
+                        string sourcePath = Path.Combine(_project.SourceDirectory.FullName, Guid.NewGuid().ToString("N")) + file.Extension;
+                        file.CopyTo(sourcePath, true);
+
+                        // Record this import so we can update the node attributes after reload.
+                        importedFiles[newFile.FullName] = sourcePath;
+
+                        if ((importResult.importer.NeedsCleanup) && (importResult.updatedFile.Exists))
+                        {
+                            importResult.updatedFile.Delete();
+                            importResult.updatedFile.Refresh();
+                        }
                     }
                 }
 
@@ -1001,6 +1013,17 @@ namespace Gorgon.Editor.ViewModels
                 RefreshNode(node, true);
 
                 await ScanFilesAsync(node);
+
+                // Update the import attribute for the node. This only applies to content nodes.
+                foreach (IFileExplorerNodeVm contentNode in node.Children.Traverse(n => n.Children).Where(item => item.IsContent))
+                {
+                    if (!importedFiles.TryGetValue(contentNode.PhysicalPath, out string sourcePath))
+                    {
+                        continue;
+                    }
+
+                    contentNode.Metadata.Attributes[ContentImportPlugin.ImportOriginalFileNameAttr] = sourcePath;
+                }
 
                 node.IsExpanded = true;
                 SelectedNode = node;
@@ -1983,6 +2006,13 @@ namespace Gorgon.Editor.ViewModels
                         return;
                     }
 
+                    // This file is already imported, so there's no point in trying to import it again.
+                    if (node.Metadata.Attributes.ContainsKey(ContentImportPlugin.ImportOriginalFileNameAttr))
+                    {
+                        continue;
+                    }
+
+                    var sourceFile = new FileInfo(node.PhysicalPath);
                     importResult = await CustomImportFileAsync(new FileInfo(node.PhysicalPath), cancelToken);
 
                     if ((importResult.outputFile == null) || (importResult.importer == null))
@@ -1999,10 +2029,20 @@ namespace Gorgon.Editor.ViewModels
 
                     node.RenameNode(newName);
 
+                    // First, copy the old file into the source directory.
+                    string srcPath = Path.Combine(_project.SourceDirectory.FullName, Guid.NewGuid().ToString("N")) + sourceFile.Extension;
+                    sourceFile.MoveTo(srcPath);
+                    
                     // Copy over the contents of the old file.
                     importResult.outputFile.CopyTo(node.PhysicalPath, true);
+
+                    // Record the name of the source file.
+                    node.Metadata.Attributes[ContentImportPlugin.ImportOriginalFileNameAttr] = srcPath;
+
                     // Update the metadata information.
                     content?.RefreshMetadata();
+
+                    OnFileSystemChanged();
                 }
                 finally
                 {
