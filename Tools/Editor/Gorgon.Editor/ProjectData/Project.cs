@@ -57,10 +57,11 @@ namespace Gorgon.Editor.ProjectData
         } = CommonEditorConstants.EditorCurrentProjectVersion;
 
         /// <summary>
-        /// Property to set or return the workspace used by the project.
+        /// Property to return the workspace used by the project.
         /// </summary>
         /// <remarks>
-        /// A project workspace is a folder on the local file system that contains a copy of the project content. This folder is transitory, and will be cleaned up upon application exit.
+        /// A project work space is a folder on the local file system that contains a copy of the project content. This is the location of data required for the project, but should not be part of the file 
+        /// system.
         /// </remarks>
         [JsonIgnore]
         public DirectoryInfo ProjectWorkSpace
@@ -70,14 +71,43 @@ namespace Gorgon.Editor.ProjectData
         }
 
         /// <summary>
-        /// Property to return the scratch space directory for the project.
+        /// Property to return the temporary directory for the project.
         /// </summary>
         /// <remarks>
-        /// The scratch space directory is a temporary directory used for plug ins to store transitory data that only needs to exist during the lifetime of the application or plug in. Nothing in this 
-        /// directory is saved into the project.
+        /// The temporary directory is for plug ins and the editor to store transitory data that only needs to exist during the lifetime of the application or plug in. Nothing in this directory is saved 
+        /// into the project.
         /// </remarks>
         [JsonIgnore]
-        public DirectoryInfo ProjectScratchSpace
+        public DirectoryInfo TempDirectory
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the directory for original files that may have been converted during the import process.
+        /// </summary>
+        [JsonIgnore]
+        public DirectoryInfo SourceDirectory
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the directory that houses the file system for the project files.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This directory contains all the files and directories imported by the user into the project.  
+        /// </para>
+        /// <para>
+        /// Files/directories added, or deleted from this via the operating system (e.g. windows explorer), are not tracked and may cause issues. Do not manipulate the data in this directory outside of the 
+        /// application.
+        /// </para>
+        /// </remarks>
+        [JsonIgnore]
+        public DirectoryInfo FileSystemDirectory
         {
             get;
             set;
@@ -137,12 +167,16 @@ namespace Gorgon.Editor.ProjectData
         /// Initializes a new instance of the <see cref="Project"/> class.
         /// </summary>
         /// <param name="workspace">The work space directory for the project.</param>
-        /// <param name="scratchDir">The temporary scratch directory for the project.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="workspace"/>, or the <paramref name="scratchDir"/> parameter is <b>null</b>.</exception>        
-        public Project(DirectoryInfo workspace, DirectoryInfo scratchDir)
+        /// <param name="tempDir">The temporary scratch directory for the project.</param>
+        /// <param name="fileSystemDir">The directory used to store the file/directory information for the project.</param>
+        /// <param name="srcDirectory">The directory used to sure the original file(s) for imported and converted file data.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="workspace"/>, <paramref name="tempDir"/>, <paramref name="fileSystemDir"/>, or the <paramref name="srcDirectory"/> parameter is <b>null</b>.</exception>        
+        public Project(DirectoryInfo workspace, DirectoryInfo tempDir, DirectoryInfo fileSystemDir, DirectoryInfo srcDirectory)
         {
             ProjectWorkSpace = workspace ?? throw new ArgumentNullException(nameof(workspace));
-            ProjectScratchSpace = scratchDir ?? throw new ArgumentNullException(nameof(scratchDir));
+            TempDirectory = tempDir ?? throw new ArgumentNullException(nameof(tempDir));
+            FileSystemDirectory = fileSystemDir ?? throw new ArgumentNullException(nameof(fileSystemDir));
+            SourceDirectory = srcDirectory ?? throw new ArgumentNullException(nameof(srcDirectory));
         }
         #endregion
     }

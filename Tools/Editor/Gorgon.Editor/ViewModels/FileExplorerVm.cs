@@ -394,7 +394,7 @@ namespace Gorgon.Editor.ViewModels
                 // Function to update the delete progress information and handle metadata update.
                 void UpdateDeleteProgress(FileSystemInfo fileSystemItem)
                 {
-                    string path = fileSystemItem.ToFileSystemPath(_project.ProjectWorkSpace);
+                    string path = fileSystemItem.ToFileSystemPath(_project.FileSystemDirectory);
                     UpdateMarequeeProgress($"{path}", Resources.GOREDIT_TEXT_DELETING, cancelSource.Cancel);
 
                     // Remove this item from the metadata.
@@ -586,7 +586,7 @@ namespace Gorgon.Editor.ViewModels
 
             nodeToRefresh.Children.Clear();
 
-            var parent = new DirectoryInfo(nodeToRefresh == RootNode ? _project.ProjectWorkSpace.FullName : nodeToRefresh.PhysicalPath);
+            var parent = new DirectoryInfo(nodeToRefresh == RootNode ? _project.FileSystemDirectory.FullName : nodeToRefresh.PhysicalPath);
 
             if (!parent.Exists)
             {
@@ -711,7 +711,7 @@ namespace Gorgon.Editor.ViewModels
         /// <returns>A <see cref="FileSystemConflictResolution"/> value that indicates how to proceed.</returns>
         private FileSystemConflictResolution ResolveImportConflict(FileSystemInfo sourceItem, FileSystemInfo destItem)
         {
-            MessageResponse response = _messageService.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_FILE_EXISTS, sourceItem.Name, destItem.ToFileSystemPath(_project.ProjectWorkSpace)), toAll: true, allowCancel: true);
+            MessageResponse response = _messageService.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_FILE_EXISTS, sourceItem.Name, destItem.ToFileSystemPath(_project.FileSystemDirectory)), toAll: true, allowCancel: true);
 
             switch (response)
             {
@@ -1922,8 +1922,7 @@ namespace Gorgon.Editor.ViewModels
 
                 // Get the list of paths, ordered from shortest to longest and formatted without a trailing separator.
                 string[] orderedPaths = dragData.ExplorerPaths.OrderBy(item => item.Length)
-                    .Select(item => (item.EndsWith(Path.DirectorySeparatorChar.ToString()))|| (item.EndsWith(Path.AltDirectorySeparatorChar.ToString()))
-                                        ? item.Substring(0, item.Length - 1) : item)
+                    .Select(item => item.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar))
                     .ToArray();
 
                 // Get the common directory name.

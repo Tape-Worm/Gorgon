@@ -50,7 +50,8 @@ namespace Gorgon.Editor.ProjectData
         /// Property to return the workspace used by the project.
         /// </summary>
         /// <remarks>
-        /// A project work space is a folder on the local file system that contains a copy of the project content. This folder is transitory, and will be cleaned up upon application exit.
+        /// A project work space is a folder on the local file system that contains a copy of the project content. This is the location of data required for the project, but should not be part of the file 
+        /// system.
         /// </remarks>
         [JsonIgnore]
         DirectoryInfo ProjectWorkSpace
@@ -59,14 +60,41 @@ namespace Gorgon.Editor.ProjectData
         }
 
         /// <summary>
-        /// Property to return the scratch space directory for the project.
+        /// Property to return the temporary directory for the project.
         /// </summary>
         /// <remarks>
-        /// The scratch space directory is a temporary directory used for plug ins to store transitory data that only needs to exist during the lifetime of the application or plug in. Nothing in this 
-        /// directory is saved into the project.
+        /// The temporary directory is for plug ins and the editor to store transitory data that only needs to exist during the lifetime of the application or plug in. Nothing in this directory is saved 
+        /// into the project.
         /// </remarks>
         [JsonIgnore]
-        DirectoryInfo ProjectScratchSpace
+        DirectoryInfo TempDirectory
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the directory for original files that may have been converted during the import process.
+        /// </summary>
+        [JsonIgnore]
+        DirectoryInfo SourceDirectory
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the directory that houses the file system for the project files.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This directory contains all the files and directories imported by the user into the project.  
+        /// </para>
+        /// <para>
+        /// Files/directories added, or deleted from this via the operating system (e.g. windows explorer), are not tracked and may cause issues. Do not manipulate the data in this directory outside of the 
+        /// application.
+        /// </para>
+        /// </remarks>
+        [JsonIgnore]
+        DirectoryInfo FileSystemDirectory
         {
             get;
         }

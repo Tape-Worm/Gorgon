@@ -77,6 +77,8 @@ namespace Gorgon.Editor.ViewModels
         private IEditorContent _currentContent;
         // The window layout XML.
         private byte[] _layout;
+        // The title for the project.
+        private string _projectTitle = Resources.GOREDIT_NEW_PROJECT;
         #endregion
 
         #region Properties.
@@ -237,28 +239,19 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to set or return the title for the project.
         /// </summary>
-        public string ProjectTitle => string.IsNullOrWhiteSpace(ProjectFile?.Name) ? Resources.GOREDIT_NEW_PROJECT : Path.GetFileNameWithoutExtension(ProjectFile.Name);
-
-        /// <summary>
-        /// Property to set or return the file information for the project if it was opened from a file.
-        /// </summary>
-        public FileInfo ProjectFile
+        public string ProjectTitle
         {
-            get => _projectFile;
-            set
+            get => _projectTitle;
+            private set
             {
-                if ((_projectFile == value) 
-                    || ((value != null) 
-                        && (_projectFile != null) 
-                        && (string.Equals(value.FullName, _projectFile.FullName, StringComparison.OrdinalIgnoreCase))))
+                if (string.Equals(_projectTitle, value, StringComparison.CurrentCulture))
                 {
                     return;
                 }
 
                 OnPropertyChanging();
-                _projectFile = value;
+                _projectTitle = value;
                 OnPropertyChanged();
-                NotifyPropertyChanged(nameof(ProjectTitle));
             }
         }
         #endregion
@@ -457,6 +450,15 @@ namespace Gorgon.Editor.ViewModels
             _busyService = injectionParameters.BusyService ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.BusyService), nameof(injectionParameters));            
             _contentPlugins = injectionParameters.ContentPlugins ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.ContentPlugins), nameof(injectionParameters));
 
+            if (_projectData.ProjectWorkSpace == null)
+            {
+                _projectTitle = Resources.GOREDIT_NEW_PROJECT;
+            }
+            else
+            {                
+                _projectTitle = _projectData.ProjectWorkSpace.Name;
+            }
+
             FileExplorer.OpenContentFile = new EditorCommand<IContentFile>(DoOpenContent, CanOpenContent);
 
             if (string.IsNullOrWhiteSpace(_viewModelFactory.Settings.WindowLayout))
@@ -469,6 +471,22 @@ namespace Gorgon.Editor.ViewModels
                 _layout = Encoding.UTF8.GetBytes(_viewModelFactory.Settings.WindowLayout);
             }                
         }
+
+        /// <summary>
+        /// Function to persist the project metadata to the disk.
+        /// </summary>
+        /// <returns>A task for asynchronous operation.</returns>
+        public Task SaveProjectMetadataAsync() => Task.Run(() =>
+                                                            {
+                                                                // Rebuild the project item metadata list.
+                                                                _projectData.ProjectItems.Clear();
+                                                                foreach (IFileExplorerNodeVm node in _fileExplorer.RootNode.Children.Traverse(n => n.Children).Where(n => n.Metadata != null))
+                                                                {
+                                                                    _projectData.ProjectItems[node.FullPath] = node.Metadata;
+                                                                }
+
+                                                                _projectManager.PersistMetadata(_projectData);
+                                                            });
 
         /// <summary>
         /// Function to persist the project data to a file.

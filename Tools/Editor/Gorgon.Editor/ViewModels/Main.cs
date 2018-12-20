@@ -309,7 +309,9 @@ namespace Gorgon.Editor.ViewModels
         /// <returns>The project view model.</returns>
         private async Task OpenProjectAsync(string path)
         {
-            (IProject project, bool isUpgraded) = await _projectManager.OpenProjectAsync(path, NewProject.WorkspacePath);
+            IProject project;
+
+            project = await Task.Run(() => _projectManager.OpenProject(new DirectoryInfo(path)));            
 
             if (project == null)
             {
@@ -318,16 +320,16 @@ namespace Gorgon.Editor.ViewModels
             }
 
             IProjectVm projectVm = await _viewModelFactory.CreateProjectViewModelAsync(project);
-            projectVm.ProjectFile = new FileInfo(path);
 
             // The project should not be in a modified state.
             projectVm.ProjectState = ProjectState.Unmodified;
 
-            if (isUpgraded)
+#warning Will we need this for directory file systems?
+            /*if (isUpgraded)
             {
                 await projectVm.FileExplorer.RunImportersAsync(CancellationToken.None);
                 projectVm.ProjectState = ProjectState.Modified;
-            }
+            }*/
 
             // Close the current project.
             CurrentProject = null;
@@ -356,17 +358,13 @@ namespace Gorgon.Editor.ViewModels
                 });
             }
                         
-            bool wasUpdated = await Task.Run(() => _viewModelFactory.FileScanService.Scan(projectVm.FileExplorer.RootNode, UpdateScanProgress, true, true));
+            await Task.Run(() => _viewModelFactory.FileScanService.Scan(projectVm.FileExplorer.RootNode, UpdateScanProgress, true, true));
 
-            // If we changed the project due to some files having plugins associated, then mark as modified so we can save those changes.
-            if (wasUpdated)
-            {
-                projectVm.ProjectState = ProjectState.Modified;
-            }            
-
+            // Update the metadata for the most up-to-date info.
+            await projectVm.SaveProjectMetadataAsync();
             CurrentProject = projectVm;
-            _settings.LastOpenSavePath = Path.GetDirectoryName(path).FormatDirectory(Path.DirectorySeparatorChar);
-            _settings.LastProjectWorkingDirectory = project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
+            
+            _settings.LastOpenSavePath = path.FormatDirectory(Path.DirectorySeparatorChar);            
 
             RecentFiles.Files.Add(new RecentItem
             {
@@ -424,15 +422,14 @@ namespace Gorgon.Editor.ViewModels
                     return;
                 }
 
-                var projectFile = new FileInfo(recentItem.FilePath);
+                var projectDir = new DirectoryInfo(recentItem.FilePath);
+                Program.Log.Print($"Opening '{projectDir.FullName}'...", LoggingLevel.Simple);
 
-                Program.Log.Print($"Opening '{projectFile.FullName}'...", LoggingLevel.Simple);
+                ShowWaitPanel(new WaitPanelActivateArgs(string.Format(Resources.GOREDIT_TEXT_OPENING, projectDir.FullName.Ellipses(65, true)), null));
 
-                ShowWaitPanel(new WaitPanelActivateArgs(string.Format(Resources.GOREDIT_TEXT_OPENING, projectFile.FullName.Ellipses(65, true)), null));
-
-                if (!projectFile.Exists)
+                if (!projectDir.Exists)
                 {
-                    _messageService.ShowError(string.Format(Resources.GOREDIT_ERR_PROJECT_NOT_FOUND, projectFile.FullName));
+                    _messageService.ShowError(string.Format(Resources.GOREDIT_ERR_PROJECT_NOT_FOUND, projectDir.FullName));
 
                     try
                     {
@@ -447,7 +444,7 @@ namespace Gorgon.Editor.ViewModels
                     return;
                 }
 
-                await OpenProjectAsync(recentItem.FilePath);
+                await OpenProjectAsync(projectDir.FullName);
             }
             catch (Exception ex)
             {
@@ -508,7 +505,8 @@ namespace Gorgon.Editor.ViewModels
         private async Task<bool> CreateSaveProjectTask(SaveProjectArgs args)
         {
             var cancelSource = new CancellationTokenSource();
-            FileInfo projectFile = CurrentProject.ProjectFile;
+#warning This used to be retrieved from the current project view model. No longer necessary.
+            FileInfo projectFile = null;
             FileWriterPlugin writer = CurrentProject.WriterPlugin;
             string projectTitle = CurrentProject.ProjectState == ProjectState.New ? string.Empty : CurrentProject.ProjectTitle;
 
@@ -589,8 +587,7 @@ namespace Gorgon.Editor.ViewModels
 
                 if (!args.Cancel)
                 {
-                    CurrentProject.WriterPlugin = writer;
-                    CurrentProject.ProjectFile = projectFile;
+                    CurrentProject.WriterPlugin = writer;                    
                     CurrentProject.ProjectState = ProjectState.Unmodified;
 
                     RecentFiles.Files.Add(new RecentItem
@@ -651,7 +648,7 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 ShowWaitPanel("Creating project...", "Please wait");
-                IProject project = await Task.Run(() => _projectManager.CreateProject(NewProject.WorkspacePath, NewProject.Title));
+                IProject project = await Task.Run(() => _projectManager.CreateProject(NewProject.WorkspacePath));
 
                 // Unload the current project.
                 CurrentProject = null;
@@ -659,6 +656,12 @@ namespace Gorgon.Editor.ViewModels
 
                 CurrentProject = await _viewModelFactory.CreateProjectViewModelAsync(project);
                 _settings.LastProjectWorkingDirectory = project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
+
+                RecentFiles.Files.Add(new RecentItem
+                {
+                    FilePath = _settings.LastProjectWorkingDirectory,
+                    LastUsedDate = DateTime.Now
+                });
             }
             catch (Exception ex)
             {

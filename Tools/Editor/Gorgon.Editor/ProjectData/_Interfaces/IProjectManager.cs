@@ -50,20 +50,31 @@ namespace Gorgon.Editor.ProjectData
 
         #region Methods.
         /// <summary>
+        /// Function to determine if the project workspace directory is locked.
+        /// </summary>
+        /// <param name="workspace">The directory to use as a project workspace.</param>
+        /// <returns><b>true</b> if the project is locked, <b>false</b> if not.</returns>
+        bool IsDirectoryLocked(DirectoryInfo workspace);
+
+        /// <summary>
         /// Function to create a project object.
         /// </summary>
         /// <param name="workspace">The directory used as a work space location.</param>
-        /// <param name="projectName">The name of the project.</param>
         /// <returns>A new project.</returns>
-        IProject CreateProject(DirectoryInfo workspace, string projectName);
+        IProject CreateProject(DirectoryInfo workspace);
+
+        /// <summary>
+        /// Function to open a project workspace directory.
+        /// </summary>
+        /// <param name="projectWorkspace">The directory pointing at the project workspace.</param>
+        /// <returns>The project information for the project data in the work space.</returns>
+        IProject OpenProject(DirectoryInfo projectWorkspace);
 
         /// <summary>
         /// Function to open a project from a file on the disk.
         /// </summary>
         /// <param name="path">The path to the project file.</param>
-        /// <param name="providers">The providers used to read the project file.</param>
         /// <param name="workspace">The workspace directory that will receive the files from the project file.</param>
-        /// <param name="metadataManager">The metadata manager to use for accessing project metadata.</param>
         /// <returns>A new project based on the file that was read.</returns>
         Task<(IProject project, bool isUpgraded)> OpenProjectAsync(string path, DirectoryInfo workspace);
 
@@ -79,17 +90,16 @@ namespace Gorgon.Editor.ProjectData
         Task SaveProjectAsync(IProject project, string path, FileWriterPlugin writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken);
 
         /// <summary>
+        /// Function to persist out the metadata for the project.
+        /// </summary>
+        /// <param name="project">The project to write out.</param>
+        void PersistMetadata(IProject project);
+
+        /// <summary>
         /// Function to close the project and clean up its working data.
         /// </summary>
         /// <param name="project">The project to close.</param>        
         void CloseProject(IProject project);
-
-        /// <summary>
-        /// Function to purge old workspace directories if they were left over (e.g. debug break, crash, etc...)
-        /// </summary>
-        /// <param name="prevDirectory">The previously used directory path for the project.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="prevDirectory"/> parameter is <b>null</b>.</exception>
-        void PurgeStaleDirectories(DirectoryInfo prevDirectory);
         #endregion
     }
 }

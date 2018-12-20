@@ -174,7 +174,7 @@ namespace Gorgon.Editor.Plugins
                 throw new ArgumentNullException(nameof(project));
             }
 
-            string scratchPath = project.ProjectScratchSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
+            string scratchPath = project.TempDirectory.FullName.FormatDirectory(Path.DirectorySeparatorChar);
             var scratchArea = new GorgonFileSystem(log);
             scratchArea.Mount(scratchPath);
             IGorgonFileSystemWriter<Stream> scratchWriter = new GorgonFileSystemWriter(scratchArea, scratchPath);

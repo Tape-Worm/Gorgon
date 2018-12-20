@@ -668,4 +668,9 @@ The path must not contain the following characters:
   <data name="GOREDIT_ERR_NOT_AUTHORIZED" xml:space="preserve">
     <value>The directory '{0}' is not accessible by this user.</value>
   </data>
+  <data name="GOREDIT_ERR_PROJECT_OPEN_LOCKED" xml:space="preserve">
+    <value>The project located at '{0}' is open in another instance of the Gorgon Editor, and is currently locked. 
+
+Please select another location for your project.</value>
+  </data>
 </root>

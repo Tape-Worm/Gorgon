@@ -236,7 +236,7 @@ namespace Gorgon.Editor.ViewModels
             if ((directory.FullName.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.System), StringComparison.OrdinalIgnoreCase))
                 || (directory.FullName.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.Windows), StringComparison.OrdinalIgnoreCase)))
             {
-                InvalidPathReason = string.Format(Resources.GOREDIT_ERR_NOT_AUTHORIZED, directory.FullName);
+                InvalidPathReason = string.Format(Resources.GOREDIT_ERR_NOT_AUTHORIZED, directory.FullName.Ellipses(65, true));
                 return false;
             }
 
@@ -257,19 +257,26 @@ namespace Gorgon.Editor.ViewModels
             }
             catch (UnauthorizedAccessException)
             {
-                InvalidPathReason = string.Format(Resources.GOREDIT_ERR_NOT_AUTHORIZED, directory.FullName);
+                InvalidPathReason = string.Format(Resources.GOREDIT_ERR_NOT_AUTHORIZED, directory.FullName.Ellipses(65, true));
                 return false;
             }
             catch (SecurityException)
             {
-                InvalidPathReason = string.Format(Resources.GOREDIT_ERR_NOT_AUTHORIZED, directory.FullName);
+                InvalidPathReason = string.Format(Resources.GOREDIT_ERR_NOT_AUTHORIZED, directory.FullName.Ellipses(65, true));
                 return false;
             }
-            catch (IOException)
+            catch (IOException ioEx)
             {
-                InvalidPathReason = string.Format(Resources.GOREDIT_ERR_NOT_AUTHORIZED, directory.FullName);
+                InvalidPathReason = string.Format(ioEx.Message, directory.FullName.Ellipses(65, true));
                 return false;
             }
+
+            if (_projectManager.IsDirectoryLocked(directory))
+            {
+                InvalidPathReason = string.Format(Resources.GOREDIT_ERR_PROJECT_OPEN_LOCKED, directory.FullName.Ellipses(65, true));
+                return false;
+            }
+
             return true;
         }
 
@@ -384,10 +391,7 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 // Remove trailing separator if we've supplied one.
-                if (path.EndsWith(Path.DirectorySeparatorChar.ToString()))
-                {
-                    path = path.Substring(0, path.Length - 1);
-                }
+                path = path.TrimEnd(Path.DirectorySeparatorChar);
 
                 // For a path, we can skip the directory separator.
                 foreach (char c in path)

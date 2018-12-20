@@ -126,12 +126,12 @@ namespace Gorgon.Editor.ViewModels
                 throw new ArgumentMissingException(nameof(ViewModelCommonParameters.Project), nameof(injectionParameters));
             }
 
-            if ((injectionParameters.Project?.ProjectWorkSpace == null) || (!injectionParameters.Project.ProjectWorkSpace.Exists))
+            if ((injectionParameters.Project?.FileSystemDirectory == null) || (!injectionParameters.Project.FileSystemDirectory.Exists))
             {
-                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, injectionParameters.Project?.ProjectWorkSpace?.FullName ?? "NULL"));
+                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, injectionParameters.Project?.FileSystemDirectory?.FullName ?? "NULL"));
             }
 
-            _directory = injectionParameters.Project.ProjectWorkSpace;
+            _directory = injectionParameters.Project.FileSystemDirectory;
             _physicalPath = _directory.FullName.FormatDirectory(Path.DirectorySeparatorChar);
         }
 

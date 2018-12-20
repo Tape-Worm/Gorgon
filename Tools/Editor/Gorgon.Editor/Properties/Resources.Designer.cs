@@ -881,6 +881,17 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The project located at &apos;{0}&apos; is open in another instance of the Gorgon Editor, and is currently locked. 
+        ///
+        ///Please select another location for your project..
+        /// </summary>
+        internal static string GOREDIT_ERR_PROJECT_OPEN_LOCKED {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_PROJECT_OPEN_LOCKED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error while refreshing the file system.
         ///Please try again..
         /// </summary>

@@ -115,15 +115,6 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to set or return the file information for the project if it was opened from a file.
-        /// </summary>
-        FileInfo ProjectFile
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Property to set or return the file explorer view model for use with the file explorer subview.
         /// </summary>
         IFileExplorerVm FileExplorer
@@ -152,6 +143,12 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="cancelToken">The token used for cancellation of the operation.</param>
         /// <returns>A task for asynchronous operation.</returns>
         Task PersistProjectAsync(string projectTitle, string path, FileWriterPlugin writer, Action<int, int, bool> progressCallback,  CancellationToken cancelToken);
+
+        /// <summary>
+        /// Function to persist the project metadata to the disk.
+        /// </summary>
+        /// <returns>A task for asynchronous operation.</returns>
+        Task SaveProjectMetadataAsync();
         #endregion
     }
 }

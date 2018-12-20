@@ -25,16 +25,14 @@
 #endregion
 
 using System;
-using System.Buffers;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Plugins;
@@ -43,7 +41,6 @@ using Gorgon.Editor.Services;
 using Gorgon.IO;
 using Gorgon.IO.Providers;
 using Gorgon.Math;
-using Newtonsoft.Json;
 
 namespace Gorgon.Editor.ProjectData
 {
@@ -55,7 +52,18 @@ namespace Gorgon.Editor.ProjectData
     {
         #region Constants
         // The extension applied to editor project directories.
-        private const string EditorProjectDirectoryExtension = ".gorEditProj";        
+        private const string EditorProjectDirectoryExtension = ".gorEditProj";
+        // The temporary directory name.
+        private const string TemporaryDirectoryName = "tmp";
+        // The source directory name.
+        private const string SourceDirectoryName = "src";
+        // The file system directory name.
+        private const string FileSystemDirectoryName = "fs";
+        #endregion
+
+        #region Variables.
+        // The stream used for the lock file.
+        private Stream _lockStream;
         #endregion
 
         #region Properties.
@@ -70,54 +78,63 @@ namespace Gorgon.Editor.ProjectData
 
         #region Methods.
         /// <summary>
-        /// Function to return a temporary scratch directory for the project.
+        /// Function to set up the required project directories.
         /// </summary>
-        /// <param name="workspace">The workspace location for the directory.</param>
-        /// <returns>The temporary scratch directory.</returns>
-        private static DirectoryInfo GetScratchDirectory(DirectoryInfo workspace)
+        /// <param name="basePath">The base path for the project.</param>
+        /// <returns>The required folders for the project.</returns>
+        private (DirectoryInfo workspace, DirectoryInfo fileSystemDir, DirectoryInfo tempDir, DirectoryInfo srcDir) SetupProjectFolders(string basePath)
         {
-            var scratchLocation = new DirectoryInfo(Path.Combine(workspace.FullName, $"Scratch_{Guid.NewGuid().ToString("N")}"));
+            var workspace = new DirectoryInfo(basePath);
 
-            if (!scratchLocation.Exists)
-            {
-                scratchLocation.Create();
-                scratchLocation.Refresh();
-            }
+            workspace.Create();
+            workspace.Refresh();
 
-            return scratchLocation;
+            var fileSystemDir = new DirectoryInfo(Path.Combine(workspace.FullName, FileSystemDirectoryName));
+            var tempDir = new DirectoryInfo(Path.Combine(workspace.FullName, TemporaryDirectoryName));
+            var srcDir = new DirectoryInfo(Path.Combine(workspace.FullName, SourceDirectoryName));
+
+            tempDir.Create();
+            fileSystemDir.Create();
+            srcDir.Create();
+            
+            tempDir.Refresh();
+            fileSystemDir.Refresh();
+            srcDir.Refresh();
+
+            Lock(workspace);
+
+            return (workspace, fileSystemDir, tempDir, srcDir);
         }
 
         /// <summary>
-        /// Function to return a new project workspace directory.
+        /// Function to place a lock file in the project workspace directory.
         /// </summary>
-        /// <param name="workspace">The base workspace directory.</param>
-        /// <returns>The project workspace directory.</returns>
-        private static DirectoryInfo GetProjectWorkspace(DirectoryInfo workspace)
+        /// <param name="projectDir">The project workspace directory.</param>
+        private void Lock(DirectoryInfo projectDir)
         {
-            var result = new DirectoryInfo(Path.ChangeExtension(Path.Combine(workspace.FullName, Guid.NewGuid().ToString("N")), EditorProjectDirectoryExtension));
-
-            if (!result.Exists)
-            {
-                result.Create();
-                result.Refresh();
-            }
-
-            return result;
+            _lockStream = File.Open(projectDir.FullName.FormatDirectory(Path.DirectorySeparatorChar) + ".gorlock", FileMode.Create, FileAccess.Write, FileShare.None);
+            _lockStream.WriteByte(1);
+            _lockStream.Flush();
         }
 
         /// <summary>
-        /// Function to persist out the metadata for the project.
+        /// Function to place a lock file in the project workspace directory.
         /// </summary>
-        /// <param name="project">The project to write out.</param>
-        /// <param name="path">The path to the metadata file.</param>
-        private void PersistMetadata(IProject project)
+        /// <param name="projectDir">The project workspace directory.</param>
+        private void Unlock(DirectoryInfo projectDir)
         {
-            // First, write out the metadata so we cans store it in the project file.
-            Program.Log.Print("Writing metadata.", LoggingLevel.Verbose);
-            using (var jsonWriter = new StreamWriter(Path.Combine(project.ProjectWorkSpace.FullName, CommonEditorConstants.EditorMetadataFileName), false, Encoding.UTF8))
+            Stream lockStream = Interlocked.Exchange(ref _lockStream, null);
+                       
+            if (lockStream != null)
             {
-                jsonWriter.Write(JsonConvert.SerializeObject(project));
-                jsonWriter.Flush();
+                lockStream.Dispose();
+            }
+
+            var file = new FileInfo(projectDir.FullName.FormatDirectory(Path.DirectorySeparatorChar) + ".gorlock");
+
+            if (file.Exists)
+            {
+                file.Delete();
             }
         }
 
@@ -145,12 +162,12 @@ namespace Gorgon.Editor.ProjectData
         /// </summary>
         /// <param name="prevDirectory">The previously used directory path for the project.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="prevDirectory"/> parameter is <b>null</b>.</exception>
-        public void PurgeStaleDirectories(DirectoryInfo prevDirectory)
+        private void PurgeStaleDirectories(DirectoryInfo prevDirectory)
         {
             int count = 0;
 
             // Attempt to delete multiple times if the directory is locked (explorer is a jerk sometimes).
-            while (count < 3)
+            while (count < 4)
             {
                 try
                 {
@@ -168,7 +185,7 @@ namespace Gorgon.Editor.ProjectData
                     ++count;
 
                     // Give the system some time. Sometimes explorer will release its lock.
-                    System.Threading.Thread.Sleep(250);
+                    Thread.Sleep(250);
                 }
             }
         }
@@ -283,9 +300,8 @@ namespace Gorgon.Editor.ProjectData
         /// Function to build the project information from the metadata.
         /// </summary>
         /// <param name="metaDataFile">The metadata file to use.</param>
-        /// <param name="scratchArea">The scratch area used for temporary files.</param>
         /// <returns>A new project object.</returns>
-        private IProject CreateFromMetadata(FileInfo metaDataFile, DirectoryInfo scratchArea)
+        private IProject CreateFromMetadata(FileInfo metaDataFile)
         {
             Project result = null;
 
@@ -297,24 +313,30 @@ namespace Gorgon.Editor.ProjectData
 
                 result = JsonConvert.DeserializeObject<Project>(readJsonData);
                 result.ProjectWorkSpace = metaDataFile.Directory;
-                result.ProjectScratchSpace = scratchArea;
-            }
+                result.FileSystemDirectory = new DirectoryInfo(Path.Combine(result.ProjectWorkSpace.FullName, FileSystemDirectoryName));
+                result.TempDirectory = new DirectoryInfo(Path.Combine(result.ProjectWorkSpace.FullName, TemporaryDirectoryName));
+                result.SourceDirectory = new DirectoryInfo(Path.Combine(result.ProjectWorkSpace.FullName, SourceDirectoryName));
 
-            if (!string.IsNullOrWhiteSpace(result.WriterPluginName))
-            {
-                string writerName = result.WriterPluginName;
-
-                result.AssignWriter(Providers.GetWriterByName(writerName));
-
-                if (result.Writer == null)
+                if (!result.FileSystemDirectory.Exists)
                 {
-                    Program.Log.Print($"WARNING: Project has a writer plug in named '{writerName}', but no such plug in was loaded.", LoggingLevel.Verbose);
+                    Program.Log.Print("[WARNING] The file system directory was not found.", LoggingLevel.Verbose);
+                    result.FileSystemDirectory.Create();
+                    result.FileSystemDirectory.Refresh();
+                }
+
+                if (!result.TempDirectory.Exists)
+                {
+                    Program.Log.Print("[WARNING] The temporary directory was not found.", LoggingLevel.Verbose);
+                    result.TempDirectory.Create();
+                    result.TempDirectory.Refresh();
+                }
+
+                if (!result.SourceDirectory.Exists)
+                {
+                    result.SourceDirectory.Create();
+                    result.SourceDirectory.Refresh();
                 }
             }
-
-            // Here we'll check the version and upgrade as needed. Not necessary now since we're in the first go around.
-
-            Program.Log.Print($"Project version {result.Version}, writer plugin: {result.WriterPluginName}.", LoggingLevel.Verbose);
 
             return result;
         }
@@ -328,8 +350,9 @@ namespace Gorgon.Editor.ProjectData
         /// <returns>A new project file.</returns>
         private async Task<(IProject project, bool isUpgraded)> OpenProjectTask(FileInfo fileSystemFile, IGorgonFileSystemProvider provider, DirectoryInfo workspace)
         {
-            DirectoryInfo projectWorkspace = GetProjectWorkspace(workspace);
-            DirectoryInfo scratchDir = GetScratchDirectory(workspace);
+#warning These are broken.
+            DirectoryInfo projectWorkspace = null;
+            DirectoryInfo scratchDir = null;
 
             FileInfo metaData = await CopyFileSystemAsync(fileSystemFile, provider, projectWorkspace);
 
@@ -340,7 +363,8 @@ namespace Gorgon.Editor.ProjectData
             {
                 Program.Log.Print("No metadata file exists. A new one will be created.", LoggingLevel.Verbose);
 
-                result = new Project(projectWorkspace, scratchDir);
+#warning This is broken.
+                result = new Project(projectWorkspace, scratchDir, null, null);
                 BuildMetadataDatabase(result, metaData);
 
                 var v2Metadata = new FileInfo(Path.Combine(result.ProjectWorkSpace.FullName, V2MetadataImporter.V2MetadataFilename));
@@ -356,7 +380,67 @@ namespace Gorgon.Editor.ProjectData
                 return (result, true);
             }
 
-            return (CreateFromMetadata(metaData, scratchDir), false);
+            return (CreateFromMetadata(metaData), false);
+        }
+
+        /// <summary>
+        /// Function to determine if the project workspace directory is locked.
+        /// </summary>
+        /// <param name="workspace">The directory to use as a project workspace.</param>
+        /// <returns><b>true</b> if the project is locked, <b>false</b> if not.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="workspace"/> parameter is <b>null</b>.</exception>
+        public bool IsDirectoryLocked(DirectoryInfo workspace)
+        {
+            Stream fileStream = null;
+
+            if (workspace == null)
+            {
+                throw new ArgumentNullException(nameof(workspace));
+            }
+
+            workspace.Refresh();
+
+            if (!workspace.Exists)
+            {
+                return false;
+            }
+
+            FileInfo file = null;            
+
+            try
+            {
+                file = new FileInfo(workspace.FullName.FormatDirectory(Path.DirectorySeparatorChar) + ".gorlock");
+
+                if (!file.Exists)
+                {
+                    return false;
+                }
+
+                fileStream = file.Open(FileMode.Append, FileAccess.Write, FileShare.None);
+                fileStream.WriteByte(2);
+                fileStream.Dispose();
+
+                file.Refresh();
+                
+                // If the file exists, but is not locked by the OS, then it's orphaned, and we can continue.
+                // Just clean up after ourselves before we do.
+                if (file.Exists)
+                {
+                    file.Delete();
+                }
+            }
+            catch
+            {
+                // If the file is open, then the directory is considered locked.
+                // Security exceptions also indicate that the directory is locked.
+                return true;
+            }
+            finally
+            {
+                fileStream?.Dispose();
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -371,37 +455,20 @@ namespace Gorgon.Editor.ProjectData
                 throw new ArgumentNullException(nameof(project));
             }
 
-            int count = 0;
+            int count = 0;            
 
             // Try multiple times if explorer is being a jerk.
             while (count < 3)
             {
                 try
                 {
-                    // Blow away the directory containing the project scratch data.
-                    project.ProjectScratchSpace.Delete(true);
-                    project.ProjectScratchSpace.Refresh();
-                    break;
-                }
-                catch (Exception ex)
-                {
-                    Program.Log.LogException(ex);
-                    ++count;
+                    // Ensure the project directory is unlocked.
+                    Unlock(project.ProjectWorkSpace);
 
-                    Thread.Sleep(250);
-                }
-            }
-
-            count = 0;
-
-            // Try multiple times if explorer is being a jerk.
-            while (count < 3)
-            {
-                try
-                {
-                    // Blow away the directory containing the project data.
-                    project.ProjectWorkSpace.Delete(true);
-                    project.ProjectWorkSpace.Refresh();
+                    // Blow away the directory containing the project temporary data.
+                    project.TempDirectory.Delete(true);
+                    project.TempDirectory.Create();
+                    project.TempDirectory.Refresh();
                     break;
                 }
                 catch (Exception ex)
@@ -418,35 +485,41 @@ namespace Gorgon.Editor.ProjectData
         /// Function to create a project object.
         /// </summary>
         /// <param name="workspace">The directory used as a work space location.</param>
-        /// <param name="projectName">The name of the project.</param>
         /// <returns>A new project.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="workspace"/>, or the <paramref name="projectName"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the<paramref name="projectName"/> parameter is empty.</exception>
-        public IProject CreateProject(DirectoryInfo workspace, string projectName)
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="workspace"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="workspace"/> directory is locked, and in use by other Gorgon editor instance.</exception>
+        public IProject CreateProject(DirectoryInfo workspace)
         {
             if (workspace == null)
             {
                 throw new ArgumentNullException(nameof(workspace));
             }
 
-            if (projectName == null)
+            workspace.Refresh();
+
+            // Unlock our own lock prior to creation.
+            Unlock(workspace);
+
+            if (IsDirectoryLocked(workspace))
             {
-                throw new ArgumentNullException(nameof(projectName));
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GOREDIT_ERR_PROJECT_OPEN_LOCKED, workspace.FullName));
             }
 
-            if (string.IsNullOrWhiteSpace(projectName))
+            // If the workspace directory is already in place, then we need to delete the contents of it.
+            if (workspace.Exists)
             {
-                throw new ArgumentEmptyException(nameof(workspace));
+                PurgeStaleDirectories(workspace);      
             }
 
-            DirectoryInfo scratchDir = GetScratchDirectory(workspace);
-            workspace = GetProjectWorkspace(workspace);
+            (DirectoryInfo projectWorkspace, DirectoryInfo projectFileSystem, DirectoryInfo projectTemp, DirectoryInfo projectSource) = SetupProjectFolders(workspace.FullName);
 
-            var metadataFile = new FileInfo(Path.Combine(workspace.FullName, CommonEditorConstants.EditorMetadataFileName));
+            // Set up the directory that will contain our file system.
 
-            var result = new Project(workspace, scratchDir);
+            var metadataFile = new FileInfo(Path.Combine(projectWorkspace.FullName, CommonEditorConstants.EditorMetadataFileName));
 
-            BuildMetadataDatabase(result, metadataFile);
+            var result = new Project(projectWorkspace, projectTemp, projectFileSystem, projectSource);
+
+            BuildMetadataDatabase(result, metadataFile);            
 
             return result;
         }
@@ -488,6 +561,59 @@ namespace Gorgon.Editor.ProjectData
             var outputFile = new FileInfo(path);
             await writer.WriteAsync(outputFile, project.ProjectWorkSpace, progressCallback, cancelToken);
             outputFile.Refresh();
+        }
+
+        /// <summary>
+        /// Function to open a project workspace directory.
+        /// </summary>
+        /// <param name="projectWorkspace">The directory pointing at the project workspace.</param>
+        /// <returns>The project information for the project data in the work space.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="projectWorkspace"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="DirectoryNotFoundException">Thrown when the directory in <paramref name="projectWorkspace"/> was not found.</exception>
+        /// <exception cref="GorgonException">Thrown when the project is locked by another instance of the Gorgon editor.</exception>
+        public IProject OpenProject(DirectoryInfo projectWorkspace)
+        {
+            if (projectWorkspace == null)
+            {
+                throw new ArgumentNullException(nameof(projectWorkspace));
+            }
+
+            projectWorkspace.Refresh();
+
+            if (!projectWorkspace.Exists)
+            {
+                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, projectWorkspace.FullName));
+            }
+
+            // Unlock our own lock prior to opening.
+            Unlock(projectWorkspace);
+
+            if (IsDirectoryLocked(projectWorkspace))
+            {
+                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_PROJECT_OPEN_LOCKED, projectWorkspace.FullName));
+            }
+
+            Lock(projectWorkspace);
+
+            try
+            {
+
+                var metaDataFile = new FileInfo(Path.Combine(projectWorkspace.FullName, CommonEditorConstants.EditorMetadataFileName));
+
+                if (!metaDataFile.Exists)
+                {
+#warning Create a better message for this.
+                    throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_WORKSPACE_NO_DIRECTORY, projectWorkspace.FullName));
+                }
+
+                return CreateFromMetadata(metaDataFile);
+            }
+            catch
+            {
+                // If we have an error, remove the lock right away.
+                Unlock(projectWorkspace);
+                throw;
+            }
         }
 
         /// <summary>
@@ -535,6 +661,27 @@ namespace Gorgon.Editor.ProjectData
             (IProject project, bool isUpgraded) result = await OpenProjectTask(file, provider, workspace);
 
             return result;
+        }
+
+        /// <summary>
+        /// Function to persist out the metadata for the project.
+        /// </summary>
+        /// <param name="project">The project to write out.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/> parameter is <b>null</b>.</exception>
+        public void PersistMetadata(IProject project)
+        {
+            if (project == null)
+            {
+                throw new ArgumentNullException(nameof(project));
+            }
+
+            // First, write out the metadata so we cans store it in the project file.
+            Program.Log.Print("Writing metadata.", LoggingLevel.Verbose);
+            using (var jsonWriter = new StreamWriter(Path.Combine(project.ProjectWorkSpace.FullName, CommonEditorConstants.EditorMetadataFileName), false, Encoding.UTF8))
+            {
+                jsonWriter.Write(JsonConvert.SerializeObject(project));
+                jsonWriter.Flush();
+            }
         }
         #endregion
 

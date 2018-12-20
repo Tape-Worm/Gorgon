@@ -37,6 +37,7 @@ using Gorgon.Diagnostics;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Plugins;
 using Gorgon.Editor.ProjectData;
+using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
@@ -158,7 +159,7 @@ namespace Gorgon.Editor.ViewModels
 
             if (parent.Parent == null)
             {
-                parentPhysicalPath = project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
+                parentPhysicalPath = project.FileSystemDirectory.FullName.FormatDirectory(Path.DirectorySeparatorChar);
                 directoryNodes[parentPhysicalPath] = parent;
             }
             else
@@ -394,19 +395,19 @@ namespace Gorgon.Editor.ViewModels
         /// <returns>The file explorer view model.</returns>
         private IFileExplorerVm CreateFileExplorerViewModel(IProject project, IFileSystemService fileSystemService)
         {
-            project.ProjectWorkSpace.Refresh();
-            if (!project.ProjectWorkSpace.Exists)
+            project.FileSystemDirectory.Refresh();
+            if (!project.FileSystemDirectory.Exists)
             {
-                throw new DirectoryNotFoundException();
+                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, project.FileSystemDirectory.FullName));
             }
 
             var result = new FileExplorerVm();            
             var root = new FileExplorerRootNode();
 
             // This is a special node, used internally.
-            root.Initialize(new FileExplorerNodeParameters(project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar), project, this, fileSystemService));
+            root.Initialize(new FileExplorerNodeParameters(project.FileSystemDirectory.FullName.FormatDirectory(Path.DirectorySeparatorChar), project, this, fileSystemService));
 
-            DoEnumerateFileSystemObjects(project.ProjectWorkSpace.FullName, project, fileSystemService, root);
+            DoEnumerateFileSystemObjects(project.FileSystemDirectory.FullName, project, fileSystemService, root);
 
             var search = new FileSystemSearchSystem(root);
 
@@ -442,7 +443,7 @@ namespace Gorgon.Editor.ViewModels
             _undoService.ClearStack();
             
             var result = new ProjectVm();
-            var fileSystemService = new FileSystemService(projectData.ProjectWorkSpace);
+            var fileSystemService = new FileSystemService(projectData.FileSystemDirectory);
 
             await Task.Run(() => result.FileExplorer = CreateFileExplorerViewModel(projectData, fileSystemService));
 
