@@ -639,6 +639,17 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The directory &apos;{0}&apos; does not contain a Gorgon Editor project.
+        ///
+        ///Please select another directory and try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_DIRECTORY_NO_PROJECT {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_DIRECTORY_NO_PROJECT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The directory &apos;{0}&apos; was not found..
         /// </summary>
         internal static string GOREDIT_ERR_DIRECTORY_NOT_FOUND {
@@ -945,8 +956,7 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error saving the project.
-        ///Please try again..
+        ///   Looks up a localized string similar to There was an error saving the project..
         /// </summary>
         internal static string GOREDIT_ERR_SAVING_PROJECT {
             get {

@@ -41,6 +41,7 @@ using Gorgon.Editor.Services;
 using Gorgon.IO;
 using Gorgon.IO.Providers;
 using Gorgon.Math;
+using System.Diagnostics;
 
 namespace Gorgon.Editor.ProjectData
 {
@@ -615,8 +616,7 @@ namespace Gorgon.Editor.ProjectData
 
                 if (!metaDataFile.Exists)
                 {
-#warning Create a better message for this.
-                    throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_WORKSPACE_NO_DIRECTORY, projectWorkspace.FullName));
+                    throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NO_PROJECT, projectWorkspace.FullName));
                 }
 
                 return CreateFromMetadata(metaDataFile);
@@ -689,11 +689,33 @@ namespace Gorgon.Editor.ProjectData
             }
 
             // First, write out the metadata so we cans store it in the project file.
+            var tempPath = new FileInfo(Path.Combine(project.ProjectWorkSpace.FullName, Guid.NewGuid().ToString("N")));
+            StreamWriter jsonWriter = null;
+
             Program.Log.Print("Writing metadata.", LoggingLevel.Verbose);
-            using (var jsonWriter = new StreamWriter(Path.Combine(project.ProjectWorkSpace.FullName, CommonEditorConstants.EditorMetadataFileName), false, Encoding.UTF8))
+            try
             {
+                // Write to a transactional file first so we don't corrupt the original.
+                jsonWriter = new StreamWriter(tempPath.Open(FileMode.Create, FileAccess.Write, FileShare.None), Encoding.UTF8, 81920, false);
                 jsonWriter.Write(JsonConvert.SerializeObject(project));
                 jsonWriter.Flush();
+                jsonWriter.Close();
+
+                tempPath.Refresh();
+
+                Debug.Assert(tempPath.Exists, "Transaction file not found for metadata.");
+                
+                // When the metadata file is finalized, copy the transaction file over old one to replace (commit phase).
+                tempPath.CopyTo(Path.Combine(project.ProjectWorkSpace.FullName, CommonEditorConstants.EditorMetadataFileName), true);
+            }
+            finally
+            {
+                jsonWriter?.Dispose();
+
+                if (tempPath.Exists)
+                {
+                    tempPath.Delete();
+                }
             }
         }
         #endregion

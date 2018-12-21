@@ -76,20 +76,10 @@ namespace Gorgon.Editor.Views
             set
             {
                 SuspendLayout();
-                ButtonSave.Visible = ButtonSaveAs.Visible = PanelBack.Visible = !value;
+                ButtonSaveAs.Visible = PanelBack.Visible = !value;
                 _isStartup = value;
                 ResumeLayout(true);
             }
-        }
-
-        /// <summary>
-        /// Property to set or return whether the application can save at this time.
-        /// </summary>
-        [Browsable(false)]
-        public bool CanSave
-        {
-            get => ButtonSave.Enabled;
-            set => ButtonSave.Enabled = value;
         }
 
         /// <summary>

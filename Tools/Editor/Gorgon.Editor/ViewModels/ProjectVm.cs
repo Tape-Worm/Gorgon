@@ -69,8 +69,6 @@ namespace Gorgon.Editor.ViewModels
         private IUndoHandler _undoContext;
         // The application project manager.
         private IProjectManager _projectManager;
-        // The file for the project.
-        private FileInfo _projectFile;
         // The content plugin service.
         private IContentPluginManagerService _contentPlugins;        
         // The currently active content.
@@ -82,6 +80,15 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return the task used to save the project data.
+        /// </summary>
+        public Task SavingTask
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// Property to set or return the layout for the window.
         /// </summary>
@@ -136,25 +143,6 @@ namespace Gorgon.Editor.ViewModels
                     CurrentContent.ProgressDeactivated += FileExplorer_ProgressDeactivated;
                     CurrentContent.CloseContent += CurrentContent_CloseContent;
                 }
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return the current file writer plugin used to write the project out to a file.
-        /// </summary>
-        public FileWriterPlugin WriterPlugin
-        {
-            get => _projectData.Writer;
-            set
-            {
-                if (_projectData.Writer == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _projectData.AssignWriter(value);                
-                OnPropertyChanged();
             }
         }
 
@@ -306,16 +294,16 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void FileExplorer_FileSystemChanged(object sender, EventArgs e)
+        private async void FileExplorer_FileSystemChanged(object sender, EventArgs e)
         {
-            // Indicate that the file system has changes now.
-            // This will only be triggered if a change is made to a file that is included in our project.  Excluded files don't matter as they don't get saved.
-            if (_state != ProjectState.Unmodified)
+            try
             {
-                return;
+                await SaveProjectMetadataAsync();
             }
-
-            ProjectState = ProjectState.Modified;
+            catch (Exception ex)
+            {
+                _messageService.ShowError(ex, string.Format(Resources.GOREDIT_ERR_SAVING_PROJECT));
+            }
         }
 
         /// <summary>
@@ -323,6 +311,8 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         private void AssignEvents()
         {
+            UnassignEvents();
+
             if (FileExplorer == null)
             {
                 return;
@@ -476,17 +466,27 @@ namespace Gorgon.Editor.ViewModels
         /// Function to persist the project metadata to the disk.
         /// </summary>
         /// <returns>A task for asynchronous operation.</returns>
-        public Task SaveProjectMetadataAsync() => Task.Run(() =>
-                                                            {
-                                                                // Rebuild the project item metadata list.
-                                                                _projectData.ProjectItems.Clear();
-                                                                foreach (IFileExplorerNodeVm node in _fileExplorer.RootNode.Children.Traverse(n => n.Children).Where(n => n.Metadata != null))
-                                                                {
-                                                                    _projectData.ProjectItems[node.FullPath] = node.Metadata;
-                                                                }
+        public async Task SaveProjectMetadataAsync()
+        {
+            if (SavingTask != null)
+            {
+                await SavingTask;
+            }
 
-                                                                _projectManager.PersistMetadata(_projectData);
-                                                            });
+            SavingTask = Task.Run(() =>
+                                {
+                                    // Rebuild the project item metadata list.
+                                    _projectData.ProjectItems.Clear();
+                                    foreach (IFileExplorerNodeVm node in _fileExplorer.RootNode.Children.Traverse(n => n.Children).Where(n => n.Metadata != null))
+                                    {
+                                        _projectData.ProjectItems[node.FullPath] = node.Metadata;
+                                    }
+
+                                    _projectManager.PersistMetadata(_projectData);
+                                });
+
+            await SavingTask;
+        }
 
         /// <summary>
         /// Function to persist the project data to a file.
@@ -499,7 +499,8 @@ namespace Gorgon.Editor.ViewModels
         /// <returns>A task for asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="projectTitle"/>, <paramref name="path"/>, or the <paramref name="writer"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="projectTitle"/> or the <paramref name="path"/> parameter is empty.</exception>
-        public Task PersistProjectAsync(string projectTitle, string path, FileWriterPlugin writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
+#warning Disabled until Save As functionality is reinstated.
+        private Task PersistProjectAsync(string projectTitle, string path, FileWriterPlugin writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
         {
             if (projectTitle == null)
             {
@@ -527,7 +528,6 @@ namespace Gorgon.Editor.ViewModels
             }
 
             Program.Log.Print("Saving files...", LoggingLevel.Verbose);
-            _projectData.AssignWriter(writer);
 
             // Rebuild the project item metadata list.
             _projectData.ProjectItems.Clear();

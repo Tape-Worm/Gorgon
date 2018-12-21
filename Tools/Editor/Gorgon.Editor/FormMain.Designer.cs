@@ -42,7 +42,6 @@ namespace Gorgon.Editor
             this.ProgressScreen = new Gorgon.UI.GorgonProgressScreenPanel();
             this.WaitScreen = new Gorgon.UI.GorgonWaitScreenPanel();
             this.RibbonMain = new ComponentFactory.Krypton.Ribbon.KryptonRibbon();
-            this.ButtonSave = new ComponentFactory.Krypton.Ribbon.KryptonRibbonQATButton();
             this.TabFileSystem = new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab();
             this.RibbonGroupFileSystemNew = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
             this.kryptonRibbonGroupTriple1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
@@ -780,26 +779,17 @@ namespace Gorgon.Editor
             this.RibbonMain.AllowMinimizedChange = false;
             this.RibbonMain.InDesignHelperMode = true;
             this.RibbonMain.Name = "RibbonMain";
-            this.RibbonMain.QATButtons.AddRange(new System.ComponentModel.Component[] {
-            this.ButtonSave});
             this.RibbonMain.QATUserChange = false;
             this.RibbonMain.RibbonAppButton.AppButtonShowRecentDocs = false;
             this.RibbonMain.RibbonTabs.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab[] {
             this.TabFileSystem});
+            this.RibbonMain.SelectedContext = null;
             this.RibbonMain.SelectedTab = this.TabFileSystem;
             this.RibbonMain.ShowMinimizeButton = false;
             this.RibbonMain.Size = new System.Drawing.Size(1280, 115);
             this.RibbonMain.TabIndex = 0;
             this.RibbonMain.Visible = false;
             this.RibbonMain.AppButtonMenuOpening += new System.ComponentModel.CancelEventHandler(this.RibbonMain_AppButtonMenuOpening);
-            // 
-            // ButtonSave
-            // 
-            this.ButtonSave.Enabled = false;
-            this.ButtonSave.Image = global::Gorgon.Editor.Properties.Resources.save_16x16;
-            this.ButtonSave.Text = "Save";
-            this.ButtonSave.ToolTipBody = "Saves the current project.";
-            this.ButtonSave.Click += new System.EventHandler(this.ButtonSave_Click);
             // 
             // TabFileSystem
             // 
@@ -1001,7 +991,6 @@ namespace Gorgon.Editor
             // 
             this.Stage.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.Stage.CanOpen = true;
-            this.Stage.CanSave = true;
             this.Stage.CanSaveAs = true;
             this.Stage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Stage.Font = new System.Drawing.Font("Segoe UI", 9F);
@@ -1089,7 +1078,6 @@ namespace Gorgon.Editor
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonImport;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonExport;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator3;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonQATButton ButtonSave;
         private Stage Stage;
         private EditorProject PanelProject;
         private System.Windows.Forms.Panel PanelWorkSpace;

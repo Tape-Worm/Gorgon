@@ -100,38 +100,12 @@ namespace Gorgon.Editor.ProjectData
         }
 
         /// <summary>
-        /// Property to set or return the writer used to write to the project file.
-        /// </summary>
-        [JsonIgnore]
-        FileWriterPlugin Writer
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the name of the writer plug in used to write the project file.
-        /// </summary>
-        [JsonProperty]
-        string WriterPluginName
-        {
-            get;
-        }
-
-        /// <summary>
         /// Property to return the list of project items.
         /// </summary>
         Dictionary<string, ProjectItemMetadata> ProjectItems
         {
             get;
         }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to assign a file system writer to the project.
-        /// </summary>
-        /// <param name="plugin">The plug in used to write the project file.</param>
-        void AssignWriter(FileWriterPlugin plugin);
         #endregion
     }
 }

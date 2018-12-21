@@ -71,15 +71,6 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to set or return the current file writer plugin used to write the project out to a file.
-        /// </summary>
-        FileWriterPlugin WriterPlugin
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Property to set or return the active clipboard handler context.
         /// </summary>
         IClipboardHandler ClipboardContext
@@ -130,6 +121,14 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the task used to save the project data.
+        /// </summary>
+        Task SavingTask
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
@@ -142,7 +141,8 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="progressCallback">The callback method that reports the saving progress to the UI.</param>
         /// <param name="cancelToken">The token used for cancellation of the operation.</param>
         /// <returns>A task for asynchronous operation.</returns>
-        Task PersistProjectAsync(string projectTitle, string path, FileWriterPlugin writer, Action<int, int, bool> progressCallback,  CancellationToken cancelToken);
+#warning Disabled until Save As functionality is reinstated
+        //Task PersistProjectAsync(string projectTitle, string path, FileWriterPlugin writer, Action<int, int, bool> progressCallback,  CancellationToken cancelToken);
 
         /// <summary>
         /// Function to persist the project metadata to the disk.

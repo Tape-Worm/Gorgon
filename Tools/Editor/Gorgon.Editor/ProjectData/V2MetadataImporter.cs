@@ -148,9 +148,7 @@ namespace Gorgon.Editor.ProjectData
             if (project == null)
             {
                 throw new ArgumentNullException(nameof(project));
-            }
-
-            project.AssignWriter(null);
+            }                       
 
             if (!_file.Exists)
             {
@@ -168,8 +166,6 @@ namespace Gorgon.Editor.ProjectData
                 Program.Log.Print("No root node found.  Not a v2 Gorgon Editor metadata file.", LoggingLevel.Verbose);
                 return;
             }
-
-            project.AssignWriter(GetWriterPlugin(rootNode));
                         
             GetFiles(project.ProjectItems, rootNode);
 

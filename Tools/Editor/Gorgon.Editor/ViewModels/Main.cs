@@ -325,13 +325,6 @@ namespace Gorgon.Editor.ViewModels
             // The project should not be in a modified state.
             projectVm.ProjectState = ProjectState.Unmodified;
 
-#warning Will we need this for directory file systems?
-            /*if (isUpgraded)
-            {
-                await projectVm.FileExplorer.RunImportersAsync(CancellationToken.None);
-                projectVm.ProjectState = ProjectState.Modified;
-            }*/
-
             // Close the current project.
             CurrentProject = null;
 
@@ -514,7 +507,7 @@ namespace Gorgon.Editor.ViewModels
             var cancelSource = new CancellationTokenSource();
 #warning This used to be retrieved from the current project view model. No longer necessary.
             FileInfo projectFile = null;
-            FileWriterPlugin writer = CurrentProject.WriterPlugin;
+            FileWriterPlugin writer = null;
             string projectTitle = CurrentProject.ProjectState == ProjectState.New ? string.Empty : CurrentProject.ProjectTitle;
 
             try
@@ -524,7 +517,7 @@ namespace Gorgon.Editor.ViewModels
 
                 string path = projectFile?.FullName;
 
-                if ((args.SaveAs) || (string.IsNullOrWhiteSpace(path)) || (CurrentProject.WriterPlugin == null))
+                if ((args.SaveAs) || (string.IsNullOrWhiteSpace(path)) || (writer == null))
                 {
                     if (projectFile != null)
                     {
@@ -544,7 +537,7 @@ namespace Gorgon.Editor.ViewModels
                         _saveDialog.InitialFilePath = string.Empty;
                     }
 
-                    _saveDialog.CurrentWriter = CurrentProject.WriterPlugin;
+                    _saveDialog.CurrentWriter = writer;
 
                     path = _saveDialog.GetFilename();
 
@@ -579,9 +572,10 @@ namespace Gorgon.Editor.ViewModels
                     panelUpdateArgs.CancelAction = allowCancellation ? CancelOperation : (Action)null;
                     panelUpdateArgs.PercentageComplete = (float)currentItem / totalItems;
                     UpdateProgress(panelUpdateArgs);
-                }                
+                }
 
-                await CurrentProject.PersistProjectAsync(projectTitle, path, writer, SaveProgress, cancelSource.Token);
+#warning Disabled until Save As functionality is reinstated.
+                //await CurrentProject.PersistProjectAsync(projectTitle, path, writer, SaveProgress, cancelSource.Token);
 
                 if (cancelSource.Token.IsCancellationRequested)
                 {
@@ -594,7 +588,6 @@ namespace Gorgon.Editor.ViewModels
 
                 if (!args.Cancel)
                 {
-                    CurrentProject.WriterPlugin = writer;                    
                     CurrentProject.ProjectState = ProjectState.Unmodified;
 
                     RecentFiles.Files.Add(new RecentItem
@@ -712,32 +705,12 @@ namespace Gorgon.Editor.ViewModels
                     }
                 }
 
-                // No changes?  The we can just go.
-                if ((CurrentProject == null) || (CurrentProject.ProjectState == ProjectState.Unmodified) || (_saveDialog.Providers.Writers.Count == 0))
+                // Save the project if one is open.
+                if (CurrentProject != null)
                 {
-                    OnUnload();
-                    SaveSettings();                    
-                    return;
+                    await CurrentProject.SaveProjectMetadataAsync();
                 }
 
-                MessageResponse response = _messageService.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_UNSAVED_PROJ, CurrentProject.ProjectTitle), allowCancel: true);
-
-                switch (response)
-                {
-                    case MessageResponse.Cancel:
-                        args.Cancel = true;
-                        return;
-                    case MessageResponse.Yes:
-                        args.Cancel = !(await CreateSaveProjectTask(new SaveProjectArgs(false, CurrentProject)));
-
-                        // We've cancelled the save dialog. Do nothing.
-                        if (args.Cancel)
-                        {
-                            return;
-                        }
-                        break;                    
-                }
-                                
                 OnUnload();
                 SaveSettings();
             }

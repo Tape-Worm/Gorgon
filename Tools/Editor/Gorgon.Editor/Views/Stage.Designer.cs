@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.PanelFunctions = new System.Windows.Forms.Panel();
             this.PanelButtons = new System.Windows.Forms.Panel();
-            this.ButtonSave = new System.Windows.Forms.Button();
             this.ButtonSaveAs = new System.Windows.Forms.Button();
             this.ButtonBrowse = new System.Windows.Forms.Button();
             this.CheckRecent = new System.Windows.Forms.RadioButton();
@@ -41,6 +41,8 @@
             this.PanelBack = new System.Windows.Forms.Panel();
             this.NewProject = new Gorgon.Editor.Views.StageNew();
             this.Recent = new Gorgon.Editor.Views.StageRecent();
+            this.PanelSepSave = new System.Windows.Forms.Panel();
+            this.TipButtons = new System.Windows.Forms.ToolTip(this.components);
             this.PanelFunctions.SuspendLayout();
             this.PanelButtons.SuspendLayout();
             this.PanelLogo.SuspendLayout();
@@ -62,41 +64,16 @@
             // PanelButtons
             // 
             this.PanelButtons.AutoScroll = true;
-            this.PanelButtons.Controls.Add(this.ButtonSave);
             this.PanelButtons.Controls.Add(this.ButtonSaveAs);
+            this.PanelButtons.Controls.Add(this.PanelSepSave);
             this.PanelButtons.Controls.Add(this.ButtonBrowse);
-            this.PanelButtons.Controls.Add(this.CheckRecent);
             this.PanelButtons.Controls.Add(this.CheckNew);
+            this.PanelButtons.Controls.Add(this.CheckRecent);
             this.PanelButtons.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PanelButtons.Location = new System.Drawing.Point(0, 0);
             this.PanelButtons.Name = "PanelButtons";
             this.PanelButtons.Size = new System.Drawing.Size(310, 572);
             this.PanelButtons.TabIndex = 2;
-            // 
-            // ButtonSave
-            // 
-            this.ButtonSave.AutoSize = true;
-            this.ButtonSave.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ButtonSave.Dock = System.Windows.Forms.DockStyle.Top;
-            this.ButtonSave.FlatAppearance.BorderSize = 0;
-            this.ButtonSave.FlatAppearance.MouseDownBackColor = System.Drawing.Color.DarkOrange;
-            this.ButtonSave.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
-            this.ButtonSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ButtonSave.Font = new System.Drawing.Font("Segoe UI", 13.5F);
-            this.ButtonSave.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.ButtonSave.Image = global::Gorgon.Editor.Properties.Resources.stage_save_48x48;
-            this.ButtonSave.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.ButtonSave.Location = new System.Drawing.Point(0, 228);
-            this.ButtonSave.Name = "ButtonSave";
-            this.ButtonSave.Padding = new System.Windows.Forms.Padding(0, 0, 0, 3);
-            this.ButtonSave.Size = new System.Drawing.Size(310, 57);
-            this.ButtonSave.TabIndex = 3;
-            this.ButtonSave.Text = "&Save";
-            this.ButtonSave.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.ButtonSave.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.ButtonSave.UseVisualStyleBackColor = true;
-            this.ButtonSave.Visible = false;
-            this.ButtonSave.Click += new System.EventHandler(this.ButtonSave_Click);
             // 
             // ButtonSaveAs
             // 
@@ -111,14 +88,16 @@
             this.ButtonSaveAs.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ButtonSaveAs.Image = global::Gorgon.Editor.Properties.Resources.stage_save_as_48x48;
             this.ButtonSaveAs.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.ButtonSaveAs.Location = new System.Drawing.Point(0, 171);
+            this.ButtonSaveAs.Location = new System.Drawing.Point(0, 173);
             this.ButtonSaveAs.Name = "ButtonSaveAs";
             this.ButtonSaveAs.Padding = new System.Windows.Forms.Padding(0, 0, 0, 3);
             this.ButtonSaveAs.Size = new System.Drawing.Size(310, 57);
             this.ButtonSaveAs.TabIndex = 2;
-            this.ButtonSaveAs.Text = "Save project &as...";
+            this.ButtonSaveAs.Text = "Save &as...";
             this.ButtonSaveAs.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.ButtonSaveAs.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.TipButtons.SetToolTip(this.ButtonSaveAs, "Save the current project as a packaged file.\r\n\r\nNote: This requires the appropria" +
+        "te plugins be loaded into the editor.\r\n");
             this.ButtonSaveAs.UseVisualStyleBackColor = true;
             this.ButtonSaveAs.Visible = false;
             this.ButtonSaveAs.Click += new System.EventHandler(this.ButtonSaveAs_Click);
@@ -144,6 +123,7 @@
             this.ButtonBrowse.Text = "&Browse for project...";
             this.ButtonBrowse.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.ButtonBrowse.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.TipButtons.SetToolTip(this.ButtonBrowse, "Locate a folder containing a Gorgon Editor project and open it.");
             this.ButtonBrowse.UseVisualStyleBackColor = true;
             this.ButtonBrowse.Click += new System.EventHandler(this.ButtonOpenProject_Click);
             // 
@@ -161,13 +141,14 @@
             this.CheckRecent.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.CheckRecent.Image = global::Gorgon.Editor.Properties.Resources.recent_48x48;
             this.CheckRecent.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.CheckRecent.Location = new System.Drawing.Point(0, 57);
+            this.CheckRecent.Location = new System.Drawing.Point(0, 0);
             this.CheckRecent.Name = "CheckRecent";
             this.CheckRecent.Padding = new System.Windows.Forms.Padding(0, 0, 0, 3);
             this.CheckRecent.Size = new System.Drawing.Size(310, 57);
             this.CheckRecent.TabIndex = 4;
             this.CheckRecent.Text = "&Recent projects";
             this.CheckRecent.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.TipButtons.SetToolTip(this.CheckRecent, "Show and open projects with recent activity.");
             this.CheckRecent.UseVisualStyleBackColor = true;
             this.CheckRecent.Click += new System.EventHandler(this.CheckRecent_Click);
             // 
@@ -186,7 +167,7 @@
             this.CheckNew.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.CheckNew.Image = global::Gorgon.Editor.Properties.Resources.newproject_48x48;
             this.CheckNew.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.CheckNew.Location = new System.Drawing.Point(0, 0);
+            this.CheckNew.Location = new System.Drawing.Point(0, 57);
             this.CheckNew.Name = "CheckNew";
             this.CheckNew.Padding = new System.Windows.Forms.Padding(0, 0, 0, 3);
             this.CheckNew.Size = new System.Drawing.Size(310, 57);
@@ -194,6 +175,7 @@
             this.CheckNew.TabStop = true;
             this.CheckNew.Text = "&New project";
             this.CheckNew.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.TipButtons.SetToolTip(this.CheckNew, "Create a new project.");
             this.CheckNew.UseVisualStyleBackColor = true;
             this.CheckNew.Click += new System.EventHandler(this.CheckNew_Click);
             // 
@@ -273,6 +255,23 @@
             this.Recent.Size = new System.Drawing.Size(626, 613);
             this.Recent.TabIndex = 1;
             // 
+            // PanelSepSave
+            // 
+            this.PanelSepSave.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.PanelSepSave.Dock = System.Windows.Forms.DockStyle.Top;
+            this.PanelSepSave.Location = new System.Drawing.Point(0, 171);
+            this.PanelSepSave.Name = "PanelSepSave";
+            this.PanelSepSave.Size = new System.Drawing.Size(310, 2);
+            this.PanelSepSave.TabIndex = 5;
+            // 
+            // TipButtons
+            // 
+            this.TipButtons.BackColor = System.Drawing.Color.White;
+            this.TipButtons.ForeColor = System.Drawing.Color.Black;
+            this.TipButtons.IsBalloon = true;
+            this.TipButtons.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
+            this.TipButtons.ToolTipTitle = "Info";
+            // 
             // Stage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -303,12 +302,13 @@
         private System.Windows.Forms.Button ButtonBrowse;
         private System.Windows.Forms.RadioButton CheckNew;
         private System.Windows.Forms.Panel PanelLogo;
-        private System.Windows.Forms.Button ButtonSave;
         private System.Windows.Forms.RadioButton CheckRecent;
         private System.Windows.Forms.Button ButtonBack;
         private System.Windows.Forms.Panel PanelBack;
         public StageNew NewProject;
         public System.Windows.Forms.PictureBox PictureLogo;
         public StageRecent Recent;
+        private System.Windows.Forms.Panel PanelSepSave;
+        private System.Windows.Forms.ToolTip TipButtons;
     }
 }

@@ -640,6 +640,8 @@ namespace Gorgon.Editor.ViewModels
 
                 // Scan the files now for updated plugin information.
                 await ScanFilesAsync(node);
+
+                OnFileSystemChanged();
             }
             catch (Exception ex)
             {
@@ -907,7 +909,7 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 FileSystemConflictResolution resolution = FileSystemConflictResolution.Skip;
-                var importedFiles = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                var importedFiles = new Dictionary<string, FileInfo>(StringComparer.OrdinalIgnoreCase);
 
                 // Finally, copy the files.
                 foreach (FileInfo file in files)
@@ -985,10 +987,10 @@ namespace Gorgon.Editor.ViewModels
                     {
                         // This is the destination file for our backup of the imported file.
                         string sourcePath = Path.Combine(_project.SourceDirectory.FullName, Guid.NewGuid().ToString("N")) + file.Extension;
-                        file.CopyTo(sourcePath, true);
+                        FileInfo copy = file.CopyTo(sourcePath, true);
 
                         // Record this import so we can update the node attributes after reload.
-                        importedFiles[newFile.FullName] = sourcePath;
+                        importedFiles[newFile.FullName] = copy;
 
                         if ((importResult.importer.NeedsCleanup) && (importResult.updatedFile.Exists))
                         {
@@ -1017,12 +1019,12 @@ namespace Gorgon.Editor.ViewModels
                 // Update the import attribute for the node. This only applies to content nodes.
                 foreach (IFileExplorerNodeVm contentNode in node.Children.Traverse(n => n.Children).Where(item => item.IsContent))
                 {
-                    if (!importedFiles.TryGetValue(contentNode.PhysicalPath, out string sourcePath))
+                    if (!importedFiles.TryGetValue(contentNode.PhysicalPath, out FileInfo sourcePath))
                     {
                         continue;
                     }
 
-                    contentNode.Metadata.Attributes[ContentImportPlugin.ImportOriginalFileNameAttr] = sourcePath;
+                    contentNode.Metadata.Attributes[ContentImportPlugin.ImportOriginalFileNameAttr] = sourcePath.Name;
                 }
 
                 node.IsExpanded = true;
@@ -1671,8 +1673,6 @@ namespace Gorgon.Editor.ViewModels
                         file.RefreshMetadata();
                     }
                 }
-
-                OnFileSystemChanged();
             }
             finally
             {

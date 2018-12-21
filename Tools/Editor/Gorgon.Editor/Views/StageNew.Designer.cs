@@ -92,10 +92,10 @@ namespace Gorgon.Editor.Views
             // 
             this.panel2.Controls.Add(this.PanelsControls);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(0, 35);
+            this.panel2.Location = new System.Drawing.Point(0, 33);
             this.panel2.Name = "panel2";
             this.panel2.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
-            this.panel2.Size = new System.Drawing.Size(712, 552);
+            this.panel2.Size = new System.Drawing.Size(712, 554);
             this.panel2.TabIndex = 4;
             // 
             // PanelsControls
@@ -104,7 +104,7 @@ namespace Gorgon.Editor.Views
             this.PanelsControls.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PanelsControls.Location = new System.Drawing.Point(0, 1);
             this.PanelsControls.Name = "PanelsControls";
-            this.PanelsControls.Size = new System.Drawing.Size(712, 551);
+            this.PanelsControls.Size = new System.Drawing.Size(712, 553);
             this.PanelsControls.TabIndex = 0;
             // 
             // tableLayoutPanel1
@@ -125,7 +125,7 @@ namespace Gorgon.Editor.Views
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(712, 551);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(712, 553);
             this.tableLayoutPanel1.TabIndex = 9;
             // 
             // ButtonCreate
@@ -135,7 +135,7 @@ namespace Gorgon.Editor.Views
             this.ButtonCreate.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
             this.ButtonCreate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ButtonCreate.Font = new System.Drawing.Font("Segoe UI", 10.5F);
-            this.ButtonCreate.Location = new System.Drawing.Point(64, 365);
+            this.ButtonCreate.Location = new System.Drawing.Point(64, 366);
             this.ButtonCreate.Margin = new System.Windows.Forms.Padding(64, 64, 64, 0);
             this.ButtonCreate.Name = "ButtonCreate";
             this.ButtonCreate.Size = new System.Drawing.Size(584, 52);
@@ -331,7 +331,7 @@ namespace Gorgon.Editor.Views
             this.panel3.Location = new System.Drawing.Point(0, 0);
             this.panel3.Name = "panel3";
             this.panel3.Padding = new System.Windows.Forms.Padding(3, 0, 0, 1);
-            this.panel3.Size = new System.Drawing.Size(712, 35);
+            this.panel3.Size = new System.Drawing.Size(712, 33);
             this.panel3.TabIndex = 5;
             // 
             // panel4
@@ -343,16 +343,17 @@ namespace Gorgon.Editor.Views
             this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel4.Location = new System.Drawing.Point(3, 0);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(709, 34);
+            this.panel4.Size = new System.Drawing.Size(709, 32);
             this.panel4.TabIndex = 1;
             // 
             // LabelHeader
             // 
+            this.LabelHeader.AutoSize = true;
             this.LabelHeader.Dock = System.Windows.Forms.DockStyle.Top;
-            this.LabelHeader.Font = new System.Drawing.Font("Segoe UI", 13.5F);
+            this.LabelHeader.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LabelHeader.Location = new System.Drawing.Point(0, 0);
             this.LabelHeader.Name = "LabelHeader";
-            this.LabelHeader.Size = new System.Drawing.Size(709, 34);
+            this.LabelHeader.Size = new System.Drawing.Size(143, 32);
             this.LabelHeader.TabIndex = 0;
             this.LabelHeader.Text = "New Project";
             this.LabelHeader.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -369,8 +370,10 @@ namespace Gorgon.Editor.Views
             // TipError
             // 
             this.TipError.BackColor = System.Drawing.Color.White;
+            this.TipError.ForeColor = System.Drawing.Color.Black;
+            this.TipError.IsBalloon = true;
             this.TipError.ShowAlways = true;
-            this.TipError.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Warning;
+            this.TipError.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Error;
             this.TipError.ToolTipTitle = "Invalid Path";
             // 
             // StageNew
@@ -400,6 +403,7 @@ namespace Gorgon.Editor.Views
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
             this.panel4.ResumeLayout(false);
+            this.panel4.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
 

@@ -327,8 +327,6 @@ namespace Gorgon.Editor
             ButtonFileSystemCopy.Enabled = _clipboardContext?.CanCopy() ?? false;
             ButtonFileSystemCut.Enabled = _clipboardContext?.CanCut() ?? false;
             ButtonFileSystemPaste.Enabled = _clipboardContext?.CanPaste() ?? false;
-
-            ButtonSave.Enabled = (DataContext.CurrentProject != null) && (DataContext.CurrentProject.ProjectState != ProjectState.Unmodified);
         }
 
         /// <summary>
@@ -382,13 +380,11 @@ namespace Gorgon.Editor
             if (DataContext?.SaveProjectCommand != null)
             {
                 var saveAsArgs = new SaveProjectArgs(true, DataContext.CurrentProject);
-                var saveArgs = new SaveProjectArgs(false, DataContext.CurrentProject);
                 Stage.CanSaveAs = DataContext.SaveProjectCommand.CanExecute(saveAsArgs);
-                Stage.CanSave = DataContext.SaveProjectCommand.CanExecute(saveArgs);                
             }
             else
             {
-                Stage.CanSave = Stage.CanSaveAs = false;
+                Stage.CanSaveAs = false;
             }
 
             Text = string.Empty;
