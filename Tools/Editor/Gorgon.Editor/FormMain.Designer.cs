@@ -783,7 +783,6 @@ namespace Gorgon.Editor
             this.RibbonMain.RibbonAppButton.AppButtonShowRecentDocs = false;
             this.RibbonMain.RibbonTabs.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab[] {
             this.TabFileSystem});
-            this.RibbonMain.SelectedContext = null;
             this.RibbonMain.SelectedTab = this.TabFileSystem;
             this.RibbonMain.ShowMinimizeButton = false;
             this.RibbonMain.Size = new System.Drawing.Size(1280, 115);
@@ -1000,8 +999,9 @@ namespace Gorgon.Editor
             this.Stage.Size = new System.Drawing.Size(1280, 685);
             this.Stage.TabIndex = 1;
             this.Stage.BackClicked += new System.EventHandler(this.StageLive_BackClicked);
-            this.Stage.OpenClicked += new System.EventHandler(this.StageLive_OpenClicked);
-            this.Stage.Save += new System.EventHandler<Gorgon.Editor.Views.SaveEventArgs>(this.StageLive_Save);
+            this.Stage.BrowseClicked += new System.EventHandler(this.StageLive_BrowseClicked);
+            this.Stage.OpenPackFileClicked += new System.EventHandler(this.Stage_OpenClicked);
+            this.Stage.SaveClicked += new System.EventHandler<Gorgon.Editor.Views.SaveEventArgs>(this.StageLive_Save);
             // 
             // PanelProject
             // 

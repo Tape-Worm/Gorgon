@@ -60,7 +60,7 @@ namespace Gorgon.Editor.ViewModels
         // The busy state service.
         private IBusyStateService _busyService;
         // The current project state.
-        private ProjectState _state = ProjectState.New;
+        private ProjectState _state = ProjectState.Unmodified;
         // The file explorer view model.
         private IFileExplorerVm _fileExplorer;
         // The current clipboard handler context.

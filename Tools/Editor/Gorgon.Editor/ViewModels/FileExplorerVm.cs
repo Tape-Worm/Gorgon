@@ -813,7 +813,7 @@ namespace Gorgon.Editor.ViewModels
 
             try
             {
-                result = await Task.Run(() => importer.ImportData(cancelToken), cancelToken);
+                result = await Task.Run(() => importer.ImportData(_project.TempDirectory, cancelToken), cancelToken);
 
                 // Do not import the file if we don't process it.
                 if (result == null)
@@ -2027,22 +2027,21 @@ namespace Gorgon.Editor.ViewModels
                         newName = _fileSystemService.GenerateFileName(importResult.outputFile.FullName);
                     }
 
-                    node.RenameNode(newName);
-
                     // First, copy the old file into the source directory.
                     string srcPath = Path.Combine(_project.SourceDirectory.FullName, Guid.NewGuid().ToString("N")) + sourceFile.Extension;
-                    sourceFile.MoveTo(srcPath);
-                    
+                    sourceFile.CopyTo(srcPath, true);
+
+                    node.RenameNode(newName);
+
                     // Copy over the contents of the old file.
                     importResult.outputFile.CopyTo(node.PhysicalPath, true);
 
                     // Record the name of the source file.
-                    node.Metadata.Attributes[ContentImportPlugin.ImportOriginalFileNameAttr] = srcPath;
+                    var destFile = new FileInfo(srcPath);
+                    node.Metadata.Attributes[ContentImportPlugin.ImportOriginalFileNameAttr] = destFile.Name;
 
                     // Update the metadata information.
                     content?.RefreshMetadata();
-
-                    OnFileSystemChanged();
                 }
                 finally
                 {

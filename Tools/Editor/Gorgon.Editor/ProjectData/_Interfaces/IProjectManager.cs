@@ -57,6 +57,13 @@ namespace Gorgon.Editor.ProjectData
         bool IsDirectoryLocked(DirectoryInfo workspace);
 
         /// <summary>
+        /// Function to determine if a directory is a Gorgon project directory or not.
+        /// </summary>
+        /// <param name="directory">The directory to examine.</param>
+        /// <returns><b>true</b> if the directory is a Gorgon directory, <b>false</b> if it is not.</returns>
+        bool IsGorgonProject(DirectoryInfo directory);
+
+        /// <summary>
         /// Function to create a project object.
         /// </summary>
         /// <param name="workspace">The directory used as a work space location.</param>
@@ -71,12 +78,12 @@ namespace Gorgon.Editor.ProjectData
         IProject OpenProject(DirectoryInfo projectWorkspace);
 
         /// <summary>
-        /// Function to open a project from a file on the disk.
+        /// Function to open a project from a packed file on the disk.
         /// </summary>
         /// <param name="path">The path to the project file.</param>
         /// <param name="workspace">The workspace directory that will receive the files from the project file.</param>
         /// <returns>A new project based on the file that was read.</returns>
-        Task<(IProject project, bool isUpgraded)> OpenProjectAsync(string path, DirectoryInfo workspace);
+        Task OpenPackFileProjectAsync(FileInfo path, DirectoryInfo workspace);
 
         /// <summary>
         /// Function to save a project to a file on the disk.

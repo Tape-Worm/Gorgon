@@ -51,13 +51,17 @@ namespace Gorgon.Editor.Views
         /// </summary>
         public event EventHandler BackClicked;
         /// <summary>
-        /// Event triggered when the open project button is clicked.
+        /// Event triggered when the browse button is clicked.
         /// </summary>
-        public event EventHandler OpenClicked;
+        public event EventHandler BrowseClicked;
+        /// <summary>
+        /// Event triggered when the open button is clicked.
+        /// </summary>
+        public event EventHandler OpenPackFileClicked;
         /// <summary>
         /// Event triggered when the Save As button is clicked, or a new project is saved for the first time.
         /// </summary>
-        public event EventHandler<SaveEventArgs> Save;
+        public event EventHandler<SaveEventArgs> SaveClicked;
         #endregion
 
         #region Variables.
@@ -98,8 +102,8 @@ namespace Gorgon.Editor.Views
         [Browsable(false)]
         public bool CanOpen
         {
-            get => ButtonBrowse.Enabled;
-            set => ButtonBrowse.Enabled = value;
+            get => ButtonOpenPackFile.Enabled;
+            set => ButtonOpenPackFile.Enabled = value;
         }
         #endregion
 
@@ -121,15 +125,13 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void CheckRecent_Click(object sender, EventArgs e) => SetViewState();
 
-        /// <summary>
-        /// Handles the Click event of the ButtonSave control.
-        /// </summary>
+        /// <summary>Handles the Click event of the ButtonOpenPackFile control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonSave_Click(object sender, EventArgs e)
+        private void ButtonOpenPackFile_Click(object sender, EventArgs e)
         {
-            EventHandler<SaveEventArgs> handler = Save;
-            handler?.Invoke(this, new SaveEventArgs(false));
+            EventHandler handler = OpenPackFileClicked;
+            handler?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -139,7 +141,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonSaveAs_Click(object sender, EventArgs e)
         {
-            EventHandler<SaveEventArgs> handler = Save;
+            EventHandler<SaveEventArgs> handler = SaveClicked;
             handler?.Invoke(this, new SaveEventArgs(true));
         }
 
@@ -159,7 +161,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The [EventArgs] instance containing the event data.</param>
         private void ButtonOpenProject_Click(object sender, EventArgs e)
         {
-            EventHandler handler = OpenClicked;
+            EventHandler handler = BrowseClicked;
             handler?.Invoke(this, EventArgs.Empty);
         }
 
@@ -181,6 +183,5 @@ namespace Gorgon.Editor.Views
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.Views.Stage"/> class.</summary>
         public Stage() => InitializeComponent();
         #endregion
-
     }
 }

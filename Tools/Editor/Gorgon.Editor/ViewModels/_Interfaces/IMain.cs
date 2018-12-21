@@ -86,7 +86,15 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the command used to open a project.
         /// </summary>
-        IEditorCommand<object> OpenProjectCommand
+        IEditorCommand<object> BrowseProjectCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to open a packed file.
+        /// </summary>
+        IEditorCommand<object> OpenPackFileCommand
         {
             get;
         }

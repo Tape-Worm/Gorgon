@@ -65,15 +65,22 @@ namespace Gorgon.Editor.ImageEditor.Services
 
         #region Methods.
         /// <summary>Imports the data.</summary>
+        /// <param name="temporaryDirectory">The temporary directory for writing any transitory data.</param>
         /// <param name="cancelToken">The cancel token.</param>
-        public FileInfo ImportData(CancellationToken cancelToken)
+        /// <remarks>
+        /// <para>
+        /// The <paramref name="temporaryDirectory"/> should be used to write any working/temporary data used by the import.  Note that all data written into this directory will be deleted when the 
+        /// project is unloaded from memory.
+        /// </para>
+        /// </remarks>
+        public FileInfo ImportData(DirectoryInfo temporaryDirectory, CancellationToken cancelToken)
         {
             var ddsCodec = new GorgonCodecDds();
 
             _log.Print($"Importing file '{SourceFile.FullName}' (Codec: {_codec.Name})...", LoggingLevel.Verbose);
             using (IGorgonImage image = _codec.LoadFromFile(SourceFile.FullName))
             {
-                var tempFile = new FileInfo(Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(SourceFile.Name)));
+                var tempFile = new FileInfo(Path.Combine(temporaryDirectory.FullName, Path.GetFileNameWithoutExtension(SourceFile.Name)));
 
                 _log.Print($"Converting '{SourceFile.FullName}' to DDS file format. Image format [{image.Format}].", LoggingLevel.Verbose);
                 ddsCodec.SaveToFile(image, tempFile.FullName);

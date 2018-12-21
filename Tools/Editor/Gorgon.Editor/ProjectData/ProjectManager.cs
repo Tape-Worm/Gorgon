@@ -209,9 +209,9 @@ namespace Gorgon.Editor.ProjectData
         /// </summary>
         /// <param name="fileSystemFile">The file system file to copy.</param>
         /// <param name="provider">The provider to use.</param>
-        /// <param name="projectWorkspace">The workspace directory to copy the files into.</param>
+        /// <param name="fileSystemDir">The workspace directory to copy the files into.</param>
         /// <returns>The path to the metadata file.</returns>
-        private async Task<FileInfo> CopyFileSystemAsync(FileInfo fileSystemFile, IGorgonFileSystemProvider provider, DirectoryInfo projectWorkspace)
+        private async Task<FileInfo> CopyFileSystemAsync(FileInfo fileSystemFile, IGorgonFileSystemProvider provider, DirectoryInfo fileSystemDir)
         {
             IGorgonFileSystem fileSystem = new GorgonFileSystem(provider, Program.Log);
 
@@ -225,7 +225,7 @@ namespace Gorgon.Editor.ProjectData
 
             foreach (IGorgonVirtualDirectory directory in directories)
             {
-                var dirInfo = new DirectoryInfo(Path.Combine(projectWorkspace.FullName, directory.FullPath.FormatDirectory(Path.DirectorySeparatorChar).Substring(1)));
+                var dirInfo = new DirectoryInfo(Path.Combine(fileSystemDir.FullName, directory.FullPath.FormatDirectory(Path.DirectorySeparatorChar).Substring(1)));
 
                 if (dirInfo.Exists)
                 {
@@ -254,7 +254,7 @@ namespace Gorgon.Editor.ProjectData
             {
                 foreach (IGorgonVirtualFile file in job.Files)
                 {
-                    var fileInfo = new FileInfo(Path.Combine(projectWorkspace.FullName, file.Directory.FullPath.FormatDirectory(Path.DirectorySeparatorChar).Substring(1), file.Name));
+                    var fileInfo = new FileInfo(Path.Combine(fileSystemDir.FullName, file.Directory.FullPath.FormatDirectory(Path.DirectorySeparatorChar).Substring(1), file.Name));
 
                     using (Stream readStream = file.OpenStream())
                     using (Stream writeStream = fileInfo.OpenWrite())
@@ -290,7 +290,7 @@ namespace Gorgon.Editor.ProjectData
             // Wait for the file copy to finish.
             await Task.WhenAll(jobs);
 
-            var metaDataOutput = new FileInfo(Path.Combine(projectWorkspace.FullName, CommonEditorConstants.EditorMetadataFileName));
+            var metaDataOutput = new FileInfo(Path.Combine(fileSystemDir.FullName, CommonEditorConstants.EditorMetadataFileName));
 
             if (metaData == null)
             {                
@@ -360,15 +360,20 @@ namespace Gorgon.Editor.ProjectData
         /// </summary>
         /// <param name="fileSystemFile">The file to load.</param>
         /// <param name="provider">The provider to use.</param>
-        /// <param name="workspace">The workspace directory to copy the files into.</param>
+        /// <param name="workspace">The workspace directory for the project.</param>
+        /// <param name="fileSystemDir">The workspace directory to copy the files into.</param>
+        /// <param name="tempDir">The temporary directory in the file system.</param>
+        /// <param name="srcDir">The directory used to hold the source file for import.</param>
         /// <returns>A new project file.</returns>
-        private async Task<(IProject project, bool isUpgraded)> OpenProjectTask(FileInfo fileSystemFile, IGorgonFileSystemProvider provider, DirectoryInfo workspace)
+        private async Task<(IProject project, bool isUpgraded)> OpenProjectTask(FileInfo fileSystemFile, IGorgonFileSystemProvider provider, DirectoryInfo workspace, DirectoryInfo fileSystemDir, DirectoryInfo tempDir, DirectoryInfo srcDir)
         {
-#warning These are broken.
-            DirectoryInfo projectWorkspace = null;
-            DirectoryInfo scratchDir = null;
+            FileInfo metaData = await CopyFileSystemAsync(fileSystemFile, provider, fileSystemDir);
 
-            FileInfo metaData = await CopyFileSystemAsync(fileSystemFile, provider, projectWorkspace);
+            // Pull the meta data file into the root of the project directory.
+            if (metaData.Exists)
+            {
+                metaData.MoveTo(Path.Combine(workspace.FullName, metaData.Name));
+            }
 
             // Create the project using the metadata (if we have any).
             Project result = null;
@@ -377,16 +382,14 @@ namespace Gorgon.Editor.ProjectData
             {
                 Program.Log.Print("No metadata file exists. A new one will be created.", LoggingLevel.Verbose);
 
-#warning This is broken.
-                result = new Project(projectWorkspace, scratchDir, null, null);
+                metaData = new FileInfo(Path.Combine(workspace.FullName, metaData.Name));
+                result = new Project(workspace, tempDir, fileSystemDir, srcDir);
                 BuildMetadataDatabase(result, metaData);
 
-                var v2Metadata = new FileInfo(Path.Combine(result.ProjectWorkSpace.FullName, V2MetadataImporter.V2MetadataFilename));
-
-                // We have v2 meatdata, upgrade the file.
+                // If we have v2 meatdata, upgrade the file.
+                var v2Metadata = new FileInfo(Path.Combine(result.ProjectWorkSpace.FullName, V2MetadataImporter.V2MetadataFilename));                
                 if (v2Metadata.Exists)
-                {
-                    
+                {                    
                     var importer = new V2MetadataImporter(v2Metadata, Providers);
                     importer.Import(result);
                 }
@@ -395,6 +398,34 @@ namespace Gorgon.Editor.ProjectData
             }
 
             return (CreateFromMetadata(metaData), false);
+        }
+
+        /// <summary>
+        /// Function to determine if a directory is a Gorgon project directory or not.
+        /// </summary>
+        /// <param name="directory">The directory to examine.</param>
+        /// <returns><b>true</b> if the directory is a Gorgon directory, <b>false</b> if it is not.</returns>
+        public bool IsGorgonProject(DirectoryInfo directory)
+        {
+            if (directory == null)
+            {
+                throw new ArgumentNullException(nameof(directory));
+            }
+
+            try
+            {
+                if (!directory.Exists)
+                {
+                    return false;
+                }
+
+                var metadata = new FileInfo(Path.Combine(directory.FullName, CommonEditorConstants.EditorMetadataFileName));
+                return metadata.Exists;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -480,7 +511,7 @@ namespace Gorgon.Editor.ProjectData
                     Unlock(project.ProjectWorkSpace);
 
                     // Blow away the directory containing the project temporary data.
-                    project.TempDirectory.Delete(true);
+                    PurgeStaleDirectories(project.TempDirectory);
                     project.TempDirectory.Create();
                     project.TempDirectory.Refresh();
                     break;
@@ -635,12 +666,11 @@ namespace Gorgon.Editor.ProjectData
         /// <param name="path">The path to the project file.</param>
         /// <param name="providers">The providers used to read the project file.</param>
         /// <param name="workspace">The workspace directory that will receive the files from the project file.</param>
-        /// <returns>A new project based on the file that was read.</returns>
+        /// <returns>A task for asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/>, or the <paramref name="workspace"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
         /// <exception cref="FileNotFoundException">Thrown if the file specified by the <paramref name="path"/> does not exist.</exception>
         /// <exception cref="GorgonException">Thrown if no provider could be found to load the file.</exception>
-        public async Task<(IProject project, bool isUpgraded)> OpenProjectAsync(string path, DirectoryInfo workspace)
+        public async Task OpenPackFileProjectAsync(FileInfo path, DirectoryInfo workspace)
         {
             if (path == null)
             {
@@ -652,28 +682,50 @@ namespace Gorgon.Editor.ProjectData
                 throw new ArgumentNullException(nameof(workspace));
             }
 
-            if (string.IsNullOrWhiteSpace(path))
+            if (!path.Exists)
             {
-                throw new ArgumentEmptyException(nameof(path));
-            }
-
-            var file = new FileInfo(path);
-
-            if (!file.Exists)
-            {
-                throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_PROJECT_NOT_FOUND, file.FullName));
+                throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_PROJECT_NOT_FOUND, path.FullName));
             }
                        
-            IGorgonFileSystemProvider provider = Providers.GetBestReader(file);
+            IGorgonFileSystemProvider provider = Providers.GetBestReader(path);
             
             if (provider == null)
             {
-                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_NO_PROVIDER, file.Name));
+                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_NO_PROVIDER, path.Name));
             }
 
-            (IProject project, bool isUpgraded) result = await OpenProjectTask(file, provider, workspace);
+            if (workspace.Exists)
+            {
+                PurgeStaleDirectories(workspace);
+            }
 
-            return result;
+            (DirectoryInfo actualWorkspace, DirectoryInfo fsDir, DirectoryInfo tempDir, DirectoryInfo srcDir) = SetupProjectFolders(workspace.FullName);
+
+            FileInfo metaData = await CopyFileSystemAsync(path, provider, fsDir);
+
+            // Pull the meta data file into the root of the project directory.
+            if (metaData.Exists)
+            {
+                metaData.MoveTo(Path.Combine(workspace.FullName, metaData.Name));
+                return;
+            }
+            Program.Log.Print("No metadata file exists. A new one will be created.", LoggingLevel.Verbose);
+
+            // Create a dummy project, so we have something to serialize.
+            var dummyProject = new Project(workspace, tempDir, fsDir, srcDir);
+
+            // If we have v2 meatdata, upgrade the file.
+            var v2Metadata = new FileInfo(Path.Combine(workspace.FullName, V2MetadataImporter.V2MetadataFilename));
+            if (!v2Metadata.Exists)
+            {
+                metaData = new FileInfo(Path.Combine(workspace.FullName, metaData.Name));
+                BuildMetadataDatabase(dummyProject, metaData);
+                return;
+            }
+
+            var importer = new V2MetadataImporter(v2Metadata, Providers);
+            importer.Import(dummyProject);
+            PersistMetadata(dummyProject);
         }
 
         /// <summary>

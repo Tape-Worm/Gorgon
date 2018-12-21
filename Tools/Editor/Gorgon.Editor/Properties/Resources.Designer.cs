@@ -318,6 +318,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Select the directory containing the Gorgon Editor project to open..
+        /// </summary>
+        internal static string GOREDIT_CAPTION_OPEN_PROJECT {
+            get {
+                return ResourceManager.GetString("GOREDIT_CAPTION_OPEN_PROJECT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Select a directory for the project....
         /// </summary>
         internal static string GOREDIT_CAPTION_SELECT_PROJECT_DIR {
@@ -406,6 +415,30 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_CONFIRM_NEED_WORKSPACE {
             get {
                 return ResourceManager.GetString("GOREDIT_CONFIRM_NEED_WORKSPACE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The project directory &apos;{0}&apos; was not found.
+        ///
+        ///Would you like to create a new project there?.
+        /// </summary>
+        internal static string GOREDIT_CONFIRM_NO_PROJECT_DIR {
+            get {
+                return ResourceManager.GetString("GOREDIT_CONFIRM_NO_PROJECT_DIR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The directory &apos;{0}&apos; is not a Gorgon Editor project directory.
+        ///
+        ///Would you like to create a new project there?
+        ///
+        ///Note: Any existing files or directories will be deleted if a new project is created..
+        /// </summary>
+        internal static string GOREDIT_CONFIRM_NOT_GOREDIT_PROJ {
+            get {
+                return ResourceManager.GetString("GOREDIT_CONFIRM_NOT_GOREDIT_PROJ", resourceCulture);
             }
         }
         
@@ -1113,6 +1146,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Creating project....
+        /// </summary>
+        internal static string GOREDIT_TEXT_CREATING_PROJECT {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_CREATING_PROJECT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Deleting....
         /// </summary>
         internal static string GOREDIT_TEXT_DELETING {
@@ -1463,6 +1505,16 @@ namespace Gorgon.Editor.Properties {
         internal static System.Drawing.Bitmap open_folder_22x22 {
             get {
                 object obj = ResourceManager.GetObject("open_folder_22x22", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap open_pack_file_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("open_pack_file_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

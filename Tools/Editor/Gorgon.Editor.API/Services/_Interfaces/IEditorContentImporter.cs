@@ -53,8 +53,15 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Function to import content.
         /// </summary>
+        /// <param name="temporaryDirectory">The temporary directory for writing any transitory data.</param>
         /// <param name="cancelToken">The token used to cancel the operation.</param>
         /// <returns>A new file information object pointing to the imported file data.</returns>
-        FileInfo ImportData(CancellationToken cancelToken);
+        /// <remarks>
+        /// <para>
+        /// The <paramref name="temporaryDirectory"/> should be used to write any working/temporary data used by the import.  Note that all data written into this directory will be deleted when the 
+        /// project is unloaded from memory.
+        /// </para>
+        /// </remarks>
+        FileInfo ImportData(DirectoryInfo temporaryDirectory, CancellationToken cancelToken);
     }
 }

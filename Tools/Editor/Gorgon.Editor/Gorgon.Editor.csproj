@@ -228,6 +228,7 @@
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
     <None Include="Resources\rename_48x48.png" />
+    <None Include="Resources\open_pack_file_48x48.png" />
     <Content Include="TODO.txt" />
     <None Include="Resources\windo_deco_129x39.png" />
     <None Include="Resources\stage_save_as_48x48.png" />

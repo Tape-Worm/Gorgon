@@ -36,6 +36,7 @@ using Gorgon.Editor.Content;
 using Gorgon.Editor.Metadata;
 using System.Collections.Generic;
 using System.Linq;
+using Gorgon.Diagnostics;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -264,6 +265,28 @@ namespace Gorgon.Editor.ViewModels
             {
                 // Delete the physical object first. If we fail here, our node will survive.
                 FileSystemService.DeleteFile(_fileInfo);
+
+                // If we have a source file, remove it.
+                if ((Metadata != null) 
+                    && (Metadata.Attributes.TryGetValue(ContentImportPlugin.ImportOriginalFileNameAttr, out string sourcePath)))
+                {                    
+                    var sourceFile = new FileInfo(Path.Combine(Project.SourceDirectory.FullName, sourcePath));
+                    
+                    if (sourceFile.Exists)
+                    {
+                        Program.Log.Print($"{FullPath} has a source file that it was imported from: {sourceFile.Name}. This file will be deleted as well.", LoggingLevel.Verbose);
+
+                        try
+                        {
+                            sourceFile.Delete();
+                        }
+                        catch(Exception ex)
+                        {
+                            Program.Log.Print($"[ERROR] Could not delete source file {sourcePath}.", LoggingLevel.Verbose);
+                            Program.Log.LogException(ex);
+                        }
+                    }
+                }
                 
                 NotifyPropertyChanging(nameof(FullPath));
 

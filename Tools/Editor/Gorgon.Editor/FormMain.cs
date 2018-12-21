@@ -191,17 +191,30 @@ namespace Gorgon.Editor
             }            
         }
 
-        /// <summary>Handles the OpenClicked event of the StageLive control.</summary>
+        /// <summary>Handles the OpenClicked event of the Stage control.</summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The [EventArgs] instance containing the event data.</param>
-        private void StageLive_OpenClicked(object sender, EventArgs e)
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void Stage_OpenClicked(object sender, EventArgs e)
         {
-            if ((DataContext?.OpenProjectCommand == null) || (!DataContext.OpenProjectCommand.CanExecute(null)))
+            if ((DataContext?.OpenPackFileCommand == null) || (!DataContext.OpenPackFileCommand.CanExecute(null)))
             {
                 return;
             }
 
-            DataContext.OpenProjectCommand.Execute(null);
+            DataContext.OpenPackFileCommand.Execute(null);
+        }
+
+        /// <summary>Handles the BrowseClicked event of the StageLive control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The [EventArgs] instance containing the event data.</param>
+        private void StageLive_BrowseClicked(object sender, EventArgs e)
+        {
+            if ((DataContext?.BrowseProjectCommand == null) || (!DataContext.BrowseProjectCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            DataContext.BrowseProjectCommand.Execute(null);
         }
 
         /// <summary>
@@ -389,7 +402,7 @@ namespace Gorgon.Editor
 
             Text = string.Empty;
             Stage.IsStartup = false;
-            Stage.CanOpen = (DataContext.OpenProjectCommand != null) && (DataContext.OpenProjectCommand.CanExecute(null));
+            Stage.CanOpen = (DataContext.BrowseProjectCommand != null) && (DataContext.BrowseProjectCommand.CanExecute(null));
 
             Stage.Visible = true;
             _clipboardContext = null;
@@ -797,7 +810,7 @@ namespace Gorgon.Editor
             
             DataContext.OnLoad();
 
-            Stage.CanOpen = (DataContext.OpenProjectCommand != null) && (DataContext.OpenProjectCommand.CanExecute(null));            
+            Stage.CanOpen = (DataContext.BrowseProjectCommand != null) && (DataContext.BrowseProjectCommand.CanExecute(null));            
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.</summary>
@@ -905,18 +918,6 @@ namespace Gorgon.Editor
             {
                 ValidateRibbonButtons();
             }
-        }
-
-        /// <summary>
-        /// Function to load the theme for the window.
-        /// </summary>
-        public void LoadTheme()
-        {
-            // Default to our dark theme. We may have more later.
-            /*byte[] theme = Encoding.UTF8.GetBytes(Resources.Krypton_DarkO2k10Theme);
-            AppPalette.SuspendUpdates();
-            AppPalette.Import(theme);
-            AppPalette.ResumeUpdates(true);*/
         }
         #endregion
 
