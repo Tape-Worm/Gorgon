@@ -29,19 +29,11 @@ using System.ComponentModel;
 namespace Gorgon.Editor.ViewModels
 {
     /// <summary>
-    /// Arguments to pass to the <see cref="IMain.SaveProjectCommand"/>.
+    /// Arguments to pass to the <see cref="IMain.SavePackFileCommand"/>.
     /// </summary>
-    internal class SaveProjectArgs
+    internal class SavePackFileArgs
         : CancelEventArgs
     {
-        /// <summary>
-        /// Property to return whether to use the Save As functionality to save with a new file name, and/or file type.
-        /// </summary>
-        public bool SaveAs
-        {
-            get;
-        }
-
         /// <summary>
         /// Property to return the currently active project.
         /// </summary>
@@ -51,14 +43,9 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SaveProjectArgs"/> class.
+        /// Initializes a new instance of the <see cref="SavePackFileArgs"/> class.
         /// </summary>
-        /// <param name="saveAs"><b>true</b> to save with a new file name and/or file type, <b>false</b> to use the current file type.</param>
         /// <param name="currentProject">The currently active project.</param>
-        public SaveProjectArgs(bool saveAs, IProjectVm currentProject)
-        {
-            SaveAs = saveAs;
-            CurrentProject = currentProject;
-        }
+        public SavePackFileArgs(IProjectVm currentProject) => CurrentProject = currentProject;
     }
 }

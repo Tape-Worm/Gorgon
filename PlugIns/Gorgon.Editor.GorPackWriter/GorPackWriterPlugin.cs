@@ -532,7 +532,7 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
         /// <summary>
         /// Function to write the file to the specified path.
         /// </summary>
-        /// <param name="file">The file to write into.</param>
+        /// <param name="file">The file to write into.</param>        
         /// <param name="workspace">The directory that represents the workspace for our file system data.</param>
         /// <param name="progressCallback">The method used to report progress back to the application.</param>
         /// <param name="cancelToken">The token used for cancelling the operation.</param>

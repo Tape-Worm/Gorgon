@@ -491,22 +491,14 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to persist the project data to a file.
         /// </summary>
-        /// <param name="projectTitle">The title for the project.</param>
         /// <param name="path">A path to the file that will hold the project data.</param>
         /// <param name="writer">The plug in used to write the project data.</param>
         /// <param name="progressCallback">The callback method that reports the saving progress to the UI.</param>
         /// <param name="cancelToken">The token used for cancellation of the operation.</param>        
         /// <returns>A task for asynchronous operation.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="projectTitle"/>, <paramref name="path"/>, or the <paramref name="writer"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="projectTitle"/> or the <paramref name="path"/> parameter is empty.</exception>
-#warning Disabled until Save As functionality is reinstated.
-        private Task PersistProjectAsync(string projectTitle, string path, FileWriterPlugin writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/>, or the <paramref name="writer"/> parameter is <b>null</b>.</exception>
+        public Task SaveToPackFileAsync(FileInfo path, FileWriterPlugin writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
         {
-            if (projectTitle == null)
-            {
-                throw new ArgumentNullException(nameof(projectTitle));
-            }
-
             if (path == null)
             {
                 throw new ArgumentNullException(nameof(path));
@@ -517,26 +509,8 @@ namespace Gorgon.Editor.ViewModels
                 throw new ArgumentNullException(nameof(writer));
             }
 
-            if (string.IsNullOrWhiteSpace(projectTitle))
-            {
-                throw new ArgumentEmptyException(nameof(projectTitle)); 
-            }
-             
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentEmptyException(nameof(path));
-            }
-
-            Program.Log.Print("Saving files...", LoggingLevel.Verbose);
-
-            // Rebuild the project item metadata list.
-            _projectData.ProjectItems.Clear();
-            foreach (IFileExplorerNodeVm node in _fileExplorer.RootNode.Children.Traverse(n => n.Children).Where(n => n.Metadata != null))
-            {
-                _projectData.ProjectItems[node.FullPath] = node.Metadata;
-            }
-
-            return _projectManager.SaveProjectAsync(_projectData, path, writer, progressCallback, cancelToken);
+            Program.Log.Print($"Saving packed file '{path.FullName}'...", LoggingLevel.Verbose);
+            return _projectManager.SavePackedFileAsync(_projectData, path, writer, progressCallback, cancelToken);
         }
 
         /// <summary>
@@ -548,6 +522,9 @@ namespace Gorgon.Editor.ViewModels
 
             try
             {
+                // Ensure the project is locked from outside interference (Gorgon editor instances only).
+                _projectManager.LockProject(_projectData);
+
                 AssignEvents();                
             }
             catch (Exception ex)

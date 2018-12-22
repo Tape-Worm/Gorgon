@@ -42,6 +42,7 @@ using Gorgon.IO;
 using Gorgon.IO.Providers;
 using Gorgon.Math;
 using System.Diagnostics;
+using Gorgon.Editor.Native;
 
 namespace Gorgon.Editor.ProjectData
 {
@@ -162,8 +163,9 @@ namespace Gorgon.Editor.ProjectData
         /// Function to purge old workspace directories if they were left over (e.g. debug break, crash, etc...)
         /// </summary>
         /// <param name="prevDirectory">The previously used directory path for the project.</param>
+        /// <param name="recycle"><b>true</b> to recycle the directory, or <b>false</b> to permenantly delete it.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="prevDirectory"/> parameter is <b>null</b>.</exception>
-        private void PurgeStaleDirectories(DirectoryInfo prevDirectory)
+        private void PurgeStaleDirectories(DirectoryInfo prevDirectory, bool recycle)
         {
             int count = 0;
 
@@ -176,7 +178,10 @@ namespace Gorgon.Editor.ProjectData
 
             // To avoid issues with delete being an asynchronous operation, we will first rename the directory, and then delete it.
             // This way we can recreate the directory structure without interference (one would hope at least).
-            deleteDir.MoveTo(Path.Combine(deleteDir.Parent.FullName, Guid.NewGuid().ToString("N")));
+            if (!recycle)
+            {
+                deleteDir.MoveTo(Path.Combine(deleteDir.Parent.FullName, Guid.NewGuid().ToString("N")));
+            }            
 
             // Attempt to delete multiple times if the directory is locked (explorer is a jerk sometimes).
             while (count < 4)
@@ -188,7 +193,16 @@ namespace Gorgon.Editor.ProjectData
                         return;
                     }
 
-                    deleteDir.Delete(true);
+                    if (recycle)
+                    {
+                        Program.Log.Print($"Moving '{deleteDir.FullName}' to the recycle bin...", LoggingLevel.Intermediate);
+                        Shell32.SendToRecycleBin(deleteDir.FullName, Shell32.FileOperationFlags.FOF_SILENT | Shell32.FileOperationFlags.FOF_NOCONFIRMATION | Shell32.FileOperationFlags.FOF_WANTNUKEWARNING);
+                    }
+                    else                        
+                    {
+                        Program.Log.Print($"Deleting '{deleteDir.FullName}'...", LoggingLevel.Intermediate);
+                        deleteDir.Delete(true);
+                    }
                     break;
                 }
                 catch (Exception ex)
@@ -250,6 +264,8 @@ namespace Gorgon.Editor.ProjectData
                 filesPerJob = files.Count;
             }
 
+            Program.Log.Print($"Copying file system. {filesPerJob} files will be copied in a single job.", LoggingLevel.Verbose);
+
             void CopyFile(FileCopyJob job)
             {
                 foreach (IGorgonVirtualFile file in job.Files)
@@ -267,25 +283,20 @@ namespace Gorgon.Editor.ProjectData
             // Build up the tasks for our jobs.
             while (files.Count > 0)
             {
-                try
-                {
-                    var jobData = new FileCopyJob();
+                var jobData = new FileCopyJob();
 
-                    // Copy the file information to the file copy job data.
-                    int length = filesPerJob.Min(files.Count);
-                    for (int i = 0; i < length; ++i)
-                    {
-                        jobData.Files.Add(files[i]);
-                    }
-                    files.RemoveRange(0, length);
-
-                    jobs.Add(Task.Run(() => CopyFile(jobData)));
-                }
-                catch
+                // Copy the file information to the file copy job data.
+                int length = filesPerJob.Min(files.Count);
+                for (int i = 0; i < length; ++i)
                 {
-                    throw;
+                    jobData.Files.Add(files[i]);
                 }
+                files.RemoveRange(0, length);
+
+                jobs.Add(Task.Run(() => CopyFile(jobData)));
             }
+
+            Program.Log.Print($"{jobs.Count} jobs running for file copy from '{fileSystemFile.FullName}'.", LoggingLevel.Verbose);
 
             // Wait for the file copy to finish.
             await Task.WhenAll(jobs);
@@ -293,10 +304,12 @@ namespace Gorgon.Editor.ProjectData
             var metaDataOutput = new FileInfo(Path.Combine(fileSystemDir.FullName, CommonEditorConstants.EditorMetadataFileName));
 
             if (metaData == null)
-            {                
+            {
+                Program.Log.Print($"'{fileSystemFile.FullName}' has no metadata. A new metadata index will be generated.", LoggingLevel.Verbose);
                 return metaDataOutput;
             }
 
+            Program.Log.Print($"'{fileSystemFile.FullName}' has metadata. Copying to the .", LoggingLevel.Verbose);
             byte[] writeBuffer = new byte[81920];
             using (Stream readStream = metaData.OpenStream())
             using (Stream writeStream = metaDataOutput.OpenWrite())
@@ -511,7 +524,7 @@ namespace Gorgon.Editor.ProjectData
                     Unlock(project.ProjectWorkSpace);
 
                     // Blow away the directory containing the project temporary data.
-                    PurgeStaleDirectories(project.TempDirectory);
+                    PurgeStaleDirectories(project.TempDirectory, false);
                     project.TempDirectory.Create();
                     project.TempDirectory.Refresh();
                     break;
@@ -553,7 +566,7 @@ namespace Gorgon.Editor.ProjectData
             // If the workspace directory is already in place, then we need to delete the contents of it.
             if (workspace.Exists)
             {
-                PurgeStaleDirectories(workspace);      
+                PurgeStaleDirectories(workspace, true);      
             }
 
             (DirectoryInfo projectWorkspace, DirectoryInfo projectFileSystem, DirectoryInfo projectTemp, DirectoryInfo projectSource) = SetupProjectFolders(workspace.FullName);
@@ -570,7 +583,7 @@ namespace Gorgon.Editor.ProjectData
         }
 
         /// <summary>
-        /// Function to save a project to a file on the disk.
+        /// Function to save a project to a packed file on the disk.
         /// </summary>
         /// <param name="project">The project to save.</param>
         /// <param name="path">The path to the project file.</param>
@@ -579,7 +592,7 @@ namespace Gorgon.Editor.ProjectData
         /// <param name="cancelToken">The token used for cancellation of the operation.</param>
         /// <returns>A task for asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, <paramref name="path"/>, or the <paramref name="writer"/> parameter is <b>null</b>.</exception>        
-        public async Task SaveProjectAsync(IProject project, string path, FileWriterPlugin writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
+        public async Task SavePackedFileAsync(IProject project, FileInfo path, FileWriterPlugin writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
         {
             if (project == null)
             {
@@ -596,16 +609,23 @@ namespace Gorgon.Editor.ProjectData
                 throw new ArgumentNullException(nameof(writer));
             }
 
-            if (string.IsNullOrWhiteSpace(path))
+            // Move the metadata file into the file system so it can be captured.
+            var metadataFile = new FileInfo(Path.Combine(project.ProjectWorkSpace.FullName, CommonEditorConstants.EditorMetadataFileName));
+            metadataFile = metadataFile.CopyTo(Path.Combine(project.FileSystemDirectory.FullName, CommonEditorConstants.EditorMetadataFileName));
+
+            try
             {
-                throw new ArgumentEmptyException(nameof(path));
+                await writer.WriteAsync(path, project.FileSystemDirectory, progressCallback, cancelToken);
+                path.Refresh();
             }
-
-            PersistMetadata(project);
-
-            var outputFile = new FileInfo(path);
-            await writer.WriteAsync(outputFile, project.ProjectWorkSpace, progressCallback, cancelToken);
-            outputFile.Refresh();
+            finally
+            {
+                // Remove the copy of the metadata file.
+                if (metadataFile.Exists)
+                {
+                    metadataFile.Delete();
+                }
+            }
         }
 
         /// <summary>
@@ -694,38 +714,57 @@ namespace Gorgon.Editor.ProjectData
                 throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_NO_PROVIDER, path.Name));
             }
 
+            // Unlock the directory if we have it locked.
+            // Unlock our own lock prior to opening.
+            Unlock(workspace);
+
+            if (IsDirectoryLocked(workspace))
+            {
+                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_PROJECT_OPEN_LOCKED, workspace.FullName));
+            }
+
             if (workspace.Exists)
             {
-                PurgeStaleDirectories(workspace);
+                PurgeStaleDirectories(workspace, true);
             }
 
             (DirectoryInfo actualWorkspace, DirectoryInfo fsDir, DirectoryInfo tempDir, DirectoryInfo srcDir) = SetupProjectFolders(workspace.FullName);
 
-            FileInfo metaData = await CopyFileSystemAsync(path, provider, fsDir);
-
-            // Pull the meta data file into the root of the project directory.
-            if (metaData.Exists)
+            try
             {
-                metaData.MoveTo(Path.Combine(workspace.FullName, metaData.Name));
-                return;
+                FileInfo metaData = await CopyFileSystemAsync(path, provider, fsDir);
+
+                // Pull the meta data file into the root of the project directory.
+                if (metaData.Exists)
+                {
+                    metaData.MoveTo(Path.Combine(workspace.FullName, metaData.Name));
+                    return;
+                }
+
+                Program.Log.Print("No metadata file exists. A new one will be created.", LoggingLevel.Verbose);
+
+                // Create a dummy project, so we have something to serialize.
+                var dummyProject = new Project(workspace, tempDir, fsDir, srcDir);
+
+                // If we have v2 meatdata, upgrade the file.
+                var v2Metadata = new FileInfo(Path.Combine(workspace.FullName, V2MetadataImporter.V2MetadataFilename));
+                if (!v2Metadata.Exists)
+                {
+                    metaData = new FileInfo(Path.Combine(workspace.FullName, metaData.Name));
+                    BuildMetadataDatabase(dummyProject, metaData);
+                    return;
+                }
+
+                var importer = new V2MetadataImporter(v2Metadata, Providers);
+                importer.Import(dummyProject);
+                PersistMetadata(dummyProject);
             }
-            Program.Log.Print("No metadata file exists. A new one will be created.", LoggingLevel.Verbose);
-
-            // Create a dummy project, so we have something to serialize.
-            var dummyProject = new Project(workspace, tempDir, fsDir, srcDir);
-
-            // If we have v2 meatdata, upgrade the file.
-            var v2Metadata = new FileInfo(Path.Combine(workspace.FullName, V2MetadataImporter.V2MetadataFilename));
-            if (!v2Metadata.Exists)
+            finally
             {
-                metaData = new FileInfo(Path.Combine(workspace.FullName, metaData.Name));
-                BuildMetadataDatabase(dummyProject, metaData);
-                return;
+                // For the file import, we will unlock the directory once we're done writing into it.
+                // The open project functionality will re-establish the lock after this method completes.
+                Unlock(workspace);
             }
-
-            var importer = new V2MetadataImporter(v2Metadata, Providers);
-            importer.Import(dummyProject);
-            PersistMetadata(dummyProject);
         }
 
         /// <summary>
@@ -769,6 +808,32 @@ namespace Gorgon.Editor.ProjectData
                     tempPath.Delete();
                 }
             }
+        }
+
+        /// <summary>
+        /// Function used to lock the project to this instance of the application only.
+        /// </summary>
+        /// <param name="project">The project to lock.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/> parameter is <b>null</b>.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method locks down the project working directory so that only this instance of the editor may use it. All other instances will exception if an attempt to open the directory is made.
+        /// </para>
+        /// </remarks>
+        public void LockProject(IProject project)
+        {
+            if (project == null)
+            {
+                throw new ArgumentNullException(nameof(project));
+            }
+
+            // We've already got this locked, so leave.
+            if (_lockStream != null)
+            {
+                return;
+            }
+
+            Lock(project.ProjectWorkSpace);
         }
         #endregion
 

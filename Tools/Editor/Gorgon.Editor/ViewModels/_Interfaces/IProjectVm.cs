@@ -135,14 +135,12 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to persist the project data to a file.
         /// </summary>
-        /// <param name="projectTitle">The title for the project.</param>
         /// <param name="path">A path to the file that will hold the project data.</param>
         /// <param name="writer">The plug in used to write the project data.</param>
         /// <param name="progressCallback">The callback method that reports the saving progress to the UI.</param>
         /// <param name="cancelToken">The token used for cancellation of the operation.</param>
         /// <returns>A task for asynchronous operation.</returns>
-#warning Disabled until Save As functionality is reinstated
-        //Task PersistProjectAsync(string projectTitle, string path, FileWriterPlugin writer, Action<int, int, bool> progressCallback,  CancellationToken cancelToken);
+        Task SaveToPackFileAsync(FileInfo path, FileWriterPlugin writer, Action<int, int, bool> progressCallback,  CancellationToken cancelToken);
 
         /// <summary>
         /// Function to persist the project metadata to the disk.

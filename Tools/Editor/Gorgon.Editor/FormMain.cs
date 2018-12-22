@@ -279,15 +279,15 @@ namespace Gorgon.Editor
                 return;
             }
 
-            var args = new SaveProjectArgs(e.SaveAs, DataContext.CurrentProject);
+            var args = new SavePackFileArgs(DataContext.CurrentProject);
 
-            if ((DataContext?.SaveProjectCommand == null) || (!DataContext.SaveProjectCommand.CanExecute(args)))
+            if ((DataContext?.SavePackFileCommand == null) || (!DataContext.SavePackFileCommand.CanExecute(args)))
             {
                 NavigateToProjectView(DataContext);
                 return;
             }
 
-            await DataContext.SaveProjectCommand.ExecuteAsync(args);
+            await DataContext.SavePackFileCommand.ExecuteAsync(args);
 
             NavigateToProjectView(DataContext);
         }        
@@ -390,10 +390,10 @@ namespace Gorgon.Editor
         /// </summary>
         private void NavigateToStagingView()
         {
-            if (DataContext?.SaveProjectCommand != null)
+            if (DataContext?.SavePackFileCommand != null)
             {
-                var saveAsArgs = new SaveProjectArgs(true, DataContext.CurrentProject);
-                Stage.CanSaveAs = DataContext.SaveProjectCommand.CanExecute(saveAsArgs);
+                var saveAsArgs = new SavePackFileArgs(DataContext.CurrentProject);
+                Stage.CanSaveAs = DataContext.SavePackFileCommand.CanExecute(saveAsArgs);
             }
             else
             {

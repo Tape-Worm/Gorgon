@@ -100,9 +100,9 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the command used to save a project.
+        /// Property to return the command used to save a project as a packed file.
         /// </summary>
-        IEditorAsyncCommand<SaveProjectArgs> SaveProjectCommand
+        IEditorAsyncCommand<SavePackFileArgs> SavePackFileCommand
         {
             get;
         }

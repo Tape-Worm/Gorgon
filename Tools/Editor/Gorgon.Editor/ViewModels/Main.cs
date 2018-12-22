@@ -169,9 +169,9 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the command used to save a project.
+        /// Property to return the command used to save a project as a packed file.
         /// </summary>
-        public IEditorAsyncCommand<SaveProjectArgs> SaveProjectCommand
+        public IEditorAsyncCommand<SavePackFileArgs> SavePackFileCommand
         {
             get;
         }
@@ -224,9 +224,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="args">The arguments for the save command.</param>
         /// <returns><b>true</b> if the project can be saved, <b>false</b> if not.</returns>
-        private bool CanSaveProject(SaveProjectArgs args) => (_saveDialog.Providers.Writers.Count > 0) 
-                                                            && (args?.CurrentProject != null) 
-                                                            && ((args.SaveAs) || (args.CurrentProject.ProjectState != ProjectState.Unmodified));
+        private bool CanSaveProject(SavePackFileArgs args) => (_saveDialog.Providers.Writers.Count > 0) && (args?.CurrentProject != null);
 
         /// <summary>
         /// Function to inject dependencies for the view model.
@@ -344,6 +342,12 @@ namespace Gorgon.Editor.ViewModels
                 }
             }
 
+            // Ensure that our metadata is up to date in the current project.
+            if (CurrentProject != null)
+            {
+                await CurrentProject.SaveProjectMetadataAsync();
+            }
+
             project = await Task.Run(() => _projectManager.OpenProject(path));
 
             if (project == null)
@@ -394,10 +398,10 @@ namespace Gorgon.Editor.ViewModels
             // Update the metadata for the most up-to-date info.
             await projectVm.SaveProjectMetadataAsync();
             CurrentProject = projectVm;
-            
+
             _settings.LastProjectWorkingDirectory = project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
 
-            RecentItem dupe = RecentFiles.Files.FirstOrDefault(item => string.Equals(_settings.LastProjectWorkingDirectory, item.FilePath, StringComparison.OrdinalIgnoreCase));
+            RecentItem dupe = RecentFiles.Files.FirstOrDefault(item => string.Equals(project.ProjectWorkSpace.FullName, item.FilePath, StringComparison.OrdinalIgnoreCase));
 
             if (dupe != null)
             {
@@ -411,31 +415,6 @@ namespace Gorgon.Editor.ViewModels
             });
 
             Program.Log.Print($"Project '{projectVm.ProjectTitle}' was loaded from '{path}'.", LoggingLevel.Simple);
-        }
-
-        /// <summary>
-        /// Function to perform the check for an unsaved project.
-        /// </summary>
-        /// <returns><b>true</b> if the project was saved, or did not need to be saved, or <b>false</b> if cancelled.</returns>
-        private async Task<bool> CheckForUnsavedProjectAsync()
-        {            
-            if ((CurrentProject == null) || (CurrentProject.ProjectState == ProjectState.Unmodified))
-            {
-                return true;
-            }
-
-            MessageResponse response = _messageService.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_UNSAVED_PROJ, CurrentProject.ProjectTitle), allowCancel: true);
-
-            switch (response)
-            {
-                case MessageResponse.Yes:
-                    bool saved = await CreateSaveProjectTask(new SaveProjectArgs(false, CurrentProject));                    
-                    return saved;
-                case MessageResponse.Cancel:
-                    return false;
-            }
-
-            return true;
         }
 
         /// <summary>
@@ -453,17 +432,10 @@ namespace Gorgon.Editor.ViewModels
         {
             try
             {
-                bool isSaved = await CheckForUnsavedProjectAsync();
-
                 // Always save the metadata.
                 if (CurrentProject != null)
                 {
                     await CurrentProject.SaveProjectMetadataAsync();
-                }
-
-                if (!isSaved)
-                {
-                    return;
                 }
 
                 var projectDir = new DirectoryInfo(recentItem.FilePath);
@@ -496,13 +468,6 @@ namespace Gorgon.Editor.ViewModels
         {
             try
             {
-                bool isSaved = await CheckForUnsavedProjectAsync();
-
-                if (!isSaved)
-                {
-                    return;
-                }
-
                 string path = _openDialog.GetFilename();
 
                 if (string.IsNullOrWhiteSpace(path))
@@ -531,6 +496,12 @@ namespace Gorgon.Editor.ViewModels
                 ShowWaitPanel(new WaitPanelActivateArgs(string.Format(Resources.GOREDIT_TEXT_OPENING, path.Ellipses(65, true)), null));
 
                 Program.Log.Print($"Opening '{path}'...", LoggingLevel.Simple);
+
+                // Ensure that our metadata is up to date in the current project.
+                if (CurrentProject != null)
+                {
+                    await CurrentProject.SaveProjectMetadataAsync();
+                }
 
                 // Create the project by copying data into the folder structure.
                 await _projectManager.OpenPackFileProjectAsync(new FileInfo(path), target);
@@ -579,14 +550,7 @@ namespace Gorgon.Editor.ViewModels
         private async void DoOpenProjectAsync()
         {
             try
-            {
-                bool isSaved = await CheckForUnsavedProjectAsync();
-
-                if (!isSaved)
-                {
-                    return;
-                }
-                
+            {               
                 DirectoryInfo path = _directoryLocator.GetDirectory(GetInitialProjectDirectory(), Resources.GOREDIT_CAPTION_OPEN_PROJECT);
 
                 if (path == null)
@@ -621,66 +585,47 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="args">The save project arguments.</param>
         /// <returns><b>true</b> if saved successfully, <b>false</b> if cancelled.</returns>
-        private async Task<bool> CreateSaveProjectTask(SaveProjectArgs args)
+        private async Task<bool> CreateSaveProjectTask(SavePackFileArgs args)
         {
             var cancelSource = new CancellationTokenSource();
-#warning This used to be retrieved from the current project view model. No longer necessary.
             FileInfo projectFile = null;
             FileWriterPlugin writer = null;
-            string projectTitle = CurrentProject.ProjectState == ProjectState.New ? string.Empty : CurrentProject.ProjectTitle;
 
             try
             {
                 // Function used to cancel the save operation.
                 void CancelOperation() => cancelSource.Cancel();
 
-                string path = projectFile?.FullName;
+                var lastSaveDir = new DirectoryInfo(_settings.LastOpenSavePath);
 
-                if ((args.SaveAs) || (string.IsNullOrWhiteSpace(path)) || (writer == null))
+                if (!lastSaveDir.Exists)
                 {
-                    if (projectFile != null)
-                    {
-                        _saveDialog.InitialDirectory = projectFile.Directory;
-                        _saveDialog.InitialFilePath = projectFile.Name;
-                    }
-                    else
-                    {
-                        var lastSaveDir = new DirectoryInfo(_settings.LastOpenSavePath);
-
-                        if (!lastSaveDir.Exists)
-                        {
-                            lastSaveDir = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
-                        }
-
-                        _saveDialog.InitialDirectory = lastSaveDir;
-                        _saveDialog.InitialFilePath = string.Empty;
-                    }
-
-                    _saveDialog.CurrentWriter = writer;
-
-                    path = _saveDialog.GetFilename();
-
-                    if (string.IsNullOrWhiteSpace(path))
-                    {
-                        args.Cancel = true;
-                        return false;
-                    }
-
-                    projectFile = new FileInfo(path);
-                    projectTitle = Path.GetFileNameWithoutExtension(path);
-                    writer = _saveDialog.CurrentWriter;
-
-                    Debug.Assert(writer != null, "Must have a writer plug in.");
-
-                    Program.Log.Print($"File writer plug in is now: {writer.Name}.", LoggingLevel.Verbose);
+                    lastSaveDir = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
                 }
 
+                _saveDialog.InitialDirectory = lastSaveDir;
+                _saveDialog.InitialFilePath = string.Empty;
+
+                string path = _saveDialog.GetFilename();
+
+                if (string.IsNullOrWhiteSpace(path))
+                {
+                    args.Cancel = true;
+                    return false;
+                }
+
+                projectFile = new FileInfo(path);
+                writer = _saveDialog.CurrentWriter;
+
+                Debug.Assert(writer != null, "Must have a writer plug in.");
+
+                Program.Log.Print($"File writer plug in is: {writer.Name}.", LoggingLevel.Verbose);
                 Program.Log.Print($"Saving to '{projectFile.FullName}'...", LoggingLevel.Simple);
                 
                 var panelUpdateArgs = new ProgressPanelUpdateArgs
                 {
                     Title = Resources.GOREDIT_TEXT_PLEASE_WAIT,
-                    Message = string.Format(Resources.GOREDIT_TEXT_SAVING, projectTitle)
+                    Message = string.Format(Resources.GOREDIT_TEXT_SAVING, CurrentProject.ProjectTitle)
                 };
 
                 UpdateProgress(panelUpdateArgs);
@@ -693,8 +638,8 @@ namespace Gorgon.Editor.ViewModels
                     UpdateProgress(panelUpdateArgs);
                 }
 
-#warning Disabled until Save As functionality is reinstated.
-                //await CurrentProject.PersistProjectAsync(projectTitle, path, writer, SaveProgress, cancelSource.Token);
+                await CurrentProject.SaveProjectMetadataAsync();
+                await CurrentProject.SaveToPackFileAsync(projectFile, writer, SaveProgress, cancelSource.Token);
 
                 if (cancelSource.Token.IsCancellationRequested)
                 {
@@ -705,19 +650,13 @@ namespace Gorgon.Editor.ViewModels
                 // Update the current project with the updated info.               
                 args.Cancel = cancelSource.Token.IsCancellationRequested;
 
-                if (!args.Cancel)
+                if (args.Cancel)
                 {
-                    CurrentProject.ProjectState = ProjectState.Unmodified;
-
-                    RecentFiles.Files.Add(new RecentItem
-                    {
-                        FilePath = path,
-                        LastUsedDate = DateTime.Now
-                    });
-                    Program.Log.Print($"Saved project '{projectTitle}' to '{projectFile.FullName}'...", LoggingLevel.Simple);
+                    return false;
                 }
 
-                return !args.Cancel;
+                Program.Log.Print($"Saved project '{CurrentProject.ProjectTitle}' to '{projectFile.FullName}'.", LoggingLevel.Simple);
+                return true;
             }
             finally
             {
@@ -730,7 +669,7 @@ namespace Gorgon.Editor.ViewModels
         /// Function to save a project file.
         /// </summary>
         /// <param name="args">The arguments for the command.</param>
-        private async Task DoSaveProjectAsync(SaveProjectArgs args)
+        private async Task DoSaveProjectAsync(SavePackFileArgs args)
         {
             try
             {
@@ -761,6 +700,12 @@ namespace Gorgon.Editor.ViewModels
 
             try
             {
+                // Ensure that our metadata is up to date in the current project.
+                if (CurrentProject != null)
+                {
+                    await CurrentProject.SaveProjectMetadataAsync();
+                }
+
                 IProject project = await Task.Run(() => _projectManager.CreateProject(directory));
 
                 // Unload the current project.
@@ -798,13 +743,6 @@ namespace Gorgon.Editor.ViewModels
         {
             try
             {
-                bool saved = await CheckForUnsavedProjectAsync();
-
-                if (!saved)
-                {
-                    return;
-                }
-
                 await CreateProjectAsync(NewProject.WorkspacePath);
             }
             catch (Exception ex)
@@ -895,7 +833,7 @@ namespace Gorgon.Editor.ViewModels
         {
             BrowseProjectCommand = new EditorCommand<object>(DoOpenProjectAsync);
             OpenPackFileCommand = new EditorCommand<object>(DoOpenPackFileAsync, CanOpenProjects);
-            SaveProjectCommand = new EditorAsyncCommand<SaveProjectArgs>(DoSaveProjectAsync, CanSaveProject);
+            SavePackFileCommand = new EditorAsyncCommand<SavePackFileArgs>(DoSaveProjectAsync, CanSaveProject);
             AppClosingAsyncCommand = new EditorAsyncCommand<AppCloseArgs>(DoAppClose);
         }
         #endregion

@@ -86,7 +86,7 @@ namespace Gorgon.Editor.ProjectData
         Task OpenPackFileProjectAsync(FileInfo path, DirectoryInfo workspace);
 
         /// <summary>
-        /// Function to save a project to a file on the disk.
+        /// Function to save a project to a packed file on the disk.
         /// </summary>
         /// <param name="project">The project to save.</param>
         /// <param name="path">The path to the project file.</param>
@@ -94,7 +94,7 @@ namespace Gorgon.Editor.ProjectData
         /// <param name="progressCallback">The callback method that reports the saving progress to the UI.</param>
         /// <param name="cancelToken">The token used for cancellation of the operation.</param>
         /// <returns>A task for asynchronous operation.</returns>
-        Task SaveProjectAsync(IProject project, string path, FileWriterPlugin writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken);
+        Task SavePackedFileAsync(IProject project, FileInfo path, FileWriterPlugin writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken);
 
         /// <summary>
         /// Function to persist out the metadata for the project.
@@ -107,6 +107,17 @@ namespace Gorgon.Editor.ProjectData
         /// </summary>
         /// <param name="project">The project to close.</param>        
         void CloseProject(IProject project);
+
+        /// <summary>
+        /// Function used to lock the project to this instance of the application only.
+        /// </summary>
+        /// <param name="project">The project to lock.</param>
+        /// <remarks>
+        /// <para>
+        /// This method locks down the project working directory so that only this instance of the editor may use it. All other instances will exception if an attempt to open the directory is made.
+        /// </para>
+        /// </remarks>
+        void LockProject(IProject project);
         #endregion
     }
 }

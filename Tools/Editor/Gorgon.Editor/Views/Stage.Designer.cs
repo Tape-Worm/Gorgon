@@ -121,11 +121,11 @@
             this.ButtonSaveAs.Padding = new System.Windows.Forms.Padding(0, 0, 0, 3);
             this.ButtonSaveAs.Size = new System.Drawing.Size(310, 57);
             this.ButtonSaveAs.TabIndex = 2;
-            this.ButtonSaveAs.Text = "Save &as...";
+            this.ButtonSaveAs.Text = "Save &as packaged file...";
             this.ButtonSaveAs.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.ButtonSaveAs.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.TipButtons.SetToolTip(this.ButtonSaveAs, "Save the current project as a packaged file.\r\n\r\nNote: This requires the appropria" +
-        "te plugins be loaded into the editor.\r\n");
+            this.TipButtons.SetToolTip(this.ButtonSaveAs, "Save the current project as a packaged file.\r\n\r\nNote: This functionality requires" +
+        " that the appropriate plugin support is available.\r\n");
             this.ButtonSaveAs.UseVisualStyleBackColor = true;
             this.ButtonSaveAs.Visible = false;
             this.ButtonSaveAs.Click += new System.EventHandler(this.ButtonSaveAs_Click);
