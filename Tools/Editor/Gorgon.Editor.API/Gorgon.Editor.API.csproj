@@ -53,6 +53,7 @@
     </Compile>
     <Compile Include="CommonEditorConstants.cs" />
     <Compile Include="Content\ContentFileMovedEventArgs.cs" />
+    <Compile Include="Content\ContentFileRenamedEventArgs.cs" />
     <Compile Include="Plugins\ContentImportPlugin.cs" />
     <Compile Include="ProjectData\RecentItem.cs" />
     <Compile Include="Services\_Interfaces\IContentImporterPluginService.cs" />

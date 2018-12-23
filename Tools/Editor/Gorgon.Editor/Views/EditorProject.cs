@@ -258,6 +258,7 @@ namespace Gorgon.Editor.Views
         private void ResetDataContext()
         {
             FileExplorer.SetDataContext(null);
+            Preview.SetDataContext(null);
             _dragDropHandler = null;
         }
 
@@ -338,6 +339,7 @@ namespace Gorgon.Editor.Views
             }
 
             FileExplorer.SetDataContext(dataContext.FileExplorer);
+            Preview.SetDataContext(dataContext.ContentPreviewer);
             _dragDropHandler = dataContext as IDragDropHandler<IContentFile>;
         }
 
@@ -488,7 +490,6 @@ namespace Gorgon.Editor.Views
 
             try
             {
-                //throw new Exception("Reset");
                 DockManager.LoadConfigFromArray(DataContext.Layout);
                 DockManager.CellsWorkspace[0].NavigatorMode = NavigatorMode.Panel;
             }
@@ -548,7 +549,8 @@ namespace Gorgon.Editor.Views
             base.OnLoad(e);
 
             if ((IsDesignTime)
-                || (!_deferDataContextLoad))
+                || (!_deferDataContextLoad)
+                || (Disposing))
             {
                 return;
             }

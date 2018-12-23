@@ -33,6 +33,7 @@ using Gorgon.Diagnostics;
 using Gorgon.Editor.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Fonts;
 using Gorgon.Renderers;
 
 namespace Gorgon.Editor.Rendering
@@ -58,6 +59,12 @@ namespace Gorgon.Editor.Rendering
         /// Property to return the graphics interface for the application.
         /// </summary>
         public GorgonGraphics Graphics
+        {
+            get;
+        }
+
+        /// <summary>Property to return the factory used to create fonts.</summary>
+        public GorgonFontFactory FontFactory
         {
             get;
         }
@@ -183,8 +190,9 @@ namespace Gorgon.Editor.Rendering
 
             // TODO: Allow an override to this later.
             var graphics = new GorgonGraphics(adapter, log: log);
+            var fontFactory = new GorgonFontFactory(graphics);
 
-            return new GraphicsContext(graphics);
+            return new GraphicsContext(graphics, fontFactory);
         }
 
         /// <summary>
@@ -200,6 +208,7 @@ namespace Gorgon.Editor.Rendering
                 }
             }
 
+            FontFactory.Dispose();
             _swapChainLeases.Clear();
             Renderer2D?.Dispose();
             Graphics?.Dispose();
@@ -211,9 +220,11 @@ namespace Gorgon.Editor.Rendering
         /// Initializes a new instance of the <see cref="GraphicsContext"/> class.
         /// </summary>
         /// <param name="graphics">The graphics interface.</param>
-        private GraphicsContext(GorgonGraphics graphics)
+        /// <param name="fontFactory">The font factory for the graphics context.</param>
+        private GraphicsContext(GorgonGraphics graphics, GorgonFontFactory fontFactory)
         {
             Graphics = graphics;
+            FontFactory = fontFactory;
             Renderer2D = new Gorgon2D(graphics);
         }
         #endregion

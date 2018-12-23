@@ -108,6 +108,7 @@
     <Compile Include="Services\_Interfaces\IFileSystemService.cs" />
     <Compile Include="Services\_Interfaces\IWorkspaceTester.cs" />
     <Compile Include="ViewModels\AppCloseArgs.cs" />
+    <Compile Include="ViewModels\ContentPreviewVm.cs" />
     <Compile Include="ViewModels\ContentPreviewVmParameters.cs" />
     <Compile Include="ViewModels\CopyNodeArgs.cs" />
     <Compile Include="ViewModels\ExportNodeData.cs" />

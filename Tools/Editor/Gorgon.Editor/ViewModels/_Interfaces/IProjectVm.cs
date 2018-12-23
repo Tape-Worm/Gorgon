@@ -115,6 +115,15 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Property to set or return the content previewer.
+        /// </summary>
+        IContentPreviewVm ContentPreviewer
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to return the current content for the project.
         /// </summary>
         IEditorContent CurrentContent

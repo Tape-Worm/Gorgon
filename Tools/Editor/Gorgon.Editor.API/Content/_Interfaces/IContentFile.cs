@@ -50,8 +50,14 @@ namespace Gorgon.Editor.Content
         event EventHandler<ContentFileMovedEventArgs> Moved;
 
         /// <summary>
+        /// Event triggered if this content file was renamed.
+        /// </summary>
+        event EventHandler<ContentFileRenamedEventArgs> Renamed;
+
+        /// <summary>
         /// Event triggered if this content file is excluded from the project.
         /// </summary>
+        [Obsolete("We don't support this anymore. Get rid of it.")]
         event EventHandler Excluded;
         #endregion
 

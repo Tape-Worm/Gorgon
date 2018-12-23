@@ -447,6 +447,16 @@ namespace Gorgon.Editor.ViewModels
 
             await Task.Run(() => result.FileExplorer = CreateFileExplorerViewModel(projectData, fileSystemService));
 
+            var previewer = new ContentPreviewVm();
+            var thumbDirectory = new DirectoryInfo(Path.Combine(projectData.TempDirectory.FullName, "thumbs"));
+            if (!thumbDirectory.Exists)
+            {
+                thumbDirectory.Create();
+                thumbDirectory.Refresh();
+            }
+            previewer.Initialize(new ContentPreviewVmParameters(result.FileExplorer, thumbDirectory, this));
+
+            result.ContentPreviewer = previewer;
             result.Initialize(new ProjectVmParameters(projectData, this));
 
             // Empty this list, it will be rebuilt when we save, and having it lying around is a waste.

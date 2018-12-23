@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,10 +39,6 @@ namespace Gorgon.Editor.ViewModels
     internal class ContentPreviewVmParameters
         : ViewModelCommonParameters
     {
-        #region Variables.
-
-        #endregion
-
         #region Properties.
         /// <summary>
         /// Property to return the file explorer view model.
@@ -50,21 +47,27 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
         }
-        #endregion
 
-        #region Methods.
-
+        /// <summary>
+        /// Property to return the thumbnail directory for the previewer.
+        /// </summary>
+        public DirectoryInfo ThumbDirectory
+        {
+            get;
+        }
         #endregion
 
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ViewModels.ContentPreviewVmParameters"/> class.</summary>
         /// <param name="fileExplorer">The file explorer view model.</param>
+        /// <param name="thumbDirectory">The thumbnail directory for the previewer.</param>
         /// <param name="viewModelFactory">The view model factory for creating view models.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public ContentPreviewVmParameters(IFileExplorerVm fileExplorer, ViewModelFactory viewModelFactory)
+        public ContentPreviewVmParameters(IFileExplorerVm fileExplorer, DirectoryInfo thumbDirectory, ViewModelFactory viewModelFactory)
             : base(viewModelFactory)
         {            
             FileExplorer = fileExplorer ?? throw new ArgumentNullException(nameof(fileExplorer));
+            ThumbDirectory = thumbDirectory ?? throw new ArgumentNullException(nameof(thumbDirectory));
         }
         #endregion
     }

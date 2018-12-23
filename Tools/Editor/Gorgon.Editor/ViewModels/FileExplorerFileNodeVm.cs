@@ -62,9 +62,12 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         public event EventHandler<ContentFileMovedEventArgs> Moved;
 
+        /// <summary>Event triggered if this content file was renamed.</summary>
+        public event EventHandler<ContentFileRenamedEventArgs> Renamed;
+
         /// <summary>
         /// Event triggered if this content file is excluded from the project.
-        /// </summary>
+        /// </summary>        
         public event EventHandler Excluded;
         #endregion
 
@@ -236,8 +239,12 @@ namespace Gorgon.Editor.ViewModels
 
             try
             {
+                string oldName = Name;
+
                 FileSystemService.RenameFile(_fileInfo, newName);
                 Refresh();
+                EventHandler<ContentFileRenamedEventArgs> handler = Renamed;
+                handler?.Invoke(this, new ContentFileRenamedEventArgs(oldName, _fileInfo.Name));
             }
             finally
             {

@@ -43,6 +43,15 @@ namespace Gorgon.Editor
     internal class EditorSettings
     {
         /// <summary>
+        /// Property to set or return the window layout version.
+        /// </summary>
+        public string WindowLayoutVersion
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to set or return the window layout for the application.
         /// </summary>
         public string WindowLayout

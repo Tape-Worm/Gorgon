@@ -20,44 +20,43 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: December 22, 2018 11:36:11 PM
+// Created: December 23, 2018 3:38:25 PM
 // 
 #endregion
 
-using System.IO;
-using Gorgon.Editor.UI;
-using Gorgon.Graphics.Imaging;
+using System;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.Content
 {
     /// <summary>
-    /// The view model for the content preview window.
+    /// Event parameters for the <see cref="IContentFile.Renamed"/> event.
     /// </summary>
-    internal interface IContentPreviewVm
-        : IViewModel
+    public class ContentFileRenamedEventArgs
+        : EventArgs
     {
         /// <summary>
-        /// Property to return the thumbnail directory.
+        /// Property to return the new name of the node.
         /// </summary>
-        DirectoryInfo ThumbnailDirectory
+        public string NewName
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the preview image to display.
+        /// Property to return the old name of the node.
         /// </summary>
-        IGorgonImage PreviewImage
+        public string OldName
         {
             get;
         }
 
-        /// <summary>
-        /// Property to return the title for the previewed content.
-        /// </summary>
-        string Title
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.Content.ContentFileRenamedEventArgs"/> class.</summary>
+        /// <param name="oldName">The old name.</param>
+        /// <param name="newName">The new name.</param>
+        public ContentFileRenamedEventArgs(string oldName, string newName)
         {
-            get;
+            OldName = oldName ?? string.Empty;
+            NewName = newName ?? string.Empty;
         }
     }
 }

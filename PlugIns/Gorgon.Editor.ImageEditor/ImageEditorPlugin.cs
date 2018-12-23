@@ -30,7 +30,6 @@ using System.IO;
 using System.Linq;
 using System.Drawing;
 using System.Threading.Tasks;
-using System.Diagnostics;
 using System.Threading;
 using DX = SharpDX;
 using Gorgon.Diagnostics;
@@ -74,6 +73,9 @@ namespace Gorgon.Editor.ImageEditor
 
         // This is the only codec supported by the image plug in.  Images will be converted when imported.
         private GorgonCodecDds _ddsCodec = new GorgonCodecDds();
+
+        // The synchronization lock for threads.
+        private readonly object _syncLock = new object();
         #endregion
 
         #region Properties.
@@ -307,30 +309,34 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="scale">The scale of the image.</param>
         private void RenderThumbnail(ref IGorgonImage image, float scale)
         {
-            using (GorgonTexture2D texture = image.ToTexture2D(GraphicsContext.Graphics, new GorgonTexture2DLoadOptions
+            lock (_syncLock)
             {
-                Usage = ResourceUsage.Immutable
-            }))            
-            using (var rtv = GorgonRenderTarget2DView.CreateRenderTarget(GraphicsContext.Graphics, new GorgonTexture2DInfo
-            {
-                ArrayCount = 1,
-                Binding = TextureBinding.ShaderResource,
-                Format = BufferFormat.R8G8B8A8_UNorm,
-                MipLevels = 1,
-                Height = (int)(image.Height * scale),
-                Width = (int)(image.Width * scale),
-                Usage = ResourceUsage.Default
-            }))
-            {
-                GorgonTexture2DView view = texture.GetShaderResourceView();
-                rtv.Clear(GorgonColor.BlackTransparent);
-                GraphicsContext.Graphics.SetRenderTarget(rtv);
-                GraphicsContext.Graphics.DrawTexture(view, new DX.Rectangle(0, 0, rtv.Width, rtv.Height), blendState: GorgonBlendState.Default, samplerState: GorgonSamplerState.Default);
-                GraphicsContext.Graphics.SetRenderTarget(null);
+                using (GorgonTexture2D texture = image.ToTexture2D(GraphicsContext.Graphics, new GorgonTexture2DLoadOptions
+                {
+                    Usage = ResourceUsage.Immutable,
+                    IsTextureCube = false
+                }))
+                using (var rtv = GorgonRenderTarget2DView.CreateRenderTarget(GraphicsContext.Graphics, new GorgonTexture2DInfo
+                {
+                    ArrayCount = 1,
+                    Binding = TextureBinding.ShaderResource,
+                    Format = BufferFormat.R8G8B8A8_UNorm,
+                    MipLevels = 1,
+                    Height = (int)(image.Height * scale),
+                    Width = (int)(image.Width * scale),
+                    Usage = ResourceUsage.Default
+                }))
+                {
+                    GorgonTexture2DView view = texture.GetShaderResourceView(mipCount: 1, arrayCount: 1);
+                    rtv.Clear(GorgonColor.BlackTransparent);
+                    GraphicsContext.Graphics.SetRenderTarget(rtv);
+                    GraphicsContext.Graphics.DrawTexture(view, new DX.Rectangle(0, 0, rtv.Width, rtv.Height), blendState: GorgonBlendState.Default, samplerState: GorgonSamplerState.Default);
+                    GraphicsContext.Graphics.SetRenderTarget(null);
 
-                image?.Dispose();
-                image = rtv.Texture.ToImage();
-            }            
+                    image?.Dispose();
+                    image = rtv.Texture.ToImage();
+                }
+            }
         }
 
         /// <summary>Function to retrieve a thumbnail for the content.</summary>
@@ -394,7 +400,7 @@ namespace Gorgon.Editor.ImageEditor
                     }
 
                     const float maxSize = 256;
-                    float scale = (result.Width / maxSize).Min(result.Height / maxSize);
+                    float scale = (maxSize / result.Width).Min(maxSize / result.Height);
                     RenderThumbnail(ref result, scale);
 
                     if (cancelToken.IsCancellationRequested)

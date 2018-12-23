@@ -50,6 +50,11 @@ namespace Gorgon.Editor.ViewModels
     internal class ProjectVm
         : ViewModelBase<ProjectVmParameters>, IProjectVm, IDragDropHandler<IContentFile>
     {
+        #region Constants.
+        // The version of the window layout XML.
+        private const string WindowLayoutVersion = "1.0-alpha";
+        #endregion
+
         #region Variables.
         // The factory used to create view models.
         private ViewModelFactory _viewModelFactory;
@@ -77,6 +82,8 @@ namespace Gorgon.Editor.ViewModels
         private byte[] _layout;
         // The title for the project.
         private string _projectTitle = Resources.GOREDIT_NEW_PROJECT;
+        // The content previewer view model.
+        private IContentPreviewVm _contentPreviewer;
         #endregion
 
         #region Properties.
@@ -107,6 +114,7 @@ namespace Gorgon.Editor.ViewModels
                 {
                     _viewModelFactory.Settings.WindowLayout = Encoding.UTF8.GetString(value);
                 }
+                _viewModelFactory.Settings.WindowLayoutVersion = WindowLayoutVersion;
                 OnPropertyChanged();
             }
         }
@@ -179,6 +187,29 @@ namespace Gorgon.Editor.ViewModels
                 OnPropertyChanging();
                 _clipboardContext = value;
                 OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the content previewer.
+        /// </summary>
+        public IContentPreviewVm ContentPreviewer
+        {
+            get => _contentPreviewer;
+            set
+            {
+                if (_contentPreviewer == value)
+                {
+                    return;
+                }
+
+                UnassignEvents();
+
+                OnPropertyChanging();
+                _contentPreviewer = value;
+                OnPropertyChanged();
+
+                AssignEvents();
             }
         }
 
@@ -408,11 +439,13 @@ namespace Gorgon.Editor.ViewModels
                     return;
                 }
 
+
+                // TODO: This should be on the content previewer view model so the image in the display is actually updated.
                 // Always generate a thumbnail now so we don't have to later, this also serves to refresh the thumbnail.
                 FileInfo thumbnailFile = null;
                 if (file.Metadata.Attributes.TryGetValue(CommonEditorConstants.ThumbnailAttr, out string thumbnailName))
                 {
-                    thumbnailFile = new FileInfo(Path.Combine(_projectData.TempDirectory.FullName, "thumbs", thumbnailName));
+                    thumbnailFile = new FileInfo(Path.Combine(_contentPreviewer.ThumbnailDirectory.FullName, thumbnailName));
 
                     if (thumbnailFile.Exists)
                     {
@@ -474,10 +507,15 @@ namespace Gorgon.Editor.ViewModels
                 return;
             }
 
-            using (var data = new MemoryStream())
+            // If we have a mismatch for the window layout, then reset to default since the krypton docking manager causes major issues when the layout schema changes.
+            // (It's really a piece of crap and is very poorly written, but we're stuck with it for now).
+            if (!string.Equals(WindowLayoutVersion, _viewModelFactory.Settings.WindowLayoutVersion, StringComparison.OrdinalIgnoreCase))
             {
-                _layout = Encoding.UTF8.GetBytes(_viewModelFactory.Settings.WindowLayout);
-            }                
+                _layout = null;
+                return;
+            }
+
+            _layout = Encoding.UTF8.GetBytes(_viewModelFactory.Settings.WindowLayout);
         }
 
         /// <summary>

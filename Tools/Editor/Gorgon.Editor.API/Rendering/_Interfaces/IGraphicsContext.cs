@@ -26,6 +26,7 @@
 
 using System.Windows.Forms;
 using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Fonts;
 using Gorgon.Renderers;
 
 namespace Gorgon.Editor.Rendering
@@ -40,6 +41,14 @@ namespace Gorgon.Editor.Rendering
         /// Property to return information about the video adapter selected.
         /// </summary>
         IGorgonVideoAdapterInfo VideoAdapter
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the factory used to create fonts.
+        /// </summary>
+        GorgonFontFactory FontFactory
         {
             get;
         }

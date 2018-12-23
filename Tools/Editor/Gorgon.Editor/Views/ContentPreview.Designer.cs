@@ -20,6 +20,7 @@
 
             if (disposing)
             {
+                UpdateImageTexture(null);
                 CleanupResources();
                 DataContext?.OnUnload();
                 UnassignEvents();
