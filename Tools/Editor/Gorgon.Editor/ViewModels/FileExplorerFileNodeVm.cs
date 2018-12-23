@@ -679,7 +679,7 @@ namespace Gorgon.Editor.ViewModels
 
         /// <summary>Function to open the file for reading.</summary>
         /// <returns>A stream containing the file data.</returns>
-        Stream IContentFile.OpenRead() => File.OpenRead(PhysicalPath);
+        Stream IContentFile.OpenRead() => File.Open(PhysicalPath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
         /// <summary>Function to notify that the metadata should be refreshed.</summary>
         void IContentFile.RefreshMetadata() => NotifyPropertyChanged(nameof(Metadata));

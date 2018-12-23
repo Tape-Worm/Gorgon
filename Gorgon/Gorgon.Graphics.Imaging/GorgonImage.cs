@@ -244,7 +244,7 @@ namespace Gorgon.Graphics.Imaging
         /// <param name="imageType">The type of image.</param>
         /// <param name="width">Width of the image.</param>
         /// <param name="height">Height of the image.</param>
-        /// <param name="depth">Depth (for <see cref="Imaging.ImageType.Image3D"/>) of the image.</param>
+        /// <param name="arrayCountOrDepth">The number of array indices for <see cref="ImageType.Image1D"/> or <see cref="ImageType.Image2D"/> images, or the number of depth slices for a <see cref="ImageType.Image3D"/>.</param>
         /// <param name="format">Format of the image.</param>
         /// <param name="mipCount">[Optional] Number of mip-map levels in the image.</param>
         /// <param name="pitchFlags">[Optional] Flags used to influence the row pitch of the image.</param>
@@ -255,7 +255,7 @@ namespace Gorgon.Graphics.Imaging
         /// The <paramref name="pitchFlags"/> parameter is used to compensate in cases where the original image data is not laid out correctly (such as with older DirectDraw DDS images).
         /// </para>
         /// </remarks>
-        public static int CalculateSizeInBytes(ImageType imageType, int width, int height, int depth, BufferFormat format, int mipCount = 1, PitchFlags pitchFlags = PitchFlags.None)
+        public static int CalculateSizeInBytes(ImageType imageType, int width, int height, int arrayCountOrDepth, BufferFormat format, int mipCount = 1, PitchFlags pitchFlags = PitchFlags.None)
 		{
 			if (format == BufferFormat.Unknown)
 			{
@@ -264,7 +264,7 @@ namespace Gorgon.Graphics.Imaging
 
 			width = 1.Max(width);
 			height = 1.Max(height);
-			depth = 1.Max(depth);
+			arrayCountOrDepth = 1.Max(arrayCountOrDepth);
 			mipCount = 1.Max(mipCount);
 			var formatInfo = new GorgonFormatInfo(format);
 			int result = 0;
@@ -274,31 +274,37 @@ namespace Gorgon.Graphics.Imaging
 				throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, format));
 			}
 
-			int mipWidth = width;
-			int mipHeight = height;
+            int arrayCount = imageType == ImageType.Image3D ? 1 : arrayCountOrDepth;
+            int depthCount = imageType == ImageType.Image3D ? arrayCountOrDepth : 1;
 
-			for (int mip = 0; mip < mipCount; mip++)
-			{
-				GorgonPitchLayout pitchInfo = formatInfo.GetPitchForFormat(mipWidth, mipHeight, pitchFlags);
-				result += pitchInfo.SlicePitch * depth;
+            for (int array = 0; array < arrayCount; ++array)
+            {
+                int mipWidth = width;
+                int mipHeight = height;
 
-				if (mipWidth > 1)
-				{
-					mipWidth >>= 1;
-				}
+                for (int mip = 0; mip < mipCount; mip++)
+                {
+                    GorgonPitchLayout pitchInfo = formatInfo.GetPitchForFormat(mipWidth, mipHeight, pitchFlags);
+                    result += pitchInfo.SlicePitch * depthCount;
 
-				if (mipHeight > 1)
-				{
-					mipHeight >>= 1;
-				}
+                    if (mipWidth > 1)
+                    {
+                        mipWidth >>= 1;
+                    }
 
-                if (depth > 1)
-				{
-					depth >>= 1;
-				}
-			}
+                    if (mipHeight > 1)
+                    {
+                        mipHeight >>= 1;
+                    }
 
-			return result;
+                    if (depthCount > 1)
+                    {
+                        depthCount >>= 1;
+                    }
+                }
+            }
+
+            return result;
 		}
 
         /// <summary>
