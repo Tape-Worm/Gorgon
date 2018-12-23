@@ -27,12 +27,9 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using System.Xml;
 using ComponentFactory.Krypton.Docking;
 using ComponentFactory.Krypton.Navigator;
 using ComponentFactory.Krypton.Ribbon;
@@ -43,8 +40,6 @@ using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Editor.ViewModels;
-using Gorgon.IO;
-using Gorgon.Math;
 
 namespace Gorgon.Editor.Views
 {
@@ -59,6 +54,8 @@ namespace Gorgon.Editor.Views
         private const string FileSystemID = "__FS_ID__QaIT-CQPZVwp4bV1zgyzp76KKy-et4Ft0sza971XT9IONmXAsTPQdqLk3OkCvCIB";
         // The content panel unique ID.
         private const string ContentID = "__CONTENT_ID__6jBgPRNH8W5BeUa3q-TCzJ8MSQiIZJq-dKMR2WMDLhOApFe3MbgPKMR9DtUTuspb";
+        // The preview panel unique ID.
+        private const string PreviewID = "__PREVIEW_ID__ZjCHftPl-E1bNRQRc64B3hIFkQXDuZNiIeWbDsP6PpzOl87LIzgrMStLNUtizZZW";
         #endregion
 
         #region Events.
@@ -114,10 +111,14 @@ namespace Gorgon.Editor.Views
         private KryptonPage _fileSystemPage;
         // The page used to host the content.
         private KryptonPage _contentPage;
+        // The page used to host the preview window.
+        private KryptonPage _previewPage;
         // The drag drop handler to use for handling content files dropped on to the project surface.
         private IDragDropHandler<IContentFile> _dragDropHandler;
         // The current content control.
         private ContentBaseControl _contentControl;
+        // The graphics context for the application.
+        private IGraphicsContext _graphicsContext;
         #endregion
 
         #region Properties.
@@ -127,8 +128,8 @@ namespace Gorgon.Editor.Views
         [Browsable(false)]
         public IGraphicsContext GraphicsContext
         {
-            get;
-            set;
+            get => _graphicsContext;
+            set => _graphicsContext = Preview.GraphicsContext = value;
         }
 
         /// <summary>
@@ -208,7 +209,11 @@ namespace Gorgon.Editor.Views
         /// <summary>Handles the DockspaceAdding event of the Dock control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="DockspaceEventArgs"/> instance containing the event data.</param>
-        private void Dock_DockspaceAdding(object sender, DockspaceEventArgs e) => e.DockspaceControl.Width = 384;
+        private void Dock_DockspaceAdding(object sender, DockspaceEventArgs e)
+        {
+            e.DockspaceControl.Width = 384;
+            e.DockspaceControl.Height = 384;
+        }
 
         /// <summary>
         /// Handles the PropertyChanged event of the DataContext control.
@@ -421,6 +426,8 @@ namespace Gorgon.Editor.Views
             PanelContent.Dock = DockStyle.Fill;
             _fileSystemPage.Controls.Add(FileExplorer);
             FileExplorer.Dock = DockStyle.Fill;
+            _previewPage.Controls.Add(Preview);
+            Preview.Dock = DockStyle.Fill;
         }
 
         /// <summary>
@@ -430,6 +437,7 @@ namespace Gorgon.Editor.Views
         {
             _contentPage?.Dispose();
             _fileSystemPage?.Dispose();
+            _previewPage?.Dispose();
 
             // Setup content area.
             _contentPage = new KryptonPage
@@ -451,10 +459,21 @@ namespace Gorgon.Editor.Views
             _fileSystemPage = new KryptonPage
             {
                 Name = FileSystemID,
+                Text = Resources.GOREDIT_TEXT_FILESYSTEM,
                 TextTitle = Resources.GOREDIT_TEXT_FILESYSTEM,
-                UniqueName = FileSystemID,
+                UniqueName = FileSystemID                
             };
+
+            _previewPage = new KryptonPage
+            {
+                Name = PreviewID,
+                Text = Resources.GOREDIT_TEXT_PREVIEW,
+                TextTitle = Resources.GOREDIT_TEXT_PREVIEW,
+                UniqueName = PreviewID,                                
+            };
+
             _fileSystemPage.ClearFlags(KryptonPageFlags.DockingAllowClose | KryptonPageFlags.DockingAllowDropDown | KryptonPageFlags.DockingAllowWorkspace);
+            _previewPage.ClearFlags(KryptonPageFlags.DockingAllowClose | KryptonPageFlags.DockingAllowDropDown | KryptonPageFlags.DockingAllowWorkspace);
         }
 
         /// <summary>
@@ -468,7 +487,8 @@ namespace Gorgon.Editor.Views
             }
 
             try
-            {                
+            {
+                //throw new Exception("Reset");
                 DockManager.LoadConfigFromArray(DataContext.Layout);
                 DockManager.CellsWorkspace[0].NavigatorMode = NavigatorMode.Panel;
             }
@@ -484,10 +504,16 @@ namespace Gorgon.Editor.Views
                     _fileSystemPage.Controls.Remove(FileExplorer);
                 }
 
+                if (_previewPage.Controls.Contains(Preview))
+                {
+                    _previewPage.Controls.Remove(Preview);
+                }
+
                 DockManager.RemoveAllPages(false);
 
                 _contentPage?.Dispose();
                 _fileSystemPage?.Dispose();
+                _previewPage?.Dispose();
 
                 // We don't care if this fails.
                 CreateDefaultDockingScheme();
@@ -504,8 +530,12 @@ namespace Gorgon.Editor.Views
             AssignControlsToPages();
 
             // Link to dock manager.
-            DockManager.AddDockspace("Control", DockingEdge.Right, new[] { _fileSystemPage });
-            DockManager.AddToWorkspace("Workspace", new[] { _contentPage });
+            DockManager.AddToWorkspace("MainWorkspace", new[] { _contentPage });
+            KryptonDockingDockspace dockSpace = DockManager.AddDockspace("Control", DockingEdge.Right, new[] { _fileSystemPage });
+            var previewCell = new KryptonWorkspaceCell("1*,384");
+            previewCell.Pages.Add(_previewPage);
+            dockSpace.DockspaceControl.Root.Orientation = Orientation.Vertical;
+            dockSpace.DockspaceControl.Root.Children.Add(previewCell);
 
             // Update the main workspace area to hide the tab and buttons.
             DockManager.CellsWorkspace[0].NavigatorMode = NavigatorMode.Panel;
@@ -523,7 +553,8 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            DockManager.ManageControl("Control", this, DockManager.ManageWorkspace("Workspace", DockSpace));
+            KryptonDockingWorkspace mainWorkspace = DockManager.ManageWorkspace("MainWorkspace", DockSpace);
+            DockManager.ManageControl("Control", this, mainWorkspace);
             DockManager.ManageFloating(ParentForm);
             DockManager.DefaultCloseRequest = DockingCloseRequest.None;
 
@@ -560,11 +591,7 @@ namespace Gorgon.Editor.Views
                 DataContext.OnLoad();
             }
 
-            if ((DataContext.Layout == null) || (DataContext.Layout.Length == 0))
-            {
-                //CreateDefaultDockingScheme();
-            }
-            else
+            if ((DataContext.Layout != null) && (DataContext.Layout.Length != 0))
             {
                 LoadLayoutFromDataContext();
             }

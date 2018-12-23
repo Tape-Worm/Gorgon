@@ -41,6 +41,7 @@
             this.kryptonPage2 = new ComponentFactory.Krypton.Navigator.KryptonPage();
             this.kryptonPage3 = new ComponentFactory.Krypton.Navigator.KryptonPage();
             this.PanelContent = new System.Windows.Forms.Panel();
+            this.Preview = new Gorgon.Editor.Views.ContentPreview();
             ((System.ComponentModel.ISupportInitialize)(this.DockSpace)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.kryptonPage2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.kryptonPage3)).BeginInit();
@@ -116,10 +117,20 @@
             this.PanelContent.DragDrop += new System.Windows.Forms.DragEventHandler(this.PanelContent_DragDrop);
             this.PanelContent.DragEnter += new System.Windows.Forms.DragEventHandler(this.PanelContent_DragEnter);
             // 
+            // Preview
+            // 
+            this.Preview.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.Preview.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.Preview.Location = new System.Drawing.Point(256, 0);
+            this.Preview.Name = "Preview";
+            this.Preview.Size = new System.Drawing.Size(256, 256);
+            this.Preview.TabIndex = 1;
+            // 
             // EditorProject
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.Preview);
             this.Controls.Add(this.PanelContent);
             this.Controls.Add(this.FileExplorer);
             this.Controls.Add(this.DockSpace);
@@ -139,5 +150,6 @@
         private ComponentFactory.Krypton.Navigator.KryptonPage kryptonPage2;
         private ComponentFactory.Krypton.Navigator.KryptonPage kryptonPage3;
         private System.Windows.Forms.Panel PanelContent;
+        private ContentPreview Preview;
     }
 }

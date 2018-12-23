@@ -84,6 +84,7 @@ namespace Gorgon.Editor.UI.Views
             if (_palette == null)
             {
                 base.OnPaint(e);
+                return;
             }
 
             PaletteState state = Enabled ? PaletteState.Normal : PaletteState.Disabled;

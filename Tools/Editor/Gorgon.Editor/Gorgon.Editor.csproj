@@ -108,6 +108,7 @@
     <Compile Include="Services\_Interfaces\IFileSystemService.cs" />
     <Compile Include="Services\_Interfaces\IWorkspaceTester.cs" />
     <Compile Include="ViewModels\AppCloseArgs.cs" />
+    <Compile Include="ViewModels\ContentPreviewVmParameters.cs" />
     <Compile Include="ViewModels\CopyNodeArgs.cs" />
     <Compile Include="ViewModels\ExportNodeData.cs" />
     <Compile Include="ViewModels\CopyNodeData.cs" />
@@ -141,9 +142,16 @@
     <Compile Include="ViewModels\_Interfaces\IFileExplorerNodeVm.cs" />
     <Compile Include="ViewModels\_Interfaces\IFileExplorerVm.cs" />
     <Compile Include="ViewModels\_Interfaces\IMain.cs" />
+    <Compile Include="ViewModels\_Interfaces\IContentPreviewVm.cs" />
     <Compile Include="ViewModels\_Interfaces\IRecentVm.cs" />
     <Compile Include="ViewModels\_Interfaces\IStageNewVm.cs" />
     <Compile Include="ViewModels\_Interfaces\IProjectVm.cs" />
+    <Compile Include="Views\ContentPreview.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\ContentPreview.Designer.cs">
+      <DependentUpon>ContentPreview.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\EditorProject.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -194,6 +202,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="Views\ContentPreview.resx">
+      <DependentUpon>ContentPreview.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\EditorProject.resx">
       <DependentUpon>EditorProject.cs</DependentUpon>
     </EmbeddedResource>
@@ -227,6 +238,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\no_thumbnail_256x256.dds" />
     <None Include="Resources\rename_48x48.png" />
     <None Include="Resources\open_pack_file_48x48.png" />
     <None Include="Resources\windo_deco_129x39.png" />

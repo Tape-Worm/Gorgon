@@ -1299,6 +1299,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Content Preview.
+        /// </summary>
+        internal static string GOREDIT_TEXT_PREVIEW {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_PREVIEW", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Save editor file as....
         /// </summary>
         internal static string GOREDIT_TEXT_SAVE_EDITOR_FILE {
@@ -1496,6 +1505,16 @@ namespace Gorgon.Editor.Properties {
             get {
                 object obj = ResourceManager.GetObject("newproject_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] no_thumbnail_256x256 {
+            get {
+                object obj = ResourceManager.GetObject("no_thumbnail_256x256", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         

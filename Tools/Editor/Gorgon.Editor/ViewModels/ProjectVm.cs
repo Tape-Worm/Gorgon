@@ -401,12 +401,30 @@ namespace Gorgon.Editor.ViewModels
                 ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_OPENING, file.Name));
 
                 // Create a content object.
-                IEditorContent content = await file.ContentPlugin.OpenContentAsync(file, _viewModelFactory, _projectData, Program.Log);
+                IEditorContent content = await file.ContentPlugin.OpenContentAsync(file, _viewModelFactory, _projectData);
 
                 if (content == null)
                 {
                     return;
                 }
+
+                // Always generate a thumbnail now so we don't have to later, this also serves to refresh the thumbnail.
+                FileInfo thumbnailFile = null;
+                if (file.Metadata.Attributes.TryGetValue(CommonEditorConstants.ThumbnailAttr, out string thumbnailName))
+                {
+                    thumbnailFile = new FileInfo(Path.Combine(_projectData.TempDirectory.FullName, "thumbs", thumbnailName));
+
+                    if (thumbnailFile.Exists)
+                    {
+                        thumbnailFile.Delete();
+                        file.Metadata.Attributes.Remove(thumbnailName);
+                    }                  
+                }
+
+                thumbnailName = Guid.NewGuid().ToString("N");
+                thumbnailFile = new FileInfo(Path.Combine(_projectData.TempDirectory.FullName, "thumbs", thumbnailName));
+
+                (await file.Metadata.ContentMetadata.GetThumbnailAsync(file, thumbnailFile, CancellationToken.None))?.Dispose();
 
                 // TODO: Open the file.
 

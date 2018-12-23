@@ -37,6 +37,7 @@ using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
+using Gorgon.Graphics.Imaging;
 using Gorgon.IO;
 
 namespace Gorgon.Editor.Plugins
@@ -71,6 +72,15 @@ namespace Gorgon.Editor.Plugins
             private set;
         }
 
+        /// <summary>
+        /// Property to return the logging interface for the application.
+        /// </summary>
+        protected IGorgonLog Log
+        {
+            get;
+            private set;
+        }
+
         /// <summary>Property to return the type of this plug in.</summary>
         public override PluginType PluginType => PluginType.Content;
 
@@ -80,7 +90,7 @@ namespace Gorgon.Editor.Plugins
         public abstract bool CanCreateContent
         {
             get;
-        }
+        }        
         #endregion
 
         #region Methods.
@@ -88,21 +98,19 @@ namespace Gorgon.Editor.Plugins
         /// Function to provide initialization for the plugin.
         /// </summary>
         /// <param name="pluginService">The plugin service used to access other plugins.</param>
-        /// <param name="log">The logging interface for debug messages.</param>
         /// <remarks>
         /// <para>
         /// This method is only called when the plugin is loaded at startup.
         /// </para>
         /// </remarks>
-        protected virtual void OnInitialize(IContentPluginService pluginService, IGorgonLog log)
+        protected virtual void OnInitialize(IContentPluginService pluginService)
         {
         }
 
         /// <summary>
         /// Function to provide clean up for the plugin.
         /// </summary>
-        /// <param name="log">The logging interface for debug messages.</param>
-        protected virtual void OnShutdown(IGorgonLog log)
+        protected virtual void OnShutdown()
         {
 
         }
@@ -113,7 +121,6 @@ namespace Gorgon.Editor.Plugins
         /// <param name="file">The file that contains the content.</param>
         /// <param name="injector">Parameters for injecting dependency objects.</param>
         /// <param name="scratchArea">The file system for the scratch area used to write transitory information.</param>
-        /// <param name="log">The logging interface to use.</param>
         /// <returns>A new <see cref="IEditorContent"/> object.</returns>
         /// <remarks>
         /// <para>
@@ -121,7 +128,7 @@ namespace Gorgon.Editor.Plugins
         /// application or plug in is shut down, and is not stored with the project.
         /// </para>
         /// </remarks>
-        protected abstract Task<IEditorContent> OnOpenContentAsync(IContentFile file, IViewModelInjection injector, IGorgonFileSystemWriter<Stream> scratchArea, IGorgonLog log);
+        protected abstract Task<IEditorContent> OnOpenContentAsync(IContentFile file, IViewModelInjection injector, IGorgonFileSystemWriter<Stream> scratchArea);
 
         /// <summary>
         /// Function to register plug in specific search keywords with the system search.
@@ -153,11 +160,10 @@ namespace Gorgon.Editor.Plugins
         /// <param name="file">The file that contains the content.</param>
         /// <param name="injector">Parameters for injecting dependency objects.</param>
         /// <param name="project">The project information.</param>
-        /// <param name="log">The logging interface to use.</param>
         /// <returns>A new <see cref="IEditorContent"/> object.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/>, <paramref name="injector"/>, or the <paramref name="project"/> parameter is <b>null</b>.</exception>
         /// <exception cref="GorgonException">Thrown if the <see cref="OnOpenContentAsync"/> method returns <b>null</b>.</exception>
-        public async Task<IEditorContent> OpenContentAsync(IContentFile file, IViewModelInjection injector, IProject project, IGorgonLog log)
+        public async Task<IEditorContent> OpenContentAsync(IContentFile file, IViewModelInjection injector, IProject project)
         {
             if (file == null)
             {
@@ -175,11 +181,11 @@ namespace Gorgon.Editor.Plugins
             }
 
             string scratchPath = project.TempDirectory.FullName.FormatDirectory(Path.DirectorySeparatorChar);
-            var scratchArea = new GorgonFileSystem(log);
+            var scratchArea = new GorgonFileSystem(Log);
             scratchArea.Mount(scratchPath);
             IGorgonFileSystemWriter<Stream> scratchWriter = new GorgonFileSystemWriter(scratchArea, scratchPath);
 
-            IEditorContent content = await OnOpenContentAsync(file, injector, scratchWriter, log ?? GorgonLog.NullLog);
+            IEditorContent content = await OnOpenContentAsync(file, injector, scratchWriter);
 
             if (content == null)
             {
@@ -195,8 +201,7 @@ namespace Gorgon.Editor.Plugins
         /// <summary>
         /// Function to perform any required clean up for the plugin.
         /// </summary>
-        /// <param name="log">The logging interface for debug messages.</param>
-        public void Shutdown(IGorgonLog log)
+        public void Shutdown()
         {
             int initalizedFlag = Interlocked.Exchange(ref _initialized, 0);
 
@@ -205,7 +210,7 @@ namespace Gorgon.Editor.Plugins
                 return;
             }
 
-            OnShutdown(log ?? GorgonLog.NullLog);
+            OnShutdown();
         }
 
         /// <summary>
@@ -213,7 +218,7 @@ namespace Gorgon.Editor.Plugins
         /// </summary>
         /// <param name="pluginService">The plugin service used to access other plugins.</param>                
         /// <param name="graphicsContext">The graphics context for the application.</param>
-        /// <param name="log">The logging interface for debug messages.</param>
+        /// <param name="log">The debug log used by the application.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginService"/>, or the <paramref name="graphicsContext"/> parameter is <b>null</b>.</exception>
         /// <remarks>
         /// <para>
@@ -239,9 +244,11 @@ namespace Gorgon.Editor.Plugins
 
             log.Print($"Initializing {Name}...", LoggingLevel.Simple);
 
+            Log = log;
+
             GraphicsContext = graphicsContext ?? throw new ArgumentNullException(nameof(graphicsContext));
 
-            OnInitialize(pluginService, log);
+            OnInitialize(pluginService);
         }
         #endregion
 

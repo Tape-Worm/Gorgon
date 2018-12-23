@@ -20,30 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: September 4, 2018 9:45:38 AM
+// Created: December 22, 2018 11:36:11 PM
 // 
 #endregion
 
-namespace Gorgon.Editor
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Gorgon.Editor.UI;
+
+namespace Gorgon.Editor.ViewModels
 {
     /// <summary>
-    /// Contains commonly used constants for the editor.
+    /// The view model for the content preview window.
     /// </summary>
-    public static class CommonEditorConstants
+    internal interface IContentPreviewVm
+        : IViewModel
     {
-        /// <summary>
-        /// The current version for an editor project.
-        /// </summary>
-        public const string EditorCurrentProjectVersion = "GOREDIT30";
 
-        /// <summary>
-        /// The name of the file that holds the metadata for the project.
-        /// </summary>
-        public const string EditorMetadataFileName = "_$GEMD$_.db";
-
-        /// <summary>
-        /// The name of the attribute for thumbnails in content items.
-        /// </summary>
-        public const string ThumbnailAttr = "Thumb";
     }
 }

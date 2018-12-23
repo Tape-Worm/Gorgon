@@ -30,7 +30,9 @@ using System.IO;
 using System.Linq;
 using System.Drawing;
 using System.Threading.Tasks;
-using Gorgon.Core;
+using System.Diagnostics;
+using System.Threading;
+using DX = SharpDX;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ImageEditor.Properties;
@@ -42,6 +44,9 @@ using Gorgon.IO;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Plugins;
 using Gorgon.Editor.UI;
+using Gorgon.Math;
+using Gorgon.Graphics.Core;
+using Gorgon.Graphics;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -143,9 +148,8 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Function to open a content object from this plugin.</summary>
         /// <param name="file">The file that contains the content.</param>
         /// <param name="scratchAreaDirectory">The directory for the temporary working directory.</param>
-        /// <param name="log">The logging interface to use.</param>
         /// <returns>A new IEditorContent object.</returns>
-        protected async override Task<IEditorContent> OnOpenContentAsync(IContentFile file, IViewModelInjection injector, IGorgonFileSystemWriter<Stream> scratchArea, IGorgonLog log)
+        protected async override Task<IEditorContent> OnOpenContentAsync(IContentFile file, IViewModelInjection injector, IGorgonFileSystemWriter<Stream> scratchArea)
         {
             IGorgonImage image = await Task.Run(() => 
             {
@@ -162,8 +166,7 @@ namespace Gorgon.Editor.ImageEditor
         }
 
         /// <summary>Function to provide clean up for the plugin.</summary>
-        /// <param name="log">The logging interface for debug messages.</param>
-        protected override void OnShutdown(IGorgonLog log)
+        protected override void OnShutdown()
         {
             foreach (IDisposable codec in _codecList.OfType<IDisposable>())
             {   
@@ -181,45 +184,44 @@ namespace Gorgon.Editor.ImageEditor
             catch (Exception ex)
             {
                 // We don't care if it crashes. The worst thing that'll happen is your settings won't persist.
-                log.LogException(ex);
+                Log.LogException(ex);
             }            
 
             _pluginCache?.Dispose();
 
             ViewFactory.Unregister<IImageContent>();
 
-            base.OnShutdown(log);
+            base.OnShutdown();
         }
 
         /// <summary>
         /// Function to load external image codec plug ins.
         /// </summary>
-        /// <param name="log">The logging interface used to log debug messages.</param>
-        private void LoadCodecPlugins(IGorgonLog log)
+        private void LoadCodecPlugins()
         {
             if (_settings.CodecPluginPaths.Count == 0)
             {
                 return;
             }
 
-            log.Print("Loading image codecs...", LoggingLevel.Intermediate);
+            Log.Print("Loading image codecs...", LoggingLevel.Intermediate);
 
             foreach (KeyValuePair<string, string> plugin in _settings.CodecPluginPaths)
             {
-                log.Print($"Loading '{plugin.Key}' from '{plugin.Value}'...", LoggingLevel.Verbose);
+                Log.Print($"Loading '{plugin.Key}' from '{plugin.Value}'...", LoggingLevel.Verbose);
 
                 var file = new FileInfo(plugin.Value);
 
                 if (!file.Exists)
                 {
-                    log.Print($"ERROR: Could not find the plug in assembly '{plugin.Value}' for plug in '{plugin.Key}'.", LoggingLevel.Simple);
+                    Log.Print($"ERROR: Could not find the plug in assembly '{plugin.Value}' for plug in '{plugin.Key}'.", LoggingLevel.Simple);
                     continue;
                 }
 
                 _pluginCache.LoadPluginAssemblies(file.DirectoryName, file.Name);
             }
 
-            IGorgonPluginService plugins = new GorgonMefPluginService(_pluginCache, log);
+            IGorgonPluginService plugins = new GorgonMefPluginService(_pluginCache, Log);
 
             // Load all the codecs contained within the plug in (a plug in can have multiple codecs).
             foreach (GorgonImageCodecPlugin plugin in plugins.GetPlugins<GorgonImageCodecPlugin>())
@@ -233,14 +235,13 @@ namespace Gorgon.Editor.ImageEditor
 
         /// <summary>Function to provide initialization for the plugin.</summary>
         /// <param name="pluginService">The plugin service used to access other plugins.</param>
-        /// <param name="log">The logging interface for debug messages.</param>
         /// <remarks>This method is only called when the plugin is loaded at startup.</remarks>
-        protected override void OnInitialize(IContentPluginService pluginService, IGorgonLog log)
+        protected override void OnInitialize(IContentPluginService pluginService)
         {
             ViewFactory.Register<IImageContent>(() => new ImageEditorView());
 
             _pluginService = pluginService;
-            _pluginCache = new GorgonMefPluginCache(log);
+            _pluginCache = new GorgonMefPluginCache(Log);
 
             // Get built-in codec list.
             _codecList.Add(new GorgonCodecPng());
@@ -258,7 +259,7 @@ namespace Gorgon.Editor.ImageEditor
             }
 
             // Load the additional plug ins.
-            LoadCodecPlugins(log);
+            LoadCodecPlugins();
 
             foreach (IGorgonImageCodec codec in _codecList)
             {
@@ -298,15 +299,134 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         /// <returns>An image for the small icon.</returns>
         public Image GetSmallIcon() => Resources.image_16x16;
+
+        /// <summary>
+        /// Function to render the thumbnail into the image passed in.
+        /// </summary>
+        /// <param name="image">The image to render the thumbnail into.</param>
+        /// <param name="scale">The scale of the image.</param>
+        private void RenderThumbnail(ref IGorgonImage image, float scale)
+        {
+            using (GorgonTexture2D texture = image.ToTexture2D(GraphicsContext.Graphics, new GorgonTexture2DLoadOptions
+            {
+                Usage = ResourceUsage.Immutable
+            }))            
+            using (var rtv = GorgonRenderTarget2DView.CreateRenderTarget(GraphicsContext.Graphics, new GorgonTexture2DInfo
+            {
+                ArrayCount = 1,
+                Binding = TextureBinding.ShaderResource,
+                Format = BufferFormat.R8G8B8A8_UNorm,
+                MipLevels = 1,
+                Height = (int)(image.Height * scale),
+                Width = (int)(image.Width * scale),
+                Usage = ResourceUsage.Default
+            }))
+            {
+                GorgonTexture2DView view = texture.GetShaderResourceView();
+                rtv.Clear(GorgonColor.BlackTransparent);
+                GraphicsContext.Graphics.SetRenderTarget(rtv);
+                GraphicsContext.Graphics.DrawTexture(view, new DX.Rectangle(0, 0, rtv.Width, rtv.Height), blendState: GorgonBlendState.Default, samplerState: GorgonSamplerState.Default);
+                GraphicsContext.Graphics.SetRenderTarget(null);
+
+                image?.Dispose();
+                image = rtv.Texture.ToImage();
+            }            
+        }
+
+        /// <summary>Function to retrieve a thumbnail for the content.</summary>
+        /// <param name="contentFile">The content file used to retrieve the data to build the thumbnail with.</param>
+        /// <param name="outputFile">The output file for the thumbnail data.</param>
+        /// <param name="cancelToken">The token used to cancel the thumbnail generation.</param>
+        /// <returns>A <see cref="T:Gorgon.Graphics.Imaging.IGorgonImage"/> containing the thumbnail image data.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="contentFile"/>, or the <paramref name="outputFile"/> parameter is <b>null</b>.</exception>
+        public Task<IGorgonImage> GetThumbnailAsync(IContentFile contentFile, FileInfo outputFile, CancellationToken cancelToken)
+        {
+            if (contentFile == null)
+            {
+                throw new ArgumentNullException(nameof(contentFile));
+            }
+
+            if (outputFile == null)
+            {
+                throw new ArgumentNullException(nameof(outputFile));
+            }
+
+            // If the content is not a DDS image, then leave it.
+            if ((!contentFile.Metadata.Attributes.TryGetValue(ImageContent.CodecAttr, out string codecName))
+                || (string.IsNullOrWhiteSpace(codecName))
+                || (!string.Equals(codecName, _ddsCodec.GetType().FullName, StringComparison.OrdinalIgnoreCase)))
+            {
+                return null;
+            }
+
+            if (!outputFile.Directory.Exists)
+            {
+                outputFile.Directory.Create();
+                outputFile.Directory.Refresh();
+            }
+
+            return Task.Run(() =>
+            {
+                try
+                {
+                    IGorgonImage result;
+                    IGorgonImageCodec pngCodec = new GorgonCodecPng();
+
+                    // If we've already got the file, then leave.
+                    if (outputFile.Exists)
+                    {
+                        using (Stream inStream = outputFile.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
+                        {
+                            result = pngCodec.LoadFromStream(inStream);
+                        }
+
+                        return cancelToken.IsCancellationRequested ? null : result;
+                    }
+
+                    using (Stream inStream = contentFile.OpenRead())
+                    {
+                        result = _ddsCodec.LoadFromStream(inStream);
+                    }
+
+                    if (cancelToken.IsCancellationRequested)
+                    {
+                        return null;
+                    }
+
+                    const float maxSize = 256;
+                    float scale = (result.Width / maxSize).Min(result.Height / maxSize);
+                    RenderThumbnail(ref result, scale);
+
+                    if (cancelToken.IsCancellationRequested)
+                    {
+                        return null;
+                    }
+
+                    pngCodec.SaveToFile(result, outputFile.FullName);
+
+                    if (cancelToken.IsCancellationRequested)
+                    {
+                        return null;
+                    }
+
+                    contentFile.Metadata.Attributes[CommonEditorConstants.ThumbnailAttr] = outputFile.Name;
+
+                    return result;
+                }
+                catch(Exception ex)
+                {
+                    Log.Print($"[ERROR] Cannot create thumbnail for '{contentFile.Path}'", LoggingLevel.Intermediate);
+                    Log.LogException(ex);
+                    return null;
+                }
+            });
+        }
         #endregion
 
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the ImageEditorPlugin class.</summary>
         public ImageEditorPlugin()
-            : base(Resources.GORIMG_DESC)
-        {
-            SmallIconID = Guid.NewGuid();
-        }
+            : base(Resources.GORIMG_DESC) => SmallIconID = Guid.NewGuid();
         #endregion
     }
 }

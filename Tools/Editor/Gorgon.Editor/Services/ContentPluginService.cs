@@ -285,7 +285,7 @@ namespace Gorgon.Editor.Services
         {
             foreach (KeyValuePair<string, ContentPlugin> plugin in _plugins)
             {
-                plugin.Value.Shutdown(Program.Log);
+                plugin.Value.Shutdown();
             }
 
             _plugins.Clear();
@@ -344,7 +344,7 @@ namespace Gorgon.Editor.Services
                     if (validation.Count > 0)
                     {
                         // Shut the plug in down.
-                        plugin.Shutdown(Program.Log);
+                        plugin.Shutdown();
 
                         Program.Log.Print($"WARNING: The content plug in '{plugin.Name}' is disabled:", LoggingLevel.Simple);
                         foreach (string reason in validation)
@@ -364,7 +364,7 @@ namespace Gorgon.Editor.Services
                 catch (Exception ex)
                 {
                     // Attempt to gracefully shut the plug in down if we error out.
-                    plugin.Shutdown(Program.Log);
+                    plugin.Shutdown();
 
                     Program.Log.Print($"ERROR: Cannot create content plug in '{plugin.Name}'.", LoggingLevel.Simple);
                     Program.Log.LogException(ex);
@@ -389,7 +389,7 @@ namespace Gorgon.Editor.Services
             }
 
             _plugins.Remove(plugin.Name);
-            plugin.Shutdown(Program.Log);
+            plugin.Shutdown();
         }
         #endregion
 
