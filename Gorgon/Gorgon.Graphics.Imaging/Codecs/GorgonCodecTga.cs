@@ -899,8 +899,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		        {
 		            // Get the pointer to the first mip/array/depth level.
 		            byte* srcPointer = (byte*)imageData.Buffers[0].Data;
-		            GorgonNativeBuffer<byte> lineBuffer = null;
-		            byte* destPtr = null;
+		            var lineBuffer = new GorgonNativeBuffer<byte>(srcPitch.RowPitch);
 
 		            try
 		            {
@@ -910,12 +909,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		                // Write out each scan line.					
 		                for (int y = 0; y < imageData.Height; y++)
 		                {
-		                    if (lineBuffer == null)
-		                    {
-		                        lineBuffer = new GorgonNativeBuffer<byte>(srcPitch.RowPitch);
-		                        // We have a conversion, which will require a new buffer to write out to the stream.
-		                        destPtr = (byte*)lineBuffer;
-		                    }
+                            byte* destPtr = (byte*)lineBuffer;
 
 		                    if ((conversionFlags & TGAConversionFlags.RGB888) == TGAConversionFlags.RGB888)
 		                    {
@@ -933,8 +927,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		                    {
 		                        ImageUtilities.CopyScanline(srcPointer, srcPitch.RowPitch, destPtr, destPitch.RowPitch, imageData.Format, ImageBitFlags.None);
 		                    }
-
-		                    destPtr += destPitch.RowPitch;
+		                    
 		                    srcPointer += srcPitch.RowPitch;
 
 		                    writer.WriteRange(lineBuffer, count: destPitch.RowPitch);
