@@ -129,6 +129,7 @@ namespace Gorgon.Editor.Views
 
             if ((image == null) || (GraphicsContext == null) || (_swapChain == null))
             {
+                RenderImage();
                 return;
             }
 

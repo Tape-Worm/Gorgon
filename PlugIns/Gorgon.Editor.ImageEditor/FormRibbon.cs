@@ -60,10 +60,6 @@ namespace Gorgon.Editor.ImageEditor
                 case nameof(IImageContent.PixelFormats):
                     RefreshPixelFormats(DataContext);
                     break;
-                case nameof(IImageContent.CurrentCodec):
-                    ButtonCodec.TextLine1 = $"{Resources.GORIMG_TEXT_CODEC}: {DataContext.CurrentCodec.Codec}";
-                    UpdateCodecMenuSelection(DataContext);
-                    break;
                 case nameof(IImageContent.CurrentPixelFormat):
                     ButtonImageFormat.TextLine1 = $"{Resources.GORIMG_TEXT_IMAGE_FORMAT}: {DataContext.CurrentPixelFormat}";
                     break;
@@ -136,9 +132,9 @@ namespace Gorgon.Editor.ImageEditor
             var item = (ToolStripMenuItem)sender;
             var codec = item.Tag as IGorgonImageCodec;
 
-            if ((DataContext?.SetCodecCommand != null) && (DataContext.SetCodecCommand.CanExecute(codec)))
+            if ((DataContext?.ExportImageCommand != null) && (DataContext.ExportImageCommand.CanExecute(codec)))
             {
-                DataContext.SetCodecCommand.Execute(codec);
+                DataContext.ExportImageCommand.Execute(codec);
             }
         }
 
@@ -152,8 +148,7 @@ namespace Gorgon.Editor.ImageEditor
                 return;
             }
 
-            ButtonCodec.Visible = MenuCodecs.Items.Count > 0;
-            ButtonImageFormat.Visible = (DataContext.CurrentCodec != null) && (DataContext.CurrentCodec.SupportedPixelFormats.Count > 0);
+            ButtonExport.Enabled = MenuCodecs.Items.Count > 0;            
             ButtonSaveImage.Enabled = DataContext.ContentState != UI.ContentState.Unmodified;
         }
 
@@ -171,23 +166,6 @@ namespace Gorgon.Editor.ImageEditor
             foreach (ToolStripMenuItem item in MenuImageFormats.Items.OfType<ToolStripMenuItem>())
             {
                 item.Checked = ((BufferFormat)item.Tag) == dataContext.CurrentPixelFormat;
-            }
-        }
-
-        /// <summary>
-        /// Function to ensure the menu is single selection only.
-        /// </summary>
-        /// <param name="dataContext">The current data context.</param>
-        private void UpdateCodecMenuSelection(IImageContent dataContext)
-        {
-            if (dataContext == null)
-            {
-                return;
-            }
-
-            foreach (ToolStripMenuItem item in MenuCodecs.Items.OfType<ToolStripMenuItem>())
-            {
-                item.Checked = item.Tag == dataContext.CurrentCodec;
             }
         }
 
@@ -250,22 +228,16 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="codec">The codec to add.</param>
         private void AddCodecItem(IImageContent dataContext, IGorgonImageCodec codec)
         {
-            var item = new ToolStripMenuItem(codec.Codec)
+            var item = new ToolStripMenuItem($"{codec.CodecDescription} ({codec.Codec})")
             {
-                Name = codec.Name,
-                Checked = dataContext.CurrentCodec == codec,
-                CheckOnClick = true,
+                Name = codec.Name,                
+                CheckOnClick = false,
                 Tag = codec
             };
 
             item.Click += CodecItem_Click;
 
             MenuCodecs.Items.Add(item);
-
-            if (item.Checked)
-            {
-                ButtonCodec.TextLine1 = $"{Resources.GORIMG_TEXT_CODEC}: {codec.Codec}";
-            }
         }
 
         /// <summary>
@@ -332,7 +304,6 @@ namespace Gorgon.Editor.ImageEditor
 
             RefreshPixelFormats(dataContext);
 
-            UpdateCodecMenuSelection(dataContext);
             UpdatePixelFormatMenuSelection(dataContext);
         }
 

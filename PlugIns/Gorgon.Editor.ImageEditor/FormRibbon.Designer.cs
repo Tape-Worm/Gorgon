@@ -43,9 +43,8 @@
             this.ButtonSaveImage = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.kryptonRibbonGroupSeparator1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
             this.GroupCodec = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
-            this.ButtonCodec = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.MenuCodecs = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ButtonImport = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonExport = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.GroupImage = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
             this.kryptonRibbonGroupTriple3 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
             this.ButtonGenerateMipMaps = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
@@ -70,6 +69,7 @@
             this.NumericArrayCount = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupNumericUpDown();
             this.kryptonRibbonGroupLabel1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLabel();
             this.NumericMipCount = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupNumericUpDown();
+            this.MenuCodecs = new System.Windows.Forms.ContextMenuStrip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.RibbonImageContent)).BeginInit();
             this.MenuImageType.SuspendLayout();
             this.SuspendLayout();
@@ -81,7 +81,6 @@
             this.RibbonImageContent.Name = "RibbonImageContent";
             this.RibbonImageContent.RibbonTabs.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab[] {
             this.TabImage});
-            this.RibbonImageContent.SelectedContext = null;
             this.RibbonImageContent.SelectedTab = this.TabImage;
             this.RibbonImageContent.Size = new System.Drawing.Size(1161, 115);
             this.RibbonImageContent.TabIndex = 0;
@@ -127,25 +126,8 @@
             // GroupCodec
             // 
             this.GroupCodec.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
-            this.ButtonCodec,
-            this.ButtonImport});
-            // 
-            // ButtonCodec
-            // 
-            this.ButtonCodec.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.DropDown;
-            this.ButtonCodec.ContextMenuStrip = this.MenuCodecs;
-            this.ButtonCodec.ImageLarge = global::Gorgon.Editor.ImageEditor.Properties.Resources.codec_48x48;
-            this.ButtonCodec.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.codec_16x16;
-            this.ButtonCodec.KeyTip = "C";
-            this.ButtonCodec.TextLine1 = "Codec";
-            this.ButtonCodec.ToolTipBody = "Sets the codec to use when writing the image back to the file system.";
-            this.ButtonCodec.ToolTipTitle = "Image Codec";
-            // 
-            // MenuCodecs
-            // 
-            this.MenuCodecs.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.MenuCodecs.Name = "MenuCodecs";
-            this.MenuCodecs.Size = new System.Drawing.Size(61, 4);
+            this.ButtonImport,
+            this.ButtonExport});
             // 
             // ButtonImport
             // 
@@ -157,6 +139,17 @@
             this.ButtonImport.TextLine1 = "Import";
             this.ButtonImport.ToolTipBody = resources.GetString("ButtonImport.ToolTipBody");
             this.ButtonImport.ToolTipTitle = "Import Image";
+            // 
+            // ButtonExport
+            // 
+            this.ButtonExport.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.DropDown;
+            this.ButtonExport.ContextMenuStrip = this.MenuCodecs;
+            this.ButtonExport.ImageLarge = global::Gorgon.Editor.ImageEditor.Properties.Resources.export_image_48x48;
+            this.ButtonExport.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.export_image_16x16;
+            this.ButtonExport.KeyTip = "E";
+            this.ButtonExport.TextLine1 = "Export";
+            this.ButtonExport.ToolTipBody = resources.GetString("ButtonExport.ToolTipBody");
+            this.ButtonExport.ToolTipTitle = "Export Image";
             // 
             // GroupImage
             // 
@@ -348,6 +341,12 @@
             this.NumericMipCount.MinimumSize = new System.Drawing.Size(80, 0);
             this.NumericMipCount.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
+            // MenuCodecs
+            // 
+            this.MenuCodecs.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.MenuCodecs.Name = "MenuCodecs";
+            this.MenuCodecs.Size = new System.Drawing.Size(61, 4);
+            // 
             // FormRibbon
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -372,7 +371,6 @@
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup GroupImage;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines GroupCodec;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator1;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonCodec;
         private System.Windows.Forms.ContextMenuStrip MenuCodecs;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines GroupImageFormat;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonImageFormat;
@@ -398,5 +396,6 @@
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines2;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton kryptonRibbonGroupButton6;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonRedo;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonExport;
     }
 }

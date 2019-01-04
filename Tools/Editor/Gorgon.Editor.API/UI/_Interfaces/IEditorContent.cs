@@ -90,7 +90,7 @@ namespace Gorgon.Editor.UI
         /// <summary>
         /// Property to set or return the command used to close the content.
         /// </summary>
-        IEditorCommand<object> CloseContentCommand
+        IEditorCommand<CloseContentArgs> CloseContentCommand
         {
             get;
             set;

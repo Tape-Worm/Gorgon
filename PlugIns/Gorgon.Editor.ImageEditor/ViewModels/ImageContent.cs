@@ -60,10 +60,12 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         #endregion
 
         #region Variables.
+        // The codec used by the image plug in.
+        private IGorgonImageCodec _codec;
+        // The list of available image codecs.
+        private IReadOnlyList<IGorgonImageCodec> _imageCodecs;
         // The image.
         private IGorgonImage _image;
-        // The codec used by the image.
-        private IGorgonImageCodec _codec;
         // The format support information for the current video card.
         private IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> _formatSupport;
         // The available pixel formats, based on codec.
@@ -72,35 +74,13 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         private FileInfo _texConvFile;
         // The working directory for temporary data.
         private IGorgonVirtualDirectory _tempDir;
+        // The settings for the image editor plugin.
+        private ImageEditorSettings _settings;
         #endregion
 
         #region Properties.
         /// <summary>Property to return the type of content.</summary>
         public override string ContentType => ImageEditorCommonConstants.ContentType;
-
-        /// <summary>
-        /// Property to set or return the image codec used by the image content.
-        /// </summary>
-        public IGorgonImageCodec CurrentCodec
-        {
-            get => _codec;
-            private set
-            {
-                if (_codec == value)
-                {
-                    return;
-                }
-
-                Debug.Assert(value != null, "Codec should never be null.");
-                OnPropertyChanging();
-                _codec = value;
-                File.Metadata.Attributes[CodecAttr] = value.GetType().FullName;
-                OnPropertyChanged();                                
-            }
-        }
-
-        /// <summary>Property to return the name of the content.</summary>
-        public string ContentName => File.Name;
 
         /// <summary>
         /// Property to return the list of codecs available.
@@ -127,12 +107,10 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 _pixelFormats = value;
                 OnPropertyChanged();
             }
-        } 
+        }
 
-        /// <summary>
-        /// Property to return the command used to assign the image codec.
-        /// </summary>
-        public IEditorCommand<IGorgonImageCodec> SetCodecCommand
+        /// <summary>Property to return the command used to export an image.</summary>
+        public IEditorCommand<IGorgonImageCodec> ExportImageCommand
         {
             get;
         }
@@ -166,28 +144,22 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <summary>
         /// Function to retrieve the list of pixel formats applicable to each codec type.
         /// </summary>
-        /// <param name="codec">The codec to evaluate.</param>
         /// <returns>A list of formats.</returns>
-        private ObservableCollection<BufferFormat> GetFilteredFormats(IGorgonImageCodec codec)
+        private ObservableCollection<BufferFormat> GetFilteredFormats()
         {
-            if (codec == null)
-            {
-                return new ObservableCollection<BufferFormat>();
-            }
-
             var result = new ObservableCollection<BufferFormat>();
-            IReadOnlyList<BufferFormat> supportedFormats = codec.SupportedPixelFormats;
+            IReadOnlyList<BufferFormat> supportedFormats = _codec.SupportedPixelFormats;
 
             if (_image.FormatInfo.IsCompressed)
             {
                 // Assume our block compressed format expands to R8G8B8A8
-                supportedFormats = BufferFormat.R8G8B8A8_UNorm.CanConvertToAny(codec.SupportedPixelFormats);
+                supportedFormats = BufferFormat.R8G8B8A8_UNorm.CanConvertToAny(supportedFormats);
 
                 // Do not provide block compressed formats if we can't convert them.
                 if (_texConvFile.Exists)
                 {
                     supportedFormats = supportedFormats
-                        .Concat(codec.SupportedPixelFormats.Where(item => (new GorgonFormatInfo(item)).IsCompressed))
+                        .Concat(supportedFormats.Where(item => (new GorgonFormatInfo(item)).IsCompressed))
                         .ToArray();
                 }
             }
@@ -220,25 +192,64 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
-        /// Function to determine if the current image codec can be changed.
+        /// Function to retrieve the last directory path used for import/export.
         /// </summary>
-        /// <param name="codec">The codec to assign.</param>
-        /// <returns><b>true</b> if the codec can be changed, <b>false</b> if not.</returns>
-        private bool CanSetImageCodec(IGorgonImageCodec codec) => (codec != null) && (Codecs.Contains(codec)) && (codec != CurrentCodec);
+        /// <returns>The directory last used for import/export.</returns>
+        private DirectoryInfo GetLastImportExportPath()
+        {
+            DirectoryInfo result;
+
+            string importExportPath = _settings.LastImportExportPath.FormatDirectory(Path.DirectorySeparatorChar);
+
+            if (string.IsNullOrWhiteSpace(importExportPath))
+            {
+                result = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+            }
+            else
+            {
+                result = new DirectoryInfo(importExportPath);
+
+                if (!result.Exists)
+                {
+                    result = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+                }
+            }
+
+            if (!result.Exists)
+            {
+                result = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
+            }
+
+            return result;
+        }
 
         /// <summary>
-        /// Function to assign a new image codec.
+        /// Function to export this image to the physical file system.
         /// </summary>
-        /// <param name="codec">The codec to assign.</param>
-        private void DoSetImageCodec(IGorgonImageCodec codec)
+        /// <param name="codec">The codec to use when exporting.</param>
+        private void DoExportImage(IGorgonImageCodec codec)
         {
-            BusyState.SetBusy();
-
             try
             {
-                CurrentCodec = codec;
-                PixelFormats = GetFilteredFormats(codec);
-                ContentState = ContentState.Modified;
+
+                IEnumerable<string> extensions = codec.CodecCommonExtensions.Distinct(StringComparer.CurrentCultureIgnoreCase).Select(item => $"*.{item}");
+                SaveFileService.FileFilter = $"{codec.CodecDescription} ({string.Join(", ", extensions)})|{string.Join(";", extensions)}";
+                SaveFileService.DialogTitle = string.Format(Resources.GORIMG_CAPTION_EXPORT_IMAGE, codec.Codec);
+                SaveFileService.InitialDirectory = GetLastImportExportPath();
+
+                string exportFilePath = SaveFileService.GetFilename();
+
+                if (string.IsNullOrWhiteSpace(exportFilePath))
+                {
+                    return;
+                }
+               
+                BusyState.SetBusy();
+
+                Log.Print($"Exporting '{File.Name}' to '{exportFilePath}' as {codec.CodecDescription}", LoggingLevel.Verbose);
+                codec.SaveToFile(_image, exportFilePath);
+
+                _settings.LastImportExportPath = Path.GetDirectoryName(exportFilePath).FormatDirectory(Path.DirectorySeparatorChar);
             }
             catch (Exception ex)
             {
@@ -250,24 +261,73 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
         }
 
+        /// <summary>
+        /// Function to build the list of codecs that support the current image.
+        /// </summary>
+        /// <param name="image">The image to evaluate.</param>
+        private void BuildCodecList(IGorgonImage image)
+        {
+            Log.Print("Building codec list for the current image.", LoggingLevel.Verbose);
+
+            Codecs.Clear();
+
+            if (image == null)
+            {
+                Log.Print("[WARNING] No image was found.", LoggingLevel.Simple);
+                return;
+            }
+
+            if (_imageCodecs.Count == 0)
+            {
+                Log.Print("[WARNING] No image codecs were found.  This should not happen.", LoggingLevel.Simple);
+                return;
+            }
+
+            foreach (IGorgonImageCodec codec in _imageCodecs.Where(item => item.CanEncode).OrderBy(item => item.Codec))
+            {
+                if ((!codec.SupportsMipMaps) && (_image.MipCount > 1))
+                {
+                    Log.Print($"Codec '{codec.CodecDescription} ({codec.Codec})' does not support mip maps, and image has {_image.MipCount} mip levels. Skipping...", LoggingLevel.Verbose);
+                    continue;
+                }
+
+                if ((!codec.SupportsMultipleFrames) && (_image.ArrayCount > 1))
+                {
+                    Log.Print($"Codec '{codec.CodecDescription} ({codec.Codec})' does not support arrays, and image has {_image.ArrayCount} array indices. Skipping...", LoggingLevel.Verbose);
+                    continue;
+                }
+
+                if ((!codec.SupportsDepth) && (_image.ImageType == ImageType.Image3D))
+                {
+                    Log.Print($"Codec '{codec.CodecDescription} ({codec.Codec})' does not support 3D (depth) images, and image is 3D. Skipping...", LoggingLevel.Verbose);
+                    continue;
+                }
+
+                if (codec.SupportedPixelFormats.All(item => item != _image.Format))
+                {
+                    Log.Print($"Codec '{codec.CodecDescription} ({codec.Codec})' does not support the pixel format [{_image.Format}]. Skipping...", LoggingLevel.Verbose);
+                    continue;
+                }
+
+                Log.Print($"Adding codec '{codec.CodecDescription} ({codec.Codec})'", LoggingLevel.Verbose);
+                Codecs.Add(codec);
+            }
+        }
+
         /// <summary>Function to initialize the content.</summary>
         /// <param name="injectionParameters">Common view model dependency injection parameters from the application.</param>
         protected override void OnInitialize(ImageContentParameters injectionParameters)
         {
             base.OnInitialize(injectionParameters);
 
-            _codec = injectionParameters.Codec ?? throw new ArgumentMissingException(nameof(injectionParameters.Codec), nameof(injectionParameters));            
+            _settings = injectionParameters.Settings ?? throw new ArgumentMissingException(nameof(injectionParameters.Settings), nameof(injectionParameters));
+            _codec = injectionParameters.DefaultCodec ?? throw new ArgumentMissingException(nameof(injectionParameters.DefaultCodec), nameof(injectionParameters));
             _image = injectionParameters.Image ?? throw new ArgumentMissingException(nameof(injectionParameters.Image), nameof(injectionParameters));
             _formatSupport = injectionParameters.FormatSupport ?? throw new ArgumentMissingException(nameof(injectionParameters.FormatSupport), nameof(injectionParameters));
 
-            IReadOnlyList<IGorgonImageCodec> codecs = injectionParameters.Codecs ?? throw new ArgumentMissingException(nameof(injectionParameters.Codecs), nameof(injectionParameters));
+            _imageCodecs = injectionParameters.Codecs ?? throw new ArgumentMissingException(nameof(injectionParameters.Codecs), nameof(injectionParameters));
 
-            Codecs.Clear();
-
-            foreach (IGorgonImageCodec codec in codecs.Where(item => item.CanEncode).OrderBy(item => item.Codec))
-            {                
-                Codecs.Add(codec);
-            }
+            BuildCodecList(_image);
 
             // The availability of texconv.exe determines whether or not we can use block compressed formats or not.
             Log.Print("Checking for texconv.exe...", LoggingLevel.Simple);
@@ -283,7 +343,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 Log.Print($"Found texconv.exe at '{_texConvFile.FullName}'.", LoggingLevel.Simple);
             }
 
-            _pixelFormats = GetFilteredFormats(_codec);
+            _pixelFormats = GetFilteredFormats();
         }
 
         /// <summary>
@@ -322,7 +382,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the ImageContent class.</summary>
-        public ImageContent() => SetCodecCommand = new EditorCommand<IGorgonImageCodec>(DoSetImageCodec, CanSetImageCodec);
+        public ImageContent() => ExportImageCommand = new EditorCommand<IGorgonImageCodec>(DoExportImage);
         #endregion
     }
 }

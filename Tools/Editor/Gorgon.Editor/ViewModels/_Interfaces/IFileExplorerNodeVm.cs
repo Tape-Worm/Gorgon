@@ -229,10 +229,10 @@ namespace Gorgon.Editor.ViewModels
         /// <returns>A task for asynchronous operation.</returns>
         /// <remarks>
         /// <para>
-        /// The <paramref name="onDeleted"/> parameter passes a file system information that contains name of the node being deleted, so callers can use that information for their own purposes.
+        /// The <paramref name="onDeleted"/> parameter passes the node that being deleted, so callers can use that information for their own purposes.
         /// </para>
         /// </remarks>
-        Task DeleteNodeAsync(Action<FileSystemInfo> onDeleted = null, CancellationToken? cancelToken = null);
+        Task DeleteNodeAsync(Action<IFileExplorerNodeVm> onDeleted = null, CancellationToken? cancelToken = null);
 
         /// <summary>
         /// Function to copy the file node into another node.

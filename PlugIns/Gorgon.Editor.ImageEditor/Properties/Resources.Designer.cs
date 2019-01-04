@@ -133,6 +133,26 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap export_image_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("export_image_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap export_image_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("export_image_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap generate_mip_maps_16x16 {
             get {
                 object obj = ResourceManager.GetObject("generate_mip_maps_16x16", resourceCulture);
@@ -147,6 +167,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
             get {
                 object obj = ResourceManager.GetObject("generate_mip_maps_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export image as {0}....
+        /// </summary>
+        internal static string GORIMG_CAPTION_EXPORT_IMAGE {
+            get {
+                return ResourceManager.GetString("GORIMG_CAPTION_EXPORT_IMAGE", resourceCulture);
             }
         }
         

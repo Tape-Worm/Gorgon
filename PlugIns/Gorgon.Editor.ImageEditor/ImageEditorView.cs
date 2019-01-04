@@ -102,7 +102,6 @@ namespace Gorgon.Editor.ImageEditor
             {
                 case nameof(IImageContent.ContentState):
                 case nameof(IImageContent.File):
-                case nameof(IImageContent.CurrentCodec):
                     // This only matters when we save, so there's no real visual update.
                     return;
                 default:

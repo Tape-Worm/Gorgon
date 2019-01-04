@@ -117,14 +117,20 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="MenuCodecs.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
   <data name="ButtonImport.ToolTipBody" xml:space="preserve">
     <value>Imports an image from the file system or physical file system and places it in the current mip level, array index and/or depth slice.
 
 When this method imports image data, the current image data for the mip level, array index and/or depth slice will be lost.
 </value>
+  </data>
+  <metadata name="MenuCodecs.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
+  <data name="ButtonExport.ToolTipBody" xml:space="preserve">
+    <value>Exports the image to a file on the disk as the specified codec.
+
+If the image codec selected does not contain support for mip map levels, array indices, 
+or depth slices, then only the first mip level/array index/depth slice will be saved.</value>
   </data>
   <metadata name="MenuImageFormats.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>140, 17</value>

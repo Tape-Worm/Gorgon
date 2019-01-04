@@ -718,4 +718,9 @@ Please try again.</value>
   <data name="no_thumbnail_256x256" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\no_thumbnail_256x256.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="GOREDIT_CONFIRM_FILE_OPEN_DELETE" xml:space="preserve">
+    <value>The file '{0}' is open in the editor and has unsaved changes. Deleting this file will result in the loss of these changes.
+
+Are you sure you wish to delete this file?</value>
+  </data>
 </root>

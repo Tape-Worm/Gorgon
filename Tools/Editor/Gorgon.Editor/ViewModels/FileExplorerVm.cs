@@ -357,17 +357,10 @@ namespace Gorgon.Editor.ViewModels
                 string message = hasChildren ? string.Format(Resources.GOREDIT_CONFIRM_DELETE_CHILDREN, args.Node.FullPath)
                                                 : string.Format(Resources.GOREDIT_CONFIRM_DELETE_NO_CHILDREN, args.Node.FullPath);
 
-                // If we have an open node, and it has unsaved changes, prompt with:
-                //
-                // "There is a file open in the editor that has unsaved changes.
-                // Deleting this file will result in the loss of these changes.
-                // 
-                // Are you sure you wish to delete this file?
-                //
-                // Yes/No"
-                if (args.Node.IsOpen)
+                if (((args.Node.IsOpen) && (args.Node.IsChanged))
+                    || ((hasChildren) && (args.Node.Children.Traverse(n => n.Children).Any(item => item.IsOpen && item.IsChanged))))
                 {
-                    // TODO: Update the message string.  We'll let the prompt below handle everything.  Better than having multiple prompts.
+                    message = string.Format(Resources.GOREDIT_CONFIRM_FILE_OPEN_DELETE, args.Node.FullPath);
                 }
 
                 if (_messageService.ShowConfirmation(message) != MessageResponse.Yes)
@@ -387,18 +380,17 @@ namespace Gorgon.Editor.ViewModels
                         _searchResults.Remove(args.Node);
                     }
 
-                    // Remove this item from the metadata.
+                    // Notify that we have file system changes when done.
                     itemsDeleted = true;
                     return;
                 }                               
 
                 // Function to update the delete progress information and handle metadata update.
-                void UpdateDeleteProgress(FileSystemInfo fileSystemItem)
+                void UpdateDeleteProgress(IFileExplorerNodeVm fileSystemItem)
                 {
-                    string path = fileSystemItem.ToFileSystemPath(_project.FileSystemDirectory);
-                    UpdateMarequeeProgress($"{path}", Resources.GOREDIT_TEXT_DELETING, cancelSource.Cancel);
+                    UpdateMarequeeProgress($"{fileSystemItem.FullPath}", Resources.GOREDIT_TEXT_DELETING, cancelSource.Cancel);
 
-                    // Remove this item from the metadata.
+                    // Notify that we have file system changes when done.
                     itemsDeleted = true;
 
                     // Give our UI time to update.  

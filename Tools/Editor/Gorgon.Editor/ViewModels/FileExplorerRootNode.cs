@@ -160,8 +160,8 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="onDeleted">[Optional] A function to call when a node or a child node is deleted.</param>
         /// <param name="cancelToken">[Optional] A cancellation token used to cancel the operation.</param>
         /// <returns>A task for asynchronous operation.</returns>
-        /// <remarks>The <paramref name="onDeleted" /> parameter passes a file system information that contains name of the node being deleted, so callers can use that information for their own purposes.</remarks>
-        public override Task DeleteNodeAsync(Action<FileSystemInfo> onDeleted = null, CancellationToken? cancelToken = null) => Task.FromResult<object>(null);
+        /// The <paramref name="onDeleted"/> parameter passes the node that being deleted, so callers can use that information for their own purposes.
+        public override Task DeleteNodeAsync(Action<IFileExplorerNodeVm> onDeleted = null, CancellationToken? cancelToken = null) => Task.FromResult<object>(null);
 
         /// <summary>
         /// Function to move this node into another node.

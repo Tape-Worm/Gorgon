@@ -402,6 +402,17 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; is open in the editor and has unsaved changes. Deleting this file will result in the loss of these changes.
+        ///
+        ///Are you sure you wish to delete this file?.
+        /// </summary>
+        internal static string GOREDIT_CONFIRM_FILE_OPEN_DELETE {
+            get {
+                return ResourceManager.GetString("GOREDIT_CONFIRM_FILE_OPEN_DELETE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The editor uses a special directory for storing working copies of the files for a project. This is known as the project work space.
         ///
         ///Currently, no work space directory has been set up. Would you like to select your workspace directory now? 

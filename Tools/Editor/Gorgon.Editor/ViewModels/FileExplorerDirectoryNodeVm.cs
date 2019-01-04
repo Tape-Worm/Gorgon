@@ -212,17 +212,43 @@ namespace Gorgon.Editor.ViewModels
         /// <returns>A task for asynchronous operation.</returns>
         /// <remarks>
         /// <para>
-        /// The <paramref name="onDeleted"/> parameter passes a file system information that contains name of the node being deleted, so callers can use that information for their own purposes.
+        /// The <paramref name="onDeleted"/> parameter passes the node that being deleted, so callers can use that information for their own purposes.
         /// </para>
         /// <para>
         /// This implmentation does not delete the underlying directory outright, it instead moves it into the recycle bin so the user can undo the delete if needed.
         /// </para>
         /// </remarks>
-        public override async Task DeleteNodeAsync(Action<FileSystemInfo> onDeleted = null, CancellationToken? cancelToken = null)
+        public override async Task DeleteNodeAsync(Action<IFileExplorerNodeVm> onDeleted = null, CancellationToken? cancelToken = null)
         {
+            IFileExplorerNodeVm rootNode = GetRoot();
+            
+            // Callback used to notify for delete progress.
+            void ProgressUpdate(FileSystemInfo info)
+            {
+                string path = info.ToFileSystemPath(Project.FileSystemDirectory);
+                IFileExplorerNodeVm deletedNode;
+
+                if (string.Equals(info.FullName, _directoryInfo.FullName, StringComparison.OrdinalIgnoreCase))
+                {
+                    deletedNode = this;
+                }
+                else
+                {                    
+                    deletedNode = Children.Traverse(n => n.Children)
+                                          .FirstOrDefault(item => string.Equals(path, item.FullPath, StringComparison.OrdinalIgnoreCase));
+                }
+
+                if (deletedNode == null)
+                {
+                    return;
+                }
+
+                onDeleted?.Invoke(deletedNode);
+            }
+
             // Delete the physical objects first. If we fail here, our node will survive.
-            // We do this asynchronously because deleting a directory with a lot of files may take a while.
-            bool dirDeleted = await Task.Run(() => FileSystemService.DeleteDirectory(_directoryInfo, onDeleted, cancelToken ?? CancellationToken.None));
+            // We do this asynchronously because deleting a directory with a lot of files may take a while, especially since we are dumping to the recycle bin.
+            bool dirDeleted = await Task.Run(() => FileSystemService.DeleteDirectory(_directoryInfo, ProgressUpdate, cancelToken ?? CancellationToken.None));
 
             // If, for some reason, our directory was not deleted, then do not remove the node.
             if (!dirDeleted)

@@ -46,22 +46,6 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
     {
         #region Properties.
         /// <summary>
-        /// Property to return the name of the content.
-        /// </summary>
-        string ContentName
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the current image codec.
-        /// </summary>
-        IGorgonImageCodec CurrentCodec
-        {
-            get;
-        }
-
-        /// <summary>
         /// Property to return the list of codecs available.
         /// </summary>
         ObservableCollection<IGorgonImageCodec> Codecs
@@ -86,9 +70,9 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the command used to assign the image codec.
+        /// Property to return the command used to export an image.
         /// </summary>
-        IEditorCommand<IGorgonImageCodec> SetCodecCommand
+        IEditorCommand<IGorgonImageCodec> ExportImageCommand
         {
             get;
         }

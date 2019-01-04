@@ -46,6 +46,7 @@ using Gorgon.Editor.UI;
 using Gorgon.Math;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics;
+using System.Windows.Forms;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -96,6 +97,48 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Methods.
+
+        /// <summary>
+        /// Function to load the image to be used a thumbnail.
+        /// </summary>
+        /// <param name="thumbnailCodec">The codec for the thumbnail images.</param>
+        /// <param name="thumbnailFile">The path to the thumbnail file.</param>
+        /// <param name="content">The content being thumbnailed.</param>
+        /// <param name="cancelToken">The token used to cancel the operation.</param>
+        /// <returns>The thumbnail image, and a flag to indicate whether the thumbnail needs conversion.</returns>
+        private (IGorgonImage thumbnailImage, bool needsConversion) LoadThumbNailImage(IGorgonImageCodec thumbnailCodec, FileInfo thumbnailFile, IContentFile content, CancellationToken cancelToken)
+        {
+            IGorgonImage result;
+            Stream inStream = null;
+
+            try
+            {
+                // If we've already got the file, then leave.
+                if (thumbnailFile.Exists)
+                {
+                    inStream = thumbnailFile.Open(FileMode.Open, FileAccess.Read, FileShare.Read);
+                    result = thumbnailCodec.LoadFromStream(inStream);
+
+                    return cancelToken.IsCancellationRequested ? (null, false) : (result, false);
+                }
+
+                inStream = content.OpenRead();
+                result = _ddsCodec.LoadFromStream(inStream);
+
+                return (result, true);
+            }
+            catch (Exception ex)
+            {
+                Log.Print($"[ERROR] Cannot create thumbnail for '{content.Path}'", LoggingLevel.Intermediate);
+                Log.LogException(ex);
+                return (null, false);
+            }
+            finally
+            {
+                inStream?.Dispose();
+            }
+        }
+
         /// <summary>
         /// Function to update the metadata for a file that is missing metadata attributes.
         /// </summary>
@@ -162,7 +205,7 @@ namespace Gorgon.Editor.ImageEditor
             });
                         
             var content = new ImageContent();
-            content.Initialize(new ImageContentParameters(file, image, _ddsCodec, _codecList, GraphicsContext.Graphics.FormatSupport, scratchArea, injector));
+            content.Initialize(new ImageContentParameters(file, _settings, image, _codecList, _ddsCodec, GraphicsContext.Graphics.FormatSupport, scratchArea, injector));
 
             return content;
         }
@@ -345,7 +388,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="cancelToken">The token used to cancel the thumbnail generation.</param>
         /// <returns>A <see cref="T:Gorgon.Graphics.Imaging.IGorgonImage"/> containing the thumbnail image data.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="contentFile"/>, or the <paramref name="outputFile"/> parameter is <b>null</b>.</exception>
-        public Task<IGorgonImage> GetThumbnailAsync(IContentFile contentFile, FileInfo outputFile, CancellationToken cancelToken)
+        public async Task<IGorgonImage> GetThumbnailAsync(IContentFile contentFile, FileInfo outputFile, CancellationToken cancelToken)
         {
             if (contentFile == null)
             {
@@ -371,61 +414,57 @@ namespace Gorgon.Editor.ImageEditor
                 outputFile.Directory.Refresh();
             }
 
-            return Task.Run(() =>
+            IGorgonImageCodec pngCodec = new GorgonCodecPng();
+
+            (IGorgonImage thumbImage, bool needsConversion) = await Task.Run(() => LoadThumbNailImage(pngCodec, outputFile, contentFile, cancelToken));
+
+            if ((thumbImage == null) || (cancelToken.IsCancellationRequested))
             {
-                try
+                return null;
+            }
+
+            if (!needsConversion)
+            {
+                return thumbImage;
+            }
+
+            // We need to switch back to the main thread here to render the image, otherwise things will break.
+            Cursor.Current = Cursors.WaitCursor;
+
+            try
+            {
+                const float maxSize = 256;
+                float scale = (maxSize / thumbImage.Width).Min(maxSize / thumbImage.Height);
+                RenderThumbnail(ref thumbImage, scale);
+
+                if (cancelToken.IsCancellationRequested)
                 {
-                    IGorgonImage result;
-                    IGorgonImageCodec pngCodec = new GorgonCodecPng();
-
-                    // If we've already got the file, then leave.
-                    if (outputFile.Exists)
-                    {
-                        using (Stream inStream = outputFile.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
-                        {
-                            result = pngCodec.LoadFromStream(inStream);
-                        }
-
-                        return cancelToken.IsCancellationRequested ? null : result;
-                    }
-
-                    using (Stream inStream = contentFile.OpenRead())
-                    {
-                        result = _ddsCodec.LoadFromStream(inStream);
-                    }
-
-                    if (cancelToken.IsCancellationRequested)
-                    {
-                        return null;
-                    }
-
-                    const float maxSize = 256;
-                    float scale = (maxSize / result.Width).Min(maxSize / result.Height);
-                    RenderThumbnail(ref result, scale);
-
-                    if (cancelToken.IsCancellationRequested)
-                    {
-                        return null;
-                    }
-
-                    pngCodec.SaveToFile(result, outputFile.FullName);
-
-                    if (cancelToken.IsCancellationRequested)
-                    {
-                        return null;
-                    }
-
-                    contentFile.Metadata.Attributes[CommonEditorConstants.ThumbnailAttr] = outputFile.Name;
-
-                    return result;
-                }
-                catch(Exception ex)
-                {
-                    Log.Print($"[ERROR] Cannot create thumbnail for '{contentFile.Path}'", LoggingLevel.Intermediate);
-                    Log.LogException(ex);
                     return null;
                 }
-            });
+
+                // We're done on the main thread, we can switch to another thread to write the image.
+                Cursor.Current = Cursors.Default;
+
+                await Task.Run(() => pngCodec.SaveToFile(thumbImage, outputFile.FullName), cancelToken);                    
+
+                if (cancelToken.IsCancellationRequested)
+                {
+                    return null;
+                }
+
+                contentFile.Metadata.Attributes[CommonEditorConstants.ThumbnailAttr] = outputFile.Name;
+                return thumbImage;
+            }
+            catch (Exception ex)
+            {
+                Log.Print($"[ERROR] Cannot create thumbnail for '{contentFile.Path}'", LoggingLevel.Intermediate);
+                Log.LogException(ex);
+                return null;
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
+            }
         }
         #endregion
 

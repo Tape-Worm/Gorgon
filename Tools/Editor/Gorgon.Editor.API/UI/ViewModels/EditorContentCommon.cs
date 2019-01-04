@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.ComponentModel;
 using System.IO;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Properties;
@@ -54,7 +55,7 @@ namespace Gorgon.Editor.UI
 
         #region Variables.
         // The command used to close the content.
-        private IEditorCommand<object> _closeCommand;
+        private IEditorCommand<CloseContentArgs> _closeCommand;
 
         // The file for the content.
         private IContentFile _file;
@@ -64,6 +65,24 @@ namespace Gorgon.Editor.UI
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return the service used to open files on the physical file system.
+        /// </summary>
+        protected IFileDialogService OpenFileService
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the service used to save files to the physical file system.
+        /// </summary>
+        protected IFileDialogService SaveFileService
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// Property to return the scratch area file system.
         /// </summary>
@@ -147,7 +166,7 @@ namespace Gorgon.Editor.UI
         }
 
         /// <summary>Property to set or return the command used to close the content.</summary>
-        public IEditorCommand<object> CloseContentCommand
+        public IEditorCommand<CloseContentArgs> CloseContentCommand
         {
             get => _closeCommand;
             set
@@ -165,50 +184,39 @@ namespace Gorgon.Editor.UI
         #endregion
 
         #region Methods.
-        // TODO: Maybe change this to a cancel event.
-        /// <summary>Handles the Excluded event of the File control.</summary>
+        /// <summary>Handles the Renamed event of the File control.</summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The [EventArgs] instance containing the event data.</param>
-        private void File_Excluded(object sender, EventArgs e) => DoCloseContent();
+        /// <param name="e">The <see cref="ContentFileRenamedEventArgs"/> instance containing the event data.</param>
+        private void File_Renamed(object sender, ContentFileRenamedEventArgs e) => NotifyPropertyChanged(nameof(File));
 
         /// <summary>Handles the Deleted event of the File control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The [EventArgs] instance containing the event data.</param>
-        private void File_Deleted(object sender, EventArgs e) => DoCloseContent();
-
-        /// <summary>Handles the Moved event of the File control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The ContentFileMovedEventArgs instance containing the event data.</param>
-        private void File_Moved(object sender, ContentFileMovedEventArgs e)
+        private void File_Deleted(object sender, EventArgs e)
         {
-            try
-            {
-                _file.Excluded -= File_Excluded;
-                _file.Moved -= File_Moved;
-                _file.Deleted -= File_Deleted;
+            DoCloseContent(new CloseContentArgs(false));
 
-                File = e.NewFile;
-
-                _file.Moved += File_Moved;
-                _file.Deleted += File_Deleted;
-                _file.Excluded += File_Excluded;
-            }
-            catch (Exception ex)
-            {
-                MessageDisplay.ShowError(ex, Resources.GOREDIT_ERR_AFTER_MOVE_UPDATE);
-                DoCloseContent();
-            }
+            // Detach this object from the content.
+            _file.Renamed -= File_Renamed;
+            _file.Deleted -= File_Deleted;
+            _file.IsOpen = false;
+            _file = null;
         }
 
         /// <summary>
         /// Function called to close the content.
         /// </summary>
-        private void DoCloseContent()
+        /// <param name="args">The arguments for the command.</param>
+        private void DoCloseContent(CloseContentArgs args)
         {
-            BusyState.SetBusy();
-
             try
-            {
+            {                
+                if (args.CheckChanges)
+                {
+                    // TODO: Ask for save if we have changes.
+                }
+
+                BusyState.SetBusy();
                 EventHandler handler = CloseContent;
                 CloseContent?.Invoke(this, EventArgs.Empty);
             }
@@ -238,15 +246,16 @@ namespace Gorgon.Editor.UI
             _file = injectionParameters.File ?? throw new ArgumentMissingException(nameof(IContentViewModelInjection.File), nameof(injectionParameters));
             MessageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(IViewModelInjection.MessageDisplay), nameof(injectionParameters));
             BusyState = injectionParameters.BusyService ?? throw new ArgumentMissingException(nameof(IViewModelInjection.BusyService), nameof(injectionParameters));
+            OpenFileService = injectionParameters.OpenDialog ?? throw new ArgumentMissingException(nameof(IContentViewModelInjection.OpenDialog), nameof(injectionParameters));
+            SaveFileService = injectionParameters.SaveDialog ?? throw new ArgumentMissingException(nameof(IContentViewModelInjection.SaveDialog), nameof(injectionParameters));
 
             if (!string.IsNullOrWhiteSpace(ContentType))
             {
                 _file.Metadata.Attributes[ContentTypeAttr] = ContentType;
             }
 
-            _file.Moved += File_Moved;
+            _file.Renamed += File_Renamed;
             _file.Deleted += File_Deleted;
-            _file.Excluded += File_Excluded;
 
             ScratchArea = injectionParameters.ScratchArea ?? throw new ArgumentMissingException(nameof(IContentViewModelInjection.ScratchArea), nameof(injectionParameters));
             ScratchWriter = injectionParameters.ScratchWriter ?? throw new ArgumentMissingException(nameof(IContentViewModelInjection.ScratchWriter), nameof(injectionParameters));            
@@ -256,17 +265,16 @@ namespace Gorgon.Editor.UI
         public override void OnUnload()
         {
             // TODO: This should get marked when we commit the file data back to the file system.
-            // _file.IsChanged = true;
-            _file.Moved -= File_Moved;
+            // _file.IsChanged = true;            
+            _file.Renamed -= File_Renamed;
             _file.Deleted -= File_Deleted;
-            _file.Excluded -= File_Excluded;
             _file.IsOpen = false;
         }
         #endregion
 
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the EditorContentCommon class.</summary>
-        protected EditorContentCommon() => CloseContentCommand = new EditorCommand<object>(DoCloseContent);
+        protected EditorContentCommon() => CloseContentCommand = new EditorCommand<CloseContentArgs>(DoCloseContent);
         #endregion
     }
 }

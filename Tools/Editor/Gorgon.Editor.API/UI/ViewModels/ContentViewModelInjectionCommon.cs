@@ -45,6 +45,21 @@ namespace Gorgon.Editor.UI
             get;            
         }
 
+        /// <summary>
+        /// Property to return the dialog service used to save files.
+        /// </summary>
+        public IFileDialogService SaveDialog
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the dialog service used to open files.
+        /// </summary>
+        public IFileDialogService OpenDialog
+        {
+            get;
+        }
 
         /// <summary>
         /// Property to return the file system containing the scratch area for the plug in.
@@ -65,12 +80,16 @@ namespace Gorgon.Editor.UI
         /// <summary>Initializes a new instance of the ContentViewModelInjectionCommon class.</summary>
         /// <param name="file">The file that contains the content.</param>
         /// <param name="scratchArea">The file system for temporary files.</param>
+        /// <param name="openService">The file dialog service used to open files.</param>
+        /// <param name="saveService">The file dialog service used to save files.</param>
         /// <param name="messageService">The message display service.</param>
         /// <param name="busyService">The busy state service.</param>
         /// <exception cref="ArgumentNullException">Thrown any of the parameters are <b>null</b></exception>
-        public ContentViewModelInjectionCommon(IContentFile file, IGorgonFileSystemWriter<Stream> scratchArea, IMessageDisplayService messageService, IBusyStateService busyService)
+        public ContentViewModelInjectionCommon(IContentFile file, IGorgonFileSystemWriter<Stream> scratchArea, IFileDialogService openService, IFileDialogService saveService,  IMessageDisplayService messageService, IBusyStateService busyService)
         {
             File = file ?? throw new ArgumentNullException(nameof(file));
+            OpenDialog = openService ?? throw new ArgumentNullException(nameof(openService));
+            SaveDialog = saveService ?? throw new ArgumentNullException(nameof(saveService));
             MessageDisplay = messageService ?? throw new ArgumentNullException(nameof(messageService));
             BusyService = busyService ?? throw new ArgumentNullException(nameof(busyService));
 

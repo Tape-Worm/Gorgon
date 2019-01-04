@@ -26,6 +26,7 @@
 
 using System.IO;
 using Gorgon.Editor.Content;
+using Gorgon.Editor.Services;
 using Gorgon.IO;
 
 namespace Gorgon.Editor.UI
@@ -40,6 +41,22 @@ namespace Gorgon.Editor.UI
         /// Property to return the content file.
         /// </summary>
         IContentFile File
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the dialog service used to save files.
+        /// </summary>
+        IFileDialogService SaveDialog
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the dialog service used to open files.
+        /// </summary>
+        IFileDialogService OpenDialog
         {
             get;
         }

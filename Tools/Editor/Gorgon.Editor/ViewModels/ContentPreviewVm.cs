@@ -129,7 +129,7 @@ namespace Gorgon.Editor.ViewModels
                     _loadPreviewTask = null;
                 }
 
-                if (file == null)
+                if (file?.Metadata?.ContentMetadata == null)
                 {
                     Title = string.Empty;
                     PreviewImage?.Dispose();

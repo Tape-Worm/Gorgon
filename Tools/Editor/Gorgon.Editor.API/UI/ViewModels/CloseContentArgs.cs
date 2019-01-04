@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,39 +20,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: November 7, 2018 1:33:38 PM
+// Created: January 4, 2019 10:58:00 AM
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.ComponentModel;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.UI
 {
     /// <summary>
-    /// The settings for the image editor plug in.
+    /// Arguments for the <see cref="IEditorContent.CloseContentCommand"/>.
     /// </summary>
-    internal class ImageEditorSettings
+    public class CloseContentArgs
+        : CancelEventArgs
     {
+        #region Properties.
         /// <summary>
-        /// Property to return the list of additional image codec plug ins to load.
+        /// Property to return whether or not to check the content for changes prior to closing.
         /// </summary>
-        [JsonProperty]
-        public Dictionary<string, string> CodecPluginPaths
+        public bool CheckChanges
         {
             get;
-            private set;
-        } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-        /// <summary>
-        /// Property to set or return the to the directory that was last used for importing/exporting.
-        /// </summary>
-        [JsonProperty]
-        public string LastImportExportPath
-        {
-            get;
-            set;
         }
+        #endregion
+
+        #region Constructor.
+
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.UI.ViewModels.CloseContentArgs"/> class.</summary>
+        /// <param name="checkForChanges"><b>true</b> to check for changes prior to closing, <b>false</b> to skip the check and force a close.</param>
+        public CloseContentArgs(bool checkForChanges) => CheckChanges = checkForChanges;
+        #endregion
     }
 }

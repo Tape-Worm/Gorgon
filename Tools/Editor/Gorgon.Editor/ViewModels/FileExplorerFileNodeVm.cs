@@ -57,18 +57,8 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>Event triggered if this content file was deleted.</summary>
         public event EventHandler Deleted;
 
-        /// <summary>
-        /// Event triggered if this content file was moved in the file system.
-        /// </summary>
-        public event EventHandler<ContentFileMovedEventArgs> Moved;
-
         /// <summary>Event triggered if this content file was renamed.</summary>
         public event EventHandler<ContentFileRenamedEventArgs> Renamed;
-
-        /// <summary>
-        /// Event triggered if this content file is excluded from the project.
-        /// </summary>        
-        public event EventHandler Excluded;
         #endregion
 
         #region Properties.        
@@ -121,13 +111,6 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 base.Metadata = value;
-
-                if (value == null)
-                {
-                    EventHandler handler = Excluded;
-                    handler?.Invoke(this, EventArgs.Empty);
-                }
-
                 NotifyPropertyChanged(nameof(ImageName));
             }
         }
@@ -165,20 +148,6 @@ namespace Gorgon.Editor.ViewModels
         {
             string newName = FileSystemService.GenerateFileName(path);
             return Path.Combine(destPath, newName);
-        }
-
-        /// <summary>Function called when the parent of this node is moved.</summary>
-        /// <param name="newNode">The new node representing this node under the new parent.</param>
-        protected override void OnNotifyParentMoved(IFileExplorerNodeVm newNode)
-        {
-            if ((!(newNode is IContentFile contentFile)) || (!contentFile.IsOpen))
-            {
-                return;
-            }
-
-            var args = new ContentFileMovedEventArgs(contentFile);
-            EventHandler<ContentFileMovedEventArgs> handler = Moved;
-            Moved?.Invoke(this, args);
         }
 
         /// <summary>Function to retrieve the physical file system object for this node.</summary>
@@ -260,16 +229,24 @@ namespace Gorgon.Editor.ViewModels
         /// <returns>A task for asynchronous operation.</returns>
         /// <remarks>
         /// <para>
-        /// The <paramref name="onDeleted"/> parameter is not used for this type.
+        /// The <paramref name="onDeleted"/> parameter passes the node that being deleted, so callers can use that information for their own purposes.
         /// </para>
         /// <para>
         /// This implmentation does not delete the underlying file outright, it instead moves it into the recycle bin so the user can undo the delete if needed.
         /// </para>
         /// </remarks>
-        public override Task DeleteNodeAsync(Action<FileSystemInfo> onDeleted = null, CancellationToken? cancelToken = null)
+        public override Task DeleteNodeAsync(Action<IFileExplorerNodeVm> onDeleted = null, CancellationToken? cancelToken = null)
         {
             try
             {
+                // If this node is open, then we need to notify the content that we just deleted the node it is associated with.
+                if (IsOpen)
+                {
+                    EventHandler deleteEvent = Deleted;
+                    Deleted?.Invoke(this, EventArgs.Empty);
+                    IsOpen = false;
+                }
+
                 // Delete the physical object first. If we fail here, our node will survive.
                 FileSystemService.DeleteFile(_fileInfo);
 
@@ -301,14 +278,6 @@ namespace Gorgon.Editor.ViewModels
                 // This will begin a chain reaction that will remove us from the UI.
                 Parent.Children.Remove(this);
                 Parent = null;
-                
-                // If this node is open in an editor, then we need to notify the editor that we just deleted the node.
-                if (IsOpen)
-                {
-                    EventHandler deleteEvent = Deleted;
-                    Deleted?.Invoke(this, EventArgs.Empty);
-                    IsOpen = false;
-                }
             }
             catch (Exception ex)
             {

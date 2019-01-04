@@ -85,6 +85,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\export_image_16x16.png" />
+    <None Include="Resources\export_image_48x48.png" />
     <None Include="Resources\right_20x20.png" />
     <None Include="Resources\left_20x20.png" />
     <None Include="Resources\redo_48x48.png" />

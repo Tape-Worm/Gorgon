@@ -56,6 +56,8 @@
     <Compile Include="Content\ContentFileRenamedEventArgs.cs" />
     <Compile Include="Plugins\ContentImportPlugin.cs" />
     <Compile Include="ProjectData\RecentItem.cs" />
+    <Compile Include="PropertyMonitor.cs" />
+    <Compile Include="Services\FileSaveDialogService.cs" />
     <Compile Include="Services\_Interfaces\IContentImporterPluginService.cs" />
     <Compile Include="Services\_Interfaces\ISearchService.cs" />
     <Compile Include="Services\_Interfaces\IUndoService.cs" />
@@ -68,6 +70,7 @@
     <Compile Include="UI\RecentItemDeleteEventArgs.cs" />
     <Compile Include="UI\RecentItemClickEventArgs.cs" />
     <Compile Include="UI\ViewFactory.cs" />
+    <Compile Include="UI\ViewModels\CloseContentArgs.cs" />
     <Compile Include="UI\ViewModels\EditorContentCommon.cs" />
     <Compile Include="Content\_Interfaces\IContentFile.cs" />
     <Compile Include="UI\ViewModels\ContentViewModelInjectionCommon.cs" />
