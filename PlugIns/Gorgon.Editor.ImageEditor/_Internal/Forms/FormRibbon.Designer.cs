@@ -45,13 +45,14 @@
             this.GroupCodec = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
             this.ButtonImport = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.ButtonExport = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.MenuCodecs = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.GroupImage = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
             this.kryptonRibbonGroupTriple3 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
             this.ButtonGenerateMipMaps = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.ButtonEditInApp = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.kryptonRibbonGroupLines2 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
-            this.kryptonRibbonGroupButton6 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.ButtonRedo = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonImageUndo = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonImageRedo = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.kryptonRibbonGroupSeparator2 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
             this.GroupImageFormat = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
             this.ButtonImageFormat = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
@@ -69,7 +70,6 @@
             this.NumericArrayCount = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupNumericUpDown();
             this.kryptonRibbonGroupLabel1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLabel();
             this.NumericMipCount = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupNumericUpDown();
-            this.MenuCodecs = new System.Windows.Forms.ContextMenuStrip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.RibbonImageContent)).BeginInit();
             this.MenuImageType.SuspendLayout();
             this.SuspendLayout();
@@ -122,6 +122,7 @@
             this.ButtonSaveImage.TextLine2 = " Image";
             this.ButtonSaveImage.ToolTipBody = "Updates the image file in the file system with the current changes.";
             this.ButtonSaveImage.ToolTipTitle = "Save Image";
+            this.ButtonSaveImage.Click += new System.EventHandler(this.ButtonSaveImage_Click);
             // 
             // GroupCodec
             // 
@@ -148,8 +149,16 @@
             this.ButtonExport.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.export_image_16x16;
             this.ButtonExport.KeyTip = "E";
             this.ButtonExport.TextLine1 = "Export";
-            this.ButtonExport.ToolTipBody = resources.GetString("ButtonExport.ToolTipBody");
+            this.ButtonExport.ToolTipBody = "Exports the image to a file on the disk as the specified codec.\r\n\r\nOnly codecs th" +
+    "at support the current pixel format, mip level count, array level count \r\nand im" +
+    "age type will appear in this list.";
             this.ButtonExport.ToolTipTitle = "Export Image";
+            // 
+            // MenuCodecs
+            // 
+            this.MenuCodecs.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.MenuCodecs.Name = "MenuCodecs";
+            this.MenuCodecs.Size = new System.Drawing.Size(61, 4);
             // 
             // GroupImage
             // 
@@ -194,28 +203,30 @@
             // kryptonRibbonGroupLines2
             // 
             this.kryptonRibbonGroupLines2.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
-            this.kryptonRibbonGroupButton6,
-            this.ButtonRedo});
+            this.ButtonImageUndo,
+            this.ButtonImageRedo});
             // 
-            // kryptonRibbonGroupButton6
+            // ButtonImageUndo
             // 
-            this.kryptonRibbonGroupButton6.ImageLarge = global::Gorgon.Editor.ImageEditor.Properties.Resources.undo_48x48;
-            this.kryptonRibbonGroupButton6.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.undo_16x16;
-            this.kryptonRibbonGroupButton6.KeyTip = "Z";
-            this.kryptonRibbonGroupButton6.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.kryptonRibbonGroupButton6.TextLine1 = "Undo";
-            this.kryptonRibbonGroupButton6.ToolTipBody = "Reverts the previous change made to the image.";
-            this.kryptonRibbonGroupButton6.ToolTipTitle = "Undo";
+            this.ButtonImageUndo.ImageLarge = global::Gorgon.Editor.ImageEditor.Properties.Resources.undo_48x48;
+            this.ButtonImageUndo.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.undo_16x16;
+            this.ButtonImageUndo.KeyTip = "Z";
+            this.ButtonImageUndo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
+            this.ButtonImageUndo.TextLine1 = "Undo";
+            this.ButtonImageUndo.ToolTipBody = "Reverts the previous change made to the image.";
+            this.ButtonImageUndo.ToolTipTitle = "Undo";
+            this.ButtonImageUndo.Click += new System.EventHandler(this.ButtonImageUndo_Click);
             // 
-            // ButtonRedo
+            // ButtonImageRedo
             // 
-            this.ButtonRedo.ImageLarge = global::Gorgon.Editor.ImageEditor.Properties.Resources.redo_48x48;
-            this.ButtonRedo.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.redo_16x16;
-            this.ButtonRedo.KeyTip = "Y";
-            this.ButtonRedo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
-            this.ButtonRedo.TextLine1 = "Redo";
-            this.ButtonRedo.ToolTipBody = "Restores the next change made to the image.";
-            this.ButtonRedo.ToolTipTitle = "Redo";
+            this.ButtonImageRedo.ImageLarge = global::Gorgon.Editor.ImageEditor.Properties.Resources.redo_48x48;
+            this.ButtonImageRedo.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.redo_16x16;
+            this.ButtonImageRedo.KeyTip = "Y";
+            this.ButtonImageRedo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
+            this.ButtonImageRedo.TextLine1 = "Redo";
+            this.ButtonImageRedo.ToolTipBody = "Restores the next change made to the image.";
+            this.ButtonImageRedo.ToolTipTitle = "Redo";
+            this.ButtonImageRedo.Click += new System.EventHandler(this.ButtonImageRedo_Click);
             // 
             // GroupImageFormat
             // 
@@ -341,12 +352,6 @@
             this.NumericMipCount.MinimumSize = new System.Drawing.Size(80, 0);
             this.NumericMipCount.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
-            // MenuCodecs
-            // 
-            this.MenuCodecs.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.MenuCodecs.Name = "MenuCodecs";
-            this.MenuCodecs.Size = new System.Drawing.Size(61, 4);
-            // 
             // FormRibbon
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -394,8 +399,8 @@
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator2;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonImport;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines2;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton kryptonRibbonGroupButton6;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonRedo;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonImageUndo;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonImageRedo;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonExport;
     }
 }

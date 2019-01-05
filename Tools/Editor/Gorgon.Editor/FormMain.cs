@@ -38,6 +38,8 @@ using Gorgon.Editor.Views;
 using Gorgon.Timing;
 using Gorgon.Editor.Rendering;
 using Gorgon.Math;
+using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Gorgon.Editor
 {
@@ -832,7 +834,6 @@ namespace Gorgon.Editor
                     e.Cancel = true;
                     return;
                 case CloseStates.NotClosing:
-
                     _closeFlag = CloseStates.Closing;
                     e.Cancel = true;
 
@@ -869,8 +870,10 @@ namespace Gorgon.Editor
                         _closeFlag = CloseStates.NotClosing;
                         return;
                     }
-                                        
-                    _closeFlag = CloseStates.Closed;                    
+
+                    await Task.Yield();
+
+                    _closeFlag = CloseStates.Closed;
                     Close();
                     break;
                 default:

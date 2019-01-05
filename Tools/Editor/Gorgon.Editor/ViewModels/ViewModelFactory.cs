@@ -64,8 +64,6 @@ namespace Gorgon.Editor.ViewModels
         private readonly ClipboardService _clipboard;
         // The directory locator service.
         private readonly DirectoryLocateService _dirLocator;
-        // The service used for undo/redo functionality.
-        private readonly UndoService _undoService;
         // The service used to scan content files for content plug in associations.
         private readonly FileScanService _fileScanService;
         #endregion
@@ -438,9 +436,6 @@ namespace Gorgon.Editor.ViewModels
             {
                 throw new ArgumentNullException(nameof(projectData));
             }
-
-            // Reset on project creation/load.
-            _undoService.ClearStack();
             
             var result = new ProjectVm();
             var fileSystemService = new FileSystemService(projectData.FileSystemDirectory);
@@ -487,7 +482,6 @@ namespace Gorgon.Editor.ViewModels
                                 ContentPluginService contentPlugins,
                                 ContentImporterPluginService contentImportPlugins,
                                 ProjectManager projectManager, 
-                                UndoService undoService,
                                 MessageBoxService messages, 
                                 WaitCursorBusyState waitState, 
                                 ClipboardService clipboardService, 
@@ -497,8 +491,7 @@ namespace Gorgon.Editor.ViewModels
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             FileSystemProviders = providers ?? throw new ArgumentNullException(nameof(providers));
             ContentPlugins = contentPlugins ?? throw new ArgumentNullException(nameof(contentPlugins));
-            ContentImporterPlugins = contentImportPlugins ?? throw new ArgumentNullException(nameof(contentImportPlugins));
-            _undoService = undoService ?? throw new ArgumentNullException(nameof(undoService));
+            ContentImporterPlugins = contentImportPlugins ?? throw new ArgumentNullException(nameof(contentImportPlugins));            
             _projectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
             _messageBoxService = messages ?? throw new ArgumentNullException(nameof(messages));
             _waitCursorService = waitState ?? throw new ArgumentNullException(nameof(waitState));

@@ -25,12 +25,10 @@
 #endregion
 
 using System;
-using System.ComponentModel;
-using System.IO;
+using System.Threading.Tasks;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
-using Gorgon.IO;
 
 namespace Gorgon.Editor.UI
 {
@@ -62,45 +60,12 @@ namespace Gorgon.Editor.UI
 
         // The current content state.
         private ContentState _state = ContentState.New;
+
+        // The command used to save the content.
+        private IEditorAsyncCommand<object> _saveContentCommand;
         #endregion
 
         #region Properties.
-        /// <summary>
-        /// Property to return the service used to open files on the physical file system.
-        /// </summary>
-        protected IFileDialogService OpenFileService
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the service used to save files to the physical file system.
-        /// </summary>
-        protected IFileDialogService SaveFileService
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the scratch area file system.
-        /// </summary>
-        protected IGorgonFileSystem ScratchArea
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the scratch area file system writer.
-        /// </summary>
-        protected IGorgonFileSystemWriter<Stream> ScratchWriter
-        {
-            get;
-            private set;
-        }
-
         /// <summary>
         /// Property to return the message display service.
         /// </summary>
@@ -181,6 +146,25 @@ namespace Gorgon.Editor.UI
                 OnPropertyChanged();
             }
         }
+
+        /// <summary>
+        /// Property to set or return the command used to save the content.
+        /// </summary>
+        public IEditorAsyncCommand<object> SaveContentCommand
+        {
+            get => _saveContentCommand;
+            set
+            {
+                if (_saveContentCommand == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _saveContentCommand = value;
+                OnPropertyChanged();
+            }
+        }
         #endregion
 
         #region Methods.
@@ -207,13 +191,18 @@ namespace Gorgon.Editor.UI
         /// Function called to close the content.
         /// </summary>
         /// <param name="args">The arguments for the command.</param>
-        private void DoCloseContent(CloseContentArgs args)
+        private async void DoCloseContent(CloseContentArgs args)
         {
             try
             {                
                 if (args.CheckChanges)
                 {
-                    // TODO: Ask for save if we have changes.
+                    bool continueClose = await OnCloseContentTask();
+
+                    if (!continueClose)
+                    {
+                        return;
+                    }
                 }
 
                 BusyState.SetBusy();
@@ -228,7 +217,18 @@ namespace Gorgon.Editor.UI
             {
                 BusyState.SetIdle();
             }
-        }               
+        }
+
+        /// <summary>
+        /// Function to determine the action to take when this content is closing.
+        /// </summary>
+        /// <returns><b>true</b> to continue with closing, <b>false</b> to cancel the close request.</returns>
+        /// <remarks>
+        /// <para>
+        /// Plugin authors should override this method to confirm whether save changed content, continue without saving, or cancel the operation entirely.
+        /// </para>
+        /// </remarks>
+        protected virtual Task<bool> OnCloseContentTask() => Task.FromResult(true);
 
         /// <summary>
         /// Function to initialize the content.
@@ -246,8 +246,6 @@ namespace Gorgon.Editor.UI
             _file = injectionParameters.File ?? throw new ArgumentMissingException(nameof(IContentViewModelInjection.File), nameof(injectionParameters));
             MessageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(IViewModelInjection.MessageDisplay), nameof(injectionParameters));
             BusyState = injectionParameters.BusyService ?? throw new ArgumentMissingException(nameof(IViewModelInjection.BusyService), nameof(injectionParameters));
-            OpenFileService = injectionParameters.OpenDialog ?? throw new ArgumentMissingException(nameof(IContentViewModelInjection.OpenDialog), nameof(injectionParameters));
-            SaveFileService = injectionParameters.SaveDialog ?? throw new ArgumentMissingException(nameof(IContentViewModelInjection.SaveDialog), nameof(injectionParameters));
 
             if (!string.IsNullOrWhiteSpace(ContentType))
             {
@@ -256,9 +254,6 @@ namespace Gorgon.Editor.UI
 
             _file.Renamed += File_Renamed;
             _file.Deleted += File_Deleted;
-
-            ScratchArea = injectionParameters.ScratchArea ?? throw new ArgumentMissingException(nameof(IContentViewModelInjection.ScratchArea), nameof(injectionParameters));
-            ScratchWriter = injectionParameters.ScratchWriter ?? throw new ArgumentMissingException(nameof(IContentViewModelInjection.ScratchWriter), nameof(injectionParameters));            
         }
 
         /// <summary>Function called when the associated view is unloaded.</summary>

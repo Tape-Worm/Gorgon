@@ -25,6 +25,7 @@
 #endregion
 
 using System.IO;
+using Gorgon.Editor.Content;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Imaging;
 
@@ -56,6 +57,14 @@ namespace Gorgon.Editor.ViewModels
         /// Property to return the title for the previewed content.
         /// </summary>
         string Title
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to refresh the preview image.
+        /// </summary>
+        IEditorAsyncCommand<IContentFile> RefreshPreviewCommand
         {
             get;
         }

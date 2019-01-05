@@ -38,11 +38,6 @@ namespace Gorgon.Editor.Services
     public class FileSaveDialogService
         : IFileDialogService
     {
-        #region Variables.
-        // The previously selected file extension filter index.
-        private int _lastSelectedExtensionIndex = -1;
-        #endregion
-
         #region Properties.
         /// <summary>
         /// Property to set or return a file filter.
@@ -88,20 +83,7 @@ namespace Gorgon.Editor.Services
         /// Function to retrieve the parent form for the message box.
         /// </summary>
         /// <returns>The form to use as the owner.</returns>
-        private static Form GetParentForm()
-        {
-            if (Form.ActiveForm != null)
-            {
-                return Form.ActiveForm;
-            }
-
-            if (Application.OpenForms.Count > 1)
-            {
-                return Application.OpenForms[Application.OpenForms.Count - 1];
-            }
-
-            return GorgonApplication.MainForm;
-        }
+        private static Form GetParentForm() => Form.ActiveForm ?? (Application.OpenForms.Count > 1 ? Application.OpenForms[Application.OpenForms.Count - 1] : GorgonApplication.MainForm);
 
         /// <summary>
         /// Function to return the dialog.
@@ -128,7 +110,7 @@ namespace Gorgon.Editor.Services
         /// Function to retrieve a single file name.
         /// </summary>
         /// <returns>The selected file path, or <b>null</b> if cancelled.</returns>
-        public string GetFilename()
+        public virtual string GetFilename()
         {
             SaveFileDialog dialog = null;
 

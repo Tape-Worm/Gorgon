@@ -399,15 +399,16 @@ namespace Gorgon.IO
 		private static bool IsPatternMatch<T>(T item, string searchMask)
 			where T : IGorgonNamedObject
 		{
-			
-			if ((searchMask.EndsWith("*")) || (!searchMask.StartsWith("*")) || (searchMask.Length != 1))
-			{
+
+#pragma warning disable IDE0046 // Convert to conditional expression
+            if ((searchMask.EndsWith("*")) || (!searchMask.StartsWith("*")) || (searchMask.Length != 1))
+            {
 				return Regex.IsMatch(item.Name,
 				                     Regex.Escape(searchMask).Replace(@"\*", ".*").Replace(@"\?", "."),
 				                     RegexOptions.Singleline | RegexOptions.IgnoreCase);
 			}
-
-			return item.Name.EndsWith(searchMask.Substring(searchMask.IndexOf('*') + 1), StringComparison.OrdinalIgnoreCase);
+#pragma warning restore IDE0046 // Convert to conditional expression
+            return item.Name.EndsWith(searchMask.Substring(searchMask.IndexOf('*') + 1), StringComparison.OrdinalIgnoreCase);
 		}
 
 		/// <summary>
@@ -572,20 +573,15 @@ namespace Gorgon.IO
 			// Start search.
 			VirtualDirectory search = InternalGetDirectory(directory);
 
-			if (search == null)
-			{
-				return null;
-			}
+            return search == null ? null : search.Files.Contains(filename) ? search.Files[filename] : null;
+        }
 
-			return search.Files.Contains(filename) ? search.Files[filename] : null;
-		}
-
-		/// <summary>
-		/// Function to retrieve a writable <see cref="VirtualDirectory"/> entry from the file system.
-		/// </summary>
-		/// <param name="path">The path to the directory entry.</param>
-		/// <returns>The directory entry if found, null if not.</returns>
-		internal VirtualDirectory InternalGetDirectory(string path)
+        /// <summary>
+        /// Function to retrieve a writable <see cref="VirtualDirectory"/> entry from the file system.
+        /// </summary>
+        /// <param name="path">The path to the directory entry.</param>
+        /// <returns>The directory entry if found, null if not.</returns>
+        internal VirtualDirectory InternalGetDirectory(string path)
 		{
 			if (path == null)
 			{
@@ -871,15 +867,18 @@ namespace Gorgon.IO
 			// Don't allow multiple threads to refresh this file system at the same time.
 			lock (_syncLock)
 			{
-				// Unload everything at once.
-				InternalRootDirectory.Directories.Clear();
-				InternalRootDirectory.Files.Clear();
+                // We need to copy the current mount point locations before refreshing.
+                (string physicalPath, string mountLocation)[] mountPoints = _mountProviders.Select(item => (item.PhysicalPath, item.MountLocation)).ToArray();
+
+                // Unload everything at once.
+                InternalRootDirectory.Directories.Clear();
+				InternalRootDirectory.Files.Clear();                
 				_mountProviders.Clear();
 
 				// Refresh the mount points so we can capture the most up to date data.
-				foreach (GorgonFileSystemMountPoint mountPoint in MountPoints)
+				foreach ((string physicalPath, string mountLocation) in mountPoints)
 				{
-					Mount(mountPoint.PhysicalPath, mountPoint.MountLocation);
+					Mount(physicalPath, mountLocation);
 				}
 			}
 		}

@@ -52,7 +52,6 @@
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CommonEditorConstants.cs" />
-    <Compile Include="Content\ContentFileMovedEventArgs.cs" />
     <Compile Include="Content\ContentFileRenamedEventArgs.cs" />
     <Compile Include="Plugins\ContentImportPlugin.cs" />
     <Compile Include="ProjectData\RecentItem.cs" />
@@ -184,7 +183,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="KryptonToolkitSuite5470">
-      <Version>5.470.701</Version>
+      <Version>5.470.716</Version>
     </PackageReference>
     <PackageReference Include="SharpDX">
       <Version>4.2.0</Version>

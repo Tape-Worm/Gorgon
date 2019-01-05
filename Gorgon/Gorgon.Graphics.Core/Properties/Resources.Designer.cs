@@ -63,6 +63,15 @@ namespace Gorgon.Graphics.Core.Properties {
         // Comment stripped.
         // Comment stripped.
         // Comment stripped.
+        internal static string GORGFX_ERR_BACKBUFFER_USAGE_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BACKBUFFER_USAGE_INVALID", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
         internal static string GORGFX_ERR_BINDING_TYPE_CANNOT_BE_USED {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_BINDING_TYPE_CANNOT_BE_USED", resourceCulture);

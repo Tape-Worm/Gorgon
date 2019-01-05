@@ -26,14 +26,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
-using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 
 namespace Gorgon.Editor.ImageEditor.ViewModels
@@ -44,11 +42,23 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
     internal class ImageContentParameters
         : ContentViewModelInjectionCommon
     {
-        #region Variables.
-
-        #endregion
-
         #region Properties.
+        /// <summary>
+        /// Property to return the service used to load/save image data.
+        /// </summary>
+        public IImageIOService ImageIOService
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the file used to storing working changes.
+        /// </summary>
+        public IGorgonVirtualFile WorkingFile
+        {
+            get;
+        }
+
         /// <summary>
         /// Property to return the content file representing this content.
         /// </summary>
@@ -61,22 +71,6 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Property to return the image to edit.
         /// </summary>
         public IGorgonImage Image
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the list of available codecs.
-        /// </summary>
-        public IReadOnlyList<IGorgonImageCodec> Codecs
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the codec used internally by the image editor plugin.
-        /// </summary>
-        public IGorgonImageCodec DefaultCodec
         {
             get;
         }
@@ -96,35 +90,49 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the original format for the image.
+        /// </summary>
+        public BufferFormat OriginalFormat
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the undo service for the editor.
+        /// </summary>
+        public IUndoService UndoService
+        {
+            get;
+        }
         #endregion
 
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the ImageContentVmParameters class.</summary>
         /// <param name="file">The file for the image content.</param>
         /// <param name="settings">The settings for the image editor.</param>
-        /// <param name="image">The image data.</param>
-        /// <param name="defaultCodec">The default codec used by the plug in.</param>
+        /// <param name="imageData">The image data and related information.</param>
         /// <param name="formatSupport">A list of <see cref="IGorgonFormatSupportInfo"/> objects for each pixel format.</param>
-        /// <param name="codecs">The list of available codecs.</param>
-        /// <param name="scratchArea">The file system for temporary files.</param>
-        /// <param name="baseInjection">The base injection object used to transfer common objects from the application to the plug in view model.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file" />, <paramref name="image"/>, <paramref name="currentCodec"/>, <paramref name="codecs"/>, or the <paramref name="baseInjection"/> parameter is <b>null</b>.</exception>
-        public ImageContentParameters(IContentFile file, 
+        /// <param name="services">The services required by the image editor.</param>
+        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+        /// <exception cref="ArgumentMissingException">Thrown when any required child parameters are <b>null</b>.</exception>
+        public ImageContentParameters(IContentFile file,
             ImageEditorSettings settings,
-            IGorgonImage image, 
-            IReadOnlyList<IGorgonImageCodec> codecs, 
-            IGorgonImageCodec defaultCodec,
+            (IGorgonImage image, IGorgonVirtualFile workingFile, BufferFormat originalFormat) imageData,
             IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> formatSupport,
-            IGorgonFileSystemWriter<Stream> scratchArea,
-            IViewModelInjection baseInjection)
-            : base(file, scratchArea, new FileOpenDialogService(), new FileSaveDialogService(), baseInjection?.MessageDisplay ?? throw new ArgumentNullException(nameof(baseInjection)), baseInjection.BusyService)
+            ImageEditorServices services)
+            : base(file, 
+                  services?.MessageDisplay ?? throw new ArgumentNullException(nameof(services)), 
+                  services?.BusyState ?? throw new ArgumentNullException(nameof(services)))
         {
-            Settings = settings;
-            Image = image ?? throw new ArgumentNullException(nameof(image));
-            Codecs = codecs ?? throw new ArgumentNullException(nameof(codecs));
-            DefaultCodec = defaultCodec ?? throw new ArgumentNullException(nameof(defaultCodec));
+            Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            WorkingFile = imageData.workingFile ?? throw new ArgumentNullException(nameof(imageData.workingFile));
+            Image = imageData.image ?? throw new ArgumentNullException(nameof(imageData.image));            
             FormatSupport = formatSupport ?? throw new ArgumentNullException(nameof(formatSupport));
-            Log = baseInjection.Log;
+            ImageIOService = services.ImageIO ?? throw new ArgumentMissingException(nameof(services.ImageIO),nameof(services));
+            UndoService = services.UndoService ?? throw new ArgumentMissingException(nameof(services.UndoService), nameof(services));
+            OriginalFormat = imageData.originalFormat;
         }
         #endregion
     }

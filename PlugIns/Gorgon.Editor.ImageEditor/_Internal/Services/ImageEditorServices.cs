@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,32 +20,53 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: November 11, 2018 1:08:24 PM
+// Created: January 5, 2019 2:46:03 PM
 // 
 #endregion
 
-using System;
-using Gorgon.Core;
+using Gorgon.Editor.Services;
 
-namespace Gorgon.Editor.Content
+namespace Gorgon.Editor.ImageEditor
 {
     /// <summary>
-    /// Event parameters for the <see cref="IContentFile.Moved"/> event.
+    /// A list of services required for the image plug in.
     /// </summary>
-    public class ContentFileMovedEventArgs
-        : EventArgs
+    internal class ImageEditorServices
     {
         /// <summary>
-        /// Property to return the new file object.
+        /// Property to set or return the busy state service.
         /// </summary>
-        public IContentFile NewFile
+        public IBusyStateService BusyState
         {
             get;
+            set;
         }
 
-        /// <summary>Initializes a new instance of the ContentFileMovedEventArgs class.</summary>
-        /// <param name="newFile">The new path after moving.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="newFile" /> parameter is <strong>null</strong>.</exception>
-        public ContentFileMovedEventArgs(IContentFile newFile) => NewFile = newFile ?? throw new ArgumentNullException(nameof(newFile));
+        /// <summary>
+        /// Property to set or return the message display service.
+        /// </summary>
+        public IMessageDisplayService MessageDisplay
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the undo service.
+        /// </summary>
+        public IUndoService UndoService
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the image I/O service.
+        /// </summary>
+        public IImageIOService ImageIO
+        {
+            get;
+            set;
+        }
     }
 }

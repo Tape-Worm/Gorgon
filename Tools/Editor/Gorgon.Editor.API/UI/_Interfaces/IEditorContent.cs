@@ -95,6 +95,15 @@ namespace Gorgon.Editor.UI
             get;
             set;
         }
+
+        /// <summary>
+        /// Property to set or return the command used to save the content.
+        /// </summary>
+        IEditorAsyncCommand<object> SaveContentCommand
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Methods.

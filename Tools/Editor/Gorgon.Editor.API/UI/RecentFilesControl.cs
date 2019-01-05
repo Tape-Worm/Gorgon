@@ -136,7 +136,6 @@ namespace Gorgon.Editor.UI
 
             PanelRecentItems.Controls[0].Dock = DockStyle.None;
             PanelRecentItems.Controls[0].Width = PanelRecentItems.ClientSize.Width - SystemInformation.VerticalScrollBarWidth - PanelRecentItems.Controls[0].Margin.Horizontal;
-            Debug.Print($"Width: {PanelRecentItems.Controls[0].Width}");
 
             for (int i = 1; i < PanelRecentItems.Controls.Count; ++i)
             {

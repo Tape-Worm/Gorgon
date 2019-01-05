@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using ComponentFactory.Krypton.Toolkit;
 using Gorgon.Editor.ImageEditor.Properties;
@@ -14,8 +9,6 @@ using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
-using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 
 namespace Gorgon.Editor.ImageEditor
@@ -62,6 +55,7 @@ namespace Gorgon.Editor.ImageEditor
                     break;
                 case nameof(IImageContent.CurrentPixelFormat):
                     ButtonImageFormat.TextLine1 = $"{Resources.GORIMG_TEXT_IMAGE_FORMAT}: {DataContext.CurrentPixelFormat}";
+                    UpdatePixelFormatMenuSelection(DataContext);
                     break;
             }
 
@@ -73,7 +67,6 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The [PropertyChangingEventArgs] instance containing the event data.</param>
         private void DataContext_PropertyChanging(object sender, PropertyChangingEventArgs e)
         {
-
         }
 
         /// <summary>Handles the CollectionChanged event of the Codecs control.</summary>
@@ -112,16 +105,22 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The [EventArgs] instance containing the event data.</param>
         private void PixelFormatItem_Click(object sender, EventArgs e)
         {
-            var item = (ToolStripMenuItem)sender;
-            var codec = (BufferFormat)item.Tag;
-
-            // TODO:
-            /*
-            if ((DataContext?.SetCodecCommand != null) && (DataContext.SetCodecCommand.CanExecute(codec)))
+            if (DataContext == null)
             {
-                DataContext.SetCodecCommand.Execute(codec);
+                return;
             }
-            */
+
+            var item = (ToolStripMenuItem)sender;
+            var format = (BufferFormat)item.Tag;
+
+            if ((DataContext.ConvertFormatCommand != null) && (DataContext.ConvertFormatCommand.CanExecute(format)))
+            {
+                DataContext.ConvertFormatCommand.Execute(format);
+            }
+
+            // Ensure only this item is checked.
+            UpdatePixelFormatMenuSelection(DataContext);
+            ValidateButtons();
         }
 
         /// <summary>Handles the Click event of the Item control.</summary>
@@ -138,6 +137,48 @@ namespace Gorgon.Editor.ImageEditor
             }
         }
 
+        /// <summary>Handles the Click event of the ButtonSaveImage control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void ButtonSaveImage_Click(object sender, EventArgs e)
+        {
+            if ((DataContext?.SaveContentCommand == null) || (!DataContext.SaveContentCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            await DataContext.SaveContentCommand.ExecuteAsync(null);
+            ValidateButtons();
+        }
+
+        /// <summary>Handles the Click event of the ButtonImageRedo control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonImageRedo_Click(object sender, EventArgs e)
+        {
+            if ((DataContext?.RedoCommand == null) || (!DataContext.RedoCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            DataContext.RedoCommand.Execute(null);
+            ValidateButtons();
+        }
+
+        /// <summary>Handles the Click event of the ButtonImageUndo control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonImageUndo_Click(object sender, EventArgs e)
+        {
+            if ((DataContext?.UndoCommand == null) || (!DataContext.UndoCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            DataContext.UndoCommand.Execute(null);
+            ValidateButtons();
+        }
+
         /// <summary>
         /// Function to validate the state of the buttons.
         /// </summary>
@@ -148,8 +189,10 @@ namespace Gorgon.Editor.ImageEditor
                 return;
             }
 
+            ButtonImageUndo.Enabled = DataContext.UndoCommand?.CanExecute(null) ?? false;
+            ButtonImageRedo.Enabled = DataContext.RedoCommand?.CanExecute(null) ?? false;
             ButtonExport.Enabled = MenuCodecs.Items.Count > 0;            
-            ButtonSaveImage.Enabled = DataContext.ContentState != UI.ContentState.Unmodified;
+            ButtonSaveImage.Enabled = DataContext.SaveContentCommand?.CanExecute(null) ?? false;
         }
 
         /// <summary>
@@ -337,6 +380,6 @@ namespace Gorgon.Editor.ImageEditor
         #region Constructor.
         /// <summary>Initializes a new instance of the FormRibbon class.</summary>
         public FormRibbon() => InitializeComponent();
-        #endregion                      
+        #endregion
     }
 }

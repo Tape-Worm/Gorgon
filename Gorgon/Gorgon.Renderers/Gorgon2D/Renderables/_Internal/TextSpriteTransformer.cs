@@ -378,7 +378,7 @@ namespace Gorgon.Renderers
             }
 
             DX.Vector2 offset = isOutlinePass ? glyph.OutlineOffset : glyph.Offset;
-            var size = isOutlinePass
+            DX.Vector2 size = isOutlinePass
                            ? new DX.Vector2(glyph.OutlineCoordinates.Width, glyph.OutlineCoordinates.Height)
                            : new DX.Vector2(glyph.GlyphCoordinates.Width, glyph.GlyphCoordinates.Height);
 

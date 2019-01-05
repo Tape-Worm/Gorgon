@@ -121,6 +121,7 @@ namespace Gorgon.Editor.Plugins
         /// <param name="file">The file that contains the content.</param>
         /// <param name="injector">Parameters for injecting dependency objects.</param>
         /// <param name="scratchArea">The file system for the scratch area used to write transitory information.</param>
+        /// <param name="undoService">The undo service for the plug in.</param>
         /// <returns>A new <see cref="IEditorContent"/> object.</returns>
         /// <remarks>
         /// <para>
@@ -128,7 +129,7 @@ namespace Gorgon.Editor.Plugins
         /// application or plug in is shut down, and is not stored with the project.
         /// </para>
         /// </remarks>
-        protected abstract Task<IEditorContent> OnOpenContentAsync(IContentFile file, IViewModelInjection injector, IGorgonFileSystemWriter<Stream> scratchArea);
+        protected abstract Task<IEditorContent> OnOpenContentAsync(IContentFile file, IViewModelInjection injector, IGorgonFileSystemWriter<Stream> scratchArea, IUndoService undoService);
 
         /// <summary>
         /// Function to register plug in specific search keywords with the system search.
@@ -160,10 +161,11 @@ namespace Gorgon.Editor.Plugins
         /// <param name="file">The file that contains the content.</param>
         /// <param name="injector">Parameters for injecting dependency objects.</param>
         /// <param name="project">The project information.</param>
+        /// <param name="undoService">The undo service for the plugin.</param>
         /// <returns>A new <see cref="IEditorContent"/> object.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/>, <paramref name="injector"/>, or the <paramref name="project"/> parameter is <b>null</b>.</exception>
         /// <exception cref="GorgonException">Thrown if the <see cref="OnOpenContentAsync"/> method returns <b>null</b>.</exception>
-        public async Task<IEditorContent> OpenContentAsync(IContentFile file, IViewModelInjection injector, IProject project)
+        public async Task<IEditorContent> OpenContentAsync(IContentFile file, IViewModelInjection injector, IProject project, IUndoService undoService)
         {
             if (file == null)
             {
@@ -180,12 +182,18 @@ namespace Gorgon.Editor.Plugins
                 throw new ArgumentNullException(nameof(project));
             }
 
-            string scratchPath = project.TempDirectory.FullName.FormatDirectory(Path.DirectorySeparatorChar);
+            string scratchPath = Path.Combine(project.TempDirectory.FullName, GetType().FullName).FormatDirectory(Path.DirectorySeparatorChar);
+
+            if (!Directory.Exists(scratchPath))
+            {
+                Directory.CreateDirectory(scratchPath);
+            }
+
             var scratchArea = new GorgonFileSystem(Log);
             scratchArea.Mount(scratchPath);
             IGorgonFileSystemWriter<Stream> scratchWriter = new GorgonFileSystemWriter(scratchArea, scratchPath);
 
-            IEditorContent content = await OnOpenContentAsync(file, injector, scratchWriter);
+            IEditorContent content = await OnOpenContentAsync(file, injector, scratchWriter, undoService);
 
             if (content == null)
             {

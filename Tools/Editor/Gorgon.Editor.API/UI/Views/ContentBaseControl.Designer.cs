@@ -20,6 +20,7 @@
 
             if (disposing)
             {
+                UnassignEvents();
                 Shutdown();
             }
             base.Dispose(disposing);

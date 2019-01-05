@@ -26,6 +26,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using ComponentFactory.Krypton.Toolkit;
@@ -81,9 +82,10 @@ namespace Gorgon.Editor.UI.Views
         /// <param name="e">A <see cref="T:System.Windows.Forms.PaintEventArgs" /> that contains the event data. </param>
         protected override void OnPaint(PaintEventArgs e)
         {
+            base.OnPaint(e);
+
             if (_palette == null)
             {
-                base.OnPaint(e);
                 return;
             }
 
@@ -92,9 +94,7 @@ namespace Gorgon.Editor.UI.Views
             using (var backBrush = new SolidBrush(backColor))
             {
                 e.Graphics.FillRectangle(backBrush, e.ClipRectangle);
-            }
-
-            base.OnPaint(e);
+            }            
         }
 
         /// <summary>

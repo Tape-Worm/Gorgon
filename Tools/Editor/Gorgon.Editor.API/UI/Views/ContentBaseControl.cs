@@ -39,6 +39,8 @@ using Gorgon.UI;
 using ComponentFactory.Krypton.Toolkit;
 using ComponentFactory.Krypton.Ribbon;
 using Gorgon.Editor.Content;
+using Gorgon.Graphics.Imaging;
+using Gorgon.Graphics.Imaging.GdiPlus;
 
 namespace Gorgon.Editor.UI.Views
 {
@@ -142,7 +144,7 @@ namespace Gorgon.Editor.UI.Views
                 return;
             }
 
-            _dataContext.CloseContentCommand.Execute(null);
+            _dataContext.CloseContentCommand.Execute(new CloseContentArgs(true));
         }
 
         /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
@@ -230,6 +232,50 @@ namespace Gorgon.Editor.UI.Views
 
             LabelHeader.Text = $"{dataContext.File.Name}{(dataContext.ContentState == ContentState.Unmodified ? string.Empty : "*")}";
             PanelContentName.Visible = true;
+        }
+
+        /// <summary>
+        /// Function to render the swap chain contents to a GDI+ bitmap.
+        /// </summary>
+        /// <param name="graphics">The GDI+ graphics interface.</param>
+        /// <remarks>
+        /// <para>
+        /// Use this method to send the backbuffer for the <see cref="SwapChain"/> to a GDI+ bitmap when the control is being rendered to a bitmap or printed. The <see cref="GorgonOverlayPanel"/> renders 
+        /// the control to a bitmap to achieve the transparency effect it uses, and without this method anything on the swap chain will not be drawn under the overlay.
+        /// </para>
+        /// </remarks>
+        protected void RenderSwapChainToBitmap(System.Drawing.Graphics graphics)
+        {
+            if ((IsDesignTime) || (SwapChain == null) || (IdleMethod == null))
+            {
+                return;
+            }
+
+            // This method is used to capture the D3D rendering when rendering to a GDI+ bitmap (as used by the overlay).
+            // Without it, no image is rendered and only a dark grey background is visible.
+
+            IGorgonImage swapBufferImage = null;
+            Bitmap gdiBitmap = null;
+
+            try
+            {
+                IdleMethod();
+
+                swapBufferImage = SwapChain.CopyBackBufferToImage();
+                gdiBitmap = swapBufferImage.Buffers[0].ToBitmap();
+                swapBufferImage.Dispose();
+
+                graphics.DrawImage(gdiBitmap, new Point(0, 0));
+            }
+            catch
+            {
+                // Empty on purpose.  Don't need to worry about exceptions here, if things fail, they fail and state should not be corrupted.
+            }
+            finally
+            {
+                gdiBitmap?.Dispose();
+                swapBufferImage?.Dispose();
+            }
         }
 
         /// <summary>

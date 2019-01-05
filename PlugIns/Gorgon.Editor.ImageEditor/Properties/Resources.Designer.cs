@@ -180,11 +180,42 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The image &apos;{0}&apos; has unsaved changes. 
+        ///
+        ///Would you like to save these changes now?.
+        /// </summary>
+        internal static string GORIMG_CONFIRM_CLOSE {
+            get {
+                return ResourceManager.GetString("GORIMG_CONFIRM_CLOSE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gorgon Image Editor.
         /// </summary>
         internal static string GORIMG_DESC {
             get {
                 return ResourceManager.GetString("GORIMG_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error while compressing the image data.
+        ///
+        ///Please try again..
+        /// </summary>
+        internal static string GORIMG_ERR_CANNOT_COMPRESS {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_CANNOT_COMPRESS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The pixel format [{0}] cannot be converted to [{1}]..
+        /// </summary>
+        internal static string GORIMG_ERR_CANNOT_CONVERT {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_CANNOT_CONVERT", resourceCulture);
             }
         }
         
@@ -199,11 +230,73 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The file is compressed using [{0}], and currently there is no support for decompressing it..
+        /// </summary>
+        internal static string GORIMG_ERR_COMPRESSED_FILE {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_COMPRESSED_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error converting the format to [{0}].
+        ///
+        ///Please try again..
+        /// </summary>
+        internal static string GORIMG_ERR_CONVERT_FORMAT {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_CONVERT_FORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is no support for the [{0}] format..
+        /// </summary>
+        internal static string GORIMG_ERR_FORMAT_NOT_SUPPORTED {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_FORMAT_NOT_SUPPORTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There is no codec loaded that can read the file &apos;{0}&apos;..
         /// </summary>
         internal static string GORIMG_ERR_NO_CODEC {
             get {
                 return ResourceManager.GetString("GORIMG_ERR_NO_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error performing the redo action.
+        ///
+        ///Please try again..
+        /// </summary>
+        internal static string GORIMG_ERR_REDO {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_REDO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error saving the content.
+        ///
+        ///Please try again..
+        /// </summary>
+        internal static string GORIMG_ERR_SAVE_CONTENT {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_SAVE_CONTENT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error performing the undo action.
+        ///
+        ///Please try again..
+        /// </summary>
+        internal static string GORIMG_ERR_UNDO {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_UNDO", resourceCulture);
             }
         }
         
@@ -240,6 +333,42 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static string GORIMG_TEXT_IMAGE_FORMAT {
             get {
                 return ResourceManager.GetString("GORIMG_TEXT_IMAGE_FORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Redoing previous action....
+        /// </summary>
+        internal static string GORIMG_TEXT_REDO {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_REDO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Saving &apos;{0}&apos;....
+        /// </summary>
+        internal static string GORIMG_TEXT_SAVING {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_SAVING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Undoing previous action....
+        /// </summary>
+        internal static string GORIMG_TEXT_UNDO {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_UNDO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Conversion to pixel format [{0}].
+        /// </summary>
+        internal static string GORIMG_UNDO_DESC_FORMAT_CONVERT {
+            get {
+                return ResourceManager.GetString("GORIMG_UNDO_DESC_FORMAT_CONVERT", resourceCulture);
             }
         }
         

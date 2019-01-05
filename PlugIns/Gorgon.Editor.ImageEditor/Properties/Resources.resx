@@ -227,4 +227,55 @@ Please try again.</value>
   <data name="GORIMG_CAPTION_EXPORT_IMAGE" xml:space="preserve">
     <value>Export image as {0}...</value>
   </data>
+  <data name="GORIMG_ERR_COMPRESSED_FILE" xml:space="preserve">
+    <value>The file is compressed using [{0}], and currently there is no support for decompressing it.</value>
+  </data>
+  <data name="GORIMG_ERR_CONVERT_FORMAT" xml:space="preserve">
+    <value>There was an error converting the format to [{0}].
+
+Please try again.</value>
+  </data>
+  <data name="GORIMG_ERR_REDO" xml:space="preserve">
+    <value>There was an error performing the redo action.
+
+Please try again.</value>
+  </data>
+  <data name="GORIMG_ERR_UNDO" xml:space="preserve">
+    <value>There was an error performing the undo action.
+
+Please try again.</value>
+  </data>
+  <data name="GORIMG_CONFIRM_CLOSE" xml:space="preserve">
+    <value>The image '{0}' has unsaved changes. 
+
+Would you like to save these changes now?</value>
+  </data>
+  <data name="GORIMG_ERR_CANNOT_COMPRESS" xml:space="preserve">
+    <value>There was an error while compressing the image data.
+
+Please try again.</value>
+  </data>
+  <data name="GORIMG_ERR_CANNOT_CONVERT" xml:space="preserve">
+    <value>The pixel format [{0}] cannot be converted to [{1}].</value>
+  </data>
+  <data name="GORIMG_ERR_FORMAT_NOT_SUPPORTED" xml:space="preserve">
+    <value>There is no support for the [{0}] format.</value>
+  </data>
+  <data name="GORIMG_ERR_SAVE_CONTENT" xml:space="preserve">
+    <value>There was an error saving the content.
+
+Please try again.</value>
+  </data>
+  <data name="GORIMG_TEXT_REDO" xml:space="preserve">
+    <value>Redoing previous action...</value>
+  </data>
+  <data name="GORIMG_TEXT_SAVING" xml:space="preserve">
+    <value>Saving '{0}'...</value>
+  </data>
+  <data name="GORIMG_TEXT_UNDO" xml:space="preserve">
+    <value>Undoing previous action...</value>
+  </data>
+  <data name="GORIMG_UNDO_DESC_FORMAT_CONVERT" xml:space="preserve">
+    <value>Conversion to pixel format [{0}]</value>
+  </data>
 </root>

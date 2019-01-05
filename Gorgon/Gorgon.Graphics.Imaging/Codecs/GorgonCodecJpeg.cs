@@ -30,38 +30,46 @@ using SharpDX.WIC;
 
 namespace Gorgon.Graphics.Imaging.Codecs
 {
-	/// <summary>
-	/// A codec to handle read/writing of JPEG files.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This codec will read and write lossy compression files using the Joint Photographics Experts Group (JPEG) format.
-	/// </para>
-	/// <para>
-	/// This codec supports the following pixel formats:
-	/// <list type="bullet">
+    /// <summary>
+    /// A codec to handle read/writing of JPEG files.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This codec will read and write lossy compression files using the Joint Photographics Experts Group (JPEG) format.
+    /// </para>
+    /// <para>
+    /// This codec supports the following pixel formats:
+    /// <list type="bullet">
+    ///		<item>
+    ///			<description><see cref="BufferFormat.B8G8R8X8_UNorm"/></description>
+    ///		</item>
+    ///		<item>
+    ///			<description><see cref="BufferFormat.B8G8R8A8_UNorm"/> (Alpha channel is ignored)</description>
+    ///		</item>
 	///		<item>
-	///			<description><see cref="BufferFormat.B8G8R8X8_UNorm"/></description>
+	///			<description><see cref="BufferFormat.R8G8B8A8_UNorm"/> (Alpha channel is ignored)</description>
 	///		</item>
-	/// </list>
-	/// </para>
-	/// <para>
-	/// <note type="important">
-	/// <para>
-	/// This codec requires the Windows Imaging Components (WIC) to be installed for the operating system.
-	/// </para>
-	/// </note>
-	/// </para>
-	/// </remarks>
-	public sealed class GorgonCodecJpeg
+    /// </list>
+    /// </para>
+    /// <para>
+    /// <note type="important">
+    /// <para>
+    /// This codec requires the Windows Imaging Components (WIC) to be installed for the operating system.
+    /// </para>
+    /// </note>
+    /// </para>
+    /// </remarks>
+    public sealed class GorgonCodecJpeg
         : GorgonCodecWic<GorgonJpegEncodingOptions, IGorgonWicDecodingOptions>
     {
         #region Variables.
 		// Supported formats.
 		private readonly BufferFormat[] _supportedFormats =
 		{
-			BufferFormat.B8G8R8X8_UNorm
-		};
+            BufferFormat.R8G8B8A8_UNorm,
+            BufferFormat.B8G8R8A8_UNorm,
+            BufferFormat.B8G8R8X8_UNorm
+        };
 
 		// Image quality for lossy compressed images.
 		private float _imageQuality = 1.0f;

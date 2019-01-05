@@ -562,12 +562,9 @@ namespace Gorgon.Renderers
             get
             {
                 BatchRenderable renderable = Renderable;
-                if (renderable.AlphaTestData.IsEnabled == 0)
-                {
-                    return null;
-                }
-
-                return new GorgonRangeF(renderable.AlphaTestData.LowerAlpha, renderable.AlphaTestData.UpperAlpha);
+                return renderable.AlphaTestData.IsEnabled == 0
+                    ? null
+                    : (GorgonRangeF?)new GorgonRangeF(renderable.AlphaTestData.LowerAlpha, renderable.AlphaTestData.UpperAlpha);
             }
             set
             {

@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,28 +20,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: September 17, 2018 7:58:15 AM
+// Created: January 5, 2019 1:48:36 PM
 // 
 #endregion
 
-using System.IO;
 using Gorgon.Editor.Content;
-using Gorgon.IO;
+using Gorgon.Editor.Services;
+using Gorgon.Graphics.Imaging.Codecs;
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.Editor.ImageEditor
 {
     /// <summary>
-    /// Defines values to inject into content view models.
+    /// Dialog serivce used for retrieving paths for exporting image data.
     /// </summary>
-    public interface IContentViewModelInjection
-        : IViewModelInjection
+    internal interface IExportImageDialogService
+        : IFileDialogService
     {
         /// <summary>
-        /// Property to return the content file.
+        /// Property to set or return the content image file being exported.
         /// </summary>
-        IContentFile File
+        IContentFile ContentFile
         {
             get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the codec used for exporting.
+        /// </summary>
+        IGorgonImageCodec SelectedCodec
+        {
+            get;
+            set;
         }
     }
 }

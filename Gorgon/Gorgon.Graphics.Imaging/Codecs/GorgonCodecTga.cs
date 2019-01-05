@@ -1060,13 +1060,15 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				return false;
 			}
 
-			if ((header.ImageType != TgaImageType.TrueColor) && (header.ImageType != TgaImageType.TrueColorRLE)
-				&& (header.ImageType != TgaImageType.BlackAndWhite) && (header.ImageType != TgaImageType.BlackAndWhiteRLE))
+#pragma warning disable IDE0046 // Convert to conditional expression
+            if ((header.ImageType != TgaImageType.TrueColor) && (header.ImageType != TgaImageType.TrueColorRLE)
+                && (header.ImageType != TgaImageType.BlackAndWhite) && (header.ImageType != TgaImageType.BlackAndWhiteRLE))
 			{
 				return false;
 			}
+#pragma warning restore IDE0046 // Convert to conditional expression
 
-			return ((header.ImageType != TgaImageType.BlackAndWhite) && (header.ImageType != TgaImageType.BlackAndWhiteRLE)) ||
+            return ((header.ImageType != TgaImageType.BlackAndWhite) && (header.ImageType != TgaImageType.BlackAndWhiteRLE)) ||
 			       (header.BPP == 8);
         }
         #endregion

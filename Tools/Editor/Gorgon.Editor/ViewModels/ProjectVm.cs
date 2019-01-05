@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -132,11 +133,12 @@ namespace Gorgon.Editor.ViewModels
 
                 if (_currentContent != null)
                 {
+                    CurrentContent.PropertyChanged -= CurrentContent_PropertyChanged;
                     CurrentContent.CloseContent -= CurrentContent_CloseContent;
                     CurrentContent.WaitPanelActivated -= FileExplorer_WaitPanelActivated;
                     CurrentContent.WaitPanelDeactivated -= FileExplorer_WaitPanelDeactivated;
                     CurrentContent.ProgressUpdated -= FileExplorer_ProgressUpdated;
-                    CurrentContent.ProgressDeactivated -= FileExplorer_ProgressDeactivated;
+                    CurrentContent.ProgressDeactivated -= FileExplorer_ProgressDeactivated;                    
                 }
 
                 OnPropertyChanging();
@@ -145,6 +147,7 @@ namespace Gorgon.Editor.ViewModels
 
                 if (_currentContent != null)
                 {
+                    CurrentContent.PropertyChanged += CurrentContent_PropertyChanged;
                     CurrentContent.WaitPanelActivated += FileExplorer_WaitPanelActivated;
                     CurrentContent.WaitPanelDeactivated += FileExplorer_WaitPanelDeactivated;
                     CurrentContent.ProgressUpdated += FileExplorer_ProgressUpdated;
@@ -273,10 +276,17 @@ namespace Gorgon.Editor.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        /// <summary>
+        /// Property to return the command to execute when the application is closing.
+        /// </summary>
+        public IEditorAsyncCommand<CancelEventArgs> BeforeCloseCommand
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
-
         /// <summary>Handles the CloseContent event of the CurrentContent control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The [EventArgs] instance containing the event data.</param>
@@ -285,6 +295,7 @@ namespace Gorgon.Editor.ViewModels
             try
             {
                 CurrentContent = null;
+                ProjectState = ProjectState.Unmodified;
             }
             catch (Exception ex)
             {
@@ -334,6 +345,33 @@ namespace Gorgon.Editor.ViewModels
             catch (Exception ex)
             {
                 _messageService.ShowError(ex, string.Format(Resources.GOREDIT_ERR_SAVING_PROJECT));
+            }
+        }
+
+
+        /// <summary>Handles the PropertyChanged event of the CurrentContent control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+        private async void CurrentContent_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(IEditorContent.ContentState):
+                    switch (CurrentContent.ContentState)
+                    {
+                        case ContentState.Modified:
+                        case ContentState.New:
+                            ProjectState = ProjectState.Modified;
+                            break;
+                        case ContentState.Unmodified:
+                            // If the state turns to unmodified, then refresh the thumbnail.
+                            if ((ContentPreviewer?.RefreshPreviewCommand != null) && (ContentPreviewer.RefreshPreviewCommand.CanExecute(CurrentContent.File)))
+                            {
+                                await ContentPreviewer.RefreshPreviewCommand.ExecuteAsync(CurrentContent.File);
+                            }
+                            break;
+                    }
+                    break;
             }
         }
 
@@ -390,16 +428,68 @@ namespace Gorgon.Editor.ViewModels
         private bool CanOpenContent(IContentFile node) => node?.Metadata != null;
 
         /// <summary>
+        /// Function to persist the changed content (if any).
+        /// </summary>
+        /// <returns><b>true</b> if saved or skipped, <b>false</b> if cancelled.</returns>
+        private async Task<bool> UpdateChangedContentAsync()
+        {
+            if ((CurrentContent == null)
+                || (CurrentContent.ContentState == ContentState.Unmodified)
+                || (CurrentContent.SaveContentCommand == null)
+                || (!CurrentContent.SaveContentCommand.CanExecute(null)))
+            {
+                return true;
+            }
+
+            MessageResponse response = _messageService.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_SAVE_CONTENT, CurrentContent.File.Name), allowCancel: true);
+
+            switch (response)
+            {
+                case MessageResponse.Yes:
+                    await CurrentContent.SaveContentCommand.ExecuteAsync(null);
+                    break;
+                case MessageResponse.Cancel:
+                    return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Function called when the application is shutting down.
+        /// </summary>
+        /// <param name="args">The command arguments.</param>
+        /// <returns>A task for asynchronous operation.</returns>
+        private async Task DoBeforeCloseAsync(CancelEventArgs args)
+        {
+            try
+            {
+                bool result = await UpdateChangedContentAsync();
+                args.Cancel = !result;
+            }
+            catch (Exception ex)
+            {
+                Log.Print("Error closing the application.", LoggingLevel.Simple);
+                Log.LogException(ex);
+            }
+        }
+
+        /// <summary>
         /// Function to open a file node as content.
         /// </summary>
         /// <param name="file">The content file to open.</param>
         private async void DoOpenContent(IContentFile file)
         {
-            ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_LOADING_CONTENT, file.Name));
-
             try
             {
-                // TODO: Check for unsaved content.
+                bool continueOpen = await UpdateChangedContentAsync();
+
+                if (!continueOpen)
+                {
+                    return;
+                }
+
+                ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_LOADING_CONTENT, file.Name));
 
                 if (file.ContentPlugin == null)
                 {
@@ -431,35 +521,19 @@ namespace Gorgon.Editor.ViewModels
 
                 ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_OPENING, file.Name));
 
-                // Create a content object.
-                IEditorContent content = await file.ContentPlugin.OpenContentAsync(file, _viewModelFactory, _projectData);
+                // Create a content object.                
+                IEditorContent content = await file.ContentPlugin.OpenContentAsync(file, _viewModelFactory, _projectData, new UndoService(Log)); 
 
                 if (content == null)
                 {
                     return;
                 }
 
-
-                // TODO: This should be on the content previewer view model so the image in the display is actually updated.
                 // Always generate a thumbnail now so we don't have to later, this also serves to refresh the thumbnail.
-                FileInfo thumbnailFile = null;
-                if (file.Metadata.Attributes.TryGetValue(CommonEditorConstants.ThumbnailAttr, out string thumbnailName))
+                if ((ContentPreviewer?.RefreshPreviewCommand != null) && (ContentPreviewer.RefreshPreviewCommand.CanExecute(file)))
                 {
-                    thumbnailFile = new FileInfo(Path.Combine(_contentPreviewer.ThumbnailDirectory.FullName, thumbnailName));
-
-                    if (thumbnailFile.Exists)
-                    {
-                        thumbnailFile.Delete();
-                        file.Metadata.Attributes.Remove(thumbnailName);
-                    }                  
+                    await ContentPreviewer.RefreshPreviewCommand.ExecuteAsync(file);
                 }
-
-                thumbnailName = Guid.NewGuid().ToString("N");
-                thumbnailFile = new FileInfo(Path.Combine(_projectData.TempDirectory.FullName, "thumbs", thumbnailName));
-
-                (await file.Metadata.ContentMetadata.GetThumbnailAsync(file, thumbnailFile, CancellationToken.None))?.Dispose();
-
-                // TODO: Open the file.
 
                 // Load the content.
                 file.IsOpen = true;
@@ -608,7 +682,6 @@ namespace Gorgon.Editor.ViewModels
             HideProgress();
             UnassignEvents();
 
-            CurrentContent?.OnUnload();
             CurrentContent = null;
         }
 
@@ -621,7 +694,12 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>Function to drop the payload for a drag drop operation.</summary>
         /// <param name="dragData">The drag/drop data.</param>
         /// <param name="afterDrop">[Optional] The method to execute after the drop operation is completed.</param>
-        void IDragDropHandler<IContentFile>.Drop(IContentFile dragData, Action afterDrop) => DoOpenContent(dragData);                    
+        void IDragDropHandler<IContentFile>.Drop(IContentFile dragData, Action afterDrop) => DoOpenContent(dragData);
+        #endregion
+
+        #region Constructor.
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ViewModels.ProjectVm"/> class.</summary>
+        public ProjectVm() => BeforeCloseCommand = new EditorAsyncCommand<CancelEventArgs>(DoBeforeCloseAsync);
         #endregion
     }
 }

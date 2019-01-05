@@ -723,4 +723,9 @@ Please try again.</value>
 
 Are you sure you wish to delete this file?</value>
   </data>
+  <data name="GOREDIT_CONFIRM_SAVE_CONTENT" xml:space="preserve">
+    <value>The file '{0}' is currently open in the editor and has unsaved changes.
+
+Would you like to save these changes now?</value>
+  </data>
 </root>

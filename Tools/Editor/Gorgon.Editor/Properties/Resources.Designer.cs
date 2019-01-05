@@ -454,6 +454,17 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; is currently open in the editor and has unsaved changes.
+        ///
+        ///Would you like to save these changes now?.
+        /// </summary>
+        internal static string GOREDIT_CONFIRM_SAVE_CONTENT {
+            get {
+                return ResourceManager.GetString("GOREDIT_CONFIRM_SAVE_CONTENT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The project &apos;{0}&apos; has unsaved changes.
         ///
         ///Would you like to save this project now?.

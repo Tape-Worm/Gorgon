@@ -106,6 +106,12 @@ namespace Gorgon.Editor.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        /// <summary>Property to return the command used to refresh the preview image.</summary>
+        public IEditorAsyncCommand<IContentFile> RefreshPreviewCommand
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
@@ -211,6 +217,46 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="e">The event parameters.</param>
         private void File_Renamed(object sender, ContentFileRenamedEventArgs e) => Title = e.NewName;
 
+        /// <summary>
+        /// Function to determine if the preview image can be refreshed at this time.
+        /// </summary>
+        /// <param name="file">The file to retrieve the preview from.</param>
+        /// <returns><b>true</b> if the image can be refreshed, <b>false</b> if not.</returns>
+        private bool CanRefreshPreview(IContentFile file) => _contentFile == file;
+
+        /// <summary>
+        /// Function to refresh the preview image for the content file.
+        /// </summary>
+        /// <param name="file">The file to refresh the preview for.</param>
+        /// <returns>A task for asynchronous operation.</returns>
+        private async Task DoRefreshPreview(IContentFile file)
+        {
+            try
+            {
+                // If the file already has a link to a thumbnail, remove it.
+                FileInfo thumbnailFile = null;
+                if (file.Metadata.Attributes.TryGetValue(CommonEditorConstants.ThumbnailAttr, out string thumbnailName))
+                {
+                    thumbnailFile = new FileInfo(Path.Combine(ThumbnailDirectory.FullName, thumbnailName));
+
+                    if (thumbnailFile.Exists)
+                    {
+                        thumbnailFile.Delete();                        
+                    }
+
+                    file.Metadata.Attributes.Remove(thumbnailName);
+                }
+
+                // Reload.
+                await LoadImagePreviewAsync(file);
+            }
+            catch (Exception ex)
+            {
+                Log.Print($"Error refreshing the preview image for '{file.Path}'.", LoggingLevel.Simple);
+                Log.LogException(ex);
+            }
+        }
+
         /// <summary>Function to inject dependencies for the view model.</summary>
         /// <param name="injectionParameters">The parameters to inject.</param>
         /// <remarks>
@@ -240,6 +286,11 @@ namespace Gorgon.Editor.ViewModels
             _fileExplorer.PropertyChanging -= FileExplorer_PropertyChanging;
             _cancelSource?.Dispose();
         }
+        #endregion
+
+        #region Constructor.
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ViewModels.ContentPreviewVm"/> class.</summary>
+        public ContentPreviewVm() => RefreshPreviewCommand = new EditorAsyncCommand<IContentFile>(DoRefreshPreview, CanRefreshPreview);
         #endregion
     }
 }

@@ -36,7 +36,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.PanelDisplay = new System.Windows.Forms.Panel();
+            this.PanelDisplay = new Gorgon.Windows.UI.GorgonSelectablePanel();
             this.SuspendLayout();
             // 
             // PanelDisplay
@@ -44,8 +44,11 @@
             this.PanelDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PanelDisplay.Location = new System.Drawing.Point(0, 0);
             this.PanelDisplay.Name = "PanelDisplay";
+            this.PanelDisplay.ShowFocus = false;
             this.PanelDisplay.Size = new System.Drawing.Size(600, 468);
             this.PanelDisplay.TabIndex = 0;
+            this.PanelDisplay.TabStop = false;
+            this.PanelDisplay.RenderToBitmap += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.PanelDisplay_RenderToBitmap);
             // 
             // ContentPreview
             // 
@@ -59,6 +62,6 @@
 
         #endregion
 
-        private System.Windows.Forms.Panel PanelDisplay;
+        private Gorgon.Windows.UI.GorgonSelectablePanel PanelDisplay;
     }
 }

@@ -27,9 +27,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using Gorgon.Collections;
 using Gorgon.Math;
 
 namespace Gorgon.UI
@@ -172,16 +175,6 @@ namespace Gorgon.UI
             get => DockStyle.None;
             set => base.Dock = DockStyle.None;
         }
-
-        /*/// <summary>Indicates the automatic sizing behavior of the control.</summary>
-        /// <returns>One of the <see cref="T:System.Windows.Forms.AutoSizeMode" /> values.</returns>
-        /// <exception cref="T:System.ComponentModel.InvalidEnumArgumentException">The specified value when setting this property is not a valid <see cref="T:System.Windows.Forms.AutoSizeMode" /> values.</exception>
-        [Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public override AutoSizeMode AutoSizeMode
-        {
-            get => AutoSizeMode.GrowOnly;
-            set => base.AutoSizeMode = AutoSizeMode.GrowOnly;
-        }*/
 
         /// <summary>
         /// Gets or sets a value that indicates whether the control resizes based on its contents.
@@ -414,8 +407,7 @@ namespace Gorgon.UI
                 }
 
                 int alphaValue = (int)(_opacity / 100.0 * 255.0);
-
-
+                
                 e.Graphics.DrawImage(backingImage, -Left, -Top);
                 using (var alphaBrush = new SolidBrush(Color.FromArgb(alphaValue, _overlayColor)))
                 {
@@ -435,6 +427,7 @@ namespace Gorgon.UI
         public GorgonOverlayPanel()
         {
             IsDesignTime = LicenseManager.UsageMode == LicenseUsageMode.Designtime;
+            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
             SetStyle(ControlStyles.ContainerControl, false);            
             InitializeComponent();

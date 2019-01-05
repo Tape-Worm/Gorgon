@@ -322,6 +322,18 @@ namespace Gorgon.Editor.ViewModels
         {
             IProject project;
 
+            // Check for content/project changes.
+            var args = new CancelEventArgs();
+            if ((CurrentProject?.BeforeCloseCommand != null) && (CurrentProject.BeforeCloseCommand.CanExecute(args)))
+            {
+                await CurrentProject.BeforeCloseCommand.ExecuteAsync(args);
+
+                if (args.Cancel)
+                {
+                    return;
+                }
+            }
+
             // Check for the existence of the directory.
             if (!path.Exists)
             {
@@ -401,7 +413,9 @@ namespace Gorgon.Editor.ViewModels
 
             _settings.LastProjectWorkingDirectory = project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
 
-            RecentItem dupe = RecentFiles.Files.FirstOrDefault(item => string.Equals(project.ProjectWorkSpace.FullName, item.FilePath, StringComparison.OrdinalIgnoreCase));
+            RecentItem dupe = RecentFiles.Files.FirstOrDefault(item => string.Equals(_settings.LastProjectWorkingDirectory, 
+                item.FilePath.FormatDirectory(Path.DirectorySeparatorChar), 
+                StringComparison.OrdinalIgnoreCase));
 
             if (dupe != null)
             {
@@ -488,6 +502,18 @@ namespace Gorgon.Editor.ViewModels
                 if ((target.Exists) && (target.GetFileSystemInfos().Length > 0))
                 {
                     if (_messageService.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_WORKSPACE_PATH_EXISTS, target.FullName)) == MessageResponse.No)
+                    {
+                        return;
+                    }
+                }
+
+                // Check for content/project changes.
+                var args = new CancelEventArgs();
+                if ((CurrentProject?.BeforeCloseCommand != null) && (CurrentProject.BeforeCloseCommand.CanExecute(args)))
+                {
+                    await CurrentProject.BeforeCloseCommand.ExecuteAsync(args);
+
+                    if (args.Cancel)
                     {
                         return;
                     }
@@ -715,7 +741,9 @@ namespace Gorgon.Editor.ViewModels
                 CurrentProject = await _viewModelFactory.CreateProjectViewModelAsync(project);
                 _settings.LastProjectWorkingDirectory = project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
 
-                RecentItem dupe = RecentFiles.Files.FirstOrDefault(item => string.Equals(item.FilePath, _settings.LastProjectWorkingDirectory, StringComparison.OrdinalIgnoreCase));
+                RecentItem dupe = RecentFiles.Files.FirstOrDefault(item => string.Equals(item.FilePath.FormatDirectory(Path.DirectorySeparatorChar), 
+                    _settings.LastProjectWorkingDirectory, 
+                    StringComparison.OrdinalIgnoreCase));
 
                 if (dupe != null)
                 {
@@ -743,6 +771,18 @@ namespace Gorgon.Editor.ViewModels
         {
             try
             {
+                // Check for content/project changes.
+                var args = new CancelEventArgs();
+                if ((CurrentProject?.BeforeCloseCommand != null) && (CurrentProject.BeforeCloseCommand.CanExecute(args)))
+                {
+                    await CurrentProject.BeforeCloseCommand.ExecuteAsync(args);
+
+                    if (args.Cancel)
+                    {
+                        return;
+                    }
+                }
+
                 await CreateProjectAsync(NewProject.WorkspacePath);
             }
             catch (Exception ex)
@@ -779,11 +819,16 @@ namespace Gorgon.Editor.ViewModels
                         Program.Log.LogException(ex);
                     }
                 }
-
+                
                 // Save the project if one is open.
-                if (CurrentProject != null)
+                if ((CurrentProject?.BeforeCloseCommand != null) && (CurrentProject.BeforeCloseCommand.CanExecute(args)))
                 {
-                    await CurrentProject.SaveProjectMetadataAsync();
+                    await CurrentProject.BeforeCloseCommand.ExecuteAsync(args);
+
+                    if (args.Cancel)
+                    {
+                        return;
+                    }
                 }
 
                 OnUnload();

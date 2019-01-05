@@ -24,12 +24,8 @@
 // 
 #endregion
 
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -42,7 +38,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
     /// The image content view model.
     /// </summary>
     internal interface IImageContent
-        : IEditorContent
+        : IEditorContent, IUndoHandler
     {
         #region Properties.
         /// <summary>
@@ -73,6 +69,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Property to return the command used to export an image.
         /// </summary>
         IEditorCommand<IGorgonImageCodec> ExportImageCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to convert the image pixel format.
+        /// </summary>
+        IEditorCommand<BufferFormat> ConvertFormatCommand
         {
             get;
         }

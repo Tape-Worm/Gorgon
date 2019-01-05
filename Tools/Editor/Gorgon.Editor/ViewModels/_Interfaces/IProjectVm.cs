@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -127,6 +128,14 @@ namespace Gorgon.Editor.ViewModels
         /// Property to return the current content for the project.
         /// </summary>
         IEditorContent CurrentContent
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command to execute when the project is closing.
+        /// </summary>
+        IEditorAsyncCommand<CancelEventArgs> BeforeCloseCommand
         {
             get;
         }

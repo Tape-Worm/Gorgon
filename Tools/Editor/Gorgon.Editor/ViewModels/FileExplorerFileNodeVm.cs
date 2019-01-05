@@ -34,7 +34,6 @@ using Gorgon.Editor.Properties;
 using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Metadata;
-using System.Collections.Generic;
 using System.Linq;
 using Gorgon.Diagnostics;
 
@@ -657,8 +656,23 @@ namespace Gorgon.Editor.ViewModels
         /// <returns>A stream containing the file data.</returns>
         Stream IContentFile.OpenRead() => File.Open(PhysicalPath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
+        /// <summary>
+        /// Function to open the file for writing.
+        /// </summary>
+        /// <param name="append">[Optional] <b>true</b> to append data to the end of the file, or <b>false</b> to overwrite.</param>
+        /// <returns>A stream to write the file data into.</returns>
+        Stream IContentFile.OpenWrite(bool append) => File.Open(PhysicalPath, append ? FileMode.Append : FileMode.Create, FileAccess.Write, FileShare.None);
+
+
         /// <summary>Function to notify that the metadata should be refreshed.</summary>
         void IContentFile.RefreshMetadata() => NotifyPropertyChanged(nameof(Metadata));
+
+        /// <summary>Function called to refresh the underlying data for the node.</summary>
+        void IContentFile.Refresh()
+        {
+            Refresh();
+            NotifyPropertyChanged(nameof(Metadata));
+        }
 
         /// <summary>
         /// Function to retrieve the size of the data on the physical file system.

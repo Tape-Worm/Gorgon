@@ -227,7 +227,7 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
     <value>Cannot copy because these formats: [{0}] and [{1}] cannot be converted. Or, the device does not support format conversion.</value>
   </data>
   <data name="GORGFX_ERR_TEXTURE_IS_DYNAMIC_OR_IMMUTABLE" xml:space="preserve">
-    <value>Cannot update a textures that have a usage of [Dynamic] or [Immutable].</value>
+    <value>Cannot update textures that have a usage of [Dynamic] or [Immutable].</value>
   </data>
   <data name="GORGFX_ERR_TEXTURE_NOT_SAME_TYPE" xml:space="preserve">
     <value>The texure '{0}' is a [{1}] and cannot be copied to or from the type [{2}].</value>
@@ -653,5 +653,8 @@ Current binding: [{0}]</value>
   </data>
   <data name="GORGFX_ERR_INPUT_BOUND_AS_UAV" xml:space="preserve">
     <value>The resource '{0}' is already bound to the pipeline as a read/write resource.</value>
+  </data>
+  <data name="GORGFX_ERR_BACKBUFFER_USAGE_INVALID" xml:space="preserve">
+    <value>The back buffer texture usage must be either [Default] or [Staging].</value>
   </data>
 </root>

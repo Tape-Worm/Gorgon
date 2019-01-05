@@ -39,6 +39,7 @@ using Gorgon.Native;
 using SharpDX.DXGI;
 using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
+using Gorgon.Graphics.Imaging;
 
 namespace Gorgon.Graphics.Core
 {
@@ -363,10 +364,8 @@ namespace Gorgon.Graphics.Core
         /// <param name="control">The control owned by the form.</param>
         /// <returns>The form that owns the control.</returns>
         private Form FindForm(Control control)
-        {            
-            var result = control as Form;
-
-            if (result != null)
+        {
+            if (control is Form result)
             {
                 return result;
             }
@@ -1054,6 +1053,59 @@ namespace Gorgon.Graphics.Core
 
 			Graphics.Log.Print($"SwapChain '{Name}': Back buffers resized.", LoggingLevel.Verbose);
 		}
+
+        /// <summary>
+        /// Function to capture the back buffer data and place it into a new texture.
+        /// </summary>
+        /// <param name="usage">The intended usage for the texture.</param>
+        /// <param name="binding">The binding mode for the texture.</param>
+        /// <returns>The new texture.</returns>
+        /// <exception cref="GorgonException">Thrown when the <paramref name="usage"/> parameter is not <see cref="ResourceUsage.Default"/>, or <see cref="ResourceUsage.Staging"/>.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method creates a copy of whatever is in the back buffer for the swap chain, and places that data into a new <see cref="GorgonTexture2D"/>. 
+        /// </para>
+        /// <para>
+        /// Applications can define the <paramref name="usage"/> and <paramref name="binding"/> of the resulting texture so that the texture data can be displayed as a texture when rendering, or used as 
+        /// a staging texture.  If the <paramref name="usage"/> parameter is not <see cref="ResourceUsage.Default"/>, or <see cref="ResourceUsage.Staging"/>, then an exception will be thrown.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonTexture2D"/>
+        public GorgonTexture2D CopyBackBufferToTexture(ResourceUsage usage, TextureBinding binding)
+        {
+            if ((usage != ResourceUsage.Default) && (usage != ResourceUsage.Staging))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_BACKBUFFER_USAGE_INVALID);
+            }
+
+            var texture = new GorgonTexture2D(Graphics, new GorgonTexture2DInfo(_backBufferTextures[0], $"{Name} - Backbuffer copy")
+            {
+                Usage = usage,
+                Binding = binding
+            });
+
+            _backBufferTextures[0].CopyTo(texture);
+
+            return texture;
+        }
+
+        /// <summary>
+        /// Function to capture the back buffer data and place it into a <see cref="IGorgonImage"/>.
+        /// </summary>
+        /// <returns>A new <see cref="IGorgonImage"/> that will contain the back buffer data.</returns>
+        /// <remarks>
+        /// <para>
+        /// This method is similar to the <see cref="CopyBackBufferToTexture"/> method, but will instead copy the back buffer data into a <see cref="IGorgonImage"/>.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="IGorgonImage"/>
+        public IGorgonImage CopyBackBufferToImage()
+        {
+            using (GorgonTexture2D texture = CopyBackBufferToTexture(ResourceUsage.Staging, TextureBinding.None))
+            {
+                return texture.ToImage();
+            }
+        }
 
         /// <summary>
         /// Function to flip the buffers to the front buffer.

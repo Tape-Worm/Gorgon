@@ -53,35 +53,40 @@
     <Compile Include="..\..\Gorgon\Gorgon.Core\SharedAssemblyInfo.cs">
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="FormRibbon.cs">
+    <Compile Include="_Internal\Forms\FormRibbon.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormRibbon.Designer.cs">
+    <Compile Include="_Internal\Forms\FormRibbon.Designer.cs">
       <DependentUpon>FormRibbon.cs</DependentUpon>
     </Compile>
-    <Compile Include="ImageImporterSettings.cs" />
+    <Compile Include="_Internal\ImageImporterSettings.cs" />
     <Compile Include="ImageImporterPlugin.cs" />
-    <Compile Include="Services\DdsImageImporter.cs" />
-    <Compile Include="TexConvCompressor.cs" />
-    <Compile Include="ViewModels\ImageContentParameters.cs" />
-    <Compile Include="ImageEditorCommonConstants.cs" />
+    <Compile Include="_Internal\Services\ExportImageDialogService.cs" />
+    <Compile Include="_Internal\Services\ImageEditorServices.cs" />
+    <Compile Include="_Internal\Services\_Interfaces\IExportImageDialogService.cs" />
+    <Compile Include="_Internal\Services\_Interfaces\IImageIOService.cs" />
+    <Compile Include="_Internal\Services\ImageIOService.cs" />
+    <Compile Include="_Internal\Services\DdsImageImporter.cs" />
+    <Compile Include="_Internal\Services\TexConvCompressor.cs" />
+    <Compile Include="_Internal\ViewModels\ImageContentParameters.cs" />
+    <Compile Include="_Internal\ImageEditorCommonConstants.cs" />
     <Compile Include="ImageEditorPlugin.cs" />
-    <Compile Include="ImageEditorSettings.cs" />
+    <Compile Include="_Internal\ImageEditorSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\ImageContent.cs" />
-    <Compile Include="ImageEditorView.cs">
+    <Compile Include="_Internal\ViewModels\ImageContent.cs" />
+    <Compile Include="_Internal\Views\ImageEditorView.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ImageEditorView.Designer.cs">
+    <Compile Include="_Internal\Views\ImageEditorView.Designer.cs">
       <DependentUpon>ImageEditorView.cs</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\_Interfaces\IImageContent.cs" />
-    <Compile Include="ZoomLevels.cs" />
+    <Compile Include="_Internal\ViewModels\_Interfaces\IImageContent.cs" />
+    <Compile Include="_Internal\ZoomLevels.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
@@ -117,20 +122,20 @@
     <None Include="Resources\image_16x16.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="FormRibbon.resx">
+    <EmbeddedResource Include="_Internal\Forms\FormRibbon.resx">
       <DependentUpon>FormRibbon.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="ImageEditorView.resx">
+    <EmbeddedResource Include="_Internal\Views\ImageEditorView.resx">
       <DependentUpon>ImageEditorView.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="KryptonToolkitSuite5470">
-      <Version>5.470.701</Version>
+      <Version>5.470.716</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.1</Version>
@@ -185,6 +190,9 @@
       <Project>{695a6554-789a-4d5a-9de1-21fb621f6a8f}</Project>
       <Name>Gorgon.Editor.API</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="_Interfaces\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

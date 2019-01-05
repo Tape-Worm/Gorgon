@@ -110,12 +110,20 @@ namespace Gorgon.Editor.Content
         /// <returns>A stream containing the file data.</returns>
         Stream OpenRead();
 
-        // TODO: OpenWrite so we can send data back out.
+        /// <summary>
+        /// Function to open the file for writing.
+        /// </summary>
+        /// <param name="append">[Optional] <b>true</b> to append data to the end of the file, or <b>false</b> to overwrite.</param>
+        /// <returns>A stream to write the file data into.</returns>
+        Stream OpenWrite(bool append = false);
 
         /// <summary>
         /// Function to notify that the metadata should be refreshed.
         /// </summary>
         void RefreshMetadata();
+
+        /// <summary>Function called to refresh the information about the file.</summary>
+        void Refresh();
         #endregion
     }
 }

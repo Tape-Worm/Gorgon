@@ -1342,21 +1342,19 @@ namespace Gorgon.Graphics.Imaging
 			                    {
 			                        // Create a WIC bitmap so we have a source for conversion.
 			                        bitmap = new Bitmap(_factory, srcBuffer.Width, srcBuffer.Height, sourceFormat, rect, srcBuffer.PitchInformation.SlicePitch);
-			                        BitmapSource converterSource = formatConverter = GetFormatConverter(bitmap, destFormat, dithering, null, 0);
 
-			                        // If we have an sRgb conversion, then apply that after converting formats.
-			                        if ((isSrcSRgb) || (isDestSRgb))
-			                        {
-			                            converterSource =
-			                                sRgbConverter = GetSRgbTransform(formatConverter,
-			                                                                 destFormat,
-			                                                                 isSrcSRgb,
-			                                                                 isDestSRgb,
-			                                                                 out srcColorContext,
-			                                                                 out destColorContext);
-			                        }
+                                    // If we have an sRgb conversion, then apply that after converting formats.
+                                    if ((isSrcSRgb) || (isDestSRgb))
+                                    {
+                                        sRgbConverter = GetSRgbTransform(bitmap, isDestSRgb ? destFormat : sourceFormat, isSrcSRgb, isDestSRgb, out srcColorContext, out destColorContext);
+                                        formatConverter = GetFormatConverter(sRgbConverter, destFormat, dithering, null, 0);
+                                    }
+                                    else
+                                    {
+                                        formatConverter = GetFormatConverter(bitmap, destFormat, dithering, null, 0);
+                                    }
 
-			                        converterSource.CopyPixels(destBuffer.PitchInformation.RowPitch,
+			                        formatConverter.CopyPixels(destBuffer.PitchInformation.RowPitch,
 			                                                   new IntPtr((void *)destBuffer.Data),
 			                                                   destBuffer.PitchInformation.SlicePitch);
 			                    }

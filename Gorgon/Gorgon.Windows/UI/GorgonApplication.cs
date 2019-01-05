@@ -183,38 +183,27 @@ namespace Gorgon.UI
 		/// <seealso cref="Application.OpenForms"/>
 		public static FormCollection OpenForms => Application.OpenForms;
 
-		/// <summary>
-		/// Property to return if the application is running in the foreground or background.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This determines whether the <see cref="MainForm"/> is focused (i.e. a top level, active window). It does this by ensuring the <see cref="Form.WindowState"/> is not set to 
-		/// <see cref="FormWindowState.Minimized"/>, and the window, or one of its child controls, currently has input focus.
-		/// </para>
-		/// <para>
-		/// If the <see cref="AllowBackground"/> property is set to <b>true</b>, then this property will always return <b>true</b>. 
-		/// </para>
-		/// <para>
-		/// If no <see cref="MainForm"/> is assigned, then this property will always return <b>false</b>. 
-		/// </para>
-		/// </remarks>
-		public static bool IsForeground
-		{
-			get
-			{
-				if (MainForm == null)
-				{
-					return false;
-				}
+        /// <summary>
+        /// Property to return if the application is running in the foreground or background.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This determines whether the <see cref="MainForm"/> is focused (i.e. a top level, active window). It does this by ensuring the <see cref="Form.WindowState"/> is not set to 
+        /// <see cref="FormWindowState.Minimized"/>, and the window, or one of its child controls, currently has input focus.
+        /// </para>
+        /// <para>
+        /// If the <see cref="AllowBackground"/> property is set to <b>true</b>, then this property will always return <b>true</b>. 
+        /// </para>
+        /// <para>
+        /// If no <see cref="MainForm"/> is assigned, then this property will always return <b>false</b>. 
+        /// </para>
+        /// </remarks>
+        public static bool IsForeground => MainForm == null ? false : (MainForm.WindowState != FormWindowState.Minimized) && (MainForm.ContainsFocus);
 
-			    return (MainForm.WindowState != FormWindowState.Minimized) && (MainForm.ContainsFocus);
-			}
-		}
-
-		/// <summary>
-		/// Property to return the ID of the application UI thread.
-		/// </summary>
-		public static int ThreadID
+        /// <summary>
+        /// Property to return the ID of the application UI thread.
+        /// </summary>
+        public static int ThreadID
 		{
 			get;
 		}

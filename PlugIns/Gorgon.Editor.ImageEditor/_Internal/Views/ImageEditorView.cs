@@ -25,20 +25,15 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using DX = SharpDX;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Core;
-using Gorgon.Renderers;
 using Gorgon.Editor.Rendering;
 using System.Diagnostics;
 using Gorgon.Math;
@@ -100,7 +95,8 @@ namespace Gorgon.Editor.ImageEditor
         {
             switch (e.PropertyName)
             {
-                case nameof(IImageContent.ContentState):
+                case nameof(IImageContent.ContentState):                    
+                    return;
                 case nameof(IImageContent.File):
                     // This only matters when we save, so there's no real visual update.
                     return;
@@ -246,10 +242,17 @@ namespace Gorgon.Editor.ImageEditor
             UpdateZoomMenu();
         }
 
+        /// <summary>Handles the RenderToBitmap event of the PanelImage control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PaintEventArgs"/> instance containing the event data.</param>
+        private void PanelImage_RenderToBitmap(object sender, PaintEventArgs e) => RenderSwapChainToBitmap(e.Graphics);
+
         /// <summary>Raises the <a href="http://msdn.microsoft.com/en-us/library/system.windows.forms.control.paint.aspx" target="_blank">Paint</a> event.</summary>
         /// <param name="e">A <a href="http://msdn.microsoft.com/en-us/library/system.windows.forms.painteventargs.aspx" target="_blank">PaintEventArgs</a> that contains the event data.</param>
         protected override void OnPaint(PaintEventArgs e)
         {
+            base.OnPaint(e);
+
             if (IsDesignTime)
             {
                 return;
@@ -495,6 +498,11 @@ namespace Gorgon.Editor.ImageEditor
 
             DataContext = dataContext;
             _ribbonForm.SetDataContext(dataContext);
+
+            if (DataContext == null)
+            {
+                return;
+            }
         }
         #endregion
 
@@ -505,7 +513,7 @@ namespace Gorgon.Editor.ImageEditor
             InitializeComponent();
 
             _ribbonForm = new FormRibbon();
-            Ribbon = _ribbonForm.RibbonImageContent;            
+            Ribbon = _ribbonForm.RibbonImageContent;
         }
         #endregion
     }

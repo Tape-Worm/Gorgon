@@ -75,8 +75,6 @@ namespace Gorgon.Editor
         private ContentPluginService _contentPlugins;
         // The plugin service used to manage content import plugins.
         private ContentImporterPluginService _contentImporterPlugins;
-        // Provides undo functionality to the application.
-        private UndoService _undoService;
         #endregion
 
         #region Properties.
@@ -403,8 +401,6 @@ namespace Gorgon.Editor
 
                 // Create the project manager for the application
                 _projectManager = new ProjectManager(fileSystemProviders);
-
-                _undoService = new UndoService(Program.Log);
                 
                 _mainForm = new FormMain
                             {
@@ -422,7 +418,6 @@ namespace Gorgon.Editor
                                                    _contentPlugins,
                                                    _contentImporterPlugins,
                                                    _projectManager,
-                                                   _undoService,
                                                    new MessageBoxService(),
                                                    new WaitCursorBusyState(),
                                                    new ClipboardService(),

@@ -97,6 +97,69 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to load external image codec plug ins.
+        /// </summary>
+        private void LoadCodecPlugins()
+        {
+            if (_settings.CodecPluginPaths.Count == 0)
+            {
+                return;
+            }
+
+            Log.Print("Loading image codecs...", LoggingLevel.Intermediate);
+
+            foreach (KeyValuePair<string, string> plugin in _settings.CodecPluginPaths)
+            {
+                Log.Print($"Loading '{plugin.Key}' from '{plugin.Value}'...", LoggingLevel.Verbose);
+
+                var file = new FileInfo(plugin.Value);
+
+                if (!file.Exists)
+                {
+                    Log.Print($"ERROR: Could not find the plug in assembly '{plugin.Value}' for plug in '{plugin.Key}'.", LoggingLevel.Simple);
+                    continue;
+                }
+
+                _pluginCache.LoadPluginAssemblies(file.DirectoryName, file.Name);
+            }
+
+            IGorgonPluginService plugins = new GorgonMefPluginService(_pluginCache, Log);
+
+            // Load all the codecs contained within the plug in (a plug in can have multiple codecs).
+            foreach (GorgonImageCodecPlugin plugin in plugins.GetPlugins<GorgonImageCodecPlugin>())
+            {
+                foreach (GorgonImageCodecDescription desc in plugin.Codecs)
+                {
+                    _codecList.Add(plugin.CreateCodec(desc.Name));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Function to retrieve the path to the texture converted used to convert compressed images.
+        /// </summary>
+        /// <returns>The file info for the texture converter file.</returns>
+        private FileInfo GetTexConvExe()
+        {
+            FileInfo result;
+
+            // The availability of texconv.exe determines whether or not we can use block compressed formats or not.
+            Log.Print("Checking for texconv.exe...", LoggingLevel.Simple);
+            var pluginDir = new DirectoryInfo(Path.GetDirectoryName(GetType().Assembly.Location));
+            result = new FileInfo(Path.Combine(pluginDir.FullName, "texconv.exe"));
+
+            if (!result.Exists)
+            {
+                Log.Print($"WARNING: Texconv.exe was not found at {pluginDir.FullName}. Block compressed formats will be unavailable.", LoggingLevel.Simple);
+            }
+            else
+            {
+                Log.Print($"Found texconv.exe at '{result.FullName}'.", LoggingLevel.Simple);
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Function to load the image to be used a thumbnail.
@@ -147,17 +210,15 @@ namespace Gorgon.Editor.ImageEditor
         private bool UpdateFileMetadataAttributes(Dictionary<string, string> attributes)
         {
             bool needsRefresh = false;
-            string currentCodecType;
-            string currentContentType;
 
-            if ((attributes.TryGetValue(ImageContent.CodecAttr, out currentCodecType))
+            if ((attributes.TryGetValue(ImageContent.CodecAttr, out string currentCodecType))
                 && (!string.IsNullOrWhiteSpace(currentCodecType)))
             {
                 attributes.Remove(ImageContent.CodecAttr);
                 needsRefresh = true;
             }
 
-            if ((attributes.TryGetValue(ImageContent.ContentTypeAttr, out currentContentType))
+            if ((attributes.TryGetValue(ImageContent.ContentTypeAttr, out string currentContentType))
                 && (string.Equals(currentContentType, ImageEditorCommonConstants.ContentType, StringComparison.OrdinalIgnoreCase)))
             {
                 attributes.Remove(ImageContent.ContentTypeAttr);
@@ -185,27 +246,59 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Function to register plug in specific search keywords with the system search.</summary>
         /// <typeparam name="T">The type of object being searched, must implement <see cref="T:Gorgon.Core.IGorgonNamedObject"/>.</typeparam>
         /// <param name="searchService">The search service to use for registration.</param>
-        protected override void OnRegisterSearchKeywords<T>(ISearchService<T> searchService)
-        {
-            searchService.MapKeywordToContentAttribute(Resources.GORIMG_SEARCH_KEYWORD_CODEC, ImageContent.CodecAttr);
-        }
+        protected override void OnRegisterSearchKeywords<T>(ISearchService<T> searchService) => searchService.MapKeywordToContentAttribute(Resources.GORIMG_SEARCH_KEYWORD_CODEC, ImageContent.CodecAttr);
 
         /// <summary>Function to open a content object from this plugin.</summary>
         /// <param name="file">The file that contains the content.</param>
-        /// <param name="scratchAreaDirectory">The directory for the temporary working directory.</param>
+        /// <param name="injector">Parameters for injecting dependency objects.</param>
+        /// <param name="scratchArea">The file system for the scratch area used to write transitory information.</param>
+        /// <param name="undoService">The undo service for the plug in.</param>
         /// <returns>A new IEditorContent object.</returns>
-        protected async override Task<IEditorContent> OnOpenContentAsync(IContentFile file, IViewModelInjection injector, IGorgonFileSystemWriter<Stream> scratchArea)
+        /// <remarks>
+        /// The <paramref name="scratchArea" /> parameter is the file system where temporary files to store transitory information for the plug in is stored. This file system is destroyed when the
+        /// application or plug in is shut down, and is not stored with the project.
+        /// </remarks>
+        protected async override Task<IEditorContent> OnOpenContentAsync(IContentFile file, IViewModelInjection injector, IGorgonFileSystemWriter<Stream> scratchArea, IUndoService undoService)
         {
-            IGorgonImage image = await Task.Run(() => 
+            FileInfo texConvExe = GetTexConvExe();
+            TexConvCompressor compressor = null;
+
+            if (texConvExe.Exists)
             {
-                using (Stream stream = file.OpenRead())
+                compressor = new TexConvCompressor(texConvExe, scratchArea, _ddsCodec);
+            }
+
+            var imageIO = new ImageIOService(_ddsCodec, 
+                _codecList,
+                new ExportImageDialogService(_settings), 
+                injector.BusyService, 
+                scratchArea, 
+                compressor, 
+                injector.Log);
+
+#pragma warning disable IDE0007 // Use implicit type (What the fuck?  How is this "implicit"!?)
+            (IGorgonImage image, IGorgonVirtualFile workingFile, BufferFormat originalFormat) imageData = await Task.Run(() => {
+                using (Stream inStream = file.OpenRead())
                 {
-                    return _ddsCodec.LoadFromStream(stream);
+                    return imageIO.LoadImageFile(inStream, file.Name);
                 }
             });
-                        
+#pragma warning restore IDE0007 // Use implicit type
+
+            var services = new ImageEditorServices
+            {
+                BusyState = injector.BusyService,
+                MessageDisplay = injector.MessageDisplay,
+                ImageIO = imageIO,
+                UndoService = undoService
+            };
+
             var content = new ImageContent();
-            content.Initialize(new ImageContentParameters(file, _settings, image, _codecList, _ddsCodec, GraphicsContext.Graphics.FormatSupport, scratchArea, injector));
+            content.Initialize(new ImageContentParameters(file,
+                _settings,
+                imageData,
+                GraphicsContext.Graphics.FormatSupport,
+                services));
 
             return content;
         }
@@ -237,45 +330,6 @@ namespace Gorgon.Editor.ImageEditor
             ViewFactory.Unregister<IImageContent>();
 
             base.OnShutdown();
-        }
-
-        /// <summary>
-        /// Function to load external image codec plug ins.
-        /// </summary>
-        private void LoadCodecPlugins()
-        {
-            if (_settings.CodecPluginPaths.Count == 0)
-            {
-                return;
-            }
-
-            Log.Print("Loading image codecs...", LoggingLevel.Intermediate);
-
-            foreach (KeyValuePair<string, string> plugin in _settings.CodecPluginPaths)
-            {
-                Log.Print($"Loading '{plugin.Key}' from '{plugin.Value}'...", LoggingLevel.Verbose);
-
-                var file = new FileInfo(plugin.Value);
-
-                if (!file.Exists)
-                {
-                    Log.Print($"ERROR: Could not find the plug in assembly '{plugin.Value}' for plug in '{plugin.Key}'.", LoggingLevel.Simple);
-                    continue;
-                }
-
-                _pluginCache.LoadPluginAssemblies(file.DirectoryName, file.Name);
-            }
-
-            IGorgonPluginService plugins = new GorgonMefPluginService(_pluginCache, Log);
-
-            // Load all the codecs contained within the plug in (a plug in can have multiple codecs).
-            foreach (GorgonImageCodecPlugin plugin in plugins.GetPlugins<GorgonImageCodecPlugin>())
-            {
-                foreach (GorgonImageCodecDescription desc in plugin.Codecs)
-                {
-                    _codecList.Add(plugin.CreateCodec(desc.Name));                    
-                }                
-            }
         }
 
         /// <summary>Function to provide initialization for the plugin.</summary>

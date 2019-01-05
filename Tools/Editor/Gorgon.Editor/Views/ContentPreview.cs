@@ -49,6 +49,7 @@ using System.Diagnostics;
 using Gorgon.Core;
 using Gorgon.Math;
 using Gorgon.Graphics.Fonts;
+using Gorgon.Graphics.Imaging.GdiPlus;
 
 namespace Gorgon.Editor.Views
 {
@@ -233,6 +234,43 @@ namespace Gorgon.Editor.Views
             UpdateImageTexture(dataContext.PreviewImage);
         }
 
+        /// <summary>Handles the RenderToBitmap event of the PanelDisplay control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PaintEventArgs"/> instance containing the event data.</param>
+        private void PanelDisplay_RenderToBitmap(object sender, PaintEventArgs e)
+        {
+            if ((IsDesignTime) || (_swapChain == null))
+            {
+                return;
+            }
+
+            // This method is used to capture the D3D rendering when rendering to a GDI+ bitmap (as used by the overlay).
+            // Without it, no image is rendered and only a dark grey background is visible.
+
+            IGorgonImage swapBufferImage = null;
+            Bitmap gdiBitmap = null;
+
+            try
+            {
+                RenderImage();
+
+                swapBufferImage = _swapChain.CopyBackBufferToImage();
+                gdiBitmap = swapBufferImage.Buffers[0].ToBitmap();
+                swapBufferImage.Dispose();
+
+                e.Graphics.DrawImage(gdiBitmap, new Point(0, 0));
+            }
+            catch
+            {
+                // Empty on purpose.  Don't need to worry about exceptions here, if things fail, they fail and state should not be corrupted.
+            }
+            finally
+            {
+                gdiBitmap?.Dispose();
+                swapBufferImage?.Dispose();
+            }
+        }
+
         /// <summary>
         /// Function to render the image into the preview area.
         /// </summary>
@@ -342,7 +380,7 @@ namespace Gorgon.Editor.Views
             SetStyle(ControlStyles.ResizeRedraw, true);
 
             InitializeComponent();
-        }        
+        }
         #endregion
     }
 }

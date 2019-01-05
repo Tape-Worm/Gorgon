@@ -235,7 +235,7 @@ namespace Gorgon.Editor.Services
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.Services.UndoService"/> class.</summary>
         /// <param name="log">The log used for debug messaging.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="log" /> parameter is <strong>null</strong>.</exception>
-        public UndoService(IGorgonLog log) => _log = log ?? throw new ArgumentNullException(nameof(log));
+        public UndoService(IGorgonLog log) => _log = log ?? GorgonLog.NullLog;
         #endregion
     }
 }

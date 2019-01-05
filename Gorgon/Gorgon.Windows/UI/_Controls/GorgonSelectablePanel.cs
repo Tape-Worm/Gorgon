@@ -31,7 +31,7 @@ using System.Windows.Forms;
 using Gorgon.Design;
 using Gorgon.Windows.Properties;
 
-namespace Gorgon.UI
+namespace Gorgon.Windows.UI
 {
 	/// <summary>
 	/// A <see cref="Panel"/> that can receive keyboard focus.
@@ -53,25 +53,34 @@ namespace Gorgon.UI
 			MouseWheel = 0x020A
 		}
 		#endregion
+
 		#region Variables.
 		// Show focus flag.
 		private bool _showFocus = true;
 		// Flag to indicate that the panel is resizing.
-		private bool _resizing;	
-		#endregion
+		private bool _resizing;
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Gets or sets a value indicating whether the user can give the focus to this control using the TAB key.
-		/// </summary>
-		/// <returns>true if the user can give the focus to the control using the TAB key; otherwise, false. The default is false.</returns>
-		///   <PermissionSet>
-		///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
-		///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
-		///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence" />
-		///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
-		///   </PermissionSet>
-		[Browsable(true), LocalDescription(typeof(Resources), nameof(Resources.PROP_TABSTOP_DESC)), LocalCategory(typeof(Resources), nameof(Resources.PROP_CATEGORY_DESIGN)), DefaultValue(true)]
+        #region Events.
+        /// <summary>
+        /// Event triggered when drawing this control to a bitmap.
+        /// </summary>
+        [Category("Appearance"), Description("Event triggered when this control is rendered to a bitmap, or printed.")]
+        public event EventHandler<PaintEventArgs> RenderToBitmap;
+        #endregion
+
+        #region Properties.
+        /// <summary>
+        /// Gets or sets a value indicating whether the user can give the focus to this control using the TAB key.
+        /// </summary>
+        /// <returns>true if the user can give the focus to the control using the TAB key; otherwise, false. The default is false.</returns>
+        ///   <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   </PermissionSet>
+        [Browsable(true), LocalDescription(typeof(Resources), nameof(Resources.PROP_TABSTOP_DESC)), LocalCategory(typeof(Resources), nameof(Resources.PROP_CATEGORY_DESIGN)), DefaultValue(true)]
 		public new bool TabStop
 		{
 			get => base.TabStop;
@@ -96,14 +105,24 @@ namespace Gorgon.UI
 				Invalidate();
 			}
 		}
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Raises the <see cref="Control.Enter" /> event.
-		/// </summary>
-		/// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
-		protected override void OnEnter(EventArgs e)
+        #region Methods.        
+        /// <summary>Raises the <see cref="RenderToBitmap"/> event.</summary>
+        /// <param name="e">A <see cref="T:System.Windows.Forms.PaintEventArgs"/> that contains the event data.</param>
+        protected override void OnPrint(PaintEventArgs e)
+        {
+            base.OnPrint(e);
+
+            EventHandler<PaintEventArgs> handler = RenderToBitmap;
+            handler?.Invoke(this, e);
+        }
+
+        /// <summary>
+        /// Raises the <see cref="Control.Enter" /> event.
+        /// </summary>
+        /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+        protected override void OnEnter(EventArgs e)
 		{
 			Invalidate();
 			base.OnEnter(e);
