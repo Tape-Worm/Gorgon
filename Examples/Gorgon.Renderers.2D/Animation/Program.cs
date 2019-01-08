@@ -39,7 +39,7 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.UI;
-using WMPLib;
+using System.Threading.Tasks;
 
 namespace Gorgon.Examples
 {
@@ -74,7 +74,9 @@ namespace Gorgon.Examples
         // The batch state for drawing our render target.
         private static Gorgon2DBatchState _targetBatchState;
         // Player for our mp3.
-        private static readonly WindowsMediaPlayer _mp3Player = new WindowsMediaPlayer();
+        private static readonly AudioPlayback _mp3Player = new AudioPlayback();
+        // The task used while playing audio.
+        private static Task _audioTask;
         #endregion
 
         #region Methods.
@@ -265,8 +267,6 @@ namespace Gorgon.Examples
                                                        .DestinationBlend(alpha: Blend.DestinationAlpha)
                                                        .Build())
                                            .Build();
-
-                _mp3Player.URL = Path.Combine(GorgonExample.ResourceBaseDirectory.FullName, "AnimationExample.mp3");
                 
                 return window;
             }
@@ -274,6 +274,19 @@ namespace Gorgon.Examples
             {
                 GorgonExample.EndInit();
             }
+        }
+
+        /// <summary>
+        /// Function to begin audio playback.
+        /// </summary>
+        private static async void PlayAudio()
+        {
+            if (_audioTask != null)
+            {
+                await _audioTask;                
+            }
+
+            _audioTask = _mp3Player.PlayMp3Async(Path.Combine(GorgonExample.ResourceBaseDirectory.FullName, "AnimationExample.xwma"));
         }
 
         /// <summary>
@@ -285,9 +298,9 @@ namespace Gorgon.Examples
             // Set the initial background color, we won't be clearing again...
             _screen.RenderTargetView.Clear(GorgonColor.CornFlowerBlue);
 
-            if (_mp3Player.playState == WMPPlayState.wmppsStopped)
+            if (!_mp3Player.IsPlaying)
             {
-                _mp3Player.controls.play();
+                PlayAudio();
             }
 
             if (_animController.CurrentAnimation == null)
@@ -331,6 +344,11 @@ namespace Gorgon.Examples
                 Application.SetCompatibleTextRenderingDefault(false);
 
                 GorgonApplication.Run(Initialize(), Idle);
+
+                if (_mp3Player != null)
+                {
+                    _mp3Player.Stop();
+                }
             }
             catch (Exception ex)
             {
@@ -340,7 +358,7 @@ namespace Gorgon.Examples
             {
                 GorgonExample.UnloadResources();
 
-                _mp3Player.controls.stop();
+                _mp3Player.Dispose();
                 _renderer?.Dispose();
                 _trooper?.Dispose();
                 _metal?.Dispose();
