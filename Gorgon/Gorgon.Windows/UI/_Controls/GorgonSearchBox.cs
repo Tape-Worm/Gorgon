@@ -102,21 +102,6 @@ namespace Gorgon.Windows.UI
             OnGotFocus(EventArgs.Empty);
         }
 
-        /// <summary>Handles the Leave event of the TextSearch control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void TextSearch_Leave(object sender, EventArgs e)
-        {
-            if (ButtonClearSearch.Focused)
-            {
-                return;
-            }
-
-            OnSearch(new GorgonSearchEventArgs(TextSearch.Text));
-            ButtonClearSearch.Visible = TextSearch.Text.Length > 0;
-            OnLostFocus(EventArgs.Empty);
-        }
-
         /// <summary>
         /// Function to trigger to the <see cref="Search"/> event.
         /// </summary>

@@ -1223,11 +1223,29 @@ namespace Gorgon.Editor.ViewModels
                 SelectedNode = null;
 
                 NotifyPropertyChanging(nameof(SearchResults));
-                _searchResults = _searchSystem.Search(searchText)?.ToList();                
+                if (string.IsNullOrWhiteSpace(searchText))
+                {
+                    _searchResults = null;
+                }
+                else
+                {
+                    _searchResults = _searchSystem.Search(searchText)?.ToList();
+                }                
                 NotifyPropertyChanged(nameof(SearchResults));
 
                 if ((selected != null) && ((_searchResults == null) || (_searchResults.Contains(selected))))
                 {
+                    if ((!selected.AllowChildCreation) && (!selected.Parent.IsExpanded))
+                    {
+                        IFileExplorerNodeVm parent = selected.Parent;
+
+                        while (parent != null)
+                        {
+                            parent.IsExpanded = true;
+                            parent = parent.Parent;
+                        }                        
+                    }
+
                     SelectedNode = selected;
                 }
             }
@@ -1724,13 +1742,13 @@ namespace Gorgon.Editor.ViewModels
         /// Function to return whether or not the item can use the cut functionality for the clipboard.
         /// </summary>
         /// <returns><b>true</b> if the clipboard handler can cut an item, <b>false</b> if not.</returns>
-        bool IClipboardHandler.CanCut() => (SelectedNode != null) && (SelectedNode.AllowDelete);
+        bool IClipboardHandler.CanCut() => (SelectedNode != null) && (SelectedNode.AllowDelete) && (SearchResults?.Count == 0);
 
         /// <summary>
         /// Function to return whether or not the item can use the copy functionality for the clipboard.
         /// </summary>
         /// <returns><b>true</b> if the clipboard handler can copy an item, <b>false</b> if not.</returns>
-        bool IClipboardHandler.CanCopy() => SelectedNode != null;
+        bool IClipboardHandler.CanCopy() => SelectedNode != null && (SearchResults?.Count == 0);
 
         /// <summary>
         /// Function to return whether or not the item can use the paste functionality for the clipboard.

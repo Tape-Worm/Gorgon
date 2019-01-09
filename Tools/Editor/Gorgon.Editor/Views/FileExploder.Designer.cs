@@ -297,8 +297,7 @@
             this.TextSearch.Name = "TextSearch";
             this.TextSearch.Size = new System.Drawing.Size(600, 24);
             this.TextSearch.TabIndex = 2;
-            this.TextSearch.Search += new System.EventHandler<Gorgon.Windows.UI.GorgonSearchEventArgs>(this.TextSearch_Search);
-            this.TextSearch.Leave += new System.EventHandler(this.TextSearch_Leave);
+            this.TextSearch.Search += new System.EventHandler<Gorgon.Windows.UI.GorgonSearchEventArgs>(this.TextSearch_Search);            
             // 
             // FileExploder
             // 

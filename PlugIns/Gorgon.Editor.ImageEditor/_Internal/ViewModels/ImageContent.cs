@@ -92,6 +92,12 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         private BufferFormat _format;
         // The undo service.
         private IUndoService _undoService;
+        // The current mip level.
+        private int _currentMipLevel;
+        // The current array index.
+        private int _currentArrayindex;
+        // The current depth slice.
+        private float _currentDepthSlice;
         #endregion
 
         #region Properties.
@@ -192,6 +198,88 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             get;
         }
+
+        /// <summary>Property to return the type of image that is loaded.</summary>
+        public ImageType ImageType => _image?.ImageType ?? ImageType.Unknown;
+
+        /// <summary>Property to return the number of mip maps in the image.</summary>
+        public int MipCount => _image.MipCount;
+
+        /// <summary>Property to return the number of array indices in the image.</summary>
+        public int ArrayCount => _image.ArrayCount;
+
+        /// <summary>Property to return the number of depth slices in the image.</summary>
+        public int DepthCount => _image.GetDepthCount(CurrentMipLevel);
+
+        /// <summary>Property to set or return the current mip map level.</summary>
+        public int CurrentMipLevel
+        {
+            get => _currentMipLevel;
+            set
+            {
+                if (_currentMipLevel == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _currentMipLevel = value;
+                OnPropertyChanged();
+
+                if (ImageType != ImageType.Image3D)
+                {
+                    return;
+                }
+
+                NotifyPropertyChanged(nameof(DepthCount));
+                NotifyPropertyChanged(nameof(CurrentDepthSlice));
+            }
+        }
+
+        /// <summary>Property to set or return the current array index.</summary>
+        public int CurrentArrayIndex
+        {
+            get => _currentArrayindex;
+            set
+            {
+                if (_currentArrayindex == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _currentArrayindex = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>Property to set or return the current depth slice.</summary>
+        /// <remarks>This value is the Z coordinate in the uvw texture coordinate.</remarks>
+        public float CurrentDepthSlice
+        {
+            get => _currentDepthSlice;
+            set
+            {
+                if (_currentDepthSlice == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _currentDepthSlice = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Property to return the width of the image, in pixels.
+        /// </summary>
+        public int Width => _image.Width;
+
+        /// <summary>
+        /// Property to return the height of the image, in pixels.
+        /// </summary>
+        public int Height => _image.Height;
         #endregion
 
         #region Methods.        

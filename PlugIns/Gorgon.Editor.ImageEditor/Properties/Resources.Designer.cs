@@ -337,6 +337,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Mip level: {0}/{1} ({2}x{3}).
+        /// </summary>
+        internal static string GORIMG_TEXT_MIP_DETAILS {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_MIP_DETAILS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Redoing previous action....
         /// </summary>
         internal static string GORIMG_TEXT_REDO {
@@ -419,6 +428,34 @@ namespace Gorgon.Editor.ImageEditor.Properties {
             get {
                 object obj = ResourceManager.GetObject("image_size_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to // Shaders for image viewing.
+        ///#GorgonInclude &quot;Gorgon2DShaders&quot;
+        ///
+        ///// Our default texture and sampler.
+        ///Texture2DArray _gorgonTexture2DArray : register(t0);
+        ///Texture3D _gorgonTexture3D : register(t1);
+        ///TextureCube _gorgonTextureCube : register(t0);
+        ///SamplerState _gorgon3DSampler : register(s1);
+        ///
+        ///// The texture parameters
+        ///cbuffer GorgonTextureParams : register(b1)
+        ///{
+        ///	// Depth slice to view.
+        ///	float depthSlice;
+        ///	// Mip level to view.
+        ///	float mipLevel;
+        ///};
+        ///
+        ///// Pixel shader to view a 2D texture array.
+        /// [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string ImageViewShaders {
+            get {
+                return ResourceManager.GetString("ImageViewShaders", resourceCulture);
             }
         }
         

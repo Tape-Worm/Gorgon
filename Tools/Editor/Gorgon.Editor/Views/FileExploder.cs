@@ -1446,6 +1446,11 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
+            if (DataContext?.SearchResults != null)
+            {
+                return;
+            }
+
             e.Node.Nodes.Clear();
 
             if (!_nodeLinks.TryGetValue((KryptonTreeNode)e.Node, out IFileExplorerNodeVm parentNode))
@@ -1498,11 +1503,6 @@ namespace Gorgon.Editor.Views
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="T:Gorgon.Windows.UI.GorgonSearchEventArgs"/> instance containing the event data.</param>
         private void TextSearch_Search(object sender, Windows.UI.GorgonSearchEventArgs e) => SendSearchCommand(e.SearchText);
-
-        /// <summary>Handles the Leave event of the TextSearch control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void TextSearch_Leave(object sender, EventArgs e) =>SendSearchCommand(string.IsNullOrWhiteSpace(TextSearch.Text) ? null : TextSearch.Text);        
         
         /// <summary>Handles the Click event of the ButtonClearSearch control.</summary>
         /// <param name="sender">The source of the event.</param>
@@ -1521,71 +1521,79 @@ namespace Gorgon.Editor.Views
         /// <param name="node">The file system node to evaluate.</param>
         private void UpdateNodeVisualState(KryptonTreeNode treeNode, IFileExplorerNodeVm node)
         {
-            if (node == null)
+            TreeFileSystem.BeforeExpand -= TreeFileSystem_BeforeExpand;
+            try
             {
-                treeNode.NodeFont = _excludedFont;
-                treeNode.ForeColor = Color.DimGray;
-                return;
-            }
-
-            if (node.Metadata == null)
-            {
-                treeNode.NodeFont = _excludedFont;
-                treeNode.ForeColor = Color.DimGray;
-            }
-            else
-            {
-                treeNode.ForeColor = node.IsChanged ? Color.LightGreen : Color.Empty;
-
-                if (node.IsOpen)
+                if (node == null)
                 {
-                    treeNode.NodeFont = _openFont;
+                    treeNode.NodeFont = _excludedFont;
+                    treeNode.ForeColor = Color.DimGray;
+                    return;
+                }
+
+                if (node.Metadata == null)
+                {
+                    treeNode.NodeFont = _excludedFont;
+                    treeNode.ForeColor = Color.DimGray;
                 }
                 else
                 {
-                    treeNode.NodeFont = null;
+                    treeNode.ForeColor = node.IsChanged ? Color.LightGreen : Color.Empty;
+
+                    if (node.IsOpen)
+                    {
+                        treeNode.NodeFont = _openFont;
+                    }
+                    else
+                    {
+                        treeNode.NodeFont = null;
+                    }
                 }
-            }
 
-            if (node.IsCut)
-            {
-                // Make the text translucent if we're in cut mode.
-                treeNode.ForeColor = Color.FromArgb(128, treeNode.ForeColor);
-            }
-
-            // Check for an icon.            
-            if (node.Metadata?.ContentMetadata != null)
-            {
-                string imageName = node.ImageName;
-                Image icon = node.Metadata.ContentMetadata.GetSmallIcon();
-
-                // This ID has not been registered in the image list, do so now.
-                if ((!TreeImages.Images.ContainsKey(node.ImageName))
-                    && (icon != null))
+                if (node.IsCut)
                 {
-                    TreeImages.Images.Add(node.ImageName, icon);
+                    // Make the text translucent if we're in cut mode.
+                    treeNode.ForeColor = Color.FromArgb(128, treeNode.ForeColor);
+                }
+
+                // Check for an icon.            
+                if (node.Metadata?.ContentMetadata != null)
+                {
+                    string imageName = node.ImageName;
+                    Image icon = node.Metadata.ContentMetadata.GetSmallIcon();
+
+                    // This ID has not been registered in the image list, do so now.
+                    if ((!TreeImages.Images.ContainsKey(node.ImageName))
+                        && (icon != null))
+                    {
+                        TreeImages.Images.Add(node.ImageName, icon);
+                    }
+                }
+                else if (node.IsContent)
+                {
+                    treeNode.NodeFont = _excludedFont;
+                    treeNode.ForeColor = Color.DimGray;
+                }
+
+                int imageIndex = FindImageIndexFromNode(node);
+                if (imageIndex != -1)
+                {
+                    treeNode.ImageIndex = treeNode.SelectedImageIndex = imageIndex;
+                }
+
+                if ((node.Children.Count > 0) && (!treeNode.IsExpanded))
+                {
+                    treeNode.Nodes.Add(new KryptonTreeNode("DUMMY_NODE_SHOULD_NOT_SEE_ME"));
+                }
+
+                if (treeNode.IsSelected)
+                {
+                    UpdateSelectedColor(treeNode);
                 }
             }
-            else if (node.IsContent)
+            finally
             {
-                treeNode.NodeFont = _excludedFont;
-                treeNode.ForeColor = Color.DimGray;
-            }
-
-            int imageIndex = FindImageIndexFromNode(node);
-            if (imageIndex != -1)
-            {
-                treeNode.ImageIndex = treeNode.SelectedImageIndex = imageIndex;
-            }
-
-            if ((node.Children.Count > 0) && (!treeNode.IsExpanded))
-            {
-                treeNode.Nodes.Add(new KryptonTreeNode("DUMMY_NODE_SHOULD_NOT_SEE_ME"));
-            }
-
-            if (treeNode.IsSelected)
-            {
-                UpdateSelectedColor(treeNode);
+                TreeFileSystem.BeforeExpand += TreeFileSystem_BeforeExpand;
             }
         }
 
@@ -1697,6 +1705,18 @@ namespace Gorgon.Editor.Views
                 if (_searchNodes != null)
                 {
                     nodeList = _searchNodes;
+
+                    // Remove these nodes from their parents.  They'll be added again below.
+                    // If we fail to do this, the linkage between the nodes gets broken and the tree will end up in an infinite loop.
+                    foreach (IFileExplorerNodeVm node in nodeList)
+                    {
+                        if (!_revNodeLinks.TryGetValue(node, out KryptonTreeNode treeNode))
+                        {
+                            continue;
+                        }
+
+                        treeNode.Remove();
+                    }
                 }
 
                 nodeList = nodeList.OrderBy(item => item.NodeType).ThenBy(item => item.Name, StringComparer.OrdinalIgnoreCase);
@@ -1730,7 +1750,7 @@ namespace Gorgon.Editor.Views
                         _nodeLinks[treeNode] = node;
                         _revNodeLinks[node] = treeNode;
                     }
-
+                                        
                     if (!treeNodes.Contains(treeNode))
                     {
                         treeNodes.Add(treeNode);

@@ -278,4 +278,10 @@ Please try again.</value>
   <data name="GORIMG_UNDO_DESC_FORMAT_CONVERT" xml:space="preserve">
     <value>Conversion to pixel format [{0}]</value>
   </data>
+  <data name="ImageViewShaders" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ImageViewShaders.hlsl;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="GORIMG_TEXT_MIP_DETAILS" xml:space="preserve">
+    <value>Mip level: {0}/{1} ({2}x{3})</value>
+  </data>
 </root>

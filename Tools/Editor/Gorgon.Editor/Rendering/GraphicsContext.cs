@@ -188,7 +188,6 @@ namespace Gorgon.Editor.Rendering
             // Choose the adapter with the highest feature level.
             IGorgonVideoAdapterInfo adapter = adapters.OrderByDescending(item => item.FeatureSet).First();
 
-            // TODO: Allow an override to this later.
             var graphics = new GorgonGraphics(adapter, log: log);
             var fontFactory = new GorgonFontFactory(graphics);
 

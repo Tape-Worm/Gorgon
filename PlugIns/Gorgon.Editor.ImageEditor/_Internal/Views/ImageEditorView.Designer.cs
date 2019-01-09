@@ -141,19 +141,21 @@
             this.PanelDepthSliceSelector.Controls.Add(this.ButtonPrevDepthSlice);
             this.PanelDepthSliceSelector.Controls.Add(this.ButtonNextDepthSlice);
             this.PanelDepthSliceSelector.Controls.Add(this.LabelDepthSlice);
-            this.PanelDepthSliceSelector.Location = new System.Drawing.Point(600, 3);
+            this.PanelDepthSliceSelector.Location = new System.Drawing.Point(678, 3);
             this.PanelDepthSliceSelector.Margin = new System.Windows.Forms.Padding(0);
             this.PanelDepthSliceSelector.Name = "PanelDepthSliceSelector";
-            this.PanelDepthSliceSelector.Size = new System.Drawing.Size(221, 30);
+            this.PanelDepthSliceSelector.Size = new System.Drawing.Size(278, 30);
             this.PanelDepthSliceSelector.TabIndex = 2;
             this.PanelDepthSliceSelector.Visible = false;
             // 
             // LabelDepthSliceDetails
             // 
             this.LabelDepthSliceDetails.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.LabelDepthSliceDetails.Location = new System.Drawing.Point(100, 0);
+            this.LabelDepthSliceDetails.Location = new System.Drawing.Point(98, 0);
+            this.LabelDepthSliceDetails.MinimumSize = new System.Drawing.Size(150, 30);
             this.LabelDepthSliceDetails.Name = "LabelDepthSliceDetails";
-            this.LabelDepthSliceDetails.Size = new System.Drawing.Size(95, 30);
+            this.LabelDepthSliceDetails.Size = new System.Drawing.Size(150, 30);
+            this.LabelDepthSliceDetails.StateCommon.ShortText.TextH = ComponentFactory.Krypton.Toolkit.PaletteRelativeAlign.Center;
             this.LabelDepthSliceDetails.TabIndex = 9;
             this.LabelDepthSliceDetails.Values.Text = "Depth slice: 1/n";
             // 
@@ -161,12 +163,12 @@
             // 
             this.ButtonPrevDepthSlice.AutoSize = true;
             this.ButtonPrevDepthSlice.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ButtonPrevDepthSlice.ButtonStyle = ComponentFactory.Krypton.Toolkit.ButtonStyle.Alternate;
+            this.ButtonPrevDepthSlice.ButtonStyle = ComponentFactory.Krypton.Toolkit.ButtonStyle.Custom1;
             this.ButtonPrevDepthSlice.Dock = System.Windows.Forms.DockStyle.Left;
             this.ButtonPrevDepthSlice.Enabled = false;
-            this.ButtonPrevDepthSlice.Location = new System.Drawing.Point(74, 0);
+            this.ButtonPrevDepthSlice.Location = new System.Drawing.Point(68, 0);
             this.ButtonPrevDepthSlice.Name = "ButtonPrevDepthSlice";
-            this.ButtonPrevDepthSlice.Size = new System.Drawing.Size(26, 30);
+            this.ButtonPrevDepthSlice.Size = new System.Drawing.Size(30, 30);
             this.ButtonPrevDepthSlice.TabIndex = 8;
             this.ButtonPrevDepthSlice.Values.Image = global::Gorgon.Editor.ImageEditor.Properties.Resources.left_20x20;
             this.ButtonPrevDepthSlice.Values.Text = "";
@@ -175,12 +177,12 @@
             // 
             this.ButtonNextDepthSlice.AutoSize = true;
             this.ButtonNextDepthSlice.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ButtonNextDepthSlice.ButtonStyle = ComponentFactory.Krypton.Toolkit.ButtonStyle.Alternate;
+            this.ButtonNextDepthSlice.ButtonStyle = ComponentFactory.Krypton.Toolkit.ButtonStyle.Custom1;
             this.ButtonNextDepthSlice.Dock = System.Windows.Forms.DockStyle.Right;
             this.ButtonNextDepthSlice.Enabled = false;
-            this.ButtonNextDepthSlice.Location = new System.Drawing.Point(195, 0);
+            this.ButtonNextDepthSlice.Location = new System.Drawing.Point(248, 0);
             this.ButtonNextDepthSlice.Name = "ButtonNextDepthSlice";
-            this.ButtonNextDepthSlice.Size = new System.Drawing.Size(26, 30);
+            this.ButtonNextDepthSlice.Size = new System.Drawing.Size(30, 30);
             this.ButtonNextDepthSlice.TabIndex = 10;
             this.ButtonNextDepthSlice.Values.Image = global::Gorgon.Editor.ImageEditor.Properties.Resources.right_20x20;
             this.ButtonNextDepthSlice.Values.Text = "";
@@ -190,7 +192,7 @@
             this.LabelDepthSlice.Dock = System.Windows.Forms.DockStyle.Left;
             this.LabelDepthSlice.Location = new System.Drawing.Point(0, 0);
             this.LabelDepthSlice.Name = "LabelDepthSlice";
-            this.LabelDepthSlice.Size = new System.Drawing.Size(74, 30);
+            this.LabelDepthSlice.Size = new System.Drawing.Size(68, 30);
             this.LabelDepthSlice.TabIndex = 3;
             this.LabelDepthSlice.Values.Text = "Depth slice:";
             // 
@@ -204,19 +206,21 @@
             this.PanelArraySelector.Controls.Add(this.ButtonPrevArrayIndex);
             this.PanelArraySelector.Controls.Add(this.ButtonNextArrayIndex);
             this.PanelArraySelector.Controls.Add(this.LabelArrayIndex);
-            this.PanelArraySelector.Location = new System.Drawing.Point(376, 3);
+            this.PanelArraySelector.Location = new System.Drawing.Point(399, 3);
             this.PanelArraySelector.Margin = new System.Windows.Forms.Padding(0);
             this.PanelArraySelector.Name = "PanelArraySelector";
-            this.PanelArraySelector.Size = new System.Drawing.Size(224, 30);
+            this.PanelArraySelector.Size = new System.Drawing.Size(279, 30);
             this.PanelArraySelector.TabIndex = 1;
             this.PanelArraySelector.Visible = false;
             // 
             // LabelArrayIndexDetails
             // 
             this.LabelArrayIndexDetails.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.LabelArrayIndexDetails.Location = new System.Drawing.Point(101, 0);
+            this.LabelArrayIndexDetails.Location = new System.Drawing.Point(99, 0);
+            this.LabelArrayIndexDetails.MinimumSize = new System.Drawing.Size(150, 30);
             this.LabelArrayIndexDetails.Name = "LabelArrayIndexDetails";
-            this.LabelArrayIndexDetails.Size = new System.Drawing.Size(97, 30);
+            this.LabelArrayIndexDetails.Size = new System.Drawing.Size(150, 30);
+            this.LabelArrayIndexDetails.StateCommon.ShortText.TextH = ComponentFactory.Krypton.Toolkit.PaletteRelativeAlign.Center;
             this.LabelArrayIndexDetails.TabIndex = 9;
             this.LabelArrayIndexDetails.Values.Text = "Array index: 1/n";
             // 
@@ -224,12 +228,12 @@
             // 
             this.ButtonPrevArrayIndex.AutoSize = true;
             this.ButtonPrevArrayIndex.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ButtonPrevArrayIndex.ButtonStyle = ComponentFactory.Krypton.Toolkit.ButtonStyle.Alternate;
+            this.ButtonPrevArrayIndex.ButtonStyle = ComponentFactory.Krypton.Toolkit.ButtonStyle.Custom1;
             this.ButtonPrevArrayIndex.Dock = System.Windows.Forms.DockStyle.Left;
             this.ButtonPrevArrayIndex.Enabled = false;
-            this.ButtonPrevArrayIndex.Location = new System.Drawing.Point(75, 0);
+            this.ButtonPrevArrayIndex.Location = new System.Drawing.Point(69, 0);
             this.ButtonPrevArrayIndex.Name = "ButtonPrevArrayIndex";
-            this.ButtonPrevArrayIndex.Size = new System.Drawing.Size(26, 30);
+            this.ButtonPrevArrayIndex.Size = new System.Drawing.Size(30, 30);
             this.ButtonPrevArrayIndex.TabIndex = 8;
             this.ButtonPrevArrayIndex.Values.Image = global::Gorgon.Editor.ImageEditor.Properties.Resources.left_20x20;
             this.ButtonPrevArrayIndex.Values.Text = "";
@@ -238,12 +242,12 @@
             // 
             this.ButtonNextArrayIndex.AutoSize = true;
             this.ButtonNextArrayIndex.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ButtonNextArrayIndex.ButtonStyle = ComponentFactory.Krypton.Toolkit.ButtonStyle.Alternate;
+            this.ButtonNextArrayIndex.ButtonStyle = ComponentFactory.Krypton.Toolkit.ButtonStyle.Custom1;
             this.ButtonNextArrayIndex.Dock = System.Windows.Forms.DockStyle.Right;
             this.ButtonNextArrayIndex.Enabled = false;
-            this.ButtonNextArrayIndex.Location = new System.Drawing.Point(198, 0);
+            this.ButtonNextArrayIndex.Location = new System.Drawing.Point(249, 0);
             this.ButtonNextArrayIndex.Name = "ButtonNextArrayIndex";
-            this.ButtonNextArrayIndex.Size = new System.Drawing.Size(26, 30);
+            this.ButtonNextArrayIndex.Size = new System.Drawing.Size(30, 30);
             this.ButtonNextArrayIndex.TabIndex = 10;
             this.ButtonNextArrayIndex.Values.Image = global::Gorgon.Editor.ImageEditor.Properties.Resources.right_20x20;
             this.ButtonNextArrayIndex.Values.Text = "";
@@ -253,7 +257,7 @@
             this.LabelArrayIndex.Dock = System.Windows.Forms.DockStyle.Left;
             this.LabelArrayIndex.Location = new System.Drawing.Point(0, 0);
             this.LabelArrayIndex.Name = "LabelArrayIndex";
-            this.LabelArrayIndex.Size = new System.Drawing.Size(75, 30);
+            this.LabelArrayIndex.Size = new System.Drawing.Size(69, 30);
             this.LabelArrayIndex.TabIndex = 3;
             this.LabelArrayIndex.Values.Text = "Array index:";
             // 
@@ -267,19 +271,20 @@
             this.PanelMipSelector.Controls.Add(this.ButtonPrevMip);
             this.PanelMipSelector.Controls.Add(this.ButtonNextMip);
             this.PanelMipSelector.Controls.Add(this.LabelMipLevel);
-            this.PanelMipSelector.Location = new System.Drawing.Point(142, 3);
+            this.PanelMipSelector.Location = new System.Drawing.Point(132, 3);
             this.PanelMipSelector.Margin = new System.Windows.Forms.Padding(0);
             this.PanelMipSelector.Name = "PanelMipSelector";
-            this.PanelMipSelector.Size = new System.Drawing.Size(234, 30);
+            this.PanelMipSelector.Size = new System.Drawing.Size(267, 30);
             this.PanelMipSelector.TabIndex = 0;
-            this.PanelMipSelector.Visible = false;
             // 
             // LabelMipDetails
             // 
             this.LabelMipDetails.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.LabelMipDetails.Location = new System.Drawing.Point(89, 0);
+            this.LabelMipDetails.Location = new System.Drawing.Point(87, 0);
+            this.LabelMipDetails.MinimumSize = new System.Drawing.Size(150, 30);
             this.LabelMipDetails.Name = "LabelMipDetails";
-            this.LabelMipDetails.Size = new System.Drawing.Size(121, 30);
+            this.LabelMipDetails.Size = new System.Drawing.Size(150, 30);
+            this.LabelMipDetails.StateCommon.ShortText.TextH = ComponentFactory.Krypton.Toolkit.PaletteRelativeAlign.Center;
             this.LabelMipDetails.TabIndex = 6;
             this.LabelMipDetails.Values.Text = "Mip level: 1/n (WxH)";
             // 
@@ -287,34 +292,38 @@
             // 
             this.ButtonPrevMip.AutoSize = true;
             this.ButtonPrevMip.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ButtonPrevMip.ButtonStyle = ComponentFactory.Krypton.Toolkit.ButtonStyle.Alternate;
+            this.ButtonPrevMip.ButtonStyle = ComponentFactory.Krypton.Toolkit.ButtonStyle.Custom1;
             this.ButtonPrevMip.Dock = System.Windows.Forms.DockStyle.Left;
             this.ButtonPrevMip.Enabled = false;
-            this.ButtonPrevMip.Location = new System.Drawing.Point(63, 0);
+            this.ButtonPrevMip.Location = new System.Drawing.Point(57, 0);
             this.ButtonPrevMip.Name = "ButtonPrevMip";
-            this.ButtonPrevMip.Size = new System.Drawing.Size(26, 30);
+            this.ButtonPrevMip.Size = new System.Drawing.Size(30, 30);
             this.ButtonPrevMip.TabIndex = 5;
             this.ButtonPrevMip.Values.Image = global::Gorgon.Editor.ImageEditor.Properties.Resources.left_20x20;
             this.ButtonPrevMip.Values.Text = "";
+            this.ButtonPrevMip.Click += new System.EventHandler(this.ButtonPrevMip_Click);
             // 
             // ButtonNextMip
             // 
-            this.ButtonNextMip.ButtonStyle = ComponentFactory.Krypton.Toolkit.ButtonStyle.Alternate;
+            this.ButtonNextMip.AutoSize = true;
+            this.ButtonNextMip.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ButtonNextMip.ButtonStyle = ComponentFactory.Krypton.Toolkit.ButtonStyle.Custom1;
             this.ButtonNextMip.Dock = System.Windows.Forms.DockStyle.Right;
             this.ButtonNextMip.Enabled = false;
-            this.ButtonNextMip.Location = new System.Drawing.Point(210, 0);
+            this.ButtonNextMip.Location = new System.Drawing.Point(237, 0);
             this.ButtonNextMip.Name = "ButtonNextMip";
-            this.ButtonNextMip.Size = new System.Drawing.Size(24, 30);
+            this.ButtonNextMip.Size = new System.Drawing.Size(30, 30);
             this.ButtonNextMip.TabIndex = 7;
             this.ButtonNextMip.Values.Image = global::Gorgon.Editor.ImageEditor.Properties.Resources.right_20x20;
             this.ButtonNextMip.Values.Text = "";
+            this.ButtonNextMip.Click += new System.EventHandler(this.ButtonNextMip_Click);
             // 
             // LabelMipLevel
             // 
             this.LabelMipLevel.Dock = System.Windows.Forms.DockStyle.Left;
             this.LabelMipLevel.Location = new System.Drawing.Point(0, 0);
             this.LabelMipLevel.Name = "LabelMipLevel";
-            this.LabelMipLevel.Size = new System.Drawing.Size(63, 30);
+            this.LabelMipLevel.Size = new System.Drawing.Size(57, 30);
             this.LabelMipLevel.TabIndex = 2;
             this.LabelMipLevel.Values.Text = "Mip level:";
             // 
@@ -324,7 +333,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.LabelZoom.Location = new System.Drawing.Point(3, 6);
             this.LabelZoom.Name = "LabelZoom";
-            this.LabelZoom.Size = new System.Drawing.Size(45, 24);
+            this.LabelZoom.Size = new System.Drawing.Size(39, 24);
             this.LabelZoom.TabIndex = 0;
             this.LabelZoom.Values.Text = "Zoom:";
             // 
@@ -332,12 +341,20 @@
             // 
             this.MenuZoomItems.AutoSize = true;
             this.MenuZoomItems.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.MenuZoomItems.ButtonStyle = ComponentFactory.Krypton.Toolkit.ButtonStyle.Command;
             this.MenuZoomItems.ContextMenuStrip = this.MenuZoom;
             this.MenuZoomItems.DropDownOrientation = ComponentFactory.Krypton.Toolkit.VisualOrientation.Top;
-            this.MenuZoomItems.Location = new System.Drawing.Point(54, 6);
+            this.MenuZoomItems.Location = new System.Drawing.Point(48, 6);
             this.MenuZoomItems.Name = "MenuZoomItems";
-            this.MenuZoomItems.Size = new System.Drawing.Size(85, 24);
+            this.MenuZoomItems.Size = new System.Drawing.Size(81, 23);
             this.MenuZoomItems.Splitter = false;
+            this.MenuZoomItems.StateCommon.Back.GraphicsHint = ComponentFactory.Krypton.Toolkit.PaletteGraphicsHint.None;
+            this.MenuZoomItems.StateCommon.Border.Draw = ComponentFactory.Krypton.Toolkit.InheritBool.False;
+            this.MenuZoomItems.StateCommon.Border.DrawBorders = ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.None;
+            this.MenuZoomItems.StateCommon.Border.GraphicsHint = ComponentFactory.Krypton.Toolkit.PaletteGraphicsHint.None;
+            this.MenuZoomItems.StateCommon.Content.Padding = new System.Windows.Forms.Padding(-1, 5, -1, 0);
+            this.MenuZoomItems.StateCommon.Content.ShortText.TextH = ComponentFactory.Krypton.Toolkit.PaletteRelativeAlign.Center;
+            this.MenuZoomItems.StateCommon.Content.ShortText.TextV = ComponentFactory.Krypton.Toolkit.PaletteRelativeAlign.Center;
             this.MenuZoomItems.TabIndex = 1;
             this.MenuZoomItems.Values.Text = "To Window";
             // 

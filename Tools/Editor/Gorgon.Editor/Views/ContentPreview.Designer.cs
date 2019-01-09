@@ -20,7 +20,8 @@
 
             if (disposing)
             {
-                UpdateImageTexture(null);
+                _previewTexture?.Dispose();
+                _previewTexture = null;
                 CleanupResources();
                 DataContext?.OnUnload();
                 UnassignEvents();

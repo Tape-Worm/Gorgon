@@ -88,6 +88,84 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the type of image that is loaded.
+        /// </summary>
+        ImageType ImageType
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the number of mip maps in the image.
+        /// </summary>
+        int MipCount
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the number of array indices in the image.
+        /// </summary>
+        int ArrayCount
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the number of depth slices in the image.
+        /// </summary>
+        int DepthCount
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to set or return the current mip map level.
+        /// </summary>
+        int CurrentMipLevel
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the current array index.
+        /// </summary>
+        int CurrentArrayIndex
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the current depth slice.
+        /// </summary>
+        /// <remarks>
+        /// This value is the Z coordinate in the uvw texture coordinate.
+        /// </remarks>
+        float CurrentDepthSlice
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the width of the image, in pixels.
+        /// </summary>
+        int Width
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the height of the image, in pixels.
+        /// </summary>
+        int Height
+        {
+            get;
+        }
         #endregion
 
         #region Methods.

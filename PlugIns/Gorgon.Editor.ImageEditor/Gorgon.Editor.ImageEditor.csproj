@@ -63,6 +63,10 @@
     <Compile Include="ImageImporterPlugin.cs" />
     <Compile Include="_Internal\Services\ExportImageDialogService.cs" />
     <Compile Include="_Internal\Services\ImageEditorServices.cs" />
+    <Compile Include="_Internal\Services\Texture3DViewer.cs" />
+    <Compile Include="_Internal\Services\TextureViewerCommon.cs" />
+    <Compile Include="_Internal\Services\_Interfaces\ITextureViewerService.cs" />
+    <Compile Include="_Internal\Services\Texture2DViewer.cs" />
     <Compile Include="_Internal\Services\_Interfaces\IExportImageDialogService.cs" />
     <Compile Include="_Internal\Services\_Interfaces\IImageIOService.cs" />
     <Compile Include="_Internal\Services\ImageIOService.cs" />
@@ -90,6 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\ImageViewShaders.hlsl" />
     <None Include="Resources\export_image_16x16.png" />
     <None Include="Resources\export_image_48x48.png" />
     <None Include="Resources\right_20x20.png" />

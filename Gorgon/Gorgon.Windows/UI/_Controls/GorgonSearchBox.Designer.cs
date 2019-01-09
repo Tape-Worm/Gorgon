@@ -70,7 +70,6 @@
             this.TextSearch.TextChanged += new System.EventHandler(this.TextSearch_TextChanged);
             this.TextSearch.Enter += new System.EventHandler(this.TextSearch_Enter);
             this.TextSearch.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TextSearch_KeyUp);
-            this.TextSearch.Leave += new System.EventHandler(this.TextSearch_Leave);
             // 
             // panel1
             // 

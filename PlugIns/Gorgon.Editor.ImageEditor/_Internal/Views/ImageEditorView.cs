@@ -31,7 +31,6 @@ using System.Linq;
 using System.Windows.Forms;
 using DX = SharpDX;
 using Gorgon.Editor.UI.Views;
-using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Core;
 using Gorgon.Editor.Rendering;
@@ -39,6 +38,11 @@ using System.Diagnostics;
 using Gorgon.Math;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.ImageEditor.ViewModels;
+using Gorgon.Renderers;
+using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
+using Gorgon.Editor.ImageEditor.Properties;
+using System.Collections.Generic;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -53,18 +57,12 @@ namespace Gorgon.Editor.ImageEditor
         private FormRibbon _ribbonForm;
         // The background texture.
         private GorgonTexture2DView _background;
-        // The 2D texture data.
-        private GorgonTexture2D _texture2D;
-        // The 2D texture data.
-        private GorgonTexture3D _texture3D;
-        // The loaded texture as a 2D texture view.
-        private GorgonTexture2DView _texture2DView;
-        // The loaded texture as a 3D texture view.
-        private GorgonTexture3DView _texture3DView;
         // The current zoom level.
         private ZoomLevels _zoomLevel = ZoomLevels.ToWindow;
-        // The boundaries for the texture.
-        private DX.RectangleF _textureBounds;
+        // The texture viewer service.
+        private ITextureViewerService _textureViewer;
+        // The available viewers.
+        private readonly Dictionary<ImageType, ITextureViewerService> _viewers = new Dictionary<ImageType, ITextureViewerService>();
         #endregion
 
         #region Properties.
@@ -78,6 +76,40 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to validate the controls on the view.
+        /// </summary>
+        private void ValidateControls()
+        {
+            if (DataContext == null)
+            {
+                PanelMipSelector.Visible = false;
+                return;
+            }
+
+            PanelMipSelector.Visible = DataContext.MipCount > 1;
+            ButtonNextMip.Enabled = DataContext.CurrentMipLevel < DataContext.MipCount - 1;
+            ButtonPrevMip.Enabled = DataContext.CurrentMipLevel > 0;
+        }
+
+        /// <summary>
+        /// Function to update the current mip map details.
+        /// </summary>
+        /// <param name="dataContext">The current data context.</param>
+        private void UpdateMipDetails(IImageContent dataContext)
+        {
+            DX.Size2 size = DX.Size2.Zero;
+
+            if ((dataContext == null) || (_textureViewer == null))
+            {
+                return;
+            }
+
+            size = _textureViewer.GetMipSize(dataContext);
+
+            LabelMipDetails.Text = string.Format(Resources.GORIMG_TEXT_MIP_DETAILS, dataContext.CurrentMipLevel + 1, DataContext.MipCount, size.Width, size.Height);
+        }
+
         /// <summary>Handles the DragDrop event of the ImageEditorView control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
@@ -100,8 +132,26 @@ namespace Gorgon.Editor.ImageEditor
                 case nameof(IImageContent.File):
                     // This only matters when we save, so there's no real visual update.
                     return;
+                case nameof(IImageContent.DepthCount):
+                case nameof(IImageContent.MipCount):
+                    UpdateMipDetails(DataContext);
+                    break;
+                case nameof(IImageContent.CurrentDepthSlice):
+                    // TODO:
+                    break;
+                case nameof(IImageContent.CurrentMipLevel):
+                    UpdateMipDetails(DataContext);
+                    _textureViewer.UpdateTextureParameters(DataContext);
+                    return;
                 default:
-                    UpdateTexture2D(GraphicsContext?.Graphics);
+                    if (_textureViewer == null)
+                    {
+                        _textureViewer = _viewers[DataContext.ImageType];
+                    }
+                                        
+                    _textureViewer.UpdateTexture(DataContext);
+                    UpdateMipDetails(DataContext);
+                    ValidateControls();
                     break;
             }            
         }
@@ -142,6 +192,30 @@ namespace Gorgon.Editor.ImageEditor
 
             ScrollHorizontal.Value = 0;
             ScrollVertical.Value = 0;
+        }
+
+        /// <summary>Handles the Click event of the ButtonNextMip control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="T:System.EventArgs"/> instance containing the event data.</param>
+        private void ButtonNextMip_Click(object sender, EventArgs e)
+        {
+            if (DataContext != null)
+            {
+                DataContext.CurrentMipLevel++;
+            }
+            ValidateControls();
+        }
+
+        /// <summary>Handles the Click event of the ButtonPrevMip control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="T:System.EventArgs"/> instance containing the event data.</param>
+        private void ButtonPrevMip_Click(object sender, EventArgs e)
+        {
+            if (DataContext != null)
+            {
+                DataContext.CurrentMipLevel--;
+            }
+            ValidateControls();
         }
 
         /// <summary>
@@ -213,6 +287,11 @@ namespace Gorgon.Editor.ImageEditor
             {
                 item.Checked = false;
             }
+
+            if (_textureViewer != null)
+            {
+                _textureViewer.ZoomLevel = _zoomLevel;
+            }
         }
 
         /// <summary>
@@ -261,56 +340,6 @@ namespace Gorgon.Editor.ImageEditor
             Idle();
         }
 
-        /// <summary>
-        /// Function to scale the image to the window.
-        /// </summary>
-        /// <param name="width">The width of the texture.</param>
-        /// <param name="height">The height of the texture.</param>
-        /// <returns>A new rectangle containing the size and location of the scaled image.</returns>
-        private void ScaleImage(int width, int height, float scale)
-        {
-            var textureSize = new DX.Size2F(width, height);
-            var location = new DX.Vector2(PanelImage.ClientSize.Width / 2.0f, PanelImage.ClientSize.Height / 2.0f);
-
-            textureSize.Width = textureSize.Width * scale;
-            textureSize.Height = textureSize.Height * scale;
-
-            var delta = new DX.Vector2((textureSize.Width - PanelImage.ClientSize.Width) / 2.0f, (textureSize.Height - PanelImage.ClientSize.Height) / 2.0f);
-
-            if (delta.X > 0)
-            {
-                ScrollHorizontal.Enabled = true;
-                ScrollHorizontal.LargeChange = (int)delta.X.Min(100).Max(10);
-                ScrollHorizontal.SmallChange = (ScrollHorizontal.LargeChange / 4).Max(1);
-                ScrollHorizontal.Maximum = ((int)delta.X / 2) + ScrollHorizontal.LargeChange;
-                ScrollHorizontal.Minimum = (int)delta.X / -2;
-            }
-            else
-            {
-                ScrollHorizontal.Enabled = false;
-                ScrollHorizontal.Value = 0;
-            }
-
-            if (delta.Y > 0)
-            {
-                ScrollVertical.Enabled = true;
-                ScrollVertical.LargeChange = (int)delta.Y.Min(100).Max(10);
-                ScrollVertical.SmallChange = (ScrollVertical.LargeChange / 4).Max(1);
-                ScrollVertical.Maximum = ((int)delta.Y / 2) + ScrollVertical.LargeChange;
-                ScrollVertical.Minimum = (int)delta.Y / -2;
-            }
-            else
-            {
-                ScrollVertical.Enabled = false;
-                ScrollVertical.Value = 0;
-            }
-
-            location.X = (location.X - textureSize.Width / 2.0f) - ((ScrollHorizontal.Value / delta.X) * textureSize.Width);
-            location.Y = (location.Y - textureSize.Height / 2.0f) - ((ScrollVertical.Value / delta.Y) * textureSize.Height);
-
-            _textureBounds = new DX.RectangleF((int)location.X, (int)location.Y, (int)textureSize.Width, (int)textureSize.Height);
-        }
-
         /// <summary>Raises the <a href="http://msdn.microsoft.com/en-us/library/system.windows.forms.control.mousewheel.aspx" target="_blank">MouseWheel</a> event.</summary>
         /// <param name="e">A <a href="http://msdn.microsoft.com/en-us/library/system.windows.forms.mouseeventargs.aspx" target="_blank">MouseEventArgs</a> that contains the event data.</param>
         protected override void OnMouseWheel(MouseEventArgs e)
@@ -324,107 +353,18 @@ namespace Gorgon.Editor.ImageEditor
         }
 
         /// <summary>
-        /// Function to scale the image to the window.
-        /// </summary>
-        /// <param name="width">The width of the texture.</param>
-        /// <param name="height">The height of the texture.</param>
-        /// <returns>A new rectangle containing the size and location of the scaled image.</returns>
-        private void ScaleImageToClientArea(int width, int height)
-        {
-            var windowSize = new DX.Size2F(PanelImage.ClientSize.Width, PanelImage.ClientSize.Height);
-            var textureSize = new DX.Size2F(width, height);
-            var location = new DX.Vector2(PanelImage.ClientSize.Width / 2.0f, PanelImage.ClientSize.Height / 2.0f);
-
-            var scale = new DX.Vector2(windowSize.Width / textureSize.Width, windowSize.Height / textureSize.Height);
-
-            if (scale.Y > scale.X)
-            {
-                scale.Y = scale.X;
-            }
-            else
-            {
-                scale.X = scale.Y;
-            }
-
-            textureSize.Width = textureSize.Width * scale.X;
-            textureSize.Height = textureSize.Height * scale.Y;
-
-            location.X = (location.X - textureSize.Width / 2.0f);
-            location.Y = (location.Y - textureSize.Height / 2.0f);
-
-            _textureBounds = new DX.RectangleF((int)location.X, (int)location.Y, (int)textureSize.Width, (int)textureSize.Height);
-        }
-
-        /// <summary>
-        /// Function to draw the 2D texture.
-        /// </summary>
-        private void Draw2DTexture()
-        {                       
-            GraphicsContext.Renderer2D.DrawFilledRectangle(_textureBounds, new GorgonColor(GorgonColor.Black, 0.125f));
-            GraphicsContext.Renderer2D.DrawFilledRectangle(_textureBounds, GorgonColor.White, _texture2DView, new DX.RectangleF(0, 0, 1, 1), textureSampler: GorgonSamplerState.PointFiltering);
-        }
-
-        /// <summary>
         /// Function to render during idle time.
         /// </summary>
         /// <returns><b>true</b> to continue rendering, <b>false</b> to stop.</returns>
         private bool Idle()
         {
-            GraphicsContext.Graphics.SetRenderTarget(SwapChain.RenderTargetView);
-
-            SwapChain.RenderTargetView.Clear(GorgonColor.White);
-
-            // Calculate the image size relative to the client area.            
-            if (_zoomLevel == ZoomLevels.ToWindow)
+            if ((DataContext == null) || (DataContext.ImageType == ImageType.Unknown) || (_textureViewer == null))
             {
-                ScaleImageToClientArea(_texture2DView.Width, _texture2DView.Height);
-            }
-            else
-            {
-                ScaleImage(_texture2DView.Width, _texture2DView.Height, GetZoomValue());
+                return false;
             }
 
-            // Draw the checkboard background.
-            GraphicsContext.Renderer2D.Begin();
-
-            GraphicsContext.Renderer2D.DrawFilledRectangle(new DX.RectangleF(0, 0, PanelImage.ClientSize.Width, PanelImage.ClientSize.Height), 
-                GorgonColor.White, 
-                _background, 
-                _background.ToTexel(new DX.Rectangle(0, 0, PanelImage.ClientSize.Width, PanelImage.ClientSize.Height)),
-                textureSampler: GorgonSamplerState.Wrapping);
-
-            // Draw our texture.
-            Draw2DTexture();
-            GraphicsContext.Renderer2D.End();
-
-            SwapChain.Present();
+            _textureViewer.Draw(DataContext);
             return true;
-        }
-
-        /// <summary>
-        /// Function to update the image texture for display.
-        /// </summary>
-        /// <param name="graphics">The graphics interface to use for generating the texture.</param>
-        private void UpdateTexture2D(GorgonGraphics graphics)
-        {
-            _texture2D?.Dispose();
-
-            IGorgonImage image = DataContext?.GetImage();
-
-            if ((image == null) || (graphics == null))
-            {
-                return;
-            }
-
-            _texture2D = image.ToTexture2D(graphics, new GorgonTexture2DLoadOptions
-            {
-                Name = DataContext.File.Path,
-                Binding = TextureBinding.ShaderResource,
-                Usage = ResourceUsage.Immutable,
-                IsTextureCube = false
-            });
-
-            _texture2DView = _texture2D.GetShaderResourceView(arrayIndex: 0, arrayCount: image.ArrayCount);
         }
 
         /// <summary>Function to allow user defined setup of the graphics context with this control.</summary>
@@ -447,7 +387,23 @@ namespace Gorgon.Editor.ImageEditor
                 Usage = ResourceUsage.Immutable
             }, EditorCommonResources.CheckerBoardPatternImage);
 
-            UpdateTexture2D(context.Graphics);            
+            _viewers[ImageType.Image2D] = new Texture2DViewer(context, swapChain, ScrollHorizontal, ScrollVertical);
+            _viewers[ImageType.Image2D].CreateResources(_background);
+            _viewers[ImageType.Image3D] = new Texture3DViewer(context, swapChain, ScrollHorizontal, ScrollVertical);
+            _viewers[ImageType.Image3D].CreateResources(_background);
+            // TODO: Other types.
+                        
+            if (DataContext?.ImageType == null)
+            {
+                ValidateControls();
+                return;
+            }            
+
+            _textureViewer = _viewers[DataContext.ImageType];
+            _textureViewer.UpdateTexture(DataContext);
+            UpdateMipDetails(DataContext);
+
+            ValidateControls();
         }
 
         /// <summary>Function called to shut down the view.</summary>
@@ -458,13 +414,13 @@ namespace Gorgon.Editor.ImageEditor
             // Reset the view.
             SetDataContext(null);
 
-            _background?.Dispose();
-            _texture3D?.Dispose();
-            _texture2D?.Dispose();
+            foreach (ITextureViewerService service in _viewers.Values)
+            {
+                service.Dispose();
+            }
 
+            _background?.Dispose();
             _background = null;
-            _texture3DView = null;
-            _texture2DView = null;
         }
 
         /// <summary>Raises the <a href="http://msdn.microsoft.com/en-us/library/system.windows.forms.usercontrol.load.aspx" target="_blank">Load</a> event.</summary>
@@ -485,6 +441,8 @@ namespace Gorgon.Editor.ImageEditor
 
             DataContext?.OnLoad();
             IdleMethod = Idle;
+
+            ValidateControls();
         }
 
         /// <summary>Function to assign a data context to the view as a view model.</summary>
@@ -498,11 +456,6 @@ namespace Gorgon.Editor.ImageEditor
 
             DataContext = dataContext;
             _ribbonForm.SetDataContext(dataContext);
-
-            if (DataContext == null)
-            {
-                return;
-            }
         }
         #endregion
 

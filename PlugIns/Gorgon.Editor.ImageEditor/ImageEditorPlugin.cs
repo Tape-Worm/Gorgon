@@ -383,13 +383,21 @@ namespace Gorgon.Editor.ImageEditor
 
             using (Stream stream = file.OpenRead())
             {
-                if (_ddsCodec.IsReadable(stream))
+                if (!_ddsCodec.IsReadable(stream))
                 {
-                    UpdateFileMetadataAttributes(file.Metadata.Attributes);
-                    return true;
+                    return false;
                 }
 
-                return false;
+                IGorgonImageInfo metadata = _ddsCodec.GetMetaData(stream);
+
+                // We won't be supporting 1D images in this editor.
+                if ((metadata.ImageType == ImageType.Image1D) || (metadata.ImageType == ImageType.Unknown))
+                {
+                    return false;
+                }
+
+                UpdateFileMetadataAttributes(file.Metadata.Attributes);
+                return true;
             }
         }
 

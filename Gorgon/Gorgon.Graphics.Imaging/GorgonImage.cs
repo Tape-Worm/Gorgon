@@ -209,10 +209,14 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="info">Information used to create this image.</param>
 		private void SanitizeInfo(IGorgonImageInfo info)
 		{
-			var newInfo = new GorgonImageInfo(info);
+            var newInfo = new GorgonImageInfo(info)
+            {
+                Height = info.Height.Max(1),
+                Depth = info.Depth.Max(1)
+            };
 
-			// Validate the array size.
-			newInfo.ArrayCount = newInfo.ImageType == ImageType.Image3D ? 1 : newInfo.ArrayCount.Max(1);
+            // Validate the array size.
+            newInfo.ArrayCount = newInfo.ImageType == ImageType.Image3D ? 1 : newInfo.ArrayCount.Max(1);
 
 			// Validate depth count.
 			newInfo.Depth = newInfo.ImageType != ImageType.Image3D ? 1 : newInfo.Depth.Max(1);
@@ -593,13 +597,13 @@ namespace Gorgon.Graphics.Imaging
 				throw new ArgumentException(Resources.GORIMG_ERR_IMAGE_WIDTH_TOO_SMALL, nameof(info));
 			}
 
-			if ((info.Height < 1) && 
-				((info.ImageType == ImageType.ImageCube) 
-				|| (info.ImageType == ImageType.Image2D) 
-				|| (info.ImageType == ImageType.Image3D)))
-			{
-				throw new ArgumentException(Resources.GORIMG_ERR_IMAGE_HEIGHT_TOO_SMALL, nameof(info));
-			}
+            if ((info.Height < 1) &&
+                ((info.ImageType == ImageType.ImageCube)
+                || (info.ImageType == ImageType.Image2D)
+                || (info.ImageType == ImageType.Image3D)))
+            {
+                throw new ArgumentException(Resources.GORIMG_ERR_IMAGE_HEIGHT_TOO_SMALL, nameof(info));
+            }
 
 			if ((info.Depth < 1) && (info.ImageType == ImageType.Image3D))
 			{
