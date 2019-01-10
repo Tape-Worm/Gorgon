@@ -112,6 +112,15 @@ namespace Gorgon.Editor.ImageEditor
             get;
             set;
         } = ZoomLevels.ToWindow;
+
+        /// <summary>Property to return whether or not the viewer is in the middle of an animation.</summary>
+        /// <value>
+        ///   <c>true</c> if this instance is animating; otherwise, <c>false</c>.</value>
+        public bool IsAnimating
+        {
+            get;
+            protected set;
+        }
         #endregion
 
         #region Methods.
@@ -274,6 +283,28 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="builder">The builder used to create the shader.</param>
         /// <returns>The shader resource view.</returns>
         protected abstract void OnGetShaderResourceViews(Gorgon2DShaderBuilder<GorgonPixelShader> builder);
+
+        /// <summary>
+        /// Function called when a playing animation should end.
+        /// </summary>
+        protected virtual void OnEndAnimation()
+        {
+
+        }
+
+        /// <summary>
+        /// Function to indicate that the current animation (if one is playing) should end.
+        /// </summary>
+        public void EndAnimation()
+        {
+            if (!IsAnimating)
+            {
+                return;
+            }
+
+            OnEndAnimation();
+            IsAnimating = false;
+        }
 
         /// <summary>
         /// Function to update the texture parameters for rendering.

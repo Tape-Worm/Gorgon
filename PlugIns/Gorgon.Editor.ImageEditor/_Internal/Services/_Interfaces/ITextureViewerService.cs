@@ -46,9 +46,22 @@ namespace Gorgon.Editor.ImageEditor
             get;
             set;
         }
+
+        /// <summary>
+        /// Property to return whether or not the viewer is in the middle of an animation.
+        /// </summary>
+        bool IsAnimating
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to indicate that the current animation (if one is playing) should end.
+        /// </summary>
+        void EndAnimation();
+
         /// <summary>
         /// Function to update the texture parameters for rendering.
         /// </summary>

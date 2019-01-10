@@ -110,6 +110,11 @@ namespace Gorgon.Editor.ImageEditor
             LabelMipDetails.Text = string.Format(Resources.GORIMG_TEXT_MIP_DETAILS, dataContext.CurrentMipLevel + 1, DataContext.MipCount, size.Width, size.Height);
         }
 
+        /// <summary>Handles the DoubleClick event of the PanelImage control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="T:System.EventArgs"/> instance containing the event data.</param>
+        private void PanelImage_DoubleClick(object sender, EventArgs e) => _textureViewer?.EndAnimation();
+
         /// <summary>Handles the DragDrop event of the ImageEditorView control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>

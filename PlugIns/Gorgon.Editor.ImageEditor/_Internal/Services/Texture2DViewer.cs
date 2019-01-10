@@ -32,6 +32,8 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Renderers;
 using Gorgon.Graphics;
+using Gorgon.Timing;
+using Gorgon.Math;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -41,21 +43,67 @@ namespace Gorgon.Editor.ImageEditor
     internal class Texture2DViewer
         : TextureViewerCommon
     {
+        #region Enums.
+        /// <summary>
+        /// Enumeration containing the animations to play.
+        /// </summary>
+        private enum Animation
+        {
+            /// <summary>
+            /// No animation.
+            /// </summary>
+            None = 0,
+            /// <summary>
+            /// A simple fade-in animation.
+            /// </summary>
+            FadeIn = 1
+        }
+        #endregion
+
         #region Variables.
         // The texture to display.
         private GorgonTexture2D _texture;
         // The view for the texture.
         private GorgonTexture2DView _textureView;
+        // The currently playing animation.
+        private Animation _currentAnim = Animation.FadeIn;
+        // The alpha value for the fade-in animation.
+        private (float alpha, float startTime, float time) _fadeInState = default;
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to perform the fade in animation.
+        /// </summary>
+        private void FadeIn()
+        {
+            // TODO: Put this in the base class or in its own object (maybe use our animation system?  It's meant for this kind of work after all).
+            float currentTime = GorgonTiming.SecondsSinceStart - _fadeInState.startTime;
+            float alpha = (currentTime / _fadeInState.time).Min(1.0f);
+            _fadeInState = (alpha, _fadeInState.startTime, _fadeInState.time);
+
+            if (alpha >= 1.0f)
+            {
+                EndAnimation();
+            }
+        }
+
         /// <summary>Function to dispose any resources created by the implementation.</summary>
         protected override void OnDispose()
         {
+            EndAnimation();
+
             _texture?.Dispose();
             _texture = null;
             _textureView = null;
         }
+
+        /// <summary>Function called when a playing animation should end.</summary>
+        protected override void OnEndAnimation()
+        {
+            _fadeInState = (1.0f, 0, 0);
+            _currentAnim = Animation.None;
+        }        
 
         /// <summary>Function to create the texture for the view.</summary>
         /// <param name="graphics">The graphics interface used to create the texture.</param>
@@ -89,14 +137,28 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="renderer">The renderer used to draw the texture.</param>
         /// <param name="textureBounds">The screen space region for the texture.</param>
         /// <param name="image">The image being rendered.</param>
-        protected override void OnDrawTexture(Gorgon2D renderer, DX.RectangleF textureBounds, IImageContent image) =>
+        protected override void OnDrawTexture(Gorgon2D renderer, DX.RectangleF textureBounds, IImageContent image)
+        {
+            if (_currentAnim != Animation.None)
+            {
+                IsAnimating = true;
+            }
+
+            switch (_currentAnim)
+            {
+                case Animation.FadeIn:
+                    FadeIn();
+                    break;
+            }
+            
             // We can use this for 3D textures because the texture is in slot 1, and slot 0, where the 2D texture is usually located is vacant and not used by the pixel shader.
             renderer.DrawFilledRectangle(textureBounds,
-                GorgonColor.White,
+                new GorgonColor(GorgonColor.White, _fadeInState.alpha),
                 _textureView,
                 new DX.RectangleF(0, 0, 1, 1),
                 image.CurrentArrayIndex,
                 textureSampler: GorgonSamplerState.PointFiltering);
+        }
 
         /// <summary>
         /// Function to retrieve the size, in pixels, if the current mip level.
@@ -117,6 +179,7 @@ namespace Gorgon.Editor.ImageEditor
         public Texture2DViewer(IGraphicsContext graphicsContext, GorgonSwapChain swapChain, ScrollBar hScroll, ScrollBar vScroll)
             : base(graphicsContext, swapChain, hScroll, vScroll)
         {
+            _fadeInState = (0, GorgonTiming.SecondsSinceStart, 0.35f);
         }
         #endregion
     }
