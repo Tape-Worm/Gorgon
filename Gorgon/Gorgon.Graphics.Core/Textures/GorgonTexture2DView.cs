@@ -868,7 +868,7 @@ namespace Gorgon.Graphics.Core
                                   Name = Path.GetFileNameWithoutExtension(filePath),
                                   Usage = ResourceUsage.Default,
                                   Binding = TextureBinding.ShaderResource,
-                                  IsTextureCube = image.ImageType == ImageType.Image2D
+                                  IsTextureCube = image.ImageType == ImageType.ImageCube
                               };
                 }
                 GorgonTexture2D texture = image.ToTexture2D(graphics, options);
