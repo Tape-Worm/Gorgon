@@ -59,6 +59,8 @@
     <Compile Include="_Internal\Forms\FormRibbon.Designer.cs">
       <DependentUpon>FormRibbon.cs</DependentUpon>
     </Compile>
+    <Compile Include="_Internal\Forms\ImageZoomedArgs.cs" />
+    <Compile Include="_Internal\ImageAnimationController.cs" />
     <Compile Include="_Internal\ImageImporterSettings.cs" />
     <Compile Include="ImageImporterPlugin.cs" />
     <Compile Include="_Internal\Services\ExportImageDialogService.cs" />
@@ -94,6 +96,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\zoom_16x16.png" />
+    <None Include="Resources\zoom_48x48.png" />
+    <None Include="Resources\right_16x16.png" />
+    <None Include="Resources\left_16x16.png" />
     <None Include="Resources\ImageViewShaders.hlsl" />
     <None Include="Resources\export_image_16x16.png" />
     <None Include="Resources\export_image_48x48.png" />
@@ -159,6 +165,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Gorgon\Gorgon.Animation\Gorgon.Animation.csproj">
+      <Project>{8cfa9634-9ed5-4d30-a9b1-6cbae73aa1ca}</Project>
+      <Name>Gorgon.Animation</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Gorgon\Gorgon.Core\Gorgon.Core.csproj">
       <Project>{933569ed-52a9-4232-a929-1d4c4489b5a1}</Project>
       <Name>Gorgon.Core</Name>

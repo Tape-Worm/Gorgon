@@ -57,8 +57,6 @@ namespace Gorgon.Editor.ImageEditor
         private FormRibbon _ribbonForm;
         // The background texture.
         private GorgonTexture2DView _background;
-        // The current zoom level.
-        private ZoomLevels _zoomLevel = ZoomLevels.ToWindow;
         // The texture viewer service.
         private ITextureViewerService _textureViewer;
         // The available viewers.
@@ -76,6 +74,32 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Methods.
+        /// <summary>Ribbons the form image zoomed.</summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The e.</param>
+        private void RibbonForm_ImageZoomed(object sender, ImageZoomedArgs e)
+        {
+            if ((_textureViewer == null) || (DataContext == null))
+            {
+                return;
+            }
+
+            if (_textureViewer.ZoomLevel == e.ZoomLevel)
+            {
+                return;
+            }
+
+            _textureViewer.SetZoomLevel(e.ZoomLevel, DataContext);
+
+            if (_textureViewer.ZoomLevel != ZoomLevels.ToWindow)
+            {
+                return;
+            }
+
+            ScrollHorizontal.Value = 0;
+            ScrollVertical.Value = 0;
+        }
+
         /// <summary>
         /// Function to validate the controls on the view.
         /// </summary>
@@ -83,13 +107,48 @@ namespace Gorgon.Editor.ImageEditor
         {
             if (DataContext == null)
             {
-                PanelMipSelector.Visible = false;
+                LabelMipDetails.Visible = LabelMipLevel.Visible = ButtonPrevMip.Visible = ButtonNextMip.Visible = false;
+                LabelArrayIndexDetails.Visible = LabelArrayIndex.Visible = ButtonPrevArrayIndex.Visible = ButtonNextArrayIndex.Visible = false;
+                LabelDepthSliceDetails.Visible = LabelDepthSlice.Visible = ButtonPrevDepthSlice.Visible = ButtonNextDepthSlice.Visible = false;
                 return;
             }
 
-            PanelMipSelector.Visible = DataContext.MipCount > 1;
+            LabelMipDetails.Visible = LabelMipLevel.Visible = ButtonPrevMip.Visible = ButtonNextMip.Visible = DataContext.MipCount > 1;
+            LabelArrayIndexDetails.Visible = LabelArrayIndex.Visible = ButtonPrevArrayIndex.Visible = ButtonNextArrayIndex.Visible = DataContext.ArrayCount > 1;
+            LabelDepthSliceDetails.Visible = LabelDepthSlice.Visible = ButtonPrevDepthSlice.Visible = ButtonNextDepthSlice.Visible = DataContext.DepthCount > 1;
+
             ButtonNextMip.Enabled = DataContext.CurrentMipLevel < DataContext.MipCount - 1;
             ButtonPrevMip.Enabled = DataContext.CurrentMipLevel > 0;
+
+            PanelBottomBar.Visible = DataContext.MipCount > 1 || DataContext.ArrayCount > 1 || DataContext.DepthCount > 1;
+        }
+
+        /// <summary>
+        /// Function to update the current depth slice details.
+        /// </summary>
+        /// <param name="dataContext">The current data context.</param>
+        private void UpdateDepthSliceDetails(IImageContent dataContext)
+        {
+            if (dataContext == null)
+            {
+                return;
+            }
+
+            LabelDepthSliceDetails.Text = $"{(int)(DataContext.CurrentDepthSlice * DataContext.DepthCount) + 1}/{DataContext.DepthCount}";
+        }
+
+        /// <summary>
+        /// Function to update the current array details.
+        /// </summary>
+        /// <param name="dataContext">The current data context.</param>
+        private void UpdateArrayDetails(IImageContent dataContext)
+        {
+            if (dataContext == null)
+            {
+                return;
+            }
+
+            LabelArrayIndexDetails.Text = $"{DataContext.CurrentArrayIndex + 1}/{DataContext.ArrayCount}";
         }
 
         /// <summary>
@@ -137,12 +196,19 @@ namespace Gorgon.Editor.ImageEditor
                 case nameof(IImageContent.File):
                     // This only matters when we save, so there's no real visual update.
                     return;
+                case nameof(IImageContent.ArrayCount):
+                    UpdateArrayDetails(DataContext);
+                    break;
                 case nameof(IImageContent.DepthCount):
+                    UpdateDepthSliceDetails(DataContext);
+                    UpdateMipDetails(DataContext);
+                    break;
                 case nameof(IImageContent.MipCount):
                     UpdateMipDetails(DataContext);
                     break;
                 case nameof(IImageContent.CurrentDepthSlice):
-                    // TODO:
+                    UpdateDepthSliceDetails(DataContext);
+                    _textureViewer.UpdateTextureParameters(DataContext);
                     break;
                 case nameof(IImageContent.CurrentMipLevel):
                     UpdateMipDetails(DataContext);
@@ -160,43 +226,28 @@ namespace Gorgon.Editor.ImageEditor
                     break;
             }            
         }
-               
+
+        /// <summary>Handles the Click event of the ButtonCenter control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonCenter_Click(object sender, EventArgs e)
+        {
+            ScrollHorizontal.Value = ScrollVertical.Value = 0;
+            _ribbonForm.ResetZoom();
+        }
+
         /// <summary>Handles the ValueChanged event of the ScrollVertical control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The [EventArgs] instance containing the event data.</param>
-        private void ScrollVertical_ValueChanged(object sender, EventArgs e) => Idle();
-
-        /// <summary>Handles the Click event of the ItemZoomToWindow control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The [EventArgs] instance containing the event data.</param>
-        private void ItemZoom_Click(object sender, EventArgs e)
+        private void ScrollVertical_ValueChanged(object sender, EventArgs e)
         {
-            var item = (ToolStripMenuItem)sender;
-
-            if ((item.Tag == null) || (!Enum.TryParse(item.Tag.ToString(), out ZoomLevels zoom)))
-            {
-                item.Checked = false;
-                return;
-            }
-
-            // Do not let us uncheck.
-            if (_zoomLevel == zoom)
-            {
-                item.Checked = true;
-                return;
-            }
-
-            MenuZoomItems.Text = item.Text;
-            _zoomLevel = zoom;
-            UpdateZoomMenu();
-
-            if (item != ItemZoomToWindow)
+            if (DataContext == null)
             {
                 return;
             }
 
-            ScrollHorizontal.Value = 0;
-            ScrollVertical.Value = 0;
+            _textureViewer?.Scroll(DataContext);
+            Idle();
         }
 
         /// <summary>Handles the Click event of the ButtonNextMip control.</summary>
@@ -224,94 +275,6 @@ namespace Gorgon.Editor.ImageEditor
         }
 
         /// <summary>
-        /// Function to retrieve the value used to multiply by when zooming.
-        /// </summary>
-        /// <returns>The zoom value as a normalized value.</returns>
-        private float GetZoomValue()
-        {
-            switch (_zoomLevel)
-            {
-                case ZoomLevels.Percent12:
-                    return 0.125f;                    
-                case ZoomLevels.Percent25:
-                    return 0.25f;                    
-                case ZoomLevels.Percent50:
-                    return 0.5f;
-                case ZoomLevels.Percent200:
-                    return 2.0f;
-                case ZoomLevels.Percent400:
-                    return 4.0f;                    
-                case ZoomLevels.Percent800:
-                    return 8.0f;                    
-                case ZoomLevels.Percent1600:
-                    return 16.0f;
-                default:
-                    return 1.0f;
-            }
-        }
-
-        /// <summary>
-        /// Function to update the zoom item menu to reflect the current selection.
-        /// </summary>
-        private void UpdateZoomMenu()
-        {
-            ToolStripMenuItem currentItem;
-
-            switch (_zoomLevel)
-            {
-                case ZoomLevels.Percent12:
-                    currentItem = Item12Percent;
-                    break;
-                case ZoomLevels.Percent25:
-                    currentItem = Item25Percent;
-                    break;
-                case ZoomLevels.Percent50:
-                    currentItem = Item50Percent;
-                    break;
-                case ZoomLevels.Percent100:
-                    currentItem = Item100Percent;
-                    break;
-                case ZoomLevels.Percent200:
-                    currentItem = Item200Percent;
-                    break;
-                case ZoomLevels.Percent400:
-                    currentItem = Item400Percent;
-                    break;
-                case ZoomLevels.Percent800:
-                    currentItem = Item800Percent;
-                    break;
-                case ZoomLevels.Percent1600:
-                    currentItem = Item1600Percent;
-                    break;
-                default:
-                    currentItem = ItemZoomToWindow;
-                    break;
-            }
-
-            foreach (ToolStripMenuItem item in MenuZoom.Items.OfType<ToolStripMenuItem>().Where(item => item != currentItem))
-            {
-                item.Checked = false;
-            }
-
-            if (_textureViewer != null)
-            {
-                _textureViewer.ZoomLevel = _zoomLevel;
-            }
-        }
-
-        /// <summary>
-        /// Function to reset the view to its original state.
-        /// </summary>
-        protected override void ResetDataContext()
-        {
-            base.ResetDataContext();
-            // Reset the zoom menu.
-            _zoomLevel = ZoomLevels.ToWindow;
-            UpdateZoomMenu();
-            ItemZoomToWindow.Checked = true;
-        }
-
-        /// <summary>
         /// Function to initialize the view from the data context.
         /// </summary>
         /// <param name="dataContext">The data context to use.</param>
@@ -321,15 +284,27 @@ namespace Gorgon.Editor.ImageEditor
             {
                 ResetDataContext();
                 return;
-            }
-                        
-            UpdateZoomMenu();
+            }                        
         }
 
         /// <summary>Handles the RenderToBitmap event of the PanelImage control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="PaintEventArgs"/> instance containing the event data.</param>
         private void PanelImage_RenderToBitmap(object sender, PaintEventArgs e) => RenderSwapChainToBitmap(e.Graphics);
+
+        /// <summary>Raises the <see cref="E:System.Windows.Forms.Control.Resize"/> event.</summary>
+        /// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+
+            if ((IsDesignTime) || (_textureViewer == null) || (DataContext == null))
+            {
+                return;
+            }
+
+            _textureViewer.WindowResize(DataContext);
+        }
 
         /// <summary>Raises the <a href="http://msdn.microsoft.com/en-us/library/system.windows.forms.control.paint.aspx" target="_blank">Paint</a> event.</summary>
         /// <param name="e">A <a href="http://msdn.microsoft.com/en-us/library/system.windows.forms.painteventargs.aspx" target="_blank">PaintEventArgs</a> that contains the event data.</param>
@@ -407,6 +382,8 @@ namespace Gorgon.Editor.ImageEditor
             _textureViewer = _viewers[DataContext.ImageType];
             _textureViewer.UpdateTexture(DataContext);
             UpdateMipDetails(DataContext);
+            UpdateArrayDetails(DataContext);
+            UpdateDepthSliceDetails(DataContext);
 
             ValidateControls();
         }
@@ -471,6 +448,7 @@ namespace Gorgon.Editor.ImageEditor
             InitializeComponent();
 
             _ribbonForm = new FormRibbon();
+            _ribbonForm.ImageZoomed += RibbonForm_ImageZoomed;
             Ribbon = _ribbonForm.RibbonImageContent;
         }
         #endregion

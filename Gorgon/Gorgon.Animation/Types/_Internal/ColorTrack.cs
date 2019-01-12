@@ -25,6 +25,7 @@
 #endregion
 
 using System.Collections.Generic;
+using System.Linq;
 using Gorgon.Animation.Properties;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -82,6 +83,44 @@ namespace Gorgon.Animation
         public IReadOnlyList<GorgonKeyGorgonColor> KeyFrames
         {
             get;
+        }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to retrieve the value at the specified time index.
+        /// </summary>
+        /// <param name="timeIndex">The time index within the track to retrieve the value from.</param>
+        /// <returns>The value at the specified time index.</returns>
+        /// <remarks>
+        /// <para>
+        /// The value returned by this method may or may not be interpolated based on the value in <see cref="InterpolationMode"/>.  
+        /// </para>
+        /// </remarks>
+        public GorgonKeyGorgonColor GetValueAtTime(float timeIndex)
+        {
+            if (KeyFrames.Count == 0)
+            {
+                return null;
+            }
+
+            if (KeyFrames.Count == 1)
+            {
+                return KeyFrames[0];
+            }
+
+            GorgonKeyGorgonColor result = KeyFrames.FirstOrDefault(item => item.Time == timeIndex);
+
+            if (result != null)
+            {
+                return result;
+            }
+
+            float highestTime = KeyFrames.Max(item => item.Time);
+
+            TrackKeyProcessor.TryUpdateColor(highestTime, this, timeIndex, out GorgonColor color);
+
+            return new GorgonKeyGorgonColor(timeIndex, color);
         }
         #endregion
 

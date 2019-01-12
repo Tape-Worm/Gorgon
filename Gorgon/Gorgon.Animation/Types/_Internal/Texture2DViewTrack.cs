@@ -25,9 +25,12 @@
 #endregion
 
 using System.Collections.Generic;
+using DX = SharpDX;
 using Gorgon.Animation.Properties;
 using Gorgon.Core;
 using Gorgon.Math;
+using Gorgon.Graphics.Core;
+using System.Linq;
 
 namespace Gorgon.Animation
 {
@@ -69,6 +72,44 @@ namespace Gorgon.Animation
         public IReadOnlyList<GorgonKeyTexture2D> KeyFrames
         {
             get;
+        }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to retrieve the value at the specified time index.
+        /// </summary>
+        /// <param name="timeIndex">The time index within the track to retrieve the value from.</param>
+        /// <returns>The value at the specified time index.</returns>
+        /// <remarks>
+        /// <para>
+        /// The value returned by this method may or may not be interpolated based on the value in <see cref="InterpolationMode"/>.  
+        /// </para>
+        /// </remarks>
+        public GorgonKeyTexture2D GetValueAtTime(float timeIndex)
+        {
+            if (KeyFrames.Count == 0)
+            {
+                return null;
+            }
+
+            if (KeyFrames.Count == 1)
+            {
+                return KeyFrames[0];
+            }
+
+            GorgonKeyTexture2D result = KeyFrames.FirstOrDefault(item => item.Time == timeIndex);
+
+            if (result != null)
+            {
+                return result;
+            }
+
+            float highestTime = KeyFrames.Max(item => item.Time);
+
+            TrackKeyProcessor.TryUpdateTexture2D(highestTime, timeIndex, this, out GorgonTexture2DView view, out DX.RectangleF texCoords, out int arrayIndex);
+
+            return new GorgonKeyTexture2D(timeIndex, view, texCoords, arrayIndex);
         }
         #endregion
 

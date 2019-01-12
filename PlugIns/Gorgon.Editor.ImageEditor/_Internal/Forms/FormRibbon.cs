@@ -22,6 +22,18 @@ namespace Gorgon.Editor.ImageEditor
     internal partial class FormRibbon 
         : KryptonForm, IDataContext<IImageContent>
     {
+        #region Events.
+        /// <summary>
+        /// Event triggered when the zoom menu is updated.
+        /// </summary>
+        public event EventHandler<ImageZoomedArgs> ImageZoomed;
+        #endregion
+
+        #region Variables.
+        // The current zoom level.
+        private ZoomLevels _zoomLevel = ZoomLevels.ToWindow;
+        #endregion
+
         #region Properties.
         /// <summary>
         /// Property to set or return the current graphics context.
@@ -43,6 +55,55 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to update the zoom item menu to reflect the current selection.
+        /// </summary>
+        private void UpdateZoomMenu()
+        {
+            ToolStripMenuItem currentItem;
+
+            switch (_zoomLevel)
+            {
+                case ZoomLevels.Percent12:
+                    currentItem = Item12Percent;
+                    break;
+                case ZoomLevels.Percent25:
+                    currentItem = Item25Percent;
+                    break;
+                case ZoomLevels.Percent50:
+                    currentItem = Item50Percent;
+                    break;
+                case ZoomLevels.Percent100:
+                    currentItem = Item100Percent;
+                    break;
+                case ZoomLevels.Percent200:
+                    currentItem = Item200Percent;
+                    break;
+                case ZoomLevels.Percent400:
+                    currentItem = Item400Percent;
+                    break;
+                case ZoomLevels.Percent800:
+                    currentItem = Item800Percent;
+                    break;
+                case ZoomLevels.Percent1600:
+                    currentItem = Item1600Percent;
+                    break;
+                default:
+                    currentItem = ItemZoomToWindow;
+                    break;
+            }
+
+            foreach (ToolStripMenuItem item in MenuZoom.Items.OfType<ToolStripMenuItem>().Where(item => item != currentItem))
+            {
+                item.Checked = false;
+            }
+
+            ButtonZoom.TextLine1 = string.Format(Resources.GORIMG_TEXT_ZOOM_BUTTON, currentItem.Text);
+
+            EventHandler<ImageZoomedArgs> handler = ImageZoomed;
+            ImageZoomed?.Invoke(this, new ImageZoomedArgs(_zoomLevel));
+        }
+
         /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The [PropertyChangedEventArgs] instance containing the event data.</param>
@@ -304,7 +365,7 @@ namespace Gorgon.Editor.ImageEditor
         /// Function to unassign the events for the data context.
         /// </summary>
         private void UnassignEvents()
-        {
+        {            
             if (DataContext == null)
             {
                 return;
@@ -325,6 +386,33 @@ namespace Gorgon.Editor.ImageEditor
         {
             RibbonImageContent.Enabled = false;
             ClearCodecs();
+            UpdateZoomMenu();
+            ItemZoomToWindow.Checked = true;
+        }
+
+
+        /// <summary>Handles the Click event of the ItemZoomToWindow control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The [EventArgs] instance containing the event data.</param>
+        private void ItemZoom_Click(object sender, EventArgs e)
+        {
+            var item = (ToolStripMenuItem)sender;
+
+            if ((item.Tag == null) || (!Enum.TryParse(item.Tag.ToString(), out ZoomLevels zoom)))
+            {
+                item.Checked = false;
+                return;
+            }
+
+            // Do not let us uncheck.
+            if (_zoomLevel == zoom)
+            {
+                item.Checked = true;
+                return;
+            }
+                        
+            _zoomLevel = zoom;
+            UpdateZoomMenu();
         }
 
         /// <summary>
@@ -348,6 +436,7 @@ namespace Gorgon.Editor.ImageEditor
             RefreshPixelFormats(dataContext);
 
             UpdatePixelFormatMenuSelection(dataContext);
+            UpdateZoomMenu();
         }
 
         /// <summary>Function to assign a data context to the view as a view model.</summary>
@@ -374,6 +463,15 @@ namespace Gorgon.Editor.ImageEditor
             {
                 DataContext.Codecs.CollectionChanged += Codecs_CollectionChanged;
             }
+        }
+
+        /// <summary>
+        /// Function to reset the zoom back to the default.
+        /// </summary>
+        public void ResetZoom()
+        {
+            _zoomLevel = ZoomLevels.ToWindow;
+            UpdateZoomMenu();
         }
         #endregion
 

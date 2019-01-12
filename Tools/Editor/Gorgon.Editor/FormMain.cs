@@ -40,13 +40,15 @@ using Gorgon.Editor.Rendering;
 using Gorgon.Math;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using ComponentFactory.Krypton.Ribbon;
+using System.Linq;
 
 namespace Gorgon.Editor
 {
     /// <summary>
     /// The main application form.
     /// </summary>
-    internal partial class FormMain 
+    internal partial class FormMain
         : KryptonForm, IDataContext<IMain>
     {
         #region Enumerations.
@@ -120,7 +122,23 @@ namespace Gorgon.Editor
         /// <summary>Handles the RibbonAdded event of the PanelProject control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The [ContentRibbonEventArgs] instance containing the event data.</param>
-        private void PanelProject_RibbonAdded(object sender, ContentRibbonEventArgs e) => RibbonMerger.Merge(e.Ribbon);
+        private void PanelProject_RibbonAdded(object sender, ContentRibbonEventArgs e)
+        {
+            KryptonRibbonTab firstTab = null;
+
+            if ((e.Ribbon != null) && (e.Ribbon.RibbonTabs.Count > 0))
+            {
+                firstTab = e.Ribbon.RibbonTabs[0];
+            }
+
+            RibbonMerger.Merge(e.Ribbon);
+
+            // Default to the first tab on the joined ribbon.
+            if (firstTab != null)
+            {
+                RibbonMain.SelectedTab = firstTab;
+            }
+        }
 
         /// <summary>Handles the RibbonRemoved event of the PanelProject control.</summary>
         /// <param name="sender">The source of the event.</param>

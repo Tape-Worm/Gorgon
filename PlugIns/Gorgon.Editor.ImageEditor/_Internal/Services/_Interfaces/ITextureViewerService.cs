@@ -44,6 +44,14 @@ namespace Gorgon.Editor.ImageEditor
         ZoomLevels ZoomLevel
         {
             get;
+        }
+
+        /// <summary>
+        /// Property to set or return the alpha for the image.
+        /// </summary>
+        float Alpha
+        {
+            get;
             set;
         }
 
@@ -54,9 +62,37 @@ namespace Gorgon.Editor.ImageEditor
         {
             get;
         }
+
+        /// <summary>
+        /// Property to set or return the current texture boundaries.
+        /// </summary>
+        DX.RectangleF TextureBounds
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function called when the render window changes size.
+        /// </summary>
+        /// <param name="image">The image to display.</param>
+        void WindowResize(IImageContent image);
+
+        /// <summary>
+        /// Function to scroll the image.
+        /// </summary>
+        /// <param name="image">The image to scroll.</param>
+        void Scroll(IImageContent image);
+
+        /// <summary>
+        /// Function to set the zoom level for the specified image.
+        /// </summary>
+        /// <param name="zoomLevel">The zoom level to apply.</param>
+        /// <param name="image">The image to zoom.</param>
+        void SetZoomLevel(ZoomLevels zoomLevel, IImageContent image);
+
         /// <summary>
         /// Function to indicate that the current animation (if one is playing) should end.
         /// </summary>

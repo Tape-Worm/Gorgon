@@ -337,7 +337,7 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Mip level: {0}/{1} ({2}x{3}).
+        ///   Looks up a localized string similar to {0}/{1} ({2}x{3}).
         /// </summary>
         internal static string GORIMG_TEXT_MIP_DETAILS {
             get {
@@ -369,6 +369,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static string GORIMG_TEXT_UNDO {
             get {
                 return ResourceManager.GetString("GORIMG_TEXT_UNDO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zoom: {0}.
+        /// </summary>
+        internal static string GORIMG_TEXT_ZOOM_BUTTON {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_ZOOM_BUTTON", resourceCulture);
             }
         }
         
@@ -482,6 +491,16 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap left_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("left_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap left_20x20 {
             get {
                 object obj = ResourceManager.GetObject("left_20x20", resourceCulture);
@@ -532,6 +551,16 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap right_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("right_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap right_20x20 {
             get {
                 object obj = ResourceManager.GetObject("right_20x20", resourceCulture);
@@ -575,6 +604,26 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static System.Drawing.Bitmap undo_48x48 {
             get {
                 object obj = ResourceManager.GetObject("undo_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap zoom_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("zoom_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap zoom_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("zoom_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

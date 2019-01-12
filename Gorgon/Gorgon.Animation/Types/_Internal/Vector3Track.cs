@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Math;
+using System.Linq;
 
 namespace Gorgon.Animation
 {
@@ -83,6 +84,42 @@ namespace Gorgon.Animation
             get;
         }
         #endregion
+
+        /// <summary>
+        /// Function to retrieve the value at the specified time index.
+        /// </summary>
+        /// <param name="timeIndex">The time index within the track to retrieve the value from.</param>
+        /// <returns>The value at the specified time index.</returns>
+        /// <remarks>
+        /// <para>
+        /// The value returned by this method may or may not be interpolated based on the value in <see cref="InterpolationMode"/>.  
+        /// </para>
+        /// </remarks>
+        public GorgonKeyVector3 GetValueAtTime(float timeIndex)
+        {
+            if (KeyFrames.Count == 0)
+            {
+                return null;
+            }
+
+            if (KeyFrames.Count == 1)
+            {
+                return KeyFrames[0];
+            }
+
+            GorgonKeyVector3 result = KeyFrames.FirstOrDefault(item => item.Time == timeIndex);
+
+            if (result != null)
+            {
+                return result;
+            }
+
+            float highestTime = KeyFrames.Max(item => item.Time);
+
+            TrackKeyProcessor.TryUpdateVector3(highestTime, this, timeIndex, out DX.Vector3 vec);
+
+            return new GorgonKeyVector3(timeIndex, vec);
+        }
 
         #region Constructor/Finalizer.
         /// <summary>

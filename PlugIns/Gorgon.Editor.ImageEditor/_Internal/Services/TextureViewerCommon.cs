@@ -41,9 +41,29 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.Renderers;
+using Gorgon.Animation;
 
 namespace Gorgon.Editor.ImageEditor
 {
+    /// <summary>
+    /// The type of animation to perform.
+    /// </summary>
+    internal enum AnimationType
+    {
+        /// <summary>
+        /// No animation.
+        /// </summary>
+        None = 0,
+        /// <summary>
+        /// A fade in/fade out animation.
+        /// </summary>
+        Fade = 1,
+        /// <summary>
+        /// A zoom in/out animation.
+        /// </summary>
+        Zoom = 2
+    }
+
     /// <summary>
     /// The common functionality for a texture viewer.
     /// </summary>
@@ -88,13 +108,54 @@ namespace Gorgon.Editor.ImageEditor
         private GorgonConstantBuffer _textureParameters;
         // The current render batch state.
         private Gorgon2DBatchState _batchState;
-        // The region boundaries for the texture.
-        private DX.RectangleF _textureBounds;
         // Pixel shader used to render the image.
         private Gorgon2DShader<GorgonPixelShader> _batchShader;
+        // The animation builder used to create animations.
+        private GorgonAnimationBuilder _animBuilder = new GorgonAnimationBuilder();
+        // The list of available animations.
+        private readonly Dictionary<AnimationType, IGorgonAnimation> _animations = new Dictionary<AnimationType, IGorgonAnimation>();
+        // The current animation.
+        private AnimationType _currentAnimation;
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to set or return the current animation to play.
+        /// </summary>
+        protected AnimationType CurrentAnimation
+        {
+            get => _currentAnimation;
+            set
+            {
+                if (_currentAnimation == value)
+                {
+                    return;
+                }
+
+                if (value == AnimationType.None)
+                {
+                    _currentAnimation = value;
+                    return;
+                }
+
+                if (!_animations.ContainsKey(value))
+                {
+                    return;
+                }
+
+                _currentAnimation = value;
+            }
+        }
+
+        /// <summary>
+        /// Property to return the animation controller.
+        /// </summary>
+        protected GorgonAnimationController<ITextureViewerService> AnimationController
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// Property to return the background texture.
         /// </summary>
@@ -110,27 +171,40 @@ namespace Gorgon.Editor.ImageEditor
         public ZoomLevels ZoomLevel
         {
             get;
-            set;
+            private set;
         } = ZoomLevels.ToWindow;
 
         /// <summary>Property to return whether or not the viewer is in the middle of an animation.</summary>
         /// <value>
         ///   <c>true</c> if this instance is animating; otherwise, <c>false</c>.</value>
-        public bool IsAnimating
+        public bool IsAnimating => AnimationController.State == AnimationState.Playing;
+
+        /// <summary>Property to set or return the alpha for the image.</summary>
+        public float Alpha
         {
             get;
-            protected set;
-        }
+            set;
+        } = 1.0f;
+
+        /// <summary>
+        /// Property to return the current texture boundaries.
+        /// </summary>
+        public DX.RectangleF TextureBounds
+        {
+            get;
+            set;
+        } = DX.RectangleF.Empty;
         #endregion
 
         #region Methods.
         /// <summary>
         /// Function to retrieve the value used to multiply by when zooming.
         /// </summary>
+        /// <param name="zoomLevel">The current zoom level.</param>
         /// <returns>The zoom value as a normalized value.</returns>
-        private float GetZoomValue()
+        private float GetZoomValue(ZoomLevels zoomLevel)
         {
-            switch (ZoomLevel)
+            switch (zoomLevel)
             {
                 case ZoomLevels.Percent12:
                     return 0.125f;
@@ -158,11 +232,16 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="width">The width of the texture.</param>
         /// <param name="height">The height of the texture.</param>
         /// <returns>A new rectangle containing the size and location of the scaled image.</returns>
-        private void ScaleImageToClientArea(int width, int height)
+        private DX.RectangleF ScaleImageToClientArea(int width, int height)
         {
             var windowSize = new DX.Size2F(_swapChain.Width, _swapChain.Height);
             var textureSize = new DX.Size2F(width, height);
             var location = new DX.Vector2(_swapChain.Width / 2.0f, _swapChain.Height / 2.0f);
+
+            _hScroll.Enabled = false;
+            _hScroll.Value = 0;
+            _vScroll.Enabled = false;
+            _vScroll.Value = 0;
 
             var scale = new DX.Vector2(windowSize.Width / textureSize.Width, windowSize.Height / textureSize.Height);
 
@@ -181,7 +260,7 @@ namespace Gorgon.Editor.ImageEditor
             location.X = (location.X - textureSize.Width / 2.0f);
             location.Y = (location.Y - textureSize.Height / 2.0f);
 
-            _textureBounds = new DX.RectangleF((int)location.X, (int)location.Y, (int)textureSize.Width, (int)textureSize.Height);
+            return new DX.RectangleF((int)location.X, (int)location.Y, (int)textureSize.Width, (int)textureSize.Height);
         }
 
         /// <summary>
@@ -190,7 +269,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="width">The width of the texture.</param>
         /// <param name="height">The height of the texture.</param>
         /// <returns>A new rectangle containing the size and location of the scaled image.</returns>
-        private void ScaleImage(int width, int height, float scale)
+        private DX.RectangleF ScaleImage(int width, int height, float scale)
         {
             var textureSize = new DX.Size2F(width, height);
             var location = new DX.Vector2(_swapChain.Width / 2.0f, _swapChain.Height / 2.0f);
@@ -231,7 +310,7 @@ namespace Gorgon.Editor.ImageEditor
             location.X = (location.X - textureSize.Width / 2.0f) - ((_hScroll.Value / delta.X) * textureSize.Width);
             location.Y = (location.Y - textureSize.Height / 2.0f) - ((_vScroll.Value / delta.Y) * textureSize.Height);
 
-            _textureBounds = new DX.RectangleF((int)location.X, (int)location.Y, (int)textureSize.Width, (int)textureSize.Height);
+            return new DX.RectangleF((int)location.X, (int)location.Y, (int)textureSize.Width, (int)textureSize.Height);
         }
 
         /// <summary>
@@ -246,6 +325,17 @@ namespace Gorgon.Editor.ImageEditor
             return builder.ResetTo(_batchState)
                 .PixelShader(shader)
                 .Build();
+        }
+
+        /// <summary>
+        /// Function called when the zoom level is changed.
+        /// </summary>
+        /// <param name="zoomLevel">The current zoom level.</param>
+        /// <param name="oldTargetRegion">The previous target render region.</param>
+        /// <param name="newTargetRegion">The new target render region.</param>
+        protected virtual void OnZoom(ZoomLevels zoomLevel, DX.RectangleF oldTargetRegion, DX.RectangleF newTargetRegion)
+        {
+
         }
 
         /// <summary>
@@ -265,9 +355,8 @@ namespace Gorgon.Editor.ImageEditor
         /// Function to draw the texture.
         /// </summary>
         /// <param name="renderer">The renderer used to draw the texture.</param>
-        /// <param name="textureBounds">The screen space region for the texture.</param>
         /// <param name="image">The image being rendered.</param>
-        protected abstract void OnDrawTexture(Gorgon2D renderer, DX.RectangleF textureBounds, IImageContent image);
+        protected abstract void OnDrawTexture(Gorgon2D renderer, IImageContent image);
 
         /// <summary>
         /// Function to create the texture for the view.
@@ -293,6 +382,78 @@ namespace Gorgon.Editor.ImageEditor
         }
 
         /// <summary>
+        /// Function to retrieve the region for the background of the image.
+        /// </summary>
+        /// <returns>The screen space region of the background.</returns>
+        protected virtual DX.RectangleF OnGetBackgroundRegion() => TextureBounds;
+
+        /// <summary>
+        /// Function called before drawing begins.
+        /// </summary>
+        protected virtual void OnBeforeDraw()
+        {
+
+        }
+
+        /// <summary>
+        /// Function called after drawing begins.
+        /// </summary>
+        protected virtual void OnAfterDraw()
+        {
+
+        }
+
+        /// <summary>
+        /// Function called when the image is scrolled.
+        /// </summary>
+        protected virtual void OnScroll()
+        {
+
+        }
+
+        /// <summary>
+        /// Function called when the render window changes size.
+        /// </summary>
+        protected virtual void OnWindowResize()
+        {
+
+        }
+
+        /// <summary>
+        /// Function called when the render window changes size.
+        /// </summary>
+        /// <param name="image">The image to display.</param>
+        public void WindowResize(IImageContent image)
+        {
+            EndAnimation();
+
+            if (ZoomLevel == ZoomLevels.ToWindow)
+            {
+                TextureBounds = ScaleImageToClientArea(image.Width, image.Height);
+            }
+            else
+            {
+                TextureBounds = ScaleImage(image.Width, image.Height, GetZoomValue(ZoomLevel));
+            }
+
+            OnWindowResize();
+        }
+
+        /// <summary>Function to scroll the image.</summary>
+        /// <param name="image">The image to scroll.</param>
+        public void Scroll(IImageContent image)
+        {
+            if (image == null)
+            {
+                return;
+            }
+
+            EndAnimation();
+            TextureBounds = ScaleImage(image.Width, image.Height, GetZoomValue(ZoomLevel));
+            OnScroll();
+        }
+
+        /// <summary>
         /// Function to indicate that the current animation (if one is playing) should end.
         /// </summary>
         public void EndAnimation()
@@ -302,8 +463,12 @@ namespace Gorgon.Editor.ImageEditor
                 return;
             }
 
+            // Jump to the end of the animation (doing this will set the animation to stopped, so we don't need to call Stop here - Doing so will reset the animation).
+            AnimationController.Time = AnimationController.CurrentAnimation.Length;
+            AnimationController.Update();
             OnEndAnimation();
-            IsAnimating = false;
+
+            CurrentAnimation = AnimationType.None;
         }
 
         /// <summary>
@@ -341,7 +506,11 @@ namespace Gorgon.Editor.ImageEditor
                 return;
             }
 
+            EndAnimation();
+
             OnCreateTexture(_context.Graphics, imageData, image.File.Name);
+
+            SetZoomLevel(ZoomLevel, image);
 
             var shaderBuilder = new Gorgon2DShaderBuilder<GorgonPixelShader>();
             shaderBuilder
@@ -357,6 +526,38 @@ namespace Gorgon.Editor.ImageEditor
             _batchState = GetBatchState(_batchShader);
 
             UpdateTextureParameters(image);
+
+            // Calculate the image size relative to the client area.            
+            if (ZoomLevel == ZoomLevels.ToWindow)
+            {
+                TextureBounds = ScaleImageToClientArea(image.Width, image.Height);
+            }
+            else
+            {
+                TextureBounds = ScaleImage(image.Width, image.Height, GetZoomValue(ZoomLevel));
+            }
+        }
+
+        /// <summary>
+        /// Function to update the animation.
+        /// </summary>
+        private void UpdateAnimation()
+        {
+            if (CurrentAnimation == AnimationType.None)
+            {
+                return;
+            }
+
+            if ((!_animations.TryGetValue(CurrentAnimation, out IGorgonAnimation animation))
+                || (animation == null))
+            {
+                return;
+            }
+
+            if (animation != AnimationController.CurrentAnimation)
+            {
+                AnimationController.Play(this, animation);
+            }
         }
 
         /// <summary>
@@ -369,36 +570,47 @@ namespace Gorgon.Editor.ImageEditor
                 return;
             }
 
+            UpdateAnimation();
+
+            OnBeforeDraw();
+
             _context.Graphics.SetRenderTarget(_swapChain.RenderTargetView);
             _swapChain.RenderTargetView.Clear(GorgonColor.Gray25);
 
-            // Calculate the image size relative to the client area.            
-            if (ZoomLevel == ZoomLevels.ToWindow)
-            {
-                ScaleImageToClientArea(image.Width, image.Height);
-            }
-            else
-            {
-                ScaleImage(image.Width, image.Height, GetZoomValue());
-            }
+            // Get the region for the background.
+            DX.RectangleF backgroundRegion = OnGetBackgroundRegion();
 
             // Draw the checkboard background.
             _context.Renderer2D.Begin();
-            _context.Renderer2D.DrawFilledRectangle(_textureBounds,
+            _context.Renderer2D.DrawFilledRectangle(backgroundRegion,
                 GorgonColor.White,
                 _background,
-                _background.ToTexel(new DX.Rectangle(0, 0, (int)_textureBounds.Width, (int)_textureBounds.Height)),
+                _background.ToTexel(new DX.Rectangle(0, 0, (int)backgroundRegion.Width, (int)backgroundRegion.Height)),
                 textureSampler: GorgonSamplerState.Wrapping);
             _context.Renderer2D.End();
 
             // Draw our texture.
             _context.Renderer2D.Begin(_batchState);
 
-            OnDrawTexture(_context.Renderer2D, _textureBounds, image);
+            OnDrawTexture(_context.Renderer2D, image);
 
             _context.Renderer2D.End();
 
-            _swapChain.Present();
+            _swapChain.Present(1);
+
+            OnAfterDraw();
+
+            // Update any playing animation.
+            if (AnimationController.State == AnimationState.Playing)
+            {
+                AnimationController.Update();
+                
+                // If we've finished the animation, then update our current animation state.
+                if (AnimationController.State == AnimationState.Stopped)
+                {
+                    CurrentAnimation = AnimationType.None;
+                }
+            }
         }
 
         /// <summary>Function to create the resources required for the viewer.</summary>
@@ -412,7 +624,16 @@ namespace Gorgon.Editor.ImageEditor
                 SizeInBytes = TextureParams.Size
             });
 
-            _pixelShader = OnGetPixelShader(_context.Graphics, Resources.ImageViewShaders);            
+            _pixelShader = OnGetPixelShader(_context.Graphics, Resources.ImageViewShaders);
+
+            IGorgonAnimation animation = _animations[AnimationType.Fade] = _animBuilder.EditColors()
+                .SetKey(new GorgonKeyGorgonColor(0, new GorgonColor(GorgonColor.White, 0)))
+                .SetKey(new GorgonKeyGorgonColor(0.35f, GorgonColor.White))
+                .EndEdit()
+                .Build(nameof(AnimationType.Fade));
+
+            // Set to start with this animation.                        
+            CurrentAnimation = AnimationType.Fade;
         }
 
         /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
@@ -435,6 +656,57 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="image">The image to retrieve mip information from.</param>
         /// <returns>The width and height of the mip level.</returns>
         public abstract DX.Size2 GetMipSize(IImageContent image);
+
+        /// <summary>Function to set the zoom level for the specified image.</summary>
+        /// <param name="zoomLevel">The zoom level to apply.</param>
+        /// <param name="image">The image to zoom.</param>
+        public void SetZoomLevel(ZoomLevels zoomLevel, IImageContent image)
+        {
+            float animTime = 0.5f;
+
+            if (image == null)
+            {
+                return;
+            }
+
+            DX.RectangleF old = TextureBounds;
+            DX.RectangleF newBounds;
+
+            if ((CurrentAnimation == AnimationType.Zoom) && (AnimationController.State == AnimationState.Playing))
+            {
+                animTime = animTime - AnimationController.Time;
+            }
+
+            EndAnimation();
+
+            // Calculate the image size relative to the client area.            
+            if (zoomLevel == ZoomLevels.ToWindow)
+            {
+                newBounds = ScaleImageToClientArea(image.Width, image.Height);
+            }
+            else
+            {
+                newBounds = ScaleImage(image.Width, image.Height, GetZoomValue(zoomLevel));
+            }
+
+            if (ZoomLevel != zoomLevel)
+            {
+                _animations[AnimationType.Zoom] = _animBuilder
+                    .Clear()
+                    .RectBoundsInterpolationMode(TrackInterpolationMode.Spline)
+                    .EditRectangularBounds()  
+                    .SetKey(new GorgonKeyRectangle(0, old))
+                    .SetKey(new GorgonKeyRectangle(animTime, newBounds))
+                    .EndEdit()
+                    .Build("Zoom_Animation");
+                
+                CurrentAnimation = AnimationType.Zoom;
+            }
+
+            ZoomLevel = zoomLevel;
+
+            OnZoom(zoomLevel, old, newBounds);
+        }
         #endregion
 
         #region Constructor/Finalizer.
@@ -449,6 +721,8 @@ namespace Gorgon.Editor.ImageEditor
             _swapChain = swapChain;
             _hScroll = hScroll;
             _vScroll = vScroll;
+
+            AnimationController = new ImageAnimationController();
         }
         #endregion
     }

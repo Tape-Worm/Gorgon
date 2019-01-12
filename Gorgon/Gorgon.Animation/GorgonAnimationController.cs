@@ -174,13 +174,13 @@ namespace Gorgon.Animation
                 if (_time < 0)
                 {
                     _time = 0;
-                    State = AnimationState.Stopped;
+                    State = AnimationState.Stopped;                    
                 }
 
                 if (_time > CurrentAnimation.Length)
                 {
                     _time = CurrentAnimation.Length;
-                    State = AnimationState.Stopped;
+                    State = AnimationState.Stopped;                    
                 }
 
                 // Do not update the animation when we're in a paused state.
@@ -201,32 +201,32 @@ namespace Gorgon.Animation
 	    private void NotifyAnimation()
 	    {
             // Update each track.
-	        if (TrackKeyProcessor.TryUpdateVector3(CurrentAnimation, CurrentAnimation.PositionTrack, _time, out DX.Vector3 posValue))
+	        if (TrackKeyProcessor.TryUpdateVector3(CurrentAnimation.Length, CurrentAnimation.PositionTrack, _time, out DX.Vector3 posValue))
 	        {
                 OnPositionUpdate(_animatedObject, posValue);
 	        }
 
-	        if (TrackKeyProcessor.TryUpdateVector3(CurrentAnimation, CurrentAnimation.ScaleTrack, _time, out DX.Vector3 scaleValue))
+	        if (TrackKeyProcessor.TryUpdateVector3(CurrentAnimation.Length, CurrentAnimation.ScaleTrack, _time, out DX.Vector3 scaleValue))
 	        {
                 OnScaleUpdate(_animatedObject, scaleValue);
 	        }
 
-	        if (TrackKeyProcessor.TryUpdateVector3(CurrentAnimation, CurrentAnimation.RotationTrack, _time, out DX.Vector3 rotValue))
+	        if (TrackKeyProcessor.TryUpdateVector3(CurrentAnimation.Length, CurrentAnimation.RotationTrack, _time, out DX.Vector3 rotValue))
 	        {
 	            OnRotationUpdate(_animatedObject, rotValue);
 	        }
 
-	        if (TrackKeyProcessor.TryUpdateColor(CurrentAnimation, CurrentAnimation.ColorTrack, _time, out GorgonColor colorValue))
+	        if (TrackKeyProcessor.TryUpdateColor(CurrentAnimation.Length, CurrentAnimation.ColorTrack, _time, out GorgonColor colorValue))
 	        {
                 OnColorUpdate(_animatedObject, colorValue);
 	        }
 
-	        if (TrackKeyProcessor.TryUpdateRectBounds(CurrentAnimation, CurrentAnimation.RectBoundsTrack, _time, out DX.RectangleF rectValue))
+	        if (TrackKeyProcessor.TryUpdateRectBounds(CurrentAnimation.Length, CurrentAnimation.RectBoundsTrack, _time, out DX.RectangleF rectValue))
 	        {
 	            OnRectBoundsUpdate(_animatedObject, rectValue);
 	        }
 
-	        if (TrackKeyProcessor.TryUpdateTexture2D(CurrentAnimation,
+	        if (TrackKeyProcessor.TryUpdateTexture2D(CurrentAnimation.Length,
 	                                                 _time,
                                                      CurrentAnimation.Texture2DTrack,
 	                                                 out GorgonTexture2DView texture,
@@ -306,6 +306,15 @@ namespace Gorgon.Animation
 
 			// Push the animation time forward (or backward, depending on the Speed modifier).
 		    Time += increment;
+
+            // If we've stopped the animation, then reset it.
+            if (State == AnimationState.Stopped)
+            {
+                _loopCount = 0;
+                _animatedObject = null;
+                CurrentAnimation = null;
+                Time = 0;
+            }
 		}
 
         /// <summary>

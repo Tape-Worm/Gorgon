@@ -66,6 +66,7 @@ namespace Gorgon.Animation
         : IGorgonNamedObject
         where T : IGorgonKeyFrame
     {
+        #region Properties.
         /// <summary>
         /// Property to return the spline controller (if applicable) for the track.
         /// </summary>
@@ -104,5 +105,20 @@ namespace Gorgon.Animation
         {
             get;
         }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to retrieve the value at the specified time index.
+        /// </summary>
+        /// <param name="timeIndex">The time index within the track to retrieve the value from.</param>
+        /// <returns>The value at the specified time index.</returns>
+        /// <remarks>
+        /// <para>
+        /// The value returned by this method may or may not be interpolated based on the value in <see cref="InterpolationMode"/>.  
+        /// </para>
+        /// </remarks>
+        T GetValueAtTime(float timeIndex);
+        #endregion
     }
 }

@@ -39,12 +39,12 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to update the vector3 property of the object that the animation is being applied to.
         /// </summary>
-        /// <param name="animation">The animation that is currently running.</param>
+        /// <param name="animationLength">The length, in seconds, of the animation.</param>
         /// <param name="track">The track to evaluate.</param>
         /// <param name="time">The current time for the animation.</param>
         /// <param name="result">The result value to apply to the vector3 object property.</param>
         /// <returns><b>true</b> if there's a value to update, <b>false</b> if not.</returns>
-	    public static bool TryUpdateVector3(IGorgonAnimation animation, IGorgonTrack<GorgonKeyVector3> track, float time, out DX.Vector3 result)
+	    public static bool TryUpdateVector3(float animationLength, IGorgonTrack<GorgonKeyVector3> track, float time, out DX.Vector3 result)
 	    {
 	        switch (track.KeyFrames.Count)
 	        {
@@ -56,7 +56,7 @@ namespace Gorgon.Animation
 	                return true;
 	        }
 
-	        (GorgonKeyVector3 prev, GorgonKeyVector3 next, int prevKeyIndex, float deltaTime) = TweenKey.GetNearestKeys(track, time, animation.Length);
+	        (GorgonKeyVector3 prev, GorgonKeyVector3 next, int prevKeyIndex, float deltaTime) = TweenKey.GetNearestKeys(track, time, animationLength);
 
 	        switch (track.InterpolationMode)
 	        {
@@ -77,12 +77,12 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to update the color of the object that the animation is being applied to.
         /// </summary>
-        /// <param name="animation">The animation that is currently running.</param>
+        /// <param name="animationLength">The length, in seconds, of the animation.</param>
         /// <param name="track">The track to evaluate.</param>
         /// <param name="time">The current time for the animation.</param>
         /// <param name="result">The result value to apply to the object color.</param>
         /// <returns><b>true</b> if there's a value to update, <b>false</b> if not.</returns>
-        public static bool TryUpdateColor(IGorgonAnimation animation, IGorgonTrack<GorgonKeyGorgonColor> track, float time, out GorgonColor result)
+        public static bool TryUpdateColor(float animationLength, IGorgonTrack<GorgonKeyGorgonColor> track, float time, out GorgonColor result)
         {
             switch (track.KeyFrames.Count)
             {
@@ -94,7 +94,7 @@ namespace Gorgon.Animation
                     return true;
             }
 
-            (GorgonKeyGorgonColor prev, GorgonKeyGorgonColor next, int prevKeyIndex, float deltaTime) = TweenKey.GetNearestKeys(track, time, animation.Length);
+            (GorgonKeyGorgonColor prev, GorgonKeyGorgonColor next, int prevKeyIndex, float deltaTime) = TweenKey.GetNearestKeys(track, time, animationLength);
 
             switch (track.InterpolationMode)
             {
@@ -115,12 +115,12 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to update the rectangle boundaries of the object that the animation is being applied to.
         /// </summary>
-        /// <param name="animation">The animation that is currently running.</param>
+        /// <param name="animationLength">The length, in seconds, of the animation.</param>
         /// <param name="track">The track to evaluate.</param>
         /// <param name="time">The current time for the animation.</param>
         /// <param name="result">The result value to apply to the object bounds.</param>
         /// <returns><b>true</b> if there's a value to update, <b>false</b> if not.</returns>
-        public static bool TryUpdateRectBounds(IGorgonAnimation animation, IGorgonTrack<GorgonKeyRectangle> track, float time, out DX.RectangleF result)
+        public static bool TryUpdateRectBounds(float animationLength, IGorgonTrack<GorgonKeyRectangle> track, float time, out DX.RectangleF result)
         {
             switch (track.KeyFrames.Count)
             {
@@ -132,7 +132,7 @@ namespace Gorgon.Animation
                     return true;
             }
 
-            (GorgonKeyRectangle prev, GorgonKeyRectangle next, int prevKeyIndex, float deltaTime) = TweenKey.GetNearestKeys(track, time, animation.Length);
+            (GorgonKeyRectangle prev, GorgonKeyRectangle next, int prevKeyIndex, float deltaTime) = TweenKey.GetNearestKeys(track, time, animationLength);
 
             switch (track.InterpolationMode)
             {
@@ -157,14 +157,14 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to update the 2D texture values for the object that the animation is being applied to.
         /// </summary>
-        /// <param name="animation">The animation that is currently running.</param>
+        /// <param name="animationLength">The length, in seconds, of the animation.</param>
         /// <param name="track">The track to evaluate.</param>
         /// <param name="time">The current time for the animation.</param>
         /// <param name="texture">The texture to switch to.</param>
         /// <param name="texCoordinates">The texture coordinates to use.</param>
         /// <param name="textureArrayIndex">The current texture array index to use.</param>
         /// <returns><b>true</b> if there's a value to update, <b>false</b> if not.</returns>
-        public static bool TryUpdateTexture2D(IGorgonAnimation animation, float time, IGorgonTrack<GorgonKeyTexture2D> track, out GorgonTexture2DView texture, out DX.RectangleF texCoordinates, out int textureArrayIndex)
+        public static bool TryUpdateTexture2D(float animationLength, float time, IGorgonTrack<GorgonKeyTexture2D> track, out GorgonTexture2DView texture, out DX.RectangleF texCoordinates, out int textureArrayIndex)
         {
             switch (track.KeyFrames.Count)
             {
@@ -181,7 +181,7 @@ namespace Gorgon.Animation
                     return true;
             }
             
-            (GorgonKeyTexture2D prev, GorgonKeyTexture2D next,_,_) = TweenKey.GetNearestKeys(track, time, animation.Length);
+            (GorgonKeyTexture2D prev, GorgonKeyTexture2D next,_,_) = TweenKey.GetNearestKeys(track, time, animationLength);
 
             GorgonKeyTexture2D correctKey = time.EqualsEpsilon(next.Time) ? next : prev;
 

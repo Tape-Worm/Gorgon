@@ -29,6 +29,7 @@ using DX = SharpDX;
 using Gorgon.Animation.Properties;
 using Gorgon.Core;
 using Gorgon.Math;
+using System.Linq;
 
 namespace Gorgon.Animation
 {
@@ -82,6 +83,44 @@ namespace Gorgon.Animation
         public IReadOnlyList<GorgonKeyRectangle> KeyFrames
         {
             get;
+        }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to retrieve the value at the specified time index.
+        /// </summary>
+        /// <param name="timeIndex">The time index within the track to retrieve the value from.</param>
+        /// <returns>The value at the specified time index.</returns>
+        /// <remarks>
+        /// <para>
+        /// The value returned by this method may or may not be interpolated based on the value in <see cref="InterpolationMode"/>.  
+        /// </para>
+        /// </remarks>
+        public GorgonKeyRectangle GetValueAtTime(float timeIndex)
+        {
+            if (KeyFrames.Count == 0)
+            {
+                return null;
+            }
+
+            if (KeyFrames.Count == 1)
+            {
+                return KeyFrames[0];
+            }
+
+            GorgonKeyRectangle result = KeyFrames.FirstOrDefault(item => item.Time == timeIndex);
+
+            if (result != null)
+            {
+                return result;
+            }
+
+            float highestTime = KeyFrames.Max(item => item.Time);
+
+            TrackKeyProcessor.TryUpdateRectBounds(highestTime, this, timeIndex, out DX.RectangleF rect);
+
+            return new GorgonKeyRectangle(timeIndex, rect);
         }
         #endregion
 
