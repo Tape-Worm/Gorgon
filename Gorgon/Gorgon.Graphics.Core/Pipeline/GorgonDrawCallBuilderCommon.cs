@@ -560,7 +560,7 @@ namespace Gorgon.Graphics.Core
 
             ReadWriteViews(drawCall.D3DState.ReadWriteViews);
 
-            DrawCall.D3DState.PipelineState = new GorgonPipelineState(DrawCall.PipelineState);
+            DrawCall.D3DState.PipelineState = new GorgonPipelineState(drawCall.PipelineState);
 
             return OnResetTo(drawCall);
         }
