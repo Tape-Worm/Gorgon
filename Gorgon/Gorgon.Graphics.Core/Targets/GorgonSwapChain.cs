@@ -171,6 +171,8 @@ namespace Gorgon.Graphics.Core
         private GorgonRenderTarget2DView _targetView;
         // The previously assigned render target views captured when using flip mode.
         private readonly GorgonRenderTargetView[] _previousViews = new GorgonRenderTargetView[D3D11.OutputMergerStage.SimultaneousRenderTargetCount];
+        // Flag to indicate that tearing support is enabled (for flip mode).
+        private int _supportsTearing = 1;
         #endregion
 
         #region Events.
@@ -1077,6 +1079,11 @@ namespace Gorgon.Graphics.Core
 
 			interval.ValidateRange(nameof(interval), 0, 4, true, true);
 
+            if ((_supportsTearing != 0) && (interval == 0) && (!IsInStandBy))
+            {
+                flags |= PresentFlags.AllowTearing;
+            }
+
 			try
 			{
 				IsInStandBy = false;
@@ -1108,7 +1115,7 @@ namespace Gorgon.Graphics.Core
                 // The typical use case is that we have only a single rtv set when we present.  So, rather than restoring everything
                 // we should just restore the single rtv.
 			    Graphics.SetRenderTargets(_previousViews, prevDepthStencil);
-
+                
                 // Remove all items from the list so we don't hang on to them.
 			    Array.Clear(_previousViews, prevTargetRange.FirstIndex, prevTargetRange.TargetCount);
 			}
@@ -1207,6 +1214,22 @@ namespace Gorgon.Graphics.Core
             SwapChainDescription1 desc = info.ToSwapChainDesc();
 
             this.RegisterDisposable(graphics);
+
+            if (info.UseFlipMode)
+            {
+                unsafe
+                {
+                    fixed (int* supportsTearing = &_supportsTearing)
+                    {
+                        Graphics.DXGIFactory.CheckFeatureSupport(Feature.PresentAllowTearing, new IntPtr(&supportsTearing), sizeof(int));
+                    }
+                }
+                
+                if (_supportsTearing != 0)
+                {
+                    desc.Flags |= SwapChainFlags.AllowTearing;
+                }
+            }
 
             using (var dxgiSwapChain = new SwapChain1(Graphics.DXGIFactory, Graphics.D3DDevice, control.Handle, ref desc)
                                                    {
