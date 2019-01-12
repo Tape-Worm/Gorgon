@@ -1044,7 +1044,14 @@ namespace Gorgon.Graphics.Core
 
 			int rtvIndex = DestroyResources(false);
 
-			DXGISwapChain.ResizeBuffers(IsWindowed ? 2 : 3, newWidth, newHeight, (Format)Format, SwapChainFlags.AllowModeSwitch);
+            SwapChainFlags flags = SwapChainFlags.AllowModeSwitch;
+
+            if ((_supportsTearing != 0) && (UseFlipMode))
+            {
+                flags |= SwapChainFlags.AllowTearing;
+            }
+
+			DXGISwapChain.ResizeBuffers(IsWindowed ? 2 : 3, newWidth, newHeight, (Format)Format, flags);
 
             var oldSize = new DX.Size2(_info.Width, _info.Height);
 			_info.Width = newWidth;
