@@ -355,6 +355,11 @@ namespace Gorgon.Graphics.Core
             
             _workerCall.PipelineState = new GorgonStreamOutPipelineState(drawCall.PipelineState.PipelineState);
             
+            // We need to copy the D3D states as well as they won't be updated unless we rebuild the pipeline state.
+            _workerCall.D3DState.PipelineState.D3DBlendState = drawCall.D3DState.PipelineState.D3DBlendState;
+            _workerCall.D3DState.PipelineState.D3DRasterState = drawCall.D3DState.PipelineState.D3DRasterState;
+            _workerCall.D3DState.PipelineState.D3DDepthStencilState = drawCall.D3DState.PipelineState.D3DDepthStencilState;
+            
             return this;
         }
 
@@ -363,7 +368,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <returns>The fluent builder interface.</returns>
         public GorgonStreamOutCallBuilder Clear()
-        {
+        {            
             _workerCall.D3DState.VertexBuffers.Clear();
             
             _workerCall.D3DState.PsConstantBuffers.Clear();

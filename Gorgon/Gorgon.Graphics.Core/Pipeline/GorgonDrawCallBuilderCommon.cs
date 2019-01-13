@@ -561,6 +561,10 @@ namespace Gorgon.Graphics.Core
             ReadWriteViews(drawCall.D3DState.ReadWriteViews);
 
             DrawCall.D3DState.PipelineState = new GorgonPipelineState(drawCall.PipelineState);
+            // We need to copy the D3D states as well as they won't be updated unless we rebuild the pipeline state.
+            DrawCall.D3DState.PipelineState.D3DBlendState = drawCall.D3DState.PipelineState.D3DBlendState;
+            DrawCall.D3DState.PipelineState.D3DRasterState = drawCall.D3DState.PipelineState.D3DRasterState;
+            DrawCall.D3DState.PipelineState.D3DDepthStencilState = drawCall.D3DState.PipelineState.D3DDepthStencilState;
 
             return OnResetTo(drawCall);
         }
