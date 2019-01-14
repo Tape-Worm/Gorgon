@@ -258,19 +258,26 @@ namespace Gorgon.Graphics.Core
 		/// </remarks>
 		public ref readonly (int Start, int Count) GetDirtyItems(bool peek = false)
 		{
-		    if (_changedIndices.Count == 0)
+    if (_changedIndices.Count == 0)
 		    {
 		        return ref _dirtyItems;
 		    }
 
 		    int minSlot = int.MaxValue;
+            int maxSlot = int.MinValue;
 
             // Find the lowest start value.
-		    for (int i = 0; i < _changedIndices.Count; ++i)
-		    {
-		        int index = _changedIndices[i];
-		        minSlot = minSlot.Min(index);
-		        Native[i] = _backingArray[index]?.Native;
+            for (int i = 0; i < _changedIndices.Count; ++i)
+            {
+                minSlot = minSlot.Min(_changedIndices[i]);
+                maxSlot = maxSlot.Max(_changedIndices[i]);
+            }
+
+            // Add values to native array.
+            for (int i = 0; i < _changedIndices.Count; ++i)
+            {
+                int index = _changedIndices[i];
+                Native[index - minSlot] = _backingArray[index]?.Native;
 		    }
 
 		    if (minSlot == int.MaxValue)
@@ -278,7 +285,12 @@ namespace Gorgon.Graphics.Core
 		        minSlot = 0;
 		    }
 
-		    _dirtyItems = (minSlot, _changedIndices.Count);
+            if (maxSlot == int.MinValue)
+            {
+                maxSlot = -1;
+            }
+
+		    _dirtyItems = (minSlot, (maxSlot - minSlot) + 1);
 
 		    if (!peek)
 		    {
@@ -287,7 +299,7 @@ namespace Gorgon.Graphics.Core
 		    }
             
 		    return ref _dirtyItems;
-		}
+	    }
 
         /// <summary>Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.</summary>
         /// <param name="index">The zero-based index of the item to remove.</param>
