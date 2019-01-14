@@ -243,51 +243,63 @@ namespace Gorgon.Graphics.Core
 #endif
 	    }
 
-		/// <summary>
-		/// Function to retrieve the dirty items in this list.
-		/// </summary>
-		/// <param name="peek">[Optional] <b>true</b> if the dirty state should not be modified by calling this method, or <b>false</b> if it should be.</param>
-		/// <remarks>
-		/// <para>
-		/// This will return a tuple that contains the start index, and count of the items that have been changed in this collection.  
-		/// </para>
-		/// <para>
-		/// If the <paramref name="peek"/> parameter is set to <b>true</b>, then the state of this collection is not changed when retrieving the modified objects. Otherwise, the state will be reset and a 
-		/// subsequent call to this method will result in a tuple that does not contain any changed values (i.e. the start and count will be 0) until the collection is modified again.
-		/// </para>
-		/// </remarks>
-		public ref readonly (int Start, int Count) GetDirtyItems(bool peek = false)
-		{
-		    if (_changedIndices.Count == 0)
-		    {
-		        return ref _dirtyItems;
-		    }
-
-		    int minSlot = int.MaxValue;
+        /// <summary>
+        /// Function to retrieve the dirty items in this list.
+        /// </summary>
+        /// <param name="peek">[Optional] <b>true</b> if the dirty state should not be modified by calling this method, or <b>false</b> if it should be.</param>
+        /// <remarks>
+        /// <para>
+        /// This will return a tuple that contains the start index, and count of the items that have been changed in this collection.  
+        /// </para>
+        /// <para>
+        /// If the <paramref name="peek"/> parameter is set to <b>true</b>, then the state of this collection is not changed when retrieving the modified objects. Otherwise, the state will be reset and a 
+        /// subsequent call to this method will result in a tuple that does not contain any changed values (i.e. the start and count will be 0) until the collection is modified again.
+        /// </para>
+        /// </remarks>
+        public ref readonly (int Start, int Count) GetDirtyItems(bool peek = false)
+        {
+            if (_changedIndices.Count == 0)
+            {
+                return ref _dirtyItems;
+            }
+            
+            int minSlot = int.MaxValue;
+            int maxSlot = int.MinValue;
 
             // Find the lowest start value.
-		    for (int i = 0; i < _changedIndices.Count; ++i)
-		    {
-		        int index = _changedIndices[i];
-		        minSlot = minSlot.Min(index);
-		        Native[i] = _backingArray[index]?.Native;
-		    }
+            for (int i = 0; i < _changedIndices.Count; ++i)
+            {
+                minSlot = minSlot.Min(_changedIndices[i]);
+                maxSlot = maxSlot.Max(_changedIndices[i]);
+            }
 
-		    if (minSlot == int.MaxValue)
-		    {
-		        minSlot = 0;
-		    }
-
-		    _dirtyItems = (minSlot, _changedIndices.Count);
-
-		    if (!peek)
-		    {
-		        _indexMask1 = _indexMask2 = 0;
+            // If we couldn't find a min/max slot, then treat as empty.
+            if ((minSlot == int.MaxValue) || (maxSlot == int.MinValue))
+            {
+                _indexMask1 = _indexMask2 = 0;
                 _changedIndices.Clear();
-		    }
-            
-		    return ref _dirtyItems;
-		}
+                _dirtyItems = (0, 0);
+                return ref _dirtyItems;
+            }
+
+            int count = 0;
+            // Add values to native array.
+            for (int i = minSlot; i <= maxSlot; ++i)
+            {                
+                Native[i - minSlot] = _backingArray[i]?.Native;
+                ++count;
+            }
+
+            _dirtyItems = (minSlot, count);
+
+            if (!peek)
+            {
+                _indexMask1 = _indexMask2 = 0;
+                _changedIndices.Clear();
+            }
+
+            return ref _dirtyItems;
+        }
 
         /// <summary>Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.</summary>
         /// <param name="index">The zero-based index of the item to remove.</param>
