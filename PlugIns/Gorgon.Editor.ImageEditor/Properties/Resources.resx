@@ -299,4 +299,10 @@ Would you like to save these changes now?</value>
   <data name="GORIMG_TEXT_ZOOM_BUTTON" xml:space="preserve">
     <value>Zoom: {0}</value>
   </data>
+  <data name="GORIMG_TEXT_3DVIEW" xml:space="preserve">
+    <value>3D View</value>
+  </data>
+  <data name="VolumeRenderShaders" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\VolumeRenderShaders.hlsl;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
 </root>

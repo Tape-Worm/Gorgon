@@ -52,11 +52,9 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Methods.
-        /// <summary>Function to dispose any resources created by the implementation.</summary>
-        protected override void OnDispose()
+        /// <summary>Function to dispose any texture resources.</summary>
+        protected override void OnDestroyTexture()
         {
-            EndAnimation();
-
             _texture?.Dispose();
             _texture = null;
             _textureView = null;
@@ -93,8 +91,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Function to draw the texture.</summary>
         /// <param name="renderer">The renderer used to draw the texture.</param>
         /// <param name="image">The image being rendered.</param>
-        protected override void OnDrawTexture(Gorgon2D renderer, IImageContent image)
-        {
+        protected override void OnDrawTexture(Gorgon2D renderer, IImageContent image) =>
             // We can use this for 3D textures because the texture is in slot 1, and slot 0, where the 2D texture is usually located is vacant and not used by the pixel shader.
             renderer.DrawFilledRectangle(TextureBounds,
                 new GorgonColor(GorgonColor.White, Alpha),
@@ -102,7 +99,6 @@ namespace Gorgon.Editor.ImageEditor
                 new DX.RectangleF(0, 0, 1, 1),
                 image.CurrentArrayIndex,
                 textureSampler: GorgonSamplerState.PointFiltering);
-        }
 
         /// <summary>
         /// Function to retrieve the size, in pixels, if the current mip level.

@@ -64,7 +64,9 @@
     <Compile Include="_Internal\ImageAnimationController.cs" />
     <Compile Include="_Internal\ImageImporterSettings.cs" />
     <Compile Include="ImageImporterPlugin.cs" />
+    <Compile Include="_Internal\Services\Cube.cs" />
     <Compile Include="_Internal\Services\ExportImageDialogService.cs" />
+    <Compile Include="_Internal\Services\CubeVertex.cs" />
     <Compile Include="_Internal\Services\ImageEditorServices.cs" />
     <Compile Include="_Internal\Services\Texture3DViewer.cs" />
     <Compile Include="_Internal\Services\TextureViewerCommon.cs" />
@@ -93,10 +95,12 @@
       <DependentUpon>ImageEditorView.cs</DependentUpon>
     </Compile>
     <Compile Include="_Internal\ViewModels\_Interfaces\IImageContent.cs" />
+    <Compile Include="_Internal\VolumeRenderer.cs" />
     <Compile Include="_Internal\ZoomLevels.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\VolumeRenderShaders.hlsl" />
     <None Include="Resources\zoom_16x16.png" />
     <None Include="Resources\zoom_48x48.png" />
     <None Include="Resources\right_16x16.png" />

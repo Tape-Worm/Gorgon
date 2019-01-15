@@ -151,6 +151,7 @@
             this.ButtonPrevDepthSlice.Name = "ButtonPrevDepthSlice";
             this.ButtonPrevDepthSlice.Size = new System.Drawing.Size(22, 22);
             this.ButtonPrevDepthSlice.TabIndex = 8;
+            this.ButtonPrevDepthSlice.Click += new System.EventHandler(this.ButtonPrevDepthSlice_Click);
             // 
             // ButtonNextDepthSlice
             // 
@@ -169,6 +170,7 @@
             this.ButtonNextDepthSlice.Name = "ButtonNextDepthSlice";
             this.ButtonNextDepthSlice.Size = new System.Drawing.Size(22, 22);
             this.ButtonNextDepthSlice.TabIndex = 10;
+            this.ButtonNextDepthSlice.Click += new System.EventHandler(this.ButtonNextDepthSlice_Click);
             // 
             // LabelDepthSlice
             // 
@@ -214,6 +216,7 @@
             this.ButtonPrevArrayIndex.Name = "ButtonPrevArrayIndex";
             this.ButtonPrevArrayIndex.Size = new System.Drawing.Size(22, 22);
             this.ButtonPrevArrayIndex.TabIndex = 8;
+            this.ButtonPrevArrayIndex.Click += new System.EventHandler(this.ButtonPrevArrayIndex_Click);
             // 
             // ButtonNextArrayIndex
             // 
@@ -232,6 +235,7 @@
             this.ButtonNextArrayIndex.Name = "ButtonNextArrayIndex";
             this.ButtonNextArrayIndex.Size = new System.Drawing.Size(22, 22);
             this.ButtonNextArrayIndex.TabIndex = 10;
+            this.ButtonNextArrayIndex.Click += new System.EventHandler(this.ButtonNextArrayIndex_Click);
             // 
             // LabelArrayIndex
             // 

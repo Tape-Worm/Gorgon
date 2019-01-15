@@ -319,6 +319,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 3D View.
+        /// </summary>
+        internal static string GORIMG_TEXT_3DVIEW {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_3DVIEW", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Codec.
         /// </summary>
         internal static string GORIMG_TEXT_CODEC {
@@ -446,21 +455,20 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         ///
         ///// Our default texture and sampler.
         ///Texture2DArray _gorgonTexture2DArray : register(t0);
+        ///TextureCube _gorgonTextureVolume : register(t0);
         ///Texture3D _gorgonTexture3D : register(t1);
-        ///TextureCube _gorgonTextureCube : register(t0);
         ///SamplerState _gorgon3DSampler : register(s1);
+        ///
+        ///// The transformation matrices combined together.
+        ///cbuffer WorldViewProjection : register(b0)
+        ///{
+        ///	float4x4 WVP;
+        ///};
         ///
         ///// The texture parameters
         ///cbuffer GorgonTextureParams : register(b1)
         ///{
-        ///	// Depth slice to view.
-        ///	float depthSlice;
-        ///	// Mip level to view.
-        ///	float mipLevel;
-        ///};
-        ///
-        ///// Pixel shader to view a 2D texture array.
-        /// [rest of string was truncated]&quot;;.
+        ///	// Depth slice t [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ImageViewShaders {
             get {
@@ -605,6 +613,34 @@ namespace Gorgon.Editor.ImageEditor.Properties {
             get {
                 object obj = ResourceManager.GetObject("undo_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to // Our default texture and sampler.
+        ///Texture3D _volumeTexture : register(t0);
+        ///SamplerState _volumeSampler : register(s0);
+        ///Texture2D _cubeFront : register(t1);
+        ///SamplerState _cubeFrontSampler : register(s2);
+        ///Texture2D _cubeBack : register(t2);
+        ///SamplerState _cubeBackSampler : register(s2);
+        ///
+        ///// A vertex for the volume cube.
+        ///struct VolumeVertex
+        ///{	
+        ///	float4 position : SV_POSITION;
+        ///	float3 uvw : TEXCOORD;
+        ///};
+        ///
+        ///// A vertex for a cube.
+        ///struct VolumeVertexOut
+        ///{	
+        ///	// The position of the vertex.
+        ///	float4 [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string VolumeRenderShaders {
+            get {
+                return ResourceManager.GetString("VolumeRenderShaders", resourceCulture);
             }
         }
         

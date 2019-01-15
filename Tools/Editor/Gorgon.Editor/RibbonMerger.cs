@@ -82,9 +82,7 @@ namespace Gorgon.Editor
 
             if (tagValue is string)
             {
-                int parsedValue;
-
-                if (int.TryParse(tagValue.ToString(), NumberStyles.Integer, CultureInfo.CurrentCulture, out parsedValue))
+                if (int.TryParse(tagValue.ToString(), NumberStyles.Integer, CultureInfo.CurrentCulture, out int parsedValue))
                 {
                     return parsedValue.Max(0).Min(maxValue);
                 }

@@ -328,6 +328,28 @@ namespace Gorgon.Editor.ImageEditor
         }
 
         /// <summary>
+        /// Function to update the animation.
+        /// </summary>
+        private void UpdateAnimation()
+        {
+            if (CurrentAnimation == AnimationType.None)
+            {
+                return;
+            }
+
+            if ((!_animations.TryGetValue(CurrentAnimation, out IGorgonAnimation animation))
+                || (animation == null))
+            {
+                return;
+            }
+
+            if (animation != AnimationController.CurrentAnimation)
+            {
+                AnimationController.Play(this, animation);
+            }
+        }
+
+        /// <summary>
         /// Function called when the zoom level is changed.
         /// </summary>
         /// <param name="zoomLevel">The current zoom level.</param>
@@ -341,7 +363,15 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>
         /// Function to dispose any resources created by the implementation.
         /// </summary>
-        protected abstract void OnDispose();
+        protected virtual void OnDispose()
+        {
+
+        }
+
+        /// <summary>
+        /// Function to dispose any texture resources.
+        /// </summary>
+        protected abstract void OnDestroyTexture();
 
         /// <summary>
         /// Function called to create the pixel shader.
@@ -414,7 +444,18 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>
         /// Function called when the render window changes size.
         /// </summary>
-        protected virtual void OnWindowResize()
+        /// <param name="size">The size of the window.</param>
+        protected virtual void OnWindowResize(DX.Size2 size)
+        {
+
+        }
+
+        /// <summary>
+        /// Function called during resource creation.
+        /// </summary>
+        /// <param name="context">The current application graphics context.</param>
+        /// <param name="swapChain">The swap chain for presenting the rendered data.</param>
+        protected virtual void OnCreateResources(IGraphicsContext context, GorgonSwapChain swapChain)
         {
 
         }
@@ -436,7 +477,7 @@ namespace Gorgon.Editor.ImageEditor
                 TextureBounds = ScaleImage(image.Width, image.Height, GetZoomValue(ZoomLevel));
             }
 
-            OnWindowResize();
+            OnWindowResize(new DX.Size2(_swapChain.Width, _swapChain.Height));
         }
 
         /// <summary>Function to scroll the image.</summary>
@@ -484,7 +525,7 @@ namespace Gorgon.Editor.ImageEditor
 
             var p = new TextureParams
             {
-                DepthSlice = image.CurrentDepthSlice,
+                DepthSlice = image.DepthCount <= 1 ? 0 : ((float)(image.CurrentDepthSlice) / (image.DepthCount - 1)),
                 MipLevel = image.CurrentMipLevel
             };
 
@@ -497,7 +538,8 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="image">The image to upload to the texture.</param>
         public void UpdateTexture(IImageContent image)
         {
-            OnDispose();
+            EndAnimation();            
+            OnDestroyTexture();
 
             IGorgonImage imageData = image?.GetImage();
 
@@ -505,8 +547,6 @@ namespace Gorgon.Editor.ImageEditor
             {
                 return;
             }
-
-            EndAnimation();
 
             OnCreateTexture(_context.Graphics, imageData, image.File.Name);
 
@@ -535,28 +575,6 @@ namespace Gorgon.Editor.ImageEditor
             else
             {
                 TextureBounds = ScaleImage(image.Width, image.Height, GetZoomValue(ZoomLevel));
-            }
-        }
-
-        /// <summary>
-        /// Function to update the animation.
-        /// </summary>
-        private void UpdateAnimation()
-        {
-            if (CurrentAnimation == AnimationType.None)
-            {
-                return;
-            }
-
-            if ((!_animations.TryGetValue(CurrentAnimation, out IGorgonAnimation animation))
-                || (animation == null))
-            {
-                return;
-            }
-
-            if (animation != AnimationController.CurrentAnimation)
-            {
-                AnimationController.Play(this, animation);
             }
         }
 
@@ -634,11 +652,14 @@ namespace Gorgon.Editor.ImageEditor
 
             // Set to start with this animation.                        
             CurrentAnimation = AnimationType.Fade;
+
+            OnCreateResources(_context, _swapChain);
         }
 
         /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
         public void Dispose()
         {
+            OnDestroyTexture();
             OnDispose();
 
             _textureParameters?.Dispose();

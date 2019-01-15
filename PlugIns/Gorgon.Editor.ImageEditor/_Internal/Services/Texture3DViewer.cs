@@ -32,6 +32,11 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Renderers;
 using Gorgon.Graphics;
+using Gorgon.Editor.ImageEditor.Properties;
+using Gorgon.Math;
+using Gorgon.Timing;
+using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -46,15 +51,30 @@ namespace Gorgon.Editor.ImageEditor
         private GorgonTexture3D _texture;
         // The view for the texture.
         private GorgonTexture3DView _textureView;
+        // The volume renderer.
+        private VolumeRenderer _volRenderer;
         #endregion
 
         #region Methods.
+        /// <summary>Function called when the render window changes size.</summary>
+        /// <param name="size">The size of the window.</param>
+        protected override void OnWindowResize(DX.Size2 size) => _volRenderer.ResizeRenderRegion();
+
+        /// <summary>Function to dispose any texture resources.</summary>
+        protected override void OnDestroyTexture()
+        {
+            _texture?.Dispose();
+            _textureView?.Dispose();
+
+            _texture = null;
+            _textureView = null;
+        }
+
         /// <summary>Function to dispose any resources created by the implementation.</summary>
         protected override void OnDispose()
         {
-            _texture?.Dispose();
-            _texture = null;
-            _textureView = null;
+            _volRenderer?.Dispose();
+            _volRenderer = null;
         }
 
         /// <summary>Function to create the texture for the view.</summary>
@@ -71,6 +91,7 @@ namespace Gorgon.Editor.ImageEditor
             });
 
             _textureView = _texture.GetShaderResourceView();
+            _volRenderer.AssignTexture(_textureView);
         }
 
         /// <summary>Function to retrieve the shader resource view for the texture pixel shader.</summary>
@@ -96,6 +117,33 @@ namespace Gorgon.Editor.ImageEditor
                 new DX.RectangleF(0, 0, 1, 1),
                 0,
                 textureSampler: GorgonSamplerState.PointFiltering);
+
+            renderer.End();
+
+            // Draw a frame around the volume rendering area.
+            DX.RectangleF volRegion = _volRenderer.VolumeRegion;
+            renderer.Begin();
+
+            DX.Size2F textArea = renderer.DefaultFont.MeasureLine(Resources.GORIMG_TEXT_3DVIEW, false);
+            renderer.DrawFilledRectangle(volRegion, new GorgonColor(GorgonColor.Black, 0.5f));
+            renderer.DrawFilledRectangle(new DX.RectangleF(volRegion.Left - 1, volRegion.Bottom, volRegion.Width + 2, textArea.Height + 6), GorgonColor.White);
+            renderer.DrawRectangle(new DX.RectangleF(volRegion.X - 1, volRegion.Y - 1, volRegion.Width + 2, volRegion.Height + 2), GorgonColor.White);            
+            renderer.DrawString("3D View", new DX.Vector2((volRegion.Right + volRegion.Left) / 2.0f - (textArea.Width / 2.0f), volRegion.Bottom + 3), color: GorgonColor.Black);
+
+            renderer.End();
+
+            _volRenderer.Render();
+
+            return;
+        }
+
+        /// <summary>Function called during resource creation.</summary>
+        /// <param name="context">The current application graphics context.</param>
+        /// <param name="swapChain">The swap chain for presenting the rendered data.</param>
+        protected override void OnCreateResources(IGraphicsContext context, GorgonSwapChain swapChain)
+        {
+            _volRenderer = new VolumeRenderer(context.Graphics, swapChain);
+            _volRenderer.CreateResources();            
         }
 
         /// <summary>

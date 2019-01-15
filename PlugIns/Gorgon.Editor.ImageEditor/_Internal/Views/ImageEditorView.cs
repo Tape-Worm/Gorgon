@@ -115,10 +115,14 @@ namespace Gorgon.Editor.ImageEditor
 
             LabelMipDetails.Visible = LabelMipLevel.Visible = ButtonPrevMip.Visible = ButtonNextMip.Visible = DataContext.MipCount > 1;
             LabelArrayIndexDetails.Visible = LabelArrayIndex.Visible = ButtonPrevArrayIndex.Visible = ButtonNextArrayIndex.Visible = DataContext.ArrayCount > 1;
-            LabelDepthSliceDetails.Visible = LabelDepthSlice.Visible = ButtonPrevDepthSlice.Visible = ButtonNextDepthSlice.Visible = DataContext.DepthCount > 1;
+            LabelDepthSliceDetails.Visible = LabelDepthSlice.Visible = ButtonPrevDepthSlice.Visible = ButtonNextDepthSlice.Visible = DataContext.ImageType == ImageType.Image3D;            
 
             ButtonNextMip.Enabled = DataContext.CurrentMipLevel < DataContext.MipCount - 1;
             ButtonPrevMip.Enabled = DataContext.CurrentMipLevel > 0;
+            ButtonNextArrayIndex.Enabled = DataContext.CurrentArrayIndex < DataContext.ArrayCount - 1;
+            ButtonPrevArrayIndex.Enabled = DataContext.CurrentArrayIndex > 0;
+            ButtonNextDepthSlice.Enabled = DataContext.CurrentDepthSlice < DataContext.DepthCount - 1;
+            ButtonPrevDepthSlice.Enabled = DataContext.CurrentDepthSlice > 0;
 
             PanelBottomBar.Visible = DataContext.MipCount > 1 || DataContext.ArrayCount > 1 || DataContext.DepthCount > 1;
         }
@@ -134,7 +138,7 @@ namespace Gorgon.Editor.ImageEditor
                 return;
             }
 
-            LabelDepthSliceDetails.Text = $"{(int)(DataContext.CurrentDepthSlice * DataContext.DepthCount) + 1}/{DataContext.DepthCount}";
+            LabelDepthSliceDetails.Text = $"{dataContext.CurrentDepthSlice + 1}/{dataContext.DepthCount}";
         }
 
         /// <summary>
@@ -148,7 +152,7 @@ namespace Gorgon.Editor.ImageEditor
                 return;
             }
 
-            LabelArrayIndexDetails.Text = $"{DataContext.CurrentArrayIndex + 1}/{DataContext.ArrayCount}";
+            LabelArrayIndexDetails.Text = $"{dataContext.CurrentArrayIndex + 1}/{dataContext.ArrayCount}";
         }
 
         /// <summary>
@@ -205,6 +209,10 @@ namespace Gorgon.Editor.ImageEditor
                     break;
                 case nameof(IImageContent.MipCount):
                     UpdateMipDetails(DataContext);
+                    break;
+                case nameof(IImageContent.CurrentArrayIndex):
+                    // Don't need to call update texture parameters here, we already use an index by default.
+                    UpdateArrayDetails(DataContext);
                     break;
                 case nameof(IImageContent.CurrentDepthSlice):
                     UpdateDepthSliceDetails(DataContext);
@@ -270,6 +278,57 @@ namespace Gorgon.Editor.ImageEditor
             if (DataContext != null)
             {
                 DataContext.CurrentMipLevel--;
+            }
+            ValidateControls();
+        }
+
+        /// <summary>Handles the Click event of the ButtonPrevArrayIndex control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonPrevArrayIndex_Click(object sender, EventArgs e)
+        {
+            if (DataContext != null)
+            {
+                DataContext.CurrentArrayIndex--;
+            }
+            ValidateControls();
+
+        }
+
+        /// <summary>Handles the Click event of the ButtonNextArrayIndex control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonNextArrayIndex_Click(object sender, EventArgs e)
+        {
+            if (DataContext != null)
+            {
+                DataContext.CurrentArrayIndex++;
+            }
+            ValidateControls();
+
+        }
+
+        /// <summary>Handles the Click event of the ButtonPrevDepthSlice control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonPrevDepthSlice_Click(object sender, EventArgs e)
+        {
+            if (DataContext != null)
+            {
+                DataContext.CurrentDepthSlice--;
+            }
+            ValidateControls();
+
+        }
+
+        /// <summary></summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ButtonNextDepthSlice_Click(object sender, EventArgs e)
+        {
+            if (DataContext != null)
+            {
+                DataContext.CurrentDepthSlice++;
             }
             ValidateControls();
         }

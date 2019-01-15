@@ -40,6 +40,7 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
+using Gorgon.Math;
 
 namespace Gorgon.Editor.ImageEditor.ViewModels
 {
@@ -97,7 +98,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         // The current array index.
         private int _currentArrayindex;
         // The current depth slice.
-        private float _currentDepthSlice;
+        private int _currentDepthSlice;
         #endregion
 
         #region Properties.
@@ -232,7 +233,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 }
 
                 NotifyPropertyChanged(nameof(DepthCount));
-                NotifyPropertyChanged(nameof(CurrentDepthSlice));
+                CurrentDepthSlice = CurrentDepthSlice.Min(DepthCount - 1).Max(0);
             }
         }
 
@@ -254,8 +255,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>Property to set or return the current depth slice.</summary>
-        /// <remarks>This value is the Z coordinate in the uvw texture coordinate.</remarks>
-        public float CurrentDepthSlice
+        public int CurrentDepthSlice
         {
             get => _currentDepthSlice;
             set

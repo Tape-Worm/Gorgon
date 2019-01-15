@@ -142,10 +142,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <summary>
         /// Property to set or return the current depth slice.
         /// </summary>
-        /// <remarks>
-        /// This value is the Z coordinate in the uvw texture coordinate.
-        /// </remarks>
-        float CurrentDepthSlice
+        int CurrentDepthSlice
         {
             get;
             set;
