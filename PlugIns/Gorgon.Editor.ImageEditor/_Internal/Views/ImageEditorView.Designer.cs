@@ -54,13 +54,15 @@
             this.ScrollHorizontal = new System.Windows.Forms.HScrollBar();
             this.ScrollVertical = new System.Windows.Forms.VScrollBar();
             this.PanelImage = new Gorgon.Windows.UI.GorgonSelectablePanel();
+            this.CropResizeSettings = new Gorgon.Editor.ImageEditor.ImageResizeSettings();
             this.ButtonCenter = new System.Windows.Forms.Button();
-            this.PanelHost = new System.Windows.Forms.Panel();
+            this.LabelImageSize = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.PresentationPanel)).BeginInit();
             this.PresentationPanel.SuspendLayout();
             this.PanelBottomBar.SuspendLayout();
             this.PanelImageViewControls.SuspendLayout();
             this.TableViewControls.SuspendLayout();
+            this.PanelImage.SuspendLayout();
             this.SuspendLayout();
             // 
             // PresentationPanel
@@ -84,7 +86,8 @@
             // 
             this.PanelImageViewControls.AutoSize = true;
             this.PanelImageViewControls.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.PanelImageViewControls.ColumnCount = 14;
+            this.PanelImageViewControls.ColumnCount = 15;
+            this.PanelImageViewControls.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.PanelImageViewControls.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.PanelImageViewControls.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.PanelImageViewControls.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -99,18 +102,19 @@
             this.PanelImageViewControls.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.PanelImageViewControls.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.PanelImageViewControls.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 16F));
-            this.PanelImageViewControls.Controls.Add(this.LabelDepthSliceDetails, 11, 0);
-            this.PanelImageViewControls.Controls.Add(this.ButtonPrevDepthSlice, 10, 0);
-            this.PanelImageViewControls.Controls.Add(this.ButtonNextDepthSlice, 12, 0);
-            this.PanelImageViewControls.Controls.Add(this.LabelDepthSlice, 9, 0);
-            this.PanelImageViewControls.Controls.Add(this.LabelArrayIndexDetails, 7, 0);
-            this.PanelImageViewControls.Controls.Add(this.ButtonPrevArrayIndex, 6, 0);
-            this.PanelImageViewControls.Controls.Add(this.ButtonNextArrayIndex, 8, 0);
-            this.PanelImageViewControls.Controls.Add(this.LabelArrayIndex, 5, 0);
-            this.PanelImageViewControls.Controls.Add(this.LabelMipDetails, 3, 0);
-            this.PanelImageViewControls.Controls.Add(this.ButtonPrevMip, 2, 0);
-            this.PanelImageViewControls.Controls.Add(this.ButtonNextMip, 4, 0);
-            this.PanelImageViewControls.Controls.Add(this.LabelMipLevel, 1, 0);
+            this.PanelImageViewControls.Controls.Add(this.LabelImageSize, 0, 0);
+            this.PanelImageViewControls.Controls.Add(this.LabelDepthSliceDetails, 12, 0);
+            this.PanelImageViewControls.Controls.Add(this.ButtonPrevDepthSlice, 11, 0);
+            this.PanelImageViewControls.Controls.Add(this.ButtonNextDepthSlice, 13, 0);
+            this.PanelImageViewControls.Controls.Add(this.LabelDepthSlice, 10, 0);
+            this.PanelImageViewControls.Controls.Add(this.LabelArrayIndexDetails, 8, 0);
+            this.PanelImageViewControls.Controls.Add(this.ButtonPrevArrayIndex, 7, 0);
+            this.PanelImageViewControls.Controls.Add(this.ButtonNextArrayIndex, 9, 0);
+            this.PanelImageViewControls.Controls.Add(this.LabelArrayIndex, 6, 0);
+            this.PanelImageViewControls.Controls.Add(this.LabelMipDetails, 4, 0);
+            this.PanelImageViewControls.Controls.Add(this.ButtonPrevMip, 3, 0);
+            this.PanelImageViewControls.Controls.Add(this.ButtonNextMip, 5, 0);
+            this.PanelImageViewControls.Controls.Add(this.LabelMipLevel, 2, 0);
             this.PanelImageViewControls.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PanelImageViewControls.Location = new System.Drawing.Point(0, 0);
             this.PanelImageViewControls.MinimumSize = new System.Drawing.Size(0, 26);
@@ -359,6 +363,7 @@
             // 
             // PanelImage
             // 
+            this.PanelImage.Controls.Add(this.CropResizeSettings);
             this.PanelImage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PanelImage.Location = new System.Drawing.Point(3, 3);
             this.PanelImage.Name = "PanelImage";
@@ -367,6 +372,17 @@
             this.PanelImage.TabIndex = 2;
             this.PanelImage.RenderToBitmap += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.PanelImage_RenderToBitmap);
             this.PanelImage.DoubleClick += new System.EventHandler(this.PanelImage_DoubleClick);
+            // 
+            // CropResizeSettings
+            // 
+            this.CropResizeSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.CropResizeSettings.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.CropResizeSettings.ForeColor = System.Drawing.Color.White;
+            this.CropResizeSettings.Location = new System.Drawing.Point(683, 239);
+            this.CropResizeSettings.Name = "CropResizeSettings";
+            this.CropResizeSettings.Size = new System.Drawing.Size(461, 367);
+            this.CropResizeSettings.TabIndex = 0;
+            this.CropResizeSettings.Visible = false;
             // 
             // ButtonCenter
             // 
@@ -385,21 +401,24 @@
             this.ButtonCenter.TabIndex = 3;
             this.ButtonCenter.Click += new System.EventHandler(this.ButtonCenter_Click);
             // 
-            // PanelHost
+            // LabelImageSize
             // 
-            this.PanelHost.Dock = System.Windows.Forms.DockStyle.Right;
-            this.PanelHost.Location = new System.Drawing.Point(851, 21);
-            this.PanelHost.Name = "PanelHost";
-            this.PanelHost.Size = new System.Drawing.Size(360, 748);
-            this.PanelHost.TabIndex = 0;
-            this.PanelHost.Visible = false;
+            this.LabelImageSize.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.LabelImageSize.AutoSize = true;
+            this.LabelImageSize.Location = new System.Drawing.Point(3, 0);
+            this.LabelImageSize.Name = "LabelImageSize";
+            this.LabelImageSize.Size = new System.Drawing.Size(93, 28);
+            this.LabelImageSize.TabIndex = 11;
+            this.LabelImageSize.Text = "Image size: WxH";
+            this.LabelImageSize.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // ImageEditorView
             // 
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.PanelHost);
             this.Controls.Add(this.PanelBottomBar);
             this.ForeColor = System.Drawing.Color.White;
             this.Name = "ImageEditorView";
@@ -409,7 +428,6 @@
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.ImageEditorView_DragEnter);
             this.Controls.SetChildIndex(this.PanelBottomBar, 0);
             this.Controls.SetChildIndex(this.PresentationPanel, 0);
-            this.Controls.SetChildIndex(this.PanelHost, 0);
             ((System.ComponentModel.ISupportInitialize)(this.PresentationPanel)).EndInit();
             this.PresentationPanel.ResumeLayout(false);
             this.PanelBottomBar.ResumeLayout(false);
@@ -418,6 +436,7 @@
             this.PanelImageViewControls.PerformLayout();
             this.TableViewControls.ResumeLayout(false);
             this.TableViewControls.PerformLayout();
+            this.PanelImage.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -444,6 +463,7 @@
         private System.Windows.Forms.Button ButtonPrevDepthSlice;
         private System.Windows.Forms.Button ButtonNextDepthSlice;
         private System.Windows.Forms.Label LabelDepthSlice;
-        private System.Windows.Forms.Panel PanelHost;
+        private ImageResizeSettings CropResizeSettings;
+        private System.Windows.Forms.Label LabelImageSize;
     }
 }

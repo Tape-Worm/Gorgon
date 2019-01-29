@@ -104,6 +104,15 @@ namespace Gorgon.Editor.ImageEditor
             ImageZoomed?.Invoke(this, new ImageZoomedArgs(_zoomLevel));
         }
 
+
+        /// <summary>Handles the PropertyChanged event of the CropOrResizeSettings control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+        private void CropOrResizeSettings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            ValidateButtons();
+        }
+
         /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The [PropertyChangedEventArgs] instance containing the event data.</param>
@@ -249,7 +258,13 @@ namespace Gorgon.Editor.ImageEditor
             {
                 return;
             }
-
+            
+            ButtonImport.Enabled = !DataContext.CropOrResizeSettings.IsActive;
+            ButtonEditInApp.Enabled = !DataContext.CropOrResizeSettings.IsActive;
+            ButtonDimensions.Enabled = !DataContext.CropOrResizeSettings.IsActive;
+            ButtonGenerateMipMaps.Enabled = !DataContext.CropOrResizeSettings.IsActive;
+            ButtonImageFormat.Enabled = !DataContext.CropOrResizeSettings.IsActive;
+            ButtonImageType.Enabled = !DataContext.CropOrResizeSettings.IsActive;
             ButtonImageUndo.Enabled = DataContext.UndoCommand?.CanExecute(null) ?? false;
             ButtonImageRedo.Enabled = DataContext.RedoCommand?.CanExecute(null) ?? false;
             ButtonExport.Enabled = MenuCodecs.Items.Count > 0;            
@@ -375,6 +390,8 @@ namespace Gorgon.Editor.ImageEditor
             {
                 DataContext.Codecs.CollectionChanged -= Codecs_CollectionChanged;
             }
+
+            DataContext.CropOrResizeSettings.PropertyChanged -= CropOrResizeSettings_PropertyChanged;
             DataContext.PropertyChanging -= DataContext_PropertyChanging;
             DataContext.PropertyChanged -= DataContext_PropertyChanged;
         }
@@ -458,6 +475,7 @@ namespace Gorgon.Editor.ImageEditor
 
             DataContext.PropertyChanged += DataContext_PropertyChanged;
             DataContext.PropertyChanging += DataContext_PropertyChanging;
+            DataContext.CropOrResizeSettings.PropertyChanged += CropOrResizeSettings_PropertyChanged;
 
             if (DataContext.Codecs != null)
             {

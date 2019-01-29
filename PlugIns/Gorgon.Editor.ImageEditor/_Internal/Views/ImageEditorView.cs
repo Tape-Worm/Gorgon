@@ -43,6 +43,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using Gorgon.Editor.ImageEditor.Properties;
 using System.Collections.Generic;
+using Gorgon.Editor.Content;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -110,12 +111,13 @@ namespace Gorgon.Editor.ImageEditor
                 LabelMipDetails.Visible = LabelMipLevel.Visible = ButtonPrevMip.Visible = ButtonNextMip.Visible = false;
                 LabelArrayIndexDetails.Visible = LabelArrayIndex.Visible = ButtonPrevArrayIndex.Visible = ButtonNextArrayIndex.Visible = false;
                 LabelDepthSliceDetails.Visible = LabelDepthSlice.Visible = ButtonPrevDepthSlice.Visible = ButtonNextDepthSlice.Visible = false;
+                PanelBottomBar.Visible = false;
                 return;
             }
 
             LabelMipDetails.Visible = LabelMipLevel.Visible = ButtonPrevMip.Visible = ButtonNextMip.Visible = DataContext.MipCount > 1;
             LabelArrayIndexDetails.Visible = LabelArrayIndex.Visible = ButtonPrevArrayIndex.Visible = ButtonNextArrayIndex.Visible = DataContext.ArrayCount > 1;
-            LabelDepthSliceDetails.Visible = LabelDepthSlice.Visible = ButtonPrevDepthSlice.Visible = ButtonNextDepthSlice.Visible = DataContext.ImageType == ImageType.Image3D;            
+            LabelDepthSliceDetails.Visible = LabelDepthSlice.Visible = ButtonPrevDepthSlice.Visible = ButtonNextDepthSlice.Visible = DataContext.ImageType == ImageType.Image3D;                        
 
             ButtonNextMip.Enabled = DataContext.CurrentMipLevel < DataContext.MipCount - 1;
             ButtonPrevMip.Enabled = DataContext.CurrentMipLevel > 0;
@@ -124,7 +126,21 @@ namespace Gorgon.Editor.ImageEditor
             ButtonNextDepthSlice.Enabled = DataContext.CurrentDepthSlice < DataContext.DepthCount - 1;
             ButtonPrevDepthSlice.Enabled = DataContext.CurrentDepthSlice > 0;
 
-            PanelBottomBar.Visible = DataContext.MipCount > 1 || DataContext.ArrayCount > 1 || DataContext.DepthCount > 1;
+            PanelBottomBar.Visible = true;
+        }
+
+        /// <summary>
+        /// Function to update the image size details.
+        /// </summary>
+        /// <param name="dataContext">The current data context.</param>
+        private void UpdateImageSizeDetails(IImageContent dataContext)
+        {
+            if (dataContext == null)
+            {
+                return;
+            }
+
+            LabelImageSize.Text = string.Format(Resources.GORIMG_TEXT_IMAGE_SIZE_DETAILS, dataContext.Width, dataContext.Height);
         }
 
         /// <summary>
@@ -178,15 +194,107 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="T:System.EventArgs"/> instance containing the event data.</param>
         private void PanelImage_DoubleClick(object sender, EventArgs e) => _textureViewer?.EndAnimation();
 
+        /// <summary>
+        /// Function to check to see if drag drop data is valid for this control.
+        /// </summary>
+        /// <param name="e">The event parameters for the drag/drop event.</param>
+        /// <returns>The data in the drag operation, or <b>null</b> if the data cannot be dragged and dropped onto this control.</returns>
+        private IContentFileDragData GetDragDropData(DragEventArgs e)
+        {
+            if (DataContext == null)
+            {
+                e.Effect = DragDropEffects.None;
+                return null;
+            }
+
+            e.Effect = DragDropEffects.Copy;
+
+            Type contentFileDragDataType = typeof(IContentFileDragData);
+
+            if (!e.Data.GetDataPresent(contentFileDragDataType.FullName, true))
+            {
+                return null;
+            }
+
+            var dragData = e.Data.GetData(contentFileDragDataType.FullName, true) as IContentFileDragData;
+
+            if (dragData == null)
+            {
+                return null;
+            }
+
+            if (!DataContext.CanDrop(dragData))
+            {
+                if (dragData.Cancel)
+                {
+                    e.Effect = DragDropEffects.None;
+                }
+
+                return null;
+            }
+
+            return dragData;
+        }
+
         /// <summary>Handles the DragDrop event of the ImageEditorView control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
-        private void ImageEditorView_DragDrop(object sender, DragEventArgs e) => OnBubbleDragDrop(e);
+        private void ImageEditorView_DragDrop(object sender, DragEventArgs e)
+        {
+            IContentFileDragData data = GetDragDropData(e);
+
+            if (data == null)
+            {
+                OnBubbleDragDrop(e);
+                return;
+            }
+
+            DataContext.Drop(data);
+        }
 
         /// <summary>Handles the DragEnter event of the ImageEditorView control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
-        private void ImageEditorView_DragEnter(object sender, DragEventArgs e) => OnBubbleDragEnter(e);
+        private void ImageEditorView_DragEnter(object sender, DragEventArgs e)
+        {
+            IContentFileDragData data = GetDragDropData(e);
+
+            if ((data == null)  && (e.Effect != DragDropEffects.None))
+            {
+                OnBubbleDragEnter(e);
+                return;
+            }
+        }
+        
+        /// <summary>Handles the PropertyChanged event of the CropOrResizeSettings control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+        private void CropOrResizeSettings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(ICropResizeSettings.IsActive):
+                    if (DataContext.CropOrResizeSettings?.IsActive ?? false)
+                    {
+                        if (Controls.Contains(CropResizeSettings))
+                        {
+                            Controls.Remove(CropResizeSettings);
+                        }
+
+                        CropResizeSettings.Visible = true;
+                        AddControlToPanelHost(CropResizeSettings);
+                        IsPanelHostActive = true;
+                    }
+                    else
+                    {
+                        IsPanelHostActive = false;
+                        ClearPanelHost();
+                    }
+                    break;
+            }
+
+            ValidateControls();
+        }
 
         /// <summary>Function called when a property is changed on the data context.</summary>
         /// <param name="e">The event parameters.</param>
@@ -195,11 +303,6 @@ namespace Gorgon.Editor.ImageEditor
         {
             switch (e.PropertyName)
             {
-                case nameof(IImageContent.ContentState):                    
-                    return;
-                case nameof(IImageContent.File):
-                    // This only matters when we save, so there's no real visual update.
-                    return;
                 case nameof(IImageContent.ArrayCount):
                     UpdateArrayDetails(DataContext);
                     break;
@@ -221,7 +324,17 @@ namespace Gorgon.Editor.ImageEditor
                 case nameof(IImageContent.CurrentMipLevel):
                     UpdateMipDetails(DataContext);
                     _textureViewer.UpdateTextureParameters(DataContext);
-                    return;
+                    break;
+                case nameof(IImageContent.Width):
+                case nameof(IImageContent.Height):
+                    UpdateImageSizeDetails(DataContext);
+                    if (_textureViewer == null)
+                    {
+                        _textureViewer = _viewers[DataContext.ImageType];
+                    }
+
+                    _textureViewer.UpdateTexture(DataContext);
+                    break;
                 default:
                     if (_textureViewer == null)
                     {
@@ -230,9 +343,10 @@ namespace Gorgon.Editor.ImageEditor
                                         
                     _textureViewer.UpdateTexture(DataContext);
                     UpdateMipDetails(DataContext);
-                    ValidateControls();
                     break;
-            }            
+            }
+
+            ValidateControls();
         }
 
         /// <summary>Handles the Click event of the ButtonCenter control.</summary>
@@ -440,6 +554,7 @@ namespace Gorgon.Editor.ImageEditor
 
             _textureViewer = _viewers[DataContext.ImageType];
             _textureViewer.UpdateTexture(DataContext);
+            UpdateImageSizeDetails(DataContext);
             UpdateMipDetails(DataContext);
             UpdateArrayDetails(DataContext);
             UpdateDepthSliceDetails(DataContext);
@@ -461,7 +576,7 @@ namespace Gorgon.Editor.ImageEditor
             }
 
             _background?.Dispose();
-            _background = null;
+            _background = null;            
         }
 
         /// <summary>Raises the <a href="http://msdn.microsoft.com/en-us/library/system.windows.forms.usercontrol.load.aspx" target="_blank">Load</a> event.</summary>
@@ -486,6 +601,24 @@ namespace Gorgon.Editor.ImageEditor
             ValidateControls();
         }
 
+        /// <summary>
+        /// Function called to remove events from the view models.
+        /// </summary>
+        protected override void UnassignEvents()
+        {
+            base.UnassignEvents();
+
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            if (DataContext.CropOrResizeSettings != null)
+            {
+                DataContext.CropOrResizeSettings.PropertyChanged -= CropOrResizeSettings_PropertyChanged;
+            }            
+        }
+
         /// <summary>Function to assign a data context to the view as a view model.</summary>
         /// <param name="dataContext">The data context to assign.</param>
         /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
@@ -497,6 +630,17 @@ namespace Gorgon.Editor.ImageEditor
 
             DataContext = dataContext;
             _ribbonForm.SetDataContext(dataContext);
+            CropResizeSettings.SetDataContext(dataContext?.CropOrResizeSettings);
+
+            if (DataContext == null)
+            {
+                return;
+            }            
+
+            if (DataContext.CropOrResizeSettings != null)
+            {
+                DataContext.CropOrResizeSettings.PropertyChanged += CropOrResizeSettings_PropertyChanged;
+            }            
         }
         #endregion
 

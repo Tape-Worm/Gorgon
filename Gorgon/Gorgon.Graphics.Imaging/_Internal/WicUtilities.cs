@@ -1260,10 +1260,10 @@ namespace Gorgon.Graphics.Imaging
 						    switch (resizeMode)
 						    {
 						        case ResizeMode.Scale:
-						            ScaleBitmapData(bitmap, destBuffer, newWidth, newHeight, scaleFilter);
+						            ScaleBitmapData(bitmap, destBuffer, destBuffer.Width, destBuffer.Height, scaleFilter);
 						            break;
 						        case ResizeMode.Crop:
-						            CropBitmapData(bitmap, destBuffer, offsetX, offsetY, newWidth, newHeight);
+						            CropBitmapData(bitmap, destBuffer, offsetX, offsetY, destBuffer.Width, destBuffer.Height);
 						            break;
 						        case ResizeMode.Expand:
 						            ExpandBitmapData(bitmap, destBuffer, offsetX, offsetY);

@@ -38,9 +38,17 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
     /// The image content view model.
     /// </summary>
     internal interface IImageContent
-        : IEditorContent, IUndoHandler
+        : IEditorContent, IUndoHandler, IDragDropHandler<IContentFileDragData>
     {
         #region Properties.
+        /// <summary>
+        /// Property to return the image data.
+        /// </summary>
+        IGorgonImage ImageData
+        {
+            get;
+        }
+
         /// <summary>
         /// Property to return the list of codecs available.
         /// </summary>
@@ -163,14 +171,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             get;
         }
-        #endregion
 
-        #region Methods.
         /// <summary>
-        /// Function to retrieve the image data for displaying on the view.
+        /// Property to return whether a crop/resize operation is required.
         /// </summary>
-        /// <returns>The underlying image data for display.</returns>
-        IGorgonImage GetImage();
+        ICropResizeSettings CropOrResizeSettings
+        {
+            get;
+        }
         #endregion
     }
 }

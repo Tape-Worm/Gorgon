@@ -42,10 +42,13 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.ButtonClose = new ComponentFactory.Krypton.Toolkit.KryptonButton();
             this.TipButton = new System.Windows.Forms.ToolTip(this.components);
+            this.PanelHost = new System.Windows.Forms.Panel();
+            this.PanelContentControls = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.PanelPresenter)).BeginInit();
             this.PanelContentName.SuspendLayout();
             this.panel4.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.PanelHost.SuspendLayout();
             this.SuspendLayout();
             // 
             // PanelPresenter
@@ -88,7 +91,7 @@
             this.LabelHeader.LabelStyle = ComponentFactory.Krypton.Toolkit.LabelStyle.Custom3;
             this.LabelHeader.Location = new System.Drawing.Point(0, 0);
             this.LabelHeader.Name = "LabelHeader";
-            this.LabelHeader.Size = new System.Drawing.Size(575, 20);
+            this.LabelHeader.Size = new System.Drawing.Size(573, 20);
             this.LabelHeader.StateCommon.ShortText.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.LabelHeader.StateCommon.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LabelHeader.TabIndex = 0;
@@ -101,9 +104,9 @@
             this.panel1.BackColor = System.Drawing.Color.Transparent;
             this.panel1.Controls.Add(this.ButtonClose);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel1.Location = new System.Drawing.Point(575, 0);
+            this.panel1.Location = new System.Drawing.Point(573, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(19, 20);
+            this.panel1.Size = new System.Drawing.Size(21, 20);
             this.panel1.TabIndex = 0;
             // 
             // ButtonClose
@@ -114,7 +117,7 @@
             this.ButtonClose.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ButtonClose.Location = new System.Drawing.Point(0, 0);
             this.ButtonClose.Name = "ButtonClose";
-            this.ButtonClose.Size = new System.Drawing.Size(19, 20);
+            this.ButtonClose.Size = new System.Drawing.Size(21, 20);
             this.ButtonClose.StateCommon.Back.GraphicsHint = ComponentFactory.Krypton.Toolkit.PaletteGraphicsHint.None;
             this.ButtonClose.StateCommon.Border.DrawBorders = ((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders)((((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Top | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Bottom) 
             | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Left) 
@@ -135,10 +138,34 @@
             this.TipButton.BackColor = System.Drawing.Color.White;
             this.TipButton.ToolTipTitle = "Close";
             // 
+            // PanelHost
+            // 
+            this.PanelHost.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
+            this.PanelHost.Controls.Add(this.PanelContentControls);
+            this.PanelHost.ForeColor = System.Drawing.Color.White;
+            this.PanelHost.Location = new System.Drawing.Point(240, 21);
+            this.PanelHost.MinimumSize = new System.Drawing.Size(360, 0);
+            this.PanelHost.Name = "PanelHost";
+            this.PanelHost.Padding = new System.Windows.Forms.Padding(1, 0, 0, 0);
+            this.PanelHost.Size = new System.Drawing.Size(360, 447);
+            this.PanelHost.TabIndex = 1;
+            this.PanelHost.Visible = false;
+            // 
+            // PanelContentControls
+            // 
+            this.PanelContentControls.AutoScroll = true;
+            this.PanelContentControls.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.PanelContentControls.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PanelContentControls.Location = new System.Drawing.Point(1, 0);
+            this.PanelContentControls.Name = "PanelContentControls";
+            this.PanelContentControls.Size = new System.Drawing.Size(359, 447);
+            this.PanelContentControls.TabIndex = 0;
+            // 
             // ContentBaseControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.PanelHost);
             this.Controls.Add(this.PanelPresenter);
             this.Controls.Add(this.PanelContentName);
             this.Name = "ContentBaseControl";
@@ -149,6 +176,7 @@
             this.panel4.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.PanelHost.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -164,5 +192,7 @@
         private System.Windows.Forms.Panel panel1;
         private ComponentFactory.Krypton.Toolkit.KryptonButton ButtonClose;
         private System.Windows.Forms.ToolTip TipButton;
+        private System.Windows.Forms.Panel PanelHost;
+        private System.Windows.Forms.Panel PanelContentControls;
     }
 }

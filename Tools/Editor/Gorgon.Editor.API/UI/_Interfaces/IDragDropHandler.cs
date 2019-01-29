@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,62 +20,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: January 5, 2019 2:46:03 PM
+// Created: September 27, 2018 10:58:50 PM
 // 
 #endregion
 
-using Gorgon.Editor.Services;
 
-namespace Gorgon.Editor.ImageEditor
+using System;
+
+namespace Gorgon.Editor.UI
 {
     /// <summary>
-    /// A list of services required for the image plug in.
+    /// Defines functionality used to handle dragging and dropping.
     /// </summary>
-    internal class ImageEditorServices
+    public interface IDragDropHandler<in T>
     {
         /// <summary>
-        /// Property to set or return the busy state service.
+        /// Function to determine if an object can be dropped.
         /// </summary>
-        public IBusyStateService BusyState
-        {
-            get;
-            set;
-        }
+        /// <param name="dragData">The drag/drop data.</param>
+        bool CanDrop(T dragData);
 
         /// <summary>
-        /// Property to set or return the message display service.
+        /// Function to drop the payload for a drag drop operation.
         /// </summary>
-        public IMessageDisplayService MessageDisplay
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the undo service.
-        /// </summary>
-        public IUndoService UndoService
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the image I/O service.
-        /// </summary>
-        public IImageIOService ImageIO
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the image update service.
-        /// </summary>
-        public IImageUpdaterService ImageUpdater
-        {
-            get;
-            set;
-        }
+        /// <param name="dragData">The drag/drop data.</param>
+        /// <param name="afterDrop">[Optional] The method to execute after the drop operation is completed.</param>
+        void Drop(T dragData, Action afterDrop = null);
     }
 }

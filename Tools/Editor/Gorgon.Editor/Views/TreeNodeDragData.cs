@@ -26,6 +26,8 @@
 
 using System;
 using ComponentFactory.Krypton.Toolkit;
+using Gorgon.Editor.Content;
+using Gorgon.Editor.UI;
 using Gorgon.Editor.ViewModels;
 
 namespace Gorgon.Editor.Views
@@ -34,7 +36,7 @@ namespace Gorgon.Editor.Views
     /// Defines which tree node and file system node that is currently being dragged.
     /// </summary>
     internal class TreeNodeDragData
-        : IFileExplorerNodeDragData
+        : IFileExplorerNodeDragData, IContentFileDragData
     {
         #region Properties.
         /// <summary>
@@ -75,6 +77,16 @@ namespace Gorgon.Editor.Views
         /// Property to set or return the tree node that is the target for the drop operation.
         /// </summary>
         public KryptonTreeNode TargetTreeNode
+        {
+            get;
+            set;
+        }
+
+        /// <summary>Property to return the content file being dragged and dropped.</summary>
+        IContentFile IContentFileDragData.File => Node as IContentFile;
+
+        /// <summary>Property to set or return whether to cancel the drag/drop operation.</summary>
+        bool IContentFileDragData.Cancel
         {
             get;
             set;

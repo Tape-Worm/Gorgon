@@ -290,12 +290,17 @@ namespace Gorgon.Editor.ImageEditor
                 BusyState = injector.BusyService,
                 MessageDisplay = injector.MessageDisplay,
                 ImageIO = imageIO,
-                UndoService = undoService
+                UndoService = undoService,
+                ImageUpdater = new ImageUpdaterService()
             };
+
+            var cropResizeSettings = new CropResizeSettings();
+            cropResizeSettings.Initialize(new ViewModelInjectionCommon());
 
             var content = new ImageContent();
             content.Initialize(new ImageContentParameters(file,
                 _settings,
+                cropResizeSettings,
                 imageData,
                 GraphicsContext.Graphics.FormatSupport,
                 services));

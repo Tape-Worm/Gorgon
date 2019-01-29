@@ -44,6 +44,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
     {
         #region Properties.
         /// <summary>
+        /// Property to return the crop/resize settings view model.
+        /// </summary>
+        public ICropResizeSettings CropResizeSettings
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the service used to load/save image data.
         /// </summary>
         public IImageIOService ImageIOService
@@ -100,6 +108,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
+        /// Property to return the service used to update the image.
+        /// </summary>
+        public IImageUpdaterService ImageUpdater
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the undo service for the editor.
         /// </summary>
         public IUndoService UndoService
@@ -112,6 +128,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <summary>Initializes a new instance of the ImageContentVmParameters class.</summary>
         /// <param name="file">The file for the image content.</param>
         /// <param name="settings">The settings for the image editor.</param>
+        /// <param name="cropResizeSettings">The crop/resize settings view model.</param>
         /// <param name="imageData">The image data and related information.</param>
         /// <param name="formatSupport">A list of <see cref="IGorgonFormatSupportInfo"/> objects for each pixel format.</param>
         /// <param name="services">The services required by the image editor.</param>
@@ -119,6 +136,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <exception cref="ArgumentMissingException">Thrown when any required child parameters are <b>null</b>.</exception>
         public ImageContentParameters(IContentFile file,
             ImageEditorSettings settings,
+            ICropResizeSettings cropResizeSettings,
             (IGorgonImage image, IGorgonVirtualFile workingFile, BufferFormat originalFormat) imageData,
             IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> formatSupport,
             ImageEditorServices services)
@@ -132,6 +150,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             FormatSupport = formatSupport ?? throw new ArgumentNullException(nameof(formatSupport));
             ImageIOService = services.ImageIO ?? throw new ArgumentMissingException(nameof(services.ImageIO),nameof(services));
             UndoService = services.UndoService ?? throw new ArgumentMissingException(nameof(services.UndoService), nameof(services));
+            ImageUpdater = services.ImageUpdater ?? throw new ArgumentMissingException(nameof(services.ImageUpdater), nameof(services));
+            CropResizeSettings = cropResizeSettings ?? throw new ArgumentNullException(nameof(cropResizeSettings));
             OriginalFormat = imageData.originalFormat;
         }
         #endregion

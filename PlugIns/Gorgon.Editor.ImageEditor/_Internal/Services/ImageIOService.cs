@@ -137,6 +137,17 @@ namespace Gorgon.Editor.ImageEditor
             IGorgonVirtualFile workFile = ScratchArea.FileSystem.GetFile(name);
             var formatInfo = new GorgonFormatInfo(pixelFormat);
 
+            // The file doesn't exist, so we need to create a dummy file.
+            if (workFile == null)
+            {
+                using (Stream tempStream = ScratchArea.OpenStream(name, FileMode.Create))
+                {
+                    tempStream.WriteString("TEMP_WORKING_FILE");
+                }
+
+                workFile = ScratchArea.FileSystem.GetFile(name);
+            }
+
             _log.Print($"Working image file: '{workFile.FullPath}'.", LoggingLevel.Verbose);
 
             // For compressed images, we need to rely on an external tool to do the job.             

@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,31 +20,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: September 27, 2018 10:58:50 PM
+// Created: January 15, 2019 12:06:21 PM
 // 
 #endregion
 
-
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Gorgon.Editor.Content;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.UI
 {
     /// <summary>
-    /// Defines functionality used to handle dragging and dropping.
+    /// Data used for drag and drop of a content file.
     /// </summary>
-    public interface IDragDropHandler<in T>
+    public interface IContentFileDragData
     {
         /// <summary>
-        /// Function to determine if an object can be dropped.
+        /// Property to return the content file being dragged and dropped.
         /// </summary>
-        /// <param name="dragData">The drag/drop data.</param>
-        bool CanDrop(T dragData);
+        IContentFile File
+        {
+            get;
+        }
 
         /// <summary>
-        /// Function to drop the payload for a drag drop operation.
+        /// Property to set or return whether to cancel the drag/drop operation.
         /// </summary>
-        /// <param name="dragData">The drag/drop data.</param>
-        /// <param name="afterDrop">[Optional] The method to execute after the drop operation is completed.</param>
-        void Drop(T dragData, Action afterDrop = null);
+        bool Cancel
+        {
+            get;
+            set;
+        }
     }
 }

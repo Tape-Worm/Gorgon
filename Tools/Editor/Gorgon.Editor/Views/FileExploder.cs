@@ -1121,10 +1121,19 @@ namespace Gorgon.Editor.Views
             {
                 return;
             }
-
+            
             var dragData = new TreeNodeDragData(treeNode, node, e.Button == MouseButtons.Right ? (DragOperation.Copy | DragOperation.Move) : DragOperation.Move);
             SelectNode(treeNode);
-            TreeFileSystem.DoDragDrop(dragData, DragDropEffects.Move | DragDropEffects.Copy);
+            var data = new DataObject();
+            data.SetData(dragData);
+
+            if (dragData is IContentFileDragData contentFileData)
+            {
+                contentFileData.Cancel = false;
+                data.SetData(typeof(IContentFileDragData).FullName, true, contentFileData);
+            }
+
+            TreeFileSystem.DoDragDrop(data, DragDropEffects.Move | DragDropEffects.Copy);
 
             if (dragData.TargetTreeNode == null)
             {
@@ -1139,7 +1148,7 @@ namespace Gorgon.Editor.Views
             }
 
             UpdateNodeVisualState(dragData.TargetTreeNode, dragData.TargetNode);
-            dragData.TargetTreeNode.BackColor = Color.Empty;
+            dragData.TargetTreeNode.BackColor = Color.Empty;            
         }
 
         /// <summary>Handles the BeforeSelect event of the TreeFileSystem control.</summary>

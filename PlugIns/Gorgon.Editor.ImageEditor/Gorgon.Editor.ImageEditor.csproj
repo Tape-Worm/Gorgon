@@ -64,10 +64,12 @@
     <Compile Include="_Internal\ImageAnimationController.cs" />
     <Compile Include="_Internal\ImageImporterSettings.cs" />
     <Compile Include="ImageImporterPlugin.cs" />
-    <Compile Include="_Internal\Services\Cube.cs" />
+    <Compile Include="_Internal\Cube.cs" />
     <Compile Include="_Internal\Services\ExportImageDialogService.cs" />
-    <Compile Include="_Internal\Services\CubeVertex.cs" />
+    <Compile Include="_Internal\CubeVertex.cs" />
+    <Compile Include="_Internal\Services\_Interfaces\IImageUpdaterService.cs" />
     <Compile Include="_Internal\Services\ImageEditorServices.cs" />
+    <Compile Include="_Internal\Services\ImageUpdaterService.cs" />
     <Compile Include="_Internal\Services\Texture3DViewer.cs" />
     <Compile Include="_Internal\Services\TextureViewerCommon.cs" />
     <Compile Include="_Internal\Services\_Interfaces\ITextureViewerService.cs" />
@@ -77,6 +79,7 @@
     <Compile Include="_Internal\Services\ImageIOService.cs" />
     <Compile Include="_Internal\Services\DdsImageImporter.cs" />
     <Compile Include="_Internal\Services\TexConvCompressor.cs" />
+    <Compile Include="_Internal\ViewModels\CropResizeSettings.cs" />
     <Compile Include="_Internal\ViewModels\ImageContentParameters.cs" />
     <Compile Include="_Internal\ImageEditorCommonConstants.cs" />
     <Compile Include="ImageEditorPlugin.cs" />
@@ -88,6 +91,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="_Internal\ViewModels\ImageContent.cs" />
+    <Compile Include="_Internal\ViewModels\_Interfaces\ICropResizeSettings.cs" />
     <Compile Include="_Internal\Views\ImageEditorView.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -95,11 +99,26 @@
       <DependentUpon>ImageEditorView.cs</DependentUpon>
     </Compile>
     <Compile Include="_Internal\ViewModels\_Interfaces\IImageContent.cs" />
+    <Compile Include="_Internal\Views\ImageResizeSettings.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="_Internal\Views\ImageResizeSettings.Designer.cs">
+      <DependentUpon>ImageResizeSettings.cs</DependentUpon>
+    </Compile>
     <Compile Include="_Internal\VolumeRenderer.cs" />
     <Compile Include="_Internal\ZoomLevels.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\center_24x24.png" />
+    <None Include="Resources\arrow_w_24x24.png" />
+    <None Include="Resources\arrow_sw_24x24.png" />
+    <None Include="Resources\arrow_se_24x24.png" />
+    <None Include="Resources\arrow_s_24x24.png" />
+    <None Include="Resources\arrow_nw_24x24.png" />
+    <None Include="Resources\arrow_ne_24x24.png" />
+    <None Include="Resources\arrow_n_24x24.png" />
+    <None Include="Resources\arrow_e_24x24.png" />
     <None Include="Resources\VolumeRenderShaders.hlsl" />
     <None Include="Resources\zoom_16x16.png" />
     <None Include="Resources\zoom_48x48.png" />
@@ -147,6 +166,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="_Internal\Views\ImageEditorView.resx">
       <DependentUpon>ImageEditorView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="_Internal\Views\ImageResizeSettings.resx">
+      <DependentUpon>ImageResizeSettings.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -117,32 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="MenuImageFormats.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>140, 17</value>
-  </metadata>
-  <metadata name="MenuImageType.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>301, 17</value>
-  </metadata>
-  <data name="ButtonImageType.ToolTipBody" xml:space="preserve">
-    <value>Converts the image from one type to another type (e.g. 2D to 3D)
+  <data name="LabelDesc.Text" xml:space="preserve">
+    <value>The dimensions of the image '{0}' do not match the dimensions of the target image. 
 
-Please note that this is a destructive operation. If the image is 3D and is converted to 2D or a 2D cube, then all depth slice information will be lost on conversion.
-
-If converting to an image cube, then the array size will be set to a multiple of 6.</value>
+Chose one of the options below to either crop or resize the imported image to fit within the dimensions of the target image.</value>
   </data>
-  <data name="ButtonImport.ToolTipBody" xml:space="preserve">
-    <value>Imports an image from the file system or physical file system and places it in the current mip level, array index and/or depth slice.
-
-When this method imports image data, the current image data for the mip level, array index and/or depth slice will be lost.
-</value>
-  </data>
-  <metadata name="MenuCodecs.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
-  <metadata name="MenuZoom.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>444, 17</value>
-  </metadata>
-  <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>78</value>
-  </metadata>
 </root>

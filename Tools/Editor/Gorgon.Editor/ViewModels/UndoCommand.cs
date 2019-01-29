@@ -41,7 +41,7 @@ namespace Gorgon.Editor.UI
     /// <typeparam name="TU">The type of undo arguments.</typeparam>
     /// <typeparam name="TR">The type of redo arguments.</typeparam>
     internal class UndoCommand<TU, TR>
-        : IUndoCommand
+        : IUndoCommand, IDisposable
         where TU : class
         where TR : class
     {
@@ -49,9 +49,9 @@ namespace Gorgon.Editor.UI
         // Flag to indicate that the undo operation is executing.
         private int _isExecuting;
         // The undo command parameters.
-        private readonly TU _undoArgs;
+        private TU _undoArgs;
         // The redo command parameters.
-        private readonly TR _redoArgs;
+        private TR _redoArgs;
         // The action to execute when undoing  instead of a command.
         private readonly Func<TU, CancellationToken, Task> _undoAction;
         // The action to execute when redoing instead of a command.
@@ -120,6 +120,19 @@ namespace Gorgon.Editor.UI
             {
                 Interlocked.Exchange(ref _isExecuting, 0);
             }
+        }
+
+        /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
+        public void Dispose()
+        {
+            TU undoArgs = Interlocked.Exchange(ref _undoArgs, null);
+            TR redoArgs = Interlocked.Exchange(ref _redoArgs, null);
+
+            var disposeUndo = undoArgs as IDisposable;
+            var disposeRedo = redoArgs as IDisposable;
+
+            disposeUndo?.Dispose();
+            disposeRedo?.Dispose();
         }
         #endregion
 

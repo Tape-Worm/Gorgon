@@ -38,7 +38,7 @@ using Gorgon.Graphics.Core;
 using Gorgon.UI;
 using ComponentFactory.Krypton.Toolkit;
 using ComponentFactory.Krypton.Ribbon;
-using Gorgon.Editor.Content;
+using Gorgon.Math;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.GdiPlus;
 
@@ -131,6 +131,25 @@ namespace Gorgon.Editor.UI.Views
         /// <summary>Property to return the swap chain assigned to the control.</summary>
         [Browsable(false)]
         public GorgonSwapChain SwapChain => _swapChain;
+
+        /// <summary>
+        /// Property to set or return the host for content panels.
+        /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public bool IsPanelHostActive
+        {
+            get => PanelHost.Visible;
+            set
+            {
+                PanelHost.Visible = value;
+                PanelHost.BringToFront();
+                PanelHost.Left = ClientSize.Width - PanelHost.Width;
+                PanelHost.Top = 0;
+                PanelHost.Height = ClientSize.Height;
+
+                Invalidate(true);
+            }
+        }
         #endregion
 
         #region Methods.
@@ -233,6 +252,45 @@ namespace Gorgon.Editor.UI.Views
             LabelHeader.Text = $"{dataContext.File.Name}{(dataContext.ContentState == ContentState.Unmodified ? string.Empty : "*")}";
             PanelContentName.Visible = true;
         }
+
+        /// <summary>
+        /// Function to add a control to the panel host.
+        /// </summary>
+        /// <param name="control">The control to add.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="control"/> parameter is <b>null</b>.</exception>
+        /// <remarks>
+        /// <para>
+        /// Adding a control does not guarantee that the host will be visible. To show the panel host, use the <see cref="IsPanelHostActive"/> property.
+        /// </para>
+        /// <para>
+        /// Only a single control can be active in the host at a time. Adding another control will remove the previous control.
+        /// </para>
+        /// </remarks>
+        protected void AddControlToPanelHost(Control control)
+        {
+            if (control == null)
+            {
+                throw new ArgumentNullException(nameof(control));
+            }
+
+            // Remove any controls within the host panel.
+            PanelContentControls.Controls.Clear();
+            PanelContentControls.Controls.Add(control);
+            control.Left = 0;
+            control.Top = 0;
+            if (control.Width > PanelHost.ClientSize.Width)
+            {
+                PanelHost.ClientSize = new Size(control.Width.Min(640), PanelHost.ClientSize.Height);                
+            }
+
+            control.Width = PanelContentControls.ClientSize.Width;
+            PanelContentControls.AutoScrollMinSize = new Size(0, control.Height);            
+        }
+
+        /// <summary>
+        /// Function to clear the host panel controls.
+        /// </summary>
+        protected void ClearPanelHost() => PanelContentControls.Controls.Clear();
 
         /// <summary>
         /// Function to render the swap chain contents to a GDI+ bitmap.

@@ -195,14 +195,8 @@ namespace Gorgon.Graphics.Imaging
 			}
 			else
 			{
-				// Clip the rectangle to the buffer size.
-				srcRegion = new DX.Rectangle
-				            {
-					            Left = sourceRegion.Value.Left.Max(0).Min(Width - 1),
-					            Top = sourceRegion.Value.Top.Max(0).Min(Height - 1),
-					            Right = sourceRegion.Value.Right.Max(0).Min(Width - 1),
-					            Bottom = sourceRegion.Value.Bottom.Max(0).Min(Height - 1)
-				            };
+                // Clip the rectangle to the buffer size.
+                srcRegion = DX.Rectangle.Intersect(sourceRegion.Value, sourceBufferDims);
 			}
 
 			// If we've nothing to copy, then leave.
@@ -219,32 +213,12 @@ namespace Gorgon.Graphics.Imaging
 		        return;
 		    }
 
-			// Adjust in case we're trying to move off the target.
-			if (destX < 0)
-			{
-				srcRegion.Left -= destX;
-				srcRegion.Right += destX;
-			    destX = 0;
-			}
+            // Ensure that the regions actually fit within their respective buffers.
+            var dstRegion = DX.Rectangle.Intersect(new DX.Rectangle(destX, destY, srcRegion.Width, srcRegion.Height),
+                                                    new DX.Rectangle(0, 0, buffer.Width, buffer.Height));
 
-			if (destY < 0)
-			{
-				srcRegion.Top -= destY;
-				srcRegion.Bottom += destY;
-			    destY = 0;
-			}
-
-			// Ensure that the regions actually fit within their respective buffers.
-		    var dstRegion = new DX.Rectangle
-		                    {
-		                        Left = destX,
-		                        Top = destY,
-		                        Right = (destX + (srcRegion.Right - srcRegion.Left)).Min(buffer.Width),
-		                        Bottom = (destY + (srcRegion.Bottom - srcRegion.Top)).Min(buffer.Height)
-		                    };
-
-			// If the source/dest region is empty, then we have nothing to copy.
-			if ((srcRegion.IsEmpty)
+            // If the source/dest region is empty, then we have nothing to copy.
+            if ((srcRegion.IsEmpty)
 				|| (dstRegion.IsEmpty)
                 || ((dstRegion.Right - dstRegion.Left) <= 0)
                 || ((dstRegion.Bottom - dstRegion.Top) <= 0))
@@ -253,10 +227,9 @@ namespace Gorgon.Graphics.Imaging
 			}
 
 			// If the buffers are identical in dimensions and have no offset, then just do a straight copy.
-		    if ((srcRegion.Left == dstRegion.Left) 
-				&& (srcRegion.Top == dstRegion.Top)
-				&& (srcRegion.Right == dstRegion.Right)
-				&& (srcRegion.Bottom == dstRegion.Bottom))
+		    if ((buffer.Width == Width)
+                && (buffer.Height == Height)
+                && (srcRegion.Equals(ref dstRegion)))
 		    {
                 Data.CopyTo(buffer.Data);
 		        return;
@@ -264,8 +237,8 @@ namespace Gorgon.Graphics.Imaging
 
 			unsafe
 			{
-				var dest = (byte*)buffer.Data;
-				var source = (byte*)Data;
+                byte* dest = (byte*)buffer.Data;
+                byte* source = (byte*)Data;
 
 				// Find out how many bytes each pixel occupies.
 				int dataSize = PitchInformation.RowPitch / Width;

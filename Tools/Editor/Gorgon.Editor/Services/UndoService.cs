@@ -119,6 +119,13 @@ namespace Gorgon.Editor.Services
         public void ClearStack()
         {
             Cancel();
+
+            // Perform any clean up required for the undo/redo arguments.
+            foreach (IDisposable command in _undoStack.OfType<IDisposable>())
+            {
+                command.Dispose();
+            }
+
             _undoStack.Clear();
             _undoIndex = -1;
 

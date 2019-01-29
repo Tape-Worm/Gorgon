@@ -46,6 +46,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
@@ -70,6 +71,12 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="UI\_Controls\GorgonAlignmentPicker.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\_Controls\GorgonAlignmentPicker.Designer.cs">
+      <DependentUpon>GorgonAlignmentPicker.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\_Controls\GorgonSearchBox.cs">
       <SubType>UserControl</SubType>
@@ -163,6 +170,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\center_24x24.png" />
+    <None Include="Resources\arrow_w_24x24.png" />
+    <None Include="Resources\arrow_sw_24x24.png" />
+    <None Include="Resources\arrow_se_24x24.png" />
+    <None Include="Resources\arrow_s_24x24.png" />
+    <None Include="Resources\arrow_nw_24x24.png" />
+    <None Include="Resources\arrow_ne_24x24.png" />
+    <None Include="Resources\arrow_n_24x24.png" />
+    <None Include="Resources\arrow_e_24x24.png" />
     <None Include="Resources\wait_48x48.gif" />
     <None Include="Resources\remove_24x24.png" />
     <None Include="Resources\add_24x24.png" />
@@ -181,6 +197,9 @@
     <None Include="Resources\Maximize.png" />
     <None Include="Resources\Info_48x48.png" />
     <None Include="Resources\Info_16x16.png" />
+    <EmbeddedResource Include="UI\_Controls\GorgonAlignmentPicker.resx">
+      <DependentUpon>GorgonAlignmentPicker.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\_Controls\GorgonSearchBox.resx">
       <DependentUpon>GorgonSearchBox.cs</DependentUpon>
     </EmbeddedResource>

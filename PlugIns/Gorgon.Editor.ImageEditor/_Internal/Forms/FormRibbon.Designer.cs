@@ -60,24 +60,12 @@
             this.GroupImageFormat = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
             this.ButtonImageFormat = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.MenuImageFormats = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.kryptonRibbonGroupButton2 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonImageType = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.MenuImageType = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.dImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dImageCubeMapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dImageToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.kryptonRibbonGroupSeparator3 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
-            this.kryptonRibbonGroupLines1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
-            this.kryptonRibbonGroupCustomControl4 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupCustomControl();
-            this.PanelMipArraySlice = new System.Windows.Forms.TableLayoutPanel();
-            this.LabelDepthSliceDetails = new ComponentFactory.Krypton.Toolkit.KryptonLabel();
-            this.LabelArrayIndexDetails = new ComponentFactory.Krypton.Toolkit.KryptonLabel();
-            this.LabelMipDetails = new ComponentFactory.Krypton.Toolkit.KryptonLabel();
-            this.ButtonNextMip = new ComponentFactory.Krypton.Toolkit.KryptonButton();
-            this.ButtonNextArrayIndex = new ComponentFactory.Krypton.Toolkit.KryptonButton();
-            this.ButtonNextDepthSlice = new ComponentFactory.Krypton.Toolkit.KryptonButton();
-            this.ButtonPrevDepthSlice = new ComponentFactory.Krypton.Toolkit.KryptonButton();
-            this.ButtonPrevArrayIndex = new ComponentFactory.Krypton.Toolkit.KryptonButton();
-            this.ButtonPrevMip = new ComponentFactory.Krypton.Toolkit.KryptonButton();
             this.kryptonRibbonGroupLines3 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
             this.ButtonZoom = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.MenuZoom = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -93,7 +81,6 @@
             this.Item1600Percent = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.RibbonImageContent)).BeginInit();
             this.MenuImageType.SuspendLayout();
-            this.PanelMipArraySlice.SuspendLayout();
             this.MenuZoom.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -201,6 +188,7 @@
             // 
             // ButtonEditInApp
             // 
+            this.ButtonEditInApp.Enabled = false;
             this.ButtonEditInApp.ImageLarge = global::Gorgon.Editor.ImageEditor.Properties.Resources.edit_image_48x48;
             this.ButtonEditInApp.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.edit_image_16x16;
             this.ButtonEditInApp.KeyTip = "E";
@@ -247,7 +235,6 @@
             this.kryptonRibbonGroupTriple2,
             this.GroupImageFormat,
             this.kryptonRibbonGroupSeparator3,
-            this.kryptonRibbonGroupLines1,
             this.kryptonRibbonGroupLines3});
             this.GroupImage.KeyTipGroup = "I";
             this.GroupImage.TextLine1 = "Image";
@@ -285,7 +272,7 @@
             // 
             this.GroupImageFormat.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
             this.ButtonImageFormat,
-            this.kryptonRibbonGroupButton2});
+            this.ButtonImageType});
             this.GroupImageFormat.MinimumSize = ComponentFactory.Krypton.Ribbon.GroupItemSize.Medium;
             // 
             // ButtonImageFormat
@@ -307,16 +294,16 @@
             this.MenuImageFormats.Name = "MenuImageFormats";
             this.MenuImageFormats.Size = new System.Drawing.Size(61, 4);
             // 
-            // kryptonRibbonGroupButton2
+            // ButtonImageType
             // 
-            this.kryptonRibbonGroupButton2.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.DropDown;
-            this.kryptonRibbonGroupButton2.ContextMenuStrip = this.MenuImageType;
-            this.kryptonRibbonGroupButton2.ImageLarge = global::Gorgon.Editor.ImageEditor.Properties.Resources.image_dimensions_48x48;
-            this.kryptonRibbonGroupButton2.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.image_dimensions_16x16;
-            this.kryptonRibbonGroupButton2.KeyTip = "T";
-            this.kryptonRibbonGroupButton2.TextLine1 = "Type";
-            this.kryptonRibbonGroupButton2.ToolTipBody = resources.GetString("kryptonRibbonGroupButton2.ToolTipBody");
-            this.kryptonRibbonGroupButton2.ToolTipTitle = "Image Type";
+            this.ButtonImageType.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.DropDown;
+            this.ButtonImageType.ContextMenuStrip = this.MenuImageType;
+            this.ButtonImageType.ImageLarge = global::Gorgon.Editor.ImageEditor.Properties.Resources.image_dimensions_48x48;
+            this.ButtonImageType.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.image_dimensions_16x16;
+            this.ButtonImageType.KeyTip = "T";
+            this.ButtonImageType.TextLine1 = "Type";
+            this.ButtonImageType.ToolTipBody = resources.GetString("ButtonImageType.ToolTipBody");
+            this.ButtonImageType.ToolTipTitle = "Image Type";
             // 
             // MenuImageType
             // 
@@ -351,175 +338,6 @@
             this.dImageToolStripMenuItem1.Size = new System.Drawing.Size(129, 22);
             this.dImageToolStripMenuItem1.Text = "3D Image";
             // 
-            // kryptonRibbonGroupLines1
-            // 
-            this.kryptonRibbonGroupLines1.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
-            this.kryptonRibbonGroupCustomControl4});
-            // 
-            // kryptonRibbonGroupCustomControl4
-            // 
-            this.kryptonRibbonGroupCustomControl4.CustomControl = this.PanelMipArraySlice;
-            // 
-            // PanelMipArraySlice
-            // 
-            this.PanelMipArraySlice.AutoSize = true;
-            this.PanelMipArraySlice.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.PanelMipArraySlice.BackColor = System.Drawing.Color.Transparent;
-            this.PanelMipArraySlice.ColumnCount = 3;
-            this.PanelMipArraySlice.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.PanelMipArraySlice.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.PanelMipArraySlice.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.PanelMipArraySlice.Controls.Add(this.LabelDepthSliceDetails, 1, 2);
-            this.PanelMipArraySlice.Controls.Add(this.LabelArrayIndexDetails, 1, 1);
-            this.PanelMipArraySlice.Controls.Add(this.LabelMipDetails, 1, 0);
-            this.PanelMipArraySlice.Controls.Add(this.ButtonNextMip, 2, 0);
-            this.PanelMipArraySlice.Controls.Add(this.ButtonNextArrayIndex, 2, 1);
-            this.PanelMipArraySlice.Controls.Add(this.ButtonNextDepthSlice, 2, 2);
-            this.PanelMipArraySlice.Controls.Add(this.ButtonPrevDepthSlice, 0, 2);
-            this.PanelMipArraySlice.Controls.Add(this.ButtonPrevArrayIndex, 0, 1);
-            this.PanelMipArraySlice.Controls.Add(this.ButtonPrevMip, 0, 0);
-            this.PanelMipArraySlice.Location = new System.Drawing.Point(851, 11);
-            this.PanelMipArraySlice.Margin = new System.Windows.Forms.Padding(0);
-            this.PanelMipArraySlice.Name = "PanelMipArraySlice";
-            this.PanelMipArraySlice.RowCount = 3;
-            this.PanelMipArraySlice.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.PanelMipArraySlice.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.PanelMipArraySlice.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.PanelMipArraySlice.Size = new System.Drawing.Size(167, 78);
-            this.PanelMipArraySlice.TabIndex = 4;
-            // 
-            // LabelDepthSliceDetails
-            // 
-            this.LabelDepthSliceDetails.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.LabelDepthSliceDetails.Location = new System.Drawing.Point(26, 52);
-            this.LabelDepthSliceDetails.Margin = new System.Windows.Forms.Padding(0);
-            this.LabelDepthSliceDetails.Name = "LabelDepthSliceDetails";
-            this.LabelDepthSliceDetails.Size = new System.Drawing.Size(115, 26);
-            this.LabelDepthSliceDetails.StateCommon.ShortText.TextH = ComponentFactory.Krypton.Toolkit.PaletteRelativeAlign.Center;
-            this.LabelDepthSliceDetails.TabIndex = 16;
-            this.LabelDepthSliceDetails.Values.Text = "Depth slice: 1/n";
-            this.LabelDepthSliceDetails.Visible = false;
-            // 
-            // LabelArrayIndexDetails
-            // 
-            this.LabelArrayIndexDetails.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.LabelArrayIndexDetails.Location = new System.Drawing.Point(26, 26);
-            this.LabelArrayIndexDetails.Margin = new System.Windows.Forms.Padding(0);
-            this.LabelArrayIndexDetails.Name = "LabelArrayIndexDetails";
-            this.LabelArrayIndexDetails.Size = new System.Drawing.Size(115, 26);
-            this.LabelArrayIndexDetails.StateCommon.ShortText.TextH = ComponentFactory.Krypton.Toolkit.PaletteRelativeAlign.Center;
-            this.LabelArrayIndexDetails.TabIndex = 15;
-            this.LabelArrayIndexDetails.Values.Text = "Array index: 1/n";
-            this.LabelArrayIndexDetails.Visible = false;
-            // 
-            // LabelMipDetails
-            // 
-            this.LabelMipDetails.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.LabelMipDetails.Location = new System.Drawing.Point(26, 0);
-            this.LabelMipDetails.Margin = new System.Windows.Forms.Padding(0);
-            this.LabelMipDetails.Name = "LabelMipDetails";
-            this.LabelMipDetails.Size = new System.Drawing.Size(115, 26);
-            this.LabelMipDetails.StateCommon.ShortText.TextH = ComponentFactory.Krypton.Toolkit.PaletteRelativeAlign.Center;
-            this.LabelMipDetails.TabIndex = 14;
-            this.LabelMipDetails.Values.Text = "Mip level: 1/n (WxH)";
-            this.LabelMipDetails.Visible = false;
-            // 
-            // ButtonNextMip
-            // 
-            this.ButtonNextMip.AutoSize = true;
-            this.ButtonNextMip.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ButtonNextMip.ButtonStyle = ComponentFactory.Krypton.Toolkit.ButtonStyle.Custom1;
-            this.ButtonNextMip.Enabled = false;
-            this.ButtonNextMip.Location = new System.Drawing.Point(141, 0);
-            this.ButtonNextMip.Margin = new System.Windows.Forms.Padding(0);
-            this.ButtonNextMip.Name = "ButtonNextMip";
-            this.ButtonNextMip.Size = new System.Drawing.Size(26, 26);
-            this.ButtonNextMip.TabIndex = 13;
-            this.ButtonNextMip.Values.Image = global::Gorgon.Editor.ImageEditor.Properties.Resources.right_16x16;
-            this.ButtonNextMip.Values.Text = "";
-            this.ButtonNextMip.Visible = false;
-            // 
-            // ButtonNextArrayIndex
-            // 
-            this.ButtonNextArrayIndex.AutoSize = true;
-            this.ButtonNextArrayIndex.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ButtonNextArrayIndex.ButtonStyle = ComponentFactory.Krypton.Toolkit.ButtonStyle.Custom1;
-            this.ButtonNextArrayIndex.Enabled = false;
-            this.ButtonNextArrayIndex.Location = new System.Drawing.Point(141, 26);
-            this.ButtonNextArrayIndex.Margin = new System.Windows.Forms.Padding(0);
-            this.ButtonNextArrayIndex.Name = "ButtonNextArrayIndex";
-            this.ButtonNextArrayIndex.Size = new System.Drawing.Size(26, 26);
-            this.ButtonNextArrayIndex.TabIndex = 12;
-            this.ButtonNextArrayIndex.Values.Image = global::Gorgon.Editor.ImageEditor.Properties.Resources.right_16x16;
-            this.ButtonNextArrayIndex.Values.Text = "";
-            this.ButtonNextArrayIndex.Visible = false;
-            // 
-            // ButtonNextDepthSlice
-            // 
-            this.ButtonNextDepthSlice.AutoSize = true;
-            this.ButtonNextDepthSlice.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ButtonNextDepthSlice.ButtonStyle = ComponentFactory.Krypton.Toolkit.ButtonStyle.Custom1;
-            this.ButtonNextDepthSlice.Enabled = false;
-            this.ButtonNextDepthSlice.Location = new System.Drawing.Point(141, 52);
-            this.ButtonNextDepthSlice.Margin = new System.Windows.Forms.Padding(0);
-            this.ButtonNextDepthSlice.Name = "ButtonNextDepthSlice";
-            this.ButtonNextDepthSlice.Size = new System.Drawing.Size(26, 26);
-            this.ButtonNextDepthSlice.TabIndex = 11;
-            this.ButtonNextDepthSlice.Values.Image = global::Gorgon.Editor.ImageEditor.Properties.Resources.right_16x16;
-            this.ButtonNextDepthSlice.Values.Text = "";
-            this.ButtonNextDepthSlice.Visible = false;
-            // 
-            // ButtonPrevDepthSlice
-            // 
-            this.ButtonPrevDepthSlice.AutoSize = true;
-            this.ButtonPrevDepthSlice.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ButtonPrevDepthSlice.ButtonStyle = ComponentFactory.Krypton.Toolkit.ButtonStyle.Custom1;
-            this.ButtonPrevDepthSlice.Enabled = false;
-            this.ButtonPrevDepthSlice.Location = new System.Drawing.Point(0, 52);
-            this.ButtonPrevDepthSlice.Margin = new System.Windows.Forms.Padding(0);
-            this.ButtonPrevDepthSlice.Name = "ButtonPrevDepthSlice";
-            this.ButtonPrevDepthSlice.Size = new System.Drawing.Size(26, 26);
-            this.ButtonPrevDepthSlice.TabIndex = 10;
-            this.ButtonPrevDepthSlice.Values.Image = global::Gorgon.Editor.ImageEditor.Properties.Resources.left_16x16;
-            this.ButtonPrevDepthSlice.Values.Text = "";
-            this.ButtonPrevDepthSlice.Visible = false;
-            // 
-            // ButtonPrevArrayIndex
-            // 
-            this.ButtonPrevArrayIndex.AutoSize = true;
-            this.ButtonPrevArrayIndex.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ButtonPrevArrayIndex.ButtonStyle = ComponentFactory.Krypton.Toolkit.ButtonStyle.Custom1;
-            this.ButtonPrevArrayIndex.Enabled = false;
-            this.ButtonPrevArrayIndex.Location = new System.Drawing.Point(0, 26);
-            this.ButtonPrevArrayIndex.Margin = new System.Windows.Forms.Padding(0);
-            this.ButtonPrevArrayIndex.Name = "ButtonPrevArrayIndex";
-            this.ButtonPrevArrayIndex.Size = new System.Drawing.Size(26, 26);
-            this.ButtonPrevArrayIndex.TabIndex = 9;
-            this.ButtonPrevArrayIndex.Values.Image = global::Gorgon.Editor.ImageEditor.Properties.Resources.left_16x16;
-            this.ButtonPrevArrayIndex.Values.Text = "";
-            this.ButtonPrevArrayIndex.Visible = false;
-            // 
-            // ButtonPrevMip
-            // 
-            this.ButtonPrevMip.AutoSize = true;
-            this.ButtonPrevMip.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ButtonPrevMip.ButtonStyle = ComponentFactory.Krypton.Toolkit.ButtonStyle.Custom1;
-            this.ButtonPrevMip.Enabled = false;
-            this.ButtonPrevMip.Location = new System.Drawing.Point(0, 0);
-            this.ButtonPrevMip.Margin = new System.Windows.Forms.Padding(0);
-            this.ButtonPrevMip.Name = "ButtonPrevMip";
-            this.ButtonPrevMip.Size = new System.Drawing.Size(26, 26);
-            this.ButtonPrevMip.TabIndex = 6;
-            this.ButtonPrevMip.Values.Image = global::Gorgon.Editor.ImageEditor.Properties.Resources.left_16x16;
-            this.ButtonPrevMip.Values.Text = "";
-            this.ButtonPrevMip.Visible = false;
-            // 
             // kryptonRibbonGroupLines3
             // 
             this.kryptonRibbonGroupLines3.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
@@ -550,7 +368,7 @@
             this.Item800Percent,
             this.Item1600Percent});
             this.MenuZoom.Name = "ZoomMenu";
-            this.MenuZoom.Size = new System.Drawing.Size(181, 230);
+            this.MenuZoom.Size = new System.Drawing.Size(135, 208);
             // 
             // ItemZoomToWindow
             // 
@@ -558,7 +376,7 @@
             this.ItemZoomToWindow.CheckOnClick = true;
             this.ItemZoomToWindow.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ItemZoomToWindow.Name = "ItemZoomToWindow";
-            this.ItemZoomToWindow.Size = new System.Drawing.Size(180, 22);
+            this.ItemZoomToWindow.Size = new System.Drawing.Size(134, 22);
             this.ItemZoomToWindow.Tag = "ToWindow";
             this.ItemZoomToWindow.Text = "To Window";
             this.ItemZoomToWindow.Click += new System.EventHandler(this.ItemZoom_Click);
@@ -566,13 +384,13 @@
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(177, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(131, 6);
             // 
             // Item12Percent
             // 
             this.Item12Percent.CheckOnClick = true;
             this.Item12Percent.Name = "Item12Percent";
-            this.Item12Percent.Size = new System.Drawing.Size(180, 22);
+            this.Item12Percent.Size = new System.Drawing.Size(134, 22);
             this.Item12Percent.Tag = "Percent12";
             this.Item12Percent.Text = "12.5%";
             this.Item12Percent.Click += new System.EventHandler(this.ItemZoom_Click);
@@ -581,7 +399,7 @@
             // 
             this.Item25Percent.CheckOnClick = true;
             this.Item25Percent.Name = "Item25Percent";
-            this.Item25Percent.Size = new System.Drawing.Size(180, 22);
+            this.Item25Percent.Size = new System.Drawing.Size(134, 22);
             this.Item25Percent.Tag = "Percent25";
             this.Item25Percent.Text = "25%";
             this.Item25Percent.Click += new System.EventHandler(this.ItemZoom_Click);
@@ -590,7 +408,7 @@
             // 
             this.Item50Percent.CheckOnClick = true;
             this.Item50Percent.Name = "Item50Percent";
-            this.Item50Percent.Size = new System.Drawing.Size(180, 22);
+            this.Item50Percent.Size = new System.Drawing.Size(134, 22);
             this.Item50Percent.Tag = "Percent50";
             this.Item50Percent.Text = "50%";
             this.Item50Percent.Click += new System.EventHandler(this.ItemZoom_Click);
@@ -599,7 +417,7 @@
             // 
             this.Item100Percent.CheckOnClick = true;
             this.Item100Percent.Name = "Item100Percent";
-            this.Item100Percent.Size = new System.Drawing.Size(180, 22);
+            this.Item100Percent.Size = new System.Drawing.Size(134, 22);
             this.Item100Percent.Tag = "Percent100";
             this.Item100Percent.Text = "100%";
             this.Item100Percent.Click += new System.EventHandler(this.ItemZoom_Click);
@@ -608,7 +426,7 @@
             // 
             this.Item200Percent.CheckOnClick = true;
             this.Item200Percent.Name = "Item200Percent";
-            this.Item200Percent.Size = new System.Drawing.Size(180, 22);
+            this.Item200Percent.Size = new System.Drawing.Size(134, 22);
             this.Item200Percent.Tag = "Percent200";
             this.Item200Percent.Text = "200%";
             this.Item200Percent.Click += new System.EventHandler(this.ItemZoom_Click);
@@ -617,7 +435,7 @@
             // 
             this.Item400Percent.CheckOnClick = true;
             this.Item400Percent.Name = "Item400Percent";
-            this.Item400Percent.Size = new System.Drawing.Size(180, 22);
+            this.Item400Percent.Size = new System.Drawing.Size(134, 22);
             this.Item400Percent.Tag = "Percent400";
             this.Item400Percent.Text = "400%";
             this.Item400Percent.Click += new System.EventHandler(this.ItemZoom_Click);
@@ -626,7 +444,7 @@
             // 
             this.Item800Percent.CheckOnClick = true;
             this.Item800Percent.Name = "Item800Percent";
-            this.Item800Percent.Size = new System.Drawing.Size(180, 22);
+            this.Item800Percent.Size = new System.Drawing.Size(134, 22);
             this.Item800Percent.Tag = "Percent800";
             this.Item800Percent.Text = "800%";
             this.Item800Percent.Click += new System.EventHandler(this.ItemZoom_Click);
@@ -635,7 +453,7 @@
             // 
             this.Item1600Percent.CheckOnClick = true;
             this.Item1600Percent.Name = "Item1600Percent";
-            this.Item1600Percent.Size = new System.Drawing.Size(180, 22);
+            this.Item1600Percent.Size = new System.Drawing.Size(134, 22);
             this.Item1600Percent.Tag = "Percent1600";
             this.Item1600Percent.Text = "1600%";
             this.Item1600Percent.Click += new System.EventHandler(this.ItemZoom_Click);
@@ -651,8 +469,6 @@
             this.Text = "FormRibbon";
             ((System.ComponentModel.ISupportInitialize)(this.RibbonImageContent)).EndInit();
             this.MenuImageType.ResumeLayout(false);
-            this.PanelMipArraySlice.ResumeLayout(false);
-            this.PanelMipArraySlice.PerformLayout();
             this.MenuZoom.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -675,7 +491,7 @@
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup GroupImage;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple2;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonDimensions;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton kryptonRibbonGroupButton2;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonImageType;
         private System.Windows.Forms.ContextMenuStrip MenuImageType;
         private System.Windows.Forms.ToolStripMenuItem dImageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem dImageCubeMapToolStripMenuItem;
@@ -690,7 +506,6 @@
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonImageRedo;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonExport;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator3;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines1;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines3;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonZoom;
         private System.Windows.Forms.ContextMenuStrip MenuZoom;
@@ -704,16 +519,5 @@
         private System.Windows.Forms.ToolStripMenuItem Item400Percent;
         private System.Windows.Forms.ToolStripMenuItem Item800Percent;
         private System.Windows.Forms.ToolStripMenuItem Item1600Percent;
-        private System.Windows.Forms.TableLayoutPanel PanelMipArraySlice;
-        private ComponentFactory.Krypton.Toolkit.KryptonButton ButtonPrevMip;
-        private ComponentFactory.Krypton.Toolkit.KryptonButton ButtonPrevArrayIndex;
-        private ComponentFactory.Krypton.Toolkit.KryptonButton ButtonPrevDepthSlice;
-        private ComponentFactory.Krypton.Toolkit.KryptonButton ButtonNextDepthSlice;
-        private ComponentFactory.Krypton.Toolkit.KryptonButton ButtonNextArrayIndex;
-        private ComponentFactory.Krypton.Toolkit.KryptonButton ButtonNextMip;
-        private ComponentFactory.Krypton.Toolkit.KryptonLabel LabelMipDetails;
-        private ComponentFactory.Krypton.Toolkit.KryptonLabel LabelArrayIndexDetails;
-        private ComponentFactory.Krypton.Toolkit.KryptonLabel LabelDepthSliceDetails;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupCustomControl kryptonRibbonGroupCustomControl4;
     }
 }
