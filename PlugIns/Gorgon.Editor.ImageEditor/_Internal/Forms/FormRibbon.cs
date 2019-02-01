@@ -9,6 +9,7 @@ using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
+using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 
 namespace Gorgon.Editor.ImageEditor
@@ -55,6 +56,43 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to update the image type menu to reflect the current selection.
+        /// </summary>
+        /// <param name="dataContext">The current data context.</param>
+        private void UpdateImageTypeMenu(IImageContent dataContext)
+        {
+            ToolStripMenuItem currentItem;
+
+            if (dataContext == null)
+            {
+                ButtonImageType.TextLine1 = ImageType.Unknown.ToString();
+                return;
+            }
+
+            switch (dataContext.ImageType)
+            {
+                case ImageType.ImageCube:
+                    currentItem = ItemCubeMap;
+                    break;
+                case ImageType.Image3D:
+                    currentItem = Item3DImage;
+                    break;
+                default:
+                    currentItem = Item2DImage;
+                    break;
+            }
+
+            foreach (ToolStripMenuItem item in MenuImageType.Items.OfType<ToolStripMenuItem>().Where(item => item != currentItem))
+            {
+                item.Checked = false;
+            }
+
+            currentItem.Checked = true;
+
+            ButtonImageType.TextLine1 = currentItem.Text;
+        }
+
         /// <summary>
         /// Function to update the zoom item menu to reflect the current selection.
         /// </summary>
@@ -108,10 +146,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Handles the PropertyChanged event of the CropOrResizeSettings control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
-        private void CropOrResizeSettings_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            ValidateButtons();
-        }
+        private void CropOrResizeSettings_PropertyChanged(object sender, PropertyChangedEventArgs e) => ValidateButtons();
 
         /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
         /// <param name="sender">The source of the event.</param>
@@ -120,6 +155,9 @@ namespace Gorgon.Editor.ImageEditor
         {
             switch (e.PropertyName)
             {
+                case nameof(IImageContent.ImageType):
+                    UpdateImageTypeMenu(DataContext);
+                    break;
                 case nameof(IImageContent.PixelFormats):
                     RefreshPixelFormats(DataContext);
                     break;
@@ -269,6 +307,16 @@ namespace Gorgon.Editor.ImageEditor
             ButtonImageRedo.Enabled = DataContext.RedoCommand?.CanExecute(null) ?? false;
             ButtonExport.Enabled = MenuCodecs.Items.Count > 0;            
             ButtonSaveImage.Enabled = DataContext.SaveContentCommand?.CanExecute(null) ?? false;
+
+            if (DataContext.ChangeImageTypeCommand == null)
+            {
+                ButtonImageType.Enabled = false;
+                return;
+            }
+
+            Item2DImage.Enabled = DataContext.ChangeImageTypeCommand.CanExecute(ImageType.Image2D);
+            Item3DImage.Enabled = DataContext.ChangeImageTypeCommand.CanExecute(ImageType.Image3D);
+            ItemCubeMap.Enabled = DataContext.ChangeImageTypeCommand.CanExecute(ImageType.ImageCube);
         }
 
         /// <summary>
@@ -404,6 +452,7 @@ namespace Gorgon.Editor.ImageEditor
             RibbonImageContent.Enabled = false;
             ClearCodecs();
             UpdateZoomMenu();
+            UpdateImageTypeMenu(null);
             ItemZoomToWindow.Checked = true;
         }
 
@@ -432,6 +481,33 @@ namespace Gorgon.Editor.ImageEditor
             UpdateZoomMenu();
         }
 
+
+        /// <summary>Handles the Click event of the Item2DImage control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ItemImageType_Click(object sender, EventArgs e)
+        {
+            var item = (ToolStripMenuItem)sender;
+
+            if (item.Tag == null)
+            {
+                item.Checked = false;
+                return;
+            }
+
+            var imageType = (ImageType)item.Tag;
+
+            if ((DataContext?.ChangeImageTypeCommand == null) 
+                || (!DataContext.ChangeImageTypeCommand.CanExecute(imageType)) 
+                || (DataContext.ImageType == imageType))
+            {
+                item.Checked = true;
+                return;
+            }
+
+            DataContext.ChangeImageTypeCommand.Execute(imageType);
+        }
+
         /// <summary>
         /// Function to initialize the view based on the data context.
         /// </summary>
@@ -454,6 +530,7 @@ namespace Gorgon.Editor.ImageEditor
 
             UpdatePixelFormatMenuSelection(dataContext);
             UpdateZoomMenu();
+            UpdateImageTypeMenu(dataContext);
         }
 
         /// <summary>Function to assign a data context to the view as a view model.</summary>
@@ -495,7 +572,14 @@ namespace Gorgon.Editor.ImageEditor
 
         #region Constructor.
         /// <summary>Initializes a new instance of the FormRibbon class.</summary>
-        public FormRibbon() => InitializeComponent();
+        public FormRibbon()
+        {
+            InitializeComponent();
+
+            Item2DImage.Tag = ImageType.Image2D;
+            ItemCubeMap.Tag = ImageType.ImageCube;
+            Item3DImage.Tag = ImageType.Image3D;
+        }
         #endregion
     }
 }

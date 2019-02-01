@@ -179,6 +179,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the command to execute when changing the image type.
+        /// </summary>
+        IEditorCommand<ImageType> ChangeImageTypeCommand
+        {
+            get;
+        }
         #endregion
     }
 }

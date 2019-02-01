@@ -192,6 +192,8 @@ namespace Gorgon.Graphics.Imaging
 		/// Initializes a new instance of the <see cref="GorgonImageInfo"/> class.
 		/// </summary>
 		/// <param name="info">The initial image information to copy into this instance.</param>
+        /// <param name="imageType">[Optional] An updated image type.</param>
+        /// <param name="format">[Optional] An updated image pixel format.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <see cref="Format"/> value of the <paramref name="info"/> parameter is set to <see cref="BufferFormat.Unknown"/>.</exception>
 		/// <remarks>
@@ -199,7 +201,7 @@ namespace Gorgon.Graphics.Imaging
 		/// Use this constructor to create a copy of an existing <see cref="IGorgonImageInfo"/> object.
 		/// </para>
 		/// </remarks>
-		public GorgonImageInfo(IGorgonImageInfo info)
+		public GorgonImageInfo(IGorgonImageInfo info, ImageType? imageType = null, BufferFormat? format = null)
 		{
 			if (info == null)
 			{
@@ -209,14 +211,14 @@ namespace Gorgon.Graphics.Imaging
 			if (info.Format == BufferFormat.Unknown)
 			{
 				throw new ArgumentException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, info.Format), nameof(info.Format));
-			}
+			}                        
 
-			Format = info.Format;
+			Format = format ?? info.Format;
 			ArrayCount = info.ArrayCount.Max(1);
 			Depth = info.Depth;
 			Height = info.Height;
 			Width = info.Width;
-			ImageType = info.ImageType;
+			ImageType = imageType ?? info.ImageType;
 			MipCount = info.MipCount.Max(1);
 			HasPreMultipliedAlpha = info.HasPreMultipliedAlpha;
 		}

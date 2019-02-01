@@ -61,5 +61,20 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="destSize">The new size of the image.</param>
         /// <param name="alignment">The location to start cropping from.</param>
         void CropTo(IGorgonImage cropImage, DX.Size2 destSize, Alignment alignment);
+
+        /// <summary>
+        /// Function to convert the specified image into a volume image.
+        /// </summary>
+        /// <param name="image">The image to convert.</param>
+        /// <returns>The converted image.</returns>
+        IGorgonImage ConvertToVolume(IGorgonImage image);
+
+        /// <summary>
+        /// Function to convert the specified image into a 2D image.
+        /// </summary>
+        /// <param name="image">The image to convert.</param>
+        /// <param name="isCubeMap"><b>true</b> if the image should be a cube map, or <b>false</b> if not.</param>
+        /// <returns>The converted image.</returns>
+        IGorgonImage ConvertTo2D(IGorgonImage image, bool isCubeMap);
     }
 }

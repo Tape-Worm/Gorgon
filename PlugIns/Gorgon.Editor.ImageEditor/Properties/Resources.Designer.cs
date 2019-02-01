@@ -270,6 +270,28 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This image has more than 1 depth slice. Converting this image to a 2D/Cube image will discard all depth slices after the 1st one.  
+        ///
+        ///Are you sure you wish to continue?.
+        /// </summary>
+        internal static string GORIMG_CONFIRM_3D_TO_2D {
+            get {
+                return ResourceManager.GetString("GORIMG_CONFIRM_3D_TO_2D", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This image has an array. Converting to a volume (3D) image will discard these array indices after the 1st one.
+        ///
+        ///Are you sure you wish to continue?.
+        /// </summary>
+        internal static string GORIMG_CONFIRM_ARRAY_TO_VOLUME {
+            get {
+                return ResourceManager.GetString("GORIMG_CONFIRM_ARRAY_TO_VOLUME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The image &apos;{0}&apos; has unsaved changes. 
         ///
         ///Would you like to save these changes now?.
@@ -328,6 +350,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static string GORIMG_ERR_CANNOT_CONVERT {
             get {
                 return ResourceManager.GetString("GORIMG_ERR_CANNOT_CONVERT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error while converting the image type..
+        /// </summary>
+        internal static string GORIMG_ERR_CHANGE_TYPE {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_CHANGE_TYPE", resourceCulture);
             }
         }
         

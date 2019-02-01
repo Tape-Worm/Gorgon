@@ -25,14 +25,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Editor.ImageEditor.Properties;
@@ -47,10 +40,6 @@ namespace Gorgon.Editor.ImageEditor
     internal partial class ImageResizeSettings 
         : EditorBaseControl, IDataContext<ICropResizeSettings>
     {
-        #region Variables.
-
-        #endregion
-
         #region Properties.
         /// <summary>Property to return the data context assigned to this view.</summary>
         /// <value>The data context.</value>
@@ -331,7 +320,7 @@ namespace Gorgon.Editor.ImageEditor
             InitializeComponent();
 
             // Populate the image filter drop down.
-            ImageFilter[] filters = (ImageFilter[])Enum.GetValues(typeof(ImageFilter));
+            var filters = (ImageFilter[])Enum.GetValues(typeof(ImageFilter));
 
             foreach (ImageFilter filter in filters)
             {

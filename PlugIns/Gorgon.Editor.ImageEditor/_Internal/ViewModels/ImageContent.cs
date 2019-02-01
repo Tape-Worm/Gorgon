@@ -96,8 +96,6 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         #region Variables.
         // The directory to store the undo cache data.
         private IGorgonVirtualDirectory _undoCacheDir;
-        // The image.
-        private IGorgonImage _image;
         // The format support information for the current video card.
         private IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> _formatSupport;
         // The available pixel formats, based on codec.
@@ -122,6 +120,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         private ICropResizeSettings _cropResizeSettings;
         // The service used to update the image data.
         private IImageUpdaterService _imageUpdater;
+        // Information about the current video adapter.
+        private IGorgonVideoAdapterInfo _videoAdapter;
         #endregion
 
         #region Properties.
@@ -131,7 +131,11 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <summary>
         /// Property to return the image data.
         /// </summary>
-        public IGorgonImage ImageData => _image;
+        public IGorgonImage ImageData
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// Property to return the list of codecs available.
@@ -229,16 +233,16 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>Property to return the type of image that is loaded.</summary>
-        public ImageType ImageType => _image?.ImageType ?? ImageType.Unknown;
+        public ImageType ImageType => ImageData?.ImageType ?? ImageType.Unknown;
 
         /// <summary>Property to return the number of mip maps in the image.</summary>
-        public int MipCount => _image.MipCount;
+        public int MipCount => ImageData.MipCount;
 
         /// <summary>Property to return the number of array indices in the image.</summary>
-        public int ArrayCount => _image.ArrayCount;
+        public int ArrayCount => ImageData.ArrayCount;
 
         /// <summary>Property to return the number of depth slices in the image.</summary>
-        public int DepthCount => _image.GetDepthCount(CurrentMipLevel);
+        public int DepthCount => ImageData.GetDepthCount(CurrentMipLevel);
 
         /// <summary>Property to set or return the current mip map level.</summary>
         public int CurrentMipLevel
@@ -302,12 +306,12 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <summary>
         /// Property to return the width of the image, in pixels.
         /// </summary>
-        public int Width => _image.Width;
+        public int Width => ImageData.Width;
 
         /// <summary>
         /// Property to return the height of the image, in pixels.
         /// </summary>
-        public int Height => _image.Height;
+        public int Height => ImageData.Height;
 
         /// <summary>
         /// Property to return whether a crop/resize operation is required.
@@ -326,6 +330,13 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 _cropResizeSettings = value;
                 OnPropertyChanged();
             }
+        }
+
+        /// <summary>Property to return the command to execute when changing the image type.</summary>
+        /// <value>The change image type command.</value>
+        public IEditorCommand<ImageType> ChangeImageTypeCommand
+        {
+            get;
         }
         #endregion
 
@@ -351,7 +362,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             try
             {
                 // Persist the image to a new working file so that block compression won't be applied to our current working file.                
-                workFile = _imageIO.SaveImageFile(Guid.NewGuid().ToString("N"), _image, CurrentPixelFormat);
+                workFile = _imageIO.SaveImageFile(Guid.NewGuid().ToString("N"), ImageData, CurrentPixelFormat);
 
                 inStream = workFile.OpenStream();
                 outStream = File.OpenWrite();
@@ -435,7 +446,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             var result = new ObservableCollection<BufferFormat>();
             IReadOnlyList<BufferFormat> supportedFormats = _imageIO.DefaultCodec.SupportedPixelFormats;
 
-            if (_image.FormatInfo.IsCompressed)
+            if (ImageData.FormatInfo.IsCompressed)
             {
                 // Assume our block compressed format expands to R8G8B8A8
                 supportedFormats = BufferFormat.R8G8B8A8_UNorm.CanConvertToAny(supportedFormats);
@@ -452,7 +463,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             foreach (BufferFormat format in supportedFormats.OrderBy(item => item.ToString()))
             {
                 if ((!_formatSupport.TryGetValue(format, out IGorgonFormatSupportInfo supportInfo))
-                    || (!supportInfo.IsTextureFormat(_image.ImageType))
+                    || (!supportInfo.IsTextureFormat(ImageData.ImageType))
                     || (supportInfo.IsDepthBufferFormat))
                 {
                     continue;
@@ -465,7 +476,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     continue;
                 }
                                 
-                if ((!_image.FormatInfo.IsCompressed) && (!formatInfo.IsCompressed) && (!_image.CanConvertToFormat(format)))
+                if ((!ImageData.FormatInfo.IsCompressed) && (!formatInfo.IsCompressed) && (!ImageData.CanConvertToFormat(format)))
                 {
                     continue;
                 }
@@ -482,7 +493,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// </summary>
         /// <param name="format">The format to convert to.</param>
         /// <returns><b>true</b> if the conversion can take place, <b>false</b> if not.</returns>
-        private bool CanConvertFormat(BufferFormat format) => (format == _image.Format) || (format == BufferFormat.Unknown) ? false : true;
+        private bool CanConvertFormat(BufferFormat format) => (format == ImageData.Format) || (format == BufferFormat.Unknown) ? false : true;
 
         /// <summary>
         /// Function to create an undo cache file from the working file.
@@ -546,10 +557,10 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                     inStream = undoArgs.UndoFile.OpenStream();
                     (IGorgonImage image, _, _) = _imageIO.LoadImageFile(inStream, _workingFile.Name);
-                    _image.Dispose();
-                    _image = image;
+                    ImageData.Dispose();
+                    ImageData = image;
                     CurrentPixelFormat = undoArgs.Format;
-                    BuildCodecList(_image);
+                    BuildCodecList(ImageData);
 
                     ContentState = ContentState.Modified;
 
@@ -574,7 +585,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
             Task RedoAction(ConvertUndoArgs redoArgs, CancellationToken cancelToken)
             {
-                GorgonFormatInfo srcFormat = _image.FormatInfo;
+                GorgonFormatInfo srcFormat = ImageData.FormatInfo;
                 IGorgonVirtualFile undoFile = null;
 
                 try
@@ -586,7 +597,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     // Ensure that we can actually convert.
                     if (!destFormat.IsCompressed)
                     {
-                        if (!_image.CanConvertToFormat(format))
+                        if (!ImageData.CanConvertToFormat(format))
                         {
                             string message = string.Format(Resources.GORIMG_ERR_CANNOT_CONVERT, srcFormat.Format, format);
                             MessageDisplay.ShowError(message);
@@ -601,10 +612,10 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     }
 
                     undoFile = CreateUndoCacheFile();                    
-                    _workingFile = _imageIO.SaveImageFile(File.Name, _image, format);
+                    _workingFile = _imageIO.SaveImageFile(File.Name, ImageData, format);
 
                     CurrentPixelFormat = format;
-                    BuildCodecList(_image);
+                    BuildCodecList(ImageData);
 
                     if (redoArgs == null)
                     {
@@ -648,7 +659,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             try
             {
-                FileInfo exportedFile = _imageIO.ExportImage(File, _image, codec);
+                FileInfo exportedFile = _imageIO.ExportImage(File, ImageData, codec);
 
                 if (exportedFile == null)
                 {
@@ -714,6 +725,84 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
+        /// Function to determine if the image change be changed to the specified type.
+        /// </summary>
+        /// <param name="imageType">The type of image.</param>
+        /// <returns><b>true</b> if the image can change types, <b>false</b> if not.</returns>
+        private bool CanChangeImageType(ImageType imageType)
+        {
+            if (((ImageType == ImageType.Image2D) && (imageType == ImageType.ImageCube))
+                || ((ImageType == ImageType.ImageCube) && (imageType == ImageType.Image2D)))
+            {
+                return true;
+            }
+
+            // Ensure that the current pixel format is supported.
+            if (!_formatSupport[CurrentPixelFormat].IsTextureFormat(ImageType))
+            {
+                return false;
+            }
+
+            return (imageType != ImageType.Image3D) 
+                || ((Width <= _videoAdapter.MaxTexture3DWidth) && (Height <= _videoAdapter.MaxTexture3DHeight));
+        }
+
+        /// <summary>
+        /// Function to convert the image type to another type.
+        /// </summary>
+        /// <param name="newImageType">The type to convert into.</param>
+        private void DoChangeImageType(ImageType newImageType)
+        {
+            IGorgonImage newImage;
+
+            try
+            {
+                if (newImageType == ImageType)
+                {
+                    return;
+                }
+
+                switch (newImageType)
+                {
+                    case ImageType.Image2D:
+                        if ((DepthCount > 1)
+                            && (MessageDisplay.ShowConfirmation(Resources.GORIMG_CONFIRM_3D_TO_2D) == MessageResponse.No))
+                        {
+                            return;
+                        }
+
+                        BusyState.SetBusy();
+                        newImage = _imageUpdater.ConvertTo2D(ImageData, false);
+                        break;
+                    case ImageType.Image3D:
+                        if ((ArrayCount > 1) 
+                            && (MessageDisplay.ShowConfirmation(Resources.GORIMG_CONFIRM_ARRAY_TO_VOLUME) == MessageResponse.No))
+                        {
+                            return;
+                        }
+
+                        BusyState.SetBusy();
+                        newImage = _imageUpdater.ConvertToVolume(ImageData);
+                        break;
+                    default:
+                        return;
+                }
+
+                ImageData.Dispose();
+                ImageData = newImage;
+                NotifyPropertyChanged(nameof(ImageType));
+            }
+            catch (Exception ex)
+            {
+                MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_CHANGE_TYPE);
+            }
+            finally
+            {
+                BusyState.SetIdle();
+            }
+        }
+
+        /// <summary>
         /// Function to build the list of codecs that support the current image.
         /// </summary>
         /// <param name="image">The image to evaluate.</param>
@@ -738,27 +827,27 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
             foreach (IGorgonImageCodec codec in _imageIO.InstalledCodecs.Where(item => item.CanEncode).OrderBy(item => item.Codec))
             {
-                if ((!codec.SupportsMipMaps) && (_image.MipCount > 1))
+                if ((!codec.SupportsMipMaps) && (ImageData.MipCount > 1))
                 {
-                    Log.Print($"Codec '{codec.CodecDescription} ({codec.Codec})' does not support mip maps, and image has {_image.MipCount} mip levels. Skipping...", LoggingLevel.Verbose);
+                    Log.Print($"Codec '{codec.CodecDescription} ({codec.Codec})' does not support mip maps, and image has {ImageData.MipCount} mip levels. Skipping...", LoggingLevel.Verbose);
                     continue;
                 }
 
-                if ((!codec.SupportsMultipleFrames) && (_image.ArrayCount > 1))
+                if ((!codec.SupportsMultipleFrames) && (ImageData.ArrayCount > 1))
                 {
-                    Log.Print($"Codec '{codec.CodecDescription} ({codec.Codec})' does not support arrays, and image has {_image.ArrayCount} array indices. Skipping...", LoggingLevel.Verbose);
+                    Log.Print($"Codec '{codec.CodecDescription} ({codec.Codec})' does not support arrays, and image has {ImageData.ArrayCount} array indices. Skipping...", LoggingLevel.Verbose);
                     continue;
                 }
 
-                if ((!codec.SupportsDepth) && (_image.ImageType == ImageType.Image3D))
+                if ((!codec.SupportsDepth) && (ImageData.ImageType == ImageType.Image3D))
                 {
                     Log.Print($"Codec '{codec.CodecDescription} ({codec.Codec})' does not support 3D (depth) images, and image is 3D. Skipping...", LoggingLevel.Verbose);
                     continue;
                 }
 
-                if (codec.SupportedPixelFormats.All(item => item != _image.Format))
+                if (codec.SupportedPixelFormats.All(item => item != ImageData.Format))
                 {
-                    Log.Print($"Codec '{codec.CodecDescription} ({codec.Codec})' does not support the pixel format [{_image.Format}]. Skipping...", LoggingLevel.Verbose);
+                    Log.Print($"Codec '{codec.CodecDescription} ({codec.Codec})' does not support the pixel format [{ImageData.Format}]. Skipping...", LoggingLevel.Verbose);
                     continue;
                 }
 
@@ -801,17 +890,18 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             _cropResizeSettings = injectionParameters.CropResizeSettings ?? throw new ArgumentMissingException(nameof(injectionParameters.CropResizeSettings), nameof(injectionParameters));
             _settings = injectionParameters.Settings ?? throw new ArgumentMissingException(nameof(injectionParameters.Settings), nameof(injectionParameters));
             _workingFile = injectionParameters.WorkingFile ?? throw new ArgumentMissingException(nameof(injectionParameters.WorkingFile), nameof(injectionParameters));            
-            _image = injectionParameters.Image ?? throw new ArgumentMissingException(nameof(injectionParameters.Image), nameof(injectionParameters));
+            ImageData = injectionParameters.Image ?? throw new ArgumentMissingException(nameof(injectionParameters.Image), nameof(injectionParameters));
             _formatSupport = injectionParameters.FormatSupport ?? throw new ArgumentMissingException(nameof(injectionParameters.FormatSupport), nameof(injectionParameters));
             _imageIO = injectionParameters.ImageIOService ?? throw new ArgumentMissingException(nameof(injectionParameters.ImageIOService), nameof(injectionParameters));
             _undoService = injectionParameters.UndoService ?? throw new ArgumentMissingException(nameof(injectionParameters.UndoService), nameof(injectionParameters));
             _imageUpdater = injectionParameters.ImageUpdater ?? throw new ArgumentMissingException(nameof(injectionParameters.ImageUpdater), nameof(injectionParameters));
+            _videoAdapter = injectionParameters.VideoAdapterInfo ?? throw new ArgumentMissingException(nameof(injectionParameters.VideoAdapterInfo), nameof(injectionParameters));
             _format = injectionParameters.OriginalFormat;
 
             _cropResizeSettings.CancelCommand = new EditorCommand<object>(DoCancelCropResize);
             _cropResizeSettings.OkCommand = new EditorCommand<object>(DoCropResize, CanCropResize);
 
-            BuildCodecList(_image);
+            BuildCodecList(ImageData);
 
             _pixelFormats = GetFilteredFormats();
 
@@ -821,7 +911,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <summary>Function called when the associated view is unloaded.</summary>
         public override void OnUnload()
         {
-            _image?.Dispose();
+            ImageData?.Dispose();
 
             try
             {                
@@ -916,8 +1006,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                     inStream = undoArgs.UndoFile.OpenStream();
                     (IGorgonImage image, _, _) = _imageIO.LoadImageFile(inStream, _workingFile.Name);
-                    _image.Dispose();
-                    _image = image;
+                    ImageData.Dispose();
+                    ImageData = image;
 
                     NotifyImageUpdated();
 
@@ -942,7 +1032,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
             Task RedoAction(ImportUndoArgs redoArgs, CancellationToken cancelToken)
             {
-                GorgonFormatInfo srcFormat = _image.FormatInfo;
+                GorgonFormatInfo srcFormat = ImageData.FormatInfo;
                 IGorgonVirtualFile undoFile = null;
                 IGorgonVirtualFile redoFile = null;
                 Stream redoFileStream = null;
@@ -964,8 +1054,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                         (IGorgonImage redoImage, _, _) = _imageIO.LoadImageFile(redoFileStream, _workingFile.Name);
                         redoFileStream.Dispose();
 
-                        _image.Dispose();
-                        _image = redoImage;
+                        ImageData.Dispose();
+                        ImageData = redoImage;
 
                         DeleteUndoCacheFile(redoArgs.RedoFile);
                     }
@@ -983,11 +1073,11 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                         }
 
                         // By default, just copy straight in.
-                        _imageUpdater.CopyTo(importImage, _image, CurrentMipLevel, startArrayOrDepth, alignment);                        
+                        _imageUpdater.CopyTo(importImage, ImageData, CurrentMipLevel, startArrayOrDepth, alignment);                        
                     }
 
                     // Save the updated data to the working file.
-                    _workingFile = _imageIO.SaveImageFile(File.Name, _image, _image.Format);
+                    _workingFile = _imageIO.SaveImageFile(File.Name, ImageData, ImageData.Format);
                     redoFile = CreateUndoCacheFile();
 
                     NotifyImageUpdated();
@@ -1075,21 +1165,21 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 imageFile.Close();
 
                 // Convert to our target image format before doing anything.
-                if (_image.Format != importImage.Format)
+                if (ImageData.Format != importImage.Format)
                 {
-                    if (!importImage.CanConvertToFormat(_image.Format))
+                    if (!importImage.CanConvertToFormat(ImageData.Format))
                     {
                         MessageDisplay.ShowError(string.Format(Resources.GORIMG_ERR_CANNOT_CONVERT, originalFormat, CurrentPixelFormat));
                         dragData.Cancel = true;
                         return;
                     }
 
-                    importImage = importImage.ConvertToFormat(_image.Format);
+                    importImage = importImage.ConvertToFormat(ImageData.Format);
                 }
 
-                if ((_image.Width != importImage.Width) || (_image.Height != importImage.Height))
+                if ((ImageData.Width != importImage.Width) || (ImageData.Height != importImage.Height))
                 {
-                    CropOrResizeSettings.AllowedModes = ((_image.Width < importImage.Width) || (_image.Height < importImage.Height)) ? (CropResizeMode.Crop | CropResizeMode.Resize) : CropResizeMode.Resize;
+                    CropOrResizeSettings.AllowedModes = ((ImageData.Width < importImage.Width) || (ImageData.Height < importImage.Height)) ? (CropResizeMode.Crop | CropResizeMode.Resize) : CropResizeMode.Resize;
                     if ((CropOrResizeSettings.CurrentMode & CropOrResizeSettings.AllowedModes) != CropOrResizeSettings.CurrentMode)
                     {
                         CropOrResizeSettings.CurrentMode = CropResizeMode.None;
@@ -1102,7 +1192,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     CropOrResizeSettings.ImportFile = dragData.File;
                     // Take a copy of the image here because we'll need to destroy it later.
                     CropOrResizeSettings.ImportImage = importImage.Clone();
-                    CropOrResizeSettings.TargetImageSize = new DX.Size2(_image.Width, _image.Height);
+                    CropOrResizeSettings.TargetImageSize = new DX.Size2(ImageData.Width, ImageData.Height);
                     CropOrResizeSettings.IsActive = true;
 
                     return;
@@ -1136,6 +1226,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             ExportImageCommand = new EditorCommand<IGorgonImageCodec>(DoExportImage);
             ConvertFormatCommand = new EditorCommand<BufferFormat>(DoConvertFormat, CanConvertFormat);
             SaveContentCommand = new EditorAsyncCommand<object>(DoSaveImageTask, CanSaveImage);
+            ChangeImageTypeCommand = new EditorCommand<ImageType>(DoChangeImageType, CanChangeImageType);
         }
         #endregion
     }

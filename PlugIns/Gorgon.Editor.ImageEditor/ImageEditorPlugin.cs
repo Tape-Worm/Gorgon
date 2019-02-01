@@ -302,6 +302,7 @@ namespace Gorgon.Editor.ImageEditor
                 _settings,
                 cropResizeSettings,
                 imageData,
+                GraphicsContext.Graphics.VideoAdapter,
                 GraphicsContext.Graphics.FormatSupport,
                 services));
 

@@ -62,9 +62,9 @@
             this.MenuImageFormats = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ButtonImageType = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.MenuImageType = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.dImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.dImageCubeMapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.dImageToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.Item2DImage = new System.Windows.Forms.ToolStripMenuItem();
+            this.ItemCubeMap = new System.Windows.Forms.ToolStripMenuItem();
+            this.Item3DImage = new System.Windows.Forms.ToolStripMenuItem();
             this.kryptonRibbonGroupSeparator3 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
             this.kryptonRibbonGroupLines3 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
             this.ButtonZoom = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
@@ -91,6 +91,7 @@
             this.RibbonImageContent.Name = "RibbonImageContent";
             this.RibbonImageContent.RibbonTabs.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab[] {
             this.TabImage});
+            this.RibbonImageContent.SelectedContext = null;
             this.RibbonImageContent.SelectedTab = this.TabImage;
             this.RibbonImageContent.Size = new System.Drawing.Size(1293, 115);
             this.RibbonImageContent.TabIndex = 0;
@@ -309,34 +310,37 @@
             // 
             this.MenuImageType.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.MenuImageType.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.dImageToolStripMenuItem,
-            this.dImageCubeMapToolStripMenuItem,
-            this.dImageToolStripMenuItem1});
+            this.Item2DImage,
+            this.ItemCubeMap,
+            this.Item3DImage});
             this.MenuImageType.Name = "MenuImageType";
-            this.MenuImageType.Size = new System.Drawing.Size(130, 70);
+            this.MenuImageType.Size = new System.Drawing.Size(181, 92);
             // 
-            // dImageToolStripMenuItem
+            // Item2DImage
             // 
-            this.dImageToolStripMenuItem.Checked = true;
-            this.dImageToolStripMenuItem.CheckOnClick = true;
-            this.dImageToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.dImageToolStripMenuItem.Name = "dImageToolStripMenuItem";
-            this.dImageToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
-            this.dImageToolStripMenuItem.Text = "2D Image";
+            this.Item2DImage.Checked = true;
+            this.Item2DImage.CheckOnClick = true;
+            this.Item2DImage.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.Item2DImage.Name = "Item2DImage";
+            this.Item2DImage.Size = new System.Drawing.Size(180, 22);
+            this.Item2DImage.Text = "2D Image";
+            this.Item2DImage.Click += new System.EventHandler(this.ItemImageType_Click);
             // 
-            // dImageCubeMapToolStripMenuItem
+            // ItemCubeMap
             // 
-            this.dImageCubeMapToolStripMenuItem.CheckOnClick = true;
-            this.dImageCubeMapToolStripMenuItem.Name = "dImageCubeMapToolStripMenuItem";
-            this.dImageCubeMapToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
-            this.dImageCubeMapToolStripMenuItem.Text = "Cube Map";
+            this.ItemCubeMap.CheckOnClick = true;
+            this.ItemCubeMap.Name = "ItemCubeMap";
+            this.ItemCubeMap.Size = new System.Drawing.Size(180, 22);
+            this.ItemCubeMap.Text = "Cube Map";
+            this.ItemCubeMap.Click += new System.EventHandler(this.ItemImageType_Click);
             // 
-            // dImageToolStripMenuItem1
+            // Item3DImage
             // 
-            this.dImageToolStripMenuItem1.CheckOnClick = true;
-            this.dImageToolStripMenuItem1.Name = "dImageToolStripMenuItem1";
-            this.dImageToolStripMenuItem1.Size = new System.Drawing.Size(129, 22);
-            this.dImageToolStripMenuItem1.Text = "3D Image";
+            this.Item3DImage.CheckOnClick = true;
+            this.Item3DImage.Name = "Item3DImage";
+            this.Item3DImage.Size = new System.Drawing.Size(180, 22);
+            this.Item3DImage.Text = "3D Image";
+            this.Item3DImage.Click += new System.EventHandler(this.ItemImageType_Click);
             // 
             // kryptonRibbonGroupLines3
             // 
@@ -493,9 +497,9 @@
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonDimensions;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonImageType;
         private System.Windows.Forms.ContextMenuStrip MenuImageType;
-        private System.Windows.Forms.ToolStripMenuItem dImageToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem dImageCubeMapToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem dImageToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem Item2DImage;
+        private System.Windows.Forms.ToolStripMenuItem ItemCubeMap;
+        private System.Windows.Forms.ToolStripMenuItem Item3DImage;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple3;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonGenerateMipMaps;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonEditInApp;

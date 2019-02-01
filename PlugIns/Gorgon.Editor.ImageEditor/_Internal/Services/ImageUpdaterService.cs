@@ -83,6 +83,82 @@ namespace Gorgon.Editor.ImageEditor
         }
 
         /// <summary>
+        /// Function to convert the specified image into a 2D image.
+        /// </summary>
+        /// <param name="image">The image to convert.</param>
+        /// <param name="isCubeMap"><b>true</b> if the image should be a cube map, or <b>false</b> if not.</param>
+        /// <returns>The converted image.</returns>
+        public IGorgonImage ConvertTo2D(IGorgonImage image, bool isCubeMap)
+        {
+            IGorgonImage result = null;
+
+            try
+            {
+                var info = new GorgonImageInfo(image, isCubeMap ? ImageType.ImageCube : ImageType.Image2D)
+                {
+                    ArrayCount = image.ArrayCount,
+                    Depth = 1
+                };
+
+                if (isCubeMap)
+                {
+                    while ((info.ArrayCount % 6) != 0)
+                    {
+                        ++info.ArrayCount;
+                    }
+                }
+
+                result = new GorgonImage(info);
+
+                // Copy the mip levels and array indices (for cube -> 2D and 2D -> cube, 3D always has an array count of 1).
+                for (int array = 0; array < image.ArrayCount; ++array)
+                {
+                    for (int mip = 0; mip < result.MipCount; ++mip)
+                    {
+                        image.Buffers[mip, array].CopyTo(result.Buffers[mip, array]);
+                    }
+                }
+            }
+            catch
+            {
+                result?.Dispose();
+                throw;
+            }
+
+            return result;
+        }
+
+        /// <summary>Function to convert the specified image into a volume image.</summary>
+        /// <param name="image">The image to convert.</param>
+        /// <returns>The converted image.</returns>
+        public IGorgonImage ConvertToVolume(IGorgonImage image)
+        {
+            IGorgonImage result = null;
+
+            try
+            {
+                result = new GorgonImage(new GorgonImageInfo(image, ImageType.Image3D)
+                {
+                    ArrayCount = 1,
+                    Depth = 1
+                });
+
+                // Copy the mip levels.
+                for (int i = 0; i < result.MipCount; ++i)
+                {
+                    image.Buffers[i].CopyTo(result.Buffers[i]);
+                }
+            }
+            catch
+            {
+                result?.Dispose();
+                throw;
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Function to crop an image.
         /// </summary>
         /// <param name="cropImage">The image to crop.</param>

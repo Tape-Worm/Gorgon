@@ -212,7 +212,7 @@ namespace Gorgon.Editor.ImageEditor
             };
             _volumeRayParams.SetData(ref volParams);
 
-            var scaleFactor = new DX.Vector4(1.0f / (maxSize / size.X), 1.0f / (maxSize / size.Y), 1.0f / (maxSize / size.Z), 1.0f);
+            var scaleFactor = new DX.Vector4(1.0f, 1.0f, 1.0f / (maxSize / size.Z), 1.0f);            
             _volumeScaleFactor.SetData(ref scaleFactor);
 
             RebuildVolumeData();

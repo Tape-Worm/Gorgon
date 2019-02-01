@@ -215,10 +215,8 @@ namespace Gorgon.Editor.ImageEditor
             {
                 return null;
             }
-
-            var dragData = e.Data.GetData(contentFileDragDataType.FullName, true) as IContentFileDragData;
-
-            if (dragData == null)
+            
+            if (!(e.Data.GetData(contentFileDragDataType.FullName, true) is IContentFileDragData dragData))
             {
                 return null;
             }
@@ -333,6 +331,16 @@ namespace Gorgon.Editor.ImageEditor
                         _textureViewer = _viewers[DataContext.ImageType];
                     }
 
+                    _textureViewer.UpdateTexture(DataContext);
+                    break;
+                case nameof(IImageContent.ImageType):
+                    if (!_viewers.ContainsKey(DataContext.ImageType))
+                    {
+                        break;
+                    }
+
+                    _textureViewer?.UpdateTexture(null);
+                    _textureViewer = _viewers[DataContext.ImageType];                    
                     _textureViewer.UpdateTexture(DataContext);
                     break;
                 default:

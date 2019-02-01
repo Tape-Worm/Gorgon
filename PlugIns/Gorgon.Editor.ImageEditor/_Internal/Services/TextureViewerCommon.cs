@@ -541,7 +541,7 @@ namespace Gorgon.Editor.ImageEditor
             EndAnimation();            
             OnDestroyTexture();
 
-            IGorgonImage imageData = image.ImageData;
+            IGorgonImage imageData = image?.ImageData;
 
             if ((imageData == null) || (_context.Graphics == null))
             {

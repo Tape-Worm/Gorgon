@@ -376,4 +376,17 @@ Continue?</value>
   <data name="GORIMG_TEXT_IMAGE_SIZE_DETAILS" xml:space="preserve">
     <value>Image width and height: {0}x{1}</value>
   </data>
+  <data name="GORIMG_CONFIRM_3D_TO_2D" xml:space="preserve">
+    <value>This image has more than 1 depth slice. Converting this image to a 2D/Cube image will discard all depth slices after the 1st one.  
+
+Are you sure you wish to continue?</value>
+  </data>
+  <data name="GORIMG_CONFIRM_ARRAY_TO_VOLUME" xml:space="preserve">
+    <value>This image has an array. Converting to a volume (3D) image will discard these array indices after the 1st one.
+
+Are you sure you wish to continue?</value>
+  </data>
+  <data name="GORIMG_ERR_CHANGE_TYPE" xml:space="preserve">
+    <value>There was an error while converting the image type.</value>
+  </data>
 </root>
