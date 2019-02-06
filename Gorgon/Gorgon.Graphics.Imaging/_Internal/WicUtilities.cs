@@ -1223,37 +1223,45 @@ namespace Gorgon.Graphics.Imaging
 		/// <returns>A new <see cref="IGorgonImage"/> containing the resized data.</returns>
 		public IGorgonImage Resize(IGorgonImage imageData, int offsetX, int offsetY, int newWidth, int newHeight, int newDepth, int calculatedMipLevels, ImageFilter scaleFilter, ResizeMode resizeMode)
 		{
-			Guid pixelFormat = GetGUID(imageData.Format);
+            IGorgonImage workingImage = imageData;
+
+            // If we have a 4 bit per channel image, then we need to convert it back to 8 bit per channel (WIC doesn't like 4 bit per channel it seems).
+            if (imageData.Format == BufferFormat.B4G4R4A4_UNorm)
+            {
+                workingImage = imageData.Clone().ConvertToFormat(BufferFormat.R8G8B8A8_UNorm);
+            }
+
+			Guid pixelFormat = GetGUID(workingImage.Format);
 
 			if (pixelFormat == Guid.Empty)
 			{
 				throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, imageData.Format));
 			}
 
-			var imageInfo = new GorgonImageInfo(imageData.ImageType, imageData.Format)
+			var imageInfo = new GorgonImageInfo(workingImage.ImageType, workingImage.Format)
 			                {
 				                Width = newWidth,
 				                Height = newHeight,
 				                Depth = newDepth.Max(1),
-				                ArrayCount = imageData.ArrayCount,
+				                ArrayCount = workingImage.ArrayCount,
 				                MipCount = calculatedMipLevels
 			                };
 
-			var result = new GorgonImage(imageInfo);
+			IGorgonImage result = new GorgonImage(imageInfo);
 			Bitmap bitmap = null;
 
 			try
 			{
 				for (int array = 0; array < imageInfo.ArrayCount; ++array)
 				{
-					for (int mip = 0; mip < calculatedMipLevels.Min(imageData.MipCount); ++mip)
+					for (int mip = 0; mip < calculatedMipLevels.Min(workingImage.MipCount); ++mip)
 					{
-						int mipDepth = result.GetDepthCount(mip).Min(imageData.Depth);
+						int mipDepth = result.GetDepthCount(mip).Min(workingImage.Depth);
 
 						for (int depth = 0; depth < mipDepth; ++depth)
 						{
-							IGorgonImageBuffer destBuffer = result.Buffers[mip, imageData.ImageType == ImageType.Image3D ? depth : array];
-							IGorgonImageBuffer srcBuffer = imageData.Buffers[mip, imageData.ImageType == ImageType.Image3D ? depth : array];
+							IGorgonImageBuffer destBuffer = result.Buffers[mip, workingImage.ImageType == ImageType.Image3D ? depth : array];
+							IGorgonImageBuffer srcBuffer = workingImage.Buffers[mip, workingImage.ImageType == ImageType.Image3D ? depth : array];
 							
 							bitmap = GetBitmap(srcBuffer, pixelFormat);
 
@@ -1276,6 +1284,12 @@ namespace Gorgon.Graphics.Imaging
 					}
 				}
 
+                // Convert back to 4 bit per channel.
+                if (imageData.Format == BufferFormat.B4G4R4A4_UNorm)
+                {
+                    result = result.ConvertToFormat(BufferFormat.B4G4R4A4_UNorm);
+                }
+
 				return result;
 			}
 			catch
@@ -1285,6 +1299,11 @@ namespace Gorgon.Graphics.Imaging
 			}
 			finally
 			{
+                if (imageData.Format == BufferFormat.B4G4R4A4_UNorm)
+                {
+                    workingImage?.Dispose();
+                }
+
 				bitmap?.Dispose();
 			}
 		}
