@@ -30,6 +30,7 @@ using System.Linq;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
+using Gorgon.Native;
 using DX = SharpDX;
 
 namespace Gorgon.Graphics.Imaging
@@ -99,20 +100,20 @@ namespace Gorgon.Graphics.Imaging
 
 				if (src.Format == BufferFormat.B8G8R8A8_UNorm)
 				{
-					b = ((srcPixel >> 24) & 0xff) >> 4;
-					g = ((srcPixel >> 16) & 0xff) >> 4;
-					r = ((srcPixel >> 8) & 0xff) >> 4;
-					a = (srcPixel & 0xff) >> 4;
+					a = ((srcPixel >> 24) & 0xff) >> 4;
+					r = ((srcPixel >> 16) & 0xff) >> 4;
+					g = ((srcPixel >> 8) & 0xff) >> 4;
+					b = (srcPixel & 0xff) >> 4;
 				}
 				else // Convert from R8G8B8A8.
 				{
-					r = ((srcPixel >> 24) & 0xff) >> 4;
-					g = ((srcPixel >> 16) & 0xff) >> 4;
-					b = ((srcPixel >> 8) & 0xff) >> 4;
-					a = (srcPixel & 0xff) >> 4;
+					a = ((srcPixel >> 24) & 0xff) >> 4;
+					b = ((srcPixel >> 16) & 0xff) >> 4;
+					g = ((srcPixel >> 8) & 0xff) >> 4;
+					r = (srcPixel & 0xff) >> 4;
 				}
 
-				*(destBufferPtr++) = (ushort)((b << 12) | (g << 8) | (r << 4) | a);
+				*(destBufferPtr++) = (ushort)((a << 12) | (r << 8) | (g << 4) | b);
 			}
 		}
 
@@ -310,7 +311,13 @@ namespace Gorgon.Graphics.Imaging
 				mipCount = maxMips;
 			}
 
-			var destSettings = new GorgonImageInfo(baseImage)
+            // If we don't have any mip levels, then return the image as-is.
+            if (mipCount < 2)
+            {
+                return baseImage;
+            }
+
+            var destSettings = new GorgonImageInfo(baseImage)
 			                               {
 				                               MipCount = mipCount
 			                               };
@@ -322,18 +329,25 @@ namespace Gorgon.Graphics.Imaging
 			{
 				// Copy the top mip level from the source image to the dest image.
 				for (int array = 0; array < baseImage.ArrayCount; ++array)
-				{
-				    baseImage.Buffers[0, array].Data.CopyTo(newImage.Buffers[0, array].Data,
-				                                            newImage.Buffers[0, array].Data.SizeInBytes * newImage.Depth);
+				{                    
+                    GorgonNativeBuffer<byte> buffer = newImage.Buffers[0, array].Data;
+                    int size = buffer.SizeInBytes;
+                    baseImage.Buffers[0, array].Data.CopyTo(buffer, count: size);
 				}
 
-				if (mipCount < 2)
-				{
-					newImage.CopyTo(baseImage);
-					return baseImage;
-				}
+                // If we have 4 bits per channel, then we need to convert to 8 bit per channel to make WIC happy.
+                if (baseImage.Format == BufferFormat.B4G4R4A4_UNorm)
+                {
+                    newImage.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm);
+                }
 
-				wic.GenerateMipImages(newImage, filter);
+                wic.GenerateMipImages(newImage, filter);
+
+                // Convert back if we asked for 4 bit per channel.
+                if (baseImage.Format == BufferFormat.B4G4R4A4_UNorm)
+                {
+                    newImage.ConvertToFormat(BufferFormat.B4G4R4A4_UNorm);
+                }
 
 				newImage.CopyTo(baseImage);
 				return baseImage;
