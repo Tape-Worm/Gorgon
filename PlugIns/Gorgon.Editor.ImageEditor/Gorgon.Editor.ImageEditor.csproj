@@ -65,8 +65,10 @@
     <Compile Include="_Internal\ImageImporterSettings.cs" />
     <Compile Include="ImageImporterPlugin.cs" />
     <Compile Include="_Internal\Cube.cs" />
+    <Compile Include="_Internal\Services\ImportImageDialogService.cs" />
     <Compile Include="_Internal\Services\ExportImageDialogService.cs" />
     <Compile Include="_Internal\CubeVertex.cs" />
+    <Compile Include="_Internal\Services\_Interfaces\IImportImageDialogService.cs" />
     <Compile Include="_Internal\Services\_Interfaces\IImageUpdaterService.cs" />
     <Compile Include="_Internal\Services\ImageEditorServices.cs" />
     <Compile Include="_Internal\Services\ImageUpdaterService.cs" />
@@ -80,6 +82,8 @@
     <Compile Include="_Internal\Services\DdsImageImporter.cs" />
     <Compile Include="_Internal\Services\TexConvCompressor.cs" />
     <Compile Include="_Internal\ViewModels\CropResizeSettings.cs" />
+    <Compile Include="_Internal\ViewModels\DimensionSettings.cs" />
+    <Compile Include="_Internal\ViewModels\DimensionSettingsParameters.cs" />
     <Compile Include="_Internal\ViewModels\ImageContentParameters.cs" />
     <Compile Include="_Internal\ImageEditorCommonConstants.cs" />
     <Compile Include="ImageEditorPlugin.cs" />
@@ -91,6 +95,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="_Internal\ViewModels\ImageContent.cs" />
+    <Compile Include="_Internal\ViewModels\_Interfaces\IDimensionSettings.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\ICropResizeSettings.cs" />
     <Compile Include="_Internal\Views\ImageEditorView.cs">
       <SubType>UserControl</SubType>
@@ -99,6 +104,12 @@
       <DependentUpon>ImageEditorView.cs</DependentUpon>
     </Compile>
     <Compile Include="_Internal\ViewModels\_Interfaces\IImageContent.cs" />
+    <Compile Include="_Internal\Views\ImageDimensionSettings.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="_Internal\Views\ImageDimensionSettings.Designer.cs">
+      <DependentUpon>ImageDimensionSettings.cs</DependentUpon>
+    </Compile>
     <Compile Include="_Internal\Views\ImageResizeSettings.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -167,13 +178,16 @@
     <EmbeddedResource Include="_Internal\Views\ImageEditorView.resx">
       <DependentUpon>ImageEditorView.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="_Internal\Views\ImageDimensionSettings.resx">
+      <DependentUpon>ImageDimensionSettings.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="_Internal\Views\ImageResizeSettings.resx">
       <DependentUpon>ImageResizeSettings.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="KryptonToolkitSuite5470">
-      <Version>5.470.716</Version>
+      <Version>5.470.717</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.1</Version>

@@ -151,6 +151,7 @@
             this.ButtonImport.TextLine1 = "Import";
             this.ButtonImport.ToolTipBody = resources.GetString("ButtonImport.ToolTipBody");
             this.ButtonImport.ToolTipTitle = "Import Image";
+            this.ButtonImport.Click += new System.EventHandler(this.ButtonImport_Click);
             // 
             // ButtonExport
             // 
@@ -248,6 +249,7 @@
             // 
             // ButtonDimensions
             // 
+            this.ButtonDimensions.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.Check;
             this.ButtonDimensions.ImageLarge = global::Gorgon.Editor.ImageEditor.Properties.Resources.image_size_48x48;
             this.ButtonDimensions.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.image_size_16x16;
             this.ButtonDimensions.KeyTip = "D";
@@ -258,6 +260,7 @@
     "used to update the number of array indices (for 2D and cube images), and \r\nthe n" +
     "umber of mip-map levels for the image.";
             this.ButtonDimensions.ToolTipTitle = "Image Dimensions";
+            this.ButtonDimensions.Click += new System.EventHandler(this.ButtonDimensions_Click);
             // 
             // ButtonGenerateMipMaps
             // 
@@ -314,7 +317,7 @@
             this.ItemCubeMap,
             this.Item3DImage});
             this.MenuImageType.Name = "MenuImageType";
-            this.MenuImageType.Size = new System.Drawing.Size(181, 92);
+            this.MenuImageType.Size = new System.Drawing.Size(130, 70);
             // 
             // Item2DImage
             // 
@@ -322,7 +325,7 @@
             this.Item2DImage.CheckOnClick = true;
             this.Item2DImage.CheckState = System.Windows.Forms.CheckState.Checked;
             this.Item2DImage.Name = "Item2DImage";
-            this.Item2DImage.Size = new System.Drawing.Size(180, 22);
+            this.Item2DImage.Size = new System.Drawing.Size(129, 22);
             this.Item2DImage.Text = "2D Image";
             this.Item2DImage.Click += new System.EventHandler(this.ItemImageType_Click);
             // 
@@ -330,7 +333,7 @@
             // 
             this.ItemCubeMap.CheckOnClick = true;
             this.ItemCubeMap.Name = "ItemCubeMap";
-            this.ItemCubeMap.Size = new System.Drawing.Size(180, 22);
+            this.ItemCubeMap.Size = new System.Drawing.Size(129, 22);
             this.ItemCubeMap.Text = "Cube Map";
             this.ItemCubeMap.Click += new System.EventHandler(this.ItemImageType_Click);
             // 
@@ -338,7 +341,7 @@
             // 
             this.Item3DImage.CheckOnClick = true;
             this.Item3DImage.Name = "Item3DImage";
-            this.Item3DImage.Size = new System.Drawing.Size(180, 22);
+            this.Item3DImage.Size = new System.Drawing.Size(129, 22);
             this.Item3DImage.Text = "3D Image";
             this.Item3DImage.Click += new System.EventHandler(this.ItemImageType_Click);
             // 

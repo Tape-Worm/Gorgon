@@ -26,6 +26,7 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Gorgon.Editor.Content;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -173,9 +174,17 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
-        /// Property to return whether a crop/resize operation is required.
+        /// Property to return the view model for the cropping/resizing settings.
         /// </summary>
         ICropResizeSettings CropOrResizeSettings
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the view model for the dimension editing settings.
+        /// </summary>
+        IDimensionSettings DimensionSettings
         {
             get;
         }
@@ -184,6 +193,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Property to return the command to execute when changing the image type.
         /// </summary>
         IEditorCommand<ImageType> ChangeImageTypeCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used import an image file into the current image as an array index or depth slice.
+        /// </summary>
+        IEditorCommand<object> ImportFileCommand
         {
             get;
         }

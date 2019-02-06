@@ -38,6 +38,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ImageEditorView));
             this.PanelBottomBar = new System.Windows.Forms.Panel();
             this.PanelImageViewControls = new System.Windows.Forms.TableLayoutPanel();
+            this.LabelImageSize = new System.Windows.Forms.Label();
             this.LabelDepthSliceDetails = new System.Windows.Forms.Label();
             this.ButtonPrevDepthSlice = new System.Windows.Forms.Button();
             this.ButtonNextDepthSlice = new System.Windows.Forms.Button();
@@ -54,9 +55,9 @@
             this.ScrollHorizontal = new System.Windows.Forms.HScrollBar();
             this.ScrollVertical = new System.Windows.Forms.VScrollBar();
             this.PanelImage = new Gorgon.Windows.UI.GorgonSelectablePanel();
+            this.DimensionSettings = new Gorgon.Editor.ImageEditor.ImageDimensionSettings();
             this.CropResizeSettings = new Gorgon.Editor.ImageEditor.ImageResizeSettings();
             this.ButtonCenter = new System.Windows.Forms.Button();
-            this.LabelImageSize = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.PresentationPanel)).BeginInit();
             this.PresentationPanel.SuspendLayout();
             this.PanelBottomBar.SuspendLayout();
@@ -123,6 +124,19 @@
             this.PanelImageViewControls.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.PanelImageViewControls.Size = new System.Drawing.Size(1211, 28);
             this.PanelImageViewControls.TabIndex = 2;
+            // 
+            // LabelImageSize
+            // 
+            this.LabelImageSize.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.LabelImageSize.AutoSize = true;
+            this.LabelImageSize.Location = new System.Drawing.Point(3, 0);
+            this.LabelImageSize.Name = "LabelImageSize";
+            this.LabelImageSize.Size = new System.Drawing.Size(93, 28);
+            this.LabelImageSize.TabIndex = 11;
+            this.LabelImageSize.Text = "Image size: WxH";
+            this.LabelImageSize.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // LabelDepthSliceDetails
             // 
@@ -363,6 +377,7 @@
             // 
             // PanelImage
             // 
+            this.PanelImage.Controls.Add(this.DimensionSettings);
             this.PanelImage.Controls.Add(this.CropResizeSettings);
             this.PanelImage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PanelImage.Location = new System.Drawing.Point(3, 3);
@@ -372,6 +387,17 @@
             this.PanelImage.TabIndex = 2;
             this.PanelImage.RenderToBitmap += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.PanelImage_RenderToBitmap);
             this.PanelImage.DoubleClick += new System.EventHandler(this.PanelImage_DoubleClick);
+            // 
+            // DimensionSettings
+            // 
+            this.DimensionSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.DimensionSettings.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.DimensionSettings.ForeColor = System.Drawing.Color.White;
+            this.DimensionSettings.Location = new System.Drawing.Point(358, 239);
+            this.DimensionSettings.Name = "DimensionSettings";
+            this.DimensionSettings.Size = new System.Drawing.Size(299, 367);
+            this.DimensionSettings.TabIndex = 1;
+            this.DimensionSettings.Visible = false;
             // 
             // CropResizeSettings
             // 
@@ -400,19 +426,6 @@
             this.ButtonCenter.Size = new System.Drawing.Size(22, 22);
             this.ButtonCenter.TabIndex = 3;
             this.ButtonCenter.Click += new System.EventHandler(this.ButtonCenter_Click);
-            // 
-            // LabelImageSize
-            // 
-            this.LabelImageSize.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.LabelImageSize.AutoSize = true;
-            this.LabelImageSize.Location = new System.Drawing.Point(3, 0);
-            this.LabelImageSize.Name = "LabelImageSize";
-            this.LabelImageSize.Size = new System.Drawing.Size(93, 28);
-            this.LabelImageSize.TabIndex = 11;
-            this.LabelImageSize.Text = "Image size: WxH";
-            this.LabelImageSize.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // ImageEditorView
             // 
@@ -465,5 +478,6 @@
         private System.Windows.Forms.Label LabelDepthSlice;
         private ImageResizeSettings CropResizeSettings;
         private System.Windows.Forms.Label LabelImageSize;
+        private ImageDimensionSettings DimensionSettings;
     }
 }

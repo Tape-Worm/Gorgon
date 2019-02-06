@@ -270,6 +270,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Import image....
+        /// </summary>
+        internal static string GORIMG_CAPTION_IMPORT_IMAGE {
+            get {
+                return ResourceManager.GetString("GORIMG_CAPTION_IMPORT_IMAGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This image has more than 1 depth slice. Converting this image to a 2D/Cube image will discard all depth slices after the 1st one.  
         ///
         ///Are you sure you wish to continue?.
@@ -455,6 +464,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to All files (*.*)|*.*.
+        /// </summary>
+        internal static string GORIMG_FILEMASK_ALL_FILES {
+            get {
+                return ResourceManager.GetString("GORIMG_FILEMASK_ALL_FILES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gorgon Image Importer.
         /// </summary>
         internal static string GORIMG_IMPORT_DESC {
@@ -502,6 +520,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Array index count:.
+        /// </summary>
+        internal static string GORIMG_TEXT_ARRAY_INDICES {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_ARRAY_INDICES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Codec.
         /// </summary>
         internal static string GORIMG_TEXT_CODEC {
@@ -516,6 +543,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static string GORIMG_TEXT_CROP_TO {
             get {
                 return ResourceManager.GetString("GORIMG_TEXT_CROP_TO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Depth slice count:.
+        /// </summary>
+        internal static string GORIMG_TEXT_DEPTH_SLICES {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_DEPTH_SLICES", resourceCulture);
             }
         }
         
@@ -624,6 +660,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static string GORIMG_UNDO_DESC_FORMAT_CONVERT {
             get {
                 return ResourceManager.GetString("GORIMG_UNDO_DESC_FORMAT_CONVERT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Image Type &apos;{0}&apos;.
+        /// </summary>
+        internal static string GORIMG_UNDO_DESC_IMAGE_TYPE {
+            get {
+                return ResourceManager.GetString("GORIMG_UNDO_DESC_IMAGE_TYPE", resourceCulture);
             }
         }
         

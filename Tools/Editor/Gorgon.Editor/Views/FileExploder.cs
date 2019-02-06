@@ -712,6 +712,7 @@ namespace Gorgon.Editor.Views
 
             if (dataContext.SelectedNode == null)
             {
+                MenuSepContent.Available = MenuItemOpenContent.Available = false;                
                 MenuItemExportTo.Available = dataContext.SearchResults == null;
                 MenuItemCopy.Available = false;
                 MenuItemCut.Available = false;
@@ -738,7 +739,25 @@ namespace Gorgon.Editor.Views
             MenuItemCreateDirectory.Available = dataContext.CreateNodeCommand?.CanExecute(null) ?? false;
             MenuItemDelete.Available = dataContext.DeleteNodeCommand?.CanExecute(null) ?? false;
 
+            MenuSepContent.Available = MenuItemOpenContent.Available = dataContext.OpenContentFile?.CanExecute(dataContext.SelectedNode as IContentFile) ?? false;
+
             MenuSepNew.Visible = MenuItemCreateDirectory.Available;
+        }
+
+
+        /// <summary>Handles the Click event of the MenuItemOpenContent control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void MenuItemOpenContent_Click(object sender, EventArgs e)
+        {
+            var selectedFile = DataContext?.SelectedNode as IContentFile;
+
+            if ((DataContext?.OpenContentFile == null) || (!DataContext.OpenContentFile.CanExecute(selectedFile)))
+            {
+                return;
+            }
+
+            DataContext.OpenContentFile.Execute(selectedFile);
         }
 
         /// <summary>

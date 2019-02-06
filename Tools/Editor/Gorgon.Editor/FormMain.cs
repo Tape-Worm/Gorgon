@@ -42,6 +42,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using ComponentFactory.Krypton.Ribbon;
 using System.Linq;
+using Gorgon.Editor.Content;
 
 namespace Gorgon.Editor
 {
@@ -119,6 +120,23 @@ namespace Gorgon.Editor
         #endregion
 
         #region Methods.
+        /// <summary>Handles the Click event of the ButtonOpenContent control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonOpenContent_Click(object sender, EventArgs e)
+        {
+            IProjectVm project = DataContext?.CurrentProject;
+            IFileExplorerVm fileExplorer = project?.FileExplorer;
+            var currentNode = fileExplorer?.SelectedNode as IContentFile;
+
+            if ((fileExplorer?.OpenContentFile == null) || (!fileExplorer.OpenContentFile.CanExecute(currentNode)))
+            {
+                return;
+            }
+
+            fileExplorer.OpenContentFile.Execute(currentNode);
+        }
+
         /// <summary>Handles the RibbonAdded event of the PanelProject control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The [ContentRibbonEventArgs] instance containing the event data.</param>
@@ -356,6 +374,8 @@ namespace Gorgon.Editor
 
             ButtonImport.Enabled = fileExplorer.ImportIntoNodeCommand?.CanExecute(fileExplorer.SelectedNode ?? fileExplorer.RootNode) ?? false;
             ButtonExport.Enabled = fileExplorer.ExportNodeToCommand?.CanExecute(fileExplorer.SelectedNode ?? fileExplorer.RootNode) ?? false;
+
+            ButtonOpenContent.Enabled = fileExplorer.OpenContentFile?.CanExecute(fileExplorer.SelectedNode as IContentFile) ?? false;
 
             ButtonFileSystemCopy.Enabled = _clipboardContext?.CanCopy() ?? false;
             ButtonFileSystemCut.Enabled = _clipboardContext?.CanCut() ?? false;

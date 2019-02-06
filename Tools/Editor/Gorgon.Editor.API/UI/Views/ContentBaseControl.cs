@@ -274,6 +274,7 @@ namespace Gorgon.Editor.UI.Views
             }
 
             // Remove any controls within the host panel.
+            control.SuspendLayout();
             PanelContentControls.Controls.Clear();
             PanelContentControls.Controls.Add(control);
             control.Left = 0;
@@ -284,7 +285,8 @@ namespace Gorgon.Editor.UI.Views
             }
 
             control.Width = PanelContentControls.ClientSize.Width;
-            PanelContentControls.AutoScrollMinSize = new Size(0, control.Height);            
+            PanelContentControls.AutoScrollMinSize = new Size(0, control.Height);
+            control.ResumeLayout(true);
         }
 
         /// <summary>

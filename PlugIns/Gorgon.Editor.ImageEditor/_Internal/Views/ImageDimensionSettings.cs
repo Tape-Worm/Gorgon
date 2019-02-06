@@ -37,14 +37,14 @@ namespace Gorgon.Editor.ImageEditor
     /// <summary>
     /// The panel used to provide settings for image import resizing.
     /// </summary>
-    internal partial class ImageResizeSettings 
-        : EditorBaseControl, IDataContext<ICropResizeSettings>
+    internal partial class ImageDimensionSettings 
+        : EditorBaseControl, IDataContext<IDimensionSettings>
     {
         #region Properties.
         /// <summary>Property to return the data context assigned to this view.</summary>
         /// <value>The data context.</value>
         [Browsable(false)]
-        public ICropResizeSettings DataContext
+        public IDimensionSettings DataContext
         {
             get;
             private set;
@@ -62,29 +62,28 @@ namespace Gorgon.Editor.ImageEditor
             if (DataContext == null)
             {
                 RadioCrop.Enabled = RadioResize.Enabled = LabelImageFilter.Enabled =
-                    ComboImageFilter.Enabled = CheckPreserveAspect.Enabled = LabelAnchor.Enabled =
-                    panelAnchor.Enabled = false;
+                    ComboImageFilter.Enabled = LabelAnchor.Enabled = false;
                 return;
             }
             
-            LabelAnchor.Visible = AlignmentPicker.Visible = RadioCrop.Checked;
-
-            RadioResize.Enabled = (DataContext.AllowedModes & CropResizeMode.Resize) == CropResizeMode.Resize;
-            LabelImageFilter.Visible = ComboImageFilter.Visible = CheckPreserveAspect.Visible = RadioResize.Enabled && RadioResize.Checked;
+            LabelAnchor.Enabled = AlignmentPicker.Enabled = RadioCrop.Checked;                        
+            LabelImageFilter.Enabled = ComboImageFilter.Enabled = RadioResize.Checked;
         }
 
-
-        /// <summary>Handles the Click event of the CheckPreserveAspect control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void CheckPreserveAspect_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Function to update the label(s) on the view.
+        /// </summary>
+        /// <param name="dataContext">The current data context.</param>
+        private void UpdateLabels(IDimensionSettings dataContext)
         {
-            if (DataContext == null)
+            if (dataContext == null)
             {
+                // Default this to a hard coded message so we know that we messed up.
+                LabelDepthOrArray.Text = @"No image";
                 return;
             }
 
-            DataContext.PreserveAspect = CheckPreserveAspect.Checked;
+            LabelDepthOrArray.Text = dataContext.HasDepth ? Resources.GORIMG_TEXT_DEPTH_SLICES : Resources.GORIMG_TEXT_ARRAY_INDICES;
         }
 
         /// <summary>Handles the SelectedValueChanged event of the ComboImageFilter control.</summary>
@@ -103,24 +102,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Handles the Click event of the RadioCrop control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void RadioCrop_Click(object sender, EventArgs e)
-        {
-            if (DataContext == null)
-            {
-                return;
-            }
-
-            if ((DataContext.AllowedModes & CropResizeMode.Crop) == CropResizeMode.Crop)
-            {
-                DataContext.CurrentMode = CropResizeMode.Crop;
-            }
-            else
-            {
-                DataContext.CurrentMode = CropResizeMode.None;
-            }
-
-            ValidateControls();
-        }
+        private void RadioCrop_Click(object sender, EventArgs e) => ValidateControls();
 
         /// <summary>Handles the Click event of the RadioResize control.</summary>
         /// <param name="sender">The source of the event.</param>
@@ -144,13 +126,16 @@ namespace Gorgon.Editor.ImageEditor
         {
             switch (e.PropertyName)
             {
-                case nameof(ICropResizeSettings.CurrentMode):
+                case nameof(IDimensionSettings.CurrentMode):
                     RadioCrop.Checked = (DataContext.CurrentMode == CropResizeMode.Crop) 
                                     || (DataContext.CurrentMode == CropResizeMode.None);
                     RadioResize.Checked = !RadioCrop.Checked;
                     break;
+                case nameof(IDimensionSettings.HasDepth):
+                    UpdateLabels(DataContext);
+                    break;
             }
-            UpdateLabels(DataContext);
+
             ValidateControls();
         }
 
@@ -192,7 +177,7 @@ namespace Gorgon.Editor.ImageEditor
                 return;
             }
 
-            DataContext.CurrentAlignment = AlignmentPicker.Alignment;
+            DataContext.CropAlignment = AlignmentPicker.Alignment;
         }
 
         /// <summary>
@@ -216,45 +201,17 @@ namespace Gorgon.Editor.ImageEditor
         {
             RadioCrop.Enabled = RadioResize.Enabled = RadioCrop.Checked = RadioResize.Checked = false;
             AlignmentPicker.Alignment = Gorgon.UI.Alignment.Center;
-            AlignmentPicker.Enabled = false;
-            CheckPreserveAspect.Checked = false;
+            AlignmentPicker.Enabled = false;            
             ComboImageFilter.Text = string.Empty;
             ComboImageFilter.Items.Clear();
             UpdateLabels(null);
         }
 
         /// <summary>
-        /// Function to update the labels for the controls on the view.
-        /// </summary>
-        /// <param name="dataContext">The current data context.</param>
-        private void UpdateLabels(ICropResizeSettings dataContext)
-        {
-            if (dataContext == null)
-            {
-                LabelDesc.Text = string.Format(Resources.GORIMG_RESIZE_CROP_DESC, string.Empty);
-                LabelImportImageName.Text = string.Format(Resources.GORIMG_TEXT_RESIZE_CROP_IMPORT_NAME, string.Empty);
-                LabelImportImageDimensions.Text = string.Format(Resources.GORIMG_TEXT_RESIZE_CROP_IMPORT_SIZE, 0, 0);
-                LabelTargetImageDimensions.Text = string.Format(Resources.GORIMG_TEXT_RESIZE_CROP_IMAGE_SIZE, 0, 0);
-                RadioCrop.Text = string.Format(Resources.GORIMG_TEXT_CROP_TO, 0, 0);
-                RadioResize.Text = string.Format(Resources.GORIMG_TEXT_RESIZE_TO, 0, 0);
-                return;
-            }
-
-            LabelDesc.Text = string.Format(Resources.GORIMG_RESIZE_CROP_DESC, dataContext.ImportFile);
-            LabelImportImageName.Text = string.Format(Resources.GORIMG_TEXT_RESIZE_CROP_IMPORT_NAME, dataContext.ImportFile);
-            LabelImportImageDimensions.Text = string.Format(Resources.GORIMG_TEXT_RESIZE_CROP_IMPORT_SIZE, dataContext.ImportImage?.Width ?? 0, dataContext.ImportImage?.Height ?? 0);
-            LabelTargetImageDimensions.Text = string.Format(Resources.GORIMG_TEXT_RESIZE_CROP_IMAGE_SIZE, dataContext.TargetImageSize.Width, dataContext.TargetImageSize.Height);
-            RadioCrop.Text = ((dataContext.AllowedModes & CropResizeMode.Crop) == CropResizeMode.Crop) ?
-                string.Format(Resources.GORIMG_TEXT_CROP_TO, dataContext.TargetImageSize.Width, dataContext.TargetImageSize.Height)
-                : Resources.GORIMG_TEXT_ALIGN_TO;
-            RadioResize.Text = string.Format(Resources.GORIMG_TEXT_RESIZE_TO, dataContext.TargetImageSize.Width, dataContext.TargetImageSize.Height);
-        }
-
-        /// <summary>
         /// Function to initialize the view from the current data context.
         /// </summary>
         /// <param name="dataContext">The data context being assigned.</param>
-        private void InitializeFromDataContext(ICropResizeSettings dataContext)
+        private void InitializeFromDataContext(IDimensionSettings dataContext)
         {
             if (dataContext == null)
             {
@@ -262,8 +219,8 @@ namespace Gorgon.Editor.ImageEditor
                 return;
             }
 
-            UpdateLabels(dataContext);
-
+            RadioResize.Enabled = RadioCrop.Enabled = true;
+            
             switch (dataContext.CurrentMode)
             {
                 case CropResizeMode.Resize:
@@ -274,9 +231,9 @@ namespace Gorgon.Editor.ImageEditor
                     break;
             }
             
-            AlignmentPicker.Alignment = dataContext.CurrentAlignment;
+            AlignmentPicker.Alignment = dataContext.CropAlignment;
             ComboImageFilter.SelectedItem = dataContext.ImageFilter;
-            CheckPreserveAspect.Checked = dataContext.PreserveAspect;
+            UpdateLabels(dataContext);
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
@@ -290,14 +247,13 @@ namespace Gorgon.Editor.ImageEditor
                 return;
             }
 
-            UpdateLabels(DataContext);
             ValidateControls();
         }
 
         /// <summary>Function to assign a data context to the view as a view model.</summary>
         /// <param name="dataContext">The data context to assign.</param>
         /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
-        public void SetDataContext(ICropResizeSettings dataContext)
+        public void SetDataContext(IDimensionSettings dataContext)
         {
             UnassignEvents();
 
@@ -314,8 +270,8 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.Views.ImageResizeSettings"/> class.</summary>
-        public ImageResizeSettings()
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.Views.ImageDimensionSettings"/> class.</summary>
+        public ImageDimensionSettings()
         {
             InitializeComponent();
 

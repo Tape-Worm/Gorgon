@@ -1543,6 +1543,26 @@ namespace Gorgon.Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap open_edit_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("open_edit_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap open_edit_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("open_edit_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap open_folder_22x22 {
             get {
                 object obj = ResourceManager.GetObject("open_folder_22x22", resourceCulture);

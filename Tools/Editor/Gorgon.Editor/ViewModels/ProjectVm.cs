@@ -425,7 +425,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="node">The node being opened.</param>
         /// <returns><b>true</b> if the node can be opened, <b>false</b> if not.</returns>
-        private bool CanOpenContent(IContentFile node) => node?.Metadata != null;
+        private bool CanOpenContent(IContentFile node) => node?.Metadata?.ContentMetadata != null;
 
         /// <summary>
         /// Function to persist the changed content (if any).

@@ -263,7 +263,35 @@ namespace Gorgon.Editor.ImageEditor
                 return;
             }
         }
-        
+
+        /// <summary>Handles the PropertyChanged event of the DimensionSettings control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+        private void DimensionSettings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(IDimensionSettings.IsActive):
+                    if (DataContext.DimensionSettings?.IsActive ?? false)
+                    {
+                        if (Controls.Contains(DimensionSettings))
+                        {
+                            Controls.Remove(DimensionSettings);
+                        }
+
+                        DimensionSettings.Visible = true;
+                        AddControlToPanelHost(DimensionSettings);
+                        IsPanelHostActive = true;
+                    }
+                    else
+                    {
+                        IsPanelHostActive = false;
+                        ClearPanelHost();
+                    }
+                    break;
+            }
+        }
+
         /// <summary>Handles the PropertyChanged event of the CropOrResizeSettings control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
@@ -342,7 +370,7 @@ namespace Gorgon.Editor.ImageEditor
                     _textureViewer?.UpdateTexture(null);
                     _textureViewer = _viewers[DataContext.ImageType];                    
                     _textureViewer.UpdateTexture(DataContext);
-                    break;
+                    break;                
                 default:
                     if (_textureViewer == null)
                     {
@@ -621,11 +649,16 @@ namespace Gorgon.Editor.ImageEditor
                 return;
             }
 
+            if (DataContext.DimensionSettings != null)
+            {
+                DataContext.DimensionSettings.PropertyChanged -= DimensionSettings_PropertyChanged;
+            }
+
             if (DataContext.CropOrResizeSettings != null)
             {
                 DataContext.CropOrResizeSettings.PropertyChanged -= CropOrResizeSettings_PropertyChanged;
             }            
-        }
+        }        
 
         /// <summary>Function to assign a data context to the view as a view model.</summary>
         /// <param name="dataContext">The data context to assign.</param>
@@ -639,17 +672,23 @@ namespace Gorgon.Editor.ImageEditor
             DataContext = dataContext;
             _ribbonForm.SetDataContext(dataContext);
             CropResizeSettings.SetDataContext(dataContext?.CropOrResizeSettings);
-
+            DimensionSettings.SetDataContext(dataContext?.DimensionSettings);
+            
             if (DataContext == null)
             {
                 return;
-            }            
+            }
+
+            if (DataContext.DimensionSettings != null)
+            {
+                DataContext.DimensionSettings.PropertyChanged += DimensionSettings_PropertyChanged;
+            }
 
             if (DataContext.CropOrResizeSettings != null)
             {
                 DataContext.CropOrResizeSettings.PropertyChanged += CropOrResizeSettings_PropertyChanged;
             }            
-        }
+        }        
         #endregion
 
         #region Constructor/Finalizer.

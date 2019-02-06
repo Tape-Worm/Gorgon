@@ -44,7 +44,11 @@ namespace Gorgon.Editor
             this.RibbonMain = new ComponentFactory.Krypton.Ribbon.KryptonRibbon();
             this.TabFileSystem = new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab();
             this.RibbonGroupFileSystemNew = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
-            this.kryptonRibbonGroupTriple1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
+            this.GalleryNew = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupGallery();
+            this.RangeTest1 = new ComponentFactory.Krypton.Ribbon.KryptonGalleryRange();
+            this.GalleryNewImages = new System.Windows.Forms.ImageList(this.components);
+            this.kryptonRibbonGroupTriple5 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
+            this.ButtonOpenContent = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.ButtonFileSystemNewDirectory = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.kryptonRibbonGroupSeparator3 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
             this.kryptonRibbonGroupLines3 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
@@ -69,6 +73,7 @@ namespace Gorgon.Editor
             this.Stage = new Gorgon.Editor.Views.Stage();
             this.PanelProject = new Gorgon.Editor.Views.EditorProject();
             this.PanelWorkSpace = new System.Windows.Forms.Panel();
+            this.kryptonGalleryRange1 = new ComponentFactory.Krypton.Ribbon.KryptonGalleryRange();
             ((System.ComponentModel.ISupportInitialize)(this.RibbonMain)).BeginInit();
             this.PanelWorkSpace.SuspendLayout();
             this.SuspendLayout();
@@ -783,6 +788,7 @@ namespace Gorgon.Editor
             this.RibbonMain.RibbonAppButton.AppButtonShowRecentDocs = false;
             this.RibbonMain.RibbonTabs.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab[] {
             this.TabFileSystem});
+            this.RibbonMain.SelectedContext = null;
             this.RibbonMain.SelectedTab = this.TabFileSystem;
             this.RibbonMain.ShowMinimizeButton = false;
             this.RibbonMain.Size = new System.Drawing.Size(1280, 115);
@@ -804,16 +810,71 @@ namespace Gorgon.Editor
             this.RibbonGroupFileSystemNew.AllowCollapsed = false;
             this.RibbonGroupFileSystemNew.DialogBoxLauncher = false;
             this.RibbonGroupFileSystemNew.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupContainer[] {
-            this.kryptonRibbonGroupTriple1,
+            this.GalleryNew,
+            this.kryptonRibbonGroupTriple5,
             this.kryptonRibbonGroupSeparator3,
             this.kryptonRibbonGroupLines3});
             this.RibbonGroupFileSystemNew.KeyTipGroup = "F";
             this.RibbonGroupFileSystemNew.TextLine1 = "File";
             // 
-            // kryptonRibbonGroupTriple1
+            // GalleryNew
             // 
-            this.kryptonRibbonGroupTriple1.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.GalleryNew.DropButtonRanges.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonGalleryRange[] {
+            this.RangeTest1,
+            this.kryptonGalleryRange1});
+            this.GalleryNew.ImageLarge = global::Gorgon.Editor.Properties.Resources.newproject_48x48;
+            this.GalleryNew.ImageList = this.GalleryNewImages;
+            this.GalleryNew.KeyTip = "N";
+            this.GalleryNew.LargeItemCount = 4;
+            this.GalleryNew.MaximumSize = ComponentFactory.Krypton.Ribbon.GroupItemSize.Medium;
+            this.GalleryNew.MediumItemCount = 4;
+            this.GalleryNew.MinimumSize = ComponentFactory.Krypton.Ribbon.GroupItemSize.Medium;
+            this.GalleryNew.TextLine1 = "New";
+            this.GalleryNew.ToolTipBody = "Provides options for creating new content items.\r\n\r\nContent creation support is d" +
+    "ependent upon the plugins installed in the editor.";
+            // 
+            // RangeTest1
+            // 
+            this.RangeTest1.Heading = "Test 1";
+            this.RangeTest1.ImageIndexEnd = 12;
+            this.RangeTest1.ImageIndexStart = 0;
+            // 
+            // GalleryNewImages
+            // 
+            this.GalleryNewImages.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("GalleryNewImages.ImageStream")));
+            this.GalleryNewImages.TransparentColor = System.Drawing.Color.Transparent;
+            this.GalleryNewImages.Images.SetKeyName(0, "confirm_24x24.png");
+            this.GalleryNewImages.Images.SetKeyName(1, "info_24x24.png");
+            this.GalleryNewImages.Images.SetKeyName(2, "Gorgon_2.x_Icon_24x24.png");
+            this.GalleryNewImages.Images.SetKeyName(3, "export_16x16.png");
+            this.GalleryNewImages.Images.SetKeyName(4, "file_system_root_node_16x16.png");
+            this.GalleryNewImages.Images.SetKeyName(5, "find_16x16.png");
+            this.GalleryNewImages.Images.SetKeyName(6, "folder_16x16.png");
+            this.GalleryNewImages.Images.SetKeyName(7, "folder_open_16x16.png");
+            this.GalleryNewImages.Images.SetKeyName(8, "font_16x16.png");
+            this.GalleryNewImages.Images.SetKeyName(9, "font_document_16x16.png");
+            this.GalleryNewImages.Images.SetKeyName(10, "forward_16x16.png");
+            this.GalleryNewImages.Images.SetKeyName(11, "gen_mips_16x16.png");
+            this.GalleryNewImages.Images.SetKeyName(12, "glyph_kerning_16x16.png");
+            // 
+            // kryptonRibbonGroupTriple5
+            // 
+            this.kryptonRibbonGroupTriple5.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.ButtonOpenContent,
             this.ButtonFileSystemNewDirectory});
+            // 
+            // ButtonOpenContent
+            // 
+            this.ButtonOpenContent.Enabled = false;
+            this.ButtonOpenContent.ImageLarge = global::Gorgon.Editor.Properties.Resources.open_edit_48x48;
+            this.ButtonOpenContent.ImageSmall = global::Gorgon.Editor.Properties.Resources.open_edit_16x16;
+            this.ButtonOpenContent.KeyTip = "O";
+            this.ButtonOpenContent.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.ButtonOpenContent.TextLine1 = "Open";
+            this.ButtonOpenContent.ToolTipBody = "Opens the currently selected file in the editor.\r\n\r\nIf the file is not handled by" +
+    " the editor because it lacks an appropriate plug in, then this button will be di" +
+    "sabled.";
+            this.ButtonOpenContent.Click += new System.EventHandler(this.ButtonOpenContent_Click);
             // 
             // ButtonFileSystemNewDirectory
             // 
@@ -824,7 +885,6 @@ namespace Gorgon.Editor
             this.ButtonFileSystemNewDirectory.TextLine1 = "Create";
             this.ButtonFileSystemNewDirectory.TextLine2 = "Directory";
             this.ButtonFileSystemNewDirectory.ToolTipBody = "Create a new directory";
-            this.ButtonFileSystemNewDirectory.Click += new System.EventHandler(this.ButtonFileSystemNewDirectory_Click);
             // 
             // kryptonRibbonGroupLines3
             // 
@@ -1027,6 +1087,10 @@ namespace Gorgon.Editor
             this.PanelWorkSpace.Size = new System.Drawing.Size(1280, 800);
             this.PanelWorkSpace.TabIndex = 0;
             // 
+            // kryptonGalleryRange1
+            // 
+            this.kryptonGalleryRange1.Heading = "Heading2";
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -1057,8 +1121,6 @@ namespace Gorgon.Editor
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonTab TabFileSystem;
         private Gorgon.UI.GorgonWaitScreenPanel WaitScreen;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup RibbonGroupFileSystemNew;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple1;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemNewDirectory;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup RibbonGroupFileSystemOrganize;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines1;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple2;
@@ -1083,6 +1145,13 @@ namespace Gorgon.Editor
         private System.Windows.Forms.Panel PanelWorkSpace;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple4;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemRename;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple5;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonOpenContent;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupGallery GalleryNew;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemNewDirectory;
+        private System.Windows.Forms.ImageList GalleryNewImages;
+        private ComponentFactory.Krypton.Ribbon.KryptonGalleryRange RangeTest1;
+        private ComponentFactory.Krypton.Ribbon.KryptonGalleryRange kryptonGalleryRange1;
     }
 }
 

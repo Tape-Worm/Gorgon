@@ -20,47 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: January 16, 2019 8:37:40 AM
+// Created: February 5, 2019 7:46:30 PM
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DX = SharpDX;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Imaging;
 using Gorgon.UI;
-using Gorgon.Editor.Content;
 
 namespace Gorgon.Editor.ImageEditor.ViewModels
 {
     /// <summary>
-    /// The mode for the cropping/resizing of an image.
+    /// The view model for the image dimensions settings view.
     /// </summary>
-    [Flags]
-    internal enum CropResizeMode
-    {
-        /// <summary>
-        /// No mode selected.
-        /// </summary>
-        None = 0,
-        /// <summary>
-        /// Image should be cropped.
-        /// </summary>
-        Crop = 1,
-        /// <summary>
-        /// Image should be resized.
-        /// </summary>
-        Resize = 2
-    }
-
-    /// <summary>
-    /// The view model for the image cropping/resizing settings view.
-    /// </summary>
-    internal interface ICropResizeSettings
+    internal interface IDimensionSettings
         : IViewModel
     {
         /// <summary>
@@ -73,48 +46,93 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
-        /// Property to set or return the file being imported.
+        /// Property to return whether the image has depth slices or not.
         /// </summary>
-        string ImportFile
+        /// <remarks>
+        /// This will return <b>true</b> if the image is a volume texture, or <b>false</b> if it is not.  If this returns <b>false</b>, then the image uses array indices instead of depth slices.
+        /// </remarks>
+        bool HasDepth
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to set or return the width of the image, in pixels.
+        /// </summary>
+        int Width
         {
             get;
             set;
         }
 
         /// <summary>
-        /// Property to set or return the directory containing the file being imported.
+        /// Property to set or return the height of the image, in pixels.
         /// </summary>
-        string ImportFileDirectory
+        int Height
         {
             get;
             set;
         }
 
         /// <summary>
-        /// Property to set or return the image being imported.
+        /// Property to set or return the number of mip map levels.
         /// </summary>
-        IGorgonImage ImportImage
+        int MipLevels
         {
             get;
             set;
         }
 
         /// <summary>
-        /// Property to set or return the width/height of the target image.
+        /// Property to set or return the number of depth slices if the image is a volume texture, or array indices if not.
         /// </summary>
-        DX.Size2 TargetImageSize
+        int DepthSlicesOrArrayIndices
         {
             get;
             set;
         }
 
         /// <summary>
-        /// Property to set or return which modes are allowed.
+        /// Property to return the maximum width of an image.
         /// </summary>
-        CropResizeMode AllowedModes
+        int MaxWidth
         {
             get;
-            set;
+        }
+
+        /// <summary>
+        /// Property to return the maximum height of an image.
+        /// </summary>
+        int MaxHeight
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the maximum number of depth slices for a volume texture, or array indices for a 2D image.
+        /// </summary>
+        int MaxDepthOrArrayIndices
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the maximum number of mip map levels based on the width, height and, if applicable, depth slices.
+        /// </summary>
+        int MaxMipLevels
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the number of array indices to increment or decrement by.
+        /// </summary>
+        /// <remarks>
+        /// If the image is a cube map, then this value will be 6, otherwise it will be 1.
+        /// </remarks>
+        int ArrayIndexStep
+        {
+            get;
         }
 
         /// <summary>
@@ -127,18 +145,9 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
-        /// Property to set or return the currently selected alignment.
+        /// Property to set or return the currently selected cropping alignment.
         /// </summary>
-        Alignment CurrentAlignment
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return whether to preserve the aspect ratio of the image being resized.
-        /// </summary>
-        bool PreserveAspect
+        Alignment CropAlignment
         {
             get;
             set;

@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -49,6 +50,8 @@ namespace Gorgon.Editor.ImageEditor
         private readonly TexConvCompressor _compressor;
         // The export image dialog service.
         private readonly IExportImageDialogService _exportDialog;
+        // The export image dialog service.
+        private readonly IImportImageDialogService _importDialog;
         // The logging interface to use.
         private readonly IGorgonLog _log;
         // The busy state service.
@@ -87,6 +90,88 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Methods.
+        /// <summary>Function to perform an import of an image into the current image mip level and array index/depth slice.</summary>
+        /// <returns>The source file information, image data, the virtual file entry for the working file and the original pixel format of the file.</returns>
+        public (FileInfo file, IGorgonImage image, IGorgonVirtualFile workingFile, BufferFormat originalFormat) ImportImage()
+        {
+            string importPath = _importDialog.GetFilename();
+
+            if (string.IsNullOrWhiteSpace(importPath))
+            {
+                return (null, null, null, BufferFormat.Unknown);
+            }
+
+            var file = new FileInfo(importPath);
+            IGorgonImageCodec importCodec = _importDialog.SelectedCodec;
+            IGorgonImageInfo metaData = null;
+            IGorgonVirtualFile workFile = null;
+            IGorgonImage importImage = null;
+            string workFilePath = $"{Path.GetFileName(importPath)}_import_{Guid.NewGuid().ToString("N")}";
+
+            // Try to determine if we can actually read the file using an installed codec, if we can't, then try to find a suitable codec.
+            using (FileStream stream = File.Open(importPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                if ((importCodec == null) || (!importCodec.IsReadable(stream)))
+                {
+                    importCodec = null;
+
+                    foreach (IGorgonImageCodec codec in InstalledCodecs.Where(item => (item.CodecCommonExtensions.Count > 0) && (item.CanDecode)))
+                    {
+                        if (codec.IsReadable(stream))
+                        {
+                            importCodec = codec;
+                            break;
+                        }
+                    }
+                }
+
+                if (importCodec == null)
+                {
+                    throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_ERR_NO_CODEC, importPath));
+                }
+
+                metaData = importCodec.GetMetaData(stream);
+
+                using (Stream outStream = ScratchArea.OpenStream(workFilePath, FileMode.Create))
+                {
+                    stream.CopyTo(outStream);
+                }
+            }
+
+            workFile = ScratchArea.FileSystem.GetFile(workFilePath);
+            var formatInfo = new GorgonFormatInfo(metaData.Format);
+
+            // This is always in DDS format.
+            if (formatInfo.IsCompressed)
+            {
+                _log.Print($"Image is compressed using [{formatInfo.Format}] as its pixel format.", LoggingLevel.Intermediate);
+
+                if (_compressor == null)
+                {
+                    throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_ERR_COMPRESSED_FILE, formatInfo.Format));
+                }
+
+                _log.Print($"Loading image '{workFile.FullPath}'...", LoggingLevel.Simple);
+                importImage = _compressor.Decompress(ref workFile, metaData);
+
+                if (importImage == null)
+                {
+                    throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_ERR_COMPRESSED_FILE, formatInfo.Format));
+                }
+
+                _log.Print($"Loaded compressed ([{formatInfo.Format}]) image data as [{importImage.Format}]", LoggingLevel.Intermediate);
+            }
+            else
+            {
+                using (Stream workStream = workFile.OpenStream())
+                {
+                    importImage = importCodec.LoadFromStream(workStream);
+                }                    
+            }
+
+            return (file, importImage, workFile, metaData.Format);
+        }
+
         /// <summary>
         /// Function to perform an export of an image.
         /// </summary>
@@ -260,20 +345,22 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ImageEditor.ImageIO"/> class.</summary>
         /// <param name="defaultCodec">The default codec used by the plug in.</param>
         /// <param name="installedCodecs">The list of installed codecs.</param>
-        /// <param name="exportDialog">The dialog service used to export an image.</param>
+        /// <param name="importDialog">The dialog service used to export an image.</param>
         /// <param name="busyService">The busy state service.</param>
         /// <param name="scratchArea">The file system writer used to write to the temporary area.</param>
         /// <param name="bcCompressor">The block compressor used to block (de)compress image data.</param>
         /// <param name="log">The logging interface to use.</param>
         public ImageIOService(IGorgonImageCodec defaultCodec, 
             IReadOnlyList<IGorgonImageCodec> installedCodecs,
-            IExportImageDialogService exportDialog, 
+            IExportImageDialogService exportDialog,
+            IImportImageDialogService importDialog,
             IBusyStateService busyService,
             IGorgonFileSystemWriter<Stream> scratchArea, 
             TexConvCompressor bcCompressor, 
             IGorgonLog log)
         {
             _exportDialog = exportDialog;
+            _importDialog = importDialog;
             DefaultCodec = defaultCodec;
             InstalledCodecs = installedCodecs;
             ScratchArea = scratchArea;

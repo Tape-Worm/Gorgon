@@ -44,6 +44,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
     {
         #region Properties.
         /// <summary>
+        /// Property to return the image dimension editor view model.
+        /// </summary>
+        public IDimensionSettings DimensionSettings
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the crop/resize settings view model.
         /// </summary>
         public ICropResizeSettings CropResizeSettings
@@ -137,6 +145,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <param name="file">The file for the image content.</param>
         /// <param name="settings">The settings for the image editor.</param>
         /// <param name="cropResizeSettings">The crop/resize settings view model.</param>
+        /// <param name="dimensionSettings">The image dimensions settings view model.</param>
         /// <param name="imageData">The image data and related information.</param>
         /// <param name="videoAdapter">Information about the current video adapter.</param>
         /// <param name="formatSupport">A list of <see cref="IGorgonFormatSupportInfo"/> objects for each pixel format.</param>
@@ -146,6 +155,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         public ImageContentParameters(IContentFile file,
             ImageEditorSettings settings,
             ICropResizeSettings cropResizeSettings,
+            IDimensionSettings dimensionSettings,
             (IGorgonImage image, IGorgonVirtualFile workingFile, BufferFormat originalFormat) imageData,
             IGorgonVideoAdapterInfo videoAdapter,
             IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> formatSupport,
@@ -162,6 +172,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             UndoService = services.UndoService ?? throw new ArgumentMissingException(nameof(services.UndoService), nameof(services));
             ImageUpdater = services.ImageUpdater ?? throw new ArgumentMissingException(nameof(services.ImageUpdater), nameof(services));
             CropResizeSettings = cropResizeSettings ?? throw new ArgumentNullException(nameof(cropResizeSettings));
+            DimensionSettings = dimensionSettings ?? throw new ArgumentNullException(nameof(dimensionSettings));
             VideoAdapterInfo = videoAdapter ?? throw new ArgumentNullException(nameof(videoAdapter));
             OriginalFormat = imageData.originalFormat;
         }

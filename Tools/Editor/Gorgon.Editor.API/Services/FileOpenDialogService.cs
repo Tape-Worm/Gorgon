@@ -122,7 +122,7 @@ namespace Gorgon.Editor.Services
         /// Function to retrieve a single file name.
         /// </summary>
         /// <returns>The selected file path, or <b>null</b> if cancelled.</returns>
-        public string GetFilename()
+        public virtual string GetFilename()
         {
             OpenFileDialog dialog = null;
 

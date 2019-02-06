@@ -177,6 +177,19 @@ namespace Gorgon.Editor.ImageEditor
         {
         }
 
+        /// <summary>Handles the Click event of the ButtonDimensions control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonDimensions_Click(object sender, EventArgs e)
+        {
+            if (DataContext?.DimensionSettings == null)
+            {
+                return;
+            }
+
+            DataContext.DimensionSettings.IsActive = ButtonDimensions.Checked;
+        }
+
         /// <summary>Handles the CollectionChanged event of the Codecs control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The [NotifyCollectionChangedEventArgs] instance containing the event data.</param>
@@ -205,6 +218,21 @@ namespace Gorgon.Editor.ImageEditor
                     ClearCodecs();
                     break;
             }
+            ValidateButtons();
+        }
+
+
+        /// <summary>Handles the Click event of the ButtonImport control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonImport_Click(object sender, EventArgs e)
+        {
+            if ((DataContext?.ImportFileCommand == null) || (!DataContext.ImportFileCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            DataContext.ImportFileCommand.Execute(null);
             ValidateButtons();
         }
 
@@ -506,6 +534,7 @@ namespace Gorgon.Editor.ImageEditor
             }
 
             DataContext.ChangeImageTypeCommand.Execute(imageType);
+            ValidateButtons();
         }
 
         /// <summary>

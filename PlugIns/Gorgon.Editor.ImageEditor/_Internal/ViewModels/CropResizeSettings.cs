@@ -45,7 +45,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
     {
         #region Variables.
         // The file being imported.
-        private IContentFile _importFile;
+        private string _importFile;
         // The imported image.
         private IGorgonImage _importImage;
         // The size of the target image.
@@ -66,6 +66,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         private bool _preserveAspect;
         // The image filter to apply when resizing.
         private ImageFilter _imageFilter = ImageFilter.Point;
+        // The directory for the imported file.
+        private string _importFileDirectory;
         #endregion
 
         #region Properties.
@@ -109,7 +111,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
         /// <summary>Property to set or return the file being imported.</summary>
         /// <value>The import file.</value>
-        public IContentFile ImportFile
+        public string ImportFile
         {
             get => _importFile;
             set
@@ -121,6 +123,25 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                 OnPropertyChanging();
                 _importFile = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the directory containing the file being imported.
+        /// </summary>
+        public string ImportFileDirectory
+        {
+            get => _importFileDirectory;
+            set
+            {
+                if (string.Equals(_importFileDirectory, value, StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _importFileDirectory = value;
                 OnPropertyChanged();
             }
         }

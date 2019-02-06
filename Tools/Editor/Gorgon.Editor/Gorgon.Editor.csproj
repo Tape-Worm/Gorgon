@@ -239,6 +239,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\open_edit_16x16.png" />
+    <None Include="Resources\open_edit_48x48.png" />
     <None Include="Resources\no_thumbnail_256x256.dds" />
     <None Include="Resources\rename_48x48.png" />
     <None Include="Resources\open_pack_file_48x48.png" />
@@ -356,7 +358,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="KryptonToolkitSuite5470">
-      <Version>5.470.716</Version>
+      <Version>5.470.717</Version>
     </PackageReference>
     <PackageReference Include="SharpDX">
       <Version>4.2.0</Version>

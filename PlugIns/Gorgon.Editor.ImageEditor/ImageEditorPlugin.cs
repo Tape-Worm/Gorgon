@@ -271,6 +271,7 @@ namespace Gorgon.Editor.ImageEditor
             var imageIO = new ImageIOService(_ddsCodec, 
                 _codecList,
                 new ExportImageDialogService(_settings), 
+                new ImportImageDialogService(_settings, _codecList),
                 injector.BusyService, 
                 scratchArea, 
                 compressor, 
@@ -295,12 +296,16 @@ namespace Gorgon.Editor.ImageEditor
             };
 
             var cropResizeSettings = new CropResizeSettings();
+            var dimensionSettings = new DimensionSettings();
+            
             cropResizeSettings.Initialize(new ViewModelInjectionCommon());
+            dimensionSettings.Initialize(new DimensionSettingsParameters(GraphicsContext.Graphics.VideoAdapter, injector.MessageDisplay));
 
             var content = new ImageContent();
             content.Initialize(new ImageContentParameters(file,
                 _settings,
                 cropResizeSettings,
+                dimensionSettings,
                 imageData,
                 GraphicsContext.Graphics.VideoAdapter,
                 GraphicsContext.Graphics.FormatSupport,

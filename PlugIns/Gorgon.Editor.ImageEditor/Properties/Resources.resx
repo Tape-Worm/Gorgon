@@ -389,4 +389,19 @@ Are you sure you wish to continue?</value>
   <data name="GORIMG_ERR_CHANGE_TYPE" xml:space="preserve">
     <value>There was an error while converting the image type.</value>
   </data>
+  <data name="GORIMG_CAPTION_IMPORT_IMAGE" xml:space="preserve">
+    <value>Import image...</value>
+  </data>
+  <data name="GORIMG_UNDO_DESC_IMAGE_TYPE" xml:space="preserve">
+    <value>Image Type '{0}'</value>
+  </data>
+  <data name="GORIMG_FILEMASK_ALL_FILES" xml:space="preserve">
+    <value>All files (*.*)|*.*</value>
+  </data>
+  <data name="GORIMG_TEXT_ARRAY_INDICES" xml:space="preserve">
+    <value>Array index count:</value>
+  </data>
+  <data name="GORIMG_TEXT_DEPTH_SLICES" xml:space="preserve">
+    <value>Depth slice count:</value>
+  </data>
 </root>

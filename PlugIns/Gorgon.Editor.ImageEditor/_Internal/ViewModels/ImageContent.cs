@@ -63,8 +63,9 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             /// The file used to store the undo data.
             /// </summary>
             public IGorgonVirtualFile UndoFile;
+
             /// <summary>
-            /// The format for the image at this undo level.
+            /// The format of the image for redo.
             /// </summary>
             public BufferFormat Format;
         }
@@ -83,6 +84,22 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             /// The file used to store the redo data.
             /// </summary>
             public IGorgonVirtualFile RedoFile;
+        }
+
+        /// <summary>
+        /// The arguments used to undo/redo an image type modification.
+        /// </summary>
+        private class ImageTypeUndoArgs
+        {
+            /// <summary>
+            /// The file used to store the undo data.
+            /// </summary>
+            public IGorgonVirtualFile UndoFile;
+
+            /// <summary>
+            /// The type of image for redo.
+            /// </summary>
+            public ImageType ImageType;
         }
         #endregion
 
@@ -116,8 +133,10 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         private int _currentArrayindex;
         // The current depth slice.
         private int _currentDepthSlice;
-        // Flag to indicate whether the image needs to be cropped or resized.
+        // The view model used to update cropping/resizing settings for import.
         private ICropResizeSettings _cropResizeSettings;
+        // The view model used to update the image dimensions.
+        private IDimensionSettings _dimensionSettings;
         // The service used to update the image data.
         private IImageUpdaterService _imageUpdater;
         // Information about the current video adapter.
@@ -313,13 +332,11 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// </summary>
         public int Height => ImageData.Height;
 
-        /// <summary>
-        /// Property to return whether a crop/resize operation is required.
-        /// </summary>
+        /// <summary>Property to return the view model for the cropping/resizing settings.</summary>
         public ICropResizeSettings CropOrResizeSettings
         {
             get => _cropResizeSettings;
-            set
+            private set
             {
                 if (_cropResizeSettings == value)
                 {
@@ -332,15 +349,55 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
         }
 
+
+        /// <summary>
+        /// Property to return the view model for the dimension editing settings.
+        /// </summary>
+        public IDimensionSettings DimensionSettings
+        {
+            get => _dimensionSettings;
+            private set
+            {
+                if (_dimensionSettings == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _dimensionSettings = value;
+                OnPropertyChanged();
+            }
+        }
+
         /// <summary>Property to return the command to execute when changing the image type.</summary>
         /// <value>The change image type command.</value>
         public IEditorCommand<ImageType> ChangeImageTypeCommand
         {
             get;
         }
+
+        /// <summary>Property to import an image file into the current image as an array index or depth slice.</summary>        
+        public IEditorCommand<object> ImportFileCommand
+        {
+            get;
+        }
         #endregion
 
         #region Methods.        
+        /// <summary>
+        /// Function to notify when the entire image structure has been updated.
+        /// </summary>
+        /// <param name="mainProperty">The name of the primary property to notify on.</param>
+        private void NotifyImageUpdated(string mainProperty)
+        {
+            NotifyPropertyChanged(mainProperty);
+            NotifyPropertyChanged(nameof(MipCount));
+            NotifyPropertyChanged(nameof(DepthCount));
+            NotifyPropertyChanged(nameof(ArrayCount));
+
+            ContentState = ContentState.Modified;
+        }
+
         /// <summary>
         /// Function to determine if the current content can be saved.
         /// </summary>
@@ -711,6 +768,11 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 ImportImageData(CropOrResizeSettings.ImportFile, image, CropOrResizeSettings.CurrentMode, 
                     CropOrResizeSettings.CurrentMode == CropResizeMode.Resize ? Alignment.UpperLeft : CropOrResizeSettings.CurrentAlignment, 
                     CropOrResizeSettings.ImageFilter, CropOrResizeSettings.PreserveAspect);
+
+                if ((!string.IsNullOrWhiteSpace(CropOrResizeSettings.ImportFileDirectory)) && (Directory.Exists(CropOrResizeSettings.ImportFileDirectory)))
+                {
+                    _settings.LastImportExportPath = CropOrResizeSettings.ImportFileDirectory;
+                }
             }
             catch (Exception ex)
             {
@@ -738,6 +800,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
 
             // Ensure that the current pixel format is supported.
+#pragma warning disable IDE0046 // Convert to conditional expression
             if (!_formatSupport[CurrentPixelFormat].IsTextureFormat(ImageType))
             {
                 return false;
@@ -745,6 +808,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
             return (imageType != ImageType.Image3D) 
                 || ((Width <= _videoAdapter.MaxTexture3DWidth) && (Height <= _videoAdapter.MaxTexture3DHeight));
+#pragma warning restore IDE0046 // Convert to conditional expression
         }
 
         /// <summary>
@@ -753,52 +817,122 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <param name="newImageType">The type to convert into.</param>
         private void DoChangeImageType(ImageType newImageType)
         {
-            IGorgonImage newImage;
+            ImageTypeUndoArgs imageTypeUndoArgs = null;
 
-            try
+            if (newImageType == ImageType)
             {
-                if (newImageType == ImageType)
+                return;
+            }
+
+            Task UndoAction(ImageTypeUndoArgs undoArgs, CancellationToken cancelToken)
+            {
+                Stream inStream = null;
+
+                BusyState.SetBusy();
+
+                try
                 {
-                    return;
+                    if (undoArgs.UndoFile == null)
+                    {
+                        return Task.CompletedTask;
+                    }
+
+                    inStream = undoArgs.UndoFile.OpenStream();
+                    (IGorgonImage image, _, _) = _imageIO.LoadImageFile(inStream, _workingFile.Name);
+                    ImageData.Dispose();
+                    ImageData = image;
+
+                    NotifyImageUpdated(nameof(ImageType));
+
+                    inStream.Dispose();
+
+                    // This file will be re-created on redo.
+                    DeleteUndoCacheFile(undoArgs.UndoFile);
+                    undoArgs.UndoFile = null;
+                }
+                catch (Exception ex)
+                {
+                    MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_CHANGE_TYPE);
+                }
+                finally
+                {
+                    inStream?.Dispose();
+                    BusyState.SetIdle();
                 }
 
-                switch (newImageType)
+                return Task.CompletedTask;
+            }
+
+            Task RedoAction(ImageTypeUndoArgs redoArgs, CancellationToken cancelToken)
+            {
+                IGorgonVirtualFile undoFile = null;
+                IGorgonImage newImage;
+
+                try
                 {
-                    case ImageType.Image2D:
-                        if ((DepthCount > 1)
-                            && (MessageDisplay.ShowConfirmation(Resources.GORIMG_CONFIRM_3D_TO_2D) == MessageResponse.No))
-                        {
-                            return;
-                        }
+                    switch (newImageType)
+                    {
+                        case ImageType.Image2D:
+                            if ((DepthCount > 1)
+                                && (MessageDisplay.ShowConfirmation(Resources.GORIMG_CONFIRM_3D_TO_2D) == MessageResponse.No))
+                            {
+                                return Task.CompletedTask;
+                            }
 
-                        BusyState.SetBusy();
-                        newImage = _imageUpdater.ConvertTo2D(ImageData, false);
-                        break;
-                    case ImageType.Image3D:
-                        if ((ArrayCount > 1) 
-                            && (MessageDisplay.ShowConfirmation(Resources.GORIMG_CONFIRM_ARRAY_TO_VOLUME) == MessageResponse.No))
-                        {
-                            return;
-                        }
+                            BusyState.SetBusy();
+                            newImage = _imageUpdater.ConvertTo2D(ImageData, false);
+                            break;
+                        case ImageType.Image3D:
+                            if ((ArrayCount > 1)
+                                && (MessageDisplay.ShowConfirmation(Resources.GORIMG_CONFIRM_ARRAY_TO_VOLUME) == MessageResponse.No))
+                            {
+                                return Task.CompletedTask;
+                            }
 
-                        BusyState.SetBusy();
-                        newImage = _imageUpdater.ConvertToVolume(ImageData);
-                        break;
-                    default:
-                        return;
+                            BusyState.SetBusy();
+                            newImage = _imageUpdater.ConvertToVolume(ImageData);
+                            break;
+                        default:
+                            return Task.CompletedTask;
+                    }
+
+                    ImageData.Dispose();
+                    ImageData = newImage;
+
+                    undoFile = CreateUndoCacheFile();
+                    _workingFile = _imageIO.SaveImageFile(File.Name, ImageData, ImageData.Format);
+
+                    if (redoArgs == null)
+                    {
+                        redoArgs = imageTypeUndoArgs = new ImageTypeUndoArgs();
+                    }
+
+                    redoArgs.ImageType = newImageType;
+                    redoArgs.UndoFile = undoFile;
+
+                    NotifyImageUpdated(nameof(ImageType));
+                }
+                catch (Exception ex)
+                {
+                    MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_CHANGE_TYPE);
+                    DeleteUndoCacheFile(undoFile);
+                    imageTypeUndoArgs = null;
+                    return Task.FromException(ex);
+                }
+                finally
+                {
+                    BusyState.SetIdle();
                 }
 
-                ImageData.Dispose();
-                ImageData = newImage;
-                NotifyPropertyChanged(nameof(ImageType));
+                return Task.CompletedTask;
             }
-            catch (Exception ex)
+
+            Task task = RedoAction(null, CancellationToken.None);
+
+            // If we had an error, do not record the undo state.
+            if (!task.IsFaulted)
             {
-                MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_CHANGE_TYPE);
-            }
-            finally
-            {
-                BusyState.SetIdle();
+                _undoService.Record(string.Format(Resources.GORIMG_UNDO_DESC_IMAGE_TYPE, newImageType), UndoAction, RedoAction, imageTypeUndoArgs, imageTypeUndoArgs);
             }
         }
 
@@ -888,6 +1022,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             base.OnInitialize(injectionParameters);
 
             _cropResizeSettings = injectionParameters.CropResizeSettings ?? throw new ArgumentMissingException(nameof(injectionParameters.CropResizeSettings), nameof(injectionParameters));
+            _dimensionSettings = injectionParameters.DimensionSettings ?? throw new ArgumentMissingException(nameof(injectionParameters.DimensionSettings), nameof(injectionParameters));
             _settings = injectionParameters.Settings ?? throw new ArgumentMissingException(nameof(injectionParameters.Settings), nameof(injectionParameters));
             _workingFile = injectionParameters.WorkingFile ?? throw new ArgumentMissingException(nameof(injectionParameters.WorkingFile), nameof(injectionParameters));            
             ImageData = injectionParameters.Image ?? throw new ArgumentMissingException(nameof(injectionParameters.Image), nameof(injectionParameters));
@@ -968,26 +1103,9 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <param name="alignment">The alignment of the source image, relative to the destination.</param>
         /// <param name="imageFilter">The filter to apply if resizing.</param>
         /// <param name="preserveAspect"><b>true</b> to preserve the aspect ratio, <b>false</b> to ignore it.</param>
-        private void ImportImageData(IContentFile file, IGorgonImage importImage, CropResizeMode cropResizeMode, Alignment alignment, ImageFilter imageFilter, bool preserveAspect)
+        private void ImportImageData(string file, IGorgonImage importImage, CropResizeMode cropResizeMode, Alignment alignment, ImageFilter imageFilter, bool preserveAspect)
         {
-            ImportUndoArgs importUndoArgs = null;
-            
-            void NotifyImageUpdated()
-            {
-                NotifyPropertyChanged(nameof(ImageData));
-
-                NotifyPropertyChanged(nameof(MipCount));
-                if (ImageType == ImageType.Image3D)
-                {
-                    NotifyPropertyChanged(nameof(DepthCount));
-                }
-                else
-                {
-                    NotifyPropertyChanged(nameof(ArrayCount));
-                }
-
-                ContentState = ContentState.Modified;
-            }
+            ImportUndoArgs importUndoArgs = null;           
 
             Task UndoAction(ImportUndoArgs undoArgs, CancellationToken cancelToken)
             {
@@ -1009,7 +1127,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     ImageData.Dispose();
                     ImageData = image;
 
-                    NotifyImageUpdated();
+                    NotifyImageUpdated(nameof(ImageData));
 
                     inStream.Dispose();
 
@@ -1032,7 +1150,6 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
             Task RedoAction(ImportUndoArgs redoArgs, CancellationToken cancelToken)
             {
-                GorgonFormatInfo srcFormat = ImageData.FormatInfo;
                 IGorgonVirtualFile undoFile = null;
                 IGorgonVirtualFile redoFile = null;
                 Stream redoFileStream = null;
@@ -1080,9 +1197,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     _workingFile = _imageIO.SaveImageFile(File.Name, ImageData, ImageData.Format);
                     redoFile = CreateUndoCacheFile();
 
-                    NotifyImageUpdated();
-
-                    ContentState = ContentState.Modified;
+                    NotifyImageUpdated(nameof(ImageData));
 
                     if (redoArgs == null)
                     {
@@ -1122,7 +1237,142 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             // If we had an error, do not record the undo state.
             if (!task.IsFaulted)
             {
-                _undoService.Record(string.Format(Resources.GORIMG_UNDO_DESC_IMPORT, file.Name), UndoAction, RedoAction, importUndoArgs, importUndoArgs);
+                _undoService.Record(string.Format(Resources.GORIMG_UNDO_DESC_IMPORT, file), UndoAction, RedoAction, importUndoArgs, importUndoArgs);
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if an image file can be imported into the current image.
+        /// </summary>
+        /// <returns><b>true</b> if the image can be imported, <b>false</b> if not.</returns>
+        private bool CanImportFile() => (ImageData != null) && ((ImageType == ImageType.Image2D) || (ImageType == ImageType.ImageCube) || (ImageType == ImageType.Image3D));
+        
+        /// <summary>
+        /// Function to confirm the overwrite of data in the image.
+        /// </summary>
+        /// <returns>The response from the user.</returns>
+        private MessageResponse ConfirmImageDataOverwrite()
+        {
+            string confirmMessage = string.Empty;
+
+            switch (ImageType)
+            {
+                case ImageType.Image2D:
+                case ImageType.ImageCube:
+                    confirmMessage = string.Format(Resources.GORIMG_CONFIRM_OVERWRITE_ARRAY_INDEX, CurrentArrayIndex + 1, CurrentMipLevel + 1);
+                    break;
+                case ImageType.Image3D:
+                    confirmMessage = string.Format(Resources.GORIMG_CONFIRM_OVERWRITE_DEPTH_SLICE, CurrentDepthSlice + 1, CurrentMipLevel + 1);
+                    break;
+            }
+
+            return MessageDisplay.ShowConfirmation(confirmMessage);
+        }
+
+        /// <summary>
+        /// Function to convert the imported image pixel data to the same format as our image.
+        /// </summary>
+        /// <param name="imageData">The imported image data.</param>
+        /// <param name="originalFormat">The original, actual, format of the source image file.</param>
+        /// <returns><b>true</b> if image was converted successfully, or <b>false</b> if the image could not be converted.</returns>
+        private bool ConvertImportFilePixelFormat(IGorgonImage imageData, BufferFormat originalFormat)
+        {
+            // Convert to our target image format before doing anything.
+            if (ImageData.Format != imageData.Format)
+            {
+                if (!imageData.CanConvertToFormat(ImageData.Format))
+                {
+                    MessageDisplay.ShowError(string.Format(Resources.GORIMG_ERR_CANNOT_CONVERT, originalFormat, CurrentPixelFormat));
+                    return false;
+                }
+
+                imageData.ConvertToFormat(ImageData.Format);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Function to check whether the image needs cropping or resizing.
+        /// </summary>
+        /// <param name="importImage">The imported image.</param>
+        /// <param name="imageFileName">The name of the file being imported.</param>
+        /// <returns><b>true</b> to cropping/resizing is required, <b>false</b> if not.</returns>
+        private bool CheckForCropResize(IGorgonImage importImage, string imageFileName)
+        {
+            if ((ImageData.Width == importImage.Width) && (ImageData.Height == importImage.Height))
+            {
+                return false;
+            }
+
+            CropOrResizeSettings.AllowedModes = ((ImageData.Width < importImage.Width) || (ImageData.Height < importImage.Height)) ? (CropResizeMode.Crop | CropResizeMode.Resize) : CropResizeMode.Resize;
+            if ((CropOrResizeSettings.CurrentMode & CropOrResizeSettings.AllowedModes) != CropOrResizeSettings.CurrentMode)
+            {
+                CropOrResizeSettings.CurrentMode = CropResizeMode.None;
+            }
+            else if ((CropOrResizeSettings.CurrentMode == CropResizeMode.None) && (((CropOrResizeSettings.AllowedModes) & (CropResizeMode.Crop)) == CropResizeMode.Crop))
+            {
+                CropOrResizeSettings.CurrentMode = CropResizeMode.Crop;
+            }
+
+            CropOrResizeSettings.ImportFile = imageFileName;
+            // Take a copy of the image here because we'll need to destroy it later.
+            CropOrResizeSettings.ImportImage = importImage.Clone();
+            CropOrResizeSettings.TargetImageSize = new DX.Size2(ImageData.Width, ImageData.Height);
+            CropOrResizeSettings.IsActive = true;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Function to import an image file into the current array index/depth slice.
+        /// </summary>
+        private void DoImportFile()
+        {
+            IGorgonImage importImage = null;
+            IGorgonVirtualFile tempFile = null;
+            BufferFormat originalFormat = BufferFormat.Unknown;
+            FileInfo sourceFile = null;
+
+            try
+            {
+                if (ConfirmImageDataOverwrite() == MessageResponse.No)
+                {
+                    return;
+                }
+
+                (sourceFile, importImage, tempFile, originalFormat) = _imageIO.ImportImage();
+
+                if ((sourceFile == null) || (importImage == null) || (tempFile == null) || (originalFormat == BufferFormat.Unknown))
+                {
+                    return;
+                }
+
+                if (!ConvertImportFilePixelFormat(importImage, originalFormat))
+                {
+                    return;
+                }
+
+                CropOrResizeSettings.ImportFileDirectory = sourceFile.Directory.FullName.FormatDirectory(Path.DirectorySeparatorChar);
+                if (CheckForCropResize(importImage, sourceFile.Name))
+                {
+                    return;
+                }
+                                
+                ImportImageData(sourceFile.Name, importImage, CropResizeMode.None, Alignment.UpperLeft, ImageFilter.Point, false);
+                _settings.LastImportExportPath = CropOrResizeSettings.ImportFileDirectory;
+            }
+            catch (Exception ex)
+            {
+                MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+            }
+            finally
+            {
+                if (tempFile != null)
+                {
+                    _imageIO.ScratchArea.DeleteFile(tempFile.FullPath);
+                }
+                importImage?.Dispose();
             }
         }
 
@@ -1135,25 +1385,10 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             BufferFormat originalFormat;
             IGorgonVirtualFile tempFile = null;
             Stream imageFile = null;
-            string confirmMessage = string.Empty;
 
             try
             {
-                switch (ImageType)
-                {
-                    case ImageType.Image2D:
-                    case ImageType.ImageCube:
-                        confirmMessage = string.Format(Resources.GORIMG_CONFIRM_OVERWRITE_ARRAY_INDEX, CurrentArrayIndex + 1, CurrentMipLevel + 1);
-                        break;
-                    case ImageType.Image3D:
-                        confirmMessage = string.Format(Resources.GORIMG_CONFIRM_OVERWRITE_DEPTH_SLICE, CurrentDepthSlice + 1, CurrentMipLevel + 1);
-                        break;
-                    default:
-                        dragData.Cancel = true;
-                        break;
-                }
-
-                if (MessageDisplay.ShowConfirmation(confirmMessage) == MessageResponse.No)
+                if (ConfirmImageDataOverwrite() == MessageResponse.No)
                 {
                     dragData.Cancel = true;
                     return;
@@ -1164,41 +1399,19 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 (importImage, tempFile, originalFormat) = _imageIO.LoadImageFile(imageFile, dragData.File.Name);
                 imageFile.Close();
 
-                // Convert to our target image format before doing anything.
-                if (ImageData.Format != importImage.Format)
+                if (!ConvertImportFilePixelFormat(importImage, originalFormat))
                 {
-                    if (!importImage.CanConvertToFormat(ImageData.Format))
-                    {
-                        MessageDisplay.ShowError(string.Format(Resources.GORIMG_ERR_CANNOT_CONVERT, originalFormat, CurrentPixelFormat));
-                        dragData.Cancel = true;
-                        return;
-                    }
-
-                    importImage = importImage.ConvertToFormat(ImageData.Format);
-                }
-
-                if ((ImageData.Width != importImage.Width) || (ImageData.Height != importImage.Height))
-                {
-                    CropOrResizeSettings.AllowedModes = ((ImageData.Width < importImage.Width) || (ImageData.Height < importImage.Height)) ? (CropResizeMode.Crop | CropResizeMode.Resize) : CropResizeMode.Resize;
-                    if ((CropOrResizeSettings.CurrentMode & CropOrResizeSettings.AllowedModes) != CropOrResizeSettings.CurrentMode)
-                    {
-                        CropOrResizeSettings.CurrentMode = CropResizeMode.None;
-                    }
-                    else if ((CropOrResizeSettings.CurrentMode == CropResizeMode.None) && (((CropOrResizeSettings.AllowedModes) & (CropResizeMode.Crop)) == CropResizeMode.Crop))
-                    {
-                        CropOrResizeSettings.CurrentMode = CropResizeMode.Crop;
-                    }
-
-                    CropOrResizeSettings.ImportFile = dragData.File;
-                    // Take a copy of the image here because we'll need to destroy it later.
-                    CropOrResizeSettings.ImportImage = importImage.Clone();
-                    CropOrResizeSettings.TargetImageSize = new DX.Size2(ImageData.Width, ImageData.Height);
-                    CropOrResizeSettings.IsActive = true;
-
+                    dragData.Cancel = true;
                     return;
                 }
 
-                ImportImageData(dragData.File, importImage, CropResizeMode.None, Alignment.UpperLeft, ImageFilter.Point, false);
+                CropOrResizeSettings.ImportFileDirectory = null;
+                if (CheckForCropResize(importImage, dragData.File.Name))
+                {
+                    return;
+                }
+
+                ImportImageData(dragData.File.Name, importImage, CropResizeMode.None, Alignment.UpperLeft, ImageFilter.Point, false);
             }
             catch (Exception ex)
             {
@@ -1227,6 +1440,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             ConvertFormatCommand = new EditorCommand<BufferFormat>(DoConvertFormat, CanConvertFormat);
             SaveContentCommand = new EditorAsyncCommand<object>(DoSaveImageTask, CanSaveImage);
             ChangeImageTypeCommand = new EditorCommand<ImageType>(DoChangeImageType, CanChangeImageType);
+            ImportFileCommand = new EditorCommand<object>(DoImportFile, CanImportFile);
         }
         #endregion
     }

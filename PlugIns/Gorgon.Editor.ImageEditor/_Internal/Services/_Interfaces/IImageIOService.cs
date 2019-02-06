@@ -93,11 +93,17 @@ namespace Gorgon.Editor.ImageEditor
         FileInfo ExportImage(IContentFile file, IGorgonImage image, IGorgonImageCodec codec);
 
         /// <summary>
+        /// Function to perform an import of an image into the current image mip level and array index/depth slice.
+        /// </summary>
+        /// <returns>The image data, the virtual file entry for the working file and the original pixel format of the file.</returns>
+        (FileInfo file, IGorgonImage image, IGorgonVirtualFile workingFile, BufferFormat originalFormat) ImportImage();
+
+        /// <summary>
         /// Function to load the image file into memory.
         /// </summary>
         /// <param name="file">The stream for the file to load.</param>
         /// <param name="name">The name of the file.</param>
-        /// <returns>The image data, the virtual file entry for the working file and the original pixel format of the file.</returns>
+        /// <returns>The source file information, image data, the virtual file entry for the working file and the original pixel format of the file.</returns>
         (IGorgonImage image, IGorgonVirtualFile workingFile, BufferFormat originalFormat) LoadImageFile(Stream file, string name);
         #endregion
     }

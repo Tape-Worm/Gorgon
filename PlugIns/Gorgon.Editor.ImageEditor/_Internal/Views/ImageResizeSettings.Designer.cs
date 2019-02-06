@@ -38,6 +38,12 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.LabelCaption = new System.Windows.Forms.Label();
             this.TableBody = new System.Windows.Forms.TableLayoutPanel();
+            this.LabelImageFilter = new System.Windows.Forms.Label();
+            this.AlignmentPicker = new Gorgon.Windows.UI.GorgonAlignmentPicker();
+            this.panelAnchor = new System.Windows.Forms.Panel();
+            this.ComboImageFilter = new System.Windows.Forms.ComboBox();
+            this.CheckPreserveAspect = new System.Windows.Forms.CheckBox();
+            this.LabelAnchor = new System.Windows.Forms.Label();
             this.LabelDesc = new System.Windows.Forms.Label();
             this.LabelImportImageName = new System.Windows.Forms.Label();
             this.LabelImportImageDimensions = new System.Windows.Forms.Label();
@@ -48,17 +54,11 @@
             this.PanelConfirmCancel = new System.Windows.Forms.Panel();
             this.ButtonOK = new System.Windows.Forms.Button();
             this.ButtonCancel = new System.Windows.Forms.Button();
-            this.LabelAnchor = new System.Windows.Forms.Label();
-            this.AlignmentPicker = new Gorgon.Windows.UI.GorgonAlignmentPicker();
-            this.LabelImageFilter = new System.Windows.Forms.Label();
-            this.CheckPreserveAspect = new System.Windows.Forms.CheckBox();
-            this.ComboImageFilter = new System.Windows.Forms.ComboBox();
-            this.panelAnchor = new System.Windows.Forms.Panel();
             this.PanelCaptionBorder.SuspendLayout();
             this.panel2.SuspendLayout();
             this.TableBody.SuspendLayout();
-            this.PanelConfirmCancel.SuspendLayout();
             this.panelAnchor.SuspendLayout();
+            this.PanelConfirmCancel.SuspendLayout();
             this.SuspendLayout();
             // 
             // PanelCaptionBorder
@@ -131,6 +131,77 @@
             this.TableBody.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.TableBody.Size = new System.Drawing.Size(382, 441);
             this.TableBody.TabIndex = 1;
+            // 
+            // LabelImageFilter
+            // 
+            this.LabelImageFilter.AutoSize = true;
+            this.LabelImageFilter.Location = new System.Drawing.Point(24, 343);
+            this.LabelImageFilter.Margin = new System.Windows.Forms.Padding(24, 0, 3, 0);
+            this.LabelImageFilter.Name = "LabelImageFilter";
+            this.LabelImageFilter.Size = new System.Drawing.Size(84, 15);
+            this.LabelImageFilter.TabIndex = 17;
+            this.LabelImageFilter.Text = "Image filtering";
+            // 
+            // AlignmentPicker
+            // 
+            this.AlignmentPicker.Location = new System.Drawing.Point(24, 210);
+            this.AlignmentPicker.Margin = new System.Windows.Forms.Padding(24, 3, 3, 3);
+            this.AlignmentPicker.Name = "AlignmentPicker";
+            this.AlignmentPicker.Size = new System.Drawing.Size(105, 105);
+            this.AlignmentPicker.TabIndex = 16;
+            this.AlignmentPicker.Visible = false;
+            this.AlignmentPicker.AlignmentChanged += new System.EventHandler(this.AlignmentPicker_AlignmentChanged);
+            // 
+            // panelAnchor
+            // 
+            this.panelAnchor.AutoSize = true;
+            this.panelAnchor.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.TableBody.SetColumnSpan(this.panelAnchor, 2);
+            this.panelAnchor.Controls.Add(this.ComboImageFilter);
+            this.panelAnchor.Controls.Add(this.CheckPreserveAspect);
+            this.panelAnchor.Location = new System.Drawing.Point(24, 361);
+            this.panelAnchor.Margin = new System.Windows.Forms.Padding(24, 3, 3, 3);
+            this.panelAnchor.Name = "panelAnchor";
+            this.panelAnchor.Size = new System.Drawing.Size(235, 54);
+            this.panelAnchor.TabIndex = 15;
+            // 
+            // ComboImageFilter
+            // 
+            this.ComboImageFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.ComboImageFilter.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ComboImageFilter.FormattingEnabled = true;
+            this.ComboImageFilter.Location = new System.Drawing.Point(3, 3);
+            this.ComboImageFilter.Margin = new System.Windows.Forms.Padding(20, 3, 3, 3);
+            this.ComboImageFilter.Name = "ComboImageFilter";
+            this.ComboImageFilter.Size = new System.Drawing.Size(221, 23);
+            this.ComboImageFilter.TabIndex = 8;
+            this.ComboImageFilter.SelectedValueChanged += new System.EventHandler(this.ComboImageFilter_SelectedValueChanged);
+            // 
+            // CheckPreserveAspect
+            // 
+            this.CheckPreserveAspect.AutoSize = true;
+            this.CheckPreserveAspect.Checked = true;
+            this.CheckPreserveAspect.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.CheckPreserveAspect.Location = new System.Drawing.Point(3, 32);
+            this.CheckPreserveAspect.Margin = new System.Windows.Forms.Padding(20, 3, 3, 3);
+            this.CheckPreserveAspect.Name = "CheckPreserveAspect";
+            this.CheckPreserveAspect.Size = new System.Drawing.Size(229, 19);
+            this.CheckPreserveAspect.TabIndex = 9;
+            this.CheckPreserveAspect.Text = "Preserve the aspect ratio of the image?";
+            this.CheckPreserveAspect.UseVisualStyleBackColor = true;
+            this.CheckPreserveAspect.Click += new System.EventHandler(this.CheckPreserveAspect_Click);
+            // 
+            // LabelAnchor
+            // 
+            this.LabelAnchor.AutoSize = true;
+            this.LabelAnchor.Location = new System.Drawing.Point(24, 192);
+            this.LabelAnchor.Margin = new System.Windows.Forms.Padding(24, 0, 3, 0);
+            this.LabelAnchor.Name = "LabelAnchor";
+            this.LabelAnchor.Size = new System.Drawing.Size(63, 15);
+            this.LabelAnchor.TabIndex = 14;
+            this.LabelAnchor.Text = "Alignment";
             // 
             // LabelDesc
             // 
@@ -271,74 +342,6 @@
             this.ButtonCancel.UseVisualStyleBackColor = true;
             this.ButtonCancel.Click += new System.EventHandler(this.ButtonCancel_Click);
             // 
-            // LabelAnchor
-            // 
-            this.LabelAnchor.AutoSize = true;
-            this.LabelAnchor.Location = new System.Drawing.Point(24, 192);
-            this.LabelAnchor.Margin = new System.Windows.Forms.Padding(24, 0, 3, 0);
-            this.LabelAnchor.Name = "LabelAnchor";
-            this.LabelAnchor.Size = new System.Drawing.Size(63, 15);
-            this.LabelAnchor.TabIndex = 14;
-            this.LabelAnchor.Text = "Alignment";
-            // 
-            // AlignmentPicker
-            // 
-            this.AlignmentPicker.Location = new System.Drawing.Point(24, 210);
-            this.AlignmentPicker.Margin = new System.Windows.Forms.Padding(24, 3, 3, 3);
-            this.AlignmentPicker.Name = "AlignmentPicker";
-            this.AlignmentPicker.Size = new System.Drawing.Size(105, 105);
-            this.AlignmentPicker.TabIndex = 16;
-            this.AlignmentPicker.Visible = false;
-            // 
-            // LabelImageFilter
-            // 
-            this.LabelImageFilter.AutoSize = true;
-            this.LabelImageFilter.Location = new System.Drawing.Point(24, 343);
-            this.LabelImageFilter.Margin = new System.Windows.Forms.Padding(24, 0, 3, 0);
-            this.LabelImageFilter.Name = "LabelImageFilter";
-            this.LabelImageFilter.Size = new System.Drawing.Size(84, 15);
-            this.LabelImageFilter.TabIndex = 17;
-            this.LabelImageFilter.Text = "Image filtering";
-            // 
-            // CheckPreserveAspect
-            // 
-            this.CheckPreserveAspect.AutoSize = true;
-            this.CheckPreserveAspect.Checked = true;
-            this.CheckPreserveAspect.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.CheckPreserveAspect.Location = new System.Drawing.Point(3, 32);
-            this.CheckPreserveAspect.Margin = new System.Windows.Forms.Padding(20, 3, 3, 3);
-            this.CheckPreserveAspect.Name = "CheckPreserveAspect";
-            this.CheckPreserveAspect.Size = new System.Drawing.Size(229, 19);
-            this.CheckPreserveAspect.TabIndex = 9;
-            this.CheckPreserveAspect.Text = "Preserve the aspect ratio of the image?";
-            this.CheckPreserveAspect.UseVisualStyleBackColor = true;
-            // 
-            // ComboImageFilter
-            // 
-            this.ComboImageFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.ComboImageFilter.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.ComboImageFilter.FormattingEnabled = true;
-            this.ComboImageFilter.Location = new System.Drawing.Point(3, 3);
-            this.ComboImageFilter.Margin = new System.Windows.Forms.Padding(20, 3, 3, 3);
-            this.ComboImageFilter.Name = "ComboImageFilter";
-            this.ComboImageFilter.Size = new System.Drawing.Size(221, 23);
-            this.ComboImageFilter.TabIndex = 8;
-            // 
-            // panelAnchor
-            // 
-            this.panelAnchor.AutoSize = true;
-            this.panelAnchor.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.TableBody.SetColumnSpan(this.panelAnchor, 2);
-            this.panelAnchor.Controls.Add(this.ComboImageFilter);
-            this.panelAnchor.Controls.Add(this.CheckPreserveAspect);
-            this.panelAnchor.Location = new System.Drawing.Point(24, 361);
-            this.panelAnchor.Margin = new System.Windows.Forms.Padding(24, 3, 3, 3);
-            this.panelAnchor.Name = "panelAnchor";
-            this.panelAnchor.Size = new System.Drawing.Size(235, 54);
-            this.panelAnchor.TabIndex = 15;
-            // 
             // ImageResizeSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -355,10 +358,10 @@
             this.panel2.PerformLayout();
             this.TableBody.ResumeLayout(false);
             this.TableBody.PerformLayout();
-            this.PanelConfirmCancel.ResumeLayout(false);
-            this.PanelConfirmCancel.PerformLayout();
             this.panelAnchor.ResumeLayout(false);
             this.panelAnchor.PerformLayout();
+            this.PanelConfirmCancel.ResumeLayout(false);
+            this.PanelConfirmCancel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -57,8 +57,19 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="destSize">The new size for the image.</param>
         /// <param name="alignment">The alignment of the image for the operation.</param>
         /// <returns></returns>
-        private DX.Point GetAnchorStart(DX.Size2 srcSize, DX.Size2 destSize, Alignment alignment)
+        private DX.Point GetAnchorStart(DX.Size2 srcSize, ref DX.Size2 destSize, Alignment alignment)
         {
+            // Limit the extents if the destination is larger in one direction than the source.
+            if (srcSize.Height < destSize.Height)
+            {
+                destSize.Height = srcSize.Height;
+            }
+
+            if (srcSize.Width < destSize.Width)
+            {
+                destSize.Width = srcSize.Width;
+            }
+
             switch (alignment)
             {
                 case Alignment.UpperCenter:
@@ -166,7 +177,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="alignment">The location to start cropping from.</param>
         public void CropTo(IGorgonImage cropImage, DX.Size2 destSize, Alignment alignment)
         {
-            DX.Point startLoc = GetAnchorStart(new DX.Size2(cropImage.Width, cropImage.Height), destSize, alignment);
+            DX.Point startLoc = GetAnchorStart(new DX.Size2(cropImage.Width, cropImage.Height), ref destSize, alignment);
             cropImage.Crop(new DX.Rectangle(startLoc.X, startLoc.Y, destSize.Width, destSize.Height), cropImage.Depth);
         }
 
@@ -204,7 +215,8 @@ namespace Gorgon.Editor.ImageEditor
             int minMipCount = mipCount.Min(srcImage.MipCount);
             int minArrayCount = arrayCount.Min(srcImage.ArrayCount);
 
-            DX.Point startLoc = GetAnchorStart(new DX.Size2(destImage.Width, destImage.Height), new DX.Size2(srcImage.Width, srcImage.Height), alignment);
+            var size = new DX.Size2(srcImage.Width, srcImage.Height);
+            DX.Point startLoc = GetAnchorStart(new DX.Size2(destImage.Width, destImage.Height), ref size, alignment);
 
             for (int array = 0; array < minArrayCount; ++array)
             {
