@@ -31,6 +31,7 @@ using Gorgon.Editor.UI.Views;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Graphics.Imaging;
+using System.Windows.Forms;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -71,6 +72,22 @@ namespace Gorgon.Editor.ImageEditor
         }
 
         /// <summary>
+        /// Function to update whether mip maps are supported or not.
+        /// </summary>
+        /// <param name="dataContext">The current data context.</param>
+        private void UpdateMipSupport(IDimensionSettings dataContext)
+        {
+            if (dataContext == null)
+            {
+                LabelMipLevels.Visible = NumericMipLevels.Visible = true;
+                LabelMipLevels.Enabled = NumericMipLevels.Enabled = false;
+                return;
+            }
+
+            LabelMipLevels.Visible = NumericMipLevels.Visible = dataContext.MipSupport;
+        }
+
+        /// <summary>
         /// Function to update the label(s) on the view.
         /// </summary>
         /// <param name="dataContext">The current data context.</param>
@@ -102,7 +119,17 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Handles the Click event of the RadioCrop control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void RadioCrop_Click(object sender, EventArgs e) => ValidateControls();
+        private void RadioCrop_Click(object sender, EventArgs e)
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            DataContext.CurrentMode = CropResizeMode.Crop;
+
+            ValidateControls();
+        }
 
         /// <summary>Handles the Click event of the RadioResize control.</summary>
         /// <param name="sender">The source of the event.</param>
@@ -133,6 +160,25 @@ namespace Gorgon.Editor.ImageEditor
                     break;
                 case nameof(IDimensionSettings.HasDepth):
                     UpdateLabels(DataContext);
+                    break;
+                case nameof(IDimensionSettings.MipSupport):
+                    UpdateMipSupport(DataContext);
+                    break;
+                case nameof(IDimensionSettings.Width):
+                case nameof(IDimensionSettings.MaxWidth):
+                    UpdateNumericUpDown(NumericWidth, DataContext.MaxWidth, DataContext.Width);
+                    break;
+                case nameof(IDimensionSettings.Height):
+                case nameof(IDimensionSettings.MaxHeight):
+                    UpdateNumericUpDown(NumericHeight, DataContext.MaxHeight, DataContext.Height);
+                    break;
+                case nameof(IDimensionSettings.MipLevels):
+                case nameof(IDimensionSettings.MaxMipLevels):
+                    UpdateNumericUpDown(NumericMipLevels, DataContext.MaxMipLevels, DataContext.MipLevels);
+                    break;
+                case nameof(IDimensionSettings.DepthSlicesOrArrayIndices):
+                case nameof(IDimensionSettings.MaxDepthOrArrayIndices):
+                    UpdateNumericUpDown(NumericDepthOrArray, DataContext.MaxDepthOrArrayIndices, DataContext.DepthSlicesOrArrayIndices);
                     break;
             }
 
@@ -181,6 +227,73 @@ namespace Gorgon.Editor.ImageEditor
         }
 
         /// <summary>
+        /// Function to update a numeric up/down control.
+        /// </summary>
+        /// <param name="control">The control to update.</param>
+        /// <param name="maxValue">The maximum value for the control.</param>
+        /// <param name="currentValue">The current value for the control.</param>
+        /// <param name="steps">[Optional] The number of steps used to increment the value.</param>
+        private void UpdateNumericUpDown(NumericUpDown control, int maxValue, int currentValue, int steps = 1)
+        {
+            control.Maximum = maxValue;
+            control.Value = currentValue;
+            control.Increment = steps;
+        }
+
+
+        /// <summary>Handles the ValueChanged event of the NumericWidth control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void NumericWidth_ValueChanged(object sender, EventArgs e)
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            DataContext.Width = (int)NumericWidth.Value;
+        }
+
+        /// <summary>Handles the ValueChanged event of the NumericHeight control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void NumericHeight_ValueChanged(object sender, EventArgs e)
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            DataContext.Height = (int)NumericHeight.Value;
+        }
+
+        /// <summary>Handles the ValueChanged event of the NumericDepthOrArray control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void NumericDepthOrArray_ValueChanged(object sender, EventArgs e)
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            DataContext.DepthSlicesOrArrayIndices = (int)NumericDepthOrArray.Value;
+        }
+
+        /// <summary>Handles the ValueChanged event of the NumericMipLevels control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void NumericMipLevels_ValueChanged(object sender, EventArgs e)
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            DataContext.MipLevels = (int)NumericMipLevels.Value;
+        }
+
+        /// <summary>
         /// Function to unassign the events assigned to the datacontext.
         /// </summary>
         private void UnassignEvents()
@@ -205,6 +318,7 @@ namespace Gorgon.Editor.ImageEditor
             ComboImageFilter.Text = string.Empty;
             ComboImageFilter.Items.Clear();
             UpdateLabels(null);
+            UpdateMipSupport(null);
         }
 
         /// <summary>
@@ -234,6 +348,11 @@ namespace Gorgon.Editor.ImageEditor
             AlignmentPicker.Alignment = dataContext.CropAlignment;
             ComboImageFilter.SelectedItem = dataContext.ImageFilter;
             UpdateLabels(dataContext);
+            UpdateMipSupport(dataContext);
+            UpdateNumericUpDown(NumericWidth, dataContext.MaxWidth, dataContext.Width);
+            UpdateNumericUpDown(NumericHeight, dataContext.MaxHeight, dataContext.Height);
+            UpdateNumericUpDown(NumericMipLevels, dataContext.MaxMipLevels, dataContext.MipLevels);
+            UpdateNumericUpDown(NumericDepthOrArray, dataContext.MaxDepthOrArrayIndices, dataContext.DepthSlicesOrArrayIndices);
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>

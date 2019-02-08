@@ -393,9 +393,9 @@
             this.DimensionSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.DimensionSettings.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.DimensionSettings.ForeColor = System.Drawing.Color.White;
-            this.DimensionSettings.Location = new System.Drawing.Point(358, 239);
+            this.DimensionSettings.Location = new System.Drawing.Point(358, 178);
             this.DimensionSettings.Name = "DimensionSettings";
-            this.DimensionSettings.Size = new System.Drawing.Size(299, 367);
+            this.DimensionSettings.Size = new System.Drawing.Size(299, 428);
             this.DimensionSettings.TabIndex = 1;
             this.DimensionSettings.Visible = false;
             // 
@@ -404,9 +404,9 @@
             this.CropResizeSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.CropResizeSettings.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.CropResizeSettings.ForeColor = System.Drawing.Color.White;
-            this.CropResizeSettings.Location = new System.Drawing.Point(683, 239);
+            this.CropResizeSettings.Location = new System.Drawing.Point(683, 178);
             this.CropResizeSettings.Name = "CropResizeSettings";
-            this.CropResizeSettings.Size = new System.Drawing.Size(461, 367);
+            this.CropResizeSettings.Size = new System.Drawing.Size(461, 428);
             this.CropResizeSettings.TabIndex = 0;
             this.CropResizeSettings.Visible = false;
             // 

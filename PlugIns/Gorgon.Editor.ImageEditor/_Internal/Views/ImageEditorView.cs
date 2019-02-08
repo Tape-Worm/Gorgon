@@ -26,7 +26,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Data;
 using System.Linq;
 using System.Windows.Forms;
 using DX = SharpDX;
@@ -38,12 +37,8 @@ using System.Diagnostics;
 using Gorgon.Math;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.ImageEditor.ViewModels;
-using Gorgon.Renderers;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
 using Gorgon.Editor.ImageEditor.Properties;
 using System.Collections.Generic;
-using Gorgon.Editor.Content;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -272,7 +267,15 @@ namespace Gorgon.Editor.ImageEditor
             switch (e.PropertyName)
             {
                 case nameof(IDimensionSettings.IsActive):
-                    if (DataContext.DimensionSettings?.IsActive ?? false)
+                    if ((DataContext.DimensionSettings.UpdateImageInfoCommand != null)
+                        && (DataContext.DimensionSettings.UpdateImageInfoCommand.CanExecute(DataContext.ImageData)))
+                    {
+                        DataContext.DimensionSettings.UpdateImageInfoCommand.Execute(DataContext.ImageData);                        
+                    }
+
+                    DataContext.DimensionSettings.MipSupport = DataContext.MipSupport;
+
+                    if (DataContext.DimensionSettings.IsActive)
                     {
                         if (Controls.Contains(DimensionSettings))
                         {
@@ -300,7 +303,7 @@ namespace Gorgon.Editor.ImageEditor
             switch (e.PropertyName)
             {
                 case nameof(ICropResizeSettings.IsActive):
-                    if (DataContext.CropOrResizeSettings?.IsActive ?? false)
+                    if (DataContext.CropOrResizeSettings.IsActive)
                     {
                         if (Controls.Contains(CropResizeSettings))
                         {
@@ -329,6 +332,12 @@ namespace Gorgon.Editor.ImageEditor
         {
             switch (e.PropertyName)
             {
+                case nameof(IImageContent.MipSupport):
+                    if (DataContext.DimensionSettings != null)
+                    {
+                        DataContext.DimensionSettings.MipSupport = DataContext.MipSupport;
+                    }
+                    break;
                 case nameof(IImageContent.ArrayCount):
                     UpdateArrayDetails(DataContext);
                     break;
@@ -493,7 +502,16 @@ namespace Gorgon.Editor.ImageEditor
             {
                 ResetDataContext();
                 return;
-            }                        
+            }
+
+            _ribbonForm.SetDataContext(dataContext);
+            CropResizeSettings.SetDataContext(dataContext.CropOrResizeSettings);
+            DimensionSettings.SetDataContext(dataContext.DimensionSettings);
+
+            if (dataContext?.DimensionSettings != null)
+            {
+                dataContext.DimensionSettings.MipSupport = dataContext.MipSupport;
+            }
         }
 
         /// <summary>Handles the RenderToBitmap event of the PanelImage control.</summary>
@@ -637,6 +655,21 @@ namespace Gorgon.Editor.ImageEditor
             ValidateControls();
         }
 
+        /// <summary>Function called when the view should be reset by a <b>null</b> data context.</summary>
+        protected override void ResetDataContext()
+        {
+            base.ResetDataContext();
+
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            _ribbonForm.SetDataContext(null);
+            CropResizeSettings.SetDataContext(null);
+            DimensionSettings.SetDataContext(null);
+        }
+
         /// <summary>
         /// Function called to remove events from the view models.
         /// </summary>
@@ -670,9 +703,6 @@ namespace Gorgon.Editor.ImageEditor
             InitializeFromDataContext(dataContext);
 
             DataContext = dataContext;
-            _ribbonForm.SetDataContext(dataContext);
-            CropResizeSettings.SetDataContext(dataContext?.CropOrResizeSettings);
-            DimensionSettings.SetDataContext(dataContext?.DimensionSettings);
             
             if (DataContext == null)
             {
@@ -682,6 +712,12 @@ namespace Gorgon.Editor.ImageEditor
             if (DataContext.DimensionSettings != null)
             {
                 DataContext.DimensionSettings.PropertyChanged += DimensionSettings_PropertyChanged;
+                DataContext.DimensionSettings.MipSupport = dataContext.MipSupport;
+
+                if ((DataContext.DimensionSettings.UpdateImageInfoCommand != null) && (DataContext.DimensionSettings.UpdateImageInfoCommand.CanExecute(dataContext.ImageData)))
+                {
+                    DataContext.DimensionSettings.UpdateImageInfoCommand.Execute(dataContext.ImageData);                    
+                }
             }
 
             if (DataContext.CropOrResizeSettings != null)

@@ -397,7 +397,7 @@ namespace Gorgon.Graphics.Core
         public int GetMipWidth(int mipLevel)
         {
             mipLevel = mipLevel.Min(Texture.MipLevels).Max(MipSlice);
-            return Width >> mipLevel;
+            return (Width >> mipLevel).Max(1);
         }
 
         /// <summary>
@@ -409,7 +409,19 @@ namespace Gorgon.Graphics.Core
         {
             mipLevel = mipLevel.Min(Texture.MipLevels).Max(MipSlice);
 
-            return Height >> mipLevel;
+            return (Height >> mipLevel).Max(1);
+        }
+
+        /// <summary>
+        /// Function to return the depth of the texture at the current <see cref="MipSlice"/> in slices.
+        /// </summary>
+        /// <param name="mipLevel">The mip level to evaluate.</param>
+        /// <returns>The height of the mip map level assigned to <see cref="MipSlice"/> for the texture associated with the texture.</returns>
+        public int GetMipDepth(int mipLevel)
+        {
+            mipLevel = mipLevel.Min(Texture.MipLevels + MipSlice).Max(MipSlice);
+
+            return (Depth >> mipLevel).Max(1);
         }
 
         /// <summary>

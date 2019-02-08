@@ -468,7 +468,7 @@ namespace Gorgon.Graphics.Core
         public int GetMipWidth(int mipLevel)
         {
             mipLevel = mipLevel.Min(Texture.MipLevels).Max(MipSlice);
-            return Width >> mipLevel;
+            return (Width >> mipLevel).Max(1);
         }
 
         /// <summary>
@@ -480,7 +480,7 @@ namespace Gorgon.Graphics.Core
         {
             mipLevel = mipLevel.Min(Texture.MipLevels).Max(MipSlice);
 
-            return Height >> mipLevel;
+            return (Height >> mipLevel).Max(1);
         }
 
         /// <summary>

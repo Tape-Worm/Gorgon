@@ -37,6 +37,15 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         : IViewModel
     {
         /// <summary>
+        /// Property to set or return whether mip maps are supported for the current image pixel format.
+        /// </summary>
+        bool MipSupport
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to set or return whether the crop/resize settings is active or not.
         /// </summary>
         bool IsActive
@@ -163,12 +172,19 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
-        /// Property to set or return the command used to cancel the operation.
+        /// Property to return the command to execute for updating the current image information.
+        /// </summary>
+        IEditorCommand<IGorgonImage> UpdateImageInfoCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to cancel the operation.
         /// </summary>
         IEditorCommand<object> CancelCommand
         {
             get;
-            set;
         }
 
         /// <summary>

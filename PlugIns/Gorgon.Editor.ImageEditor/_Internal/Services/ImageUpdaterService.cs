@@ -194,7 +194,99 @@ namespace Gorgon.Editor.ImageEditor
                 newSize = new DX.Size2((int)(resizeImage.Width * imageScale), (int)(resizeImage.Height * imageScale));
             }
 
-            resizeImage.Resize(newSize.Width, newSize.Height, 1, filter);
+            resizeImage.Resize(newSize.Width, newSize.Height, resizeImage.Depth, filter);
+        }
+
+        /// <summary>
+        /// Function to update the depth slice count for a 3D image, or the array index count for a 2D/cube image.
+        /// </summary>
+        /// <param name="sourceImage">The image to update.</param>
+        /// <param name="arrayOrDepthCount">The new depth or array count.</param>
+        /// <returns>A new image with the specified depth/array count, or the same image if no changes were made.</returns>
+        public IGorgonImage ChangeArrayOrDepthCount(IGorgonImage sourceImage, int arrayOrDepthCount)
+        {
+            int currentArrayOrDepth = sourceImage.ImageType == ImageType.Image3D ? sourceImage.Depth : sourceImage.ArrayCount;
+            int depthCount = sourceImage.ImageType == ImageType.Image3D ? arrayOrDepthCount : 1;
+            int arrayCount = sourceImage.ImageType != ImageType.Image3D ? arrayOrDepthCount : 1;
+
+            if (currentArrayOrDepth == arrayOrDepthCount)
+            {
+                return sourceImage;
+            }
+
+            IGorgonImage newImage = new GorgonImage(new GorgonImageInfo(sourceImage)
+            {
+                Depth = depthCount,
+                ArrayCount = arrayCount
+            });
+
+            for (int array = 0; array < arrayCount.Min(sourceImage.ArrayCount); ++array)
+            {
+                for (int mip = 0; mip < sourceImage.MipCount; ++mip)
+                {
+                    for (int depth = 0; depth < depthCount.Min(sourceImage.GetDepthCount(mip)); ++depth)
+                    {
+                        IGorgonImageBuffer srcBuffer = sourceImage.Buffers[mip, sourceImage.ImageType == ImageType.Image3D ? depth : array];
+                        IGorgonImageBuffer destBuffer = newImage.Buffers[mip, sourceImage.ImageType == ImageType.Image3D ? depth : array];
+                        srcBuffer.CopyTo(destBuffer);
+                    }
+
+                    depthCount >>= 1;
+
+                    if (depthCount < 1)
+                    {
+                        depthCount = 1;
+                    }
+                }
+            }
+
+            return newImage;
+        }
+
+        /// <summary>
+        /// Function to update the number of mip levels on an image.
+        /// </summary>
+        /// <param name="sourceImage">The source image to update.</param>
+        /// <param name="newMipCount">The new number of mip levels for the resulting image.</param>
+        /// <returns>The updated image, or the same image if no changes were made.</returns>
+        public IGorgonImage ChangeMipCount(IGorgonImage sourceImage, int newMipCount)
+        {
+            if (sourceImage.MipCount == newMipCount)
+            {
+                return sourceImage;
+            }
+
+            int maxDepth = sourceImage.Depth;
+            int minMipCount = newMipCount
+                            .Min(sourceImage.MipCount)
+                            .Min(GorgonImage.CalculateMaxMipCount(sourceImage.Width, sourceImage.Height, sourceImage.Depth));
+
+            IGorgonImage result = new GorgonImage(new GorgonImageInfo(sourceImage)
+            {
+                MipCount = newMipCount
+            });
+
+            for (int array = 0; array < sourceImage.ArrayCount; ++array)
+            {
+                for (int mip = 0; mip < minMipCount; ++mip)
+                {
+                    for (int depth = 0; depth < maxDepth; ++depth)
+                    {
+                        int depthOrArray = sourceImage.ImageType == ImageType.Image3D ? depth : array;
+                        IGorgonImageBuffer src = sourceImage.Buffers[mip, depthOrArray];
+                        IGorgonImageBuffer dest = result.Buffers[mip, depthOrArray];
+                        src.CopyTo(dest);
+                    }
+
+                    maxDepth >>= 1;
+                    if (maxDepth < 1)
+                    {
+                        maxDepth = 1;
+                    }
+                }
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -207,25 +299,41 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="alignment">The alignment of the image, relative to the source image.</param>
         public void CopyTo(IGorgonImage srcImage, IGorgonImage destImage, int startMip, int startArrayOrDepth, Alignment alignment)
         {
-            int depthCount = destImage.Depth - (destImage.ImageType == ImageType.Image3D ? startArrayOrDepth : 0);
             int mipCount = destImage.MipCount - startMip;
             int arrayCount = destImage.ArrayCount - (destImage.ImageType == ImageType.Image3D ? 0 : startArrayOrDepth);
 
-            int minDepth = depthCount.Min(srcImage.Depth);
             int minMipCount = mipCount.Min(srcImage.MipCount);
             int minArrayCount = arrayCount.Min(srcImage.ArrayCount);
 
             var size = new DX.Size2(srcImage.Width, srcImage.Height);
-            DX.Point startLoc = GetAnchorStart(new DX.Size2(destImage.Width, destImage.Height), ref size, alignment);
 
             for (int array = 0; array < minArrayCount; ++array)
             {
                 for (int mip = 0; mip < minMipCount; ++mip)
                 {
+                    int destDepthCount = destImage.GetDepthCount(mip + startMip);
+                    int minDepth = destDepthCount.Min(srcImage.GetDepthCount(mip));
+
                     for (int depth = 0; depth < minDepth; ++depth)
                     {
+                        int destOffset = 0;
+                        if (destImage.ImageType == ImageType.Image3D)
+                        {
+                            destOffset = depth + startArrayOrDepth;
+
+                            // We're at the end of the destination buffer, skip the rest of the slices.
+                            if (destOffset >= destDepthCount)
+                            {
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            destOffset = array + startArrayOrDepth;
+                        }
+
                         IGorgonImageBuffer srcBuffer = srcImage.Buffers[mip, srcImage.ImageType == ImageType.Image3D ? depth : array];
-                        IGorgonImageBuffer destBuffer = destImage.Buffers[mip + startMip, destImage.ImageType == ImageType.Image3D ? (depth + startArrayOrDepth) : (array + startArrayOrDepth)];
+                        IGorgonImageBuffer destBuffer = destImage.Buffers[mip + startMip, destOffset];
 
                         // Clear the destination buffer before copying.
                         destBuffer.Data.Fill(0);
@@ -233,6 +341,8 @@ namespace Gorgon.Editor.ImageEditor
                         int minWidth = destBuffer.Width.Min(srcBuffer.Width);
                         int minHeight = destBuffer.Height.Min(srcBuffer.Height);
                         var copyRegion = new DX.Rectangle(0, 0, minWidth, minHeight);
+
+                        DX.Point startLoc = GetAnchorStart(new DX.Size2(minWidth, minHeight), ref size, alignment);
 
                         srcBuffer.CopyTo(destBuffer, copyRegion, startLoc.X, startLoc.Y);
                     }

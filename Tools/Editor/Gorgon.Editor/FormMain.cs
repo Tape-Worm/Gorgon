@@ -143,19 +143,23 @@ namespace Gorgon.Editor
         private void PanelProject_RibbonAdded(object sender, ContentRibbonEventArgs e)
         {
             KryptonRibbonTab firstTab = null;
+                        
+            RibbonMain.SuspendLayout();
 
             if ((e.Ribbon != null) && (e.Ribbon.RibbonTabs.Count > 0))
             {
                 firstTab = e.Ribbon.RibbonTabs[0];
             }
-
-            RibbonMerger.Merge(e.Ribbon);
+            
+            RibbonMerger.Merge(e.Ribbon);            
 
             // Default to the first tab on the joined ribbon.
             if (firstTab != null)
             {
                 RibbonMain.SelectedTab = firstTab;
             }
+
+            RibbonMain.ResumeLayout(true);
         }
 
         /// <summary>Handles the RibbonRemoved event of the PanelProject control.</summary>

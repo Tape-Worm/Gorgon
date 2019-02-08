@@ -167,6 +167,7 @@
             0,
             0,
             0});
+            this.NumericMipLevels.ValueChanged += new System.EventHandler(this.NumericMipLevels_ValueChanged);
             // 
             // NumericDepthOrArray
             // 
@@ -193,6 +194,7 @@
             0,
             0,
             0});
+            this.NumericDepthOrArray.ValueChanged += new System.EventHandler(this.NumericDepthOrArray_ValueChanged);
             // 
             // NumericHeight
             // 
@@ -219,6 +221,7 @@
             0,
             0,
             0});
+            this.NumericHeight.ValueChanged += new System.EventHandler(this.NumericHeight_ValueChanged);
             // 
             // AlignmentPicker
             // 
@@ -332,6 +335,7 @@
             0,
             0,
             0});
+            this.NumericWidth.ValueChanged += new System.EventHandler(this.NumericWidth_ValueChanged);
             // 
             // LabelAnchor
             // 
@@ -398,7 +402,6 @@
             this.ButtonOK.AutoSize = true;
             this.ButtonOK.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ButtonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.ButtonOK.Enabled = false;
             this.ButtonOK.FlatAppearance.BorderColor = System.Drawing.Color.Gray;
             this.ButtonOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.DarkOrange;
             this.ButtonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;

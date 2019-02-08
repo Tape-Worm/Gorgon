@@ -334,11 +334,31 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to At least one image dimension is smaller than the current image dimensions.  This will result in a loss of data in the image.
+        ///
+        ///Do you wish to continue?.
+        /// </summary>
+        internal static string GORIMG_CROP_LOSE_DATA {
+            get {
+                return ResourceManager.GetString("GORIMG_CROP_LOSE_DATA", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gorgon Image Editor.
         /// </summary>
         internal static string GORIMG_DESC {
             get {
                 return ResourceManager.GetString("GORIMG_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error canceling the operation..
+        /// </summary>
+        internal static string GORIMG_ERR_CANCEL_OP {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_CANCEL_OP", resourceCulture);
             }
         }
         
@@ -407,6 +427,17 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static string GORIMG_ERR_FORMAT_NOT_SUPPORTED {
             get {
                 return ResourceManager.GetString("GORIMG_ERR_FORMAT_NOT_SUPPORTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error while trying to retrieve the current image information.
+        ///
+        ///Please try again..
+        /// </summary>
+        internal static string GORIMG_ERR_IMAGE_INFO {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_IMAGE_INFO", resourceCulture);
             }
         }
         
@@ -651,6 +682,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static string GORIMG_TEXT_ZOOM_BUTTON {
             get {
                 return ResourceManager.GetString("GORIMG_TEXT_ZOOM_BUTTON", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Image dimensions.
+        /// </summary>
+        internal static string GORIMG_UNDO_DESC_DIMENSIONS {
+            get {
+                return ResourceManager.GetString("GORIMG_UNDO_DESC_DIMENSIONS", resourceCulture);
             }
         }
         

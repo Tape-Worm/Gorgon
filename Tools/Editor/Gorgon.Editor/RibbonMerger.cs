@@ -217,7 +217,7 @@ namespace Gorgon.Editor
 
                 // The tab doesn't exist, so just add it
                 if ((existingTab == null) && (!targetRibbon.RibbonTabs.Contains(tab)))
-                {
+                {                    
                     sourceRibbon.RibbonTabs.Remove(tab);
 
                     int index = GetSortIndexFromTag(tab.Tag, targetRibbon.RibbonTabs.Count);
@@ -342,7 +342,11 @@ namespace Gorgon.Editor
             MergeTabs(ribbon, TargetRibbon);
             MergeContexts(ribbon, TargetRibbon);
 
-            // Restore the seleted tab.
+            // Ensure that the layout is refreshed.
+            TargetRibbon.CheckPerformLayout();
+            ribbon.CheckPerformLayout();
+
+            // Restore the selected tab.
             TargetRibbon.SelectedContext = selectedContext;
             TargetRibbon.SelectedTab = selectedTab;            
         }
@@ -363,6 +367,10 @@ namespace Gorgon.Editor
 
             UnmergeContexts(ribbon, TargetRibbon);
             UnmergeTabs(ribbon, TargetRibbon);
+
+            // Ensure that the layout is refreshed.
+            TargetRibbon.CheckPerformLayout();
+            ribbon.CheckPerformLayout();
 
             // Restore the seleted tab.
             if (TargetRibbon.RibbonTabs.Contains(selected))

@@ -63,6 +63,22 @@ namespace Gorgon.Editor.ImageEditor
         void CropTo(IGorgonImage cropImage, DX.Size2 destSize, Alignment alignment);
 
         /// <summary>
+        /// Function to update the number of mip levels on an image.
+        /// </summary>
+        /// <param name="sourceImage">The source image to update.</param>
+        /// <param name="newMipCount">The new number of mip levels for the resulting image.</param>
+        /// <returns>The updated image, or the same image if no changes were made.</returns>
+        IGorgonImage ChangeMipCount(IGorgonImage sourceImage, int newMipCount);
+
+        /// <summary>
+        /// Function to update the depth slice count for a 3D image, or the array index count for a 2D/cube image.
+        /// </summary>
+        /// <param name="sourceImage">The image to update.</param>
+        /// <param name="arrayOrDepthCount">The new depth or array count.</param>
+        /// <returns>A new image with the specified depth/array count, or the same image if no changes were made.</returns>
+        IGorgonImage ChangeArrayOrDepthCount(IGorgonImage sourceImage, int arrayOrDepthCount);
+
+        /// <summary>
         /// Function to convert the specified image into a volume image.
         /// </summary>
         /// <param name="image">The image to convert.</param>

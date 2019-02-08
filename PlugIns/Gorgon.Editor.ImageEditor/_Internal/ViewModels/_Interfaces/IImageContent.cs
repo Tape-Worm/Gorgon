@@ -51,6 +51,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
+        /// Property to return whether mip maps are supported for the current format.
+        /// </summary>
+        bool MipSupport
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the list of codecs available.
         /// </summary>
         ObservableCollection<IGorgonImageCodec> Codecs
@@ -201,6 +209,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Property to return the command used import an image file into the current image as an array index or depth slice.
         /// </summary>
         IEditorCommand<object> ImportFileCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to show the image dimensions editor.
+        /// </summary>
+        IEditorCommand<object> ShowImageDimensionsCommand
         {
             get;
         }

@@ -71,9 +71,9 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
-        /// The arguments used to undo/redo an image import.
+        /// The arguments used to undo/redo an image import or dimension update.
         /// </summary>
-        private class ImportUndoArgs
+        private class ImportDimensionUndoArgs
         {
             /// <summary>
             /// The file used to store the undo data.
@@ -144,6 +144,13 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return whether mip maps are supported for the current format.
+        /// </summary>
+        public bool MipSupport => (_formatSupport != null) 
+            && (_formatSupport.ContainsKey(CurrentPixelFormat)) 
+            && (_formatSupport[CurrentPixelFormat].FormatSupport & BufferFormatSupport.Mip) == BufferFormatSupport.Mip;
+
         /// <summary>Property to return the type of content.</summary>
         public override string ContentType => ImageEditorCommonConstants.ContentType;
 
@@ -205,6 +212,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 OnPropertyChanging();
                 _format = value;
                 OnPropertyChanged();
+
+                NotifyPropertyChanged(nameof(MipSupport));
             }
         }
 
@@ -381,6 +390,12 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             get;
         }
+
+        /// <summary>Property to return the command used to show the image dimensions editor.</summary>
+        public IEditorCommand<object> ShowImageDimensionsCommand
+        {
+            get;
+        }
         #endregion
 
         #region Methods.        
@@ -396,6 +411,342 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             NotifyPropertyChanged(nameof(ArrayCount));
 
             ContentState = ContentState.Modified;
+        }
+
+
+        /// <summary>
+        /// Function to perform the image import by bringing in a new image to replace the current mip level and array index, or depth slice. 
+        /// </summary>
+        /// <param name="fileName">The name of the file being imported.</param>
+        /// <param name="importImage">The image being imported.</param>
+        /// <param name="cropResizeMode">The type of resize operation.</param>
+        /// <param name="alignment">The alignment of the source image, relative to the destination.</param>
+        /// <param name="imageFilter">The filter to apply if resizing.</param>
+        /// <param name="preserveAspect"><b>true</b> to preserve the aspect ratio, <b>false</b> to ignore it.</param>
+        private void ImportImageData(string file, IGorgonImage importImage, CropResizeMode cropResizeMode, Alignment alignment, ImageFilter imageFilter, bool preserveAspect)
+        {
+            ImportDimensionUndoArgs importUndoArgs = null;
+
+            Task UndoAction(ImportDimensionUndoArgs undoArgs, CancellationToken cancelToken)
+            {
+                Stream inStream = null;
+
+                BusyState.SetBusy();
+
+                try
+                {
+                    if (undoArgs.UndoFile == null)
+                    {
+                        return Task.CompletedTask;
+                    }
+
+                    NotifyPropertyChanging(nameof(ImageData));
+
+                    inStream = undoArgs.UndoFile.OpenStream();
+                    (IGorgonImage image, _, _) = _imageIO.LoadImageFile(inStream, _workingFile.Name);
+                    ImageData.Dispose();
+                    ImageData = image;
+
+                    NotifyImageUpdated(nameof(ImageData));
+
+                    inStream.Dispose();
+
+                    // This file will be re-created on redo.
+                    DeleteUndoCacheFile(undoArgs.UndoFile);
+                    undoArgs.UndoFile = null;
+                }
+                catch (Exception ex)
+                {
+                    MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+                }
+                finally
+                {
+                    inStream?.Dispose();
+                    BusyState.SetIdle();
+                }
+
+                return Task.CompletedTask;
+            }
+
+            Task RedoAction(ImportDimensionUndoArgs redoArgs, CancellationToken cancelToken)
+            {
+                IGorgonVirtualFile undoFile = null;
+                IGorgonVirtualFile redoFile = null;
+                Stream redoFileStream = null;
+
+                try
+                {
+                    BusyState.SetBusy();
+
+                    int startArrayOrDepth = ImageType == ImageType.Image3D ? CurrentDepthSlice : CurrentArrayIndex;
+                    int width = ImageData.Buffers[CurrentMipLevel, startArrayOrDepth].Width;
+                    int height = ImageData.Buffers[CurrentMipLevel, startArrayOrDepth].Height;
+                    var newSize = new DX.Size2(width, height);
+
+                    NotifyPropertyChanging(nameof(ImageData));
+
+                    undoFile = CreateUndoCacheFile();
+                    if (redoArgs?.RedoFile != null)
+                    {
+                        // Just reuse the image data in the redo cache item.                        
+                        redoFileStream = redoArgs.RedoFile.OpenStream();
+                        (IGorgonImage redoImage, _, _) = _imageIO.LoadImageFile(redoFileStream, _workingFile.Name);
+                        redoFileStream.Dispose();
+
+                        ImageData.Dispose();
+                        ImageData = redoImage;
+
+                        DeleteUndoCacheFile(redoArgs.RedoFile);
+                    }
+                    else
+                    {
+                        switch (cropResizeMode)
+                        {
+                            case CropResizeMode.Crop:
+                                // Crop the source image down to the same size as this image.
+                                _imageUpdater.CropTo(importImage, newSize, alignment);
+                                break;
+                            case CropResizeMode.Resize:
+                                _imageUpdater.Resize(importImage, newSize, imageFilter, preserveAspect);
+                                break;
+                        }
+
+                        // By default, just copy straight in.
+                        _imageUpdater.CopyTo(importImage, ImageData, CurrentMipLevel, startArrayOrDepth, alignment);
+                    }
+
+                    // Save the updated data to the working file.
+                    _workingFile = _imageIO.SaveImageFile(File.Name, ImageData, ImageData.Format);
+                    redoFile = CreateUndoCacheFile();
+
+                    NotifyImageUpdated(nameof(ImageData));
+
+                    if (redoArgs == null)
+                    {
+                        redoArgs = importUndoArgs = new ImportDimensionUndoArgs();
+                    }
+
+                    redoArgs.RedoFile = redoFile;
+                    redoArgs.UndoFile = undoFile;
+                }
+                catch (Exception ex)
+                {
+                    MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+                    if (undoFile != null)
+                    {
+                        DeleteUndoCacheFile(undoFile);
+                    }
+
+                    if (redoFile != null)
+                    {
+                        redoFileStream?.Dispose();
+                        DeleteUndoCacheFile(redoFile);
+                    }
+
+                    importUndoArgs = null;
+                    return Task.FromException(ex);
+                }
+                finally
+                {
+                    BusyState.SetIdle();
+                }
+
+                return Task.CompletedTask;
+            }
+
+            Task task = RedoAction(null, CancellationToken.None);
+
+            // If we had an error, do not record the undo state.
+            if (!task.IsFaulted)
+            {
+                _undoService.Record(string.Format(Resources.GORIMG_UNDO_DESC_IMPORT, file), UndoAction, RedoAction, importUndoArgs, importUndoArgs);
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if an image file can be imported into the current image.
+        /// </summary>
+        /// <returns><b>true</b> if the image can be imported, <b>false</b> if not.</returns>
+        private bool CanImportFile() => (ImageData != null) && ((ImageType == ImageType.Image2D) || (ImageType == ImageType.ImageCube) || (ImageType == ImageType.Image3D));
+
+        /// <summary>
+        /// Function to confirm the overwrite of data in the image.
+        /// </summary>
+        /// <returns>The response from the user.</returns>
+        private MessageResponse ConfirmImageDataOverwrite()
+        {
+            string confirmMessage = string.Empty;
+
+            switch (ImageType)
+            {
+                case ImageType.Image2D:
+                case ImageType.ImageCube:
+                    confirmMessage = string.Format(Resources.GORIMG_CONFIRM_OVERWRITE_ARRAY_INDEX, CurrentArrayIndex + 1, CurrentMipLevel + 1);
+                    break;
+                case ImageType.Image3D:
+                    confirmMessage = string.Format(Resources.GORIMG_CONFIRM_OVERWRITE_DEPTH_SLICE, CurrentDepthSlice + 1, CurrentMipLevel + 1);
+                    break;
+            }
+
+            return MessageDisplay.ShowConfirmation(confirmMessage);
+        }
+
+        /// <summary>
+        /// Function to convert the imported image pixel data to the same format as our image.
+        /// </summary>
+        /// <param name="imageData">The imported image data.</param>
+        /// <param name="originalFormat">The original, actual, format of the source image file.</param>
+        /// <returns><b>true</b> if image was converted successfully, or <b>false</b> if the image could not be converted.</returns>
+        private bool ConvertImportFilePixelFormat(IGorgonImage imageData, BufferFormat originalFormat)
+        {
+            // Convert to our target image format before doing anything.
+            if (ImageData.Format != imageData.Format)
+            {
+                if (!imageData.CanConvertToFormat(ImageData.Format))
+                {
+                    MessageDisplay.ShowError(string.Format(Resources.GORIMG_ERR_CANNOT_CONVERT, originalFormat, CurrentPixelFormat));
+                    return false;
+                }
+
+                imageData.ConvertToFormat(ImageData.Format);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Function to disable all prompt panels.
+        /// </summary>
+        private void TurnOffPanels()
+        {
+            // Turn off any other panels.
+            if (DimensionSettings?.IsActive ?? false)
+            {
+                DimensionSettings.IsActive = false;
+            }
+
+            if (CropOrResizeSettings?.IsActive ?? false)
+            {
+                CropOrResizeSettings.IsActive = false;
+            }
+        }
+
+        /// <summary>
+        /// Function to check whether the image needs cropping or resizing.
+        /// </summary>
+        /// <param name="importImage">The imported image.</param>
+        /// <param name="imageFileName">The name of the file being imported.</param>
+        /// <returns><b>true</b> to cropping/resizing is required, <b>false</b> if not.</returns>
+        private bool CheckForCropResize(IGorgonImage importImage, string imageFileName)
+        {
+            int arrayOrDepth = ImageType == ImageType.Image3D ? CurrentDepthSlice : CurrentArrayIndex;
+            int width = ImageData.Buffers[CurrentMipLevel, arrayOrDepth].Width;
+            int height = ImageData.Buffers[CurrentMipLevel, arrayOrDepth].Height;
+
+            if ((width == importImage.Width) && (height == importImage.Height))
+            {
+                return false;
+            }
+
+            TurnOffPanels();            
+
+            CropOrResizeSettings.AllowedModes = ((ImageData.Width < importImage.Width) || (ImageData.Height < importImage.Height)) ? (CropResizeMode.Crop | CropResizeMode.Resize) : CropResizeMode.Resize;
+            if ((CropOrResizeSettings.CurrentMode & CropOrResizeSettings.AllowedModes) != CropOrResizeSettings.CurrentMode)
+            {
+                CropOrResizeSettings.CurrentMode = CropResizeMode.None;
+            }
+            else if ((CropOrResizeSettings.CurrentMode == CropResizeMode.None) && (((CropOrResizeSettings.AllowedModes) & (CropResizeMode.Crop)) == CropResizeMode.Crop))
+            {
+                CropOrResizeSettings.CurrentMode = CropResizeMode.Crop;
+            }
+
+            CropOrResizeSettings.ImportFile = imageFileName;
+            // Take a copy of the image here because we'll need to destroy it later.
+            CropOrResizeSettings.ImportImage = importImage.Clone();
+            CropOrResizeSettings.TargetImageSize = new DX.Size2(width, height);
+            CropOrResizeSettings.IsActive = true;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Function to import an image file into the current array index/depth slice.
+        /// </summary>
+        private void DoImportFile()
+        {
+            IGorgonImage importImage = null;
+            IGorgonVirtualFile tempFile = null;
+            BufferFormat originalFormat = BufferFormat.Unknown;
+            FileInfo sourceFile = null;
+
+            try
+            {
+                if (ConfirmImageDataOverwrite() == MessageResponse.No)
+                {
+                    return;
+                }
+
+                (sourceFile, importImage, tempFile, originalFormat) = _imageIO.ImportImage();
+
+                if ((sourceFile == null) || (importImage == null) || (tempFile == null) || (originalFormat == BufferFormat.Unknown))
+                {
+                    return;
+                }
+
+                if (!ConvertImportFilePixelFormat(importImage, originalFormat))
+                {
+                    return;
+                }
+
+                CropOrResizeSettings.ImportFileDirectory = sourceFile.Directory.FullName.FormatDirectory(Path.DirectorySeparatorChar);
+                if (CheckForCropResize(importImage, sourceFile.Name))
+                {
+                    return;
+                }
+
+                ImportImageData(sourceFile.Name, importImage, CropResizeMode.None, Alignment.UpperLeft, ImageFilter.Point, false);
+                _settings.LastImportExportPath = CropOrResizeSettings.ImportFileDirectory;
+            }
+            catch (Exception ex)
+            {
+                MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+            }
+            finally
+            {
+                if (tempFile != null)
+                {
+                    _imageIO.ScratchArea.DeleteFile(tempFile.FullPath);
+                }
+                importImage?.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if the image dimensions editor can be shown.
+        /// </summary>
+        /// <returns><b>true</b> if the editor can be shown, <b>false</b> if not.</returns>
+        private bool CanShowImageDimensions() => (DimensionSettings?.UpdateImageInfoCommand != null) && (DimensionSettings.UpdateImageInfoCommand.CanExecute(ImageData));
+
+        /// <summary>
+        /// Function to show or hide the image dimensions editor.
+        /// </summary>
+        private void DoShowImageDimensions()
+        {
+            try
+            {
+                if (DimensionSettings.IsActive)
+                {
+                    DimensionSettings.IsActive = false;
+                    return;
+                }
+
+                DimensionSettings.UpdateImageInfoCommand.Execute(ImageData);
+                DimensionSettings.IsActive = true;
+            }
+            catch (Exception ex)
+            {
+                MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+            }
         }
 
         /// <summary>
@@ -456,13 +807,13 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Function to determine if an undo operation is possible.
         /// </summary>
         /// <returns><b>true</b> if the last action can be undone, <b>false</b> if not.</returns>
-        private bool CanUndo() => _undoService.CanUndo && !CropOrResizeSettings.IsActive;
+        private bool CanUndo() => _undoService.CanUndo && !CropOrResizeSettings.IsActive && !DimensionSettings.IsActive;
 
         /// <summary>
         /// Function to determine if a redo operation is possible.
         /// </summary>
         /// <returns><b>true</b> if the last action can be redone, <b>false</b> if not.</returns>
-        private bool CanRedo() => _undoService.CanRedo && !CropOrResizeSettings.IsActive;
+        private bool CanRedo() => _undoService.CanRedo && !CropOrResizeSettings.IsActive && !DimensionSettings.IsActive;
 
         /// <summary>
         /// Function called when a redo operation is requested.
@@ -617,8 +968,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     ImageData.Dispose();
                     ImageData = image;
                     CurrentPixelFormat = undoArgs.Format;
-                    BuildCodecList(ImageData);
-
+                    BuildCodecList(ImageData);                    
                     ContentState = ContentState.Modified;
 
                     inStream.Dispose();
@@ -783,6 +1133,265 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 image.Dispose();
                 CropOrResizeSettings.ImportImage = null;
                 CropOrResizeSettings.IsActive = false;
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if an image can be cropped/resized.
+        /// </summary>
+        /// <returns><b>true</b> if the image can be cropped or resized, <b>false</b> if not.</returns>
+        private bool CanUpdateDimensions()
+        {
+            if (ImageData == null)
+            {
+                return false;
+            }
+
+            switch (ImageData.ImageType)
+            {
+                case ImageType.Image3D:
+                    return (ImageData.Width != DimensionSettings.Width)
+                        || (ImageData.Height != DimensionSettings.Height)
+                        || (ImageData.MipCount != DimensionSettings.MipLevels)
+                        || (ImageData.Depth != DimensionSettings.DepthSlicesOrArrayIndices);
+                default:
+                    return (ImageData.Width != DimensionSettings.Width)
+                        || (ImageData.Height != DimensionSettings.Height)
+                        || (ImageData.MipCount != DimensionSettings.MipLevels)
+                        || (ImageData.ArrayCount != DimensionSettings.DepthSlicesOrArrayIndices);
+            }
+        }
+
+        /// <summary>
+        /// Function to update the image dimensions.
+        /// </summary>
+        private void DoUpdateImageDimensions()
+        {
+            ImportDimensionUndoArgs dimensionUndoArgs = null;            
+
+            Task UndoAction(ImportDimensionUndoArgs undoArgs, CancellationToken cancelToken)
+            {
+                Stream inStream = null;
+
+                BusyState.SetBusy();
+
+                try
+                {
+                    if (undoArgs.UndoFile == null)
+                    {
+                        return Task.CompletedTask;
+                    }
+
+                    NotifyPropertyChanging(nameof(ImageData));
+
+                    inStream = undoArgs.UndoFile.OpenStream();
+                    (IGorgonImage image, _, _) = _imageIO.LoadImageFile(inStream, _workingFile.Name);
+                    ImageData.Dispose();
+                    ImageData = image;
+
+                    if (CurrentMipLevel >= MipCount)
+                    {
+                        CurrentMipLevel = MipCount - 1;
+                    }
+
+                    // Ensure we don't exceed the ranges for our dimensions.
+                    if (CurrentArrayIndex >= ArrayCount)
+                    {
+                        CurrentArrayIndex = ArrayCount - 1;
+                    }
+
+                    if (CurrentDepthSlice >= DepthCount)
+                    {
+                        CurrentDepthSlice = DepthCount - 1;
+                    }
+
+                    NotifyPropertyChanged(nameof(Width));
+                    NotifyPropertyChanged(nameof(Height));
+                    NotifyPropertyChanged(nameof(MipCount));
+                    NotifyImageUpdated(nameof(ImageData));
+
+                    inStream.Dispose();
+
+                    // This file will be re-created on redo.
+                    DeleteUndoCacheFile(undoArgs.UndoFile);
+                    undoArgs.UndoFile = null;
+                }
+                catch (Exception ex)
+                {
+                    MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+                }
+                finally
+                {
+                    inStream?.Dispose();
+                    BusyState.SetIdle();
+                }
+
+                return Task.CompletedTask;
+            }
+
+            Task RedoAction(ImportDimensionUndoArgs redoArgs, CancellationToken cancelToken)
+            {
+                Stream redoFileStream = null;
+                IGorgonVirtualFile undoFile = null;
+                IGorgonVirtualFile redoFile = null;
+                IGorgonImage newImage = null;
+                int arrayOrDepthCount = ImageData.ImageType == ImageType.Image3D ? ImageData.Depth : ImageData.ArrayCount;
+
+                try
+                {
+                    if ((((DimensionSettings.Width < ImageData.Width) || (DimensionSettings.Height < ImageData.Height))
+                            && (DimensionSettings.CurrentMode != CropResizeMode.Resize))
+                        || (DimensionSettings.DepthSlicesOrArrayIndices < arrayOrDepthCount)
+                        || (DimensionSettings.MipLevels < ImageData.MipCount))
+                    {
+                        if (MessageDisplay.ShowConfirmation(Resources.GORIMG_CROP_LOSE_DATA) == MessageResponse.No)
+                        {
+                            return Task.CompletedTask;
+                        }
+                    }
+
+                    BusyState.SetBusy();
+
+                    undoFile = CreateUndoCacheFile();
+
+                    if (redoArgs?.RedoFile != null)
+                    {
+                        // Just reuse the image data in the redo cache item.                        
+                        redoFileStream = redoArgs.RedoFile.OpenStream();
+                        (IGorgonImage redoImage, _, _) = _imageIO.LoadImageFile(redoFileStream, _workingFile.Name);
+                        redoFileStream.Dispose();
+
+                        ImageData.Dispose();
+                        ImageData = redoImage;
+
+                        DeleteUndoCacheFile(redoArgs.RedoFile);
+                    }
+                    else
+                    {
+                        // Handle width/height.
+                        if (DimensionSettings.CurrentMode != CropResizeMode.Resize)
+                        {
+                            if ((DimensionSettings.Width > ImageData.Width)
+                                || (DimensionSettings.Height > ImageData.Height))
+                            {
+
+                                ImageData.Expand(DimensionSettings.Width, DimensionSettings.Height, DepthCount,
+                                    (ImageExpandAnchor)DimensionSettings.CropAlignment);
+                            }
+
+                            if ((DimensionSettings.Width <= ImageData.Width)
+                                || (DimensionSettings.Height <= ImageData.Height))
+                            {
+                                _imageUpdater.CropTo(ImageData, new DX.Size2(DimensionSettings.Width, DimensionSettings.Height), DimensionSettings.CropAlignment);
+                            }
+                        }
+                        else
+                        {
+                            _imageUpdater.Resize(ImageData, new DX.Size2(DimensionSettings.Width, DimensionSettings.Height), DimensionSettings.ImageFilter, false);
+                        }
+
+                        // Handle depth slices/array indices.
+                        if (DimensionSettings.DepthSlicesOrArrayIndices != arrayOrDepthCount)
+                        {
+                            newImage = _imageUpdater.ChangeArrayOrDepthCount(ImageData, DimensionSettings.DepthSlicesOrArrayIndices);
+
+                            if (newImage != ImageData)
+                            {
+                                ImageData?.Dispose();
+                                ImageData = newImage;
+                            }
+                        }
+
+                        // Handle mip levels.
+                        if (DimensionSettings.MipLevels != ImageData.MipCount)
+                        {
+                            newImage = _imageUpdater.ChangeMipCount(ImageData, DimensionSettings.MipLevels);
+                            if (newImage != ImageData)
+                            {
+                                ImageData?.Dispose();
+                                ImageData = newImage;
+                            }
+                        }
+                    }
+                   
+                    // Ensure we aren't on a mip level that doesn't exist.
+                    if (CurrentMipLevel >= MipCount)
+                    {
+                        CurrentMipLevel = MipCount - 1;
+                    }
+
+                    // Update the current values to fit within our updated ranges.
+                    if (ImageType == ImageType.Image3D)
+                    {
+                        if (CurrentDepthSlice >= DepthCount)
+                        {
+                            CurrentDepthSlice = DepthCount - 1;
+                        }
+                    }
+                    else
+                    {
+                        if (CurrentArrayIndex >= ArrayCount)
+                        {
+                            CurrentArrayIndex = ArrayCount - 1;
+                        }
+                    }
+
+                    NotifyPropertyChanged(nameof(Width));
+                    NotifyPropertyChanged(nameof(Height));
+                    NotifyImageUpdated(nameof(ImageData));
+
+                    // Save the updated data to the working file.
+                    _workingFile = _imageIO.SaveImageFile(File.Name, ImageData, ImageData.Format);
+                    redoFile = CreateUndoCacheFile();
+
+                    if (redoArgs == null)
+                    {
+                        redoArgs = dimensionUndoArgs = new ImportDimensionUndoArgs();
+                    }
+
+                    redoArgs.UndoFile = undoFile;
+                    redoArgs.RedoFile = redoFile;
+
+                    return Task.CompletedTask;
+                }
+                catch (Exception ex)
+                {
+                    MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+
+                    if (newImage != ImageData)
+                    {
+                        newImage?.Dispose();
+                    }
+
+                    if (undoFile != null)
+                    {
+                        DeleteUndoCacheFile(undoFile);
+                    }
+
+                    if (redoFile != null)
+                    {
+                        redoFileStream?.Dispose();
+                        DeleteUndoCacheFile(redoFile);
+                    }
+
+                    dimensionUndoArgs = null;
+
+                    return Task.FromException(ex);
+                }
+                finally
+                {
+                    redoFileStream?.Dispose();
+                    BusyState.SetIdle();
+                    DimensionSettings.IsActive = false;
+                }
+            }
+
+            Task task = RedoAction(null, CancellationToken.None);
+
+            // If we had an error, do not record the undo state.
+            if (!task.IsFaulted)
+            {
+                _undoService.Record(Resources.GORIMG_UNDO_DESC_DIMENSIONS, UndoAction, RedoAction, dimensionUndoArgs, dimensionUndoArgs);
             }
         }
 
@@ -1035,6 +1644,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
             _cropResizeSettings.CancelCommand = new EditorCommand<object>(DoCancelCropResize);
             _cropResizeSettings.OkCommand = new EditorCommand<object>(DoCropResize, CanCropResize);
+            _dimensionSettings.OkCommand = new EditorCommand<object>(DoUpdateImageDimensions, CanUpdateDimensions);
 
             BuildCodecList(ImageData);
 
@@ -1094,288 +1704,6 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             return true;
         }
 
-        /// <summary>
-        /// Function to perform the image import by bringing in a new image to replace the current mip level and array index, or depth slice. 
-        /// </summary>
-        /// <param name="fileName">The name of the file being imported.</param>
-        /// <param name="importImage">The image being imported.</param>
-        /// <param name="cropResizeMode">The type of resize operation.</param>
-        /// <param name="alignment">The alignment of the source image, relative to the destination.</param>
-        /// <param name="imageFilter">The filter to apply if resizing.</param>
-        /// <param name="preserveAspect"><b>true</b> to preserve the aspect ratio, <b>false</b> to ignore it.</param>
-        private void ImportImageData(string file, IGorgonImage importImage, CropResizeMode cropResizeMode, Alignment alignment, ImageFilter imageFilter, bool preserveAspect)
-        {
-            ImportUndoArgs importUndoArgs = null;           
-
-            Task UndoAction(ImportUndoArgs undoArgs, CancellationToken cancelToken)
-            {
-                Stream inStream = null;
-
-                BusyState.SetBusy();
-
-                try
-                {
-                    if (undoArgs.UndoFile == null)
-                    {
-                        return Task.CompletedTask;
-                    }
-
-                    NotifyPropertyChanging(nameof(ImageData));
-
-                    inStream = undoArgs.UndoFile.OpenStream();
-                    (IGorgonImage image, _, _) = _imageIO.LoadImageFile(inStream, _workingFile.Name);
-                    ImageData.Dispose();
-                    ImageData = image;
-
-                    NotifyImageUpdated(nameof(ImageData));
-
-                    inStream.Dispose();
-
-                    // This file will be re-created on redo.
-                    DeleteUndoCacheFile(undoArgs.UndoFile);
-                    undoArgs.UndoFile = null;
-                }
-                catch (Exception ex)
-                {
-                    MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
-                }
-                finally
-                {
-                    inStream?.Dispose();
-                    BusyState.SetIdle();
-                }
-
-                return Task.CompletedTask;
-            }
-
-            Task RedoAction(ImportUndoArgs redoArgs, CancellationToken cancelToken)
-            {
-                IGorgonVirtualFile undoFile = null;
-                IGorgonVirtualFile redoFile = null;
-                Stream redoFileStream = null;
-
-                try
-                {
-                    BusyState.SetBusy();
-
-                    int startArrayOrDepth = ImageType == ImageType.Image3D ? CurrentDepthSlice : CurrentArrayIndex;
-                    var newSize = new DX.Size2(Width, Height);
-
-                    NotifyPropertyChanging(nameof(ImageData));
-
-                    undoFile = CreateUndoCacheFile();
-                    if (redoArgs?.RedoFile != null)
-                    {
-                        // Just reuse the image data in the redo cache item.                        
-                        redoFileStream = redoArgs.RedoFile.OpenStream();                        
-                        (IGorgonImage redoImage, _, _) = _imageIO.LoadImageFile(redoFileStream, _workingFile.Name);
-                        redoFileStream.Dispose();
-
-                        ImageData.Dispose();
-                        ImageData = redoImage;
-
-                        DeleteUndoCacheFile(redoArgs.RedoFile);
-                    }
-                    else
-                    {
-                        switch (cropResizeMode)
-                        {
-                            case CropResizeMode.Crop:
-                                // Crop the source image down to the same size as this image.
-                                _imageUpdater.CropTo(importImage, newSize, alignment);
-                                break;
-                            case CropResizeMode.Resize:
-                                _imageUpdater.Resize(importImage, newSize, imageFilter, preserveAspect);
-                                break;
-                        }
-
-                        // By default, just copy straight in.
-                        _imageUpdater.CopyTo(importImage, ImageData, CurrentMipLevel, startArrayOrDepth, alignment);                        
-                    }
-
-                    // Save the updated data to the working file.
-                    _workingFile = _imageIO.SaveImageFile(File.Name, ImageData, ImageData.Format);
-                    redoFile = CreateUndoCacheFile();
-
-                    NotifyImageUpdated(nameof(ImageData));
-
-                    if (redoArgs == null)
-                    {
-                        redoArgs = importUndoArgs = new ImportUndoArgs();
-                    }
-
-                    redoArgs.RedoFile = redoFile;
-                    redoArgs.UndoFile = undoFile;
-                }
-                catch (Exception ex)
-                {
-                    MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
-                    if (undoFile != null)
-                    {
-                        DeleteUndoCacheFile(undoFile);
-                    }
-
-                    if (redoFile != null)
-                    {
-                        redoFileStream?.Dispose();
-                        DeleteUndoCacheFile(redoFile);
-                    }
-                    
-                    importUndoArgs = null;
-                    return Task.FromException(ex);
-                }
-                finally
-                {                    
-                    BusyState.SetIdle();
-                }
-
-                return Task.CompletedTask;
-            }
-
-            Task task = RedoAction(null, CancellationToken.None);
-
-            // If we had an error, do not record the undo state.
-            if (!task.IsFaulted)
-            {
-                _undoService.Record(string.Format(Resources.GORIMG_UNDO_DESC_IMPORT, file), UndoAction, RedoAction, importUndoArgs, importUndoArgs);
-            }
-        }
-
-        /// <summary>
-        /// Function to determine if an image file can be imported into the current image.
-        /// </summary>
-        /// <returns><b>true</b> if the image can be imported, <b>false</b> if not.</returns>
-        private bool CanImportFile() => (ImageData != null) && ((ImageType == ImageType.Image2D) || (ImageType == ImageType.ImageCube) || (ImageType == ImageType.Image3D));
-        
-        /// <summary>
-        /// Function to confirm the overwrite of data in the image.
-        /// </summary>
-        /// <returns>The response from the user.</returns>
-        private MessageResponse ConfirmImageDataOverwrite()
-        {
-            string confirmMessage = string.Empty;
-
-            switch (ImageType)
-            {
-                case ImageType.Image2D:
-                case ImageType.ImageCube:
-                    confirmMessage = string.Format(Resources.GORIMG_CONFIRM_OVERWRITE_ARRAY_INDEX, CurrentArrayIndex + 1, CurrentMipLevel + 1);
-                    break;
-                case ImageType.Image3D:
-                    confirmMessage = string.Format(Resources.GORIMG_CONFIRM_OVERWRITE_DEPTH_SLICE, CurrentDepthSlice + 1, CurrentMipLevel + 1);
-                    break;
-            }
-
-            return MessageDisplay.ShowConfirmation(confirmMessage);
-        }
-
-        /// <summary>
-        /// Function to convert the imported image pixel data to the same format as our image.
-        /// </summary>
-        /// <param name="imageData">The imported image data.</param>
-        /// <param name="originalFormat">The original, actual, format of the source image file.</param>
-        /// <returns><b>true</b> if image was converted successfully, or <b>false</b> if the image could not be converted.</returns>
-        private bool ConvertImportFilePixelFormat(IGorgonImage imageData, BufferFormat originalFormat)
-        {
-            // Convert to our target image format before doing anything.
-            if (ImageData.Format != imageData.Format)
-            {
-                if (!imageData.CanConvertToFormat(ImageData.Format))
-                {
-                    MessageDisplay.ShowError(string.Format(Resources.GORIMG_ERR_CANNOT_CONVERT, originalFormat, CurrentPixelFormat));
-                    return false;
-                }
-
-                imageData.ConvertToFormat(ImageData.Format);
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Function to check whether the image needs cropping or resizing.
-        /// </summary>
-        /// <param name="importImage">The imported image.</param>
-        /// <param name="imageFileName">The name of the file being imported.</param>
-        /// <returns><b>true</b> to cropping/resizing is required, <b>false</b> if not.</returns>
-        private bool CheckForCropResize(IGorgonImage importImage, string imageFileName)
-        {
-            if ((ImageData.Width == importImage.Width) && (ImageData.Height == importImage.Height))
-            {
-                return false;
-            }
-
-            CropOrResizeSettings.AllowedModes = ((ImageData.Width < importImage.Width) || (ImageData.Height < importImage.Height)) ? (CropResizeMode.Crop | CropResizeMode.Resize) : CropResizeMode.Resize;
-            if ((CropOrResizeSettings.CurrentMode & CropOrResizeSettings.AllowedModes) != CropOrResizeSettings.CurrentMode)
-            {
-                CropOrResizeSettings.CurrentMode = CropResizeMode.None;
-            }
-            else if ((CropOrResizeSettings.CurrentMode == CropResizeMode.None) && (((CropOrResizeSettings.AllowedModes) & (CropResizeMode.Crop)) == CropResizeMode.Crop))
-            {
-                CropOrResizeSettings.CurrentMode = CropResizeMode.Crop;
-            }
-
-            CropOrResizeSettings.ImportFile = imageFileName;
-            // Take a copy of the image here because we'll need to destroy it later.
-            CropOrResizeSettings.ImportImage = importImage.Clone();
-            CropOrResizeSettings.TargetImageSize = new DX.Size2(ImageData.Width, ImageData.Height);
-            CropOrResizeSettings.IsActive = true;
-
-            return true;
-        }
-
-        /// <summary>
-        /// Function to import an image file into the current array index/depth slice.
-        /// </summary>
-        private void DoImportFile()
-        {
-            IGorgonImage importImage = null;
-            IGorgonVirtualFile tempFile = null;
-            BufferFormat originalFormat = BufferFormat.Unknown;
-            FileInfo sourceFile = null;
-
-            try
-            {
-                if (ConfirmImageDataOverwrite() == MessageResponse.No)
-                {
-                    return;
-                }
-
-                (sourceFile, importImage, tempFile, originalFormat) = _imageIO.ImportImage();
-
-                if ((sourceFile == null) || (importImage == null) || (tempFile == null) || (originalFormat == BufferFormat.Unknown))
-                {
-                    return;
-                }
-
-                if (!ConvertImportFilePixelFormat(importImage, originalFormat))
-                {
-                    return;
-                }
-
-                CropOrResizeSettings.ImportFileDirectory = sourceFile.Directory.FullName.FormatDirectory(Path.DirectorySeparatorChar);
-                if (CheckForCropResize(importImage, sourceFile.Name))
-                {
-                    return;
-                }
-                                
-                ImportImageData(sourceFile.Name, importImage, CropResizeMode.None, Alignment.UpperLeft, ImageFilter.Point, false);
-                _settings.LastImportExportPath = CropOrResizeSettings.ImportFileDirectory;
-            }
-            catch (Exception ex)
-            {
-                MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
-            }
-            finally
-            {
-                if (tempFile != null)
-                {
-                    _imageIO.ScratchArea.DeleteFile(tempFile.FullPath);
-                }
-                importImage?.Dispose();
-            }
-        }
-
         /// <summary>Function to drop the payload for a drag drop operation.</summary>
         /// <param name="dragData">The drag/drop data.</param>
         /// <param name="afterDrop">[Optional] The method to execute after the drop operation is completed.</param>
@@ -1394,9 +1722,10 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     return;
                 }
 
-                // Get the image we're importing.
+                // Get the image we're importing.    
+                // If we drag ourselves, we don't need to clone it.
                 imageFile = dragData.File.OpenRead();
-                (importImage, tempFile, originalFormat) = _imageIO.LoadImageFile(imageFile, dragData.File.Name);
+                (importImage, tempFile, originalFormat) = _imageIO.LoadImageFile(imageFile, $"Import_{dragData.File.Name}_{Guid.NewGuid():N}");
                 imageFile.Close();
 
                 if (!ConvertImportFilePixelFormat(importImage, originalFormat))
@@ -1441,6 +1770,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             SaveContentCommand = new EditorAsyncCommand<object>(DoSaveImageTask, CanSaveImage);
             ChangeImageTypeCommand = new EditorCommand<ImageType>(DoChangeImageType, CanChangeImageType);
             ImportFileCommand = new EditorCommand<object>(DoImportFile, CanImportFile);
+            ShowImageDimensionsCommand = new EditorCommand<object>(DoShowImageDimensions, CanShowImageDimensions);
         }
         #endregion
     }

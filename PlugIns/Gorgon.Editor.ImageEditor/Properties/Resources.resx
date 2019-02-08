@@ -404,4 +404,20 @@ Are you sure you wish to continue?</value>
   <data name="GORIMG_TEXT_DEPTH_SLICES" xml:space="preserve">
     <value>Depth slice count:</value>
   </data>
+  <data name="GORIMG_ERR_CANCEL_OP" xml:space="preserve">
+    <value>There was an error canceling the operation.</value>
+  </data>
+  <data name="GORIMG_ERR_IMAGE_INFO" xml:space="preserve">
+    <value>There was an error while trying to retrieve the current image information.
+
+Please try again.</value>
+  </data>
+  <data name="GORIMG_CROP_LOSE_DATA" xml:space="preserve">
+    <value>At least one image dimension is smaller than the current image dimensions.  This will result in a loss of data in the image.
+
+Do you wish to continue?</value>
+  </data>
+  <data name="GORIMG_UNDO_DESC_DIMENSIONS" xml:space="preserve">
+    <value>Image dimensions</value>
+  </data>
 </root>

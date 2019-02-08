@@ -244,6 +244,12 @@ namespace Gorgon.Editor.ImageEditor
                     throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_ERR_COMPRESSED_FILE, formatInfo.Format));
                 }
 
+                // Send the image data as uncompressed to our working file, so we can have something to compress.
+                using (Stream outStream = ScratchArea.OpenStream(workFile.FullPath, FileMode.Create))
+                {
+                    DefaultCodec.SaveToStream(image, outStream);
+                }
+
                 _log.Print($"Saving to working file '{workFile.FullPath}'...", LoggingLevel.Simple);
                 result = _compressor.Compress(workFile, pixelFormat, image.MipCount);
 

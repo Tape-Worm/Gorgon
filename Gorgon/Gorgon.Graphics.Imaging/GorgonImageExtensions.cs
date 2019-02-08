@@ -31,6 +31,7 @@ using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
+using Gorgon.UI;
 using DX = SharpDX;
 
 namespace Gorgon.Graphics.Imaging
@@ -43,39 +44,39 @@ namespace Gorgon.Graphics.Imaging
         /// <summary>
         /// Image is in the upper left corner.
         /// </summary>
-        UpperLeft = 0,
+        UpperLeft = Alignment.UpperLeft,
         /// <summary>
         /// Image is in the center at the top.
         /// </summary>
-        UpperMiddle = 1,
+        UpperMiddle = Alignment.UpperCenter,
         /// <summary>
         /// Image is in the upper right corner.
         /// </summary>
-        UpperRight = 2,
+        UpperRight = Alignment.UpperRight,
         /// <summary>
         /// Image is in the middle and to the left.
         /// </summary>
-        MiddleLeft = 3,
+        MiddleLeft = Alignment.CenterLeft,
         /// <summary>
         /// Image is centered.
         /// </summary>
-        Center = 4,
+        Center = Alignment.Center,
         /// <summary>
         /// Image is in the middle and to the right.
         /// </summary>
-        MiddleRight = 5,
+        MiddleRight = Alignment.CenterRight,
         /// <summary>
         /// Image is in the bottom left corner.
         /// </summary>
-        BottomLeft = 6,
+        BottomLeft = Alignment.LowerLeft,
         /// <summary>
         /// Image is in the center at the bottom.
         /// </summary>
-        BottomMiddle = 7,
+        BottomMiddle = Alignment.LowerCenter,
         /// <summary>
         /// Image is in the bottom right corner.
         /// </summary>
-        BottomRight = 8
+        BottomRight = Alignment.LowerRight
     }
 
 	/// <summary>
