@@ -92,5 +92,29 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="isCubeMap"><b>true</b> if the image should be a cube map, or <b>false</b> if not.</param>
         /// <returns>The converted image.</returns>
         IGorgonImage ConvertTo2D(IGorgonImage image, bool isCubeMap);
+
+        /// <summary>
+        /// Function to retrieve an image based on the current mip level.
+        /// </summary>
+        /// <param name="sourceImage">The image to extract the mip level from.</param>
+        /// <param name="currentMipLevel">The mip level to extract.</param>
+        /// <returns>A new image with the specified mip level.</returns>
+        IGorgonImage GetMipLevelAsImage(IGorgonImage sourceImage, int currentMipLevel);
+
+        /// <summary>
+        /// Function to retrieve an image based on the array index.
+        /// </summary>
+        /// <param name="sourceImage">The image to extract the mip level from.</param>
+        /// <param name="currentArrayIndex">The array index to extract.</param>
+        /// <returns>A new image with the specified mip level.</returns>
+        IGorgonImage GetArrayIndexAsImage(IGorgonImage sourceImage, int currentArrayIndex);
+
+        /// <summary>
+        /// Function to retrieve an image based on the current depth slice.
+        /// </summary>
+        /// <param name="sourceImage">The image to extract the depth slice from.</param>
+        /// <param name="currentDepthSlice">The depth slice to extract.</param>
+        /// <returns>A new image with the specified depth slice.</returns>
+        IGorgonImage GetDepthSliceAsImage(IGorgonImage sourceImage, int currentDepthSlice);
     }
 }

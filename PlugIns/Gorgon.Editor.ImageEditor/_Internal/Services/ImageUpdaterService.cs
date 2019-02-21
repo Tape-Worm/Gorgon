@@ -244,6 +244,113 @@ namespace Gorgon.Editor.ImageEditor
         }
 
         /// <summary>
+        /// Function to retrieve an image based on the current mip level.
+        /// </summary>
+        /// <param name="sourceImage">The image to extract the mip level from.</param>
+        /// <param name="currentMipLevel">The mip level to extract.</param>
+        /// <returns>A new image with the specified mip level.</returns>
+        public IGorgonImage GetMipLevelAsImage(IGorgonImage sourceImage, int currentMipLevel)
+        {
+            if (sourceImage.MipCount == 1)
+            {
+                return sourceImage;
+            }
+
+            int depthCount = 1;
+
+            if (sourceImage.ImageType == ImageType.Image3D)
+            {
+                depthCount = sourceImage.GetDepthCount(currentMipLevel);
+            }                       
+
+            IGorgonImage result = new GorgonImage(new GorgonImageInfo(sourceImage)
+            {
+                Width = sourceImage.Buffers[currentMipLevel].Width,
+                Height = sourceImage.Buffers[currentMipLevel].Height,
+                Depth = depthCount,
+                MipCount = 1
+            });
+
+            for (int array = 0; array < sourceImage.ArrayCount; ++array)
+            {
+                for (int depth = 0; depth < result.Depth; ++depth)
+                {
+                    IGorgonImageBuffer srcBuffer = sourceImage.Buffers[currentMipLevel, sourceImage.ImageType == ImageType.Image3D ? depth : array];
+                    IGorgonImageBuffer destBuffer = result.Buffers[0, sourceImage.ImageType == ImageType.Image3D ? depth : array];
+
+                    srcBuffer.CopyTo(destBuffer);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Function to retrieve an image based on the current depth slice.
+        /// </summary>
+        /// <param name="sourceImage">The image to extract the depth slice from.</param>
+        /// <param name="currentDepthSlice">The depth slice to extract.</param>
+        /// <returns>A new image with the specified depth slice.</returns>
+        public IGorgonImage GetDepthSliceAsImage(IGorgonImage sourceImage, int currentDepthSlice)
+        {
+            if (sourceImage.MipCount == 1)
+            {
+                return sourceImage;
+            }
+
+            IGorgonImage result = new GorgonImage(new GorgonImageInfo(sourceImage, ImageType.Image2D)
+            {
+                Depth = 1
+            });
+
+            for (int mip = 0; mip < result.MipCount; ++mip)
+            {
+                int depthCount = sourceImage.GetDepthCount(mip);
+
+                if (currentDepthSlice >= depthCount)
+                {
+                    return result;
+                }
+
+                IGorgonImageBuffer srcBuffer = sourceImage.Buffers[mip, currentDepthSlice];
+                IGorgonImageBuffer destBuffer = result.Buffers[mip];
+
+                srcBuffer.CopyTo(destBuffer);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Function to retrieve an image based on the array index.
+        /// </summary>
+        /// <param name="sourceImage">The image to extract the array index from.</param>
+        /// <param name="currentArrayIndex">The array index to extract.</param>
+        /// <returns>A new image with the specified array index.</returns>
+        public IGorgonImage GetArrayIndexAsImage(IGorgonImage sourceImage, int currentArrayIndex)
+        {
+            if (sourceImage.ArrayCount == 1)
+            {
+                return sourceImage;
+            }
+
+            IGorgonImage result = new GorgonImage(new GorgonImageInfo(sourceImage)
+            {
+                ArrayCount = 1
+            });
+
+            for (int mip = 0; mip < result.MipCount; ++mip)
+            {
+                IGorgonImageBuffer srcBuffer = sourceImage.Buffers[mip, currentArrayIndex];
+                IGorgonImageBuffer destBuffer = result.Buffers[mip, 0];
+
+                srcBuffer.CopyTo(destBuffer);
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Function to update the number of mip levels on an image.
         /// </summary>
         /// <param name="sourceImage">The source image to update.</param>

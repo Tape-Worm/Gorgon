@@ -312,6 +312,20 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The codec &apos;{0}&apos; does not support the following:
+        ///{1}
+        ///
+        ///Only the current mip level and array index, or depth slice will be exported, and the pixel format will be converted to an appropriate pixel format for the codec.
+        ///
+        ///Do you wish to continue?.
+        /// </summary>
+        internal static string GORIMG_CONFIRM_EXPORT_LIMITS {
+            get {
+                return ResourceManager.GetString("GORIMG_CONFIRM_EXPORT_LIMITS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This will overwrite the image data at array index {0}, mip level {1}.
         ///
         ///Continue?.
@@ -418,6 +432,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static string GORIMG_ERR_CONVERT_FORMAT {
             get {
                 return ResourceManager.GetString("GORIMG_ERR_CONVERT_FORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot convert [{0}] to a format supported by the codec..
+        /// </summary>
+        internal static string GORIMG_ERR_EXPORT_CONVERT {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_EXPORT_CONVERT", resourceCulture);
             }
         }
         
@@ -551,7 +574,25 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Alpha Channel.
+        /// </summary>
+        internal static string GORIMG_TEXT_ALPHA {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_ALPHA", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Array index count:.
+        /// </summary>
+        internal static string GORIMG_TEXT_ARRAY_INDEX_COUNT {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_ARRAY_INDEX_COUNT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Array Indices.
         /// </summary>
         internal static string GORIMG_TEXT_ARRAY_INDICES {
             get {
@@ -579,6 +620,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to Depth slice count:.
+        /// </summary>
+        internal static string GORIMG_TEXT_DEPTH_SLICE_COUNT {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_DEPTH_SLICE_COUNT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Depth Slices.
         /// </summary>
         internal static string GORIMG_TEXT_DEPTH_SLICES {
             get {
@@ -610,6 +660,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static string GORIMG_TEXT_MIP_DETAILS {
             get {
                 return ResourceManager.GetString("GORIMG_TEXT_MIP_DETAILS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mip Maps.
+        /// </summary>
+        internal static string GORIMG_TEXT_MIP_MAPS {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_MIP_MAPS", resourceCulture);
             }
         }
         

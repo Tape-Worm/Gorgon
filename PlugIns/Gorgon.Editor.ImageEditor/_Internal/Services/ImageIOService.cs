@@ -220,7 +220,10 @@ namespace Gorgon.Editor.ImageEditor
             var result = new FileInfo(exportFilePath);
 
             _log.Print($"Exporting '{file.Name}' to '{exportFilePath}' as {codec.CodecDescription}", LoggingLevel.Verbose);
+
             codec.SaveToFile(image, result.FullName);
+
+            _busyState.SetIdle();
 
             return result;
         }

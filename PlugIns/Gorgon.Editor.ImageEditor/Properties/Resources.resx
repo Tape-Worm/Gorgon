@@ -398,10 +398,10 @@ Are you sure you wish to continue?</value>
   <data name="GORIMG_FILEMASK_ALL_FILES" xml:space="preserve">
     <value>All files (*.*)|*.*</value>
   </data>
-  <data name="GORIMG_TEXT_ARRAY_INDICES" xml:space="preserve">
+  <data name="GORIMG_TEXT_ARRAY_INDEX_COUNT" xml:space="preserve">
     <value>Array index count:</value>
   </data>
-  <data name="GORIMG_TEXT_DEPTH_SLICES" xml:space="preserve">
+  <data name="GORIMG_TEXT_DEPTH_SLICE_COUNT" xml:space="preserve">
     <value>Depth slice count:</value>
   </data>
   <data name="GORIMG_ERR_CANCEL_OP" xml:space="preserve">
@@ -419,5 +419,28 @@ Do you wish to continue?</value>
   </data>
   <data name="GORIMG_UNDO_DESC_DIMENSIONS" xml:space="preserve">
     <value>Image dimensions</value>
+  </data>
+  <data name="GORIMG_CONFIRM_EXPORT_LIMITS" xml:space="preserve">
+    <value>The codec '{0}' does not support the following:
+{1}
+
+Only the current mip level and array index, or depth slice will be exported, and the pixel format will be converted to an appropriate pixel format for the codec.
+
+Do you wish to continue?</value>
+  </data>
+  <data name="GORIMG_TEXT_ARRAY_INDICES" xml:space="preserve">
+    <value>Array Indices</value>
+  </data>
+  <data name="GORIMG_TEXT_DEPTH_SLICES" xml:space="preserve">
+    <value>Depth Slices</value>
+  </data>
+  <data name="GORIMG_TEXT_MIP_MAPS" xml:space="preserve">
+    <value>Mip Maps</value>
+  </data>
+  <data name="GORIMG_ERR_EXPORT_CONVERT" xml:space="preserve">
+    <value>Cannot convert [{0}] to a format supported by the codec.</value>
+  </data>
+  <data name="GORIMG_TEXT_ALPHA" xml:space="preserve">
+    <value>Alpha Channel</value>
   </data>
 </root>

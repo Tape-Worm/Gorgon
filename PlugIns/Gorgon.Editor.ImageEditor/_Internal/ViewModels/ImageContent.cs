@@ -45,6 +45,7 @@ using Gorgon.Math;
 using Gorgon.UI;
 using Gorgon.Editor.Content;
 using System.Diagnostics;
+using System.Text;
 
 namespace Gorgon.Editor.ImageEditor.ViewModels
 {
@@ -975,7 +976,6 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     ImageData.Dispose();
                     ImageData = image;
                     CurrentPixelFormat = undoArgs.Format;
-                    BuildCodecList(ImageData);                    
                     ContentState = ContentState.Modified;
 
                     inStream.Dispose();
@@ -1029,8 +1029,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     _workingFile = _imageIO.SaveImageFile(File.Name, ImageData, format);
 
                     CurrentPixelFormat = format;
-                    BuildCodecList(ImageData);
-
+                    
                     if (redoArgs == null)
                     {
                         redoArgs = convertUndoArgs = new ConvertUndoArgs();
@@ -1071,9 +1070,83 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <param name="codec">The codec to use when exporting.</param>
         private void DoExportImage(IGorgonImageCodec codec)
         {
+            var missingSupport = new StringBuilder();
+            IGorgonImage exportImage = ImageData.Clone();
+            IGorgonImage workImage = exportImage;
+
             try
             {
-                FileInfo exportedFile = _imageIO.ExportImage(File, ImageData, codec);
+                if (!codec.SupportedPixelFormats.Contains(ImageData.Format))
+                {
+                    missingSupport.AppendFormat("{0} {1}", Resources.GORIMG_TEXT_IMAGE_FORMAT, CurrentPixelFormat);
+                    // Convert to the first supported format.
+                    BufferFormat convertFormat = BufferFormat.Unknown;
+
+                    foreach (BufferFormat format in codec.SupportedPixelFormats)
+                    {
+                        if (workImage.CanConvertToFormat(format))
+                        {
+                            convertFormat = format;
+                            break;
+                        }
+                    }
+
+                    if (convertFormat == BufferFormat.Unknown)
+                    {
+                        MessageDisplay.ShowError(Resources.GORIMG_ERR_EXPORT_CONVERT);
+                        return;
+                    }
+
+                    workImage.ConvertToFormat(convertFormat);
+                }
+
+                if ((!codec.SupportsMultipleFrames) && (ArrayCount > 1))
+                {
+                    if (missingSupport.Length > 0)
+                    {
+                        missingSupport.Append("\r\n");
+                    }
+
+                    missingSupport.Append(Resources.GORIMG_TEXT_ARRAY_INDICES);
+                    exportImage = _imageUpdater.GetArrayIndexAsImage(workImage, CurrentArrayIndex);
+                    workImage.Dispose();
+                    workImage = exportImage;
+                }
+                else if ((!codec.SupportsDepth) && (workImage.ImageType == ImageType.Image3D))
+                {
+                    if (missingSupport.Length > 0)
+                    {
+                        missingSupport.Append("\r\n");
+                    }
+
+                    missingSupport.Append(Resources.GORIMG_TEXT_DEPTH_SLICES);
+                    exportImage = _imageUpdater.GetDepthSliceAsImage(workImage, CurrentDepthSlice);
+                    workImage.Dispose();
+                    workImage = exportImage;
+                }
+
+                if ((!codec.SupportsMipMaps) && (MipCount > 1))
+                {
+                    if (missingSupport.Length > 0)
+                    {
+                        missingSupport.Append("\r\n");
+                    }
+
+                    missingSupport.Append(Resources.GORIMG_TEXT_MIP_MAPS);
+                    exportImage = _imageUpdater.GetMipLevelAsImage(workImage, CurrentMipLevel);
+                    workImage.Dispose();
+                    workImage = exportImage;
+                }
+
+                if (missingSupport.Length > 0)
+                {
+                    if (MessageDisplay.ShowConfirmation(string.Format(Resources.GORIMG_CONFIRM_EXPORT_LIMITS, codec.CodecDescription, missingSupport)) == MessageResponse.No)
+                    {
+                        return;
+                    }
+                }
+
+                FileInfo exportedFile = _imageIO.ExportImage(File, exportImage, codec);
 
                 if (exportedFile == null)
                 {
@@ -1088,6 +1161,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
             finally
             {
+                exportImage?.Dispose();
                 BusyState.SetIdle();
             }
         }
@@ -1577,30 +1651,6 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
             foreach (IGorgonImageCodec codec in _imageIO.InstalledCodecs.Where(item => item.CanEncode).OrderBy(item => item.Codec))
             {
-                if ((!codec.SupportsMipMaps) && (ImageData.MipCount > 1))
-                {
-                    Log.Print($"Codec '{codec.CodecDescription} ({codec.Codec})' does not support mip maps, and image has {ImageData.MipCount} mip levels. Skipping...", LoggingLevel.Verbose);
-                    continue;
-                }
-
-                if ((!codec.SupportsMultipleFrames) && (ImageData.ArrayCount > 1))
-                {
-                    Log.Print($"Codec '{codec.CodecDescription} ({codec.Codec})' does not support arrays, and image has {ImageData.ArrayCount} array indices. Skipping...", LoggingLevel.Verbose);
-                    continue;
-                }
-
-                if ((!codec.SupportsDepth) && (ImageData.ImageType == ImageType.Image3D))
-                {
-                    Log.Print($"Codec '{codec.CodecDescription} ({codec.Codec})' does not support 3D (depth) images, and image is 3D. Skipping...", LoggingLevel.Verbose);
-                    continue;
-                }
-
-                if (codec.SupportedPixelFormats.All(item => item != ImageData.Format))
-                {
-                    Log.Print($"Codec '{codec.CodecDescription} ({codec.Codec})' does not support the pixel format [{ImageData.Format}]. Skipping...", LoggingLevel.Verbose);
-                    continue;
-                }
-
                 Log.Print($"Adding codec '{codec.CodecDescription} ({codec.Codec})'", LoggingLevel.Verbose);
                 Codecs.Add(codec);
             }

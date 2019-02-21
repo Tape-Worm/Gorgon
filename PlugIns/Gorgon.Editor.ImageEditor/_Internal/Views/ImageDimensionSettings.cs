@@ -100,7 +100,7 @@ namespace Gorgon.Editor.ImageEditor
                 return;
             }
 
-            LabelDepthOrArray.Text = dataContext.HasDepth ? Resources.GORIMG_TEXT_DEPTH_SLICES : Resources.GORIMG_TEXT_ARRAY_INDICES;
+            LabelDepthOrArray.Text = dataContext.HasDepth ? Resources.GORIMG_TEXT_DEPTH_SLICE_COUNT : Resources.GORIMG_TEXT_ARRAY_INDEX_COUNT;
         }
 
         /// <summary>Handles the SelectedValueChanged event of the ComboImageFilter control.</summary>
