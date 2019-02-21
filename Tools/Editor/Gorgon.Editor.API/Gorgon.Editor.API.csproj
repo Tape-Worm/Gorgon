@@ -61,6 +61,7 @@
     <Compile Include="Services\_Interfaces\IContentImporterPluginService.cs" />
     <Compile Include="Services\_Interfaces\ISearchService.cs" />
     <Compile Include="Services\_Interfaces\IUndoService.cs" />
+    <Compile Include="UI\ExplorerFilesDragData.cs" />
     <Compile Include="UI\RecentFilesControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -133,6 +134,7 @@
     <Compile Include="UI\ViewModels\_Interfaces\IViewModel.cs" />
     <Compile Include="UI\Views\_Interfaces\IDataContext.cs" />
     <Compile Include="Services\_Interfaces\IEditorContentImporter.cs" />
+    <Compile Include="UI\_Interfaces\IExplorerFilesDragData.cs" />
     <Compile Include="UI\_Interfaces\IRibbonMerger.cs" />
     <Compile Include="UI\_Interfaces\IUndoCommand.cs" />
     <Compile Include="UI\_Interfaces\IUndoHandler.cs" />

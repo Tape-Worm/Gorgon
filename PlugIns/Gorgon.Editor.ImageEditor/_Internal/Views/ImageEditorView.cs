@@ -190,6 +190,41 @@ namespace Gorgon.Editor.ImageEditor
         private void PanelImage_DoubleClick(object sender, EventArgs e) => _textureViewer?.EndAnimation();
 
         /// <summary>
+        /// Function to determine if files from explorer can be dragged onto this view.
+        /// </summary>
+        /// <param name="e">The event parameters for the drag/drop event.</param>
+        /// <returns>The data in the drag operation, or <b>null</b> if the data cannot be dragged and dropped onto this control.</returns>
+        private IExplorerFilesDragData GetExplorerDragDropData(DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.None;
+
+            if (DataContext == null)
+            {
+                return null;
+            }
+
+            if (!e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                return null;
+            }
+
+            if (!(e.Data.GetData(DataFormats.FileDrop) is IReadOnlyList<string> dragData))
+            {
+                return null;
+            }
+
+            IExplorerFilesDragData result = new ExplorerFilesDragData(dragData);
+
+            if (!DataContext.CanDrop(result))
+            {                
+                return null;
+            }
+
+            e.Effect = DragDropEffects.Copy;
+            return result;
+        }
+
+        /// <summary>
         /// Function to check to see if drag drop data is valid for this control.
         /// </summary>
         /// <param name="e">The event parameters for the drag/drop event.</param>
@@ -234,15 +269,23 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
         private void ImageEditorView_DragDrop(object sender, DragEventArgs e)
         {
-            IContentFileDragData data = GetDragDropData(e);
+            IContentFileDragData contentFiles = GetDragDropData(e);
 
-            if (data == null)
+            if (contentFiles != null)
             {
-                OnBubbleDragDrop(e);
+                DataContext.Drop(contentFiles);
                 return;
             }
 
-            DataContext.Drop(data);
+            IExplorerFilesDragData explorerFiles = GetExplorerDragDropData(e);
+
+            if (explorerFiles != null)
+            {
+                DataContext.Drop(explorerFiles);
+                return;
+            }
+
+            OnBubbleDragDrop(e);
         }
 
         /// <summary>Handles the DragEnter event of the ImageEditorView control.</summary>
@@ -250,12 +293,23 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
         private void ImageEditorView_DragEnter(object sender, DragEventArgs e)
         {
-            IContentFileDragData data = GetDragDropData(e);
+            IContentFileDragData contentFiles = GetDragDropData(e);
 
-            if ((data == null)  && (e.Effect != DragDropEffects.None))
+            if ((contentFiles != null) && (e.Effect != DragDropEffects.None))
+            {
+                return;
+            }
+
+            IExplorerFilesDragData explorerFiles = GetExplorerDragDropData(e);
+
+            if ((explorerFiles != null) && (e.Effect != DragDropEffects.None))
+            {
+                return;
+            }
+
+            if (e.Effect != DragDropEffects.None)
             {
                 OnBubbleDragEnter(e);
-                return;
             }
         }
 

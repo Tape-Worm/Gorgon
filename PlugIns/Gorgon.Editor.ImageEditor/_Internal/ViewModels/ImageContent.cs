@@ -44,6 +44,7 @@ using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.UI;
 using Gorgon.Editor.Content;
+using System.Diagnostics;
 
 namespace Gorgon.Editor.ImageEditor.ViewModels
 {
@@ -111,6 +112,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         #endregion
 
         #region Variables.
+        // The list of available codecs matched by extension.
+        private readonly List<(GorgonFileExtension extension, IGorgonImageCodec codec)> _codecs = new List<(GorgonFileExtension extension, IGorgonImageCodec codec)>();
         // The directory to store the undo cache data.
         private IGorgonVirtualDirectory _undoCacheDir;
         // The format support information for the current video card.
@@ -686,6 +689,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     return;
                 }
 
+                BusyState.SetBusy();
                 (sourceFile, importImage, tempFile, originalFormat) = _imageIO.ImportImage();
 
                 if ((sourceFile == null) || (importImage == null) || (tempFile == null) || (originalFormat == BufferFormat.Unknown))
@@ -693,10 +697,12 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     return;
                 }
 
+
                 if (!ConvertImportFilePixelFormat(importImage, originalFormat))
                 {
                     return;
                 }
+                BusyState.SetIdle();
 
                 CropOrResizeSettings.ImportFileDirectory = sourceFile.Directory.FullName.FormatDirectory(Path.DirectorySeparatorChar);
                 if (CheckForCropResize(importImage, sourceFile.Name))
@@ -718,6 +724,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     _imageIO.ScratchArea.DeleteFile(tempFile.FullPath);
                 }
                 importImage?.Dispose();
+                BusyState.SetIdle();
             }
         }
 
@@ -769,8 +776,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
             try
             {
-                // Persist the image to a new working file so that block compression won't be applied to our current working file.                
-                workFile = _imageIO.SaveImageFile(Guid.NewGuid().ToString("N"), ImageData, CurrentPixelFormat);
+                // Persist the image to a new working file so that block compression won't be applied to our current working file.   
+                workFile = await Task.Run(() =>_imageIO.SaveImageFile(Guid.NewGuid().ToString("N"), ImageData, CurrentPixelFormat));
 
                 inStream = workFile.OpenStream();
                 outStream = File.OpenWrite();
@@ -1650,6 +1657,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
             _pixelFormats = GetFilteredFormats();
 
+            foreach (IGorgonImageCodec codec in _imageIO.InstalledCodecs)
+            {
+                foreach (string extension in codec.CodecCommonExtensions)
+                {
+                    _codecs.Add((new GorgonFileExtension(extension), codec));
+                }
+            }
+
             _undoCacheDir = _imageIO.ScratchArea.CreateDirectory("/undocache");
         }
 
@@ -1695,7 +1710,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 return false;
             }
 
-            if (CropOrResizeSettings.IsActive)
+            if ((CropOrResizeSettings.IsActive) || (DimensionSettings.IsActive))
             {
                 dragData.Cancel = true;
                 return false;
@@ -1724,6 +1739,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                 // Get the image we're importing.    
                 // If we drag ourselves, we don't need to clone it.
+                BusyState.SetBusy();
                 imageFile = dragData.File.OpenRead();
                 (importImage, tempFile, originalFormat) = _imageIO.LoadImageFile(imageFile, $"Import_{dragData.File.Name}_{Guid.NewGuid():N}");
                 imageFile.Close();
@@ -1733,6 +1749,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     dragData.Cancel = true;
                     return;
                 }
+                BusyState.SetIdle();
 
                 CropOrResizeSettings.ImportFileDirectory = null;
                 if (CheckForCropResize(importImage, dragData.File.Name))
@@ -1755,6 +1772,103 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 }
                 
                 importImage?.Dispose();
+                BusyState.SetIdle();
+            }
+        }
+
+        /// <summary>Function to determine if an object can be dropped.</summary>
+        /// <param name="dragData">The drag/drop data.</param>
+        /// <returns>
+        ///   <b>true</b> if the data can be dropped, <b>false</b> if not.</returns>
+        public bool CanDrop(IExplorerFilesDragData dragData)
+        {
+            // Only perform special operations if the dragged type is an image, otherwise, fall back.
+            if ((dragData?.Files == null)
+                || (dragData.Files.Count != 1))
+            {
+                dragData.Cancel = true;
+                return false;
+            }
+
+            if ((CropOrResizeSettings.IsActive) || (DimensionSettings.IsActive))
+            {
+                dragData.Cancel = true;
+                return false;
+            }
+
+            // Ensure the file being imported is actually supported.
+            var ext = new GorgonFileExtension(Path.GetExtension(dragData.Files[0]));
+
+            if (_codecs.All(item => item.codec.CanDecode && item.extension.Equals(ext)))
+            {
+                dragData.Cancel = true;
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>Function to drop the payload for a drag drop operation.</summary>
+        /// <param name="dragData">The drag/drop data.</param>
+        /// <param name="afterDrop">[Optional] The method to execute after the drop operation is completed.</param>
+        public void Drop(IExplorerFilesDragData dragData, Action afterDrop = null)
+        {
+            IGorgonImage importImage = null;
+            BufferFormat originalFormat;
+            IGorgonVirtualFile tempFile = null;
+            FileInfo sourceFile = null;
+
+            try
+            {
+                if (ConfirmImageDataOverwrite() == MessageResponse.No)
+                {
+                    dragData.Cancel = true;
+                    return;
+                }
+
+                IGorgonImageCodec codec = null;
+                string file = dragData.Files[0];
+                var ext = new GorgonFileExtension(Path.GetExtension(file));
+
+                codec = _codecs.FirstOrDefault(item => item.extension.Equals(ext)).codec;
+                Debug.Assert(codec != null, $"Could not locate code for {file}");
+
+                BusyState.SetBusy();
+                (sourceFile, importImage, tempFile, originalFormat) = _imageIO.ImportImage(codec, file);
+
+                if ((sourceFile == null) || (importImage == null) || (tempFile == null) || (originalFormat == BufferFormat.Unknown))
+                {
+                    return;
+                }
+
+                if (!ConvertImportFilePixelFormat(importImage, originalFormat))
+                {
+                    return;
+                }
+                BusyState.SetIdle();
+
+                CropOrResizeSettings.ImportFileDirectory = sourceFile.Directory.FullName.FormatDirectory(Path.DirectorySeparatorChar);
+                if (CheckForCropResize(importImage, sourceFile.Name))
+                {
+                    return;
+                }
+
+                ImportImageData(sourceFile.Name, importImage, CropResizeMode.None, Alignment.UpperLeft, ImageFilter.Point, false);
+                _settings.LastImportExportPath = CropOrResizeSettings.ImportFileDirectory;
+            }
+            catch (Exception ex)
+            {
+                MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+            }
+            finally
+            {
+                if (tempFile != null)
+                {
+                    _imageIO.ScratchArea.DeleteFile(tempFile.FullPath);
+                }
+                importImage?.Dispose();
+
+                BusyState.SetIdle();
             }
         }
         #endregion

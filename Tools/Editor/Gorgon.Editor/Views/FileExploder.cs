@@ -79,7 +79,7 @@ namespace Gorgon.Editor.Views
         // A drag and drop handler interface.
         private IDragDropHandler<IFileExplorerNodeDragData> _nodeDragDropHandler;
         // A drag and drop handler interface.
-        private IDragDropHandler<IExplorerFilesDragData> _explorerDragDropHandler;
+        private IDragDropHandler<ViewModels.IExplorerFilesDragData> _explorerDragDropHandler;
         // The drag hilight background color.
         private Color _dragBackColor;
         // The drag hilight foreground color.

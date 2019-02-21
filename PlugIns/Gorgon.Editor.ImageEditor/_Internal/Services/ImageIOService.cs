@@ -90,36 +90,33 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Methods.
-        /// <summary>Function to perform an import of an image into the current image mip level and array index/depth slice.</summary>
+        /// <summary>
+        /// Function to import an image file from the physical file system into the current image.
+        /// </summary>
+        /// <param name="codec">The codec used to open the file.</param>
+        /// <param name="filePath">The path to the file to import.</param>
         /// <returns>The source file information, image data, the virtual file entry for the working file and the original pixel format of the file.</returns>
-        public (FileInfo file, IGorgonImage image, IGorgonVirtualFile workingFile, BufferFormat originalFormat) ImportImage()
+        public (FileInfo file, IGorgonImage image, IGorgonVirtualFile workingFile, BufferFormat originalFormat) ImportImage(IGorgonImageCodec codec, string filePath)
         {
-            string importPath = _importDialog.GetFilename();
-
-            if (string.IsNullOrWhiteSpace(importPath))
-            {
-                return (null, null, null, BufferFormat.Unknown);
-            }
-
-            var file = new FileInfo(importPath);
-            IGorgonImageCodec importCodec = _importDialog.SelectedCodec;
+            var file = new FileInfo(filePath);
+            IGorgonImageCodec importCodec = codec;
             IGorgonImageInfo metaData = null;
             IGorgonVirtualFile workFile = null;
             IGorgonImage importImage = null;
-            string workFilePath = $"{Path.GetFileName(importPath)}_import_{Guid.NewGuid().ToString("N")}";
+            string workFilePath = $"{Path.GetFileNameWithoutExtension(filePath)}_import_{Guid.NewGuid().ToString("N")}";
 
             // Try to determine if we can actually read the file using an installed codec, if we can't, then try to find a suitable codec.
-            using (FileStream stream = File.Open(importPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 if ((importCodec == null) || (!importCodec.IsReadable(stream)))
                 {
                     importCodec = null;
 
-                    foreach (IGorgonImageCodec codec in InstalledCodecs.Where(item => (item.CodecCommonExtensions.Count > 0) && (item.CanDecode)))
+                    foreach (IGorgonImageCodec newCodec in InstalledCodecs.Where(item => (item.CodecCommonExtensions.Count > 0) && (item.CanDecode)))
                     {
-                        if (codec.IsReadable(stream))
+                        if (newCodec.IsReadable(stream))
                         {
-                            importCodec = codec;
+                            importCodec = newCodec;
                             break;
                         }
                     }
@@ -127,10 +124,16 @@ namespace Gorgon.Editor.ImageEditor
 
                 if (importCodec == null)
                 {
-                    throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_ERR_NO_CODEC, importPath));
+                    throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_ERR_NO_CODEC, filePath));
                 }
 
                 metaData = importCodec.GetMetaData(stream);
+
+
+                // We absolutely need to have an extension, or else the texconv tool will not work.
+                var codecExtension = new GorgonFileExtension(importCodec.CodecCommonExtensions[0]);
+                _log.Print($"Adding {codecExtension.Extension} extension to working file or else external tools may not be able to read it.", LoggingLevel.Verbose);
+                workFilePath = $"{workFilePath}.{codecExtension.Extension}";
 
                 using (Stream outStream = ScratchArea.OpenStream(workFilePath, FileMode.Create))
                 {
@@ -166,10 +169,32 @@ namespace Gorgon.Editor.ImageEditor
                 using (Stream workStream = workFile.OpenStream())
                 {
                     importImage = importCodec.LoadFromStream(workStream);
-                }                    
+                }
             }
 
             return (file, importImage, workFile, metaData.Format);
+        }
+
+        /// <summary>Function to perform an import of an image into the current image mip level and array index/depth slice.</summary>
+        /// <returns>The source file information, image data, the virtual file entry for the working file and the original pixel format of the file.</returns>
+        public (FileInfo file, IGorgonImage image, IGorgonVirtualFile workingFile, BufferFormat originalFormat) ImportImage()
+        {
+            string importPath = _importDialog.GetFilename();
+
+            if (string.IsNullOrWhiteSpace(importPath))
+            {
+                return (null, null, null, BufferFormat.Unknown);
+            }
+
+            try
+            {
+                _busyState.SetBusy();
+                return ImportImage(_importDialog.SelectedCodec, importPath);
+            }
+            finally
+            {
+                _busyState.SetIdle();
+            }
         }
 
         /// <summary>

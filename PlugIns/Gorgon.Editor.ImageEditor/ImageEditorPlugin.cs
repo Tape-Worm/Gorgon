@@ -60,9 +60,6 @@ namespace Gorgon.Editor.ImageEditor
         // The loaded image codecs.
         private List<IGorgonImageCodec> _codecList = new List<IGorgonImageCodec>();
 
-        // The list of available codecs matched by extension.
-        private readonly List<(GorgonFileExtension extension, IGorgonImageCodec codec)> _codecs = new List<(GorgonFileExtension extension, IGorgonImageCodec codec)>();
-
         // The image editor settings.
         private ImageEditorSettings _settings = new ImageEditorSettings();
 
@@ -370,14 +367,6 @@ namespace Gorgon.Editor.ImageEditor
 
             // Load the additional plug ins.
             LoadCodecPlugins();
-
-            foreach (IGorgonImageCodec codec in _codecList)
-            {
-                foreach (string extension in codec.CodecCommonExtensions)
-                {
-                    _codecs.Add((new GorgonFileExtension(extension), codec));
-                }
-            }
         }
 
         /// <summary>Function to determine if the content plugin can open the specified file.</summary>
