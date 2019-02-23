@@ -142,28 +142,6 @@ namespace Gorgon.Editor.ImageEditor
             ImageZoomed?.Invoke(this, new ImageZoomedArgs(_zoomLevel));
         }
 
-
-        /// <summary>Handles the PropertyChanged event of the DimensionSettings control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
-        private void DimensionSettings_PropertyChanged(object sender, PropertyChangedEventArgs e) 
-        {
-            switch (e.PropertyName)
-            {
-                case nameof(IDimensionSettings.IsActive):
-                    ButtonDimensions.Checked = DataContext.DimensionSettings.IsActive;
-                    break;
-            }
-
-            ValidateButtons();
-        }
-
-
-        /// <summary>Handles the PropertyChanged event of the CropOrResizeSettings control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
-        private void CropOrResizeSettings_PropertyChanged(object sender, PropertyChangedEventArgs e) => ValidateButtons();
-
         /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The [PropertyChangedEventArgs] instance containing the event data.</param>
@@ -191,6 +169,21 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The [PropertyChangingEventArgs] instance containing the event data.</param>
         private void DataContext_PropertyChanging(object sender, PropertyChangingEventArgs e)
         {
+        }
+
+
+        /// <summary>Handles the Click event of the ButtonGenerateMipMaps control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonGenerateMipMaps_Click(object sender, EventArgs e)
+        {
+            if ((DataContext?.ShowMipGenerationCommand == null)
+                || (!DataContext.ShowMipGenerationCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            DataContext.ShowMipGenerationCommand.Execute(null);
         }
 
         /// <summary>Handles the Click event of the ButtonDimensions control.</summary>
@@ -341,13 +334,13 @@ namespace Gorgon.Editor.ImageEditor
             {
                 return;
             }
-            
-            ButtonImport.Enabled = !DataContext.CropOrResizeSettings.IsActive && !DataContext.DimensionSettings.IsActive;
-            ButtonEditInApp.Enabled = !DataContext.CropOrResizeSettings.IsActive && !DataContext.DimensionSettings.IsActive;
-            ButtonDimensions.Enabled = !DataContext.CropOrResizeSettings.IsActive;
-            ButtonGenerateMipMaps.Enabled = !DataContext.CropOrResizeSettings.IsActive && DataContext.MipSupport && !DataContext.DimensionSettings.IsActive;
-            ButtonImageFormat.Enabled = !DataContext.CropOrResizeSettings.IsActive && !DataContext.DimensionSettings.IsActive;
-            ButtonImageType.Enabled = !DataContext.CropOrResizeSettings.IsActive && !DataContext.DimensionSettings.IsActive;
+
+            ButtonImport.Enabled = DataContext.CurrentPanel == null;
+            ButtonEditInApp.Enabled = DataContext.CurrentPanel == null;
+            ButtonDimensions.Enabled = (DataContext.CurrentPanel == null) && (DataContext.ShowImageDimensionsCommand != null) && (DataContext.ShowImageDimensionsCommand.CanExecute(null));
+            ButtonGenerateMipMaps.Enabled = (DataContext.CurrentPanel == null) && (DataContext.ShowMipGenerationCommand != null) && (DataContext.ShowMipGenerationCommand.CanExecute(null));
+            ButtonImageFormat.Enabled = DataContext.CurrentPanel == null;
+            ButtonImageType.Enabled = DataContext.CurrentPanel == null;
             ButtonImageUndo.Enabled = DataContext.UndoCommand?.CanExecute(null) ?? false;
             ButtonImageRedo.Enabled = DataContext.RedoCommand?.CanExecute(null) ?? false;
             ButtonExport.Enabled = MenuCodecs.Items.Count > 0;            
@@ -484,16 +477,6 @@ namespace Gorgon.Editor.ImageEditor
                 DataContext.Codecs.CollectionChanged -= Codecs_CollectionChanged;
             }
 
-            if (DataContext.CropOrResizeSettings != null)
-            {
-                DataContext.CropOrResizeSettings.PropertyChanged -= CropOrResizeSettings_PropertyChanged;
-            }
-
-            if (DataContext.DimensionSettings != null)
-            {
-                DataContext.DimensionSettings.PropertyChanged -= DimensionSettings_PropertyChanged;
-            }
-
             DataContext.PropertyChanging -= DataContext_PropertyChanging;
             DataContext.PropertyChanged -= DataContext_PropertyChanged;
         }
@@ -607,16 +590,6 @@ namespace Gorgon.Editor.ImageEditor
 
             DataContext.PropertyChanged += DataContext_PropertyChanged;
             DataContext.PropertyChanging += DataContext_PropertyChanging;
-
-            if (DataContext.CropOrResizeSettings != null)
-            {
-                DataContext.CropOrResizeSettings.PropertyChanged += CropOrResizeSettings_PropertyChanged;
-            }
-
-            if (DataContext.DimensionSettings != null)
-            {
-                DataContext.DimensionSettings.PropertyChanged += DimensionSettings_PropertyChanged;
-            }
 
             if (DataContext.Codecs != null)
             {

@@ -60,6 +60,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
+        /// Property to return the mip map generation view model.
+        /// </summary>
+        public IMipMapSettings MipMapSettings
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the service used to load/save image data.
         /// </summary>
         public IImageIOService ImageIOService
@@ -146,6 +154,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <param name="settings">The settings for the image editor.</param>
         /// <param name="cropResizeSettings">The crop/resize settings view model.</param>
         /// <param name="dimensionSettings">The image dimensions settings view model.</param>
+        /// <param name="mipMapSettings">The mip map generation settings view model.</param>
         /// <param name="imageData">The image data and related information.</param>
         /// <param name="videoAdapter">Information about the current video adapter.</param>
         /// <param name="formatSupport">A list of <see cref="IGorgonFormatSupportInfo"/> objects for each pixel format.</param>
@@ -156,6 +165,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             ImageEditorSettings settings,
             ICropResizeSettings cropResizeSettings,
             IDimensionSettings dimensionSettings,
+            IMipMapSettings mipMapSettings,
             (IGorgonImage image, IGorgonVirtualFile workingFile, BufferFormat originalFormat) imageData,
             IGorgonVideoAdapterInfo videoAdapter,
             IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> formatSupport,
@@ -173,6 +183,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             ImageUpdater = services.ImageUpdater ?? throw new ArgumentMissingException(nameof(services.ImageUpdater), nameof(services));
             CropResizeSettings = cropResizeSettings ?? throw new ArgumentNullException(nameof(cropResizeSettings));
             DimensionSettings = dimensionSettings ?? throw new ArgumentNullException(nameof(dimensionSettings));
+            MipMapSettings = mipMapSettings ?? throw new ArgumentNullException(nameof(mipMapSettings));
             VideoAdapterInfo = videoAdapter ?? throw new ArgumentNullException(nameof(videoAdapter));
             OriginalFormat = imageData.originalFormat;
         }

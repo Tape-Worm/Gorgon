@@ -33,7 +33,6 @@ using DX = SharpDX;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Imaging;
 using Gorgon.UI;
-using Gorgon.Editor.Content;
 
 namespace Gorgon.Editor.ImageEditor.ViewModels
 {
@@ -61,17 +60,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
     /// The view model for the image cropping/resizing settings view.
     /// </summary>
     internal interface ICropResizeSettings
-        : IViewModel
+        : IHostedPanelViewModel
     {
-        /// <summary>
-        /// Property to set or return whether the crop/resize settings is active or not.
-        /// </summary>
-        bool IsActive
-        {
-            get;
-            set;
-        }
-
         /// <summary>
         /// Property to set or return the file being imported.
         /// </summary>
@@ -148,24 +138,6 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Property to set or return the image filter to use when resizing.
         /// </summary>
         ImageFilter ImageFilter
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the command used to cancel the operation.
-        /// </summary>
-        IEditorCommand<object> CancelCommand
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the command used to apply the operation.
-        /// </summary>
-        IEditorCommand<object> OkCommand
         {
             get;
             set;

@@ -294,15 +294,18 @@ namespace Gorgon.Editor.ImageEditor
 
             var cropResizeSettings = new CropResizeSettings();
             var dimensionSettings = new DimensionSettings();
-            
-            cropResizeSettings.Initialize(new ViewModelInjectionCommon());
+            var mipSettings = new MipMapSettings();
+
+            cropResizeSettings.Initialize(new CropResizeSettingsParameters(injector.MessageDisplay));
             dimensionSettings.Initialize(new DimensionSettingsParameters(GraphicsContext.Graphics.VideoAdapter, injector.MessageDisplay));
+            mipSettings.Initialize(new MipMapSettingsParameters(injector.MessageDisplay));
 
             var content = new ImageContent();
             content.Initialize(new ImageContentParameters(file,
                 _settings,
                 cropResizeSettings,
                 dimensionSettings,
+                mipSettings,
                 imageData,
                 GraphicsContext.Graphics.VideoAdapter,
                 GraphicsContext.Graphics.FormatSupport,

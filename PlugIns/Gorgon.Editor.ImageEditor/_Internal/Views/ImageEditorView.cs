@@ -57,6 +57,8 @@ namespace Gorgon.Editor.ImageEditor
         private ITextureViewerService _textureViewer;
         // The available viewers.
         private readonly Dictionary<ImageType, ITextureViewerService> _viewers = new Dictionary<ImageType, ITextureViewerService>();
+        // The list of panels associated with a view model.
+        private readonly Dictionary<Type, Control> _panels = new Dictionary<Type, Control>();
         #endregion
 
         #region Properties.
@@ -313,70 +315,18 @@ namespace Gorgon.Editor.ImageEditor
             }
         }
 
-        /// <summary>Handles the PropertyChanged event of the DimensionSettings control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
-        private void DimensionSettings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        /// <summary>Function called when a property is changing on the data context.</summary>
+        /// <param name="e">The event parameters.</param>
+        /// <remarks>Implementors should override this method in order to handle a property change notification from their data context.</remarks>
+        protected override void OnPropertyChanging(PropertyChangingEventArgs e)
         {
             switch (e.PropertyName)
             {
-                case nameof(IDimensionSettings.IsActive):
-                    if ((DataContext.DimensionSettings.UpdateImageInfoCommand != null)
-                        && (DataContext.DimensionSettings.UpdateImageInfoCommand.CanExecute(DataContext.ImageData)))
-                    {
-                        DataContext.DimensionSettings.UpdateImageInfoCommand.Execute(DataContext.ImageData);                        
-                    }
-
-                    DataContext.DimensionSettings.MipSupport = DataContext.MipSupport;
-
-                    if (DataContext.DimensionSettings.IsActive)
-                    {
-                        if (Controls.Contains(DimensionSettings))
-                        {
-                            Controls.Remove(DimensionSettings);
-                        }
-
-                        DimensionSettings.Visible = true;
-                        AddControlToPanelHost(DimensionSettings);
-                        IsPanelHostActive = true;
-                    }
-                    else
-                    {
-                        IsPanelHostActive = false;
-                        ClearPanelHost();
-                    }
+                case nameof(IImageContent.CurrentPanel):
+                    IsPanelHostActive = false;
+                    ClearPanelHost();
                     break;
             }
-        }
-
-        /// <summary>Handles the PropertyChanged event of the CropOrResizeSettings control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
-        private void CropOrResizeSettings_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case nameof(ICropResizeSettings.IsActive):
-                    if (DataContext.CropOrResizeSettings.IsActive)
-                    {
-                        if (Controls.Contains(CropResizeSettings))
-                        {
-                            Controls.Remove(CropResizeSettings);
-                        }
-
-                        CropResizeSettings.Visible = true;
-                        AddControlToPanelHost(CropResizeSettings);
-                        IsPanelHostActive = true;
-                    }
-                    else
-                    {
-                        IsPanelHostActive = false;
-                        ClearPanelHost();
-                    }
-                    break;
-            }
-
-            ValidateControls();
         }
 
         /// <summary>Function called when a property is changed on the data context.</summary>
@@ -386,11 +336,20 @@ namespace Gorgon.Editor.ImageEditor
         {
             switch (e.PropertyName)
             {
-                case nameof(IImageContent.MipSupport):
-                    if (DataContext.DimensionSettings != null)
+                case nameof(IImageContent.CurrentPanel):
+                    if ((DataContext.CurrentPanel == null) || (!_panels.TryGetValue(DataContext.CurrentPanel.GetType(), out Control panel)))
                     {
-                        DataContext.DimensionSettings.MipSupport = DataContext.MipSupport;
+                        break;
                     }
+                    
+                    if (Controls.Contains(panel))
+                    {
+                        Controls.Remove(panel);
+                    }
+
+                    panel.Visible = true;
+                    AddControlToPanelHost(panel);
+                    IsPanelHostActive = true;
                     break;
                 case nameof(IImageContent.ArrayCount):
                     UpdateArrayDetails(DataContext);
@@ -561,11 +520,7 @@ namespace Gorgon.Editor.ImageEditor
             _ribbonForm.SetDataContext(dataContext);
             CropResizeSettings.SetDataContext(dataContext.CropOrResizeSettings);
             DimensionSettings.SetDataContext(dataContext.DimensionSettings);
-
-            if (dataContext?.DimensionSettings != null)
-            {
-                dataContext.DimensionSettings.MipSupport = dataContext.MipSupport;
-            }
+            GenMipMapSettings.SetDataContext(dataContext.MipMapSettings);
         }
 
         /// <summary>Handles the RenderToBitmap event of the PanelImage control.</summary>
@@ -722,30 +677,8 @@ namespace Gorgon.Editor.ImageEditor
             _ribbonForm.SetDataContext(null);
             CropResizeSettings.SetDataContext(null);
             DimensionSettings.SetDataContext(null);
+            GenMipMapSettings.SetDataContext(null);
         }
-
-        /// <summary>
-        /// Function called to remove events from the view models.
-        /// </summary>
-        protected override void UnassignEvents()
-        {
-            base.UnassignEvents();
-
-            if (DataContext == null)
-            {
-                return;
-            }
-
-            if (DataContext.DimensionSettings != null)
-            {
-                DataContext.DimensionSettings.PropertyChanged -= DimensionSettings_PropertyChanged;
-            }
-
-            if (DataContext.CropOrResizeSettings != null)
-            {
-                DataContext.CropOrResizeSettings.PropertyChanged -= CropOrResizeSettings_PropertyChanged;
-            }            
-        }        
 
         /// <summary>Function to assign a data context to the view as a view model.</summary>
         /// <param name="dataContext">The data context to assign.</param>
@@ -757,27 +690,6 @@ namespace Gorgon.Editor.ImageEditor
             InitializeFromDataContext(dataContext);
 
             DataContext = dataContext;
-            
-            if (DataContext == null)
-            {
-                return;
-            }
-
-            if (DataContext.DimensionSettings != null)
-            {
-                DataContext.DimensionSettings.PropertyChanged += DimensionSettings_PropertyChanged;
-                DataContext.DimensionSettings.MipSupport = dataContext.MipSupport;
-
-                if ((DataContext.DimensionSettings.UpdateImageInfoCommand != null) && (DataContext.DimensionSettings.UpdateImageInfoCommand.CanExecute(dataContext.ImageData)))
-                {
-                    DataContext.DimensionSettings.UpdateImageInfoCommand.Execute(dataContext.ImageData);                    
-                }
-            }
-
-            if (DataContext.CropOrResizeSettings != null)
-            {
-                DataContext.CropOrResizeSettings.PropertyChanged += CropOrResizeSettings_PropertyChanged;
-            }            
         }        
         #endregion
 
@@ -790,6 +702,10 @@ namespace Gorgon.Editor.ImageEditor
             _ribbonForm = new FormRibbon();
             _ribbonForm.ImageZoomed += RibbonForm_ImageZoomed;
             Ribbon = _ribbonForm.RibbonImageContent;
+
+            _panels[typeof(DimensionSettings)] = DimensionSettings;
+            _panels[typeof(CropResizeSettings)] = CropResizeSettings;
+            _panels[typeof(MipMapSettings)] = GenMipMapSettings;
         }
         #endregion
     }

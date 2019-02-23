@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,26 +20,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: September 17, 2018 7:58:15 AM
+// Created: February 5, 2019 7:57:48 PM
 // 
 #endregion
 
-using Gorgon.Editor.Content;
+using System;
+using Gorgon.Editor.UI;
+using Gorgon.Editor.Services;
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.Editor.ImageEditor.ViewModels
 {
     /// <summary>
-    /// Defines values to inject into content view models.
+    /// Parameters for the <see cref="MipMapSettings"/> view model.
     /// </summary>
-    public interface IContentViewModelInjection
-        : IViewModelInjection
+    internal class MipMapSettingsParameters
+        : ViewModelInjectionCommon
     {
-        /// <summary>
-        /// Property to return the content file.
-        /// </summary>
-        IContentFile File
-        {
-            get;
-        }
+        #region Constructor/Finalizer.
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ImageEditor.ViewModels.MipMapSettingsParameters"/> class.</summary>
+        /// <param name="messageDisplay">The message display.</param>
+        /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
+        public MipMapSettingsParameters(IMessageDisplayService messageDisplay) => MessageDisplay = messageDisplay ?? throw new ArgumentNullException(nameof(messageDisplay));
+        #endregion
     }
 }

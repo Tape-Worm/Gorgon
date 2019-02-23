@@ -326,6 +326,17 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There are mip map levels in this image. Generating new mip levels will overwrite these mip maps.
+        ///
+        ///Would you like to continue?.
+        /// </summary>
+        internal static string GORIMG_CONFIRM_GEN_MIPMAP {
+            get {
+                return ResourceManager.GetString("GORIMG_CONFIRM_GEN_MIPMAP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This will overwrite the image data at array index {0}, mip level {1}.
         ///
         ///Continue?.

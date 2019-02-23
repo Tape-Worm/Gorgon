@@ -91,7 +91,6 @@
             this.RibbonImageContent.Name = "RibbonImageContent";
             this.RibbonImageContent.RibbonTabs.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab[] {
             this.TabImage});
-            this.RibbonImageContent.SelectedContext = null;
             this.RibbonImageContent.SelectedTab = this.TabImage;
             this.RibbonImageContent.Size = new System.Drawing.Size(1293, 115);
             this.RibbonImageContent.TabIndex = 0;
@@ -249,7 +248,6 @@
             // 
             // ButtonDimensions
             // 
-            this.ButtonDimensions.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.Check;
             this.ButtonDimensions.ImageLarge = global::Gorgon.Editor.ImageEditor.Properties.Resources.image_size_48x48;
             this.ButtonDimensions.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.image_size_16x16;
             this.ButtonDimensions.KeyTip = "D";
@@ -271,6 +269,7 @@
             this.ButtonGenerateMipMaps.TextLine2 = "Mip Maps";
             this.ButtonGenerateMipMaps.ToolTipBody = "Automatically generates the image data for each mip map level in the image.";
             this.ButtonGenerateMipMaps.ToolTipTitle = "Generate Mip Map Levels";
+            this.ButtonGenerateMipMaps.Click += new System.EventHandler(this.ButtonGenerateMipMaps_Click);
             // 
             // GroupImageFormat
             // 

@@ -48,7 +48,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         IGorgonImage ImageData
         {
             get;
-        }
+        }        
 
         /// <summary>
         /// Property to return whether mip maps are supported for the current format.
@@ -198,6 +198,22 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
+        /// Property to return the view model for the mip map generation settings.
+        /// </summary>
+        IMipMapSettings MipMapSettings
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the currently active panel.
+        /// </summary>
+        IHostedPanelViewModel CurrentPanel
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the command to execute when changing the image type.
         /// </summary>
         IEditorCommand<ImageType> ChangeImageTypeCommand
@@ -214,9 +230,17 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the command used to show the image dimensions editor.
+        /// Property to return the command used to show the image dimensions settings.
         /// </summary>
         IEditorCommand<object> ShowImageDimensionsCommand
+        {
+            get;
+        }
+        
+        /// <summary>
+        /// Property to return the command used to show the mip map generation settings.
+        /// </summary>
+        IEditorCommand<object> ShowMipGenerationCommand
         {
             get;
         }

@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,26 +20,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: September 17, 2018 7:58:15 AM
+// Created: February 22, 2019 9:03:18 PM
 // 
 #endregion
-
-using Gorgon.Editor.Content;
 
 namespace Gorgon.Editor.UI
 {
     /// <summary>
-    /// Defines values to inject into content view models.
+    /// A view model for hosted panels.
     /// </summary>
-    public interface IContentViewModelInjection
-        : IViewModelInjection
+    public interface IHostedPanelViewModel
+        : IViewModel
     {
         /// <summary>
-        /// Property to return the content file.
+        /// Property to set or return whether the crop/resize settings is active or not.
         /// </summary>
-        IContentFile File
+        bool IsActive
         {
             get;
+            set;
+        }
+        
+        /// <summary>
+        /// Property to return the command used to cancel the operation.
+        /// </summary>
+        IEditorCommand<object> CancelCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to set or return the command used to apply the operation.
+        /// </summary>
+        IEditorCommand<object> OkCommand
+        {
+            get;
+            set;
         }
     }
 }

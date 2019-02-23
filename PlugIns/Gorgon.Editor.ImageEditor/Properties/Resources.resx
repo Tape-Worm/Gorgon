@@ -443,4 +443,9 @@ Do you wish to continue?</value>
   <data name="GORIMG_TEXT_ALPHA" xml:space="preserve">
     <value>Alpha Channel</value>
   </data>
+  <data name="GORIMG_CONFIRM_GEN_MIPMAP" xml:space="preserve">
+    <value>There are mip map levels in this image. Generating new mip levels will overwrite these mip maps.
+
+Would you like to continue?</value>
+  </data>
 </root>

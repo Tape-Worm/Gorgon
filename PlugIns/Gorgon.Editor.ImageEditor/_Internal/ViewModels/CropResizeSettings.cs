@@ -30,6 +30,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Gorgon.Editor.Content;
+using Gorgon.Editor.ImageEditor.Properties;
+using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Imaging;
 using Gorgon.UI;
@@ -68,6 +70,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         private ImageFilter _imageFilter = ImageFilter.Point;
         // The directory for the imported file.
         private string _importFileDirectory;
+        // The message display service for the view model.
+        private IMessageDisplayService _messageDisplay;
         #endregion
 
         #region Properties.
@@ -298,18 +302,33 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to cancel the crop/resize operation.
+        /// </summary>
+        private void DoCancelCropResize()
+        {
+            try
+            {
+                IsActive = false;
+            }
+            catch (Exception ex)
+            {
+                _messageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+            }
+        }
+
         /// <summary>Function to inject dependencies for the view model.</summary>
         /// <param name="injectionParameters">The parameters to inject.</param>
         /// <remarks>
         /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
         /// </remarks>
-        protected override void OnInitialize(IViewModelInjection injectionParameters)
-        {
-        }
+        protected override void OnInitialize(IViewModelInjection injectionParameters) =>        
+            _messageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(IViewModelInjection.MessageDisplay), nameof(injectionParameters));        
         #endregion
 
         #region Constructor/Finalizer.
-
+        /// <summary>Initializes a new instance of the <see cref="CropResizeSettings"/> class.</summary>
+        public CropResizeSettings() => CancelCommand = new EditorCommand<object>(DoCancelCropResize);
         #endregion
 
     }

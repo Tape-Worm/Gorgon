@@ -403,9 +403,11 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 {
                     MaxDepthOrArrayIndices = MaxMipLevels = MaxHeight = MaxWidth = int.MaxValue;
                     ArrayIndexStep = DepthSlicesOrArrayIndices = MipLevels = Height = Width = 1;
+                    MipSupport = false;
                     return;
                 }
 
+                MipSupport = false;
                 MaxDepthOrArrayIndices = image.ImageType == ImageType.Image3D ? _videoAdapter.MaxTexture3DDepth : _videoAdapter.MaxTextureArrayCount;
                 MaxHeight = _videoAdapter.MaxTextureHeight;
                 MaxWidth = _videoAdapter.MaxTextureWidth;

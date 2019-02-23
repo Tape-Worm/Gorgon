@@ -76,6 +76,7 @@
     <Compile Include="Content\_Interfaces\IContentFile.cs" />
     <Compile Include="UI\ViewModels\ContentViewModelInjectionCommon.cs" />
     <Compile Include="UI\ViewModels\_Interfaces\IContentViewModelInjection.cs" />
+    <Compile Include="UI\ViewModels\_Interfaces\IHostedPanelViewModel.cs" />
     <Compile Include="UI\_Interfaces\IContentFileDragData.cs" />
     <Compile Include="UI\_Interfaces\IDragDropHandler.cs" />
     <Compile Include="UI\_Interfaces\IEditorContent.cs" />

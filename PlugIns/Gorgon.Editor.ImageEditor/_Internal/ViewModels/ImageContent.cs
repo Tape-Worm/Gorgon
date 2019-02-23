@@ -43,9 +43,9 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.UI;
-using Gorgon.Editor.Content;
 using System.Diagnostics;
 using System.Text;
+using System.ComponentModel;
 
 namespace Gorgon.Editor.ImageEditor.ViewModels
 {
@@ -141,10 +141,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         private ICropResizeSettings _cropResizeSettings;
         // The view model used to update the image dimensions.
         private IDimensionSettings _dimensionSettings;
+        // The view model used to generate mip map levels.
+        private IMipMapSettings _mipMapSettings;
         // The service used to update the image data.
         private IImageUpdaterService _imageUpdater;
         // Information about the current video adapter.
         private IGorgonVideoAdapterInfo _videoAdapter;
+        // The currently active panel.
+        private IHostedPanelViewModel _currentPanel;
         #endregion
 
         #region Properties.
@@ -218,6 +222,11 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 OnPropertyChanged();
 
                 NotifyPropertyChanged(nameof(MipSupport));
+
+                if (DimensionSettings != null)
+                {
+                    DimensionSettings.MipSupport = MipSupport;
+                }                
             }
         }
 
@@ -362,6 +371,24 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
         }
 
+        /// <summary>
+        /// Property to return the view model for the mip map generation settings.
+        /// </summary>
+        public IMipMapSettings MipMapSettings
+        {
+            get => _mipMapSettings;
+            private set
+            {
+                if (_mipMapSettings == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _mipMapSettings = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// Property to return the view model for the dimension editing settings.
@@ -379,6 +406,35 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 OnPropertyChanging();
                 _dimensionSettings = value;
                 OnPropertyChanged();
+            }
+        }
+
+        /// <summary>Property to return the currently active panel.</summary>
+        public IHostedPanelViewModel CurrentPanel
+        {
+            get => _currentPanel;
+            private set
+            {
+                if (_currentPanel == value)
+                {
+                    return;
+                }
+
+                if (_currentPanel != null)
+                {
+                    _currentPanel.PropertyChanged -= CurrentPanel_PropertyChanged;
+                    _currentPanel.IsActive = false;
+                }
+
+                OnPropertyChanging();
+                _currentPanel = value;
+                OnPropertyChanged();
+
+                if (_currentPanel != null)
+                {
+                    _currentPanel.IsActive = true;
+                    _currentPanel.PropertyChanged += CurrentPanel_PropertyChanged;
+                }
             }
         }
 
@@ -400,9 +456,33 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the command used to show the mip map generation settings.
+        /// </summary>
+        public IEditorCommand<object> ShowMipGenerationCommand
+        {
+            get;
+        }
         #endregion
 
         #region Methods.        
+        /// <summary>Handles the PropertyChanged event of the CurrentPanel control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+        private void CurrentPanel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(IHostedPanelViewModel.IsActive):
+                    if ((CurrentPanel != null) && (!CurrentPanel.IsActive))
+                    {
+                        CurrentPanel = null;
+                    }                    
+                    break;
+            }
+        }
+
         /// <summary>
         /// Function to notify when the entire image structure has been updated.
         /// </summary>
@@ -619,23 +699,6 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
-        /// Function to disable all prompt panels.
-        /// </summary>
-        private void TurnOffPanels()
-        {
-            // Turn off any other panels.
-            if (DimensionSettings?.IsActive ?? false)
-            {
-                DimensionSettings.IsActive = false;
-            }
-
-            if (CropOrResizeSettings?.IsActive ?? false)
-            {
-                CropOrResizeSettings.IsActive = false;
-            }
-        }
-
-        /// <summary>
         /// Function to check whether the image needs cropping or resizing.
         /// </summary>
         /// <param name="importImage">The imported image.</param>
@@ -652,7 +715,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 return false;
             }
 
-            TurnOffPanels();            
+            CurrentPanel = null;            
 
             CropOrResizeSettings.AllowedModes = ((ImageData.Width < importImage.Width) || (ImageData.Height < importImage.Height)) ? (CropResizeMode.Crop | CropResizeMode.Resize) : CropResizeMode.Resize;
             if ((CropOrResizeSettings.CurrentMode & CropOrResizeSettings.AllowedModes) != CropOrResizeSettings.CurrentMode)
@@ -668,7 +731,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             // Take a copy of the image here because we'll need to destroy it later.
             CropOrResizeSettings.ImportImage = importImage.Clone();
             CropOrResizeSettings.TargetImageSize = new DX.Size2(width, height);
-            CropOrResizeSettings.IsActive = true;
+            CurrentPanel = CropOrResizeSettings;
 
             return true;
         }
@@ -733,7 +796,13 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Function to determine if the image dimensions editor can be shown.
         /// </summary>
         /// <returns><b>true</b> if the editor can be shown, <b>false</b> if not.</returns>
-        private bool CanShowImageDimensions() => (DimensionSettings?.UpdateImageInfoCommand != null) && (DimensionSettings.UpdateImageInfoCommand.CanExecute(ImageData));
+        private bool CanShowImageDimensions() => (ImageData != null) && (DimensionSettings?.UpdateImageInfoCommand != null) && (DimensionSettings.UpdateImageInfoCommand.CanExecute(ImageData));
+
+        /// <summary>
+        /// Function to determine if the mip map generation settings can be shown.
+        /// </summary>
+        /// <returns><b>true</b> if the settings can be shown, <b>false</b> if not.</returns>
+        private bool CanShowMipGeneration() => (ImageData != null) && (MipSupport) && (MipMapSettings?.UpdateImageInfoCommand != null) && (MipMapSettings.UpdateImageInfoCommand.CanExecute(ImageData));
 
         /// <summary>
         /// Function to show or hide the image dimensions editor.
@@ -742,14 +811,42 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             try
             {
-                if (DimensionSettings.IsActive)
+                if (CurrentPanel == DimensionSettings)
                 {
-                    DimensionSettings.IsActive = false;
+                    CurrentPanel = null;
                     return;
                 }
 
                 DimensionSettings.UpdateImageInfoCommand.Execute(ImageData);
-                DimensionSettings.IsActive = true;
+                DimensionSettings.MipSupport = MipSupport;
+                CurrentPanel = DimensionSettings;
+            }
+            catch (Exception ex)
+            {
+                MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+            }
+        }
+
+        /// <summary>
+        /// Function to show or hide the mip map generation settings.
+        /// </summary>
+        private void DoShowMipGeneration()
+        {
+            try
+            {
+                if (CurrentPanel == MipMapSettings)
+                {
+                    return;
+                }
+
+                // Ensure that the user is aware we'll be wrecking their current mips.
+                if ((ImageData.MipCount > 1) && (MessageDisplay.ShowConfirmation(Resources.GORIMG_CONFIRM_GEN_MIPMAP) == MessageResponse.No))
+                {
+                    return;
+                }
+
+                MipMapSettings.UpdateImageInfoCommand?.Execute(ImageData);
+                CurrentPanel = MipMapSettings;
             }
             catch (Exception ex)
             {
@@ -815,13 +912,13 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Function to determine if an undo operation is possible.
         /// </summary>
         /// <returns><b>true</b> if the last action can be undone, <b>false</b> if not.</returns>
-        private bool CanUndo() => _undoService.CanUndo && !CropOrResizeSettings.IsActive && !DimensionSettings.IsActive;
+        private bool CanUndo() => _undoService.CanUndo && CurrentPanel == null;
 
         /// <summary>
         /// Function to determine if a redo operation is possible.
         /// </summary>
         /// <returns><b>true</b> if the last action can be redone, <b>false</b> if not.</returns>
-        private bool CanRedo() => _undoService.CanRedo && !CropOrResizeSettings.IsActive && !DimensionSettings.IsActive;
+        private bool CanRedo() => _undoService.CanRedo && CurrentPanel == null;
 
         /// <summary>
         /// Function called when a redo operation is requested.
@@ -1167,21 +1264,6 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
-        /// Function to cancel the crop/resize operation.
-        /// </summary>
-        private void DoCancelCropResize()
-        {
-            try
-            {
-                CropOrResizeSettings.IsActive = false;
-            }
-            catch (Exception ex)
-            {
-                MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
-            }
-        }
-
-        /// <summary>
         /// Function to determine if an image can be cropped/resized.
         /// </summary>
         /// <returns><b>true</b> if the image can be cropped or resized, <b>false</b> if not.</returns>
@@ -1213,7 +1295,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             {
                 image.Dispose();
                 CropOrResizeSettings.ImportImage = null;
-                CropOrResizeSettings.IsActive = false;
+                CurrentPanel = null;
             }
         }
 
@@ -1463,7 +1545,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 {
                     redoFileStream?.Dispose();
                     BusyState.SetIdle();
-                    DimensionSettings.IsActive = false;
+                    CurrentPanel = null;
                 }
             }
 
@@ -1473,6 +1555,44 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             if (!task.IsFaulted)
             {
                 _undoService.Record(Resources.GORIMG_UNDO_DESC_DIMENSIONS, UndoAction, RedoAction, dimensionUndoArgs, dimensionUndoArgs);
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if mip maps can be generated.
+        /// </summary>
+        /// <returns><b>true</b> if the image can be cropped or resized, <b>false</b> if not.</returns>
+        private bool CanGenMips() => ImageData == null ? false : MipSupport;
+
+        /// <summary>
+        /// Function to generate mip maps for the current image.
+        /// </summary>
+        private void DoGenMips()
+        {
+            BusyState.SetBusy();
+
+            try
+            {
+                int mipCount = MipMapSettings.MipLevels;
+                int currentMip = CurrentMipLevel.Min(mipCount - 1).Max(0);
+
+                ImageData.GenerateMipMaps(mipCount, MipMapSettings.MipFilter);
+
+                CurrentMipLevel = currentMip;                
+                if (MipMapSettings.MipLevels != MipCount)
+                {
+                    NotifyPropertyChanged(nameof(MipCount));
+                }
+                NotifyPropertyChanged(nameof(ImageData));                
+            }
+            catch (Exception ex)
+            {
+                MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+            }
+            finally
+            {
+                CurrentPanel = null;
+                BusyState.SetIdle();
             }
         }
 
@@ -1689,6 +1809,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
             _cropResizeSettings = injectionParameters.CropResizeSettings ?? throw new ArgumentMissingException(nameof(injectionParameters.CropResizeSettings), nameof(injectionParameters));
             _dimensionSettings = injectionParameters.DimensionSettings ?? throw new ArgumentMissingException(nameof(injectionParameters.DimensionSettings), nameof(injectionParameters));
+            _mipMapSettings = injectionParameters.MipMapSettings ?? throw new ArgumentMissingException(nameof(injectionParameters.MipMapSettings), nameof(injectionParameters));
             _settings = injectionParameters.Settings ?? throw new ArgumentMissingException(nameof(injectionParameters.Settings), nameof(injectionParameters));
             _workingFile = injectionParameters.WorkingFile ?? throw new ArgumentMissingException(nameof(injectionParameters.WorkingFile), nameof(injectionParameters));            
             ImageData = injectionParameters.Image ?? throw new ArgumentMissingException(nameof(injectionParameters.Image), nameof(injectionParameters));
@@ -1699,9 +1820,9 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             _videoAdapter = injectionParameters.VideoAdapterInfo ?? throw new ArgumentMissingException(nameof(injectionParameters.VideoAdapterInfo), nameof(injectionParameters));
             _format = injectionParameters.OriginalFormat;
 
-            _cropResizeSettings.CancelCommand = new EditorCommand<object>(DoCancelCropResize);
             _cropResizeSettings.OkCommand = new EditorCommand<object>(DoCropResize, CanCropResize);
             _dimensionSettings.OkCommand = new EditorCommand<object>(DoUpdateImageDimensions, CanUpdateDimensions);
+            _mipMapSettings.OkCommand = new EditorCommand<object>(DoGenMips, CanGenMips);
 
             BuildCodecList(ImageData);
 
@@ -1716,6 +1837,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
 
             _undoCacheDir = _imageIO.ScratchArea.CreateDirectory("/undocache");
+
+            _dimensionSettings.MipSupport = MipSupport;
         }
 
         /// <summary>Function called when the associated view is unloaded.</summary>
@@ -1724,7 +1847,9 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             ImageData?.Dispose();
 
             try
-            {                
+            {
+                CurrentPanel = null;
+
                 if (_workingFile != null)
                 {                       
                     _imageIO.ScratchArea.DeleteFile(_workingFile.FullPath);
@@ -1760,7 +1885,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 return false;
             }
 
-            if ((CropOrResizeSettings.IsActive) || (DimensionSettings.IsActive))
+            if (CurrentPanel != null)
             {
                 dragData.Cancel = true;
                 return false;
@@ -1840,7 +1965,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 return false;
             }
 
-            if ((CropOrResizeSettings.IsActive) || (DimensionSettings.IsActive))
+            if (CurrentPanel != null)
             {
                 dragData.Cancel = true;
                 return false;
@@ -1935,6 +2060,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             ChangeImageTypeCommand = new EditorCommand<ImageType>(DoChangeImageType, CanChangeImageType);
             ImportFileCommand = new EditorCommand<object>(DoImportFile, CanImportFile);
             ShowImageDimensionsCommand = new EditorCommand<object>(DoShowImageDimensions, CanShowImageDimensions);
+            ShowMipGenerationCommand = new EditorCommand<object>(DoShowMipGeneration, CanShowMipGeneration);
         }
         #endregion
     }

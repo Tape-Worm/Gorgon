@@ -82,6 +82,10 @@
     <Compile Include="_Internal\Services\DdsImageImporter.cs" />
     <Compile Include="_Internal\Services\TexConvCompressor.cs" />
     <Compile Include="_Internal\ViewModels\CropResizeSettings.cs" />
+    <Compile Include="_Internal\ViewModels\MipMapSettingsParameters.cs" />
+    <Compile Include="_Internal\ViewModels\CropResizeSettingsParameters.cs" />
+    <Compile Include="_Internal\ViewModels\_Interfaces\IMipMapSettings.cs" />
+    <Compile Include="_Internal\ViewModels\MipMapSettings.cs" />
     <Compile Include="_Internal\ViewModels\DimensionSettings.cs" />
     <Compile Include="_Internal\ViewModels\DimensionSettingsParameters.cs" />
     <Compile Include="_Internal\ViewModels\ImageContentParameters.cs" />
@@ -97,6 +101,12 @@
     <Compile Include="_Internal\ViewModels\ImageContent.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\IDimensionSettings.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\ICropResizeSettings.cs" />
+    <Compile Include="_Internal\Views\GenMipMapSettings.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="_Internal\Views\GenMipMapSettings.Designer.cs">
+      <DependentUpon>GenMipMapSettings.cs</DependentUpon>
+    </Compile>
     <Compile Include="_Internal\Views\ImageEditorView.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -174,6 +184,9 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="_Internal\Views\GenMipMapSettings.resx">
+      <DependentUpon>GenMipMapSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="_Internal\Views\ImageEditorView.resx">
       <DependentUpon>ImageEditorView.cs</DependentUpon>
