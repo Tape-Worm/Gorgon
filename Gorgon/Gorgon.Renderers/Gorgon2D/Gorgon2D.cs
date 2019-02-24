@@ -772,11 +772,13 @@ namespace Gorgon.Renderers
             {
                 return;
             }
-            
+
+            // Reset the font prior to doing anything.  If the font associated with the text sprite is disposed and we try to use it (e.g. by assigning text), 
+            // then an error can occur because the font is no longer valid. By setting the font first, we are assured that we always have a valid font.
+            _defaultTextSprite.Font = font ?? _defaultFontFactory.Value.DefaultFont;
             _defaultTextSprite.Text = text;
             _defaultTextSprite.Color = color ?? GorgonColor.White;
             _defaultTextSprite.Position = position;
-            _defaultTextSprite.Font = font ?? _defaultFontFactory.Value.DefaultFont;
             _defaultTextSprite.DrawMode = _defaultTextSprite.Font.HasOutline ? TextDrawMode.OutlinedGlyphs : TextDrawMode.GlyphsOnly;
             _defaultTextSprite.AllowColorCodes = (text.IndexOf("[c", StringComparison.CurrentCultureIgnoreCase) > -1)
                                                  && (text.IndexOf("[/c]", StringComparison.CurrentCultureIgnoreCase) > -1);
