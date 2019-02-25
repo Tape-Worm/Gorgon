@@ -70,6 +70,8 @@
     </Compile>
     <Compile Include="UI\RecentItemDeleteEventArgs.cs" />
     <Compile Include="UI\RecentItemClickEventArgs.cs" />
+    <Compile Include="UI\Selection\_Interfaces\ISelectionRectangle.cs" />
+    <Compile Include="UI\Selection\SelectionRectangle.cs" />
     <Compile Include="UI\ViewFactory.cs" />
     <Compile Include="UI\ViewModels\CloseContentArgs.cs" />
     <Compile Include="UI\ViewModels\EditorContentCommon.cs" />
@@ -155,6 +157,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\selection_16x16.dds" />
     <None Include="Resources\recent_item_badge_48x48.png" />
     <None Include="Resources\recent_item_badge_64x64.png" />
     <None Include="Resources\Pattern.dds" />

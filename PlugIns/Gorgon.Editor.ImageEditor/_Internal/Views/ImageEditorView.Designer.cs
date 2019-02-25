@@ -56,10 +56,10 @@
             this.ScrollHorizontal = new System.Windows.Forms.HScrollBar();
             this.ScrollVertical = new System.Windows.Forms.VScrollBar();
             this.PanelImage = new Gorgon.Windows.UI.GorgonSelectablePanel();
+            this.GenMipMapSettings = new Gorgon.Editor.ImageEditor.GenMipMapSettings();
             this.DimensionSettings = new Gorgon.Editor.ImageEditor.ImageDimensionSettings();
             this.CropResizeSettings = new Gorgon.Editor.ImageEditor.ImageResizeSettings();
             this.ButtonCenter = new System.Windows.Forms.Button();
-            this.GenMipMapSettings = new Gorgon.Editor.ImageEditor.GenMipMapSettings();
             ((System.ComponentModel.ISupportInitialize)(this.PresentationPanel)).BeginInit();
             this.PresentationPanel.SuspendLayout();
             this.PanelBottomBar.SuspendLayout();
@@ -390,6 +390,20 @@
             this.PanelImage.TabIndex = 2;
             this.PanelImage.RenderToBitmap += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.PanelImage_RenderToBitmap);
             this.PanelImage.DoubleClick += new System.EventHandler(this.PanelImage_DoubleClick);
+            this.PanelImage.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PanelImage_MouseDown);
+            this.PanelImage.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PanelImage_MouseMove);
+            this.PanelImage.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PanelImage_MouseUp);
+            // 
+            // GenMipMapSettings
+            // 
+            this.GenMipMapSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.GenMipMapSettings.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.GenMipMapSettings.ForeColor = System.Drawing.Color.White;
+            this.GenMipMapSettings.Location = new System.Drawing.Point(53, 178);
+            this.GenMipMapSettings.Name = "GenMipMapSettings";
+            this.GenMipMapSettings.Size = new System.Drawing.Size(299, 165);
+            this.GenMipMapSettings.TabIndex = 2;
+            this.GenMipMapSettings.Visible = false;
             // 
             // DimensionSettings
             // 
@@ -429,17 +443,6 @@
             this.ButtonCenter.Size = new System.Drawing.Size(22, 22);
             this.ButtonCenter.TabIndex = 3;
             this.ButtonCenter.Click += new System.EventHandler(this.ButtonCenter_Click);
-            // 
-            // GenMipMapSettings
-            // 
-            this.GenMipMapSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.GenMipMapSettings.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.GenMipMapSettings.ForeColor = System.Drawing.Color.White;
-            this.GenMipMapSettings.Location = new System.Drawing.Point(53, 178);
-            this.GenMipMapSettings.Name = "GenMipMapSettings";
-            this.GenMipMapSettings.Size = new System.Drawing.Size(299, 165);
-            this.GenMipMapSettings.TabIndex = 2;
-            this.GenMipMapSettings.Visible = false;
             // 
             // ImageEditorView
             // 

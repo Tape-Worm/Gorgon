@@ -28,6 +28,7 @@ using System;
 using DX = SharpDX;
 using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Graphics.Core;
+using System.Windows.Forms;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -127,6 +128,33 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         /// <param name="image">The image to upload to the texture.</param>
         void UpdateTexture(IImageContent image);
+
+        /// <summary>
+        /// Function called when the mouse is moved.
+        /// </summary>
+        /// <param name="x">The horizontal position of the mouse.</param>
+        /// <param name="y">The vertical position of the mouse.</param>
+        /// <param name="buttons">The button(s) held down while moving.</param>
+        /// <param name="image">The current image.</param>
+        void MouseMove(int x, int y, MouseButtons buttons, IImageContent image);
+
+        /// <summary>
+        /// Function called when a button on the mouse is held down.
+        /// </summary>
+        /// <param name="x">The horizontal position of the mouse.</param>
+        /// <param name="y">The vertical position of the mouse.</param>
+        /// <param name="buttons">The button(s) held down.</param>
+        /// <param name="image">The current image.</param>
+        void MouseDown(int x, int y, MouseButtons buttons, IImageContent image);
+
+        /// <summary>
+        /// Function called when a button the on mouse is released.
+        /// </summary>
+        /// <param name="x">The horizontal position of the mouse.</param>
+        /// <param name="y">The vertical position of the mouse.</param>
+        /// <param name="buttons">The button(s) released.</param>
+        /// <param name="image">The current image.</param>
+        void MouseUp(int x, int y, MouseButtons buttons, IImageContent image);
         #endregion
     }
 }

@@ -116,6 +116,9 @@ namespace Gorgon.Editor.ImageEditor
         private readonly Dictionary<AnimationType, IGorgonAnimation> _animations = new Dictionary<AnimationType, IGorgonAnimation>();
         // The current animation.
         private AnimationType _currentAnimation;
+        // The region for drawing the background layer.
+        private DX.RectangleF _backgroundRegion;
+        private DX.RectangleF _textureBounds = DX.RectangleF.Empty;
         #endregion
 
         #region Properties.
@@ -159,7 +162,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>
         /// Property to return the background texture.
         /// </summary>
-        protected GorgonTexture2DView _background
+        protected GorgonTexture2DView Background
         {
             get;
             private set;
@@ -191,9 +194,17 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         public DX.RectangleF TextureBounds
         {
-            get;
-            set;
-        } = DX.RectangleF.Empty;
+            get => _textureBounds;
+            set
+            {
+                if (value.Equals(ref _textureBounds))
+                {
+                    return;
+                }
+
+                _backgroundRegion = _textureBounds = value;
+            }
+        }
         #endregion
 
         #region Methods.
@@ -202,7 +213,7 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         /// <param name="zoomLevel">The current zoom level.</param>
         /// <returns>The zoom value as a normalized value.</returns>
-        private float GetZoomValue(ZoomLevels zoomLevel)
+        protected float GetZoomValue(ZoomLevels zoomLevel)
         {
             switch (zoomLevel)
             {
@@ -225,6 +236,16 @@ namespace Gorgon.Editor.ImageEditor
             }
         }
 
+        /// <summary>
+        /// Function to disable scrolling of the image.
+        /// </summary>
+        protected void DisableScrolling()
+        {
+            _hScroll.Enabled = false;
+            _hScroll.Value = 0;
+            _vScroll.Enabled = false;
+            _vScroll.Value = 0;
+        }
 
         /// <summary>
         /// Function to scale the image to the window.
@@ -232,17 +253,13 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="width">The width of the texture.</param>
         /// <param name="height">The height of the texture.</param>
         /// <returns>A new rectangle containing the size and location of the scaled image.</returns>
-        private DX.RectangleF ScaleImageToClientArea(int width, int height)
+        protected virtual DX.RectangleF OnScaleImageToClientArea(int width, int height)
         {
+            DisableScrolling();
+
             var windowSize = new DX.Size2F(_swapChain.Width, _swapChain.Height);
             var textureSize = new DX.Size2F(width, height);
             var location = new DX.Vector2(_swapChain.Width / 2.0f, _swapChain.Height / 2.0f);
-
-            _hScroll.Enabled = false;
-            _hScroll.Value = 0;
-            _vScroll.Enabled = false;
-            _vScroll.Value = 0;
-
             var scale = new DX.Vector2(windowSize.Width / textureSize.Width, windowSize.Height / textureSize.Height);
 
             if (scale.Y > scale.X)
@@ -268,8 +285,9 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         /// <param name="width">The width of the texture.</param>
         /// <param name="height">The height of the texture.</param>
+        /// <param name="scale">The scaling value to apply.</param>
         /// <returns>A new rectangle containing the size and location of the scaled image.</returns>
-        private DX.RectangleF ScaleImage(int width, int height, float scale)
+        protected virtual DX.RectangleF OnScaleImage(int width, int height, float scale)
         {
             var textureSize = new DX.Size2F(width, height);
             var location = new DX.Vector2(_swapChain.Width / 2.0f, _swapChain.Height / 2.0f);
@@ -386,7 +404,8 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         /// <param name="renderer">The renderer used to draw the texture.</param>
         /// <param name="image">The image being rendered.</param>
-        protected abstract void OnDrawTexture(Gorgon2D renderer, IImageContent image);
+        /// <param name="batchState">The currently active batch render state.</param>
+        protected abstract void OnDrawTexture(Gorgon2D renderer, IImageContent image, Gorgon2DBatchState batchState);
 
         /// <summary>
         /// Function to create the texture for the view.
@@ -415,7 +434,7 @@ namespace Gorgon.Editor.ImageEditor
         /// Function to retrieve the region for the background of the image.
         /// </summary>
         /// <returns>The screen space region of the background.</returns>
-        protected virtual DX.RectangleF OnGetBackgroundRegion() => TextureBounds;
+        protected virtual DX.RectangleF OnGetBackgroundRegion() => _backgroundRegion;
 
         /// <summary>
         /// Function called before drawing begins.
@@ -470,11 +489,11 @@ namespace Gorgon.Editor.ImageEditor
 
             if (ZoomLevel == ZoomLevels.ToWindow)
             {
-                TextureBounds = ScaleImageToClientArea(image.Width, image.Height);
+                _backgroundRegion = TextureBounds = OnScaleImageToClientArea(image.Width, image.Height);
             }
             else
             {
-                TextureBounds = ScaleImage(image.Width, image.Height, GetZoomValue(ZoomLevel));
+                _backgroundRegion = TextureBounds = OnScaleImage(image.Width, image.Height, GetZoomValue(ZoomLevel));
             }
 
             OnWindowResize(new DX.Size2(_swapChain.Width, _swapChain.Height));
@@ -490,7 +509,7 @@ namespace Gorgon.Editor.ImageEditor
             }
 
             EndAnimation();
-            TextureBounds = ScaleImage(image.Width, image.Height, GetZoomValue(ZoomLevel));
+            _backgroundRegion = TextureBounds = OnScaleImage(image.Width, image.Height, GetZoomValue(ZoomLevel));
             OnScroll();
         }
 
@@ -538,7 +557,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="image">The image to upload to the texture.</param>
         public void UpdateTexture(IImageContent image)
         {
-            EndAnimation();            
+            EndAnimation();
             OnDestroyTexture();
 
             IGorgonImage imageData = image?.ImageData;
@@ -570,11 +589,11 @@ namespace Gorgon.Editor.ImageEditor
             // Calculate the image size relative to the client area.            
             if (ZoomLevel == ZoomLevels.ToWindow)
             {
-                TextureBounds = ScaleImageToClientArea(image.Width, image.Height);
+                _backgroundRegion = TextureBounds = OnScaleImageToClientArea(image.Width, image.Height);
             }
             else
             {
-                TextureBounds = ScaleImage(image.Width, image.Height, GetZoomValue(ZoomLevel));
+                _backgroundRegion = TextureBounds = OnScaleImage(image.Width, image.Height, GetZoomValue(ZoomLevel));
             }
         }
 
@@ -602,15 +621,15 @@ namespace Gorgon.Editor.ImageEditor
             _context.Renderer2D.Begin();
             _context.Renderer2D.DrawFilledRectangle(backgroundRegion,
                 GorgonColor.White,
-                _background,
-                _background.ToTexel(new DX.Rectangle(0, 0, (int)backgroundRegion.Width, (int)backgroundRegion.Height)),
+                Background,
+                Background.ToTexel(new DX.Rectangle(0, 0, (int)backgroundRegion.Width, (int)backgroundRegion.Height)),
                 textureSampler: GorgonSamplerState.Wrapping);
             _context.Renderer2D.End();
 
             // Draw our texture.
             _context.Renderer2D.Begin(_batchState);
 
-            OnDrawTexture(_context.Renderer2D, image);
+            OnDrawTexture(_context.Renderer2D, image, _batchState);
 
             _context.Renderer2D.End();
 
@@ -622,7 +641,7 @@ namespace Gorgon.Editor.ImageEditor
             if (AnimationController.State == AnimationState.Playing)
             {
                 AnimationController.Update();
-                
+
                 // If we've finished the animation, then update our current animation state.
                 if (AnimationController.State == AnimationState.Stopped)
                 {
@@ -635,7 +654,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="backgroundImage">The image used for display in the background.</param>
         public void CreateResources(GorgonTexture2DView backgroundImage)
         {
-            _background = backgroundImage;
+            Background = backgroundImage;
 
             _textureParameters = new GorgonConstantBuffer(_context.Graphics, new GorgonConstantBufferInfo
             {
@@ -703,11 +722,11 @@ namespace Gorgon.Editor.ImageEditor
             // Calculate the image size relative to the client area.            
             if (zoomLevel == ZoomLevels.ToWindow)
             {
-                newBounds = ScaleImageToClientArea(image.Width, image.Height);
+                newBounds = OnScaleImageToClientArea(image.Width, image.Height);
             }
             else
             {
-                newBounds = ScaleImage(image.Width, image.Height, GetZoomValue(zoomLevel));
+                newBounds = OnScaleImage(image.Width, image.Height, GetZoomValue(zoomLevel));
             }
 
             if (ZoomLevel != zoomLevel)
@@ -715,12 +734,12 @@ namespace Gorgon.Editor.ImageEditor
                 _animations[AnimationType.Zoom] = _animBuilder
                     .Clear()
                     .RectBoundsInterpolationMode(TrackInterpolationMode.Spline)
-                    .EditRectangularBounds()  
+                    .EditRectangularBounds()
                     .SetKey(new GorgonKeyRectangle(0, old))
                     .SetKey(new GorgonKeyRectangle(animTime, newBounds))
                     .EndEdit()
                     .Build("Zoom_Animation");
-                
+
                 CurrentAnimation = AnimationType.Zoom;
             }
 
@@ -728,6 +747,60 @@ namespace Gorgon.Editor.ImageEditor
 
             OnZoom(zoomLevel, old, newBounds);
         }
+
+        /// <summary>
+        /// Function called when the mouse is moved.
+        /// </summary>
+        /// <param name="position">The position of the mouse cursor, relative to the image region.</param>
+        /// <param name="buttons">The buttons held down while moving.</param>
+        /// <param name="image">The current image.</param>
+        protected virtual void OnMouseMove(DX.Vector2 position, MouseButtons buttons, IImageContent image)
+        {
+
+        }
+
+        /// <summary>
+        /// Function called when a mouse button is held down.
+        /// </summary>
+        /// <param name="position">The position of the mouse cursor.</param>
+        /// <param name="buttons">The button(s) held down.</param>
+        /// <param name="image">The current image.</param>
+        protected virtual void OnMouseDown(DX.Vector2 position, MouseButtons buttons, IImageContent image)
+        {
+
+        }
+
+        /// <summary>
+        /// Function called when a mouse button is released.
+        /// </summary>
+        /// <param name="position">The position of the mouse cursor.</param>
+        /// <param name="buttons">The button(s) released.</param>
+        /// <param name="image">The current image.</param>
+        protected virtual void OnMouseUp(DX.Vector2 position, MouseButtons buttons, IImageContent image)
+        {
+
+        }
+
+        /// <summary>Function called when the mouse is moved.</summary>
+        /// <param name="x">The horizontal position of the mouse.</param>
+        /// <param name="y">The vertical position of the mouse.</param>
+        /// <param name="buttons">The button(s) held down while moving.</param>
+        /// <param name="image">The current image.</param>
+        public void MouseMove(int x, int y, MouseButtons buttons, IImageContent image) => OnMouseMove(new DX.Vector2(x, y), buttons, image);
+
+        /// <summary>Function called when a button on the mouse is held down.</summary>
+        /// <param name="x">The horizontal position of the mouse.</param>
+        /// <param name="y">The vertical position of the mouse.</param>
+        /// <param name="buttons">The button(s) held down.</param>
+        /// <param name="image">The current image.</param>
+        public void MouseDown(int x, int y, MouseButtons buttons, IImageContent image) => OnMouseDown(new DX.Vector2(x, y), buttons, image);
+
+        /// <summary>Function called when a button the on mouse is released.</summary>
+        /// <param name="x">The horizontal position of the mouse.</param>
+        /// <param name="y">The vertical position of the mouse.</param>
+        /// <param name="buttons">The button(s) released.</param>
+        /// <param name="image">The current image.</param>
+        public void MouseUp(int x, int y, MouseButtons buttons, IImageContent image) => OnMouseUp(new DX.Vector2(x, y), buttons, image);
         #endregion
 
         #region Constructor/Finalizer.

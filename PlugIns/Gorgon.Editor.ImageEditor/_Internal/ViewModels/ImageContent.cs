@@ -155,7 +155,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <summary>
         /// Property to return whether mip maps are supported for the current format.
         /// </summary>
-        public bool MipSupport => (_formatSupport != null) 
+        public bool MipSupport => (_formatSupport != null) && (ImageData != null)
             && (_formatSupport.ContainsKey(CurrentPixelFormat)) 
             && (_formatSupport[CurrentPixelFormat].FormatSupport & BufferFormatSupport.Mip) == BufferFormatSupport.Mip;
 
@@ -1025,9 +1025,9 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
-        /// Function to delete 
+        /// Function to delete the temporary undo file.
         /// </summary>
-        /// <param name="undoFile"></param>
+        /// <param name="undoFile">The file holding the undo information.</param>
         private void DeleteUndoCacheFile(IGorgonVirtualFile undoFile)
         {
             // If we errored out, then delete the undo file.
@@ -1124,16 +1124,15 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                     undoFile = CreateUndoCacheFile();                    
                     _workingFile = _imageIO.SaveImageFile(File.Name, ImageData, format);
-
-                    CurrentPixelFormat = format;
                     
                     if (redoArgs == null)
                     {
                         redoArgs = convertUndoArgs = new ConvertUndoArgs();
                     }
 
-                    redoArgs.Format = srcFormat.Format;
+                    redoArgs.Format = CurrentPixelFormat;
                     redoArgs.UndoFile = undoFile;
+                    CurrentPixelFormat = format;
 
                     ContentState = ContentState.Modified;
                 }
@@ -1603,6 +1602,17 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <returns><b>true</b> if the image can change types, <b>false</b> if not.</returns>
         private bool CanChangeImageType(ImageType imageType)
         {
+            if (!_formatSupport.ContainsKey(CurrentPixelFormat))
+            {
+                return false;
+            }
+
+            if ((imageType == ImageType.ImageCube)
+                && ((_formatSupport[CurrentPixelFormat].FormatSupport & BufferFormatSupport.TextureCube) != BufferFormatSupport.TextureCube))
+            {
+                return false;
+            }
+
             if (((ImageType == ImageType.Image2D) && (imageType == ImageType.ImageCube))
                 || ((ImageType == ImageType.ImageCube) && (imageType == ImageType.Image2D)))
             {
@@ -1682,6 +1692,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 {
                     switch (newImageType)
                     {
+                        case ImageType.ImageCube:
                         case ImageType.Image2D:
                             if ((DepthCount > 1)
                                 && (MessageDisplay.ShowConfirmation(Resources.GORIMG_CONFIRM_3D_TO_2D) == MessageResponse.No))
@@ -1690,7 +1701,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                             }
 
                             BusyState.SetBusy();
-                            newImage = _imageUpdater.ConvertTo2D(ImageData, false);
+                            newImage = _imageUpdater.ConvertTo2D(ImageData, newImageType == ImageType.ImageCube);
                             break;
                         case ImageType.Image3D:
                             if ((ArrayCount > 1)
@@ -1705,7 +1716,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                         default:
                             return Task.CompletedTask;
                     }
-
+                    
                     ImageData.Dispose();
                     ImageData = newImage;
 

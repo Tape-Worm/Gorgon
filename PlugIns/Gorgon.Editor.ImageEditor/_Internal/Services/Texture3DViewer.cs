@@ -108,7 +108,8 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Function to draw the texture.</summary>
         /// <param name="renderer">The renderer used to draw the texture.</param>
         /// <param name="image">The image being rendered.</param>
-        protected override void OnDrawTexture(Gorgon2D renderer, IImageContent image)
+        /// <param name="batchState">The currently active batch render state.</param>
+        protected override void OnDrawTexture(Gorgon2D renderer, IImageContent image, Gorgon2DBatchState batchState)
         {
             // We can use this for 3D textures because the texture is in slot 1, and slot 0, where the 2D texture is usually located is vacant and not used by the pixel shader.
             renderer.DrawFilledRectangle(TextureBounds,

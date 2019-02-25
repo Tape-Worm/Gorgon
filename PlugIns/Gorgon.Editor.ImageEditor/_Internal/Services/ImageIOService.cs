@@ -281,6 +281,46 @@ namespace Gorgon.Editor.ImageEditor
                 _log.Print($"Saving to working file '{workFile.FullPath}'...", LoggingLevel.Simple);
                 result = _compressor.Compress(workFile, pixelFormat, image.MipCount);
 
+                // Convert to an uncompressed format if we aren't already in that format.
+                switch (pixelFormat)
+                {
+                    case BufferFormat.BC5_SNorm when image.Format != BufferFormat.R8G8_SNorm:
+                        image.ConvertToFormat(BufferFormat.R8G8_SNorm);
+                        break;
+                    case BufferFormat.BC5_Typeless when image.Format != BufferFormat.R8G8_UNorm:
+                    case BufferFormat.BC5_UNorm when image.Format != BufferFormat.R8G8_UNorm:
+                        image.ConvertToFormat(BufferFormat.R8G8_UNorm);
+                        break;
+                    case BufferFormat.BC6H_Sf16 when image.Format != BufferFormat.R16G16B16A16_Float:
+                    case BufferFormat.BC6H_Typeless when image.Format != BufferFormat.R16G16B16A16_Float:
+                    case BufferFormat.BC6H_Uf16 when image.Format != BufferFormat.R16G16B16A16_Float:
+                        image.ConvertToFormat(BufferFormat.R16G16B16A16_Float);
+                        break;
+                    case BufferFormat.BC4_SNorm when image.Format != BufferFormat.R8G8_SNorm:
+                        image.ConvertToFormat(BufferFormat.R8_SNorm);
+                        break;
+                    case BufferFormat.BC4_Typeless when image.Format != BufferFormat.R8G8_UNorm:
+                    case BufferFormat.BC4_UNorm when image.Format != BufferFormat.R8G8_UNorm:
+                        image.ConvertToFormat(BufferFormat.R8_UNorm);
+                        break;
+                    case BufferFormat.BC1_Typeless when image.Format != BufferFormat.R8G8B8A8_UNorm:
+                    case BufferFormat.BC1_UNorm when image.Format != BufferFormat.R8G8B8A8_UNorm:
+                    case BufferFormat.BC2_Typeless when image.Format != BufferFormat.R8G8B8A8_UNorm:
+                    case BufferFormat.BC2_UNorm when image.Format != BufferFormat.R8G8B8A8_UNorm:
+                    case BufferFormat.BC3_Typeless when image.Format != BufferFormat.R8G8B8A8_UNorm:
+                    case BufferFormat.BC3_UNorm when image.Format != BufferFormat.R8G8B8A8_UNorm:
+                    case BufferFormat.BC7_Typeless when image.Format != BufferFormat.R8G8B8A8_UNorm:
+                    case BufferFormat.BC7_UNorm when image.Format != BufferFormat.R8G8B8A8_UNorm:
+                        image.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm);
+                        break;
+                    case BufferFormat.BC1_UNorm_SRgb when image.Format != BufferFormat.R8G8B8A8_UNorm_SRgb:
+                    case BufferFormat.BC2_UNorm_SRgb when image.Format != BufferFormat.R8G8B8A8_UNorm_SRgb:
+                    case BufferFormat.BC3_UNorm_SRgb when image.Format != BufferFormat.R8G8B8A8_UNorm_SRgb:
+                    case BufferFormat.BC7_UNorm_SRgb when image.Format != BufferFormat.R8G8B8A8_UNorm_SRgb:
+                        image.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm_SRgb);
+                        break;                    
+                }
+
                 if (result == null)
                 {
                     throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_ERR_COMPRESSED_FILE, formatInfo.Format));

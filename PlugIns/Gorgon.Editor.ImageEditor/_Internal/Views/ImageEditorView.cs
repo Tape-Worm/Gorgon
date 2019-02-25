@@ -72,6 +72,45 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Methods.
+        /// <summary>Handles the MouseMove event of the PanelImage control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+        private void PanelImage_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (_textureViewer == null)
+            {
+                return;
+            }
+
+            _textureViewer.MouseMove(e.X, e.Y, e.Button, DataContext);
+        }
+
+        /// <summary>Handles the MouseDown event of the PanelImage control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+        private void PanelImage_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (_textureViewer == null)
+            {
+                return;
+            }
+
+            _textureViewer.MouseDown(e.X, e.Y, e.Button, DataContext);
+        }
+
+        /// <summary>Handles the MouseUp event of the PanelImage control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+        private void PanelImage_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (_textureViewer == null)
+            {
+                return;
+            }
+
+            _textureViewer.MouseUp(e.X, e.Y, e.Button, DataContext);
+        }
+
         /// <summary>Ribbons the form image zoomed.</summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The e.</param>
@@ -605,9 +644,10 @@ namespace Gorgon.Editor.ImageEditor
 
             _viewers[ImageType.Image2D] = new Texture2DViewer(context, swapChain, ScrollHorizontal, ScrollVertical);
             _viewers[ImageType.Image2D].CreateResources(_background);
+            _viewers[ImageType.ImageCube] = new TextureCubeViewer(context, swapChain, ScrollHorizontal, ScrollVertical);
+            _viewers[ImageType.ImageCube].CreateResources(_background);
             _viewers[ImageType.Image3D] = new Texture3DViewer(context, swapChain, ScrollHorizontal, ScrollVertical);
             _viewers[ImageType.Image3D].CreateResources(_background);
-            // TODO: Other types.
                         
             if (DataContext?.ImageType == null)
             {
