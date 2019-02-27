@@ -46,6 +46,7 @@ using Gorgon.UI;
 using System.Diagnostics;
 using System.Text;
 using System.ComponentModel;
+using Gorgon.Collections;
 
 namespace Gorgon.Editor.ImageEditor.ViewModels
 {
@@ -149,6 +150,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         private IGorgonVideoAdapterInfo _videoAdapter;
         // The currently active panel.
         private IHostedPanelViewModel _currentPanel;
+        // The service used to edit the image with an external editor.
+        private IImageExternalEditService _externalEditor;
         #endregion
 
         #region Properties.
@@ -296,6 +299,11 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     return;
                 }
 
+                if ((value < 0) || (value >= MipCount))
+                {
+                    return;
+                }
+
                 OnPropertyChanging();
                 _currentMipLevel = value;
                 OnPropertyChanged();
@@ -321,6 +329,11 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     return;
                 }
 
+                if ((value < 0) || (value >= ArrayCount))
+                {
+                    return;
+                }
+
                 OnPropertyChanging();
                 _currentArrayindex = value;
                 OnPropertyChanged();
@@ -334,6 +347,11 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             set
             {
                 if (_currentDepthSlice == value)
+                {
+                    return;
+                }
+
+                if ((value < 0) || (value >= DepthCount))
                 {
                     return;
                 }
@@ -461,6 +479,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Property to return the command used to show the mip map generation settings.
         /// </summary>
         public IEditorCommand<object> ShowMipGenerationCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Porperty to return the command used to edit the image in an external application.
+        /// </summary>
+        public IEditorCommand<object> EditInAppCommand
         {
             get;
         }
@@ -1758,12 +1784,121 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
+        /// Function to edit the current image in an application.
+        /// </summary>
+        private void DoEditInApp()
+        {
+            IGorgonImage workImage = null;
+            IGorgonVirtualFile workImageFile = null;
+            Stream imageStream = null;
+
+            BusyState.SetBusy();
+
+            try
+            {
+                // We will extract the buffer for the current array/depth and mip and edit that.
+                // Most apps won't support editing images with volume data, array data, or mip levels, so we'll let them work on the image part one at a time.
+                // This should give us the most flexibility.
+                IGorgonImageBuffer buffer = ImageData.Buffers[CurrentMipLevel, ImageType == ImageType.Image3D ? CurrentDepthSlice : CurrentArrayIndex];
+
+                workImage = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, ImageData.Format)
+                {
+                    Depth = 1,
+                    ArrayCount = 1,
+                    MipCount = 1,
+                    Width = buffer.Width,
+                    Height = buffer.Height
+                });
+
+                buffer.CopyTo(workImage.Buffers[0]);
+
+                // Get the PNG codec, this is a pretty common format and should be supported by all image editors.
+                // The only issue we may run into is if the format of the image is not supported by the codec, in that case we can try to convert it.
+                IGorgonImageCodec codec = _imageIO.InstalledCodecs.First(item => item is GorgonCodecPng);
+
+                // Doesn't support our format, so convert it.
+                if (!codec.SupportedPixelFormats.Contains(workImage.Format))
+                {
+                    Log.Print($"Image pixel format is [{workImage.Format}], but PNG codec does not support this format. Image will be converted to [{BufferFormat.B8G8R8A8_UNorm}].", LoggingLevel.Verbose);
+                    if (!workImage.CanConvertToFormat(BufferFormat.B8G8R8A8_UNorm))
+                    {
+                        MessageDisplay.ShowError(string.Format(Resources.GORIMG_ERR_EXPORT_CONVERT, workImage.Format));
+                        return;
+                    }
+
+                    workImage.ConvertToFormat(BufferFormat.B8G8R8A8_UNorm);
+                }
+
+                // Finally, write out the image data so the external image editor can have at it.
+                string fileName = $"{File.Name}_extern_edit.png";
+                workImageFile = _imageIO.SaveImageFile(fileName, workImage, workImage.Format, codec);
+
+                workImage.Dispose();
+
+                // Launch the editor.
+                if (!_externalEditor.EditImage(workImageFile))
+                {
+                    return;
+                }
+
+                // Reload the image.
+                imageStream = workImageFile.OpenStream();
+                workImage = codec.LoadFromStream(imageStream);
+                imageStream.Dispose();
+
+                if (workImage.Format != ImageData.Format)
+                {
+                    Log.Print($"Image pixel format changed.  Is now [{workImage.Format}], will be converted to [{ImageData.Format}] to match current format.", LoggingLevel.Verbose);
+                    if (!workImage.CanConvertToFormat(ImageData.Format))
+                    {
+                        MessageDisplay.ShowError(string.Format(Resources.GORIMG_ERR_EXPORT_CONVERT, workImage.Format));
+                        return;
+                    }
+
+                    workImage.ConvertToFormat(ImageData.Format);
+                }
+                
+                CropOrResizeSettings.ImportFileDirectory = null;
+                if (CheckForCropResize(workImage, workImageFile.Name))
+                {
+                    return;
+                }
+
+                ImportImageData(workImageFile.Name, workImage, CropResizeMode.None, Alignment.UpperLeft, ImageFilter.Point, false);
+            }
+            catch (Exception ex)
+            {
+                MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+            }
+            finally
+            {
+                imageStream?.Dispose();
+
+                // Clean up after ourselves.
+                if (workImageFile != null)
+                {
+                    try
+                    {
+                        _imageIO.ScratchArea.DeleteFile(workImageFile.FullPath);
+                    }
+                    catch(Exception ex)
+                    {
+                        Log.Print("Error deleting working image file.", LoggingLevel.All);
+                        Log.LogException(ex);
+                    }
+                }
+
+                workImage?.Dispose();
+                BusyState.SetIdle();
+            }
+        }
+
+        /// <summary>
         /// Function to build the list of codecs that support the current image.
         /// </summary>
         /// <param name="image">The image to evaluate.</param>
         private void BuildCodecList(IGorgonImage image)
         {
-            // TODO: This isn't well designed and is confusing to use, need to rethink how we do exports.
             Log.Print("Building codec list for the current image.", LoggingLevel.Verbose);
 
             Codecs.Clear();
@@ -1829,6 +1964,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             _undoService = injectionParameters.UndoService ?? throw new ArgumentMissingException(nameof(injectionParameters.UndoService), nameof(injectionParameters));
             _imageUpdater = injectionParameters.ImageUpdater ?? throw new ArgumentMissingException(nameof(injectionParameters.ImageUpdater), nameof(injectionParameters));
             _videoAdapter = injectionParameters.VideoAdapterInfo ?? throw new ArgumentMissingException(nameof(injectionParameters.VideoAdapterInfo), nameof(injectionParameters));
+            _externalEditor = injectionParameters.ExternalEditorService ?? throw new ArgumentMissingException(nameof(injectionParameters.ExternalEditorService), nameof(injectionParameters));
             _format = injectionParameters.OriginalFormat;
 
             _cropResizeSettings.OkCommand = new EditorCommand<object>(DoCropResize, CanCropResize);
@@ -2072,6 +2208,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             ImportFileCommand = new EditorCommand<object>(DoImportFile, CanImportFile);
             ShowImageDimensionsCommand = new EditorCommand<object>(DoShowImageDimensions, CanShowImageDimensions);
             ShowMipGenerationCommand = new EditorCommand<object>(DoShowMipGeneration, CanShowMipGeneration);
+            EditInAppCommand = new EditorCommand<object>(DoEditInApp, () => ImageData != null);
         }
         #endregion
     }

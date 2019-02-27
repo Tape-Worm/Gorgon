@@ -289,7 +289,8 @@ namespace Gorgon.Editor.ImageEditor
                 MessageDisplay = injector.MessageDisplay,
                 ImageIO = imageIO,
                 UndoService = undoService,
-                ImageUpdater = new ImageUpdaterService()
+                ImageUpdater = new ImageUpdaterService(),
+                ExternalEditorService = new ImageExternalEditService(injector.Log)
             };
 
             var cropResizeSettings = new CropResizeSettings();

@@ -70,6 +70,15 @@ namespace Gorgon.Editor.ImageEditor
         }
 
         /// <summary>
+        /// Property to set or return the external image editor service.
+        /// </summary>
+        public IImageExternalEditService ExternalEditorService
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to set or return the image update service.
         /// </summary>
         public IImageUpdaterService ImageUpdater

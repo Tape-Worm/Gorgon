@@ -456,6 +456,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; was not found..
+        /// </summary>
+        internal static string GORIMG_ERR_FILE_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_FILE_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There is no support for the [{0}] format..
         /// </summary>
         internal static string GORIMG_ERR_FORMAT_NOT_SUPPORTED {
@@ -481,6 +490,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static string GORIMG_ERR_NO_CODEC {
             get {
                 return ResourceManager.GetString("GORIMG_ERR_NO_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find an external editor that can open &apos;{0}&apos;..
+        /// </summary>
+        internal static string GORIMG_ERR_NO_EXTERNAL_EDITOR {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_NO_EXTERNAL_EDITOR", resourceCulture);
             }
         }
         

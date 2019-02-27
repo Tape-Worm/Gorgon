@@ -80,8 +80,9 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="name">The name of the file to write into.</param>
         /// <param name="image">The image to save.</param>
         /// <param name="pixelFormat">The pixel format for the image.</param>
+        /// <param name="codec">[Optional] The codec to use when saving the image.</param>
         /// <returns>The updated working file.</returns>
-        IGorgonVirtualFile SaveImageFile(string name, IGorgonImage image, BufferFormat pixelFormat);
+        IGorgonVirtualFile SaveImageFile(string name, IGorgonImage image, BufferFormat pixelFormat, IGorgonImageCodec codec = null);
 
         /// <summary>
         /// Function to perform an export of an image.

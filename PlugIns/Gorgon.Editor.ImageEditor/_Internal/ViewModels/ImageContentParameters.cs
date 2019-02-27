@@ -146,6 +146,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the external editor service used to update an image.
+        /// </summary>
+        public IImageExternalEditService ExternalEditorService
+        {
+            get;
+        }
         #endregion
 
         #region Constructor/Finalizer.
@@ -181,6 +189,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             ImageIOService = services.ImageIO ?? throw new ArgumentMissingException(nameof(services.ImageIO),nameof(services));
             UndoService = services.UndoService ?? throw new ArgumentMissingException(nameof(services.UndoService), nameof(services));
             ImageUpdater = services.ImageUpdater ?? throw new ArgumentMissingException(nameof(services.ImageUpdater), nameof(services));
+            ExternalEditorService = services.ExternalEditorService ?? throw new ArgumentMissingException(nameof(services.ExternalEditorService), nameof(services));
             CropResizeSettings = cropResizeSettings ?? throw new ArgumentNullException(nameof(cropResizeSettings));
             DimensionSettings = dimensionSettings ?? throw new ArgumentNullException(nameof(dimensionSettings));
             MipMapSettings = mipMapSettings ?? throw new ArgumentNullException(nameof(mipMapSettings));

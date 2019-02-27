@@ -46,6 +46,7 @@ namespace Gorgon.Editor
             this.RibbonGroupFileSystemNew = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
             this.GalleryNew = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupGallery();
             this.RangeTest1 = new ComponentFactory.Krypton.Ribbon.KryptonGalleryRange();
+            this.kryptonGalleryRange1 = new ComponentFactory.Krypton.Ribbon.KryptonGalleryRange();
             this.GalleryNewImages = new System.Windows.Forms.ImageList(this.components);
             this.kryptonRibbonGroupTriple5 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
             this.ButtonOpenContent = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
@@ -73,7 +74,6 @@ namespace Gorgon.Editor
             this.Stage = new Gorgon.Editor.Views.Stage();
             this.PanelProject = new Gorgon.Editor.Views.EditorProject();
             this.PanelWorkSpace = new System.Windows.Forms.Panel();
-            this.kryptonGalleryRange1 = new ComponentFactory.Krypton.Ribbon.KryptonGalleryRange();
             ((System.ComponentModel.ISupportInitialize)(this.RibbonMain)).BeginInit();
             this.PanelWorkSpace.SuspendLayout();
             this.SuspendLayout();
@@ -85,7 +85,7 @@ namespace Gorgon.Editor
             // 
             // AppPalette
             // 
-            this.AppPalette.BasePaletteMode = ComponentFactory.Krypton.Toolkit.PaletteMode.Office2010Black;
+            this.AppPalette.BasePaletteMode = ComponentFactory.Krypton.Toolkit.PaletteMode.Office365Black;
             this.AppPalette.ButtonStyles.ButtonAlternate.OverrideDefault.Back.Color1 = System.Drawing.Color.SteelBlue;
             this.AppPalette.ButtonStyles.ButtonAlternate.OverrideDefault.Back.Color2 = System.Drawing.Color.SteelBlue;
             this.AppPalette.ButtonStyles.ButtonAlternate.OverrideDefault.Back.GraphicsHint = ComponentFactory.Krypton.Toolkit.PaletteGraphicsHint.AntiAlias;
@@ -792,6 +792,7 @@ namespace Gorgon.Editor
             this.RibbonMain.SelectedTab = this.TabFileSystem;
             this.RibbonMain.ShowMinimizeButton = false;
             this.RibbonMain.Size = new System.Drawing.Size(1280, 115);
+            this.RibbonMain.StateCommon.RibbonGeneral.RibbonShape = ComponentFactory.Krypton.Toolkit.PaletteRibbonShape.Office2010;
             this.RibbonMain.TabIndex = 0;
             this.RibbonMain.Visible = false;
             this.RibbonMain.AppButtonMenuOpening += new System.ComponentModel.CancelEventHandler(this.RibbonMain_AppButtonMenuOpening);
@@ -832,12 +833,17 @@ namespace Gorgon.Editor
             this.GalleryNew.TextLine1 = "New";
             this.GalleryNew.ToolTipBody = "Provides options for creating new content items.\r\n\r\nContent creation support is d" +
     "ependent upon the plugins installed in the editor.";
+            this.GalleryNew.Visible = false;
             // 
             // RangeTest1
             // 
             this.RangeTest1.Heading = "Test 1";
             this.RangeTest1.ImageIndexEnd = 12;
             this.RangeTest1.ImageIndexStart = 0;
+            // 
+            // kryptonGalleryRange1
+            // 
+            this.kryptonGalleryRange1.Heading = "Heading2";
             // 
             // GalleryNewImages
             // 
@@ -1086,10 +1092,6 @@ namespace Gorgon.Editor
             this.PanelWorkSpace.Name = "PanelWorkSpace";
             this.PanelWorkSpace.Size = new System.Drawing.Size(1280, 800);
             this.PanelWorkSpace.TabIndex = 0;
-            // 
-            // kryptonGalleryRange1
-            // 
-            this.kryptonGalleryRange1.Heading = "Heading2";
             // 
             // FormMain
             // 

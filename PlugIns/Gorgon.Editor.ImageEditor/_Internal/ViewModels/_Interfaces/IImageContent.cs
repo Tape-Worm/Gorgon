@@ -244,6 +244,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             get;
         }
+
+        /// <summary>
+        /// Porperty to return the command used to edit the image in an external application.
+        /// </summary>
+        IEditorCommand<object> EditInAppCommand
+        {
+            get;
+        }
         #endregion
     }
 }

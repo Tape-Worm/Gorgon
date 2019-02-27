@@ -126,6 +126,7 @@
             this.PanelImageViewControls.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.PanelImageViewControls.Size = new System.Drawing.Size(1211, 28);
             this.PanelImageViewControls.TabIndex = 2;
+            this.PanelImageViewControls.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.PanelImage_PreviewKeyDown);
             // 
             // LabelImageSize
             // 
@@ -139,6 +140,7 @@
             this.LabelImageSize.TabIndex = 11;
             this.LabelImageSize.Text = "Image size: WxH";
             this.LabelImageSize.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.LabelImageSize.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.PanelImage_PreviewKeyDown);
             // 
             // LabelDepthSliceDetails
             // 
@@ -153,6 +155,7 @@
             this.LabelDepthSliceDetails.TabIndex = 9;
             this.LabelDepthSliceDetails.Text = "1/n";
             this.LabelDepthSliceDetails.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.LabelDepthSliceDetails.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.PanelImage_PreviewKeyDown);
             // 
             // ButtonPrevDepthSlice
             // 
@@ -204,6 +207,7 @@
             this.LabelDepthSlice.TabIndex = 3;
             this.LabelDepthSlice.Text = "Depth slice:";
             this.LabelDepthSlice.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.LabelDepthSlice.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.PanelImage_PreviewKeyDown);
             // 
             // LabelArrayIndexDetails
             // 
@@ -218,6 +222,7 @@
             this.LabelArrayIndexDetails.TabIndex = 9;
             this.LabelArrayIndexDetails.Text = "1/n";
             this.LabelArrayIndexDetails.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.LabelArrayIndexDetails.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.PanelImage_PreviewKeyDown);
             // 
             // ButtonPrevArrayIndex
             // 
@@ -269,6 +274,7 @@
             this.LabelArrayIndex.TabIndex = 3;
             this.LabelArrayIndex.Text = "Array index:";
             this.LabelArrayIndex.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.LabelArrayIndex.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.PanelImage_PreviewKeyDown);
             // 
             // LabelMipDetails
             // 
@@ -283,6 +289,7 @@
             this.LabelMipDetails.TabIndex = 6;
             this.LabelMipDetails.Text = "1/n (WxH)";
             this.LabelMipDetails.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.LabelMipDetails.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.PanelImage_PreviewKeyDown);
             // 
             // ButtonPrevMip
             // 
@@ -334,6 +341,7 @@
             this.LabelMipLevel.TabIndex = 2;
             this.LabelMipLevel.Text = "Mip level:";
             this.LabelMipLevel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.LabelMipLevel.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.PanelImage_PreviewKeyDown);
             // 
             // TableViewControls
             // 
@@ -393,6 +401,7 @@
             this.PanelImage.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PanelImage_MouseDown);
             this.PanelImage.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PanelImage_MouseMove);
             this.PanelImage.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PanelImage_MouseUp);
+            this.PanelImage.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.PanelImage_PreviewKeyDown);
             // 
             // GenMipMapSettings
             // 
@@ -456,6 +465,7 @@
             this.Size = new System.Drawing.Size(1211, 797);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.ImageEditorView_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.ImageEditorView_DragEnter);
+            this.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.PanelImage_PreviewKeyDown);
             this.Controls.SetChildIndex(this.PanelBottomBar, 0);
             this.Controls.SetChildIndex(this.PresentationPanel, 0);
             ((System.ComponentModel.ISupportInitialize)(this.PresentationPanel)).EndInit();

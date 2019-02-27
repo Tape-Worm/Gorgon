@@ -234,17 +234,23 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="name">The name of the file to write into.</param>
         /// <param name="image">The image to save.</param>
         /// <param name="pixelFormat">The pixel format for the image.</param>
+        /// <param name="codec">[Optional] The codec to use when saving the image.</param>
         /// <returns>The updated working file.</returns>
-        public IGorgonVirtualFile SaveImageFile(string name, IGorgonImage image, BufferFormat pixelFormat)
+        public IGorgonVirtualFile SaveImageFile(string name, IGorgonImage image, BufferFormat pixelFormat, IGorgonImageCodec codec = null)
         {
             IGorgonVirtualFile result = null;
 
-            // We absolutely need to have an extension, or else the texconv tool will not work.
-            if ((DefaultCodec.CodecCommonExtensions.Count > 0) 
-                && (!string.Equals(Path.GetExtension(name), DefaultCodec.CodecCommonExtensions[0], System.StringComparison.OrdinalIgnoreCase)))
+            if (codec == null)
             {
-                _log.Print("Adding DDS extension to working file or else external tools may not be able to read it.", LoggingLevel.Verbose);
-                name = Path.ChangeExtension(name, DefaultCodec.CodecCommonExtensions[0]);
+                codec = DefaultCodec;
+            }
+
+            // We absolutely need to have an extension, or else the texconv tool will not work.
+            if ((codec.CodecCommonExtensions.Count > 0) 
+                && (!string.Equals(Path.GetExtension(name), codec.CodecCommonExtensions[0], StringComparison.OrdinalIgnoreCase)))
+            {
+                _log.Print("Adding extension to working file or else external tools may not be able to read it.", LoggingLevel.Verbose);
+                name = Path.ChangeExtension(name, codec.CodecCommonExtensions[0]);
             }
 
             IGorgonVirtualFile workFile = ScratchArea.FileSystem.GetFile(name);
@@ -267,7 +273,7 @@ namespace Gorgon.Editor.ImageEditor
             if (formatInfo.IsCompressed)
             {
                 _log.Print($"Pixel format [{pixelFormat}] is a block compression format, compressing using external tool...", LoggingLevel.Intermediate);
-                if (_compressor == null)
+                if ((_compressor == null) || (!codec.SupportsBlockCompression))
                 {
                     throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_ERR_COMPRESSED_FILE, formatInfo.Format));
                 }
@@ -275,7 +281,7 @@ namespace Gorgon.Editor.ImageEditor
                 // Send the image data as uncompressed to our working file, so we can have something to compress.
                 using (Stream outStream = ScratchArea.OpenStream(workFile.FullPath, FileMode.Create))
                 {
-                    DefaultCodec.SaveToStream(image, outStream);
+                    codec.SaveToStream(image, outStream);
                 }
 
                 _log.Print($"Saving to working file '{workFile.FullPath}'...", LoggingLevel.Simple);
@@ -339,7 +345,7 @@ namespace Gorgon.Editor.ImageEditor
                 _log.Print($"Saving to working file '{workFile.FullPath}'...", LoggingLevel.Simple);
                 using (Stream outStream = ScratchArea.OpenStream(workFile.FullPath, FileMode.Create))
                 {
-                    DefaultCodec.SaveToStream(image, outStream);
+                    codec.SaveToStream(image, outStream);
                 }
 
                 ScratchArea.FileSystem.Refresh();

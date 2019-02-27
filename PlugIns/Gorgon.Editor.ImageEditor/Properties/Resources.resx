@@ -448,4 +448,10 @@ Do you wish to continue?</value>
 
 Would you like to continue?</value>
   </data>
+  <data name="GORIMG_ERR_FILE_NOT_FOUND" xml:space="preserve">
+    <value>The file '{0}' was not found.</value>
+  </data>
+  <data name="GORIMG_ERR_NO_EXTERNAL_EDITOR" xml:space="preserve">
+    <value>Could not find an external editor that can open '{0}'.</value>
+  </data>
 </root>

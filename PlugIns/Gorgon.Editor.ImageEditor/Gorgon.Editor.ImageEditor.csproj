@@ -65,10 +65,13 @@
     <Compile Include="_Internal\ImageImporterSettings.cs" />
     <Compile Include="ImageImporterPlugin.cs" />
     <Compile Include="_Internal\Cube.cs" />
+    <Compile Include="_Internal\Native\Win32API.cs" />
+    <Compile Include="_Internal\Services\ImageExternalEditService.cs" />
     <Compile Include="_Internal\Services\ImportImageDialogService.cs" />
     <Compile Include="_Internal\Services\ExportImageDialogService.cs" />
     <Compile Include="_Internal\CubeVertex.cs" />
     <Compile Include="_Internal\Services\TextureCubeViewer.cs" />
+    <Compile Include="_Internal\Services\_Interfaces\IImageExternalEditService.cs" />
     <Compile Include="_Internal\Services\_Interfaces\IImportImageDialogService.cs" />
     <Compile Include="_Internal\Services\_Interfaces\IImageUpdaterService.cs" />
     <Compile Include="_Internal\Services\ImageEditorServices.cs" />

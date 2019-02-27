@@ -91,6 +91,7 @@
             this.RibbonImageContent.Name = "RibbonImageContent";
             this.RibbonImageContent.RibbonTabs.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab[] {
             this.TabImage});
+            this.RibbonImageContent.SelectedContext = null;
             this.RibbonImageContent.SelectedTab = this.TabImage;
             this.RibbonImageContent.Size = new System.Drawing.Size(1293, 115);
             this.RibbonImageContent.TabIndex = 0;
@@ -199,6 +200,7 @@
     "image editor application is launched, Gorgon\'s UI will remain locked until the a" +
     "pplication exits.\r\n";
             this.ButtonEditInApp.ToolTipTitle = "Edit In Application";
+            this.ButtonEditInApp.Click += new System.EventHandler(this.ButtonEditInApp_Click);
             // 
             // kryptonRibbonGroupLines2
             // 

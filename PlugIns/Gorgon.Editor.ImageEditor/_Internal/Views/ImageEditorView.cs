@@ -567,6 +567,65 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="PaintEventArgs"/> instance containing the event data.</param>
         private void PanelImage_RenderToBitmap(object sender, PaintEventArgs e) => RenderSwapChainToBitmap(e.Graphics);
 
+
+        /// <summary>Handles the PreviewKeyDown event of the PanelImage control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PreviewKeyDownEventArgs"/> instance containing the event data.</param>
+        private void PanelImage_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.Left:
+                    if (e.Shift)
+                    {
+                        DataContext.CurrentArrayIndex -= (DataContext.ArrayCount / 2).Max(1).Min(6);
+                        DataContext.CurrentDepthSlice -= (DataContext.DepthCount / 2).Max(1).Min(6);
+                    }
+                    else
+                    {
+                        --DataContext.CurrentArrayIndex;
+                        --DataContext.CurrentDepthSlice;
+                    }
+                    e.IsInputKey = true;
+                    return;
+                case Keys.Right:
+                    if (e.Shift)
+                    {
+                        DataContext.CurrentArrayIndex += (DataContext.ArrayCount / 2).Max(1).Min(6);
+                        DataContext.CurrentDepthSlice += (DataContext.DepthCount / 2).Max(1).Min(6);
+                    }
+                    else
+                    {
+                        ++DataContext.CurrentArrayIndex;
+                        ++DataContext.CurrentDepthSlice;
+                    }
+                    e.IsInputKey = true;
+                    return;
+                case Keys.Up:
+                    if (e.Shift)
+                    {
+                        DataContext.CurrentMipLevel -= 2;
+                    }
+                    else
+                    {
+                        --DataContext.CurrentMipLevel;
+                    }
+                    e.IsInputKey = true;
+                    return;
+                case Keys.Down:
+                    if (e.Shift)
+                    {
+                        DataContext.CurrentMipLevel += 2;
+                    }
+                    else
+                    {
+                        ++DataContext.CurrentMipLevel;
+                    }
+                    e.IsInputKey = true;
+                    return;
+            }
+        }
+
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Control.Resize"/> event.</summary>
         /// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
         protected override void OnResize(EventArgs e)
@@ -700,6 +759,8 @@ namespace Gorgon.Editor.ImageEditor
 
             DataContext?.OnLoad();
             IdleMethod = Idle;
+
+            PanelImage.Select();
 
             ValidateControls();
         }

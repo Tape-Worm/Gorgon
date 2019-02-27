@@ -283,6 +283,21 @@ namespace Gorgon.Editor.ImageEditor
             }
         }
 
+
+        /// <summary>Handles the Click event of the ButtonEditInApp control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonEditInApp_Click(object sender, EventArgs e)
+        {
+            if ((DataContext?.EditInAppCommand == null) || (!DataContext.EditInAppCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            DataContext.EditInAppCommand.Execute(null);
+            ValidateButtons();
+        }
+
         /// <summary>Handles the Click event of the ButtonSaveImage control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
