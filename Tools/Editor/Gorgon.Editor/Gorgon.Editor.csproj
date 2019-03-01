@@ -101,13 +101,11 @@
     <Compile Include="Services\_Interfaces\IContentImporterPluginManagerService.cs" />
     <Compile Include="Services\_Interfaces\IFileScanService.cs" />
     <Compile Include="Services\UndoService.cs" />
-    <Compile Include="Services\WorkspaceTester.cs" />
     <Compile Include="Services\_Interfaces\IContentPluginManagerService.cs" />
     <Compile Include="Services\_Interfaces\IEditorFileSaveAsDialogService.cs" />
     <Compile Include="Services\_Interfaces\IEditorFileOpenDialogService.cs" />
     <Compile Include="Services\_Interfaces\IFileSystemProviders.cs" />
     <Compile Include="Services\_Interfaces\IFileSystemService.cs" />
-    <Compile Include="Services\_Interfaces\IWorkspaceTester.cs" />
     <Compile Include="ViewModels\AppCloseArgs.cs" />
     <Compile Include="ViewModels\ContentPreviewVm.cs" />
     <Compile Include="ViewModels\ContentPreviewVmParameters.cs" />
@@ -367,6 +365,9 @@
       <Version>4.2.0</Version>
     </PackageReference>
     <PackageReference Include="System.Buffers">
+      <Version>4.5.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.IO.FileSystem.AccessControl">
       <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
