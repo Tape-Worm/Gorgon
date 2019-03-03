@@ -220,10 +220,11 @@ namespace Gorgon.Editor.Services
         /// Function to set up the content plug in association for a content file.
         /// </summary>
         /// <param name="contentFile">The content file to evaluate.</param>
+        /// <param name="fileManager">The file manager used to manage content files.</param>
         /// <param name="metadataOnly"><b>true</b> to indicate that only metadata should be used to scan the content file, <b>false</b> to scan, in depth, per plugin (slow).</param>
         /// <returns><b>true</b> if a content plug in was associated, <b>false</b> if not.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="contentFile"/> parameter is <b>null</b>.</exception>
-        public bool AssignContentPlugin(IContentFile contentFile, bool metadataOnly)
+        public bool AssignContentPlugin(IContentFile contentFile, IContentFileManager fileManager, bool metadataOnly)
         {
             if (contentFile == null)
             {
@@ -268,7 +269,7 @@ namespace Gorgon.Editor.Services
             foreach (KeyValuePair<string, ContentPlugin> servicePlugin in Plugins)
             {
                 if ((!(servicePlugin.Value is IContentPluginMetadata pluginMetadata))
-                    || (!pluginMetadata.CanOpenContent(contentFile)))
+                    || (!pluginMetadata.CanOpenContent(contentFile, fileManager)))
                 {
                     continue;
                 }

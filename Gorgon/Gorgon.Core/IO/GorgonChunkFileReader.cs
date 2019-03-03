@@ -271,6 +271,59 @@ namespace Gorgon.IO
 			_activeReader = null;
 		}
 
+        /// <summary>
+        /// Function to determine if the data in the stream is a chunk file.
+        /// </summary>
+        /// <param name="stream">The stream containing the data.</param>
+        /// <returns><b>true</b> if the stream data contains a chunk file, <b>false</b> if not.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only.</exception>
+        public static bool IsReadable(Stream stream)
+        {
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            if (!stream.CanRead)
+            {
+                throw new IOException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
+            }
+
+            if (!stream.CanSeek)
+            {
+                return false;
+            }
+
+            GorgonBinaryReader reader = null;
+            long pos = 0;
+
+            try
+            {
+                pos = stream.Position;
+
+                if (stream.Length < 16)
+                {
+                    return false;
+                }
+
+                reader = new GorgonBinaryReader(stream, true);
+
+                ulong headerID = reader.ReadUInt64();
+
+                return FileFormatHeaderIDv0100 == headerID;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            finally
+            {
+                reader?.Dispose();
+                stream.Position = pos;
+            }
+        }
+
 		/// <summary>
 		/// Function to open a chunk for reading.
 		/// </summary>

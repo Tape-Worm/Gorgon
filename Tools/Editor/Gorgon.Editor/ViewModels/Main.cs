@@ -405,7 +405,7 @@ namespace Gorgon.Editor.ViewModels
                 });
             }
                         
-            await Task.Run(() => _viewModelFactory.FileScanService.Scan(projectVm.FileExplorer.RootNode, UpdateScanProgress, true, true));
+            await Task.Run(() => _viewModelFactory.FileScanService.Scan(projectVm.FileExplorer.RootNode, projectVm.ContentFileManager, UpdateScanProgress, true, true));
 
             // Update the metadata for the most up-to-date info.
             await projectVm.SaveProjectMetadataAsync();

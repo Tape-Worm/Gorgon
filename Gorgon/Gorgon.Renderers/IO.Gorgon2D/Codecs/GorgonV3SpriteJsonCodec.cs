@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Buffers;
 using System.IO;
 using System.Text;
 using Gorgon.Core;
@@ -160,9 +161,32 @@ namespace Gorgon.IO
         protected override bool OnIsReadable(Stream stream)
         {
             JsonReader reader = null;
+            long pos = 0;
+            byte[] fileBuffer = null;
 
             try
-            {
+            {                
+                pos = stream.Position;
+
+                if (stream.Length < 4)
+                {
+                    return false;
+                }
+
+                fileBuffer = ArrayPool<byte>.Shared.Rent(4);
+
+                stream.Read(fileBuffer, 0, 4);
+
+                stream.Position = pos;
+
+                string fileBegin = Encoding.UTF8.GetString(fileBuffer, 0, 4);
+
+                // This is not a JSON file if we don't have an opening curly brace.
+                if (!fileBegin.StartsWith("{", StringComparison.OrdinalIgnoreCase))
+                {
+                    return false;
+                }
+
                 reader = GetJsonReader(stream);
                 return IsReadableJObject(reader);
             }
@@ -173,6 +197,11 @@ namespace Gorgon.IO
             finally
             {
                 reader?.Close();
+                stream.Position = pos;
+                if (fileBuffer != null)
+                {
+                    ArrayPool<byte>.Shared.Return(fileBuffer);
+                }
             }
         }
 

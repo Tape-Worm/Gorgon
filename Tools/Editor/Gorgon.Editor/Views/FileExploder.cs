@@ -142,7 +142,8 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            UnassignNodeEvents(node.Children);
+            UnassignNodeEvents(node.Dependencies);
+            UnassignNodeEvents(node.Children);            
             node.PropertyChanged -= Node_PropertyChanged;
             _revNodeLinks.Remove(node);
         }
@@ -231,6 +232,7 @@ namespace Gorgon.Editor.Views
             {
                 newNode.PropertyChanged += Node_PropertyChanged;
                 newNode.Children.CollectionChanged += Nodes_CollectionChanged;
+                newNode.Dependencies.CollectionChanged += Nodes_CollectionChanged;
 
                 int imageIndex = FindImageIndexFromNode(newNode);
                 newTreeNode = new KryptonTreeNode(newNode.Name, imageIndex, imageIndex);
@@ -271,14 +273,14 @@ namespace Gorgon.Editor.Views
         private void ClearNodeBranch(ObservableCollection<IFileExplorerNodeVm> nodes)
         {
             // Find the owner of the collection.
-            IFileExplorerNodeVm node = _revNodeLinks.FirstOrDefault(item => item.Key.Children == nodes).Key;
+            IFileExplorerNodeVm node = _revNodeLinks.FirstOrDefault(item => (item.Key.Children == nodes) || (item.Key.Dependencies == nodes)).Key;
 
             if ((node == null) && (nodes != DataContext.RootNode.Children))
             {
                 return;
             }
 
-            nodes.CollectionChanged -= Nodes_CollectionChanged;
+            nodes.CollectionChanged -= Nodes_CollectionChanged;            
 
             if ((node != null) && (_revNodeLinks.TryGetValue(node, out KryptonTreeNode treeNode)))
             {
@@ -307,6 +309,7 @@ namespace Gorgon.Editor.Views
                 foreach (IFileExplorerNodeVm cachedNode in _revNodeLinks.Keys)
                 {
                     UnassignNodeEvents(cachedNode.Children);
+                    UnassignNodeEvents(cachedNode.Dependencies);
 
                     if (cachedNode != DataContext.RootNode)
                     {
@@ -1057,6 +1060,13 @@ namespace Gorgon.Editor.Views
                 data.TargetTreeNode.BackColor = Color.Empty;
             }
 
+            // We won't allow links to be dragged into other nodes.
+            if (data.Node.NodeType == NodeType.Link)
+            {
+                e.Effect = DragDropEffects.None;
+                return;
+            }
+
             TreeViewHitTestInfo hitResult = TreeFileSystem.HitTest(TreeFileSystem.PointToClient(new Point(e.X, e.Y)));
             IFileExplorerNodeVm targetNode;
 
@@ -1406,7 +1416,7 @@ namespace Gorgon.Editor.Views
             e.Node.Nodes.Clear();
 
             if ((!_nodeLinks.TryGetValue((KryptonTreeNode)e.Node, out IFileExplorerNodeVm node))
-                || (node.Children.Count == 0))
+                || ((node.Children.Count == 0) && (node.Dependencies.Count == 0)))
             {
                 return;
             }
@@ -1487,11 +1497,20 @@ namespace Gorgon.Editor.Views
             }
 
             // Turn off events for this nodes children since they'll be destroyed anyway, and we really don't want to trigger the events during a refresh.
-            UnassignNodeEvents(parentNode.Children);            
+            UnassignNodeEvents(parentNode.Dependencies);
+            UnassignNodeEvents(parentNode.Children);
 
-            FillTree(e.Node.Nodes, parentNode.Children, false);
+            if (parentNode.Children.Count > 0)
+            {
+                FillTree(e.Node.Nodes, parentNode.Children, false);
+            }
+            else
+            {
+                FillTree(e.Node.Nodes, parentNode.Dependencies, false);
+            }            
 
             AssignNodeEvents(parentNode.Children);
+            AssignNodeEvents(parentNode.Dependencies);
         }
 
         /// <summary>
@@ -1609,7 +1628,7 @@ namespace Gorgon.Editor.Views
                     treeNode.ImageIndex = treeNode.SelectedImageIndex = imageIndex;
                 }
 
-                if ((node.Children.Count > 0) && (!treeNode.IsExpanded))
+                if (((node.Children.Count > 0) || (node.Dependencies.Count > 0)) && (!treeNode.IsExpanded))
                 {
                     treeNode.Nodes.Add(new KryptonTreeNode("DUMMY_NODE_SHOULD_NOT_SEE_ME"));
                 }
@@ -1808,6 +1827,8 @@ namespace Gorgon.Editor.Views
         /// </summary>
         private void ResetDataContext()
         {
+            DataContext?.OnUnload();
+
             _searchNodes = null;
             _clipboardContext = null;
             _nodeDragDropHandler = null;
@@ -1838,9 +1859,10 @@ namespace Gorgon.Editor.Views
 
                 node.PropertyChanged += Node_PropertyChanged;
                 node.Children.CollectionChanged += Nodes_CollectionChanged;
+                node.Dependencies.CollectionChanged += Nodes_CollectionChanged;
             }
 
-            nodes.CollectionChanged += Nodes_CollectionChanged;
+            nodes.CollectionChanged += Nodes_CollectionChanged;            
         }
 
         /// <summary>
@@ -1863,6 +1885,7 @@ namespace Gorgon.Editor.Views
                     continue;
                 }
 
+                node.Dependencies.CollectionChanged -= Nodes_CollectionChanged;
                 node.Children.CollectionChanged -= Nodes_CollectionChanged;
                 node.PropertyChanged -= Node_PropertyChanged;
             }
@@ -1901,6 +1924,8 @@ namespace Gorgon.Editor.Views
                     ResetDataContext();
                     return;
                 }
+
+                DataContext?.OnUnload();
 
                 _clipboardContext = dataContext as IClipboardHandler;
                 _nodeDragDropHandler = dataContext;

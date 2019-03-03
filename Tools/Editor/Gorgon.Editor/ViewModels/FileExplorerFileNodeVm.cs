@@ -36,6 +36,10 @@ using Gorgon.Editor.Content;
 using Gorgon.Editor.Metadata;
 using System.Linq;
 using Gorgon.Diagnostics;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -50,6 +54,8 @@ namespace Gorgon.Editor.ViewModels
         private bool _isOpen;
         // The file system information object.
         private FileInfo _fileInfo;
+        // The list of content file dependant upon this file.
+        private ObservableCollection<IContentFile> _dependencies;
         #endregion
 
         #region Events.
@@ -133,10 +139,72 @@ namespace Gorgon.Editor.ViewModels
 
         /// <summary>Property to return the physical path to the node.</summary>
         public override string PhysicalPath => Parent == null ? null : Path.Combine(Parent.PhysicalPath, Name);
+
+        /// <summary>Property to return the list of items dependant upon this node</summary>
+        IList<IContentFile> IContentFile.Dependencies => _dependencies;
         #endregion
 
         #region Methods.
-        // 
+        /// <summary>
+        /// Function to synchronize between two collections when one of the collections has changed.
+        /// </summary>
+        /// <typeparam name="T">The type of data in the destination collection.</typeparam>
+        /// <param name="dest">The destination collection.</param>
+        /// <param name="e">The event parameters from the collection changed event.</param>
+        private void HandleCollectionSync<T>(ObservableCollection<T> dest, NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    foreach (T node in e.NewItems.OfType<T>())
+                    {
+                        if (dest.Contains(node))
+                        {
+                            continue;
+                        }
+
+                        dest.Add(node);
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    foreach (T node in e.OldItems.OfType<T>())
+                    {
+                        if (!dest.Contains(node))
+                        {
+                            continue;
+                        }
+
+                        dest.Remove(node);
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    if (dest.Count > 0)
+                    {
+                        dest.Clear();
+                    }
+                    break;
+            }
+        }
+
+        /// <summary>Handles the CollectionChanged event of the Dependencies control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
+        private void ContentDependencies_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) => HandleCollectionSync(Dependencies, e);
+
+        /// <summary>Handles the CollectionChanged event of the Dependencies control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
+        private void Dependencies_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) => HandleCollectionSync(_dependencies, e);
+
+        /// <summary>Function to retrieve the physical file system object for this node.</summary>
+        /// <param name="path">The path to the physical file system object.</param>
+        /// <returns>Information about the physical file system object.</returns>
+        protected override FileSystemInfo OnGetFileSystemObject(string path)
+        {
+            _fileInfo = new FileInfo(path);
+            return _fileInfo;
+        }
+
         /// <summary>
         /// Function to rename a node that is in conflict when the file is the same in the source and dest, or if the user chooses to not overwrite.
         /// </summary>
@@ -147,15 +215,6 @@ namespace Gorgon.Editor.ViewModels
         {
             string newName = FileSystemService.GenerateFileName(path);
             return Path.Combine(destPath, newName);
-        }
-
-        /// <summary>Function to retrieve the physical file system object for this node.</summary>
-        /// <param name="path">The path to the physical file system object.</param>
-        /// <returns>Information about the physical file system object.</returns>
-        protected override FileSystemInfo OnGetFileSystemObject(string path)
-        {
-            _fileInfo = new FileInfo(path);
-            return _fileInfo;
         }
 
         /// <summary>Function called to refresh the underlying data for the node.</summary>
@@ -238,16 +297,24 @@ namespace Gorgon.Editor.ViewModels
         {
             try
             {
+                // Delete the physical object first. If we fail here, our node will survive.
+                FileSystemService.DeleteFile(_fileInfo);
+
+                IFileExplorerNodeVm openDependant = Dependencies.FirstOrDefault(item => item.IsOpen);
+                EventHandler handler = Deleted;
+                handler?.Invoke(this, EventArgs.Empty);
+
                 // If this node is open, then we need to notify the content that we just deleted the node it is associated with.
                 if (IsOpen)
                 {
-                    EventHandler deleteEvent = Deleted;
-                    Deleted?.Invoke(this, EventArgs.Empty);
                     IsOpen = false;
                 }
 
-                // Delete the physical object first. If we fail here, our node will survive.
-                FileSystemService.DeleteFile(_fileInfo);
+                // Close any open dependant file.
+                if (openDependant != null)
+                {
+                    openDependant.IsOpen = false;
+                }
 
                 // If we have a source file, remove it.
                 if ((Metadata != null) 
@@ -273,6 +340,8 @@ namespace Gorgon.Editor.ViewModels
                 
                 NotifyPropertyChanging(nameof(FullPath));
 
+                OnUnload();
+                
                 // Drop us from the parent list.
                 // This will begin a chain reaction that will remove us from the UI.
                 Parent.Children.Remove(this);
@@ -684,6 +753,18 @@ namespace Gorgon.Editor.ViewModels
         /// </para>
         /// </remarks>
         public override long GetSizeInBytes() => _fileInfo.Length;
+
+        /// <summary>Function called when the associated view is unloaded.</summary>
+        public override void OnUnload()
+        {
+            foreach (IFileExplorerNodeVm dep in Dependencies)
+            {
+                dep.OnUnload();
+            }
+            _dependencies.CollectionChanged -= ContentDependencies_CollectionChanged;
+            Dependencies.CollectionChanged -= Dependencies_CollectionChanged;
+            base.OnUnload();
+        }
         #endregion
 
         #region Constructor/Finalizer.
@@ -693,14 +774,20 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="copy">The node to copy.</param>
         internal FileExplorerFileNodeVm(FileExplorerFileNodeVm copy)
             : base(copy)
-        {            
+        {
+            _dependencies = new ObservableCollection<IContentFile>();
+            _dependencies.CollectionChanged += ContentDependencies_CollectionChanged;
+            Dependencies.CollectionChanged += Dependencies_CollectionChanged;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileExplorerFileNodeVm" /> class.
         /// </summary>
         public FileExplorerFileNodeVm()
-        {            
+        {
+            _dependencies = new ObservableCollection<IContentFile>();
+            _dependencies.CollectionChanged += ContentDependencies_CollectionChanged;
+            Dependencies.CollectionChanged += Dependencies_CollectionChanged;
         }
         #endregion
     }

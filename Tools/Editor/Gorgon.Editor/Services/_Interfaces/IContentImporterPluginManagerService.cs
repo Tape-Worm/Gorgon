@@ -26,6 +26,7 @@
 
 using System.IO;
 using Gorgon.Editor.Plugins;
+using Gorgon.IO;
 using Gorgon.Plugins;
 
 namespace Gorgon.Editor.Services
@@ -64,8 +65,9 @@ namespace Gorgon.Editor.Services
         /// Function to retrieve the appropriate content importer for the file specified.
         /// </summary>
         /// <param name="file">The content file to evaluate.</param>
+        /// <param name="fileSystem">The file system containing the file to evaluate.</param>
         /// <param name="metadataOnly"><b>true</b> to indicate that only metadata should be used to scan the content file, <b>false</b> to scan, in depth, per plugin (slow).</param>
         /// <returns>A <see cref="IEditorContentImporter"/>, or <b>null</b> if none was found.</returns>
-        IEditorContentImporter GetContentImporter(FileInfo file);
+        IEditorContentImporter GetContentImporter(FileInfo file, IGorgonFileSystem fileSystem);
     }
 }

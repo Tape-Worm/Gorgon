@@ -339,6 +339,11 @@ namespace Gorgon.IO
 
             try
             {
+                if (!GorgonChunkFileReader.IsReadable(stream))
+                {
+                    return false;
+                }
+
                 reader = new GorgonChunkFileReader(stream, new [] { CurrentFileHeader });
                 reader.Open();
                 return IsReadableChunkFile(reader);

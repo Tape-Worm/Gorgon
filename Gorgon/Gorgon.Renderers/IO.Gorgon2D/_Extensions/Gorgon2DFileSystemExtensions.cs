@@ -147,7 +147,7 @@ namespace Gorgon.IO.Extensions
         /// <param name="codecs">The list of available image codecs to use when determining texture type.</param>
         /// <returns>A tuple containing the codec, the texture file, and a flag to indicate that the texture was previously loaded into memory.</returns>
         private static (IGorgonImageCodec codec, IGorgonVirtualFile file, bool alreadyLoaded) LocateTextureCodecAndFile(
-            GorgonFileSystem fileSystem,
+            IGorgonFileSystem fileSystem,
             IGorgonVirtualDirectory localDir,
             Gorgon2D renderer,
             string textureName,
@@ -246,7 +246,7 @@ namespace Gorgon.IO.Extensions
         /// <seealso cref="GorgonFileSystem"/>
         /// <seealso cref="GorgonTexture2DView"/>
         /// <seealso cref="GorgonSprite"/>
-        public static GorgonSprite LoadSprite(this GorgonFileSystem fileSystem,
+        public static GorgonSprite LoadSprite(this IGorgonFileSystem fileSystem,
                                               Gorgon2D renderer,
                                               string path,
                                               IEnumerable<IGorgonSpriteCodec> spriteCodecs = null,

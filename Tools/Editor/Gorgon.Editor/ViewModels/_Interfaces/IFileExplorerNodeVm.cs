@@ -64,6 +64,14 @@ namespace Gorgon.Editor.ViewModels
     {
         #region Properties.
         /// <summary>
+        /// Property to return the list of items dependant upon this node
+        /// </summary>
+        ObservableCollection<IFileExplorerNodeVm> Dependencies
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to set or return the metadata for the node.
         /// </summary>
         ProjectItemMetadata Metadata

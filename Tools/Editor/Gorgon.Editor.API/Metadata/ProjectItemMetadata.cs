@@ -65,6 +65,16 @@ namespace Gorgon.Editor.Metadata
             get;
             private set;
         } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// Property to return the list of item paths that this item depends on.
+        /// </summary>
+        [JsonProperty]
+        public List<string> Dependencies
+        {
+            get;
+            private set;
+        } = new List<string>();
         
         /// <summary>
         /// Property to return the content plugin metadata associated with this project item.
@@ -111,6 +121,11 @@ namespace Gorgon.Editor.Metadata
             foreach (KeyValuePair<string, string> attribute in metadata.Attributes)
             {
                 Attributes[attribute.Key] = attribute.Value;
+            }
+
+            foreach (string path in metadata.Dependencies)
+            {
+                Dependencies.Add(path);
             }
         }
 

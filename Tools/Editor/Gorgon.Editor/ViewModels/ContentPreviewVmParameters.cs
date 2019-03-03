@@ -30,6 +30,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Gorgon.Editor.Content;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -49,6 +50,14 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Property to return the file manager for content.
+        /// </summary>
+        public IContentFileManager ContentFileManager
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the thumbnail directory for the previewer.
         /// </summary>
         public DirectoryInfo ThumbDirectory
@@ -60,13 +69,15 @@ namespace Gorgon.Editor.ViewModels
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ViewModels.ContentPreviewVmParameters"/> class.</summary>
         /// <param name="fileExplorer">The file explorer view model.</param>
+        /// <param name="contentFileManager">The file manager used for content files.</param>
         /// <param name="thumbDirectory">The thumbnail directory for the previewer.</param>
         /// <param name="viewModelFactory">The view model factory for creating view models.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public ContentPreviewVmParameters(IFileExplorerVm fileExplorer, DirectoryInfo thumbDirectory, ViewModelFactory viewModelFactory)
+        public ContentPreviewVmParameters(IFileExplorerVm fileExplorer, IContentFileManager contentFileManager, DirectoryInfo thumbDirectory, ViewModelFactory viewModelFactory)
             : base(viewModelFactory)
         {            
             FileExplorer = fileExplorer ?? throw new ArgumentNullException(nameof(fileExplorer));
+            ContentFileManager = contentFileManager ?? throw new ArgumentNullException(nameof(contentFileManager));
             ThumbDirectory = thumbDirectory ?? throw new ArgumentNullException(nameof(thumbDirectory));
         }
         #endregion

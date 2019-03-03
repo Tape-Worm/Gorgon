@@ -25,11 +25,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Diagnostics;
@@ -49,6 +46,8 @@ namespace Gorgon.Editor.ViewModels
         #region Variables.
         // The file explorer view model, used to track selection changes.
         private IFileExplorerVm _fileExplorer;
+        // The file manager for content.
+        private IContentFileManager _contentFileManager;
         // The image to display.
         private IGorgonImage _image;
         // The PNG image codec.  Our thumbnails will be stored as png files.
@@ -152,7 +151,7 @@ namespace Gorgon.Editor.ViewModels
                 var thumbNailFile = new FileInfo(Path.Combine(ThumbnailDirectory.FullName, thumbnailName));
 
                 _cancelSource = new CancellationTokenSource();
-                _loadPreviewTask = file.Metadata.ContentMetadata.GetThumbnailAsync(file, thumbNailFile, _cancelSource.Token);
+                _loadPreviewTask = file.Metadata.ContentMetadata.GetThumbnailAsync(file, _contentFileManager, thumbNailFile, _cancelSource.Token);
 
                 IGorgonImage image = await _loadPreviewTask;
 
@@ -265,6 +264,7 @@ namespace Gorgon.Editor.ViewModels
         protected override void OnInitialize(ContentPreviewVmParameters injectionParameters)
         {
             _fileExplorer = injectionParameters.FileExplorer ?? throw new ArgumentMissingException(nameof(ContentPreviewVmParameters.FileExplorer), nameof(injectionParameters));
+            _contentFileManager = injectionParameters.ContentFileManager ?? throw new ArgumentMissingException(nameof(ContentPreviewVmParameters.ContentFileManager), nameof(injectionParameters));
             ThumbnailDirectory = injectionParameters.ThumbDirectory ?? throw new ArgumentMissingException(nameof(ContentPreviewVmParameters.ThumbDirectory), nameof(injectionParameters));
         }
 

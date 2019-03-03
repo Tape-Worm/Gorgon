@@ -50,16 +50,22 @@ namespace Gorgon.Editor.Services
         /// Function to perform the scan used to determine whether a content file has an associated plugin or not.
         /// </summary>
         /// <param name="node">The node to scan.</param>
+        /// <param name="contentFileManager">The file manager used to manage content file data.</param>
         /// <param name="scanProgress">The callback method used to report progress of the scan.</param>
         /// <param name="deepScan"><b>true</b> to perform a more time consuming scan, or <b>false</b> to just scan by file name extension.</param>
         /// <param name="forceScan">[Optional] <b>true</b> to force the scan, even if content metadata is already available, or <b>false</b> to skip files with content metadata already.</param>
         /// <returns><b>true</b> if the content plugin metadata was updated, <b>false</b> if not.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="node"/>, or the <paramref name="scanProgress"/> parameter is <b>null</b>.</exception>        
-        public bool Scan(IFileExplorerNodeVm node, Action<string, int, int> scanProgress, bool deepScan, bool forceScan = false)
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="node"/>, <paramref name="contentFileManager"/> or the <paramref name="scanProgress"/> parameter is <b>null</b>.</exception>        
+        public bool Scan(IFileExplorerNodeVm node, IContentFileManager contentFileManager, Action<string, int, int> scanProgress, bool deepScan, bool forceScan = false)
         {
             if (node == null)
             {
                 throw new ArgumentNullException(nameof(node));
+            }
+
+            if (contentFileManager == null)
+            {
+                throw new ArgumentNullException(nameof(contentFileManager));
             }
 
             if (scanProgress == null)
@@ -88,7 +94,8 @@ namespace Gorgon.Editor.Services
             }
 
             bool result = false;
-            int count = 0;            
+            int count = 0;
+            var prevDeps = new List<string>();
 
             foreach(IContentFile contentFile in contentFiles.OfType<IContentFile>())
             {                
@@ -97,12 +104,21 @@ namespace Gorgon.Editor.Services
                 if (forceScan)
                 {
                     contentFile.Metadata.ContentMetadata = null;
+                    contentFile.Metadata.Dependencies.Clear();
                 }
 
-                if ((_contentPlugins.AssignContentPlugin(contentFile, !deepScan))
-                    && (!string.Equals(pluginName, contentFile.Metadata.PluginName, StringComparison.OrdinalIgnoreCase)))
-                {
-                    result = true;
+                prevDeps.Clear();
+                prevDeps.AddRange(contentFile.Metadata.Dependencies);
+
+                if (_contentPlugins.AssignContentPlugin(contentFile, contentFileManager, !deepScan))
+                {                    
+                    if ((!string.Equals(pluginName, contentFile.Metadata.PluginName, StringComparison.OrdinalIgnoreCase))
+                        || (!contentFile.Metadata.Dependencies
+                        .OrderBy(item => item, StringComparer.Ordinal)
+                        .SequenceEqual(prevDeps.OrderBy(item => item, StringComparer.Ordinal), StringComparer.OrdinalIgnoreCase)))
+                    {
+                        result = true;
+                    }
                 }
 
                 scanProgress.Invoke(contentFile.Path, ++count, fileCount);

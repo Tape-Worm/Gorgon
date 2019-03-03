@@ -27,22 +27,19 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
+using Gorgon.Editor.Content;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Plugins;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
-using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.IO;
-using Gorgon.Timing;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -290,7 +287,6 @@ namespace Gorgon.Editor.ViewModels
 
             var result = new FileExplorerFileNodeVm();
 
-            // TODO: Add links as children.            
             result.Initialize(new FileExplorerNodeParameters(file.FullName, project, this, fileSystemService)
             {
                 Parent = parent,
@@ -391,7 +387,7 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="project">The project data.</param>
         /// <param name="fileSystemService">The file system service for the project.</param>
         /// <returns>The file explorer view model.</returns>
-        private IFileExplorerVm CreateFileExplorerViewModel(IProject project, IFileSystemService fileSystemService)
+        private FileExplorerVm CreateFileExplorerViewModel(IProject project, IFileSystemService fileSystemService)
         {
             project.FileSystemDirectory.Refresh();
             if (!project.FileSystemDirectory.Exists)
@@ -425,6 +421,40 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Function to create a new dependency node.
+        /// </summary>
+        /// <param name="project">The project that contains the file system.</param>
+        /// <param name="fileSystemService">The file system service for the project.</param>
+        /// <param name="parentNode">The node to use as a the parent of the node.</param>
+        /// <param name="content">The content object referenced by the dependency node.</param>
+        /// <returns>A new dependency node.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+        public DependencyNode CreateDependencyNode(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parentNode, IContentFile content)
+        {
+            if (project == null)
+            {
+                throw new ArgumentNullException(nameof(project));
+            }
+
+            if (parentNode == null)
+            {
+                throw new ArgumentNullException(nameof(parentNode));
+            }
+
+            if (content == null)
+            {
+                throw new ArgumentNullException(nameof(content));
+            }
+
+            var fileNode = (IFileExplorerNodeVm)content;
+
+            var dependNode = new DependencyNode(parentNode, (IFileExplorerNodeVm)content);
+            dependNode.Initialize(new FileExplorerNodeParameters(fileNode.PhysicalPath, project, this, fileSystemService));
+
+            return dependNode;
+        }
+
+        /// <summary>
         /// Function to create a project view model.
         /// </summary>
         /// <param name="projectData">The project data to assign to the project view model.</param>
@@ -440,7 +470,12 @@ namespace Gorgon.Editor.ViewModels
             var result = new ProjectVm();
             var fileSystemService = new FileSystemService(projectData.FileSystemDirectory);
 
-            await Task.Run(() => result.FileExplorer = CreateFileExplorerViewModel(projectData, fileSystemService));
+            await Task.Run(() =>
+            {
+                FileExplorerVm fileExplorer = CreateFileExplorerViewModel(projectData, fileSystemService);
+                result.ContentFileManager = fileExplorer;
+                result.FileExplorer = fileExplorer;
+            });
 
             var previewer = new ContentPreviewVm();
             var thumbDirectory = new DirectoryInfo(Path.Combine(projectData.TempDirectory.FullName, "thumbs"));
@@ -449,7 +484,7 @@ namespace Gorgon.Editor.ViewModels
                 thumbDirectory.Create();
                 thumbDirectory.Refresh();
             }
-            previewer.Initialize(new ContentPreviewVmParameters(result.FileExplorer, thumbDirectory, this));
+            previewer.Initialize(new ContentPreviewVmParameters(result.FileExplorer, result.ContentFileManager, thumbDirectory, this));
 
             result.ContentPreviewer = previewer;
             result.Initialize(new ProjectVmParameters(projectData, this));

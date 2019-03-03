@@ -36,6 +36,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Collections;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Data;
 using Gorgon.Editor.Metadata;
@@ -54,7 +55,7 @@ namespace Gorgon.Editor.ViewModels
     /// The file explorer view model.
     /// </summary>
     internal class FileExplorerVm
-        : ViewModelBase<FileExplorerParameters>, IFileExplorerVm, IClipboardHandler
+        : ViewModelBase<FileExplorerParameters>, IFileExplorerVm, IClipboardHandler, IContentFileManager
     {
         #region Events.
         // Event triggered when the clipboard is updated from the file explorer.
@@ -353,14 +354,27 @@ namespace Gorgon.Editor.ViewModels
             try
             {
                 bool hasChildren = args.Node.Children.Count != 0;
+                bool hasDependants = args.Node.Dependencies.Count != 0;
 
                 string message = hasChildren ? string.Format(Resources.GOREDIT_CONFIRM_DELETE_CHILDREN, args.Node.FullPath)
                                                 : string.Format(Resources.GOREDIT_CONFIRM_DELETE_NO_CHILDREN, args.Node.FullPath);
 
-                if (((args.Node.IsOpen) && (args.Node.IsChanged))
-                    || ((hasChildren) && (args.Node.Children.Traverse(n => n.Children).Any(item => item.IsOpen && item.IsChanged))))
+                if (hasDependants)
                 {
-                    message = string.Format(Resources.GOREDIT_CONFIRM_FILE_OPEN_DELETE, args.Node.FullPath);
+                    message = string.Format(Resources.GOREDIT_CONFIRM_DELETE_NODE_DEPENDANTS, args.Node.FullPath);
+
+                    if (args.Node.Dependencies.Any(item => item.IsOpen && item.IsChanged))
+                    {
+                        message = string.Format(Resources.GOREDIT_CONFIRM_DELETE_NODE_DEPENDANT_OPEN, args.Node.FullPath);
+                    }
+                }
+                else
+                {
+                    if (((args.Node.IsOpen) && (args.Node.IsChanged))
+                        || ((hasChildren) && (args.Node.Children.Traverse(n => n.Children).Any(item => item.IsOpen && item.IsChanged))))
+                    {
+                        message = string.Format(Resources.GOREDIT_CONFIRM_FILE_OPEN_DELETE, args.Node.FullPath);
+                    }
                 }
 
                 if (_messageService.ShowConfirmation(message) != MessageResponse.Yes)
@@ -372,7 +386,7 @@ namespace Gorgon.Editor.ViewModels
                 {
                     ShowWaitPanel(Resources.GOREDIT_TEXT_DELETING);
                     string path = args.Node.FullPath;
-                                        
+
                     await args.Node.DeleteNodeAsync();
 
                     if ((_searchResults != null) && (_searchResults.Contains(args.Node)))
@@ -383,7 +397,7 @@ namespace Gorgon.Editor.ViewModels
                     // Notify that we have file system changes when done.
                     itemsDeleted = true;
                     return;
-                }                               
+                }
 
                 // Function to update the delete progress information and handle metadata update.
                 void UpdateDeleteProgress(IFileExplorerNodeVm fileSystemItem)
@@ -452,7 +466,7 @@ namespace Gorgon.Editor.ViewModels
             try
             {
                 IFileExplorerNodeVm parent = args.ParentNode ?? RootNode;
-                _factory.CreateNewDirectoryNode(_project, _fileSystemService, parent);                
+                _factory.CreateNewDirectoryNode(_project, _fileSystemService, parent);
 
                 OnFileSystemChanged();
             }
@@ -550,6 +564,7 @@ namespace Gorgon.Editor.ViewModels
             string openContentPath = null;
             var changedFilePaths = new HashSet<string>();
             var searchNodes = new List<string>();
+            var depNodes = new List<IContentFile>();
 
             // Reset the metadata list.  The enumeration method requires that we have this list up to date.
             _project.ProjectItems.Clear();
@@ -564,6 +579,15 @@ namespace Gorgon.Editor.ViewModels
                 if (child.Metadata != null)
                 {
                     _project.ProjectItems[child.FullPath] = child.Metadata;
+
+                    foreach (IFileExplorerNodeVm fileNode in child.Dependencies)
+                    {
+                        if (fileNode is IContentFile depNode)
+                        {
+                            fileNode.OnUnload();
+                            depNodes.Add(depNode);
+                        }
+                    }
                 }
 
                 if (child.IsOpen)
@@ -584,8 +608,8 @@ namespace Gorgon.Editor.ViewModels
             if (!parent.Exists)
             {
                 return;
-            }                                             
-            
+            }
+
             _factory.EnumerateFileSystemObjects(parent.FullName, _project, _fileSystemService, nodeToRefresh);
 
             // We don't need the metadata list now, all objects have their metadata assigned at this point.
@@ -614,6 +638,12 @@ namespace Gorgon.Editor.ViewModels
                 {
                     child.IsChanged = true;
                 }
+            }
+
+            // Rebuild dependencies.
+            foreach (IContentFile dep in depNodes)
+            {
+                SetupDependencyNodes(dep);                
             }
         }
 
@@ -791,12 +821,13 @@ namespace Gorgon.Editor.ViewModels
         /// Function to perform a custom import on a file.
         /// </summary>
         /// <param name="file">The file being imported.</param>
+        /// <param name="fileSystem">The file system being imported.</param>
         /// <param name="cancelToken">The token used to cancel the operation.</param>
         /// <returns>The importer used to import, and the imported file.</returns>
-        private async Task<(IEditorContentImporter importer, FileInfo importedFile)> CustomImportFileAsync(FileInfo file, CancellationToken cancelToken)
+        private async Task<(IEditorContentImporter importer, FileInfo importedFile)> CustomImportFileAsync(FileInfo file, IGorgonFileSystem fileSystem, CancellationToken cancelToken)
         {
             FileInfo result;
-            IEditorContentImporter importer = _factory.ContentImporterPlugins.GetContentImporter(file);
+            IEditorContentImporter importer = _factory.ContentImporterPlugins.GetContentImporter(file, fileSystem);
 
             if (importer == null)
             {
@@ -811,7 +842,7 @@ namespace Gorgon.Editor.ViewModels
                 if (result == null)
                 {
                     return (null, null);
-                }                
+                }
             }
             catch (Exception ex)
             {
@@ -839,6 +870,7 @@ namespace Gorgon.Editor.ViewModels
             long totalByteCount = 0;
             long totalBytesCopied = 0;
             var cancelSource = new CancellationTokenSource();
+            IGorgonFileSystem importFileSystem = new GorgonFileSystem(Log);
             (IEditorContentImporter importer, FileInfo updatedFile) importResult = default;
 
             void cancelAction() => cancelSource.Cancel();
@@ -849,7 +881,7 @@ namespace Gorgon.Editor.ViewModels
                 {
                     return;
                 }
-                                
+
                 float percent = (totalBytesCopied + bytesCopied) / (float)totalByteCount;
                 UpdateProgress(new ProgressPanelUpdateArgs
                 {
@@ -879,6 +911,9 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 totalByteCount = files.Count > 0 ? files.Sum(item => item.Length) : 0;
+
+                // Some things will require that we have the file system available to us for reading while importing.
+                importFileSystem.Mount(_project.FileSystemDirectory.FullName.FormatDirectory(Path.DirectorySeparatorChar));
 
                 // Allow some time for the UI to update.
                 await Task.Delay(500);
@@ -914,7 +949,7 @@ namespace Gorgon.Editor.ViewModels
                     currentFile = file;
                     var newFile = new FileInfo(currentFile.FullName.Replace(parentDir.FullName.FormatDirectory(Path.DirectorySeparatorChar), node.PhysicalPath));
 
-                    importResult = await CustomImportFileAsync(currentFile, cancelSource.Token);
+                    importResult = await CustomImportFileAsync(currentFile, importFileSystem, cancelSource.Token);
 
                     if (importResult.updatedFile == null)
                     {
@@ -941,13 +976,13 @@ namespace Gorgon.Editor.ViewModels
                         IFileExplorerNodeVm dupeNode = node.Children.Traverse(n => n.Children).FirstOrDefault(n => string.Equals(n.PhysicalPath, newFile.FullName, StringComparison.OrdinalIgnoreCase));
                         FileSystemConflictResolution currentResolution = resolution;
 
-                        if ((dupeNode != null) 
+                        if ((dupeNode != null)
                             && (((dupeNode.IsOpen) && (resolution == FileSystemConflictResolution.OverwriteAll))
                                 || ((resolution != FileSystemConflictResolution.OverwriteAll) && (resolution != FileSystemConflictResolution.RenameAll))))
                         {
                             currentResolution = FileSystemConflictHandler(dupeNode, dupeNode, true, true);
                         }
-                        
+
                         switch (currentResolution)
                         {
                             case FileSystemConflictResolution.Overwrite:
@@ -1000,7 +1035,7 @@ namespace Gorgon.Editor.ViewModels
                 });
 
                 // Give a little delay so we can update the UI.
-                await Task.Delay(500);                
+                await Task.Delay(500);
 
                 // This will probably take a while to run for large file systems. But, because it modifies the UI, we can't put it on background thread.
                 // We may have to refactor this later so we can thread it and give feed back.
@@ -1123,7 +1158,7 @@ namespace Gorgon.Editor.ViewModels
                     CancelToken = cancelSource.Token,
                     ConflictHandler = ExportSystemConflictHandler,
                     CopyProgress = ExportProgress,
-                    Destination = destDir                    
+                    Destination = destDir
                 });
 
                 _settings.LastOpenSavePath = destDir.FullName.FormatDirectory(Path.DirectorySeparatorChar);
@@ -1230,7 +1265,7 @@ namespace Gorgon.Editor.ViewModels
                 else
                 {
                     _searchResults = _searchSystem.Search(searchText)?.ToList();
-                }                
+                }
                 NotifyPropertyChanged(nameof(SearchResults));
 
                 if ((selected != null) && ((_searchResults == null) || (_searchResults.Contains(selected))))
@@ -1243,7 +1278,7 @@ namespace Gorgon.Editor.ViewModels
                         {
                             parent.IsExpanded = true;
                             parent = parent.Parent;
-                        }                        
+                        }
                     }
 
                     SelectedNode = selected;
@@ -1311,7 +1346,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 return false;
             }
-            
+
             _nodePathLookup.Remove(originalPath);
 
             if ((originalChildPaths != null) && (originalChildPaths.Length > 0))
@@ -1532,6 +1567,54 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Function to set up dependencies on the given node.
+        /// </summary>
+        /// <param name="node">The node to set up.</param>
+        private void SetupDependencyNodes(IContentFile node)
+        {
+            if (node == null)
+            {
+                return;
+            }
+
+            string[] dependencyPaths = node.Metadata.Dependencies.ToArray();
+
+            if (dependencyPaths.Length == 0)
+            {
+                return;
+            }
+
+            Log.Print("Scanning node dependencies... This may take a bit...", LoggingLevel.Intermediate);
+
+            if (!(node is IContentFile contentFile))
+            {
+                return;
+            }
+
+            foreach (string path in dependencyPaths)
+            {
+                if (!_nodePathLookup.TryGetValue(path, out IFileExplorerNodeVm parentNode))
+                {
+                    Log.Print($"[WARNING] The node '{node.Path}' has a dependency on '{path}', but no file system node was found that represents that path.", LoggingLevel.Simple);
+                    continue;
+                }
+
+                Log.Print($"Found node dependency for '{path}'.", LoggingLevel.Verbose);
+                DependencyNode depNode = _factory.CreateDependencyNode(_project, _fileSystemService, parentNode, contentFile);
+
+                // Ensure that we don't already have this node in as a dependency, if we do, then dump it.
+                IFileExplorerNodeVm existingDep = parentNode.Dependencies.FirstOrDefault(item => string.Equals(depNode.FullPath, item.FullPath, StringComparison.OrdinalIgnoreCase));
+                if (existingDep != null)
+                {
+                    parentNode.Dependencies.Remove(existingDep);
+                }
+
+                parentNode.Dependencies.Add(depNode);
+                _nodePathLookup[depNode.FullPath] = depNode;
+            }
+        }
+
+        /// <summary>
         /// Function to enumerate all child nodes and cache them in a look up for quick access.
         /// </summary>
         /// <param name="parent">The parent node to start enumerating from.</param>
@@ -1549,10 +1632,15 @@ namespace Gorgon.Editor.ViewModels
             foreach (IFileExplorerNodeVm node in parent.Children.Traverse(n => n.Children))
             {
                 _nodePathLookup[node.FullPath] = node;
+
+                SetupDependencyNodes(node as IContentFile);
+
                 node.Children.CollectionChanged += Children_CollectionChanged;
                 node.PropertyChanged += Node_PropertyChanged;
                 node.PropertyChanging += Node_PropertyChanging;
             }
+
+            SetupDependencyNodes(parent as IContentFile);
 
             parent.Children.CollectionChanged += Children_CollectionChanged;
             parent.PropertyChanged += Node_PropertyChanged;
@@ -1635,7 +1723,7 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="node">The node that was added to the file system.</param>
         /// <returns><b>true</b> if an association was made, or <b>false</b> if there were no changes.</returns>
         private async Task ScanFilesAsync(IFileExplorerNodeVm node)
-        {            
+        {
             try
             {
                 // If we sent a non-content node, and there are no children to process, then move on.
@@ -1664,23 +1752,45 @@ namespace Gorgon.Editor.ViewModels
                     });
                 }
 
-                bool result = await Task.Run(() => _fileScanner.Scan(node, UpdateScanProgress, true));                
+                string[] prevDeps;
+
+                if (node is IContentFile)
+                {
+                    prevDeps = node.Metadata.Dependencies.ToArray();
+                }
+                else
+                {
+                    prevDeps = node.Children.Traverse(item => item.Children)
+                        .OfType<IContentFile>()
+                        .SelectMany(item => item.Metadata.Dependencies)
+                        .OrderBy(item => item, StringComparer.Ordinal)
+                        .ToArray();
+                }
+
+                bool result = await Task.Run(() => _fileScanner.Scan(node, this, UpdateScanProgress, true, true));
 
                 if (!result)
                 {
-                    return;                    
+                    return;
                 }
 
                 // Update the node display to ensure that we see the changes.
                 if (node is IContentFile contentFile)
                 {
                     contentFile.RefreshMetadata();
+
+                    SetupDependencyNodes(contentFile);
                 }
                 else
                 {
                     foreach (IContentFile file in node.Children.Traverse(n => n.Children).OfType<IContentFile>())
                     {
                         file.RefreshMetadata();
+
+                        if (file.Metadata.Dependencies.Count > 0)
+                        {
+                            SetupDependencyNodes(file);
+                        }
                     }
                 }
             }
@@ -1887,7 +1997,15 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function called when the associated view is unloaded.
         /// </summary>
-        public override void OnUnload() => _clipboardUpdated = null;
+        public override void OnUnload()
+        {
+            foreach (IFileExplorerNodeVm node in RootNode.Children.Traverse(n => n.Children))
+            {
+                node.OnUnload();
+            }
+
+            _clipboardUpdated = null;
+        }
 
         /// <summary>
         /// Function to drop the payload for a drag drop operation.
@@ -1999,6 +2117,11 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         public async Task RunImportersAsync(CancellationToken cancelToken)
         {
+            IGorgonFileSystem importFileSystem = new GorgonFileSystem(Log);
+
+            // Some things will require that we have the file system available to us for reading while importing.
+            importFileSystem.Mount(_project.FileSystemDirectory.FullName.FormatDirectory(Path.DirectorySeparatorChar));
+
             foreach (IFileExplorerNodeVm node in RootNode.Children.Traverse(n => n.Children).Where(item => item.IsContent))
             {
                 // Do not update nodes that are open in the editor.
@@ -2023,7 +2146,7 @@ namespace Gorgon.Editor.ViewModels
                     }
 
                     var sourceFile = new FileInfo(node.PhysicalPath);
-                    importResult = await CustomImportFileAsync(new FileInfo(node.PhysicalPath), cancelToken);
+                    importResult = await CustomImportFileAsync(new FileInfo(node.PhysicalPath), importFileSystem, cancelToken);
 
                     if ((importResult.outputFile == null) || (importResult.importer == null))
                     {
@@ -2061,6 +2184,28 @@ namespace Gorgon.Editor.ViewModels
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Function to retrieve a file based on the path specified.
+        /// </summary>
+        /// <param name="path">The path to the file.</param>
+        /// <returns>A <see cref="IContentFile"/> if found, <b>null</b> if not.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+        IContentFile IContentFileManager.GetFile(string path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentEmptyException(nameof(path));
+            }
+
+            return !_nodePathLookup.TryGetValue(path, out IFileExplorerNodeVm node) ? null : node as IContentFile;
         }
         #endregion
 

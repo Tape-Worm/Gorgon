@@ -85,6 +85,8 @@ namespace Gorgon.Editor.ViewModels
         private string _projectTitle = Resources.GOREDIT_NEW_PROJECT;
         // The content previewer view model.
         private IContentPreviewVm _contentPreviewer;
+        // The file manager used to manage content through content plug ins.
+        private IContentFileManager _contentFileManager;
         #endregion
 
         #region Properties.
@@ -213,6 +215,25 @@ namespace Gorgon.Editor.ViewModels
                 OnPropertyChanged();
 
                 AssignEvents();
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the content file manager for managing content file systems through content plug ins.
+        /// </summary>
+        public IContentFileManager ContentFileManager
+        {
+            get => _contentFileManager;
+            set
+            {
+                if (_contentFileManager == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _contentFileManager = value;
+                OnPropertyChanged();
             }
         }
 
@@ -498,7 +519,7 @@ namespace Gorgon.Editor.ViewModels
 
                     // If we don't have a content plug in, then try to find one now.
                     // If that fails (i.e. the assignment won't change), then tell the user we can't open.
-                    _contentPlugins.AssignContentPlugin(file, false);
+                    _contentPlugins.AssignContentPlugin(file, ContentFileManager, false);
 
                     if (file.ContentPlugin == null)
                     {
@@ -609,6 +630,16 @@ namespace Gorgon.Editor.ViewModels
                                     _projectData.ProjectItems.Clear();
                                     foreach (IFileExplorerNodeVm node in _fileExplorer.RootNode.Children.Traverse(n => n.Children).Where(n => n.Metadata != null))
                                     {
+                                        node.Metadata.Dependencies.Clear();
+                                    }
+
+                                    foreach (IFileExplorerNodeVm node in _fileExplorer.RootNode.Children.Traverse(n => n.Children).Where(n => n.Metadata != null))
+                                    {
+                                        foreach (IFileExplorerNodeVm depNode in node.Dependencies)
+                                        {
+                                            depNode.Metadata.Dependencies.Add(node.FullPath);
+                                        }
+
                                         _projectData.ProjectItems[node.FullPath] = node.Metadata;
                                     }
 

@@ -37,6 +37,7 @@ using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
+using Gorgon.IO;
 
 namespace Gorgon.Editor.Plugins
 {
@@ -100,9 +101,10 @@ namespace Gorgon.Editor.Plugins
         /// Function to open a content object from this plugin.
         /// </summary>
         /// <param name="sourceFile">The file being imported.</param>
+        /// <param name="fileSystem">The file system containing the file being imported.</param>
         /// <param name="log">The logging interface to use.</param>
         /// <returns>A new <see cref="IEditorContentImporter"/> object.</returns>
-        protected abstract IEditorContentImporter OnCreateImporter(FileInfo sourceFile, IGorgonLog log);
+        protected abstract IEditorContentImporter OnCreateImporter(FileInfo sourceFile, IGorgonFileSystem fileSystem, IGorgonLog log);
 
         /// <summary>
         /// Function to determine if the content plugin can open the specified file.
@@ -132,18 +134,19 @@ namespace Gorgon.Editor.Plugins
         /// Function to open a content object from this plugin.
         /// </summary>        
         /// <param name="sourceFile">The file being imported.</param>
+        /// <param name="fileSystem">The file system that contains the file being imported.</param>
         /// <param name="log">The logging interface to use.</param>
         /// <returns>A new <see cref="IEditorContent"/> object.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceFile"/> parameter is <b>null</b>.</exception>
         /// <exception cref="GorgonException">Thrown if the <see cref="OnCreateImporter"/> method returns <b>null</b>.</exception>
-        public IEditorContentImporter CreateImporter(FileInfo sourceFile, IGorgonLog log)
+        public IEditorContentImporter CreateImporter(FileInfo sourceFile, IGorgonFileSystem fileSystem, IGorgonLog log)
         {
             if (sourceFile == null)
             {
                 throw new ArgumentNullException(nameof(sourceFile));
             }
 
-            IEditorContentImporter importer = OnCreateImporter(sourceFile, log ?? GorgonLog.NullLog);
+            IEditorContentImporter importer = OnCreateImporter(sourceFile, fileSystem, log ?? GorgonLog.NullLog);
 
             if (importer == null)
             {

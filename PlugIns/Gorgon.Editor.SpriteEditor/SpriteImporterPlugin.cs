@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: December 17, 2018 10:00:39 PM
+// Created: March 2, 2019 11:15:34 AM
 // 
 #endregion
 
@@ -28,31 +28,31 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Gorgon.Diagnostics;
-using Gorgon.Editor.ImageEditor.Properties;
-using Gorgon.Editor.ImageEditor.Services;
+using Gorgon.Editor.SpriteEditor.Properties;
+using Gorgon.Editor.SpriteEditor.Services;
 using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Services;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Plugins;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.SpriteEditor
 {
     /// <summary>
-    /// A plugin used to build an importer for image data.
+    /// A plugin used to build an importer for sprite data.
     /// </summary>
-    internal class ImageImporterPlugin
+    internal class SpriteImporterPlugin
         : ContentImportPlugin
     {
         #region Variables.
         // The loaded image codecs.
-        private List<IGorgonImageCodec> _codecList = new List<IGorgonImageCodec>();
+        private List<IGorgonSpriteCodec> _codecList = new List<IGorgonSpriteCodec>();
 
         // The list of available codecs matched by extension.
-        private readonly List<(GorgonFileExtension extension, IGorgonImageCodec codec)> _codecs = new List<(GorgonFileExtension extension, IGorgonImageCodec codec)>();
+        private readonly List<(GorgonFileExtension extension, IGorgonSpriteCodec codec)> _codecs = new List<(GorgonFileExtension extension, IGorgonSpriteCodec codec)>();
 
         // The image editor settings.
-        private ImageImporterSettings _settings = new ImageImporterSettings();
+        private SpriteImporterSettings _settings = new SpriteImporterSettings();
 
         // The plug in cache for image codecs.
         private GorgonMefPluginCache _pluginCache;
@@ -67,9 +67,8 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         /// <param name="file">The file containing the image content.</param>
         /// <returns>The codec used to read the file.</returns>
-        private IGorgonImageCodec GetCodec(FileInfo file)
+        private IGorgonSpriteCodec GetCodec(FileInfo file)
         {
-            IGorgonImageCodec result = null;
             Stream stream = null;
 
             try
@@ -79,11 +78,21 @@ namespace Gorgon.Editor.ImageEditor
                 {
                     var extension = new GorgonFileExtension(file.Extension);
 
-                    result = _codecs.FirstOrDefault(item => item.extension == extension).codec;
+                    (GorgonFileExtension, IGorgonSpriteCodec codec)[] results = _codecs.Where(item => item.extension == extension).ToArray();
 
-                    if (result != null)
+                    if (results.Length == 0)
                     {
-                        return result;
+                        return null;
+                    }
+
+                    stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.Read);
+
+                    foreach (IGorgonSpriteCodec codec in results.Select(item => item.codec))
+                    {
+                        if (codec.IsReadable(stream))
+                        {
+                            return codec;
+                        }
                     }
                 }
             }
@@ -106,7 +115,7 @@ namespace Gorgon.Editor.ImageEditor
                 return;
             }
 
-            log.Print("Loading image codecs...", LoggingLevel.Intermediate);
+            log.Print("Loading sprite codecs...", LoggingLevel.Intermediate);
 
             foreach (KeyValuePair<string, string> plugin in _settings.CodecPluginPaths)
             {
@@ -126,9 +135,9 @@ namespace Gorgon.Editor.ImageEditor
             IGorgonPluginService plugins = new GorgonMefPluginService(_pluginCache, log);
 
             // Load all the codecs contained within the plug in (a plug in can have multiple codecs).
-            foreach (GorgonImageCodecPlugin plugin in plugins.GetPlugins<GorgonImageCodecPlugin>())
+            foreach (GorgonSpriteCodecPlugin plugin in plugins.GetPlugins<GorgonSpriteCodecPlugin>())
             {
-                foreach (GorgonImageCodecDescription desc in plugin.Codecs)
+                foreach (GorgonSpriteCodecDescription desc in plugin.Codecs)
                 {
                     _codecList.Add(plugin.CreateCodec(desc.Name));
                 }
@@ -145,13 +154,12 @@ namespace Gorgon.Editor.ImageEditor
             _pluginCache = new GorgonMefPluginCache(log);
 
             // Get built-in codec list.
-            _codecList.Add(new GorgonCodecPng());
-            _codecList.Add(new GorgonCodecJpeg());
-            _codecList.Add(new GorgonCodecTga());
-            _codecList.Add(new GorgonCodecBmp());
-            _codecList.Add(new GorgonCodecGif());
+            _codecList.Add(new GorgonV3SpriteBinaryCodec(GraphicsContext.Renderer2D));
+            _codecList.Add(new GorgonV3SpriteJsonCodec(GraphicsContext.Renderer2D));
+            _codecList.Add(new GorgonV2SpriteCodec(GraphicsContext.Renderer2D));
+            _codecList.Add(new GorgonV1SpriteBinaryCodec(GraphicsContext.Renderer2D));
 
-            ImageImporterSettings settings = pluginService.ReadContentSettings<ImageImporterSettings>(this);
+            SpriteImporterSettings settings = pluginService.ReadContentSettings<SpriteImporterSettings>(this);
 
             if (settings != null)
             {
@@ -161,11 +169,11 @@ namespace Gorgon.Editor.ImageEditor
             // Load the additional plug ins.
             LoadCodecPlugins(log);
 
-            foreach (IGorgonImageCodec codec in _codecList)
+            foreach (IGorgonSpriteCodec codec in _codecList)
             {
-                foreach (string extension in codec.CodecCommonExtensions)
+                foreach (GorgonFileExtension extension in codec.FileExtensions)
                 {
-                    _codecs.Add((new GorgonFileExtension(extension), codec));
+                    _codecs.Add((extension, codec));
                 }
             }
         }
@@ -175,7 +183,8 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="fileSystem">The file system containing the file being imported.</param>
         /// <param name="log">The logging interface to use.</param>
         /// <returns>A new <see cref="T:Gorgon.Editor.Services.IEditorContentImporter"/> object.</returns>
-        protected override IEditorContentImporter OnCreateImporter(FileInfo sourceFile, IGorgonFileSystem fileSystem, IGorgonLog log) => new DdsImageImporter(sourceFile, GetCodec(sourceFile), log);
+        protected override IEditorContentImporter OnCreateImporter(FileInfo sourceFile, IGorgonFileSystem fileSystem, IGorgonLog log) => 
+            new GorgonSpriteImporter(sourceFile, GetCodec(sourceFile), GraphicsContext.Renderer2D, fileSystem, log);
 
         /// <summary>Function to determine if the content plugin can open the specified file.</summary>
         /// <param name="file">The content file to evaluate.</param>
@@ -189,9 +198,9 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ImageEditor.ImageImporterPlugin"/> class.</summary>
-        public ImageImporterPlugin()
-            : base(Resources.GORIMG_IMPORT_DESC)
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.SpriteEditor.SpriteImporterPlugin"/> class.</summary>
+        public SpriteImporterPlugin()
+            : base(Resources.GORSPR_IMPORT_DESC)
         {
 
         }

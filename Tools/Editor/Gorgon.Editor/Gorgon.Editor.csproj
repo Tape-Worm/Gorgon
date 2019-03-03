@@ -114,6 +114,7 @@
     <Compile Include="ViewModels\CopyNodeData.cs" />
     <Compile Include="ViewModels\CreateNodeArgs.cs" />
     <Compile Include="ViewModels\DeleteNodeArgs.cs" />
+    <Compile Include="ViewModels\DependencyNode.cs" />
     <Compile Include="ViewModels\FileExplorerRootNode.cs" />
     <Compile Include="ViewModels\SetProjectWorkspaceArgs.cs" />
     <Compile Include="ViewModels\UndoCommand.cs" />

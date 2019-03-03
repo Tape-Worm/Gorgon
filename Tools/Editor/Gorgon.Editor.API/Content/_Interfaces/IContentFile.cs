@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using Gorgon.Core;
@@ -52,6 +53,14 @@ namespace Gorgon.Editor.Content
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return the list of dependencies for this content.
+        /// </summary>
+        IList<IContentFile> Dependencies
+        {
+            get;
+        }
+
         /// <summary>
         /// Property to set or return whether the file has changes.
         /// </summary>
@@ -91,7 +100,7 @@ namespace Gorgon.Editor.Content
         ProjectItemMetadata Metadata
         {
             get;
-        }
+        }        
 
         /// <summary>
         /// Property to set or return whether the file is open for editing or not.

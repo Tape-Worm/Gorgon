@@ -368,6 +368,28 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; is linked to another file or files. One of linked files is open in the editor and has unsaved changes. Deleting &apos;{0}&apos; will result in the editor closing and losing any changes.
+        ///
+        ///Do you wish to continue?.
+        /// </summary>
+        internal static string GOREDIT_CONFIRM_DELETE_NODE_DEPENDANT_OPEN {
+            get {
+                return ResourceManager.GetString("GOREDIT_CONFIRM_DELETE_NODE_DEPENDANT_OPEN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; is linked to another file.  Deleting this file will break the link between the two items, and may result in undesirable changes.
+        ///
+        ///Do you wish to continue?.
+        /// </summary>
+        internal static string GOREDIT_CONFIRM_DELETE_NODE_DEPENDANTS {
+            get {
+                return ResourceManager.GetString("GOREDIT_CONFIRM_DELETE_NODE_DEPENDANTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This will delete the project at &apos;{0}&apos;.
         ///
         ///This action will delete all files and folders from the directory.

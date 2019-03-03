@@ -107,21 +107,27 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to set or return the file explorer view model for use with the file explorer subview.
+        /// Property to return the content file manager for managing content file systems through content plug ins.
+        /// </summary>
+        IContentFileManager ContentFileManager
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the file explorer view model for use with the file explorer subview.
         /// </summary>
         IFileExplorerVm FileExplorer
         {
             get;
-            set;
         }
 
         /// <summary>
-        /// Property to set or return the content previewer.
+        /// Property to return the content previewer.
         /// </summary>
         IContentPreviewVm ContentPreviewer
         {
             get;
-            set;
         }
 
         /// <summary>

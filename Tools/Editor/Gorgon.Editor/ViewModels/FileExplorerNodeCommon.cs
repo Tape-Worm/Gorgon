@@ -190,6 +190,14 @@ namespace Gorgon.Editor.ViewModels
         } = new ObservableCollection<IFileExplorerNodeVm>();
 
         /// <summary>
+        /// Property to return the list of items dependant upon this node
+        /// </summary>
+        public ObservableCollection<IFileExplorerNodeVm> Dependencies
+        {
+            get;
+        } = new ObservableCollection<IFileExplorerNodeVm>();
+
+        /// <summary>
         /// Property to return the parent node for this node.
         /// </summary>
         public virtual IFileExplorerNodeVm Parent
