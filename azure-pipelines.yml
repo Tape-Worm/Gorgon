@@ -39,6 +39,21 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
+- task: CopyFiles@2
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)/Gorgon'
+    contents: '**/$(BuildConfiguration)/**/?(*.dll|*.xml)'
+    CleanTargetFolder: true
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/lib'
+
+
+- task: CopyFiles@2
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)/PlugIns/Bin'
+    contents: '**/$(BuildConfiguration)/**/?(*.dll|*.xml)'
+    CleanTargetFolder: true
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/PlugIns'
+
 - task: PublishBuildArtifacts@1
   inputs:
     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
