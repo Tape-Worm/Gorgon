@@ -7,16 +7,33 @@ pool:
   vmImage: 'VS2017-Win2016'
 
 variables:
-  solution: '**/*.sln'
+  solution: 'Gorgon/Gorgon.sln'
   buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
+  buildConfiguration: 'ReleaseAndDeploy'
+
+name: 2.0.$(Rev:r).$(DayOfYear)
 
 steps:
+- task: PowerShell@2
+  displayName: 'Updating version to $(Build.BuildNumber)'
+  inputs:
+    targetType: filePath
+    filePath: '.\VersionUpdater.ps1'
+
 - task: NuGetToolInstaller@0
 
 - task: NuGetCommand@2
   inputs:
     restoreSolution: '$(solution)'
+
+- task: DownloadSecureFile@1
+  inputs:
+    secureFile: GorgonFull.snk
+
+- task: CmdLine@2
+  displayName: 'Signing code...'
+  inputs:
+    script: 'ProjectSigner.exe $(Agent.TempDirectory)\GorgonFull.snk -y'
 
 - task: VSBuild@1
   inputs:
@@ -24,7 +41,72 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
-- task: VSTest@2
+- task: CopyFiles@2
+  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/Gorgon/lib'
   inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    sourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Common/bin/release'
+    contents: '**/?(*.dll|*.xml)'
+    CleanTargetFolder: true
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/lib'
+
+- task: CopyFiles@2
+  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/Gorgon/lib'
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.FileSystem/bin/release'
+    contents: '**/?(*.dll|*.xml)'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/lib'
+
+- task: CopyFiles@2
+  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/Gorgon/lib'
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Input/bin/release'
+    contents: '**/?(*.dll|*.xml)'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/lib'
+
+- task: CopyFiles@2
+  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/Gorgon/lib'
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Graphics/bin/release'
+    contents: '**/?(*.dll|*.xml)'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/lib'
+
+- task: CopyFiles@2
+  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/Gorgon/lib'
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Renderers/2D/bin/release'
+    contents: '**/?(*.dll|*.xml)'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/lib'
+
+- task: CopyFiles@2
+  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/Gorgon/lib'
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Animation/bin/release'
+    contents: '**/?(*.dll|*.xml)'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/lib'
+
+- task: CopyFiles@2
+  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/Gorgon/PlugIns'
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)/PlugIns/Bin/Release/'
+    contents: '**/?(*.dll|*.xml)'
+    CleanTargetFolder: true
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/PlugIns'
+
+- task: CopyFiles@2
+  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/Gorgon/Tools'  
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)/Tools/Gorgon.Editor/bin/Release/'
+    contents: '**/?(*.exe|*.dll|*.config)'
+    CleanTargetFolder: true
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/Tools'
+
+- task: PowerShell@2
+  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/Examples'
+  inputs:
+    targetType: filePath
+    filePath: '.\Deploy_Examples.ps1'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: drop
