@@ -18,6 +18,10 @@ steps:
   inputs:
     restoreSolution: '$(solution)'
 
+- task: DownloadSecureFile@1
+  inputs:
+    secureFile: GorgonFull.snk
+
 - task: PowerShell@2
   inputs:
    arguments: 'ProjectSigner.exe'
