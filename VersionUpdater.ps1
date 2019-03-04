@@ -82,10 +82,10 @@ if($files)
     Write-Verbose "Will apply $NewVersion to $($files.count) files."
 
     foreach ($file in $files) {
+        Write-Host "Updating version for $file.FullName to $NewVersion"
         $filecontent = Get-Content($file)
         attrib $file -r
-        $filecontent -replace $VersionRegex, $NewVersion | Out-File $file
-        Write-Verbose "$file.FullName - version applied"
+        $filecontent -replace "(\d+.\d+.\*)|($VersionRegex)", $NewVersion | Out-File $file                
     }
 }
 else
