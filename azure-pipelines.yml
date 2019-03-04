@@ -1,0 +1,35 @@
+# .NET Desktop
+# Build and run tests for .NET Desktop or Windows classic desktop solutions.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
+
+pool:
+  vmImage: 'VS2017-Win2016'
+
+variables:
+  solution: 'Gorgon/Gorgon.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'ReleaseAndDeploy'
+
+name: 2.0.$(Date:yyyyMMdd)$(Rev:.r)
+
+steps:
+- task: NuGetToolInstaller@0
+
+- task: NuGetCommand@2
+  inputs:
+    restoreSolution: '$(solution)'
+
+- task: DownloadSecureFile@1
+  inputs:
+    secureFile: GorgonFull.snk
+
+- task: CmdLine@2
+  inputs:
+    script: 'ProjectSigner.exe $(Agent.TempDirectory)\GorgonFull.snk -y'
+
+- task: VSBuild@1
+  inputs:
+    solution: '$(solution)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
