@@ -18,6 +18,10 @@ steps:
   inputs:
     restoreSolution: '$(solution)'
 
+- task: PowerShell@2
+  inputs:
+   arguments: 'ProjectSigner.exe'
+
 - task: VSBuild@1
   inputs:
     solution: '$(solution)'
