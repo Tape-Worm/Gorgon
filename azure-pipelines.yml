@@ -22,9 +22,9 @@ steps:
   inputs:
     secureFile: GorgonFull.snk
 
-- task: PowerShell@2
+- task: CmdLine@2
   inputs:
-   arguments: 'ProjectSigner.exe $(Agent.TempDirectory)GorgonFull.snk'
+    script: 'ProjectSigner.exe $(Agent.TempDirectory)GorgonFull.snk'
 
 - task: VSBuild@1
   inputs:
