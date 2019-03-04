@@ -9,7 +9,7 @@ pool:
 variables:
   solution: 'Gorgon/Gorgon.sln'
   buildPlatform: 'Any CPU'
-  buildConfiguration: 'ReleaseAndDeploy'
+  buildConfiguration: 'Release'
 
 name: 2.0.$(Rev:r).$(DayOfYear)
 
