@@ -42,63 +42,63 @@ steps:
     configuration: '$(buildConfiguration)'
 
 - task: CopyFiles@2
-  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/lib'
+  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/Gorgon/lib'
   inputs:
-    sourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Common/'
-    contents: '**/bin/Release/**/?(*.dll|*.xml)'
+    sourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Common/bin/release'
+    contents: '**/?(*.dll|*.xml)'
     CleanTargetFolder: true
-    TargetFolder: '$(Build.ArtifactStagingDirectory)/lib'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/lib'
 
 - task: CopyFiles@2
-  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/lib'
+  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/Gorgon/lib'
   inputs:
-    sourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.FileSystem/'
-    contents: '**/bin/Release/**/?(*.dll|*.xml)'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)/lib'
+    sourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.FileSystem/bin/release'
+    contents: '**/?(*.dll|*.xml)'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/lib'
 
 - task: CopyFiles@2
-  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/lib'
+  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/Gorgon/lib'
   inputs:
-    sourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Input/'
-    contents: '**/bin/Release/**/?(*.dll|*.xml)'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)/lib'
+    sourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Input/bin/release'
+    contents: '**/?(*.dll|*.xml)'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/lib'
 
 - task: CopyFiles@2
-  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/lib'
+  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/Gorgon/lib'
   inputs:
-    sourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Graphics/'
-    contents: '**/bin/Release/**/?(*.dll|*.xml)'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)/lib'
+    sourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Graphics/bin/release'
+    contents: '**/?(*.dll|*.xml)'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/lib'
 
 - task: CopyFiles@2
-  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/lib'
+  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/Gorgon/lib'
   inputs:
-    sourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Renderers/2D/'
-    contents: '**/bin/Release/**/?(*.dll|*.xml)'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)/lib'
+    sourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Renderers/2D/bin/release'
+    contents: '**/?(*.dll|*.xml)'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/lib'
 
 - task: CopyFiles@2
-  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/lib'
+  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/Gorgon/lib'
   inputs:
-    sourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Animation/'
-    contents: '**/bin/Release/**/?(*.dll|*.xml)'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)/lib'
+    sourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Animation/bin/release'
+    contents: '**/?(*.dll|*.xml)'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/lib'
 
 - task: CopyFiles@2
-  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/PlugIns'
+  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/Gorgon/PlugIns'
   inputs:
     sourceFolder: '$(Build.SourcesDirectory)/PlugIns/Bin/Release/'
     contents: '**/?(*.dll|*.xml)'
     CleanTargetFolder: true
-    TargetFolder: '$(Build.ArtifactStagingDirectory)/PlugIns'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/PlugIns'
 
 - task: CopyFiles@2
-  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/Tools'  
+  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/Gorgon/Tools'  
   inputs:
     sourceFolder: '$(Build.SourcesDirectory)/Tools/Gorgon.Editor/bin/Release/'
     contents: '**/?(*.exe|*.dll|*.config)'
     CleanTargetFolder: true
-    TargetFolder: '$(Build.ArtifactStagingDirectory)/Tools'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/Tools'
 
 - task: PublishBuildArtifacts@1
   inputs:
