@@ -70,7 +70,7 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
 
   In addition to the support above, applications can introduce their own codecs to read/write whatever font types they wish by extending the [GorgonFontCodec](Gorgon/Gorgon.Graphics.Fonts/Codecs/GorgonFontCodec.cs) type. (Plug in support is pending at this time)
   
-  - [x] __[Gorgon.Renderers.Gorgon2D](Gorgon/Gorgon.Renderers/Gorgon2D)__ _**(In Development)**_
+  - [x] __[Gorgon.Renderers.Gorgon2D](Gorgon/Gorgon.Renderers/Gorgon2D)__ 
   
   A 2D renderer that sits on top of the graphics module to make developing 2D games/applications much easier. It supports:
    * Sprites
@@ -80,19 +80,26 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
   
   All of these are provided using batched rendering, similar to [MonoGame](http://www.monogame.net/) for maximum performance.   
   
-  - [x] __[Gorgon.IO.Gorgon2D](Gorgon/Gorgon.Renderers/IO.Gorgon2D)__ _**(In Development)**_
+  - [x] __[Gorgon.IO.Gorgon2D](Gorgon/Gorgon.Renderers/IO.Gorgon2D)__ 
   
   IO functionality for serializing sprite and polysprite data to and from various formats using codecs.
 
-  - [x] __[Gorgon.Animation](Gorgon/Gorgon.Animation)__ _**(In Development)**_
+  - [x] __[Gorgon.Animation](Gorgon/Gorgon.Animation)__ 
   
   An animation module that allows the creation and playback of key framed animations for various types of objects. 
   
-  Animation controllers for the 2D renderer are provided by the [Gorgon.Animation.Gorgon2D](Gorgon/Gorgon.Renderers/Animation.Gorgon2D) assembly _**(In Development)**_.
+  Animation controllers for the 2D renderer are provided by the [Gorgon.Animation.Gorgon2D](Gorgon/Gorgon.Renderers/Animation.Gorgon2D) assembly.
   
-  - [ ] __[TBD]__ 
+  - [x] __[Gorgon.Editor](Tools/Editor)__ _**(In Development)**_ 
   
-  A flexible content editor to allow for the creation of sprites, fonts, etc...  
+  A flexible content editor to allow for the creation and editing of content.        
+    * Supports a plug in based architecture to allow developers to extend the editor indefinitely. 
+    * Supports file management of content by using a simple tree layout for folders and files.
+    * Comes with an image editor plug in which allows users to add depth slices to 3D images (I have yet, for the life of me to find anything on the web that does this), mip maps and array indices, and other simple functions.
+    * Comes with a sprite editor plug in which allows users to clip sprites from an image and store them as a file.    
+    * Can output the files as a packed file. The type of file that be written out is provided via plug in support (currently only supports the proprietary Gorgon packed file format).
+    * Can import packed files using file system plug ins (currently has support for zip and the proprietary Gorgon packed file formats - included with Gorgon as file system plug ins).
+    * _TBD..._
 
 What's required?
 ----------------
