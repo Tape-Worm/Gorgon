@@ -24,7 +24,7 @@ steps:
 
 - task: CmdLine@2
   inputs:
-    script: 'ProjectSigner.exe $(Agent.TempDirectory)GorgonFull.snk'
+    script: 'ProjectSigner.exe $(Agent.TempDirectory)GorgonFull.snk -y'
 
 - task: VSBuild@1
   inputs:
