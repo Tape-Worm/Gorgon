@@ -9,7 +9,7 @@ pool:
 variables:
   solution: 'Gorgon/Gorgon.sln'
   buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
+  buildConfiguration: 'ReleaseAndDeploy'
 
 name: 2.0.$(Rev:r).$(DayOfYear)
 
@@ -42,14 +42,14 @@ steps:
 - task: CopyFiles@2
   inputs:
     sourceFolder: '$(Build.SourcesDirectory)/Gorgon'
-    contents: '**/bin/$(BuildConfiguration)/**/?(*.dll|*.xml)'
+    contents: '**/bin/Release/**/?(*.dll|*.xml)'
     CleanTargetFolder: true
     TargetFolder: '$(Build.ArtifactStagingDirectory)/lib'
 
 
 - task: CopyFiles@2
   inputs:
-    sourceFolder: '$(Build.SourcesDirectory)/PlugIns/Bin/$(BuildConfiguration)/'
+    sourceFolder: '$(Build.SourcesDirectory)/PlugIns/Bin/Release/'
     contents: '**/?(*.dll|*.xml)'
     CleanTargetFolder: true
     TargetFolder: '$(Build.ArtifactStagingDirectory)/PlugIns'
