@@ -24,7 +24,7 @@ steps:
 
 - task: PowerShell@2
   inputs:
-   arguments: 'ProjectSigner.exe'
+   arguments: 'ProjectSigner.exe $(Agent.TempDirectory)GorgonFull.snk'
 
 - task: VSBuild@1
   inputs:
