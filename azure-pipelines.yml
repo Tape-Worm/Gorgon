@@ -15,6 +15,7 @@ name: 2.0.$(Rev:r).$(DayOfYear)
 
 steps:
 - task: PowerShell@2
+  displayName: 'Updating version to $(Build.BuildNumber)'
   inputs:
     targetType: filePath
     filePath: '.\VersionUpdater.ps1'
@@ -30,6 +31,7 @@ steps:
     secureFile: GorgonFull.snk
 
 - task: CmdLine@2
+  displayName: 'Signing code...'
   inputs:
     script: 'ProjectSigner.exe $(Agent.TempDirectory)\GorgonFull.snk -y'
 
@@ -40,6 +42,7 @@ steps:
     configuration: '$(buildConfiguration)'
 
 - task: CopyFiles@2
+  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/lib'
   inputs:
     sourceFolder: '$(Build.SourcesDirectory)/Gorgon'
     contents: '**/bin/Release/**/?(*.dll|*.xml)'
@@ -48,11 +51,20 @@ steps:
 
 
 - task: CopyFiles@2
+  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/PlugIns'
   inputs:
     sourceFolder: '$(Build.SourcesDirectory)/PlugIns/Bin/Release/'
     contents: '**/?(*.dll|*.xml)'
     CleanTargetFolder: true
     TargetFolder: '$(Build.ArtifactStagingDirectory)/PlugIns'
+
+- task: CopyFiles@2
+  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/Tools'  
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)/Tools/Gorgon.Editor/bin/Release/'
+    contents: '**/?(*.exe|*.dll|*.config)'
+    CleanTargetFolder: true
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/Tools'
 
 - task: PublishBuildArtifacts@1
   inputs:
