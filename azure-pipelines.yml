@@ -42,7 +42,7 @@ steps:
 - task: CopyFiles@2
   inputs:
     sourceFolder: '$(Build.SourcesDirectory)/Gorgon'
-    contents: '**/$(BuildConfiguration)/**/?(*.dll|*.xml)'
+    contents: 'bin/$(BuildConfiguration)/**/?(*.dll|*.xml)'
     CleanTargetFolder: true
     TargetFolder: '$(Build.ArtifactStagingDirectory)/lib'
 
@@ -50,7 +50,7 @@ steps:
 - task: CopyFiles@2
   inputs:
     sourceFolder: '$(Build.SourcesDirectory)/PlugIns/Bin'
-    contents: '**/$(BuildConfiguration)/**/?(*.dll|*.xml)'
+    contents: '$(BuildConfiguration)/**/?(*.dll|*.xml)'
     CleanTargetFolder: true
     TargetFolder: '$(Build.ArtifactStagingDirectory)/PlugIns'
 
