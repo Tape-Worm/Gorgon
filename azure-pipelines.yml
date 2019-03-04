@@ -14,6 +14,10 @@ variables:
 name: 2.0.$(Date:yyyyMMdd)$(Rev:.r)
 
 steps:
+- task: PowerShell@2
+  inputs:
+   arguments: 'VersionUpdater.ps1'
+
 - task: NuGetToolInstaller@0
 
 - task: NuGetCommand@2
