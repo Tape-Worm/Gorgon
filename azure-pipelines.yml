@@ -11,7 +11,7 @@ variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'ReleaseAndDeploy'
 
-name: 2.0.$(Rev:r).$(DayOfYear)
+name: 3.0.$(Rev:r).$(DayOfYear)
 
 steps:
 - task: PowerShell@2
