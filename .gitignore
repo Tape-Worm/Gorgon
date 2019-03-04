@@ -185,5 +185,4 @@ UpgradeLog*.htm
 # Microsoft Fakes
 FakesAssemblies/
 /Deploy.ps1
-/Deploy_Examples.ps1
 GorgonFull.snk
