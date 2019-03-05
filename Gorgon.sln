@@ -81,6 +81,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boinger", "Examples\Gorgon.Graphics\Boinger\Boinger.csproj", "{256CC806-B7DC-4125-A350-F78F520D9742}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TvImageCodec", "Examples\Gorgon.Graphics\TvImageCodec\TvImageCodec.csproj", "{58398BDA-7076-410A-B73C-928E79EAE8A9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9524F1F2-8260-4203-AF0A-5457053F6BEE} = {9524F1F2-8260-4203-AF0A-5457053F6BEE}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodecPlugIn", "Examples\Gorgon.Graphics\CodecPlugIn\CodecPlugIn.csproj", "{9524F1F2-8260-4203-AF0A-5457053F6BEE}"
 EndProject

@@ -40,7 +40,7 @@
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationManifest>D:\Mike\Code\GitHubRepos\Gorgon\WIP\Examples\app.manifest</ApplicationManifest>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>Gorgon.Editor.Program</StartupObject>
