@@ -1,4 +1,4 @@
-![gorgon_2 x_logo_full_site](https://cloud.githubusercontent.com/assets/9710137/23449195/86a8701c-fe12-11e6-9079-c4a8997bd311.png) [![BuildStatus](https://ci.appveyor.com/api/projects/status/7bwgi85435urivwu/branch/master?svg=true)](https://ci.appveyor.com/project/Tape-Worm/gorgon/)
+![gorgon_2 x_logo_full_site](https://cloud.githubusercontent.com/assets/9710137/23449195/86a8701c-fe12-11e6-9079-c4a8997bd311.png) 
 
 A modular set of libraries useful for graphics and/or video game development.  Gorgon uses Direct 3D 11.4 (via [SharpDX](http://sharpdx.org)) to provide high performance graphics for your applications.
 
@@ -93,13 +93,13 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
   - [x] __[Gorgon.Editor](Tools/Editor)__ _**(In Development)**_ 
   
   A flexible content editor to allow for the creation and editing of content.        
-    * Supports a plug in based architecture to allow developers to extend the editor indefinitely. 
-    * Supports file management of content by using a simple tree layout for folders and files.
-    * Comes with an image editor plug in which allows users to add depth slices to 3D images (I have yet, for the life of me to find anything on the web that does this), mip maps and array indices, and other simple functions.
-    * Comes with a sprite editor plug in which allows users to clip sprites from an image and store them as a file.    
-    * Can output the files as a packed file. The type of file that be written out is provided via plug in support (currently only supports the proprietary Gorgon packed file format).
-    * Can import packed files using file system plug ins (currently has support for zip and the proprietary Gorgon packed file formats - included with Gorgon as file system plug ins).
-    * _TBD..._
+   * Supports a plug in based architecture to allow developers to extend the editor indefinitely. 
+   * Supports file management of content by using a simple tree layout for folders and files.
+   * Comes with an image editor plug in which allows users to add depth slices to 3D images (I have yet, for the life of me to find anything on the web that does this), mip maps and array indices, and other simple functions.
+   * Comes with a sprite editor plug in which allows users to clip sprites from an image and store them as a file.    
+   * Can output the files as a packed file. The type of file that be written out is provided via plug in support (currently only supports the proprietary Gorgon packed file format).
+   * Can import packed files using file system plug ins (currently has support for zip and the proprietary Gorgon packed file formats - included with Gorgon as file system plug ins).
+   * _TBD..._
 
 What's required?
 ----------------
