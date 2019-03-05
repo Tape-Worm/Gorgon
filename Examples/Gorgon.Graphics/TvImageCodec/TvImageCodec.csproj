@@ -79,8 +79,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetDir)TVImageCodec.dll" "$(SolutionDir)\Examples\Gorgon.Graphics\CodecPlugIn\$(OutDir)"
-copy "$(TargetDir)TVImageCodec.pdb" "$(SolutionDir)\Examples\Gorgon.Graphics\CodecPlugIn\$(OutDir)"</PostBuildEvent>
+    <PostBuildEvent>copy "$(TargetDir)TVImageCodec.dll" "$(SolutionDir)Examples\Gorgon.Graphics\CodecPlugIn\$(OutDir)"
+copy "$(TargetDir)TVImageCodec.pdb" "$(SolutionDir)Examples\Gorgon.Graphics\CodecPlugIn\$(OutDir)"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>
