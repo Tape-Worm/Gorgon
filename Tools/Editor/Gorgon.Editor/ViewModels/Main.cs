@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -34,6 +35,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
+using Gorgon.Editor.Content;
 using Gorgon.Editor.Plugins;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
@@ -72,6 +74,15 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return a list of content plugins that can create their own content.
+        /// </summary>
+        public ObservableCollection<IContentPluginMetadata> ContentCreators
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// Property to return the view model for the new project child view.
         /// </summary>
@@ -183,6 +194,14 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the command used to create content.
+        /// </summary>
+        public IEditorCommand<string> CreateContentCommand
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
@@ -245,6 +264,7 @@ namespace Gorgon.Editor.ViewModels
 
             _directoryLocator = injectionParameters.ViewModelFactory.DirectoryLocator;
 
+            ContentCreators = new ObservableCollection<IContentPluginMetadata>(injectionParameters.ContentCreators ?? throw new ArgumentMissingException(nameof(MainParameters.ContentCreators), nameof(injectionParameters)));
             RecentFiles.OpenProjectCommand = new EditorCommand<RecentItem>(DoOpenRecentAsync, CanOpenRecent);
             NewProject.CreateProjectCommand = new EditorCommand<object>(DoCreateProjectAsync, CanCreateProject);
         }
@@ -796,6 +816,63 @@ namespace Gorgon.Editor.ViewModels
             }
         }
 
+        /// <summary>
+        /// Function to determine if content can be created.
+        /// </summary>
+        /// <param name="notUsed">Not used.</param>
+        /// <returns><b>true</b> if the content can be created, <b>false</b> if not.</returns>
+        private bool CanCreateContent(string notUsed) => CurrentProject?.FileExplorer != null && ContentCreators != null && ContentCreators.Count > 0;
+
+        /// <summary>
+        /// Function to create new content.
+        /// </summary>
+        /// <param name="contentID">The ID of the content type based on its new icon ID.</param>
+        private async void DoCreateContentAsync(string contentID)
+        {
+            IContentFile contentFile = null;
+
+            try
+            {
+                if (!Guid.TryParse(contentID, out Guid guid))
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, Resources.GOREDIT_ERR_INVALID_CONTENT_TYPE_ID);
+                }
+
+                IContentPluginMetadata metaData = ContentCreators.FirstOrDefault(item => guid == item.NewIconID);
+
+                Debug.Assert(metaData != null, $"Could not locate the content plugin metadata for {contentID}.");
+
+                ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_CREATING_CONTENT, metaData.ContentType));
+
+                ContentPlugin plugin = _viewModelFactory.ContentPlugins.Plugins.FirstOrDefault(item => item.Value == metaData).Value;
+
+                Debug.Assert(plugin != null, $"Could not locate the content plug in for {contentID}.");
+
+                contentFile = await CurrentProject.CreateNewContentItemAsync(metaData, plugin);
+
+                if (contentFile == null)
+                {
+                    return;
+                }
+
+                HideWaitPanel();                
+            }
+            catch (Exception ex)
+            {
+                _messageService.ShowError(ex, Resources.GOREDIT_ERR_CONTENT_CREATION);
+            }
+            finally
+            {
+                HideWaitPanel();
+            }
+
+            // We have our content, we can now open it as we normally would.
+            if (contentFile != null)
+            {
+                CurrentProject.FileExplorer.OpenContentFile.Execute(contentFile);
+            }            
+        }
+
         /// <summary>Function called when the application is closing.</summary>
         /// <param name="args">The arguments for the command.</param>
         private async Task DoAppClose(AppCloseArgs args)
@@ -880,6 +957,7 @@ namespace Gorgon.Editor.ViewModels
             OpenPackFileCommand = new EditorCommand<object>(DoOpenPackFileAsync, CanOpenProjects);
             SavePackFileCommand = new EditorAsyncCommand<SavePackFileArgs>(DoSaveProjectAsync, CanSaveProject);
             AppClosingAsyncCommand = new EditorAsyncCommand<AppCloseArgs>(DoAppClose);
+            CreateContentCommand = new EditorCommand<string>(DoCreateContentAsync, CanCreateContent);
         }
         #endregion
     }

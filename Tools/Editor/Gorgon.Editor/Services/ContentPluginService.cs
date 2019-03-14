@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Metadata;
@@ -214,6 +215,30 @@ namespace Gorgon.Editor.Services
             }
 
             _plugins[plugin.Name] = plugin;
+        }
+
+        /// <summary>
+        /// Function to assign a plugin to a content file.
+        /// </summary>
+        /// <param name="contentFile">The content file to update.</param>
+        /// <param name="fileManager">The file manager used to manage content files.</param>
+        /// <param name="plugin">The plugin to assign.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="contentFile"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="plugin"/> is unable to read the contents of <paramref name="contentFile"/>.</exception>
+        public void AssignContentPlugin(IContentFile contentFile, IContentFileManager fileManager, IContentPluginMetadata plugin)
+        {
+            if (contentFile == null)
+            {
+                throw new ArgumentNullException(nameof(contentFile));
+            }
+
+            if ((!plugin.CanOpenContent(contentFile, fileManager)) || (contentFile.Metadata == null))
+            {
+                throw new GorgonException(GorgonResult.CannotRead);
+            }
+
+            contentFile.Metadata.ContentMetadata = plugin;            
+            contentFile.RefreshMetadata();
         }
 
         /// <summary>

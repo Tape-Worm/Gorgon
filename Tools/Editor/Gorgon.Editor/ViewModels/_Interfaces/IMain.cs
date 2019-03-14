@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using System.Collections.ObjectModel;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ViewModels
@@ -35,6 +37,14 @@ namespace Gorgon.Editor.ViewModels
         : IViewModel
     {
         #region Properties.
+        /// <summary>
+        /// Property to return a list of content plugins that can create their own content.
+        /// </summary>
+        ObservableCollection<IContentPluginMetadata> ContentCreators
+        {
+            get;
+        }
+
         /// <summary>
         /// Property to return the current clipboard context.
         /// </summary>
@@ -111,6 +121,14 @@ namespace Gorgon.Editor.ViewModels
         /// Property to return the command used to query before closing the application.
         /// </summary>
         IEditorAsyncCommand<AppCloseArgs> AppClosingAsyncCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to create content.
+        /// </summary>
+        IEditorCommand<string> CreateContentCommand
         {
             get;
         }

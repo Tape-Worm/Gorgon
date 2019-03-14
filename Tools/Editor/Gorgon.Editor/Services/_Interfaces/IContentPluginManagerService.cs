@@ -67,6 +67,14 @@ namespace Gorgon.Editor.Services
         bool AssignContentPlugin(IContentFile contentFile, IContentFileManager fileManager, bool metadataOnly);
 
         /// <summary>
+        /// Function to assign a plugin to a content file.
+        /// </summary>
+        /// <param name="contentFile">The content file to update.</param>
+        /// <param name="fileManager">The file manager used to manage content files.</param>
+        /// <param name="plugin">The plugin to assign.</param>
+        void AssignContentPlugin(IContentFile contentFile, IContentFileManager fileManager, IContentPluginMetadata plugin);
+
+        /// <summary>
         /// Function to clear all of the content plugins.
         /// </summary>
         void Clear();        

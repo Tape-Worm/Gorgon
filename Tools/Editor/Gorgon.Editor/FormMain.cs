@@ -43,6 +43,8 @@ using System.Diagnostics;
 using ComponentFactory.Krypton.Ribbon;
 using System.Linq;
 using Gorgon.Editor.Content;
+using System.Collections.Generic;
+using Gorgon.Editor.Plugins;
 
 namespace Gorgon.Editor
 {
@@ -384,6 +386,9 @@ namespace Gorgon.Editor
             ButtonFileSystemCopy.Enabled = _clipboardContext?.CanCopy() ?? false;
             ButtonFileSystemCut.Enabled = _clipboardContext?.CanCut() ?? false;
             ButtonFileSystemPaste.Enabled = _clipboardContext?.CanPaste() ?? false;
+
+            GroupCreate.Visible = SepCreate.Visible = (DataContext.CreateContentCommand != null) 
+                                                        && (DataContext.CreateContentCommand.CanExecute(null));
         }
 
         /// <summary>
@@ -656,6 +661,124 @@ namespace Gorgon.Editor
         }
 
         /// <summary>
+        /// Function to update the icons used for the "new" buttons.
+        /// </summary>
+        /// <param name="metadata">The metadata for plug ins that can create content.</param>
+        private void AddNewIcons(IEnumerable<IContentPluginMetadata> metadata)
+        {
+            if (metadata == null)
+            {                
+                return;
+            }
+
+            foreach (IContentPluginMetadata item in metadata)
+            {
+                string id = item.NewIconID.ToString("N");
+                Image icon = item.GetNewIcon();
+
+                if ((MenuCreate.Items.ContainsKey(id))
+                    || (icon == null))
+                {
+                    continue;
+                }
+
+                var menuItem = new ToolStripMenuItem(string.Format(Resources.GOREDIT_CREATE_NEW, item.ContentType), icon)
+                {
+                    Name = id
+                };
+                menuItem.Click += NewItem_Click;
+
+                MenuCreate.Items.Add(menuItem);                
+            }
+        }
+
+        /// <summary>
+        /// Function to update the icons used for the "new" buttons.
+        /// </summary>
+        /// <param name="oldMetadata">The previous metadata at updated location in the list.</param>
+        /// <param name="metadata">The metadata for plug ins that can create content.</param>
+        private void UpdateNewIcons(IContentPluginMetadata oldMetadata, IContentPluginMetadata metadata)
+        {
+            if ((metadata == null) || (oldMetadata == null))
+            {
+                return;
+            }
+
+            string oldId = oldMetadata.NewIconID.ToString("N");
+
+            if (!MenuCreate.Items.ContainsKey(oldId))
+            {
+                return;
+            }
+
+            ToolStripItem menuItem = MenuCreate.Items[oldId];
+            string newId = metadata.NewIconID.ToString("N");
+            Image icon = oldMetadata.GetNewIcon();
+
+            if ((MenuCreate.Items.ContainsKey(newId))
+                || (icon == null))
+            {
+                return;
+            }
+
+            int index = MenuCreate.Items.IndexOfKey(oldId);
+            var newItem = new ToolStripMenuItem(metadata.ContentType, icon)
+            {
+                Name = newId
+            };
+
+            newItem.Click += NewItem_Click;
+
+            MenuCreate.Items.Insert(index, newItem);
+            MenuCreate.Items.Remove(menuItem);
+            menuItem.Click -= NewItem_Click;
+            menuItem.Dispose();
+        }
+
+        /// <summary>Handles the Click event of the NewItem control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void NewItem_Click(object sender, EventArgs e)
+        {
+            var item = (ToolStripItem)sender;
+
+            if ((DataContext?.CreateContentCommand == null) || (!DataContext.CreateContentCommand.CanExecute(item.Name)))
+            {
+                return;
+            }
+
+            DataContext.CreateContentCommand.Execute(item.Name);
+        }
+
+        /// <summary>
+        /// Function to update the icons used for the "new" buttons.
+        /// </summary>
+        /// <param name="metadata">The metadata for plug ins that can create content.</param>
+        private void RemoveNewIcons(IEnumerable<IContentPluginMetadata> metadata)
+        {
+            if (metadata == null)
+            {
+                return;
+            }
+                        
+            foreach (IContentPluginMetadata item in metadata)
+            {
+                string id = item.NewIconID.ToString("N");
+
+                if (!MenuCreate.Items.ContainsKey(id))
+                {
+                    continue;
+                }
+
+                ToolStripItem menuItem = MenuCreate.Items[id];
+                MenuCreate.Items.RemoveByKey(id);
+                menuItem.Click += NewItem_Click;
+                menuItem.Dispose();
+            }
+            
+        }
+
+        /// <summary>
         /// Function to initialize the form from the data context.
         /// </summary>
         /// <param name="dataContext">The data context to assign.</param>
@@ -676,9 +799,12 @@ namespace Gorgon.Editor
             if (_clipboardContext != null)
             {
                 _clipboardContext.DataUpdated += ClipboardContext_DataUpdated;
-            }            
+            }
+
+#warning Add event handler for the collection.
+            AddNewIcons(dataContext.ContentCreators);
         }
-        
+
         /// <summary>
         /// Function to unassign the events from the data context.
         /// </summary>
@@ -691,6 +817,8 @@ namespace Gorgon.Editor
             {
                 return;
             }
+
+#warning Remove event handler for new item collection.
 
             if (_clipboardContext != null)
             {

@@ -110,6 +110,7 @@
     <Compile Include="ViewModels\ContentPreviewVm.cs" />
     <Compile Include="ViewModels\ContentPreviewVmParameters.cs" />
     <Compile Include="ViewModels\CopyNodeArgs.cs" />
+    <Compile Include="ViewModels\CreateContentFileArgs.cs" />
     <Compile Include="ViewModels\ExportNodeData.cs" />
     <Compile Include="ViewModels\CopyNodeData.cs" />
     <Compile Include="ViewModels\CreateNodeArgs.cs" />
@@ -238,6 +239,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\new_content_48x48.png" />
+    <None Include="Resources\new_content_16x16.png" />
     <None Include="Resources\open_edit_16x16.png" />
     <None Include="Resources\open_edit_48x48.png" />
     <None Include="Resources\no_thumbnail_256x256.dds" />

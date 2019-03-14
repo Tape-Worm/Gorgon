@@ -231,6 +231,18 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Function to enumerate the content plug ins that can create their own content.
+        /// </summary>
+        /// <returns>A list of plugins that can create their own content.</returns>
+        private IReadOnlyList<IContentPluginMetadata> EnumerateContentCreators()
+        {
+            IEnumerable<IContentPluginMetadata> filteredPlugins = ContentPlugins.Plugins.Where(item => item.Value.CanCreateContent)
+                                                                                        .Select(item => item.Value)
+                                                                                        .OfType<IContentPluginMetadata>();
+            return new List<IContentPluginMetadata>(filteredPlugins);
+        }
+
+        /// <summary>
         /// Function to create the main view model and any child view models.
         /// </summary>
         /// <param name="gpuName">The name of the GPU used by the application.</param>
@@ -251,6 +263,7 @@ namespace Gorgon.Editor.ViewModels
 
             mainVm.Initialize(new MainParameters(newProjectVm,
                                                 recentFilesVm,
+                                                EnumerateContentCreators(),
                                                 this,
                                                 new EditorFileOpenDialogService(Settings, FileSystemProviders),
                                                 new EditorFileSaveDialogService(Settings, FileSystemProviders)));

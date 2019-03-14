@@ -61,6 +61,15 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sprite.
+        /// </summary>
+        internal static string GORSPR_CONTENT_TYPE {
+            get {
+                return ResourceManager.GetString("GORSPR_CONTENT_TYPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gorgon Sprite Editor.
         /// </summary>
         internal static string GORSPR_DESC {
@@ -79,6 +88,16 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] NoImage_256x256 {
+            get {
+                object obj = ResourceManager.GetObject("NoImage_256x256", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap sprite_16x16 {
@@ -91,10 +110,30 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap sprite_24x24 {
+            get {
+                object obj = ResourceManager.GetObject("sprite_24x24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap sprite_48x48 {
             get {
                 object obj = ResourceManager.GetObject("sprite_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] SpriteEditor_Bg_1024x1024 {
+            get {
+                object obj = ResourceManager.GetObject("SpriteEditor_Bg_1024x1024", resourceCulture);
+                return ((byte[])(obj));
             }
         }
     }

@@ -511,6 +511,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create New {0}....
+        /// </summary>
+        internal static string GOREDIT_CREATE_NEW {
+            get {
+                return ResourceManager.GetString("GOREDIT_CREATE_NEW", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to An error occurred while loading the importer plug in.
         ///Exception: {0}.
         /// </summary>
@@ -665,6 +674,17 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error creating the content.
+        ///
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_CONTENT_CREATION {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CONTENT_CREATION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error copying &apos;{0}&apos; to the clipboard.
         ///Please try again..
         /// </summary>
@@ -681,6 +701,17 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_CREATE_PROJECT {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_CREATE_PROJECT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error creating the file &apos;{0}&apos;.
+        ///
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_CREATING_CONTENT_FILE {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CREATING_CONTENT_FILE", resourceCulture);
             }
         }
         
@@ -801,6 +832,17 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_INCLUDE_NODE {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_INCLUDE_NODE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The ID for the content is an invalid type.
+        ///
+        ///Content IDs should be GUID values..
+        /// </summary>
+        internal static string GOREDIT_ERR_INVALID_CONTENT_TYPE_ID {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_INVALID_CONTENT_TYPE_ID", resourceCulture);
             }
         }
         
@@ -1190,6 +1232,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Creating {0} content....
+        /// </summary>
+        internal static string GOREDIT_TEXT_CREATING_CONTENT {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_CREATING_CONTENT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Creating project....
         /// </summary>
         internal static string GOREDIT_TEXT_CREATING_PROJECT {
@@ -1529,6 +1580,26 @@ namespace Gorgon.Editor.Properties {
         internal static string Krypton_DarkO2k10Theme {
             get {
                 return ResourceManager.GetString("Krypton_DarkO2k10Theme", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap new_content_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("new_content_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap new_content_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("new_content_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

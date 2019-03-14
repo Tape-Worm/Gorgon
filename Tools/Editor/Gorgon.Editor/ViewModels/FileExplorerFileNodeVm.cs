@@ -310,12 +310,6 @@ namespace Gorgon.Editor.ViewModels
                     IsOpen = false;
                 }
 
-                // Close any open dependant file.
-                if (openDependant != null)
-                {
-                    openDependant.IsOpen = false;
-                }
-
                 // If we have a source file, remove it.
                 if ((Metadata != null) 
                     && (Metadata.Attributes.TryGetValue(ContentImportPlugin.ImportOriginalFileNameAttr, out string sourcePath)))

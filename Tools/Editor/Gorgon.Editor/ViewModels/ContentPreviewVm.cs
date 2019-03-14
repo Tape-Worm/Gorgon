@@ -139,7 +139,7 @@ namespace Gorgon.Editor.ViewModels
                     Title = string.Empty;
                     PreviewImage?.Dispose();
                     PreviewImage = null;
-                    _contentFile = null;
+                    _contentFile = file;
                     return;
                 }
 
@@ -161,7 +161,7 @@ namespace Gorgon.Editor.ViewModels
                     image?.Dispose();
                     PreviewImage?.Dispose();
                     PreviewImage = null;
-                    _contentFile = null;
+                    _contentFile = file;
                     return;
                 }
 

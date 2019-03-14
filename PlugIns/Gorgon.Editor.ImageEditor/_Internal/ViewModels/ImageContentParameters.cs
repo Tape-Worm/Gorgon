@@ -84,14 +84,6 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the content file representing this content.
-        /// </summary>
-        public IContentFile ContentFile
-        {
-            get;
-        }
-
-        /// <summary>
         /// Property to return the image to edit.
         /// </summary>
         public IGorgonImage Image

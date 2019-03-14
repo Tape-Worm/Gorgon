@@ -63,9 +63,20 @@
     <Compile Include="_Internal\SpriteImporterSettings.cs" />
     <Compile Include="_Internal\SpriteEditorCommonConstants.cs" />
     <Compile Include="_Internal\ViewModels\SpriteContent.cs" />
+    <Compile Include="_Internal\ViewModels\SpriteContentParameters.cs" />
+    <Compile Include="_Internal\ViewModels\_Interfaces\ISpriteContent.cs" />
+    <Compile Include="_Internal\Views\SpriteEditorView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="_Internal\Views\SpriteEditorView.Designer.cs">
+      <DependentUpon>SpriteEditorView.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\SpriteEditor_Bg_1024x1024.dds" />
+    <None Include="Resources\sprite_24x24.png" />
+    <None Include="Resources\NoImage_256x256.dds" />
     <None Include="Resources\sprite_48x48.png" />
     <None Include="Resources\sprite_16x16.png" />
   </ItemGroup>
@@ -73,6 +84,9 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="_Internal\Views\SpriteEditorView.resx">
+      <DependentUpon>SpriteEditorView.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -129,9 +143,7 @@
       <Version>4.5.2</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="_Internal\ViewModels\_Interfaces\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>REM Editor copy

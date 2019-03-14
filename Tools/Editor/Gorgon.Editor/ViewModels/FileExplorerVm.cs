@@ -242,6 +242,14 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the command to execute to create a new, empty content file.
+        /// </summary>
+        public IEditorCommand<CreateContentFileArgs> CreateContentFileCommand
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
@@ -548,6 +556,75 @@ namespace Gorgon.Editor.ViewModels
             finally
             {
                 _busyService.SetIdle();
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if a content file can be created.
+        /// </summary>
+        /// <param name="args">The arguments for the command.</param>
+        /// <returns><b>true</b> if the content file can be created, <b>false</b> if not.</returns>
+        private bool CanCreateContentFile(CreateContentFileArgs args) => !string.IsNullOrWhiteSpace(args.Name);
+
+        /// <summary>
+        /// Function to create a new content file.
+        /// </summary>
+        /// <param name="args">The arguments for the command.</param>
+        private void DoCreateContentFile(CreateContentFileArgs args)
+        {
+            FileInfo file = null;
+            
+            // Find out which directory is selected.
+            IFileExplorerNodeVm parent = SelectedNode;
+
+            try
+            {
+                if (parent == null)
+                {
+                    parent = RootNode;
+                }
+                else
+                {
+                    while (!parent.AllowChildCreation)
+                    {
+                        parent = parent.Parent;
+                    }
+                }
+
+                int count = 0;
+                string name = args.Name;
+
+                while (parent.Children.Any(item => string.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase)))
+                {
+                    name = $"{args.Name} ({++count})";
+                }
+
+                // Update the name if we renamed it.
+                args.Name = name;
+
+                var physicalParent = new DirectoryInfo(parent.PhysicalPath);
+                file = _fileSystemService.CreateEmptyFile(physicalParent, args.Name);
+                                
+                SelectedNode = args.Node = _factory.CreateFileExplorerFileNodeVm(_project, _fileSystemService, parent, file);
+            }
+            catch (Exception ex)
+            {
+                _messageService.ShowError(ex, string.Format(Resources.GOREDIT_ERR_CREATING_CONTENT_FILE, args.Name));
+                args.Cancel = true;
+
+                // Clean up should we mess up.
+                if ((file != null) && (file.Exists))
+                {
+                    try
+                    {
+                        file.Delete();
+                    }
+                    catch (Exception subEx)
+                    {
+                        Log.Print($"Could not delete the working file for '{args.Name}'", LoggingLevel.Simple);
+                        Log.LogException(subEx);
+                    }
+                }
             }
         }
 
@@ -2226,6 +2303,7 @@ namespace Gorgon.Editor.ViewModels
             DeleteFileSystemCommand = new EditorCommand<object>(DoDeleteFileSystemAsync, CanDeleteFileSystem);
             ImportIntoNodeCommand = new EditorAsyncCommand<IFileExplorerNodeVm>(DoImportIntoNodeAsync, CanImportIntoNode);
             SearchCommand = new EditorCommand<string>(DoSearch);
+            CreateContentFileCommand = new EditorCommand<CreateContentFileArgs>(DoCreateContentFile, CanCreateContentFile);
         }
         #endregion
     }

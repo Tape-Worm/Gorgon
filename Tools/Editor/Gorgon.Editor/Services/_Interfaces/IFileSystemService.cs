@@ -133,6 +133,14 @@ namespace Gorgon.Editor.Services
         bool DirectoryExists(DirectoryInfo path);
 
         /// <summary>
+        /// Function to create an empty 1-byte file.
+        /// </summary>
+        /// <param name="parentDir">The physical parent directory for the file.</param>
+        /// <param name="name">The name of the file.</param>
+        /// <returns>A file information obejct representing the file on the disk.</returns>
+        FileInfo CreateEmptyFile(DirectoryInfo parentDir, string name);
+
+        /// <summary>
         /// Function to create a new directory.
         /// </summary>
         /// <param name="parentDirectory">The parent directory on the physical file system.</param>

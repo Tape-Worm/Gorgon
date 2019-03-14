@@ -402,19 +402,16 @@ namespace Gorgon.IO
 		        textureView = texture?.GetShaderResourceView();
 		    }
 
-		    if (textureView == null)
-		    {
-                sprite.TextureRegion = new DX.RectangleF(0, 0, 1, 1);
-		    }
-		    else
+            sprite.TextureRegion = reader.ReadRectangleF();
+
+            if (textureView != null)
 		    {
 		        // V2 used black transparent by default, so convert it to our default so we can keep from creating unnecessary states.
 		        if (borderColor == GorgonColor.BlackTransparent)
 		        {
 		            borderColor = GorgonColor.White;
 		        }
-
-		        sprite.TextureRegion = reader.ReadRectangleF();
+		        
 		        sprite.Texture = textureView;
 		        sprite.TextureSampler = CreateSamplerState(graphics, filter, borderColor, hWrap, vWrap);
 		    }

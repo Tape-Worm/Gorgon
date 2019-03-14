@@ -355,6 +355,49 @@ namespace Gorgon.Editor.Services
         }
 
         /// <summary>
+        /// Function to create an empty 1-byte file.
+        /// </summary>
+        /// <param name="parentDir">The physical parent directory for the file.</param>
+        /// <param name="name">The name of the file.</param>
+        /// <returns>A file information obejct representing the file on the disk.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, or the <paramref name="parentDir"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+        public FileInfo CreateEmptyFile(DirectoryInfo parentDir, string name)
+        {
+            if (parentDir == null)
+            {
+                throw new ArgumentNullException(nameof(parentDir));
+            }
+
+            if (!parentDir.Exists)
+            {
+                throw new DirectoryNotFoundException();
+            }
+
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentEmptyException(nameof(name));
+            }
+
+            var result = new FileInfo(Path.Combine(parentDir.FullName, name));
+
+            // Write a single byte to it so we know that we have the file.
+            using (Stream stream = result.OpenWrite())
+            {
+                stream.WriteByte(0);
+            }
+
+            result.Refresh();
+
+            return result;
+        }
+
+        /// <summary>
         /// Function to create a new directory.
         /// </summary>
         /// <param name="parentDirectory">The parent directory on the physical file system.</param>

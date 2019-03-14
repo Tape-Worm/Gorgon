@@ -115,8 +115,6 @@ namespace Gorgon.IO
 
             if (texture == null)
             {
-                textureRegion = DX.RectangleF.Empty;
-                textureArrayIndex = 0;
                 return null;
             }
 

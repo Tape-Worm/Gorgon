@@ -67,6 +67,30 @@ namespace Gorgon.Editor.Plugins
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the ID of the new icon for this plug in.
+        /// </summary>
+        Guid NewIconID
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return whether content creation is possible.
+        /// </summary>
+        bool CanCreateContent
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the friendly (i.e shown on the UI) name for the type of content.
+        /// </summary>
+        string ContentType
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
@@ -93,6 +117,17 @@ namespace Gorgon.Editor.Plugins
         /// </summary>
         /// <returns>An image for the small icon.</returns>
         Image GetSmallIcon();
+
+        /// <summary>
+        /// Function to retrieve the icon used for new content creation.
+        /// </summary>
+        /// <returns>An image for the icon.</returns>
+        /// <remarks>
+        /// <para>
+        /// This method is never called when <see cref="CanCreateContent"/> is <b>false</b>.
+        /// </para>
+        /// </remarks>
+        Image GetNewIcon();
         #endregion
     }
 }

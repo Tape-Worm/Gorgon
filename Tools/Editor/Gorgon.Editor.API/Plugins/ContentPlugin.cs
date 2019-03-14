@@ -87,13 +87,35 @@ namespace Gorgon.Editor.Plugins
         /// <summary>
         /// Property to return whether or not the plugin is capable of creating content.
         /// </summary>
+        /// <remarks>
+        /// When plugin authors return <b>true</b> for this property, they should also override the <see cref="GetDefaultContentAsync(string)"/> method to pre-populate the content with default data.
+        /// </remarks>
         public abstract bool CanCreateContent
         {
             get;
-        }        
+        }
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to return the file system used for writing out temporary data.
+        /// </summary>
+        /// <param name="tempDirectory">The physical directory to store the temporary data into.</param>
+        /// <returns>A new writable file system for writing temporary data into.</returns>
+        private IGorgonFileSystemWriter<Stream> GetScratchArea(DirectoryInfo tempDirectory)
+        {
+            string scratchPath = Path.Combine(tempDirectory.FullName, GetType().FullName).FormatDirectory(Path.DirectorySeparatorChar);
+
+            if (!Directory.Exists(scratchPath))
+            {
+                Directory.CreateDirectory(scratchPath);
+            }
+
+            var scratchArea = new GorgonFileSystem(Log);
+            scratchArea.Mount(scratchPath);
+            return new GorgonFileSystemWriter(scratchArea, scratchPath);
+        }
+
         /// <summary>
         /// Function to provide initialization for the plugin.
         /// </summary>
@@ -119,6 +141,7 @@ namespace Gorgon.Editor.Plugins
         /// Function to open a content object from this plugin.
         /// </summary>
         /// <param name="file">The file that contains the content.</param>
+        /// <param name="fileManager">The file manager used to access other content files.</param>
         /// <param name="injector">Parameters for injecting dependency objects.</param>
         /// <param name="scratchArea">The file system for the scratch area used to write transitory information.</param>
         /// <param name="undoService">The undo service for the plug in.</param>
@@ -129,7 +152,7 @@ namespace Gorgon.Editor.Plugins
         /// application or plug in is shut down, and is not stored with the project.
         /// </para>
         /// </remarks>
-        protected abstract Task<IEditorContent> OnOpenContentAsync(IContentFile file, IViewModelInjection injector, IGorgonFileSystemWriter<Stream> scratchArea, IUndoService undoService);
+        protected abstract Task<IEditorContent> OnOpenContentAsync(IContentFile file, IContentFileManager fileManager, IViewModelInjection injector, IGorgonFileSystemWriter<Stream> scratchArea, IUndoService undoService);
 
         /// <summary>
         /// Function to register plug in specific search keywords with the system search.
@@ -156,20 +179,41 @@ namespace Gorgon.Editor.Plugins
         }
 
         /// <summary>
+        /// Function to retrieve the default content for the plug in.
+        /// </summary>
+        /// <param name="name">The name of the content (if applicable).</param>
+        /// <returns>A byte array containing the default content data.</returns>
+        /// <remarks>
+        /// <para>
+        /// This is used to generate default content data when creating new content.
+        /// </para>
+        /// <para>
+        /// This method will not be called if <see cref="CanCreateContent"/> is <b>false</b>.
+        /// </para>
+        /// </remarks>
+        public virtual Task<byte[]> GetDefaultContentAsync(string name) => Task.FromResult<byte[]>(null);
+
+        /// <summary>
         /// Function to open a content object from this plugin.
         /// </summary>        
         /// <param name="file">The file that contains the content.</param>
+        /// <param name="fileManager">The file manager used to access other content files.</param>
         /// <param name="injector">Parameters for injecting dependency objects.</param>
         /// <param name="project">The project information.</param>
         /// <param name="undoService">The undo service for the plugin.</param>
         /// <returns>A new <see cref="IEditorContent"/> object.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/>, <paramref name="injector"/>, or the <paramref name="project"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/>, <paramref name="fileManager"/>, <paramref name="injector"/>, or the <paramref name="project"/> parameter is <b>null</b>.</exception>
         /// <exception cref="GorgonException">Thrown if the <see cref="OnOpenContentAsync"/> method returns <b>null</b>.</exception>
-        public async Task<IEditorContent> OpenContentAsync(IContentFile file, IViewModelInjection injector, IProject project, IUndoService undoService)
+        public async Task<IEditorContent> OpenContentAsync(IContentFile file, IContentFileManager fileManager, IViewModelInjection injector, IProject project, IUndoService undoService)
         {
             if (file == null)
             {
                 throw new ArgumentNullException(nameof(file));
+            }
+
+            if (fileManager == null)
+            {
+                throw new ArgumentNullException(nameof(fileManager));
             }
 
             if (injector == null)
@@ -182,18 +226,9 @@ namespace Gorgon.Editor.Plugins
                 throw new ArgumentNullException(nameof(project));
             }
 
-            string scratchPath = Path.Combine(project.TempDirectory.FullName, GetType().FullName).FormatDirectory(Path.DirectorySeparatorChar);
+            IGorgonFileSystemWriter<Stream> scratchWriter = GetScratchArea(project.TempDirectory);            
 
-            if (!Directory.Exists(scratchPath))
-            {
-                Directory.CreateDirectory(scratchPath);
-            }
-
-            var scratchArea = new GorgonFileSystem(Log);
-            scratchArea.Mount(scratchPath);
-            IGorgonFileSystemWriter<Stream> scratchWriter = new GorgonFileSystemWriter(scratchArea, scratchPath);
-
-            IEditorContent content = await OnOpenContentAsync(file, injector, scratchWriter, undoService);
+            IEditorContent content = await OnOpenContentAsync(file, fileManager, injector, scratchWriter, undoService);
 
             if (content == null)
             {

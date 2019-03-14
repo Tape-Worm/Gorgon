@@ -25,6 +25,8 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.ViewModels
@@ -75,21 +77,30 @@ namespace Gorgon.Editor.ViewModels
             get;
         }
 
+        /// <summary>
+        /// Property to return a list of content plug ins that can create their own content.
+        /// </summary>
+        public IReadOnlyList<IContentPluginMetadata> ContentCreators
+        {
+            get;
+        }
+
         /// <summary>Initializes a new instance of the MainParameters class.</summary>
         /// <param name="newProject">The new project view model.</param>
         /// <param name="recent">The recent files view model.</param>
-        /// <param name="undoService">The undo service for the application.</param>
+        /// <param name="contentCreators">A list of content plug ins that can create their own content.</param>
         /// <param name="viewModelFactory">The view model factory for creating view models.</param>
         /// <param name="openDialog">A dialog service used for opening files.</param>
         /// <param name="saveDialog">A dialog service used for saving files.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public MainParameters(IStageNewVm newProject, IRecentVm recent, ViewModelFactory viewModelFactory, IEditorFileOpenDialogService openDialog, IEditorFileSaveAsDialogService saveDialog)
+        public MainParameters(IStageNewVm newProject, IRecentVm recent, IReadOnlyList<IContentPluginMetadata> contentCreators, ViewModelFactory viewModelFactory, IEditorFileOpenDialogService openDialog, IEditorFileSaveAsDialogService saveDialog)
             : base(viewModelFactory)
         {            
             OpenDialog = openDialog ?? throw new ArgumentNullException(nameof(openDialog));
             SaveDialog = saveDialog ?? throw new ArgumentNullException(nameof(saveDialog));
             NewProject = newProject ?? throw new ArgumentNullException(nameof(newProject));
             RecentFiles = recent ?? throw new ArgumentNullException(nameof(recent));
+            ContentCreators = contentCreators ?? throw new ArgumentNullException(nameof(contentCreators));
         }
     }
 }

@@ -157,6 +157,15 @@ namespace Gorgon.Editor.ViewModels
 
         #region Methods.
         /// <summary>
+        /// Function to create a new content item.
+        /// </summary>
+        /// <param name="metadata">The metadata for the plug in associated with the content.</param>
+        /// <param name="plugin">The plug in used to create the content.</param>
+        /// <returns>A new content file containing the content data, or <b>null</b> if the content creation was cancelled.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="metadata"/>, or the <paramref name="plugin"/> parameter is <b>null</b>.</exception>
+        Task<IContentFile> CreateNewContentItemAsync(IContentPluginMetadata metadata, ContentPlugin plugin);
+
+        /// <summary>
         /// Function to persist the project data to a file.
         /// </summary>
         /// <param name="path">A path to the file that will hold the project data.</param>

@@ -91,6 +91,11 @@ namespace Gorgon.Editor.ImageEditor
         {
             get;
         }
+        /// <summary>Property to return the ID of the new icon for this plug in.</summary>
+        public Guid NewIconID => Guid.Empty;
+
+        /// <summary>Property to return the friendly (i.e shown on the UI) name for the type of content.</summary>
+        public string ContentType => string.Empty;
         #endregion
 
         #region Methods.
@@ -247,6 +252,7 @@ namespace Gorgon.Editor.ImageEditor
 
         /// <summary>Function to open a content object from this plugin.</summary>
         /// <param name="file">The file that contains the content.</param>
+        /// <param name = "fileManager" > The file manager used to access other content files.</param>
         /// <param name="injector">Parameters for injecting dependency objects.</param>
         /// <param name="scratchArea">The file system for the scratch area used to write transitory information.</param>
         /// <param name="undoService">The undo service for the plug in.</param>
@@ -255,7 +261,7 @@ namespace Gorgon.Editor.ImageEditor
         /// The <paramref name="scratchArea" /> parameter is the file system where temporary files to store transitory information for the plug in is stored. This file system is destroyed when the
         /// application or plug in is shut down, and is not stored with the project.
         /// </remarks>
-        protected async override Task<IEditorContent> OnOpenContentAsync(IContentFile file, IViewModelInjection injector, IGorgonFileSystemWriter<Stream> scratchArea, IUndoService undoService)
+        protected async override Task<IEditorContent> OnOpenContentAsync(IContentFile file, IContentFileManager fileManager, IViewModelInjection injector, IGorgonFileSystemWriter<Stream> scratchArea, IUndoService undoService)
         {
             FileInfo texConvExe = GetTexConvExe();
             TexConvCompressor compressor = null;
@@ -545,6 +551,10 @@ namespace Gorgon.Editor.ImageEditor
                 Cursor.Current = Cursors.Default;
             }
         }
+
+        /// <summary>Function to retrieve the icon used for new content creation.</summary>
+        /// <returns>An image for the icon.</returns>
+        public Image GetNewIcon() => null;
         #endregion
 
         #region Constructor/Finalizer.

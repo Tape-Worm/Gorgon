@@ -543,7 +543,7 @@ namespace Gorgon.Editor.ViewModels
                 ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_OPENING, file.Name));
 
                 // Create a content object.                
-                IEditorContent content = await file.ContentPlugin.OpenContentAsync(file, _viewModelFactory, _projectData, new UndoService(Log)); 
+                IEditorContent content = await file.ContentPlugin.OpenContentAsync(file, _contentFileManager, _viewModelFactory, _projectData, new UndoService(Log)); 
 
                 if (content == null)
                 {
@@ -611,6 +611,87 @@ namespace Gorgon.Editor.ViewModels
             }
 
             _layout = Encoding.UTF8.GetBytes(_viewModelFactory.Settings.WindowLayout);
+        }
+
+        /// <summary>
+        /// Function to create a new content item.
+        /// </summary>
+        /// <param name="metadata">The metadata for the plug in associated with the content.</param>
+        /// <param name="plugin">The plug in used to create the content.</param>
+        /// <returns>A new content file containing the content data, or <b>null</b> if the content creation was cancelled.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="metadata"/>, or the <paramref name="plugin"/> parameter is <b>null</b>.</exception>
+        public async Task<IContentFile> CreateNewContentItemAsync(IContentPluginMetadata metadata, ContentPlugin plugin)
+        {
+            if (metadata == null)
+            {
+                throw new ArgumentNullException(nameof(metadata));
+            }
+
+            if (plugin == null)
+            {
+                throw new ArgumentNullException(nameof(plugin));
+            }
+
+            // TODO: Add prompt if we have opened, unsaved changes.
+            var args = new CreateContentFileArgs
+            {
+                Name = metadata.ContentType
+            };
+
+            if ((_fileExplorer?.CreateContentFileCommand == null) || (!_fileExplorer.CreateContentFileCommand.CanExecute(args)))
+            {
+                return null;
+            }
+            
+            _fileExplorer.CreateContentFileCommand.Execute(args);
+
+            if (args.Cancel)
+            {
+                return null;
+            }
+
+            Stream contentStream = null;
+
+            try
+            {
+                // Now that we have a file, we need to populate it with default data from the content plugin.
+                contentStream = args.ContentFile.OpenWrite();
+
+                byte[] contentData = await plugin.GetDefaultContentAsync(args.Name);
+
+                contentStream.Write(contentData, 0, contentData.Length);
+                contentStream.Dispose();
+
+                args.Node.Refresh();
+
+                // Since we already know our plug in, we can assign it here.
+                _viewModelFactory.ContentPlugins.AssignContentPlugin(args.ContentFile, _contentFileManager, metadata);
+
+                await SaveProjectMetadataAsync();
+
+                // Always generate a thumbnail now so we don't have to later, this also serves to refresh the thumbnail.
+                if ((ContentPreviewer?.RefreshPreviewCommand != null) && (ContentPreviewer.RefreshPreviewCommand.CanExecute(args.ContentFile)))
+                {                    
+                    await ContentPreviewer.RefreshPreviewCommand.ExecuteAsync(args.ContentFile);
+                }
+            }
+            catch (Exception)
+            {
+                // If we fail, for any reason, destroy the node.
+                if (args.Node != null)
+                {
+                    args.Node.Parent.Children.Remove(args.Node);
+                    File.Delete(args.Node.PhysicalPath);
+                }
+
+                throw;
+            }
+            finally
+            {
+                contentStream?.Dispose();
+            }
+
+            return args.ContentFile;
         }
 
         /// <summary>

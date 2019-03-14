@@ -29,20 +29,24 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using DX = SharpDX;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Editor.UI;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Plugins;
+using Gorgon.Renderers;
+using Gorgon.Math;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -68,8 +72,20 @@ namespace Gorgon.Editor.SpriteEditor
         // This is the only codec supported by the image plug in.  Images will be converted when imported.
         private GorgonV3SpriteBinaryCodec _defaultCodec;
 
+        // The image codec to use.
+        private IGorgonImageCodec _ddsCodec;
+
         // The synchronization lock for threads.
         private readonly object _syncLock = new object();
+
+        // The image used to display a broken image link to a sprite.
+        private IGorgonImage _noImage;
+
+        // Pattern for sprite background.
+        private GorgonTexture2DView _bgPattern;
+
+        // The render target for rendering the sprite.
+        private GorgonRenderTarget2DView _rtv = null;
         #endregion
 
         #region Properties.
@@ -80,13 +96,22 @@ namespace Gorgon.Editor.SpriteEditor
         string IContentPluginMetadata.Description => Description;
 
         /// <summary>Property to return whether or not the plugin is capable of creating content.</summary>
-        public override bool CanCreateContent => false;
+        public override bool CanCreateContent => true;
 
         /// <summary>Property to return the ID of the small icon for this plug in.</summary>
         public Guid SmallIconID
         {
             get;
         }
+
+        /// <summary>Property to return the ID of the new icon for this plug in.</summary>
+        public Guid NewIconID
+        {
+            get;
+        }
+
+        /// <summary>Property to return the friendly (i.e shown on the UI) name for the type of content.</summary>
+        public string ContentType => Resources.GORSPR_CONTENT_TYPE;
         #endregion
 
         #region Methods.
@@ -155,17 +180,82 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>
+        /// Function to find the image associated with the sprite file.
+        /// </summary>
+        /// <param name="spriteFile">The sprite file to evaluate.</param>
+        /// <param name="fileManager">The file manager used to handle content files.</param>
+        /// <returns>The file representing the image associated with the sprite.</returns>
+        private IContentFile FindImage(IContentFile spriteFile, IContentFileManager fileManager)
+        {
+            if (spriteFile.Metadata.Dependencies.Count == 0)
+            {
+                return null;
+            }
+
+            return spriteFile.Metadata.Dependencies
+                                        .Select(item => fileManager.GetFile(item))
+                                        .FirstOrDefault(item => (item != null) 
+                                            && (string.Equals(item.Metadata.Attributes[SpriteContent.ContentTypeAttr], "image", StringComparison.OrdinalIgnoreCase)));
+        }
+
+        /// <summary>
+        /// Function to render the sprite to a thumbnail image.
+        /// </summary>
+        /// <param name="sprite">The sprite to render.</param>
+        /// <returns>The image containing the rendered sprite.</returns>
+        private IGorgonImage RenderThumbnail(GorgonSprite sprite)
+        {
+                      
+            GorgonRenderTargetView prevRtv = null;
+
+            try
+            {
+                sprite.Anchor = new DX.Vector2(0.5f);
+                
+                if (sprite.Size.Width > sprite.Size.Height)
+                {
+                    sprite.Scale = new DX.Vector2(256.0f / (sprite.Size.Width.Max(1)));
+                }
+                else
+                {
+                    sprite.Scale = new DX.Vector2(256.0f / (sprite.Size.Height.Max(1)));
+                }
+
+                sprite.Position = new DX.Vector2(128, 128);
+                sprite.TextureSampler = GorgonSamplerState.PointFiltering;
+
+                prevRtv = GraphicsContext.Graphics.RenderTargets[0];                
+                GraphicsContext.Graphics.SetRenderTarget(_rtv);
+                GraphicsContext.Renderer2D.Begin();
+                GraphicsContext.Renderer2D.DrawFilledRectangle(new DX.RectangleF(0, 0, 256, 256), GorgonColor.White, _bgPattern, new DX.RectangleF(0, 0, 1, 1));
+                GraphicsContext.Renderer2D.DrawSprite(sprite);
+                GraphicsContext.Renderer2D.End();
+
+                return _rtv.Texture.ToImage();
+            }
+            finally
+            {
+                if (prevRtv != null)
+                {
+                    GraphicsContext.Graphics.SetRenderTarget(prevRtv);
+                }                
+            }
+        }
+
+        /// <summary>
         /// Function to load the image to be used a thumbnail.
         /// </summary>
         /// <param name="thumbnailCodec">The codec for the thumbnail images.</param>
         /// <param name="thumbnailFile">The path to the thumbnail file.</param>
-        /// <param name="content">The content being thumbnailed.</param>
+        /// <param name="content">The content being thumbnailed.</param>        
+        /// <param name="fileManager">The file manager used to handle content files.</param>
         /// <param name="cancelToken">The token used to cancel the operation.</param>
-        /// <returns>The thumbnail image, and a flag to indicate whether the thumbnail needs conversion.</returns>
-        private (IGorgonImage thumbnailImage, bool needsConversion) LoadThumbNailImage(IGorgonImageCodec thumbnailCodec, FileInfo thumbnailFile, IContentFile content, CancellationToken cancelToken)
+        /// <returns>The image, image content file and sprite, or just the thumbnail image if it was cached (sprite will be null).</returns>
+        private (IGorgonImage image, IContentFile imageFile, GorgonSprite sprite) LoadThumbnailImage(IGorgonImageCodec thumbnailCodec, FileInfo thumbnailFile, IContentFile content, IContentFileManager fileManager, CancellationToken cancelToken)
         {
-            IGorgonImage result;
+            IGorgonImage spriteImage;
             Stream inStream = null;
+            Stream imgStream = null;
 
             try
             {
@@ -173,25 +263,45 @@ namespace Gorgon.Editor.SpriteEditor
                 if (thumbnailFile.Exists)
                 {
                     inStream = thumbnailFile.Open(FileMode.Open, FileAccess.Read, FileShare.Read);
-                    result = thumbnailCodec.LoadFromStream(inStream);
+                    spriteImage = thumbnailCodec.LoadFromStream(inStream);
 
-                    return cancelToken.IsCancellationRequested ? (null, false) : (result, false);
+                    if (cancelToken.IsCancellationRequested)
+                    {
+                        return (null, null, null);
+                    }
+
+                    return (spriteImage, null, null);
                 }
 
-                inStream = content.OpenRead();
-                result = null;
-                //result = _ddsCodec.LoadFromStream(inStream);
+                IContentFile imageFile = FindImage(content, fileManager);
+                if (imageFile == null)
+                {
+                    return (_noImage.Clone(), null, null);
+                }
 
-                return (result, true);
+                imgStream = imageFile.OpenRead();
+                inStream = content.OpenRead();
+
+                if ((!_ddsCodec.IsReadable(imgStream))
+                    || (!_defaultCodec.IsReadable(inStream)))
+                {
+                    return (_noImage.Clone(), null, null);
+                }
+
+                spriteImage = _ddsCodec.LoadFromStream(imgStream);
+                GorgonSprite sprite = _defaultCodec.FromStream(inStream);
+
+                return (spriteImage, imageFile, sprite);
             }
             catch (Exception ex)
             {
                 Log.Print($"[ERROR] Cannot create thumbnail for '{content.Path}'", LoggingLevel.Intermediate);
                 Log.LogException(ex);
-                return (null, false);
+                return (null, null, null);
             }
             finally
             {
+                imgStream?.Dispose();
                 inStream?.Dispose();
             }
         }
@@ -245,8 +355,56 @@ namespace Gorgon.Editor.SpriteEditor
             // Not needed yet.
         }
 
+        /// <summary>
+        /// Function to retrieve the sprite texture from the dependency metadata.
+        /// </summary>
+        /// <param name="dependencies">The dependencies for the sprite file.</param>
+        /// <param name = "fileManager" > The file manager used to access other content files.</param>
+        /// <returns>A tuple containing the sprite image, and the file for the sprite image, or <b>null</b> for both entries if no image was found in the dependency list.</returns>
+        private (IGorgonImage spriteImage, IContentFile imageFile) GetSpriteImageFromMetadata(IList<string> dependencies, IContentFileManager fileManager)
+        {
+            if (dependencies.Count == 0)
+            {
+                return (null, null);
+            }
+
+            IGorgonImage depImage = null;
+
+            // Find the sprite texture dependency.
+            foreach (string dependencyPath in dependencies)
+            {
+                if (string.IsNullOrWhiteSpace(dependencyPath))
+                {
+                    continue;
+                }
+
+                IContentFile dependency = fileManager.GetFile(dependencyPath);
+                
+                if ((!dependency.Metadata.Attributes.TryGetValue(SpriteContent.ContentTypeAttr, out string contentType))
+                    || (!string.Equals(contentType, "image", StringComparison.OrdinalIgnoreCase)))
+                {
+                    continue;
+                }
+
+                using (Stream depStream = dependency.OpenRead())
+                {
+                    if (!_ddsCodec.IsReadable(depStream))
+                    {
+                        Log.Print("Sprite dependency '{dependency}' found. But is not DDS file.", LoggingLevel.Verbose);
+                        continue;
+                    }
+
+                    depImage = _ddsCodec.LoadFromStream(depStream);
+                    return (depImage, dependency);
+                }
+            }
+
+            return (null, null);
+        }
+
         /// <summary>Function to open a content object from this plugin.</summary>
         /// <param name="file">The file that contains the content.</param>
+        /// <param name = "fileManager" > The file manager used to access other content files.</param>
         /// <param name="injector">Parameters for injecting dependency objects.</param>
         /// <param name="scratchArea">The file system for the scratch area used to write transitory information.</param>
         /// <param name="undoService">The undo service for the plug in.</param>
@@ -255,9 +413,53 @@ namespace Gorgon.Editor.SpriteEditor
         /// The <paramref name="scratchArea" /> parameter is the file system where temporary files to store transitory information for the plug in is stored. This file system is destroyed when the
         /// application or plug in is shut down, and is not stored with the project.
         /// </remarks>
-        protected override Task<IEditorContent> OnOpenContentAsync(IContentFile file, IViewModelInjection injector, IGorgonFileSystemWriter<Stream> scratchArea, IUndoService undoService)
+        protected async override Task<IEditorContent> OnOpenContentAsync(IContentFile file, IContentFileManager fileManager, IViewModelInjection injector, IGorgonFileSystemWriter<Stream> scratchArea, IUndoService undoService)
         {
-            return Task.FromResult<IEditorContent>(null);
+            var content = new SpriteContent();
+            IGorgonImage spriteImage = null;
+            IContentFile imageFile = null;
+            GorgonTexture2DView texture = null;
+            GorgonSprite sprite = null;
+
+            try
+            {
+                // Load the sprite image.
+                (spriteImage, imageFile) = await Task.Run(() => GetSpriteImageFromMetadata(file.Metadata.Dependencies, fileManager));
+                                
+                if ((spriteImage != null) && (imageFile != null))
+                {
+                    texture = GorgonTexture2DView.CreateTexture(GraphicsContext.Graphics, new GorgonTexture2DInfo(imageFile.Path), spriteImage);
+                }
+
+                sprite = await Task.Run(() =>
+                {
+                    // Load the sprite now.  We don't really need a thread for this, but whatever...
+                    using (Stream spriteStream = file.OpenRead())
+                    {
+                        return _defaultCodec.FromStream(spriteStream, texture);
+                    }
+                });
+
+                content.Initialize(new SpriteContentParameters(file, 
+                    imageFile, 
+                    fileManager, 
+                    sprite, 
+                    undoService, 
+                    scratchArea, 
+                    injector.MessageDisplay, 
+                    injector.BusyService));
+
+                return content;
+            }
+            catch
+            {
+                texture?.Dispose();
+                throw;
+            }
+            finally
+            {
+                spriteImage?.Dispose();
+            }
         }
 
         /// <summary>Function to provide clean up for the plugin.</summary>
@@ -282,6 +484,9 @@ namespace Gorgon.Editor.SpriteEditor
                 Log.LogException(ex);
             }
 
+            _rtv?.Dispose();
+            _bgPattern?.Dispose();
+            _noImage?.Dispose();
             _pluginCache?.Dispose();
 
             //ViewFactory.Unregister<IImageContent>();
@@ -294,10 +499,10 @@ namespace Gorgon.Editor.SpriteEditor
         /// <remarks>This method is only called when the plugin is loaded at startup.</remarks>
         protected override void OnInitialize(IContentPluginService pluginService)
         {
-            //ViewFactory.Register<IImageContent>(() => new ImageEditorView());
+            ViewFactory.Register<ISpriteContent>(() => new SpriteEditorView());
 
             _pluginService = pluginService;
-            //_pluginCache = new GorgonMefPluginCache(Log);
+            _pluginCache = new GorgonMefPluginCache(Log);
 
             // Get built-in codec list.
             _defaultCodec = new GorgonV3SpriteBinaryCodec(GraphicsContext.Renderer2D);
@@ -305,11 +510,6 @@ namespace Gorgon.Editor.SpriteEditor
             _codecList.Add(new GorgonV3SpriteJsonCodec(GraphicsContext.Renderer2D));
             _codecList.Add(new GorgonV2SpriteCodec(GraphicsContext.Renderer2D));
             _codecList.Add(new GorgonV1SpriteBinaryCodec(GraphicsContext.Renderer2D));
-            //_codecList.Add(new GorgonCodecJpeg());
-            //_codecList.Add(new GorgonCodecDds());
-            //_codecList.Add(new GorgonCodecTga());
-            //_codecList.Add(new GorgonCodecBmp());
-            //_codecList.Add(new GorgonCodecGif());
 
             //ImageEditorSettings settings = pluginService.ReadContentSettings<ImageEditorSettings>(this);
 
@@ -320,6 +520,23 @@ namespace Gorgon.Editor.SpriteEditor
 
             // Load the additional plug ins.
             LoadCodecPlugins();
+
+            _ddsCodec = new GorgonCodecDds();
+
+            using (var noImageStream = new MemoryStream(Resources.NoImage_256x256))
+            {
+                _noImage = _ddsCodec.LoadFromStream(noImageStream);
+            }
+
+            _bgPattern = GorgonTexture2DView.CreateTexture(GraphicsContext.Graphics, new GorgonTexture2DInfo($"Sprite_Editor_Bg_Preview_{Guid.NewGuid():N}"), EditorCommonResources.CheckerBoardPatternImage);
+
+            _rtv = GorgonRenderTarget2DView.CreateRenderTarget(GraphicsContext.Graphics, new GorgonTexture2DInfo($"SpriteEditor_Rtv_Preview_{Guid.NewGuid():N}")
+            {
+                Width = 256,
+                Height = 256,
+                Format = BufferFormat.R8G8B8A8_UNorm,
+                Binding = TextureBinding.ShaderResource
+            });
         }
 
         /// <summary>
@@ -349,6 +566,28 @@ namespace Gorgon.Editor.SpriteEditor
             if (!dependencyList.Any(item => string.Equals(textureName, item, StringComparison.OrdinalIgnoreCase)))
             {
                 dependencyList.Add(textureName);
+            }
+        }
+
+        /// <summary>Function to retrieve the default content for the plug in.</summary>
+        /// <param name="name">The name of the content (if applicable).</param>
+        /// <returns>A byte array containing the default content data.</returns>
+        /// <remarks>
+        ///   <para>
+        /// This is used to generate default content data when creating new content.
+        /// </para>
+        ///   <para>
+        /// This method will not be called if <see cref="P:Gorgon.Editor.Plugins.ContentPlugin.CanCreateContent"/> is <b>false</b>.
+        /// </para>
+        /// </remarks>
+        public override Task<byte[]> GetDefaultContentAsync(string name)
+        {
+            var defaultSprite = new GorgonSprite();
+
+            using (var stream = new MemoryStream())
+            {
+                _defaultCodec.Save(defaultSprite, stream);
+                return Task.FromResult(stream.ToArray());
             }
         }
 
@@ -389,15 +628,6 @@ namespace Gorgon.Editor.SpriteEditor
         /// <returns>An image for the small icon.</returns>
         public Image GetSmallIcon() => Resources.sprite_16x16;
 
-        /// <summary>
-        /// Function to render the thumbnail into the image passed in.
-        /// </summary>
-        /// <param name="image">The image to render the thumbnail into.</param>
-        /// <param name="scale">The scale of the image.</param>
-        private void RenderThumbnail(ref IGorgonImage image, float scale)
-        {
-        }
-
         /// <summary>Function to retrieve a thumbnail for the content.</summary>
         /// <param name="contentFile">The content file used to retrieve the data to build the thumbnail with.</param>
         /// <param name="fileManager">The content file manager.</param>
@@ -405,7 +635,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="cancelToken">The token used to cancel the thumbnail generation.</param>
         /// <returns>A <see cref="T:Gorgon.Graphics.Imaging.IGorgonImage"/> containing the thumbnail image data.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="contentFile" />, <paramref name="fileManager" /> or the <paramref name="outputFile" /> parameter is <b>null</b>.</exception>
-        public Task<IGorgonImage> GetThumbnailAsync(IContentFile contentFile, IContentFileManager fileManager, FileInfo outputFile, CancellationToken cancelToken)
+        public async Task<IGorgonImage> GetThumbnailAsync(IContentFile contentFile, IContentFileManager fileManager, FileInfo outputFile, CancellationToken cancelToken)
         {
             if (contentFile == null)
             {
@@ -422,14 +652,97 @@ namespace Gorgon.Editor.SpriteEditor
                 throw new ArgumentNullException(nameof(outputFile));
             }
 
-            return Task.FromResult<IGorgonImage>(null);
+            // If the content is not a v3 sprite, then leave it.
+            if ((!contentFile.Metadata.Attributes.TryGetValue(SpriteContent.CodecAttr, out string codecName))
+                || (string.IsNullOrWhiteSpace(codecName))
+                || (!string.Equals(codecName, _defaultCodec.GetType().FullName, StringComparison.OrdinalIgnoreCase)))
+            {
+                return null;
+            }
+
+            if (!outputFile.Directory.Exists)
+            {
+                outputFile.Directory.Create();
+                outputFile.Directory.Refresh();
+            }
+
+            IGorgonImageCodec pngCodec = new GorgonCodecPng();
+
+            (IGorgonImage image, IContentFile imageFile, GorgonSprite sprite) = await Task.Run(() => LoadThumbnailImage(pngCodec, outputFile, contentFile, fileManager, cancelToken));
+
+            if ((image == null) || (cancelToken.IsCancellationRequested))
+            {
+                return null;
+            }
+
+            // We loaded a cached thumbnail.
+            if ((sprite == null) || (imageFile == null))
+            {
+                return image;
+            }
+
+            // We need to switch back to the main thread here to render the image, otherwise things will break.
+            Cursor.Current = Cursors.WaitCursor;
+
+            GorgonTexture2DView spriteTexture = null;
+            IGorgonImage resultImage = null;
+
+            try
+            {                
+                spriteTexture = GorgonTexture2DView.CreateTexture(GraphicsContext.Graphics, new GorgonTexture2DInfo(imageFile.Path)
+                {
+                    Width = image.Width,
+                    Height = image.Height,
+                    Format = image.Format,
+                    Binding = TextureBinding.ShaderResource,
+                    Usage = ResourceUsage.Default
+                }, image);
+                sprite.Texture = spriteTexture;
+
+                resultImage = RenderThumbnail(sprite);
+
+                await Task.Run(() => pngCodec.SaveToFile(resultImage, outputFile.FullName), cancelToken);
+
+                if (cancelToken.IsCancellationRequested)
+                {
+                    return null;
+                }
+
+                contentFile.Metadata.Attributes[CommonEditorConstants.ThumbnailAttr] = outputFile.Name;
+                return resultImage;
+            }
+            catch (Exception ex)
+            {
+                Log.Print($"[ERROR] Cannot create thumbnail for '{contentFile.Path}'", LoggingLevel.Intermediate);
+                Log.LogException(ex);
+                return null;
+            }
+            finally
+            {
+                image?.Dispose();
+                spriteTexture?.Dispose();
+                Cursor.Current = Cursors.Default;
+            }
         }
+
+        /// <summary>Function to retrieve the icon used for new content creation.</summary>
+        /// <returns>An image for the icon.</returns>
+        /// <remarks>
+        /// <para>
+        /// This method is never called when <see cref="IContentPluginMetadata.CanCreateContent"/> is <b>false</b>.
+        /// </para>
+        /// </remarks>
+        public Image GetNewIcon() => Resources.sprite_24x24;
         #endregion
 
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the SpriteEditorPlugin class.</summary>
         public SpriteEditorPlugin()
-            : base(Resources.GORSPR_DESC) => SmallIconID = Guid.NewGuid();
+            : base(Resources.GORSPR_DESC)
+        {
+            SmallIconID = Guid.NewGuid();
+            NewIconID = Guid.NewGuid();
+        }
         #endregion
     }
 }

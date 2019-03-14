@@ -88,6 +88,14 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Property to return the command to execute to create a new, empty content file.
+        /// </summary>
+        IEditorCommand<CreateContentFileArgs> CreateContentFileCommand
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the command used to rename the selected node.
         /// </summary>
         IEditorCommand<FileExplorerNodeRenameArgs> RenameNodeCommand
