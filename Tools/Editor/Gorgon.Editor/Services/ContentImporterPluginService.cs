@@ -205,7 +205,7 @@ namespace Gorgon.Editor.Services
                 try
                 {
                     Program.Log.Print($"Loading content importer plug in assembly '{file.FullName}'...", LoggingLevel.Simple);
-                    pluginCache.LoadPluginAssemblies(pluginDir.FullName, "*.dll");
+                    pluginCache.LoadPluginAssemblies(pluginDir.FullName, file.Name);
                 }
                 catch (Exception ex)
                 {

@@ -810,6 +810,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Mipmap generation.
+        /// </summary>
+        internal static string GORIMG_UNDO_DESC_MIP_GEN {
+            get {
+                return ResourceManager.GetString("GORIMG_UNDO_DESC_MIP_GEN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap image_16x16 {
