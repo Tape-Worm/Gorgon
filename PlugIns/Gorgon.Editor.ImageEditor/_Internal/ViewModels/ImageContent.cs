@@ -1427,10 +1427,10 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                 try
                 {
-                    if ((((DimensionSettings.Width < ImageData.Width) || (DimensionSettings.Height < ImageData.Height))
+                    if ((redoArgs?.RedoFile == null) && ((((DimensionSettings.Width < ImageData.Width) || (DimensionSettings.Height < ImageData.Height))
                             && (DimensionSettings.CurrentMode != CropResizeMode.Resize))
                         || (DimensionSettings.DepthSlicesOrArrayIndices < arrayOrDepthCount)
-                        || (DimensionSettings.MipLevels < ImageData.MipCount))
+                        || (DimensionSettings.MipLevels < ImageData.MipCount)))
                     {
                         if (MessageDisplay.ShowConfirmation(Resources.GORIMG_CROP_LOSE_DATA) == MessageResponse.No)
                         {
@@ -1580,6 +1580,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             if (!task.IsFaulted)
             {
                 _undoService.Record(Resources.GORIMG_UNDO_DESC_DIMENSIONS, UndoAction, RedoAction, dimensionUndoArgs, dimensionUndoArgs);
+                // Need to call this so the UI can register our updated undo stack.
+                NotifyPropertyChanged(nameof(UndoCommand));
             }
         }
 
@@ -1594,30 +1596,150 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// </summary>
         private void DoGenMips()
         {
-            BusyState.SetBusy();
+            ImportDimensionUndoArgs mipGenUndoArgs = null;
 
-            try
+            Task UndoAction(ImportDimensionUndoArgs undoArgs, CancellationToken cancelToken)
             {
-                int mipCount = MipMapSettings.MipLevels;
-                int currentMip = CurrentMipLevel.Min(mipCount - 1).Max(0);
+                Stream inStream = null;
 
-                ImageData.GenerateMipMaps(mipCount, MipMapSettings.MipFilter);
+                BusyState.SetBusy();
 
-                CurrentMipLevel = currentMip;                
-                if (MipMapSettings.MipLevels != MipCount)
+                try
                 {
+                    if (undoArgs.UndoFile == null)
+                    {
+                        return Task.CompletedTask;
+                    }
+
+                    NotifyPropertyChanging(nameof(ImageData));
+
+                    inStream = undoArgs.UndoFile.OpenStream();
+                    (IGorgonImage image, _, _) = _imageIO.LoadImageFile(inStream, _workingFile.Name);
+                    ImageData.Dispose();
+                    ImageData = image;
+
+                    if (CurrentMipLevel >= MipCount)
+                    {
+                        CurrentMipLevel = MipCount - 1;
+                    }
+
                     NotifyPropertyChanged(nameof(MipCount));
+                    NotifyImageUpdated(nameof(ImageData));
+
+                    inStream.Dispose();
+
+                    // This file will be re-created on redo.
+                    DeleteUndoCacheFile(undoArgs.UndoFile);
+                    undoArgs.UndoFile = null;
                 }
-                NotifyPropertyChanged(nameof(ImageData));                
+                catch (Exception ex)
+                {
+                    MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+                }
+                finally
+                {
+                    inStream?.Dispose();
+                    BusyState.SetIdle();
+                }
+
+                return Task.CompletedTask;
             }
-            catch (Exception ex)
+
+            Task RedoAction(ImportDimensionUndoArgs redoArgs, CancellationToken cancelToken)
             {
-                MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+                Stream redoFileStream = null;
+                IGorgonVirtualFile undoFile = null;
+                IGorgonVirtualFile redoFile = null;
+
+                try
+                {
+                    BusyState.SetBusy();
+
+                    undoFile = CreateUndoCacheFile();
+
+                    NotifyPropertyChanging(nameof(ImageData));
+
+                    int prevMipCount = MipCount;
+
+                    if (redoArgs?.RedoFile != null)
+                    {
+                        // Just reuse the image data in the redo cache item.                        
+                        redoFileStream = redoArgs.RedoFile.OpenStream();
+                        (IGorgonImage redoImage, _, _) = _imageIO.LoadImageFile(redoFileStream, _workingFile.Name);
+                        redoFileStream.Dispose();
+
+                        ImageData.Dispose();
+                        ImageData = redoImage;
+
+                        DeleteUndoCacheFile(redoArgs.RedoFile);
+                    }
+                    else
+                    {
+                        int mipCount = MipMapSettings.MipLevels;                        
+                        int currentMip = CurrentMipLevel.Min(mipCount - 1).Max(0);
+
+                        ImageData.GenerateMipMaps(mipCount, MipMapSettings.MipFilter);
+
+                        CurrentMipLevel = currentMip;
+                    }
+
+                    // Save the updated data to the working file.
+                    _workingFile = _imageIO.SaveImageFile(File.Name, ImageData, ImageData.Format);
+                    redoFile = CreateUndoCacheFile();
+
+                    if (redoArgs == null)
+                    {
+                        redoArgs = mipGenUndoArgs = new ImportDimensionUndoArgs();
+                    }
+
+                    redoArgs.UndoFile = undoFile;
+                    redoArgs.RedoFile = redoFile;
+
+                    if (MipCount != prevMipCount)
+                    {
+                        NotifyPropertyChanged(nameof(MipCount));
+                    }
+                    
+                    NotifyPropertyChanged(nameof(ImageData));                    
+                    ContentState = ContentState.Modified;
+
+                    return Task.CompletedTask;
+                }
+                catch (Exception ex)
+                {
+                    MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+
+                    if (undoFile != null)
+                    {
+                        DeleteUndoCacheFile(undoFile);
+                    }
+
+                    if (redoFile != null)
+                    {
+                        redoFileStream?.Dispose();
+                        DeleteUndoCacheFile(redoFile);
+                    }
+
+                    mipGenUndoArgs = null;
+
+                    return Task.FromException(ex);
+                }
+                finally
+                {
+                    redoFileStream?.Dispose();
+                    BusyState.SetIdle();
+                    CurrentPanel = null;
+                }
             }
-            finally
+
+            Task task = RedoAction(null, CancellationToken.None);
+
+            // If we had an error, do not record the undo state.
+            if (!task.IsFaulted)
             {
-                CurrentPanel = null;
-                BusyState.SetIdle();
+                _undoService.Record(Resources.GORIMG_UNDO_DESC_MIP_GEN, UndoAction, RedoAction, mipGenUndoArgs, mipGenUndoArgs);
+                // Need to call this so the UI can register our updated undo stack.
+                NotifyPropertyChanged(nameof(UndoCommand));
             }
         }
 

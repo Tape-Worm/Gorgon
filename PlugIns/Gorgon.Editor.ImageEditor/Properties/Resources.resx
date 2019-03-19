@@ -454,4 +454,7 @@ Would you like to continue?</value>
   <data name="GORIMG_ERR_NO_EXTERNAL_EDITOR" xml:space="preserve">
     <value>Could not find an external editor that can open '{0}'.</value>
   </data>
+  <data name="GORIMG_UNDO_DESC_MIP_GEN" xml:space="preserve">
+    <value>Mipmap generation</value>
+  </data>
 </root>
