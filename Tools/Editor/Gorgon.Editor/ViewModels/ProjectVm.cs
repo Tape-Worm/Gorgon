@@ -135,6 +135,7 @@ namespace Gorgon.Editor.ViewModels
 
                 if (_currentContent != null)
                 {
+                    CurrentContent.File.DependenciesUpdated -= ContentFile_DependenciesUpdated;
                     CurrentContent.PropertyChanged -= CurrentContent_PropertyChanged;
                     CurrentContent.CloseContent -= CurrentContent_CloseContent;
                     CurrentContent.WaitPanelActivated -= FileExplorer_WaitPanelActivated;
@@ -155,6 +156,7 @@ namespace Gorgon.Editor.ViewModels
                     CurrentContent.ProgressUpdated += FileExplorer_ProgressUpdated;
                     CurrentContent.ProgressDeactivated += FileExplorer_ProgressDeactivated;
                     CurrentContent.CloseContent += CurrentContent_CloseContent;
+                    CurrentContent.File.DependenciesUpdated += ContentFile_DependenciesUpdated;
                 }
             }
         }
@@ -444,9 +446,9 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to determine whether the content can be opened or not.
         /// </summary>
-        /// <param name="node">The node being opened.</param>
+        /// <param name="file">The node being opened.</param>
         /// <returns><b>true</b> if the node can be opened, <b>false</b> if not.</returns>
-        private bool CanOpenContent(IContentFile node) => node?.Metadata?.ContentMetadata != null;
+        private bool CanOpenContent(IContentFile file) => file?.Metadata?.ContentMetadata != null;
 
         /// <summary>
         /// Function to persist the changed content (if any).
@@ -498,7 +500,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to open a file node as content.
         /// </summary>
-        /// <param name="file">The content file to open.</param>
+        /// <param name="file">The file to open.</param>
         private async void DoOpenContent(IContentFile file)
         {
             try
@@ -535,7 +537,7 @@ namespace Gorgon.Editor.ViewModels
 
                 // Close the current content. It should be saved at this point.
                 if (CurrentContent != null)
-                {
+                {                    
                     CurrentContent.OnUnload();
                     CurrentContent = null;                    
                 }
@@ -557,7 +559,7 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 // Load the content.
-                file.IsOpen = true;
+                file.IsOpen = true;                
                 CurrentContent = content;
             }
             catch (Exception ex)
@@ -569,7 +571,30 @@ namespace Gorgon.Editor.ViewModels
                 HideWaitPanel();
             }
         }
-        
+
+        /// <summary>Handles the DependenciesUpdated event of the ContentFile control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void ContentFile_DependenciesUpdated(object sender, EventArgs e)
+        {
+            ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_SAVING, ProjectTitle));
+
+            try
+            {
+                // When we update the dependencies on content, we need to persist those changes to the file system as soon as possible.
+                await SaveProjectMetadataAsync();                
+            }
+            catch (Exception ex)
+            {
+                // If this happens, we have problems.
+                _messageService.ShowError(ex, string.Format(Resources.GOREDIT_ERR_SAVING_METADATA, CurrentContent?.File?.Name ?? string.Empty));
+            }
+            finally
+            {
+                HideWaitPanel();
+            }
+        }
+
         /// <summary>
         /// Function used to initialize the view model with dependencies.
         /// </summary>
@@ -595,7 +620,7 @@ namespace Gorgon.Editor.ViewModels
                 _projectTitle = _projectData.ProjectWorkSpace.Name;
             }
 
-            FileExplorer.OpenContentFile = new EditorCommand<IContentFile>(DoOpenContent, CanOpenContent);
+            FileExplorer.OpenContentFileCommand = new EditorCommand<IContentFile>(DoOpenContent, CanOpenContent);
 
             if (string.IsNullOrWhiteSpace(_viewModelFactory.Settings.WindowLayout))
             {
@@ -666,6 +691,9 @@ namespace Gorgon.Editor.ViewModels
 
                 // Since we already know our plug in, we can assign it here.
                 _viewModelFactory.ContentPlugins.AssignContentPlugin(args.ContentFile, _contentFileManager, metadata);
+
+                // Mark this item as new.
+                args.ContentFile.Metadata.Attributes[CommonEditorConstants.IsNewAttr] = "true";
 
                 await SaveProjectMetadataAsync();
 

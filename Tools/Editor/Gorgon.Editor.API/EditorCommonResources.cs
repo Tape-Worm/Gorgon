@@ -47,6 +47,15 @@ namespace Gorgon.Editor
             get;
             private set;
         }
+        
+        /// <summary>
+        /// Property to return a keyboard icon (encoded as DDS/DXT5 data).
+        /// </summary>
+        public static IGorgonImage KeyboardIcon
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// Function to load the common resources at application start up.
@@ -59,6 +68,11 @@ namespace Gorgon.Editor
             {
                 CheckerBoardPatternImage = dds.LoadFromStream(stream);
             }
+
+            using (var stream = new MemoryStream(Resources.keyboard_20x20, false))
+            {
+                KeyboardIcon = dds.LoadFromStream(stream);
+            }
         }
 
         /// <summary>
@@ -69,6 +83,7 @@ namespace Gorgon.Editor
             try
             {
                 CheckerBoardPatternImage?.Dispose();
+                KeyboardIcon?.Dispose();
             }
             catch
             {

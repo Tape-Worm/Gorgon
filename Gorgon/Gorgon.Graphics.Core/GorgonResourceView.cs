@@ -141,10 +141,12 @@ namespace Gorgon.Graphics.Core
                 return false;
             }
 
+#pragma warning disable IDE0046 // Convert to conditional expression
             if (other == this)
             {
                 return true;
             }
+#pragma warning restore IDE0046 // Convert to conditional expression
 
             return other._view == _view;
         }

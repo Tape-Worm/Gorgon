@@ -50,13 +50,18 @@ namespace Gorgon.Editor.Content
         /// Event triggered if this content file was renamed.
         /// </summary>
         event EventHandler<ContentFileRenamedEventArgs> Renamed;
+
+        /// <summary>
+        /// Event triggered if the dependencies list for this file is updated.
+        /// </summary>
+        event EventHandler DependenciesUpdated;
         #endregion
 
         #region Properties.
         /// <summary>
         /// Property to return the list of dependencies for this content.
         /// </summary>
-        IList<IContentFile> Dependencies
+        IReadOnlyList<IContentFile> Dependencies
         {
             get;
         }
@@ -112,7 +117,24 @@ namespace Gorgon.Editor.Content
         }
         #endregion
 
-        #region Methods.
+        #region Methods.  
+        /// <summary>
+        /// Function to link a content file to be dependant upon this content.
+        /// </summary>
+        /// <param name="child">The child content to link to this content.</param>
+        void LinkContent(IContentFile child);
+
+        /// <summary>
+        /// Function to unlink a content file from being dependant upon this content.
+        /// </summary>
+        /// <param name="child">The child content to unlink from this content.</param>
+        void UnlinkContent(IContentFile child);
+
+        /// <summary>
+        /// Function to remove all child dependency links from this content.
+        /// </summary>
+        void ClearLinks();
+
         /// <summary>
         /// Function to open the file for reading.
         /// </summary>
@@ -130,6 +152,11 @@ namespace Gorgon.Editor.Content
         /// Function to notify that the metadata should be refreshed.
         /// </summary>
         void RefreshMetadata();
+
+        /// <summary>
+        /// Function to persist the metadata for content.
+        /// </summary>
+        void SaveMetadata();
 
         /// <summary>Function called to refresh the information about the file.</summary>
         void Refresh();

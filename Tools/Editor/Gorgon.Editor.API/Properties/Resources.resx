@@ -206,4 +206,43 @@ This content will now close in order to avoid corrupting the file.</value>
   <data name="selection_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\selection_16x16.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="march_ants_diag_32x32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\march_ants_diag_32x32.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="keyboard_20x20" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\keyboard_20x20.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="GOREDIT_ZOOM_100" xml:space="preserve">
+    <value>100%</value>
+  </data>
+  <data name="GOREDIT_ZOOM_12" xml:space="preserve">
+    <value>12.5%</value>
+  </data>
+  <data name="GOREDIT_ZOOM_1600" xml:space="preserve">
+    <value>1600%</value>
+  </data>
+  <data name="GOREDIT_ZOOM_200" xml:space="preserve">
+    <value>200%</value>
+  </data>
+  <data name="GOREDIT_ZOOM_25" xml:space="preserve">
+    <value>25%</value>
+  </data>
+  <data name="GOREDIT_ZOOM_3200" xml:space="preserve">
+    <value>3200%</value>
+  </data>
+  <data name="GOREDIT_ZOOM_400" xml:space="preserve">
+    <value>400%</value>
+  </data>
+  <data name="GOREDIT_ZOOM_50" xml:space="preserve">
+    <value>50%</value>
+  </data>
+  <data name="GOREDIT_ZOOM_6400" xml:space="preserve">
+    <value>6400%</value>
+  </data>
+  <data name="GOREDIT_ZOOM_800" xml:space="preserve">
+    <value>800%</value>
+  </data>
+  <data name="GOREDIT_ZOOM_TO_WINDOW" xml:space="preserve">
+    <value>To Window</value>
+  </data>
 </root>

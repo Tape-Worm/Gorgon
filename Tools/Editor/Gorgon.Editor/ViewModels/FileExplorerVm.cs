@@ -224,7 +224,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to set or return the command to execute when a content node is opened.
         /// </summary>
-        public IEditorCommand<IContentFile> OpenContentFile
+        public IEditorCommand<IContentFile> OpenContentFileCommand
         {
             get;
             set;
@@ -1710,11 +1710,16 @@ namespace Gorgon.Editor.ViewModels
             {
                 _nodePathLookup[node.FullPath] = node;
 
-                SetupDependencyNodes(node as IContentFile);
-
                 node.Children.CollectionChanged += Children_CollectionChanged;
                 node.PropertyChanged += Node_PropertyChanged;
                 node.PropertyChanging += Node_PropertyChanging;
+            }
+
+            // This is painful, but necessary as we need our node dictionary set up prior to using this.
+            // The only other option is to traverse the tree while in the loop, and that's even worse than this.
+            foreach (IContentFile content in parent.Children.Traverse(n => n.Children).OfType<IContentFile>())
+            {
+                SetupDependencyNodes(content);
             }
 
             SetupDependencyNodes(parent as IContentFile);

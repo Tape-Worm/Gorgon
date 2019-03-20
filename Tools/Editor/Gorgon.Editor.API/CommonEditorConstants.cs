@@ -45,5 +45,10 @@ namespace Gorgon.Editor
         /// The name of the attribute for thumbnails in content items.
         /// </summary>
         public const string ThumbnailAttr = "Thumb";
+
+        /// <summary>
+        /// The name of the attribute for the is new flag.
+        /// </summary>
+        public const string IsNewAttr = "IsNew";
     }
 }

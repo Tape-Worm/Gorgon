@@ -20,44 +20,46 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: February 24, 2019 5:41:36 PM
+// Created: March 19, 2019 8:19:27 PM
 // 
 #endregion
 
-using System;
+using System.Windows.Forms;
+using Gorgon.Graphics.Core;
 using DX = SharpDX;
-using Gorgon.Graphics;
 
-namespace Gorgon.Editor.UI.Selection
+namespace Gorgon.Editor.Services
 {
     /// <summary>
-    /// Used to render a selection rectangle on the UI.
+    /// A handle on a selection rectangle.
     /// </summary>
-    public interface ISelectionRectangle
-        : IDisposable
+    public class RectHandle
     {
         /// <summary>
-        /// Property to set or return the color for the selection rectangle.
+        /// Property to return the boundaries for the handle.
         /// </summary>
-        GorgonColor Color
+        public DX.RectangleF HandleBounds
         {
             get;
             set;
         }
 
         /// <summary>
-        /// Property to set or return the speed of the overlay animation.
+        /// Property to return the cursor to use for the handle.
         /// </summary>
-        DX.Vector2 Speed
+        public Cursor HandleCursor
         {
             get;
             set;
         }
 
         /// <summary>
-        /// Function to draw the selection region.
+        /// Property to assign a texture to the handle instead of an empty rectangle.
         /// </summary>
-        /// <param name="region">The region to draw.</param>
-        void Draw(DX.RectangleF region);
+        public GorgonTexture2DView Texture
+        {
+            get;
+            set;
+        }
     }
 }

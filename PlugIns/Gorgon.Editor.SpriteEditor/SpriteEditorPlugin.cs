@@ -187,6 +187,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <returns>The file representing the image associated with the sprite.</returns>
         private IContentFile FindImage(IContentFile spriteFile, IContentFileManager fileManager)
         {
+#pragma warning disable IDE0046 // Convert to conditional expression
             if (spriteFile.Metadata.Dependencies.Count == 0)
             {
                 return null;
@@ -196,6 +197,7 @@ namespace Gorgon.Editor.SpriteEditor
                                         .Select(item => fileManager.GetFile(item))
                                         .FirstOrDefault(item => (item != null) 
                                             && (string.Equals(item.Metadata.Attributes[SpriteContent.ContentTypeAttr], "image", StringComparison.OrdinalIgnoreCase)));
+#pragma warning restore IDE0046 // Convert to conditional expression
         }
 
         /// <summary>
@@ -416,34 +418,29 @@ namespace Gorgon.Editor.SpriteEditor
         protected async override Task<IEditorContent> OnOpenContentAsync(IContentFile file, IContentFileManager fileManager, IViewModelInjection injector, IGorgonFileSystemWriter<Stream> scratchArea, IUndoService undoService)
         {
             var content = new SpriteContent();
-            IGorgonImage spriteImage = null;
+            GorgonTexture2DView spriteImage = null;
             IContentFile imageFile = null;
-            GorgonTexture2DView texture = null;
             GorgonSprite sprite = null;
+            ISpriteTextureService textureService = null;
+            Stream stream = null;
 
             try
-            {
+            {                
+                textureService = new SpriteTextureService(GraphicsContext, fileManager, _ddsCodec);
+                                               
                 // Load the sprite image.
-                (spriteImage, imageFile) = await Task.Run(() => GetSpriteImageFromMetadata(file.Metadata.Dependencies, fileManager));
-                                
-                if ((spriteImage != null) && (imageFile != null))
-                {
-                    texture = GorgonTexture2DView.CreateTexture(GraphicsContext.Graphics, new GorgonTexture2DInfo(imageFile.Path), spriteImage);
-                }
+                (spriteImage, imageFile) = await textureService.LoadFromSpriteContentAsync(file);
 
-                sprite = await Task.Run(() =>
-                {
-                    // Load the sprite now.  We don't really need a thread for this, but whatever...
-                    using (Stream spriteStream = file.OpenRead())
-                    {
-                        return _defaultCodec.FromStream(spriteStream, texture);
-                    }
-                });
+                // Load the sprite now. 
+                stream = file.OpenRead();
+                sprite = _defaultCodec.FromStream(stream, spriteImage);
 
                 content.Initialize(new SpriteContentParameters(file, 
                     imageFile, 
                     fileManager, 
-                    sprite, 
+                    textureService,
+                    sprite,
+                    _defaultCodec,
                     undoService, 
                     scratchArea, 
                     injector.MessageDisplay, 
@@ -453,12 +450,12 @@ namespace Gorgon.Editor.SpriteEditor
             }
             catch
             {
-                texture?.Dispose();
+                spriteImage?.Dispose();
                 throw;
             }
             finally
             {
-                spriteImage?.Dispose();
+                stream?.Dispose();
             }
         }
 

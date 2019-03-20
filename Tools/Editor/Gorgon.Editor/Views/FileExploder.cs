@@ -157,6 +157,15 @@ namespace Gorgon.Editor.Views
             // This node is not on the tree, so just leave.  There's nothing we can do here.
             if (!_revNodeLinks.TryGetValue(deleteNode, out KryptonTreeNode deleteTreeNode))
             {
+                // If we have a collapsed parent node, we won't have a link for the item in our tree node links.
+                // So, in that case, get the parent node and remove any dummy nodes (if the parent is collapsed) and we're the only child.
+                if ((_revNodeLinks.TryGetValue(deleteNode.Parent, out KryptonTreeNode parentTreeNode))
+                    && (!parentTreeNode.IsExpanded)
+                    && (deleteNode.Parent.Children.Count == 0))
+                {
+                    parentTreeNode.Nodes.Clear();
+                }
+
                 return;
             }
 
@@ -742,7 +751,7 @@ namespace Gorgon.Editor.Views
             MenuItemCreateDirectory.Available = dataContext.CreateNodeCommand?.CanExecute(null) ?? false;
             MenuItemDelete.Available = dataContext.DeleteNodeCommand?.CanExecute(null) ?? false;
 
-            MenuSepContent.Available = MenuItemOpenContent.Available = dataContext.OpenContentFile?.CanExecute(dataContext.SelectedNode as IContentFile) ?? false;
+            MenuSepContent.Available = MenuItemOpenContent.Available = dataContext.OpenContentFileCommand?.CanExecute(dataContext.SelectedNode as IContentFile) ?? false;
 
             MenuSepNew.Visible = MenuItemCreateDirectory.Available;
         }
@@ -755,12 +764,12 @@ namespace Gorgon.Editor.Views
         {
             var selectedFile = DataContext?.SelectedNode as IContentFile;
 
-            if ((DataContext?.OpenContentFile == null) || (!DataContext.OpenContentFile.CanExecute(selectedFile)))
+            if ((DataContext?.OpenContentFileCommand == null) || (!DataContext.OpenContentFileCommand.CanExecute(selectedFile)))
             {
                 return;
             }
 
-            DataContext.OpenContentFile.Execute(selectedFile);
+            DataContext.OpenContentFileCommand.Execute(selectedFile);
         }
 
         /// <summary>
@@ -1017,12 +1026,12 @@ namespace Gorgon.Editor.Views
 
             var contentFile = node as IContentFile;
 
-            if ((DataContext?.OpenContentFile == null) || (!DataContext.OpenContentFile.CanExecute(contentFile)))
+            if ((DataContext?.OpenContentFileCommand == null) || (!DataContext.OpenContentFileCommand.CanExecute(contentFile)))
             {
                 return;
             }
 
-            DataContext.OpenContentFile.Execute(contentFile);
+            DataContext.OpenContentFileCommand.Execute(contentFile);
         }
 
         /// <summary>

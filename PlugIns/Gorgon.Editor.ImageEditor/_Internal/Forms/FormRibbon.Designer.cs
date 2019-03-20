@@ -79,6 +79,8 @@
             this.Item400Percent = new System.Windows.Forms.ToolStripMenuItem();
             this.Item800Percent = new System.Windows.Forms.ToolStripMenuItem();
             this.Item1600Percent = new System.Windows.Forms.ToolStripMenuItem();
+            this.Item3200Percent = new System.Windows.Forms.ToolStripMenuItem();
+            this.Item6400Percent = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.RibbonImageContent)).BeginInit();
             this.MenuImageType.SuspendLayout();
             this.MenuZoom.SuspendLayout();
@@ -374,9 +376,11 @@
             this.Item200Percent,
             this.Item400Percent,
             this.Item800Percent,
-            this.Item1600Percent});
+            this.Item1600Percent,
+            this.Item3200Percent,
+            this.Item6400Percent});
             this.MenuZoom.Name = "ZoomMenu";
-            this.MenuZoom.Size = new System.Drawing.Size(135, 208);
+            this.MenuZoom.Size = new System.Drawing.Size(181, 274);
             // 
             // ItemZoomToWindow
             // 
@@ -384,7 +388,7 @@
             this.ItemZoomToWindow.CheckOnClick = true;
             this.ItemZoomToWindow.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ItemZoomToWindow.Name = "ItemZoomToWindow";
-            this.ItemZoomToWindow.Size = new System.Drawing.Size(134, 22);
+            this.ItemZoomToWindow.Size = new System.Drawing.Size(180, 22);
             this.ItemZoomToWindow.Tag = "ToWindow";
             this.ItemZoomToWindow.Text = "To Window";
             this.ItemZoomToWindow.Click += new System.EventHandler(this.ItemZoom_Click);
@@ -392,13 +396,13 @@
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(131, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(177, 6);
             // 
             // Item12Percent
             // 
             this.Item12Percent.CheckOnClick = true;
             this.Item12Percent.Name = "Item12Percent";
-            this.Item12Percent.Size = new System.Drawing.Size(134, 22);
+            this.Item12Percent.Size = new System.Drawing.Size(180, 22);
             this.Item12Percent.Tag = "Percent12";
             this.Item12Percent.Text = "12.5%";
             this.Item12Percent.Click += new System.EventHandler(this.ItemZoom_Click);
@@ -407,7 +411,7 @@
             // 
             this.Item25Percent.CheckOnClick = true;
             this.Item25Percent.Name = "Item25Percent";
-            this.Item25Percent.Size = new System.Drawing.Size(134, 22);
+            this.Item25Percent.Size = new System.Drawing.Size(180, 22);
             this.Item25Percent.Tag = "Percent25";
             this.Item25Percent.Text = "25%";
             this.Item25Percent.Click += new System.EventHandler(this.ItemZoom_Click);
@@ -416,7 +420,7 @@
             // 
             this.Item50Percent.CheckOnClick = true;
             this.Item50Percent.Name = "Item50Percent";
-            this.Item50Percent.Size = new System.Drawing.Size(134, 22);
+            this.Item50Percent.Size = new System.Drawing.Size(180, 22);
             this.Item50Percent.Tag = "Percent50";
             this.Item50Percent.Text = "50%";
             this.Item50Percent.Click += new System.EventHandler(this.ItemZoom_Click);
@@ -425,7 +429,7 @@
             // 
             this.Item100Percent.CheckOnClick = true;
             this.Item100Percent.Name = "Item100Percent";
-            this.Item100Percent.Size = new System.Drawing.Size(134, 22);
+            this.Item100Percent.Size = new System.Drawing.Size(180, 22);
             this.Item100Percent.Tag = "Percent100";
             this.Item100Percent.Text = "100%";
             this.Item100Percent.Click += new System.EventHandler(this.ItemZoom_Click);
@@ -434,7 +438,7 @@
             // 
             this.Item200Percent.CheckOnClick = true;
             this.Item200Percent.Name = "Item200Percent";
-            this.Item200Percent.Size = new System.Drawing.Size(134, 22);
+            this.Item200Percent.Size = new System.Drawing.Size(180, 22);
             this.Item200Percent.Tag = "Percent200";
             this.Item200Percent.Text = "200%";
             this.Item200Percent.Click += new System.EventHandler(this.ItemZoom_Click);
@@ -443,7 +447,7 @@
             // 
             this.Item400Percent.CheckOnClick = true;
             this.Item400Percent.Name = "Item400Percent";
-            this.Item400Percent.Size = new System.Drawing.Size(134, 22);
+            this.Item400Percent.Size = new System.Drawing.Size(180, 22);
             this.Item400Percent.Tag = "Percent400";
             this.Item400Percent.Text = "400%";
             this.Item400Percent.Click += new System.EventHandler(this.ItemZoom_Click);
@@ -452,7 +456,7 @@
             // 
             this.Item800Percent.CheckOnClick = true;
             this.Item800Percent.Name = "Item800Percent";
-            this.Item800Percent.Size = new System.Drawing.Size(134, 22);
+            this.Item800Percent.Size = new System.Drawing.Size(180, 22);
             this.Item800Percent.Tag = "Percent800";
             this.Item800Percent.Text = "800%";
             this.Item800Percent.Click += new System.EventHandler(this.ItemZoom_Click);
@@ -461,10 +465,26 @@
             // 
             this.Item1600Percent.CheckOnClick = true;
             this.Item1600Percent.Name = "Item1600Percent";
-            this.Item1600Percent.Size = new System.Drawing.Size(134, 22);
+            this.Item1600Percent.Size = new System.Drawing.Size(180, 22);
             this.Item1600Percent.Tag = "Percent1600";
             this.Item1600Percent.Text = "1600%";
             this.Item1600Percent.Click += new System.EventHandler(this.ItemZoom_Click);
+            // 
+            // Item3200Percent
+            // 
+            this.Item3200Percent.Name = "Item3200Percent";
+            this.Item3200Percent.Size = new System.Drawing.Size(180, 22);
+            this.Item3200Percent.Tag = "Percent3200";
+            this.Item3200Percent.Text = "3200%";
+            this.Item3200Percent.Click += new System.EventHandler(this.ItemZoom_Click);
+            // 
+            // Item6400Percent
+            // 
+            this.Item6400Percent.Name = "Item6400Percent";
+            this.Item6400Percent.Size = new System.Drawing.Size(180, 22);
+            this.Item6400Percent.Tag = "Percent6400";
+            this.Item6400Percent.Text = "6400%";
+            this.Item6400Percent.Click += new System.EventHandler(this.ItemZoom_Click);
             // 
             // FormRibbon
             // 
@@ -527,5 +547,7 @@
         private System.Windows.Forms.ToolStripMenuItem Item400Percent;
         private System.Windows.Forms.ToolStripMenuItem Item800Percent;
         private System.Windows.Forms.ToolStripMenuItem Item1600Percent;
+        private System.Windows.Forms.ToolStripMenuItem Item3200Percent;
+        private System.Windows.Forms.ToolStripMenuItem Item6400Percent;
     }
 }

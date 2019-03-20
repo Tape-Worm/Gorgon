@@ -238,6 +238,11 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Property to return the path to the linked node.
+        /// </summary>
+        public string LinkPath => FullPath;
+
+        /// <summary>
         /// Property to return the image name to use for the node type.
         /// </summary>
         public abstract string ImageName

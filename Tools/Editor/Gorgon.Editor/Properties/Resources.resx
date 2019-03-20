@@ -771,4 +771,9 @@ Content IDs should be GUID values.</value>
   <data name="GOREDIT_TEXT_CREATING_CONTENT" xml:space="preserve">
     <value>Creating {0} content...</value>
   </data>
+  <data name="GOREDIT_ERR_SAVING_METADATA" xml:space="preserve">
+    <value>There was an error while saving the content metadata for '{0}'.
+
+Please try again.</value>
+  </data>
 </root>

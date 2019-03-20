@@ -26,12 +26,12 @@
 
 using System;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.UI
 {
     /// <summary>
-    /// Event arguments for the <see cref="FormRibbon.ImageZoomed"/> event.
+    /// Event arguments for the a zoom event.
     /// </summary>
-    internal class ImageZoomedArgs
+    public class ZoomEventArgs
         : EventArgs
     {
         /// <summary>
@@ -42,8 +42,8 @@ namespace Gorgon.Editor.ImageEditor
             get;
         }
 
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ImageEditor.ImageZoomedArgs"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="ZoomEventArgs"/> class.</summary>
         /// <param name="currentZoomLevel">The current zoom level.</param>
-        public ImageZoomedArgs(ZoomLevels currentZoomLevel) => ZoomLevel = currentZoomLevel;
+        public ZoomEventArgs(ZoomLevels currentZoomLevel) => ZoomLevel = currentZoomLevel;
     }
 }

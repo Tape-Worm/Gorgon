@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -430,6 +431,42 @@ namespace Gorgon.Renderers
         #endregion
 
         #region Constructor/Finalizer.
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Renderers.GorgonSprite"/> class.</summary>
+        /// <param name="clone">The clone.</param>
+        /// <exception cref="T:System.ArgumentNullException">Thrown when the <paramref name="clone"/> parameter is <b>null</b>.</exception>
+        public GorgonSprite(GorgonSprite clone)
+            : this()
+        {
+            if (clone == null)
+            {
+                throw new ArgumentNullException(nameof(clone));
+            }
+
+            AlphaTest = clone.AlphaTest;
+            Anchor = clone.Anchor;
+            Angle = clone.Angle;
+            Bounds = clone.Bounds;
+            Color = clone.Color;
+            Depth = clone.Depth;
+            HorizontalFlip = clone.HorizontalFlip;            
+            Scale = clone.Scale;
+            Texture = clone.Texture;
+            TextureArrayIndex = clone.TextureArrayIndex;
+            TextureRegion = clone.TextureRegion;
+            TextureSampler = clone.TextureSampler;            
+            VerticalFlip = clone.VerticalFlip;
+
+            CornerOffsets.UpperLeft = clone.CornerOffsets.UpperLeft;
+            CornerOffsets.UpperRight = clone.CornerOffsets.UpperRight;
+            CornerOffsets.LowerRight = clone.CornerOffsets.LowerRight;
+            CornerOffsets.LowerLeft = clone.CornerOffsets.LowerLeft;
+
+            CornerColors.UpperLeft = clone.CornerColors.UpperLeft;
+            CornerColors.UpperRight = clone.CornerColors.UpperRight;
+            CornerColors.LowerRight = clone.CornerColors.LowerRight;
+            CornerColors.LowerLeft = clone.CornerColors.LowerLeft;
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonSprite"/> class.
         /// </summary>

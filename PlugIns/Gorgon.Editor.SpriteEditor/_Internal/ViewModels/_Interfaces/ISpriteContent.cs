@@ -36,10 +36,24 @@ using Gorgon.Graphics.Core;
 namespace Gorgon.Editor.SpriteEditor
 {
     /// <summary>
+    /// Tool states for the sprite editor.
+    /// </summary>
+    internal enum SpriteEditTool
+    {
+        None = 0,
+        SpriteClip = 1,
+        SpritePick = 2,
+        CornerResize = 3,
+        CornerColor = 4,
+        TextureResize = 5,
+        SetAnchor = 6
+    }
+
+    /// <summary>
     /// The view model for sprite content.
     /// </summary>
     internal interface ISpriteContent
-        : IEditorContent
+        : IEditorContent, IUndoHandler, IDragDropHandler<IContentFileDragData>
     {
         /// <summary>
         /// Property to return the texture associated with the sprite.
@@ -55,7 +69,31 @@ namespace Gorgon.Editor.SpriteEditor
         DX.RectangleF TextureCoordinates
         {
             get;
+        }
+
+        /// <summary>
+        /// Property to return the size of the sprite.
+        /// </summary>
+        DX.Size2F Size
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to set or return the currently active tool for editing the sprite.
+        /// </summary>
+        SpriteEditTool CurrentTool
+        {
+            get;
             set;
+        }
+
+        /// <summary>
+        /// Property to return the command to execute when applying texture coordinates to the sprite.
+        /// </summary>
+        IEditorCommand<DX.RectangleF> SetTextureCoordinatesCommand
+        {
+            get;
         }
     }
 }

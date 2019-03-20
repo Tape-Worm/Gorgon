@@ -157,6 +157,14 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Property to return the path to the linked node.
+        /// </summary>
+        string LinkPath
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the physical path to the node.
         /// </summary>
         string PhysicalPath

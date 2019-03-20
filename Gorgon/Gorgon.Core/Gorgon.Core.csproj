@@ -117,6 +117,7 @@
     <Compile Include="Graphics\BufferFormat.cs" />
     <Compile Include="Graphics\GorgonBox.cs" />
     <Compile Include="Graphics\GorgonColor.cs" />
+    <Compile Include="Graphics\_Extensions\SharpDXRectExtensions.cs" />
     <Compile Include="IO\GorgonChunk.cs" />
     <Compile Include="IO\GorgonChunkCollection.cs" />
     <Compile Include="IO\GorgonChunkFile.cs" />

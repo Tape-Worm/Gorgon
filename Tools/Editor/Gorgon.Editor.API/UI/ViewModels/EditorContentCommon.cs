@@ -100,6 +100,13 @@ namespace Gorgon.Editor.UI
                 OnPropertyChanging();
                 _state = value;
                 OnPropertyChanged();
+
+                if (File == null)
+                {
+                    return;
+                }
+
+                File.IsChanged = _state != ContentState.Unmodified;
             }
         }
 
@@ -208,6 +215,11 @@ namespace Gorgon.Editor.UI
                 BusyState.SetBusy();
                 EventHandler handler = CloseContent;
                 CloseContent?.Invoke(this, EventArgs.Empty);
+
+                if (File != null)
+                {
+                    File.IsChanged = false;
+                }
             }
             catch (Exception ex)
             {

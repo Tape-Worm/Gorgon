@@ -37,6 +37,12 @@ using Gorgon.Editor.UI;
 using Gorgon.Graphics.Core;
 using Gorgon.IO;
 using Gorgon.Renderers;
+using Gorgon.Graphics.Imaging.Codecs;
+using Gorgon.Graphics.Imaging;
+using Gorgon.Editor.SpriteEditor.Properties;
+using Gorgon.Math;
+using System.Threading;
+using Gorgon.Graphics;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -46,6 +52,31 @@ namespace Gorgon.Editor.SpriteEditor
     internal class SpriteContent
         : EditorContentCommon<SpriteContentParameters>, ISpriteContent
     {
+        #region Classes.
+        /// <summary>
+        /// Arguments for an undo/redo operation.
+        /// </summary>
+        private class SpriteUndoArgs
+        {
+            /// <summary>
+            /// The sprite data at the time of the undo.
+            /// </summary>
+            public GorgonSprite Sprite;
+            /// <summary>
+            /// The sprite texture coordinates, in pixel space.
+            /// </summary>
+            public DX.RectangleF TextureCoordinates;
+            /// <summary>
+            /// The original texture file associated with the sprite.
+            /// </summary>
+            public IContentFile OriginalTexture;
+            /// <summary>
+            /// The current texture file associated with the sprite.
+            /// </summary>
+            public IContentFile CurrentTexture;
+        }
+        #endregion
+
         #region Constants.
         /// <summary>
         /// The attribute key name for the sprite codec attribute.
@@ -63,12 +94,40 @@ namespace Gorgon.Editor.SpriteEditor
         // The file manager used to access external content files.
         private IContentFileManager _contentFiles;
         // The file system for temporary working data.
-        private IGorgonFileSystemWriter<Stream> _scratchArea;        
+        private IGorgonFileSystemWriter<Stream> _scratchArea;
+        // The sprite texture service.
+        private ISpriteTextureService _textureService;
+        // The codec used to read/write sprite data.
+        private IGorgonSpriteCodec _spriteCodec;
+        // The original texture.
+        private IContentFile _originalTexture;
+        // The currently active tool for editing the sprite.
+        private SpriteEditTool _currentTool = SpriteEditTool.None;
         #endregion
 
         #region Properties.
         /// <summary>Property to return the type of content.</summary>
         public override string ContentType => SpriteEditorCommonConstants.ContentType;
+
+
+        /// <summary>
+        /// Property to set or return the currently active tool for editing the sprite.
+        /// </summary>
+        public SpriteEditTool CurrentTool
+        {
+            get => _currentTool;
+            set
+            {
+                if (_currentTool == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _currentTool = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// Property to set or return the texture coordinates used by the sprite.
@@ -76,7 +135,7 @@ namespace Gorgon.Editor.SpriteEditor
         public DX.RectangleF TextureCoordinates
         {
             get => _sprite.TextureRegion;
-            set
+            private set
             {
                 if (_sprite.TextureRegion.Equals(ref value))
                 {
@@ -105,7 +164,53 @@ namespace Gorgon.Editor.SpriteEditor
                 OnPropertyChanging();
                 _sprite.Texture = value;
                 OnPropertyChanged();
+
+                ContentState = ContentState.Modified;
             }
+        }
+
+
+        /// <summary>
+        /// Property to set or return the size of the sprite.
+        /// </summary>
+        public DX.Size2F Size
+        {
+            get => _sprite.Size;
+            private set
+            {
+                if (_sprite.Size.Equals(value))
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _sprite.Size = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Property to return the command used to undo an action.
+        /// </summary>
+        public IEditorCommand<object> UndoCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to redo an action.
+        /// </summary>
+        public IEditorCommand<object> RedoCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command to execute when applying texture coordinates to the sprite.
+        /// </summary>
+        public IEditorCommand<DX.RectangleF> SetTextureCoordinatesCommand
+        {
+            get;
         }
         #endregion
 
@@ -138,8 +243,168 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void TextureFile_Deleted(object sender, EventArgs e)
         {
+            SetupTextureFile(null);
             Texture?.Dispose();
-            Texture = null;
+            Texture = null;            
+        }
+
+
+        /// <summary>
+        /// Function to determine if an undo operation is possible.
+        /// </summary>
+        /// <returns><b>true</b> if the last action can be undone, <b>false</b> if not.</returns>
+        private bool CanUndo() => _undoService.CanUndo && _currentTool == SpriteEditTool.None;
+
+        /// <summary>
+        /// Function to determine if a redo operation is possible.
+        /// </summary>
+        /// <returns><b>true</b> if the last action can be redone, <b>false</b> if not.</returns>
+        private bool CanRedo() => _undoService.CanRedo && _currentTool == SpriteEditTool.None;
+
+        /// <summary>
+        /// Function called when a redo operation is requested.
+        /// </summary>
+        private async void DoRedoAsync()
+        {
+            try
+            {
+                await _undoService.Redo();
+            }
+            catch (Exception ex)
+            {
+                MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_REDO);
+            }
+        }
+
+        /// <summary>
+        /// Function called when an undo operation is requested.
+        /// </summary>
+        private async void DoUndoAsync()
+        {
+            try
+            {
+                await _undoService.Undo();
+            }
+            catch (Exception ex)
+            {
+                MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UNDO);
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if the current content can be saved.
+        /// </summary>
+        /// <returns><b>true</b> if the content can be saved, <b>false</b> if not.</returns>
+        private bool CanSaveSprite() => ContentState != ContentState.Unmodified && _currentTool == SpriteEditTool.None;
+
+        /// <summary>
+        /// Function to save the sprite back to the project file system.
+        /// </summary>
+        /// <returns>A task for asynchronous operation.</returns>
+        private Task DoSaveSpriteTask()
+        {
+            Stream outStream = null;
+
+            BusyState.SetBusy();
+
+            try
+            {
+                outStream = File.OpenWrite();
+                _spriteCodec.Save(_sprite, outStream);
+                outStream.Dispose();
+
+                // This file is no longer "new".
+                File.Metadata.Attributes.Remove(CommonEditorConstants.IsNewAttr);
+                File.Refresh();
+                File.SaveMetadata();
+
+                _originalTexture = _textureFile;
+                ContentState = ContentState.Unmodified;                
+            }
+            catch (Exception ex)
+            {
+                MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_SAVE_SPRITE);
+            }
+            finally
+            {
+                outStream?.Dispose();
+                BusyState.SetIdle();
+            }
+
+            return Task.FromResult<object>(null);
+        }
+
+        /// <summary>
+        /// Function to determine if the texture coordinates can be updated for the sprite.
+        /// </summary>
+        /// <param name="textureCoords">The texture coordinates to apply.</param>
+        /// <returns><b>true</b> if the texture coordinates can be applied, <b>false</b> if not.</returns>
+        private bool CanSetTextureCoordinates(DX.RectangleF textureCoords) => (Texture != null)
+            && (!textureCoords.IsEmpty)
+            && (!textureCoords.ToRectangle().Equals(Texture.ToPixel(TextureCoordinates)));
+
+        /// <summary>
+        /// Function called to update the texture coordinates for the sprite.
+        /// </summary>
+        /// <param name="textureCoords">The texture coordinates to apply.</param>
+        private void DoSetTextureCoordinates(DX.RectangleF textureCoords)
+        {
+            bool SetTextureCoordinates(DX.RectangleF coordinates)
+            {
+                try
+                {
+                    TextureCoordinates = Texture.ToTexel(coordinates.ToRectangle());                    
+                    Size = new DX.Size2F((int)coordinates.Size.Width, (int)coordinates.Size.Height);
+                    
+                    ContentState = ContentState.Modified;
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
+                    return false;
+                }
+            }
+
+            Task UndoAction(SpriteUndoArgs undoArgs, CancellationToken cancelToken)
+            {
+                SetTextureCoordinates(undoArgs.TextureCoordinates);
+                return Task.CompletedTask;
+            }
+
+            Task RedoAction(SpriteUndoArgs redoArgs, CancellationToken cancelToken)
+            {
+                SetTextureCoordinates(redoArgs.TextureCoordinates);
+                return Task.CompletedTask;
+            }
+
+            var texCoordUndoArgs = new SpriteUndoArgs
+            {
+                TextureCoordinates = Texture.ToPixel(TextureCoordinates).ToRectangleF()
+            };
+            var texCoordRedoArgs = new SpriteUndoArgs
+            {
+                TextureCoordinates = textureCoords
+            };
+
+            if (!SetTextureCoordinates(textureCoords))
+            {
+                return;                
+            }
+            
+
+            _undoService.Record(Resources.GORSPR_UNDO_DESC_CLIP, UndoAction, RedoAction, texCoordUndoArgs, texCoordRedoArgs);
+            NotifyPropertyChanged(nameof(UndoCommand));
+        }
+
+        /// <summary>Function to determine the action to take when this content is closing.</summary>
+        /// <returns>
+        ///   <b>true</b> to continue with closing, <b>false</b> to cancel the close request.</returns>
+        /// <remarks>Plugin authors should override this method to confirm whether save changed content, continue without saving, or cancel the operation entirely.</remarks>
+        protected override Task<bool> OnCloseContentTask()
+        {
+            return base.OnCloseContentTask();
         }
 
         /// <summary>Function to initialize the content.</summary>
@@ -152,6 +417,10 @@ namespace Gorgon.Editor.SpriteEditor
             _sprite = injectionParameters.Sprite ?? throw new ArgumentMissingException(nameof(injectionParameters.Sprite), nameof(injectionParameters));
             _undoService = injectionParameters.UndoService ?? throw new ArgumentMissingException(nameof(injectionParameters.UndoService), nameof(injectionParameters));
             _scratchArea = injectionParameters.ScratchArea ?? throw new ArgumentMissingException(nameof(injectionParameters.ScratchArea), nameof(injectionParameters));
+            _textureService = injectionParameters.TextureService ?? throw new ArgumentMissingException(nameof(injectionParameters.TextureService), nameof(injectionParameters));
+            _spriteCodec = injectionParameters.SpriteCodec ?? throw new ArgumentMissingException(nameof(injectionParameters.SpriteCodec), nameof(injectionParameters));
+
+            _originalTexture = injectionParameters.SpriteTextureFile;
 
             SetupTextureFile(injectionParameters.SpriteTextureFile);
         }
@@ -171,15 +440,140 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Function called when the associated view is unloaded.</summary>
         public override void OnUnload()
         {
-            SetupTextureFile(_textureFile);
+            // If a texture was assigned, but not saved, then remove the link.
+            // TODO: When undoing this, we will need to reset the linkages at each undo level (store in params).
+            if (_originalTexture != _textureFile)
+            {
+                _textureFile?.UnlinkContent(File);
+                _originalTexture?.LinkContent(File);
+            }
+
+            SetupTextureFile(null);
             _sprite?.Texture?.Dispose();
 
             base.OnUnload();
         }
+
+        /// <summary>Function to determine if an object can be dropped.</summary>
+        /// <param name="dragData">The drag/drop data.</param>
+        /// <returns>
+        ///   <b>true</b> if the data can be dropped, <b>false</b> if not.</returns>
+        public bool CanDrop(IContentFileDragData dragData)
+        {
+            // Don't open the same file, it's already loaded, or is not a content image, or a tool is active.            
+            if (((_textureFile != null)  && (string.Equals(_textureFile.Path, dragData.File.Path, StringComparison.OrdinalIgnoreCase))) 
+                || (!_textureService.IsContentImage(dragData.File))
+                || (_currentTool != SpriteEditTool.None))
+            {
+                dragData.Cancel = true;
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>Function to drop the payload for a drag drop operation.</summary>
+        /// <param name="dragData">The drag/drop data.</param>
+        /// <param name="afterDrop">[Optional] The method to execute after the drop operation is completed.</param>
+        public async void Drop(IContentFileDragData dragData, Action afterDrop = null)
+        {
+            SpriteUndoArgs textureUndoArgs = null;
+            SpriteUndoArgs textureRedoArgs = null;
+
+            async Task<bool> AssignTextureAsync(SpriteUndoArgs args)
+            {
+                IContentFile newTextureFile = args.CurrentTexture;
+
+                ShowWaitPanel(string.Format(Resources.GORSPR_TEXT_LOADING_IMAGE, newTextureFile.Path));
+
+                try
+                {
+                    
+                    GorgonTexture2DView texture;
+                    IGorgonImageInfo imageInfo;
+
+                    imageInfo = _textureService.GetImageMetadata(newTextureFile);
+
+                    if (imageInfo == null)
+                    {
+                        MessageDisplay.ShowError(string.Format(Resources.GORSPR_ERR_NOT_AN_IMAGE, newTextureFile.Path));
+                        return false;
+                    }
+
+                    if ((imageInfo.ImageType == ImageType.Image1D) || (imageInfo.ImageType == ImageType.Image3D))
+                    {
+                        MessageDisplay.ShowError(Resources.GORSPR_ERR_NOT_2D_IMAGE);
+                        return false;
+                    }
+
+                    texture = await _textureService.LoadTextureAsync(newTextureFile);
+
+                    Texture?.Dispose();
+                    Texture = texture;
+
+                    _textureFile?.UnlinkContent(File);
+
+                    SetupTextureFile(newTextureFile);
+
+                    _textureFile.LinkContent(File);
+
+                    if (File.Metadata.Attributes.ContainsKey(CommonEditorConstants.IsNewAttr))
+                    {
+                        // TODO: Set the size property on the view model.
+                        Size = new DX.Size2F(texture.Width, texture.Height);
+                        File.Metadata.Attributes.Remove(CommonEditorConstants.IsNewAttr);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_TEXTURE_REPLACE);
+                    return false;
+                }
+                finally
+                {
+                    HideWaitPanel();
+                }
+
+                return true;
+            }
+
+            async Task UndoAction(SpriteUndoArgs undoArgs, CancellationToken cancelToken) => await AssignTextureAsync(undoArgs);
+
+            async Task RedoAction(SpriteUndoArgs redoArgs, CancellationToken cancelToken) => await AssignTextureAsync(redoArgs);
+
+            textureUndoArgs = new SpriteUndoArgs
+            {
+                CurrentTexture = _textureFile
+            };
+            textureRedoArgs = new SpriteUndoArgs
+            {
+                CurrentTexture = dragData.File
+            };
+
+            if (!await AssignTextureAsync(textureRedoArgs))
+            {
+                return;
+            }
+                
+            // If we initially don't have a texture, then don't record the action.
+            if (textureUndoArgs?.CurrentTexture != null)
+            {
+                _undoService.Record(Resources.GORSPR_UNDO_DESC_TEXTURE, UndoAction, RedoAction, textureUndoArgs, textureRedoArgs);
+                // Need to call this so the UI can register our updated undo stack.
+                NotifyPropertyChanged(nameof(UndoCommand));
+            }
+        }
         #endregion
 
         #region Constructor/Finalizer.
-
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.SpriteEditor.SpriteContent"/> class.</summary>
+        public SpriteContent()
+        {
+            SaveContentCommand = new EditorAsyncCommand<object>(DoSaveSpriteTask, CanSaveSprite);
+            UndoCommand = new EditorCommand<object>(DoUndoAsync, CanUndo);
+            RedoCommand = new EditorCommand<object>(DoRedoAsync, CanRedo);
+            SetTextureCoordinatesCommand = new EditorCommand<DX.RectangleF>(DoSetTextureCoordinates, CanSetTextureCoordinates);
+        }
         #endregion
     }
 }

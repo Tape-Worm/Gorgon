@@ -114,7 +114,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Ribbons the form image zoomed.</summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The e.</param>
-        private void RibbonForm_ImageZoomed(object sender, ImageZoomedArgs e)
+        private void RibbonForm_ImageZoomed(object sender, ZoomEventArgs e)
         {
             if ((_textureViewer == null) || (DataContext == null))
             {
@@ -265,52 +265,12 @@ namespace Gorgon.Editor.ImageEditor
             return result;
         }
 
-        /// <summary>
-        /// Function to check to see if drag drop data is valid for this control.
-        /// </summary>
-        /// <param name="e">The event parameters for the drag/drop event.</param>
-        /// <returns>The data in the drag operation, or <b>null</b> if the data cannot be dragged and dropped onto this control.</returns>
-        private IContentFileDragData GetDragDropData(DragEventArgs e)
-        {
-            if (DataContext == null)
-            {
-                e.Effect = DragDropEffects.None;
-                return null;
-            }
-
-            e.Effect = DragDropEffects.Copy;
-
-            Type contentFileDragDataType = typeof(IContentFileDragData);
-
-            if (!e.Data.GetDataPresent(contentFileDragDataType.FullName, true))
-            {
-                return null;
-            }
-            
-            if (!(e.Data.GetData(contentFileDragDataType.FullName, true) is IContentFileDragData dragData))
-            {
-                return null;
-            }
-
-            if (!DataContext.CanDrop(dragData))
-            {
-                if (dragData.Cancel)
-                {
-                    e.Effect = DragDropEffects.None;
-                }
-
-                return null;
-            }
-
-            return dragData;
-        }
-
         /// <summary>Handles the DragDrop event of the ImageEditorView control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
         private void ImageEditorView_DragDrop(object sender, DragEventArgs e)
         {
-            IContentFileDragData contentFiles = GetDragDropData(e);
+            IContentFileDragData contentFiles = GetDragDropData(e, DataContext);
 
             if (contentFiles != null)
             {
@@ -334,7 +294,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
         private void ImageEditorView_DragEnter(object sender, DragEventArgs e)
         {
-            IContentFileDragData contentFiles = GetDragDropData(e);
+            IContentFileDragData contentFiles = GetDragDropData(e, DataContext);
 
             if ((contentFiles != null) && (e.Effect != DragDropEffects.None))
             {

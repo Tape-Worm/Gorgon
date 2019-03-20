@@ -44,6 +44,8 @@ using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Graphics;
+using Gorgon.Editor.Services;
+using System.Diagnostics;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -54,16 +56,18 @@ namespace Gorgon.Editor.SpriteEditor
         : ContentBaseControl, IDataContext<ISpriteContent>
     {
         #region Variables.
-        // The default background image.
-        private GorgonTexture2DView _defBgImage;
-        // The graphics interface for the application.
-        private GorgonGraphics _graphics;
+        // The form for the ribbon.
+        private FormRibbon _ribbonForm;
         // The renderer for the application.
-        private Gorgon2D _renderer;
-        // The primary swap chain.
-        private GorgonSwapChain _swapChain;
-        // The patterned background to show behind the image.
-        private GorgonTexture2DView _patternBg;
+        private ISpriteContentRenderer _renderer;
+        // The current zoom setting.
+        private ZoomLevels _zoomLevel = ZoomLevels.ToWindow;
+        // The rectangle clipping service used to capture sprite data.
+        private IRectClipperService _clipperService = null;
+        // Flag to indicate that the surface is dragging.
+        private bool _isDragging;
+        // The starting point of the drag operation.
+        private DX.Vector2 _dragStart;
         #endregion
 
         #region Properties.
@@ -76,58 +80,321 @@ namespace Gorgon.Editor.SpriteEditor
         #endregion
 
         #region Methods.
+        /// <summary>Handles the DragEnter event of the PanelRenderWindow control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+        private void PanelRenderWindow_DragEnter(object sender, DragEventArgs e)
+        {
+            IContentFileDragData dragData = GetDragDropData(e, DataContext);
+
+            if ((dragData != null) && (e.Effect != DragDropEffects.None))
+            {
+                return;
+            }
+
+            if (e.Effect != DragDropEffects.None)
+            {
+                OnBubbleDragEnter(e);
+            }
+        }
+
+        /// <summary>Handles the DragDrop event of the PanelRenderWindow control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+        private void PanelRenderWindow_DragDrop(object sender, DragEventArgs e)
+        {
+            IContentFileDragData dragData = GetDragDropData(e, DataContext);
+
+            if ((dragData != null) && (e.Effect != DragDropEffects.None))
+            {
+                DataContext.Drop(dragData);
+                return;
+            }
+
+            OnBubbleDragDrop(e);
+        }
+
+        /// <summary>Handles the Click event of the ButtonCenter control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonCenter_Click(object sender, EventArgs e) => _ribbonForm.ResetZoom();
+
+        /// <summary>Handles the ValueChanged event of the ScrollHorizontal control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="ScrollEventArgs"/> instance containing the event data.</param>
+        private void ScrollHorizontal_ValueChanged(object sender, EventArgs e)
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+            Idle();
+        }
+
+
+        /// <summary>Handles the PreviewKeyDown event of the PanelRenderWindow control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PreviewKeyDownEventArgs"/> instance containing the event data.</param>
+        private void PanelRenderWindow_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            if ((DataContext != null) && (DataContext.CurrentTool == SpriteEditTool.SpriteClip))
+            {
+                switch (e.KeyCode)
+                {
+                    case Keys.Enter:
+                        _ribbonForm.SetTool(SpriteEditTool.None);
+                        e.IsInputKey = true;
+                        return;
+                    case Keys.Escape:
+                        if (DataContext.Texture != null)
+                        {
+                            // Reset to the original coordinates so we don't apply anything.
+                            _clipperService.Rectangle = DX.RectangleF.Empty;
+                        }                        
+                        _ribbonForm.SetTool(SpriteEditTool.None);
+                        e.IsInputKey = true;
+                        return;
+                }
+
+                e.IsInputKey = _clipperService.KeyDown(e.KeyCode, e.Modifiers);
+            }            
+        }
+
+        /// <summary>Handles the RenderToBitmap event of the PanelRenderWindow control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PaintEventArgs"/> instance containing the event data.</param>
+        private void PanelRenderWindow_RenderToBitmap(object sender, PaintEventArgs e) => RenderSwapChainToBitmap(e.Graphics);
+
+        /// <summary>Handles the MouseWheel event of the PanelRenderWindow control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+        private void PanelRenderWindow_MouseWheel(object sender, MouseEventArgs e)
+        {
+            if ((ModifierKeys & Keys.Control) == Keys.Control)
+            {
+                float scale = _renderer.ZoomScaleValue;
+
+                if (e.Delta < 0)
+                {
+                    _ribbonForm.SetZoom(scale.GetPrevNearest());
+                }
+                else if (e.Delta > 0)
+                {
+                    _ribbonForm.SetZoom(scale.GetNextNearest());
+                }
+                return;
+            }
+
+            if (e.Delta < 0)
+            {
+                if ((ModifierKeys & Keys.Shift) == Keys.Shift)
+                {
+                    ScrollHorizontal.Value = (ScrollHorizontal.Value - ScrollHorizontal.SmallChange).Max(ScrollHorizontal.Minimum);
+                }
+                else
+                {
+                    ScrollVertical.Value = (ScrollVertical.Value - ScrollVertical.SmallChange).Max(ScrollVertical.Minimum);
+                }
+            }
+            else if (e.Delta > 0)
+            {
+                if ((ModifierKeys & Keys.Shift) == Keys.Shift)
+                {
+                    ScrollHorizontal.Value = (ScrollHorizontal.Value + ScrollHorizontal.SmallChange).Min(ScrollHorizontal.Maximum - ScrollHorizontal.LargeChange);
+                }
+                else
+                {
+                    ScrollVertical.Value = (ScrollVertical.Value + ScrollVertical.SmallChange).Min(ScrollVertical.Maximum - ScrollVertical.LargeChange);
+                }
+            }
+            
+        }
+        
+        /// <summary>Handles the MouseMove event of the PanelRenderWindow control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+        private void PanelRenderWindow_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+            
+            var pos = new DX.Vector2(e.X, e.Y);
+
+            if (DataContext.CurrentTool == SpriteEditTool.SpriteClip)
+            {
+
+                _clipperService.MousePosition = pos;
+                if (_clipperService.MouseMove(e.Button))
+                {
+                    return;
+                }
+            }
+
+            if (((ModifierKeys & Keys.Control) != Keys.Control) || (!_isDragging) || (DataContext.Texture == null))
+            {
+                _isDragging = false;
+                return;
+            }
+
+            DX.RectangleF imageSize = _renderer.GetSpriteTextureSize(DataContext);
+            var scale = new DX.Vector2(imageSize.Width / DataContext.Texture.Width, imageSize.Height / DataContext.Texture.Height);            
+            var scaledPos = new DX.Vector2((int)(pos.X / scale.X), (int)(pos.Y / scale.Y));
+
+            DX.Vector2.Subtract(ref _dragStart, ref scaledPos, out DX.Vector2 dragDelta);
+
+            float hScrollAmount = ScrollHorizontal.Value + dragDelta.X;
+            float vScrollAmount = ScrollVertical.Value + dragDelta.Y;
+
+            ScrollHorizontal.Value = (int)(hScrollAmount).Max(ScrollHorizontal.Minimum).Min(ScrollHorizontal.Maximum - ScrollHorizontal.LargeChange);
+            ScrollVertical.Value = (int)(vScrollAmount).Max(ScrollVertical.Minimum).Min(ScrollVertical.Maximum - ScrollVertical.LargeChange);
+
+            _dragStart = scaledPos;
+        }
+
+        /// <summary>Handles the MouseDown event of the PanelRenderWindow control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+        private void PanelRenderWindow_MouseDown(object sender, MouseEventArgs e) 
+        {
+            if (DataContext == null) 
+            {
+                return;
+            }
+
+            var pos = new DX.Vector2(e.X, e.Y);
+
+            if (DataContext.CurrentTool == SpriteEditTool.SpriteClip)
+            {                
+                _clipperService.MousePosition = pos;
+                if (_clipperService.MouseDown(e.Button))
+                {
+                    return;
+                }
+            }
+
+            if (((ModifierKeys & Keys.Control) != Keys.Control) || (DataContext.Texture == null))
+            {
+                return;
+            }
+
+            DX.RectangleF imageSize = _renderer.GetSpriteTextureSize(DataContext);
+            var scale = new DX.Vector2(imageSize.Width / DataContext.Texture.Width, imageSize.Height / DataContext.Texture.Height);
+
+            _isDragging = true;
+            _dragStart = new DX.Vector2((int)(pos.X / scale.X), (int)(pos.Y / scale.Y));
+        }
+
+        /// <summary>Handles the MouseUp event of the PanelRenderWindow control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+        private void PanelRenderWindow_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+                        
+            var pos = new DX.Vector2(e.X, e.Y);
+            if (DataContext.CurrentTool == SpriteEditTool.SpriteClip)
+            {
+                _clipperService.MousePosition = pos;
+                if (_clipperService.MouseUp(e.Button))
+                {
+                    return;
+                }
+            }
+
+            _isDragging = false;
+            if ((ModifierKeys & Keys.Control) != Keys.Control)
+            {
+                return;
+            }
+        }
+
+
+        /// <summary>Handles the ImageZoomed event of the RibbonForm control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="ZoomEventArgs"/> instance containing the event data.</param>
+        private void RibbonForm_ImageZoomed(object sender, ZoomEventArgs e) => _zoomLevel = e.ZoomLevel;        
+
         /// <summary>
         /// Function to handle idle time and rendering.
         /// </summary>
         /// <returns><b>true</b> to continue rendering, <b>false</b> to stop.</returns>
         private bool Idle()
         {
-            Size clientSize = RenderControl.ClientSize;
-            float newSize = clientSize.Width < clientSize.Height ? clientSize.Width : clientSize.Height;
-            var size = new DX.Size2F(newSize.Min(_defBgImage.Width), newSize.Min(_defBgImage.Width));
-            var halfClient = new DX.Size2F(clientSize.Width / 2.0f, clientSize.Height / 2.0f);
-            
-            GorgonTexture2DView texture = _defBgImage;
-            
-            _graphics.SetRenderTarget(_swapChain.RenderTargetView);
-            
-            _swapChain.RenderTargetView.Clear(RenderControl.BackColor);
+            DX.RectangleF imageSize = _renderer.GetSpriteTextureSize(DataContext);
 
-            _renderer.Begin();
-
-            // If we do not have a texture, then display a message stating what we need to do.
-            if (DataContext?.Texture != null)
+            if ((!_renderer.IsAnimating) && (DataContext?.Texture != null))
             {
-                size = new DX.Size2F(texture.Width, texture.Height);
-                texture = DataContext.Texture;
+                UpdateScrollBars(imageSize);
+
+                var textureSize = new DX.Size2F(DataContext.Texture.Width / 2.0f, DataContext.Texture.Height / 2.0f);
+                _renderer.ScrollOffset = new DX.Vector2(ScrollHorizontal.Value / textureSize.Width, ScrollVertical.Value / textureSize.Height);
             }
-
-            var pos = new DX.Vector2((int)(halfClient.Width - size.Width / 2.0f), (int)(halfClient.Height - size.Height / 2.0f));
-            var rect = new DX.RectangleF(pos.X, pos.Y, size.Width, size.Height);
-
-            if (texture != _defBgImage)
+            else
             {
-                _renderer.DrawFilledRectangle(rect, GorgonColor.White, _patternBg, new DX.RectangleF(0, 0, (rect.Width / _patternBg.Width), (rect.Height / _patternBg.Height)));
-            }
-            
-            _renderer.DrawFilledRectangle(rect, new GorgonColor(GorgonColor.White, 0.5f), texture, new DX.RectangleF(0, 0, 1, 1));
+                ScrollHorizontal.Enabled = false;
+                ScrollVertical.Enabled = false;
+            }                                   
 
-            if (DataContext == null)
-            {
-                return true;
-            }
-
-            DX.Rectangle spriteRect = texture.ToPixel(DataContext.TextureCoordinates);
-
-            _renderer.DrawFilledRectangle(new DX.RectangleF(spriteRect.X + pos.X, spriteRect.Y + pos.Y, spriteRect.Width, spriteRect.Height),
-                GorgonColor.White, _patternBg, new DX.RectangleF(0, 0, (spriteRect.Width / (float)_patternBg.Width), (spriteRect.Height / (float)_patternBg.Height)));
-            _renderer.DrawFilledRectangle(new DX.RectangleF(spriteRect.X + pos.X, spriteRect.Y + pos.Y, spriteRect.Width, spriteRect.Height), GorgonColor.White, texture, DataContext.TextureCoordinates);
-
-            _renderer.End();
-
-            _swapChain.Present(1);
+            _renderer.Render(_zoomLevel, DataContext.CurrentTool);
 
             return true;
+        }
+
+        /// <summary>
+        /// Function to update the scroll bars on the view based on the amount of space used by the image when zoomed.
+        /// </summary>
+        /// <param name="region">The region for the sprite.</param>
+        private void UpdateScrollBars(DX.RectangleF region)
+        {
+            var clientSize = new DX.RectangleF(0, 0, RenderControl.ClientSize.Width, RenderControl.ClientSize.Height);
+
+            if ((region.IsEmpty) || (DataContext?.Texture == null))
+            {
+                ScrollHorizontal.Value = 0;
+                ScrollVertical.Value = 0;
+                ScrollHorizontal.Enabled = false;
+                ScrollVertical.Enabled = false;
+                return;
+            }
+                        
+            var delta = new DX.Vector2((region.Width - clientSize.Width).Max(0), (region.Height - clientSize.Height).Max(0));
+
+            if (delta.X > 0)
+            {
+                int width = DataContext.Texture.Width / 2;
+
+                ScrollHorizontal.Enabled = true;
+                ScrollHorizontal.LargeChange = (int)(width * 0.25f).Max(1);
+                ScrollHorizontal.SmallChange = (int)(width * 0.1f).Max(1);
+                ScrollHorizontal.Maximum = width + ScrollHorizontal.LargeChange - 1;
+                ScrollHorizontal.Minimum = -width;
+            }
+            else
+            {
+                ScrollHorizontal.Value = 0;
+                ScrollHorizontal.Enabled = false;
+            }
+
+            if (delta.Y > 0)
+            {
+                int height = DataContext.Texture.Height / 2;
+
+                ScrollVertical.Enabled = true;
+                ScrollVertical.LargeChange = (int)(height * 0.25f).Max(1);
+                ScrollVertical.SmallChange = (int)(height * 0.1f).Max(1);
+                ScrollVertical.Maximum = height + ScrollVertical.LargeChange - 1;
+                ScrollVertical.Minimum = -height;
+            }
+            else
+            {
+                ScrollVertical.Value = 0;
+                ScrollVertical.Enabled = false;
+            }
         }
 
         /// <summary>
@@ -143,34 +410,77 @@ namespace Gorgon.Editor.SpriteEditor
             }
         }
 
+        /// <summary>
+        /// Function to notify when the sprite clipping is finished.
+        /// </summary>
+        private void SpriteClipFinished()
+        {
+            if ((DataContext?.SetTextureCoordinatesCommand == null) || (!DataContext.SetTextureCoordinatesCommand.CanExecute(_clipperService.Rectangle)))
+            {
+                return;
+            }
+
+            DataContext.SetTextureCoordinatesCommand.Execute(_clipperService.Rectangle);
+        }
+
+        /// <summary>Function called when a property is changing on the data context.</summary>
+        /// <param name="e">The event parameters.</param>
+        /// <remarks>Implementors should override this method in order to handle a property change notification from their data context.</remarks>
+        protected override void OnPropertyChanging(PropertyChangingEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(ISpriteContent.CurrentTool):
+                    if (DataContext.CurrentTool == SpriteEditTool.SpriteClip)
+                    {
+                        SpriteClipFinished();
+                    }
+                    break;
+            }
+        }
+
+        /// <summary>Function called when a property is changed on the data context.</summary>
+        /// <param name="e">The event parameters.</param>
+        /// <remarks>Implementors should override this method in order to handle a property change notification from their data context.</remarks>
+        protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(ISpriteContent.Texture):
+                    _renderer.SetSprite(DataContext);
+                    break;
+                case nameof(ISpriteContent.CurrentTool):
+                    if (DataContext.CurrentTool == SpriteEditTool.SpriteClip)
+                    {
+                        _renderer.SetSprite(DataContext);
+                    }
+                    break;
+            }            
+        }
+
         /// <summary>Function to allow user defined setup of the graphics context with this control.</summary>
         /// <param name="context">The context being assigned.</param>
         /// <param name="swapChain">The swap chain assigned to the <see cref="P:Gorgon.Editor.UI.Views.ContentBaseControl.RenderControl"/>.</param>
         protected override void OnSetupGraphics(IGraphicsContext context, GorgonSwapChain swapChain)
         {
-            _graphics = context.Graphics;
-            _renderer = context.Renderer2D;
-            _swapChain = swapChain;
+            IMarchingAnts marchAnts = new MarchingAnts(context.Renderer2D);
+            _clipperService = new RectClipperService(context.Renderer2D, marchAnts);
 
-            using (var stream = new MemoryStream(Resources.SpriteEditor_Bg_1024x1024))
+            _renderer = new SpriteContentRenderer(context.Graphics, swapChain, context.Renderer2D, _clipperService, marchAnts)
             {
-                _defBgImage = GorgonTexture2DView.FromStream(_graphics, stream, new GorgonCodecDds(), options: new GorgonTexture2DLoadOptions
-                {
-                    Name = "Default Sprite Background Image"
-                });
-            }
+                BackgroundColor = RenderControl.BackColor
+            };
+            _renderer.Load();
 
-            _patternBg = GorgonTexture2DView.CreateTexture(_graphics, new GorgonTexture2DInfo("SpriteEditor_Bg_Pattern"), EditorCommonResources.CheckerBoardPatternImage);
+            _renderer.SetSprite(DataContext);
         }
 
         /// <summary>Function called to shut down the view and perform any clean up required (including user defined graphics objects).</summary>
         /// <remarks>Plug in developers do not need to clean up the <see cref="P:Gorgon.Editor.UI.Views.ContentBaseControl.SwapChain"/> as it will be returned to the swap chain pool automatically.</remarks>
         protected override void OnShutdown()
-        {
+        {            
             DataContext?.OnUnload();
-
-            _patternBg?.Dispose();
-            _defBgImage?.Dispose();
+            _renderer?.Dispose();
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
@@ -182,7 +492,21 @@ namespace Gorgon.Editor.SpriteEditor
             IdleMethod = Idle;
 
             DataContext?.OnLoad();
+
+            // Force keyboard focus to our render window.
+            ShowFocusState(true);
+            RenderControl.Select();
         }
+
+        /// <summary>Handles the GotFocus event of the RenderControl control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void RenderControl_GotFocus(object sender, EventArgs e) => ShowFocusState(true);
+
+        /// <summary>Handles the LostFocus event of the RenderControl control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void RenderControl_LostFocus(object sender, EventArgs e) => ShowFocusState(false);
 
         /// <summary>Function to assign a data context to the view as a view model.</summary>
         /// <param name="dataContext">The data context to assign.</param>
@@ -192,14 +516,25 @@ namespace Gorgon.Editor.SpriteEditor
             base.SetDataContext(dataContext);
 
             InitializeFromDataContext(dataContext);
+            _ribbonForm.SetDataContext(dataContext);            
 
-            DataContext = dataContext;
+            DataContext = dataContext;            
         }
         #endregion
 
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.SpriteEditor._Internal.Views.SpriteEditorView"/> class.</summary>
-        public SpriteEditorView() => InitializeComponent();        
+        public SpriteEditorView()
+        {
+            InitializeComponent();
+
+            _ribbonForm = new FormRibbon();
+            Ribbon = _ribbonForm.RibbonSpriteContent;
+
+            _ribbonForm.ImageZoomed += RibbonForm_ImageZoomed;
+
+            PanelRenderWindow.MouseWheel += PanelRenderWindow_MouseWheel;
+        }
         #endregion
     }
 }

@@ -42,7 +42,7 @@ using System.Diagnostics;
 using Gorgon.Timing;
 using Gorgon.Math;
 
-namespace Gorgon.Editor.UI.Selection
+namespace Gorgon.Editor.Rendering
 {
     /// <summary>
     /// Used to render a selection rectangle on the UI.

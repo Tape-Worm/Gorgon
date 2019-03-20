@@ -107,7 +107,12 @@ namespace Gorgon.Editor.UI.Views
         /// If this value is set to <b>null</b>, then no swap chain will be created and the <see cref="SwapChain"/> property will be set to <b>null</b>.
         /// </para>
         /// </remarks>
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Rendering"), Description("Sets or returns the custom control to use for Gorgon rendering.")]
+        [Browsable(true), 
+            DefaultValue(null),
+            EditorBrowsable(EditorBrowsableState.Always), 
+            Category("Rendering"), 
+            Description("Sets or returns the custom control to use for rendering output."), 
+            DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public Control RenderControl
         {
             get;
@@ -251,6 +256,65 @@ namespace Gorgon.Editor.UI.Views
 
             LabelHeader.Text = $"{dataContext.File.Name}{(dataContext.ContentState == ContentState.Unmodified ? string.Empty : "*")}";
             PanelContentName.Visible = true;
+        }
+
+        /// <summary>
+        /// Function to show the control keyboard focus state.
+        /// </summary>
+        /// <param name="isFocused"><b>true</b> if focused, <b>false</b> if not.</param>
+        protected void ShowFocusState(bool isFocused)
+        {
+            if (isFocused)
+            {
+                panel4.BackColor = Color.FromArgb(104, 104, 104);
+                PanelContentName.BackColor = Color.FromKnownColor(KnownColor.SteelBlue);
+            }
+            else
+            {
+                panel4.BackColor = Color.FromArgb(52, 52, 52);
+                PanelContentName.BackColor = Color.FromKnownColor(KnownColor.SlateGray);
+            }
+        }
+
+        /// <summary>
+        /// Function to check to see if drag drop data is valid for this control.
+        /// </summary>
+        /// <param name="e">The event parameters for the drag/drop event.</param>
+        /// <param name="handler">The drag/drop handler used to handle the drag drop information.</param>
+        /// <returns>The data in the drag operation, or <b>null</b> if the data cannot be dragged and dropped onto this control.</returns>
+        protected IContentFileDragData GetDragDropData(DragEventArgs e, IDragDropHandler<IContentFileDragData> handler)
+        {
+            if (handler == null)
+            {
+                e.Effect = DragDropEffects.None;
+                return null;
+            }
+
+            e.Effect = DragDropEffects.Copy;
+
+            Type contentFileDragDataType = typeof(IContentFileDragData);
+
+            if (!e.Data.GetDataPresent(contentFileDragDataType.FullName, true))
+            {
+                return null;
+            }
+
+            if (!(e.Data.GetData(contentFileDragDataType.FullName, true) is IContentFileDragData dragData))
+            {
+                return null;
+            }
+
+            if (!handler.CanDrop(dragData))
+            {
+                if (dragData.Cancel)
+                {
+                    e.Effect = DragDropEffects.None;
+                }
+
+                return null;
+            }
+
+            return dragData;
         }
 
         /// <summary>

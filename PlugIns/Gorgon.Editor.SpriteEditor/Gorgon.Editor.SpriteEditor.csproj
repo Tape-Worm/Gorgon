@@ -59,7 +59,18 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="SpriteEditorPlugin.cs" />
+    <Compile Include="_Internal\Forms\FormRibbon.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="_Internal\Forms\FormRibbon.Designer.cs">
+      <DependentUpon>FormRibbon.cs</DependentUpon>
+    </Compile>
+    <Compile Include="_Internal\ImageAnimationController.cs" />
     <Compile Include="_Internal\Services\GorgonSpriteImporter.cs" />
+    <Compile Include="_Internal\Services\SpriteContentRenderer.cs" />
+    <Compile Include="_Internal\Services\SpriteTextureService.cs" />
+    <Compile Include="_Internal\Services\_Interfaces\ISpriteContentRenderer.cs" />
+    <Compile Include="_Internal\Services\_Interfaces\ISpriteTextureService.cs" />
     <Compile Include="_Internal\SpriteImporterSettings.cs" />
     <Compile Include="_Internal\SpriteEditorCommonConstants.cs" />
     <Compile Include="_Internal\ViewModels\SpriteContent.cs" />
@@ -74,6 +85,38 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\pand_hand_open.cur" />
+    <None Include="Resources\pan_hand_close.cur" />
+    <None Include="Resources\anchor_24x24.dds" />
+    <None Include="Resources\edit_texture_coordinates_48x48.png" />
+    <None Include="Resources\edit_texture_coordinates_16x16.png" />
+    <None Include="Resources\wrapping_48x48.png" />
+    <None Include="Resources\wrapping_16x16.png" />
+    <None Include="Resources\filtering_48x48.png" />
+    <None Include="Resources\filtering_16x16.png" />
+    <None Include="Resources\anchor_48x48.png" />
+    <None Include="Resources\anchor_16x16.png" />
+    <None Include="Resources\sprite_color_48x48.png" />
+    <None Include="Resources\sprite_color_16x16.png" />
+    <None Include="Resources\rectangle_edit_48x48.png" />
+    <None Include="Resources\rectangle_edit_16x16.png" />
+    <None Include="Resources\edit_vertex_colors_48x48.png" />
+    <None Include="Resources\edit_vertex_colors_16x16.png" />
+    <None Include="Resources\pick_48x48.png" />
+    <None Include="Resources\pick_16x16.png" />
+    <None Include="Resources\clip_sprite_48x48.png" />
+    <None Include="Resources\clip_sprite_16x16.png" />
+    <None Include="Resources\zoom_48x48.png" />
+    <None Include="Resources\zoom_16x16.png" />
+    <None Include="Resources\undo_48x48.png" />
+    <None Include="Resources\undo_16x16.png" />
+    <None Include="Resources\redo_48x48.png" />
+    <None Include="Resources\redo_16x16.png" />
+    <None Include="Resources\save_content_48x48.png" />
+    <None Include="Resources\save_content_16x16.png" />
+    <None Include="Resources\right_16x16.png" />
+    <None Include="Resources\left_16x16.png" />
+    <None Include="Resources\center_16x16.png" />
     <None Include="Resources\SpriteEditor_Bg_1024x1024.dds" />
     <None Include="Resources\sprite_24x24.png" />
     <None Include="Resources\NoImage_256x256.dds" />
@@ -85,11 +128,18 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="_Internal\Forms\FormRibbon.resx">
+      <DependentUpon>FormRibbon.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="_Internal\Views\SpriteEditorView.resx">
       <DependentUpon>SpriteEditorView.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Gorgon\Gorgon.Animation\Gorgon.Animation.csproj">
+      <Project>{8cfa9634-9ed5-4d30-a9b1-6cbae73aa1ca}</Project>
+      <Name>Gorgon.Animation</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Gorgon\Gorgon.Core\Gorgon.Core.csproj">
       <Project>{933569ed-52a9-4232-a929-1d4c4489b5a1}</Project>
       <Name>Gorgon.Core</Name>
@@ -110,6 +160,10 @@
       <Project>{9dd1ec99-5d74-4b0a-ad93-14746939f6be}</Project>
       <Name>Gorgon.Graphics.Imaging</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Gorgon\Gorgon.Renderers\Animation.Gorgon2D\Gorgon.Animation.Gorgon2D.csproj">
+      <Project>{06f3a8a5-5c46-4f5a-8b17-ddbdcdd49745}</Project>
+      <Name>Gorgon.Animation.Gorgon2D</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Gorgon\Gorgon.Renderers\Gorgon2D\Gorgon.Renderers.Gorgon2D.csproj">
       <Project>{4bb4ef41-1f32-4c50-bcbf-43c02f9600bd}</Project>
       <Name>Gorgon.Renderers.Gorgon2D</Name>
@@ -117,6 +171,10 @@
     <ProjectReference Include="..\..\Gorgon\Gorgon.Renderers\IO.Gorgon2D\Gorgon.IO.Gorgon2D.csproj">
       <Project>{e5506a64-62c5-4aa3-adcb-766ab0cd5528}</Project>
       <Name>Gorgon.IO.Gorgon2D</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Gorgon\Gorgon.Windows\Gorgon.Windows.csproj">
+      <Project>{a19cb981-2d25-4316-9542-1d2bd7064f2b}</Project>
+      <Name>Gorgon.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Tools\Editor\Gorgon.Editor.API\Gorgon.Editor.API.csproj">
       <Project>{695a6554-789a-4d5a-9de1-21fb621f6a8f}</Project>

@@ -29,6 +29,7 @@ using DX = SharpDX;
 using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Graphics.Core;
 using System.Windows.Forms;
+using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ImageEditor
 {

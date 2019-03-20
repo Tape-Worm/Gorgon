@@ -1075,6 +1075,17 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error while saving the content metadata for &apos;{0}&apos;.
+        ///
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_SAVING_METADATA {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_SAVING_METADATA", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error saving the project..
         /// </summary>
         internal static string GOREDIT_ERR_SAVING_PROJECT {

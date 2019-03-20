@@ -29,13 +29,9 @@ using System.Threading;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Services;
 using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Renderers;
-using Gorgon.IO.Extensions;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace Gorgon.Editor.SpriteEditor.Services
 {

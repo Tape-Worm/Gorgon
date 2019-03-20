@@ -36,7 +36,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ImageEditorView));
             this.PanelBottomBar = new System.Windows.Forms.Panel();
             this.PanelImageViewControls = new System.Windows.Forms.TableLayoutPanel();
             this.LabelImageSize = new System.Windows.Forms.Label();
@@ -169,7 +168,7 @@
             this.ButtonPrevDepthSlice.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Orange;
             this.ButtonPrevDepthSlice.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
             this.ButtonPrevDepthSlice.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ButtonPrevDepthSlice.Image = ((System.Drawing.Image)(resources.GetObject("ButtonPrevDepthSlice.Image")));
+            this.ButtonPrevDepthSlice.Image = global::Gorgon.Editor.ImageEditor.Properties.Resources.left_16x16;
             this.ButtonPrevDepthSlice.Location = new System.Drawing.Point(1081, 3);
             this.ButtonPrevDepthSlice.Name = "ButtonPrevDepthSlice";
             this.ButtonPrevDepthSlice.Size = new System.Drawing.Size(22, 22);
@@ -188,7 +187,7 @@
             this.ButtonNextDepthSlice.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Orange;
             this.ButtonNextDepthSlice.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
             this.ButtonNextDepthSlice.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ButtonNextDepthSlice.Image = ((System.Drawing.Image)(resources.GetObject("ButtonNextDepthSlice.Image")));
+            this.ButtonNextDepthSlice.Image = global::Gorgon.Editor.ImageEditor.Properties.Resources.right_16x16;
             this.ButtonNextDepthSlice.Location = new System.Drawing.Point(1170, 3);
             this.ButtonNextDepthSlice.Name = "ButtonNextDepthSlice";
             this.ButtonNextDepthSlice.Size = new System.Drawing.Size(22, 22);
@@ -236,7 +235,7 @@
             this.ButtonPrevArrayIndex.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Orange;
             this.ButtonPrevArrayIndex.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
             this.ButtonPrevArrayIndex.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ButtonPrevArrayIndex.Image = ((System.Drawing.Image)(resources.GetObject("ButtonPrevArrayIndex.Image")));
+            this.ButtonPrevArrayIndex.Image = global::Gorgon.Editor.ImageEditor.Properties.Resources.left_16x16;
             this.ButtonPrevArrayIndex.Location = new System.Drawing.Point(890, 3);
             this.ButtonPrevArrayIndex.Name = "ButtonPrevArrayIndex";
             this.ButtonPrevArrayIndex.Size = new System.Drawing.Size(22, 22);
@@ -255,7 +254,7 @@
             this.ButtonNextArrayIndex.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Orange;
             this.ButtonNextArrayIndex.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
             this.ButtonNextArrayIndex.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ButtonNextArrayIndex.Image = ((System.Drawing.Image)(resources.GetObject("ButtonNextArrayIndex.Image")));
+            this.ButtonNextArrayIndex.Image = global::Gorgon.Editor.ImageEditor.Properties.Resources.right_16x16;
             this.ButtonNextArrayIndex.Location = new System.Drawing.Point(979, 3);
             this.ButtonNextArrayIndex.Name = "ButtonNextArrayIndex";
             this.ButtonNextArrayIndex.Size = new System.Drawing.Size(22, 22);
@@ -303,7 +302,7 @@
             this.ButtonPrevMip.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Orange;
             this.ButtonPrevMip.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
             this.ButtonPrevMip.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ButtonPrevMip.Image = ((System.Drawing.Image)(resources.GetObject("ButtonPrevMip.Image")));
+            this.ButtonPrevMip.Image = global::Gorgon.Editor.ImageEditor.Properties.Resources.left_16x16;
             this.ButtonPrevMip.Location = new System.Drawing.Point(638, 3);
             this.ButtonPrevMip.Name = "ButtonPrevMip";
             this.ButtonPrevMip.Size = new System.Drawing.Size(22, 22);
@@ -322,7 +321,7 @@
             this.ButtonNextMip.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Orange;
             this.ButtonNextMip.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
             this.ButtonNextMip.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ButtonNextMip.Image = ((System.Drawing.Image)(resources.GetObject("ButtonNextMip.Image")));
+            this.ButtonNextMip.Image = global::Gorgon.Editor.ImageEditor.Properties.Resources.right_16x16;
             this.ButtonNextMip.Location = new System.Drawing.Point(787, 3);
             this.ButtonNextMip.Name = "ButtonNextMip";
             this.ButtonNextMip.Size = new System.Drawing.Size(22, 22);

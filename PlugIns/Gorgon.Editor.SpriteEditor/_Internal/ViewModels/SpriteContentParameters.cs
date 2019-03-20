@@ -37,7 +37,7 @@ namespace Gorgon.Editor.SpriteEditor
     /// <summary>
     /// Parameters for the <see cref="ISpriteContent"/> view model.
     /// </summary>
-    public class SpriteContentParameters
+    internal class SpriteContentParameters
         : ContentViewModelInjectionCommon
     {
         /// <summary>
@@ -81,22 +81,42 @@ namespace Gorgon.Editor.SpriteEditor
             get;
         }
 
+        /// <summary>
+        /// Property to return the texture service used to read sprite texture data.
+        /// </summary>
+        public ISpriteTextureService TextureService
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the codec to use when reading/writing sprite data.
+        /// </summary>
+        public IGorgonSpriteCodec SpriteCodec
+        {
+            get;
+        }
+
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.SpriteEditor.SpriteContentParameters"/> class.</summary>
         /// <param name="spriteFile">The sprite file.</param>
         /// <param name="spriteTextureFile">The sprite texture file.</param>
         /// <param name="fileManager">The file manager used to access external content.</param>
+        /// <param name="textureService">The texture service to use when reading sprite texture data.</param>
         /// <param name="sprite">The sprite being edited.</param>
+        /// <param name="codec">The codec to use when reading/writing sprite data.</param>
         /// <param name="undoService">The undo service.</param>
         /// <param name="scratchArea">The file system used to write out temporary working data.</param>
         /// <param name="messageService">The message service.</param>
         /// <param name="busyService">The busy service.</param>
-        public SpriteContentParameters(IContentFile spriteFile, IContentFile spriteTextureFile, IContentFileManager fileManager, GorgonSprite sprite, IUndoService undoService, IGorgonFileSystemWriter<Stream> scratchArea, IMessageDisplayService messageService, IBusyStateService busyService)
+        public SpriteContentParameters(IContentFile spriteFile, IContentFile spriteTextureFile, IContentFileManager fileManager, ISpriteTextureService textureService, GorgonSprite sprite, IGorgonSpriteCodec codec, IUndoService undoService, IGorgonFileSystemWriter<Stream> scratchArea, IMessageDisplayService messageService, IBusyStateService busyService)
             : base(spriteFile, messageService, busyService)
         {
             Sprite = sprite ?? throw new ArgumentNullException(nameof(sprite));
             UndoService = undoService ?? throw new ArgumentNullException(nameof(undoService));
             ContentFileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
             ScratchArea = scratchArea ?? throw new ArgumentNullException(nameof(scratchArea));
+            TextureService = textureService ?? throw new ArgumentNullException(nameof(textureService));
+            SpriteCodec = codec ?? throw new ArgumentNullException(nameof(codec));
             SpriteTextureFile = spriteTextureFile;            
         }
     }

@@ -42,6 +42,7 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Animation;
+using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -208,34 +209,6 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function to retrieve the value used to multiply by when zooming.
-        /// </summary>
-        /// <param name="zoomLevel">The current zoom level.</param>
-        /// <returns>The zoom value as a normalized value.</returns>
-        protected float GetZoomValue(ZoomLevels zoomLevel)
-        {
-            switch (zoomLevel)
-            {
-                case ZoomLevels.Percent12:
-                    return 0.125f;
-                case ZoomLevels.Percent25:
-                    return 0.25f;
-                case ZoomLevels.Percent50:
-                    return 0.5f;
-                case ZoomLevels.Percent200:
-                    return 2.0f;
-                case ZoomLevels.Percent400:
-                    return 4.0f;
-                case ZoomLevels.Percent800:
-                    return 8.0f;
-                case ZoomLevels.Percent1600:
-                    return 16.0f;
-                default:
-                    return 1.0f;
-            }
-        }
-
         /// <summary>
         /// Function to disable scrolling of the image.
         /// </summary>
@@ -493,7 +466,7 @@ namespace Gorgon.Editor.ImageEditor
             }
             else
             {
-                _backgroundRegion = TextureBounds = OnScaleImage(image.Width, image.Height, GetZoomValue(ZoomLevel));
+                _backgroundRegion = TextureBounds = OnScaleImage(image.Width, image.Height, ZoomLevel.GetScale());
             }
 
             OnWindowResize(new DX.Size2(_swapChain.Width, _swapChain.Height));
@@ -509,7 +482,7 @@ namespace Gorgon.Editor.ImageEditor
             }
 
             EndAnimation();
-            _backgroundRegion = TextureBounds = OnScaleImage(image.Width, image.Height, GetZoomValue(ZoomLevel));
+            _backgroundRegion = TextureBounds = OnScaleImage(image.Width, image.Height, ZoomLevel.GetScale());
             OnScroll();
         }
 
@@ -593,7 +566,7 @@ namespace Gorgon.Editor.ImageEditor
             }
             else
             {
-                _backgroundRegion = TextureBounds = OnScaleImage(image.Width, image.Height, GetZoomValue(ZoomLevel));
+                _backgroundRegion = TextureBounds = OnScaleImage(image.Width, image.Height, ZoomLevel.GetScale());
             }
         }
 
@@ -726,7 +699,7 @@ namespace Gorgon.Editor.ImageEditor
             }
             else
             {
-                newBounds = OnScaleImage(image.Width, image.Height, GetZoomValue(zoomLevel));
+                newBounds = OnScaleImage(image.Width, image.Height, zoomLevel.GetScale());
             }
 
             if (ZoomLevel != zoomLevel)

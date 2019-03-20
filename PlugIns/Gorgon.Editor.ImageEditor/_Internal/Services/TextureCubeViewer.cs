@@ -33,9 +33,6 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.Renderers;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Fonts;
-using Gorgon.Timing;
-using Gorgon.Editor.UI.Selection;
-using System.Linq;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -57,7 +54,7 @@ namespace Gorgon.Editor.ImageEditor
         // The current swap chain.
         private GorgonSwapChain _swapChain;
         // The selection rectangle.
-        private ISelectionRectangle _selectionRect;
+        private IMarchingAnts _selectionRect;
         #endregion
 
         #region Methods.
@@ -218,7 +215,7 @@ namespace Gorgon.Editor.ImageEditor
                 FontStyle = FontStyle.Bold
             });
 
-            _selectionRect = new SelectionRectangle(context);
+            _selectionRect = new MarchingAnts(context.Renderer2D);
         }
 
         /// <summary>Function to dispose any resources created by the implementation.</summary>

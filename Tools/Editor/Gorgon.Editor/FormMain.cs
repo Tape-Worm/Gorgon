@@ -131,12 +131,12 @@ namespace Gorgon.Editor
             IFileExplorerVm fileExplorer = project?.FileExplorer;
             var currentNode = fileExplorer?.SelectedNode as IContentFile;
 
-            if ((fileExplorer?.OpenContentFile == null) || (!fileExplorer.OpenContentFile.CanExecute(currentNode)))
+            if ((fileExplorer?.OpenContentFileCommand == null) || (!fileExplorer.OpenContentFileCommand.CanExecute(currentNode)))
             {
                 return;
             }
 
-            fileExplorer.OpenContentFile.Execute(currentNode);
+            fileExplorer.OpenContentFileCommand.Execute(currentNode);
         }
 
         /// <summary>Handles the RibbonAdded event of the PanelProject control.</summary>
@@ -381,7 +381,7 @@ namespace Gorgon.Editor
             ButtonImport.Enabled = fileExplorer.ImportIntoNodeCommand?.CanExecute(fileExplorer.SelectedNode ?? fileExplorer.RootNode) ?? false;
             ButtonExport.Enabled = fileExplorer.ExportNodeToCommand?.CanExecute(fileExplorer.SelectedNode ?? fileExplorer.RootNode) ?? false;
 
-            ButtonOpenContent.Enabled = fileExplorer.OpenContentFile?.CanExecute(fileExplorer.SelectedNode as IContentFile) ?? false;
+            ButtonOpenContent.Enabled = fileExplorer.OpenContentFileCommand?.CanExecute(fileExplorer.SelectedNode as IContentFile) ?? false;
 
             ButtonFileSystemCopy.Enabled = _clipboardContext?.CanCopy() ?? false;
             ButtonFileSystemCut.Enabled = _clipboardContext?.CanCut() ?? false;

@@ -60,7 +60,6 @@
     <Compile Include="_Internal\Forms\FormRibbon.Designer.cs">
       <DependentUpon>FormRibbon.cs</DependentUpon>
     </Compile>
-    <Compile Include="_Internal\Forms\ImageZoomedArgs.cs" />
     <Compile Include="_Internal\ImageAnimationController.cs" />
     <Compile Include="_Internal\ImageImporterSettings.cs" />
     <Compile Include="ImageImporterPlugin.cs" />
@@ -131,7 +130,6 @@
       <DependentUpon>ImageResizeSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="_Internal\VolumeRenderer.cs" />
-    <Compile Include="_Internal\ZoomLevels.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />

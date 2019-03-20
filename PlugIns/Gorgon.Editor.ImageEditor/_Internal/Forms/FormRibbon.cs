@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -27,10 +28,12 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>
         /// Event triggered when the zoom menu is updated.
         /// </summary>
-        public event EventHandler<ImageZoomedArgs> ImageZoomed;
+        public event EventHandler<ZoomEventArgs> ImageZoomed;
         #endregion
 
         #region Variables.
+        // The list of menu items associated with the zoom level.
+        private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuItems = new Dictionary<ZoomLevels, ToolStripMenuItem>();
         // The current zoom level.
         private ZoomLevels _zoomLevel = ZoomLevels.ToWindow;
         #endregion
@@ -98,37 +101,9 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         private void UpdateZoomMenu()
         {
-            ToolStripMenuItem currentItem;
-
-            switch (_zoomLevel)
+            if (!_menuItems.TryGetValue(_zoomLevel, out ToolStripMenuItem currentItem))
             {
-                case ZoomLevels.Percent12:
-                    currentItem = Item12Percent;
-                    break;
-                case ZoomLevels.Percent25:
-                    currentItem = Item25Percent;
-                    break;
-                case ZoomLevels.Percent50:
-                    currentItem = Item50Percent;
-                    break;
-                case ZoomLevels.Percent100:
-                    currentItem = Item100Percent;
-                    break;
-                case ZoomLevels.Percent200:
-                    currentItem = Item200Percent;
-                    break;
-                case ZoomLevels.Percent400:
-                    currentItem = Item400Percent;
-                    break;
-                case ZoomLevels.Percent800:
-                    currentItem = Item800Percent;
-                    break;
-                case ZoomLevels.Percent1600:
-                    currentItem = Item1600Percent;
-                    break;
-                default:
-                    currentItem = ItemZoomToWindow;
-                    break;
+                return;
             }
 
             foreach (ToolStripMenuItem item in MenuZoom.Items.OfType<ToolStripMenuItem>().Where(item => item != currentItem))
@@ -136,10 +111,10 @@ namespace Gorgon.Editor.ImageEditor
                 item.Checked = false;
             }
 
-            ButtonZoom.TextLine1 = string.Format(Resources.GORIMG_TEXT_ZOOM_BUTTON, currentItem.Text);
+            ButtonZoom.TextLine1 = string.Format(Resources.GORIMG_TEXT_ZOOM_BUTTON, _zoomLevel.GetName());
 
-            EventHandler<ImageZoomedArgs> handler = ImageZoomed;
-            ImageZoomed?.Invoke(this, new ImageZoomedArgs(_zoomLevel));
+            EventHandler<ZoomEventArgs> handler = ImageZoomed;
+            ImageZoomed?.Invoke(this, new ZoomEventArgs(_zoomLevel));
         }
 
         /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
@@ -631,6 +606,18 @@ namespace Gorgon.Editor.ImageEditor
             Item2DImage.Tag = ImageType.Image2D;
             ItemCubeMap.Tag = ImageType.ImageCube;
             Item3DImage.Tag = ImageType.Image3D;
+
+            foreach (ToolStripMenuItem menuItem in MenuZoom.Items.OfType<ToolStripMenuItem>())
+            {
+                if (!Enum.TryParse(menuItem.Tag.ToString(), out ZoomLevels level))
+                {
+                    menuItem.Enabled = false;
+                    continue;
+                }
+
+                menuItem.Text = level.GetName();
+                _menuItems[level] = menuItem;
+            }
         }
         #endregion
     }

@@ -116,7 +116,8 @@ namespace Gorgon.Editor.Services
         #endregion
 
         #region Constructor/Finalizer.
-
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.Services.ClipboardService"/> class.</summary>
+        public ClipboardService() => Clipboard.Clear();
         #endregion
     }
 }

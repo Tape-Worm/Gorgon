@@ -868,8 +868,8 @@ namespace Gorgon.Editor.ViewModels
 
             // We have our content, we can now open it as we normally would.
             if (contentFile != null)
-            {
-                CurrentProject.FileExplorer.OpenContentFile.Execute(contentFile);
+            {                
+                CurrentProject.FileExplorer.OpenContentFileCommand.Execute(contentFile);
             }            
         }
 

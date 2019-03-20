@@ -298,6 +298,125 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 100%.
+        /// </summary>
+        internal static string GOREDIT_ZOOM_100 {
+            get {
+                return ResourceManager.GetString("GOREDIT_ZOOM_100", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 12.5%.
+        /// </summary>
+        internal static string GOREDIT_ZOOM_12 {
+            get {
+                return ResourceManager.GetString("GOREDIT_ZOOM_12", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1600%.
+        /// </summary>
+        internal static string GOREDIT_ZOOM_1600 {
+            get {
+                return ResourceManager.GetString("GOREDIT_ZOOM_1600", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 200%.
+        /// </summary>
+        internal static string GOREDIT_ZOOM_200 {
+            get {
+                return ResourceManager.GetString("GOREDIT_ZOOM_200", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 25%.
+        /// </summary>
+        internal static string GOREDIT_ZOOM_25 {
+            get {
+                return ResourceManager.GetString("GOREDIT_ZOOM_25", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 3200%.
+        /// </summary>
+        internal static string GOREDIT_ZOOM_3200 {
+            get {
+                return ResourceManager.GetString("GOREDIT_ZOOM_3200", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 400%.
+        /// </summary>
+        internal static string GOREDIT_ZOOM_400 {
+            get {
+                return ResourceManager.GetString("GOREDIT_ZOOM_400", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 50%.
+        /// </summary>
+        internal static string GOREDIT_ZOOM_50 {
+            get {
+                return ResourceManager.GetString("GOREDIT_ZOOM_50", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 6400%.
+        /// </summary>
+        internal static string GOREDIT_ZOOM_6400 {
+            get {
+                return ResourceManager.GetString("GOREDIT_ZOOM_6400", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 800%.
+        /// </summary>
+        internal static string GOREDIT_ZOOM_800 {
+            get {
+                return ResourceManager.GetString("GOREDIT_ZOOM_800", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To Window.
+        /// </summary>
+        internal static string GOREDIT_ZOOM_TO_WINDOW {
+            get {
+                return ResourceManager.GetString("GOREDIT_ZOOM_TO_WINDOW", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] keyboard_20x20 {
+            get {
+                object obj = ResourceManager.GetObject("keyboard_20x20", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] march_ants_diag_32x32 {
+            get {
+                object obj = ResourceManager.GetObject("march_ants_diag_32x32", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap recent_item_badge_48x48 {

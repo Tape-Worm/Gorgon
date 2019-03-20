@@ -64,6 +64,11 @@ namespace Gorgon.Editor.ViewModels
 
         /// <summary>Event triggered if this content file was renamed.</summary>
         public event EventHandler<ContentFileRenamedEventArgs> Renamed;
+
+        /// <summary>
+        /// Event triggered if the dependencies list for this file is updated.
+        /// </summary>
+        public event EventHandler DependenciesUpdated;
         #endregion
 
         #region Properties.        
@@ -141,46 +146,45 @@ namespace Gorgon.Editor.ViewModels
         public override string PhysicalPath => Parent == null ? null : Path.Combine(Parent.PhysicalPath, Name);
 
         /// <summary>Property to return the list of items dependant upon this node</summary>
-        IList<IContentFile> IContentFile.Dependencies => _dependencies;
+        IReadOnlyList<IContentFile> IContentFile.Dependencies => _dependencies;
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function to synchronize between two collections when one of the collections has changed.
-        /// </summary>
-        /// <typeparam name="T">The type of data in the destination collection.</typeparam>
-        /// <param name="dest">The destination collection.</param>
-        /// <param name="e">The event parameters from the collection changed event.</param>
-        private void HandleCollectionSync<T>(ObservableCollection<T> dest, NotifyCollectionChangedEventArgs e)
+        /// <summary>Handles the CollectionChanged event of the Dependencies control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
+        private void ContentDependencies_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    foreach (T node in e.NewItems.OfType<T>())
+                    foreach (IContentFile file in e.NewItems.OfType<IContentFile>())
                     {
-                        if (dest.Contains(node))
+                        if (Dependencies.Any(item => string.Equals(item.FullPath, file.Path, StringComparison.OrdinalIgnoreCase)))
                         {
                             continue;
                         }
 
-                        dest.Add(node);
+                        Dependencies.Add(ViewModelFactory.CreateDependencyNode(Project, FileSystemService, this, file));
                     }
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    foreach (T node in e.OldItems.OfType<T>())
+                    foreach (IContentFile file in e.OldItems.OfType<IContentFile>())
                     {
-                        if (!dest.Contains(node))
+                        IFileExplorerNodeVm node = Dependencies.FirstOrDefault(item => string.Equals(item.FullPath, file.Path, StringComparison.OrdinalIgnoreCase));
+
+                        if (node == null)
                         {
                             continue;
                         }
 
-                        dest.Remove(node);
+                        Dependencies.Remove(node);
                     }
                     break;
                 case NotifyCollectionChangedAction.Reset:
-                    if (dest.Count > 0)
+                    if (Dependencies.Count > 0)
                     {
-                        dest.Clear();
+                        Dependencies.Clear();
                     }
                     break;
             }
@@ -189,12 +193,43 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>Handles the CollectionChanged event of the Dependencies control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
-        private void ContentDependencies_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) => HandleCollectionSync(Dependencies, e);
+        private void Dependencies_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    foreach (IFileExplorerNodeVm node in e.NewItems.OfType<IFileExplorerNodeVm>())
+                    {
+                        if ((!(node is IContentFile file))
+                            || (_dependencies.Any(item => string.Equals(node.FullPath, item.Path, StringComparison.OrdinalIgnoreCase))))
+                        {
+                            continue;
+                        }
 
-        /// <summary>Handles the CollectionChanged event of the Dependencies control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
-        private void Dependencies_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) => HandleCollectionSync(_dependencies, e);
+                        _dependencies.Add(file);
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    foreach (IFileExplorerNodeVm node in e.OldItems.OfType<IFileExplorerNodeVm>())
+                    {
+                        IContentFile file = _dependencies.FirstOrDefault(item => string.Equals(item.Path, node.FullPath, StringComparison.OrdinalIgnoreCase));
+
+                        if (file == null)
+                        {
+                            continue;
+                        }
+
+                        _dependencies.Remove(file);
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    if (_dependencies.Count > 0)
+                    {
+                        _dependencies.Clear();
+                    }
+                    break;
+            }
+        }
 
         /// <summary>Function to retrieve the physical file system object for this node.</summary>
         /// <param name="path">The path to the physical file system object.</param>
@@ -713,6 +748,69 @@ namespace Gorgon.Editor.ViewModels
                 }
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Function to link a content file to be dependant upon this content.
+        /// </summary>
+        /// <param name="child">The child content to link to this content.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="child"/> parameter is <b>null.</b></exception>
+        void IContentFile.LinkContent(IContentFile child)
+        {
+            if (child == null)
+            {
+                throw new ArgumentNullException(nameof(child));
+            }
+
+            if (_dependencies.Any(item => string.Equals(child.Path, item.Path, StringComparison.OrdinalIgnoreCase)))
+            {
+                return;
+            }
+
+            _dependencies.Add(child);
+        }
+
+        /// <summary>
+        /// Function to unlink a content file from being dependant upon this content.
+        /// </summary>
+        /// <param name="child">The child content to unlink from this content.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="child"/> parameter is <b>null.</b></exception>
+        void IContentFile.UnlinkContent(IContentFile child)
+        {
+            if (child == null)
+            {
+                throw new ArgumentNullException(nameof(child));
+            }
+
+            IContentFile actualItem = _dependencies.FirstOrDefault(item => string.Equals(child.Path, item.Path, StringComparison.OrdinalIgnoreCase));
+            if (actualItem == null)
+            {
+                return;
+            }
+
+            _dependencies.Remove(actualItem);            
+        }
+
+        /// <summary>
+        /// Function to remove all child dependency links from this content.
+        /// </summary>
+        void IContentFile.ClearLinks()
+        {
+            if (_dependencies.Count == 0)
+            {
+                return;
+            }
+
+            _dependencies.Clear();
+        }
+
+        /// <summary>
+        /// Function to persist the metadata for content.
+        /// </summary>
+        void IContentFile.SaveMetadata()
+        {
+            EventHandler handler = DependenciesUpdated;
+            handler?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>Function to open the file for reading.</summary>

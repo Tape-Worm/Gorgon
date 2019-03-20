@@ -24,12 +24,12 @@
 // 
 #endregion
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.UI
 {
     /// <summary>
     /// The zoom levels for image magnification.
     /// </summary>
-    internal enum ZoomLevels
+    public enum ZoomLevels
     {
         /// <summary>
         /// Resize to the client area of the window.
@@ -66,6 +66,14 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>
         /// Shrink to 1600% of normal size.
         /// </summary>
-        Percent1600 = 8
+        Percent1600 = 8,
+        /// <summary>
+        /// Shrink to 3200% of normal size.
+        /// </summary>
+        Percent3200 = 9,
+        /// <summary>
+        /// Shrink to 6400% of normal size.
+        /// </summary>
+        Percent6400 = 10
     }
 }
