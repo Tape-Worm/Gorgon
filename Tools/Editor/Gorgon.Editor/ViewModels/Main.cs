@@ -220,7 +220,7 @@ namespace Gorgon.Editor.ViewModels
             try
             {
                 writer = new StreamWriter(settingsFile.FullName, false, Encoding.UTF8);
-                writer.Write(JsonConvert.SerializeObject(_settings));
+                writer.Write(JsonConvert.SerializeObject(_settings, new JsonSharpDxRectConverter()));
             }
             catch (Exception ex)
             {
@@ -884,7 +884,11 @@ namespace Gorgon.Editor.ViewModels
                 {
                     try
                     {
-                        _settings.WindowBounds = args.WindowDimensions;
+                        if (args.WindowState == 0)
+                        {
+                            // Only store the window boundaries when we're in normal window state.
+                            _settings.WindowBounds = args.WindowDimensions;
+                        }
                         _settings.WindowState = args.WindowState;
 
                         PersistSettings();

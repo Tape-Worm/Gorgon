@@ -86,6 +86,9 @@ namespace Gorgon.Editor.SpriteEditor
 
         // The render target for rendering the sprite.
         private GorgonRenderTarget2DView _rtv = null;
+
+        // The settings for the plug in.
+        private SpriteEditorSettings _settings = new SpriteEditorSettings();
         #endregion
 
         #region Properties.
@@ -120,12 +123,12 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         private void LoadCodecPlugins()
         {
-            /*if (_settings.CodecPluginPaths.Count == 0)
+            if (_settings.CodecPluginPaths.Count == 0)
             {
                 return;
             }
 
-            Log.Print("Loading image codecs...", LoggingLevel.Intermediate);
+            Log.Print("Loading sprite codecs...", LoggingLevel.Intermediate);
 
             foreach (KeyValuePair<string, string> plugin in _settings.CodecPluginPaths)
             {
@@ -145,13 +148,13 @@ namespace Gorgon.Editor.SpriteEditor
             IGorgonPluginService plugins = new GorgonMefPluginService(_pluginCache, Log);
 
             // Load all the codecs contained within the plug in (a plug in can have multiple codecs).
-            foreach (GorgonImageCodecPlugin plugin in plugins.GetPlugins<GorgonImageCodecPlugin>())
+            foreach (GorgonSpriteCodecPlugin plugin in plugins.GetPlugins<GorgonSpriteCodecPlugin>())
             {
-                foreach (GorgonImageCodecDescription desc in plugin.Codecs)
+                foreach (GorgonSpriteCodecDescription desc in plugin.Codecs)
                 {
                     _codecList.Add(plugin.CreateCodec(desc.Name));
                 }
-            }*/
+            }
         }
 
         /// <summary>
@@ -469,11 +472,11 @@ namespace Gorgon.Editor.SpriteEditor
 
             try
             {
-                /*if (_settings != null)
+                if (_settings != null)
                 {
                     // Persist any settings.
                     _pluginService.WriteContentSettings(this, _settings);
-                }*/
+                }
             }
             catch (Exception ex)
             {
@@ -486,7 +489,7 @@ namespace Gorgon.Editor.SpriteEditor
             _noImage?.Dispose();
             _pluginCache?.Dispose();
 
-            //ViewFactory.Unregister<IImageContent>();
+            ViewFactory.Unregister<ISpriteContent>();
 
             base.OnShutdown();
         }
@@ -508,12 +511,12 @@ namespace Gorgon.Editor.SpriteEditor
             _codecList.Add(new GorgonV2SpriteCodec(GraphicsContext.Renderer2D));
             _codecList.Add(new GorgonV1SpriteBinaryCodec(GraphicsContext.Renderer2D));
 
-            //ImageEditorSettings settings = pluginService.ReadContentSettings<ImageEditorSettings>(this);
+            SpriteEditorSettings settings = pluginService.ReadContentSettings<SpriteEditorSettings>(this);
 
-            //if (settings != null)
-            //{
-            //    _settings = settings;
-            //}
+            if (settings != null)
+            {
+                _settings = settings;
+            }
 
             // Load the additional plug ins.
             LoadCodecPlugins();

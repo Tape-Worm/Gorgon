@@ -176,7 +176,7 @@ namespace Gorgon.Editor
                 {
                     Program.Log.Print($"Loading application settings from '{settingsFile.FullName}'", LoggingLevel.Intermediate);
                     reader = new StreamReader(settingsFile.FullName, Encoding.UTF8, true);
-                    result = JsonConvert.DeserializeObject<EditorSettings>(reader.ReadToEnd());
+                    result = JsonConvert.DeserializeObject<EditorSettings>(reader.ReadToEnd(), new JsonSharpDxRectConverter());
                     Program.Log.Print("Application settings loaded.", LoggingLevel.Intermediate);
                 }
                 catch (IOException ioex)

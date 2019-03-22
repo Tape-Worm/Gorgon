@@ -66,6 +66,7 @@
       <DependentUpon>FormRibbon.cs</DependentUpon>
     </Compile>
     <Compile Include="_Internal\ImageAnimationController.cs" />
+    <Compile Include="_Internal\SpriteEditorSettings.cs" />
     <Compile Include="_Internal\Services\GorgonSpriteImporter.cs" />
     <Compile Include="_Internal\Services\SpriteContentRenderer.cs" />
     <Compile Include="_Internal\Services\SpriteTextureService.cs" />
