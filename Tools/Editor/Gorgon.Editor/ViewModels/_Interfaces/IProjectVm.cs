@@ -145,14 +145,6 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
         }
-
-        /// <summary>
-        /// Property to return the task used to save the project data.
-        /// </summary>
-        Task SavingTask
-        {
-            get;
-        }
         #endregion
 
         #region Methods.

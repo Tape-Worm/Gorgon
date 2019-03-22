@@ -47,6 +47,26 @@ namespace Gorgon.Editor.Services
 
         #region Methods.
         /// <summary>
+        /// Function to compare two dependency dictionaries for equality.
+        /// </summary>
+        /// <param name="first">The first dictionary to compare.</param>
+        /// <param name="second">The second dictionary to compare.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+        private bool CompareDependencyLists(Dictionary<string, string> first, Dictionary<string, string> second)
+        {
+            foreach (KeyValuePair<string, string> firstItem in first)
+            {
+                if ((!second.TryGetValue(firstItem.Key, out string secondValue))
+                    || (!string.Equals(firstItem.Value, secondValue, StringComparison.OrdinalIgnoreCase)))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// Function to perform the scan used to determine whether a content file has an associated plugin or not.
         /// </summary>
         /// <param name="node">The node to scan.</param>
@@ -79,7 +99,7 @@ namespace Gorgon.Editor.Services
             if (node.Children.Count > 0)
             {
                 contentFiles = node.Children.Traverse(n => n.Children)
-                                                           .Where(n => ((n.Metadata != null) && (n.IsContent) && ((forceScan) || (n.Metadata.ContentMetadata == null))));
+                                             .Where(n => ((n.Metadata != null) && (n.IsContent) && ((forceScan) || (n.Metadata.ContentMetadata == null))));
                 fileCount = contentFiles.Count();
             }
             else
@@ -95,7 +115,7 @@ namespace Gorgon.Editor.Services
 
             bool result = false;
             int count = 0;
-            var prevDeps = new List<string>();
+            var prevDeps = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             foreach(IContentFile contentFile in contentFiles.OfType<IContentFile>())
             {                
@@ -108,14 +128,15 @@ namespace Gorgon.Editor.Services
                 }
 
                 prevDeps.Clear();
-                prevDeps.AddRange(contentFile.Metadata.Dependencies);
+                foreach (KeyValuePair<string, string> dep in contentFile.Metadata.Dependencies)
+                {
+                    prevDeps[dep.Key] = dep.Value;
+                }                
 
                 if (_contentPlugins.AssignContentPlugin(contentFile, contentFileManager, !deepScan))
                 {                    
                     if ((!string.Equals(pluginName, contentFile.Metadata.PluginName, StringComparison.OrdinalIgnoreCase))
-                        || (!contentFile.Metadata.Dependencies
-                        .OrderBy(item => item, StringComparer.Ordinal)
-                        .SequenceEqual(prevDeps.OrderBy(item => item, StringComparer.Ordinal), StringComparer.OrdinalIgnoreCase)))
+                        || (!CompareDependencyLists(contentFile.Metadata.Dependencies, prevDeps)))
                     {
                         result = true;
                     }

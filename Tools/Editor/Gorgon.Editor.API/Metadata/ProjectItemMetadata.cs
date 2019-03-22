@@ -70,11 +70,11 @@ namespace Gorgon.Editor.Metadata
         /// Property to return the list of item paths that this item depends on.
         /// </summary>
         [JsonProperty]
-        public List<string> Dependencies
+        public Dictionary<string, string> Dependencies
         {
             get;
             private set;
-        } = new List<string>();
+        } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         
         /// <summary>
         /// Property to return the content plugin metadata associated with this project item.
@@ -123,9 +123,9 @@ namespace Gorgon.Editor.Metadata
                 Attributes[attribute.Key] = attribute.Value;
             }
 
-            foreach (string path in metadata.Dependencies)
+            foreach (KeyValuePair<string, string> path in metadata.Dependencies)
             {
-                Dependencies.Add(path);
+                Dependencies[path.Key] = path.Value;
             }
         }
 

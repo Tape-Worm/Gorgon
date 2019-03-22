@@ -85,6 +85,14 @@ namespace Gorgon.Editor.Plugins
         }
 
         /// <summary>
+        /// Property to return the ID for the type of content produced by this plug in.
+        /// </summary>
+        string ContentTypeID
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the friendly (i.e shown on the UI) name for the type of content.
         /// </summary>
         string ContentType

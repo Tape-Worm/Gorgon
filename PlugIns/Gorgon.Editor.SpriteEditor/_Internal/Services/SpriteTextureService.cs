@@ -180,27 +180,22 @@ namespace Gorgon.Editor.SpriteEditor
 
             (IGorgonImage imageData, IContentFile file) = await Task.Run(() =>
             {
-                foreach (string dependency in spriteContent.Metadata.Dependencies)
+                if (!spriteContent.Metadata.Dependencies.TryGetValue(SpriteEditorCommonConstants.ImageDependencyType, out string dependency))
                 {
-                    IContentFile imageFile = _fileManager.GetFile(dependency);
-
-                    if (!IsContentImage(imageFile))
-                    {
-                        continue;
-                    }                    
-
-                    using (Stream stream = imageFile.OpenRead())
-                    {
-                        if (!_codec.IsReadable(stream))
-                        {
-                            continue;
-                        }
-
-                        return (_codec.LoadFromStream(stream), imageFile);
-                    }
+                    return (null, null);
                 }
 
-                return (null, null);
+                IContentFile imageFile = _fileManager.GetFile(dependency);
+
+                if (!IsContentImage(imageFile))
+                {                    
+                    return (null, null);
+                }                    
+
+                using (Stream stream = imageFile.OpenRead())
+                {
+                    return !_codec.IsReadable(stream) ? ((IGorgonImage, IContentFile imageFile))(null, null) : (_codec.LoadFromStream(stream), imageFile);
+                }
             });
             
             if ((imageData == null) || (file == null))

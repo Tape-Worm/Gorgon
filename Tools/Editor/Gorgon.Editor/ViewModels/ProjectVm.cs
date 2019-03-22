@@ -31,10 +31,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Linq;
 using Gorgon.Collections;
-using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Plugins;
@@ -87,18 +84,11 @@ namespace Gorgon.Editor.ViewModels
         private IContentPreviewVm _contentPreviewer;
         // The file manager used to manage content through content plug ins.
         private IContentFileManager _contentFileManager;
+        // The event triggered when the project metadata is being saved.
+        private Task _saveEvent;
         #endregion
 
         #region Properties.
-        /// <summary>
-        /// Property to return the task used to save the project data.
-        /// </summary>
-        public Task SavingTask
-        {
-            get;
-            private set;
-        }
-
         /// <summary>
         /// Property to set or return the layout for the window.
         /// </summary>
@@ -728,12 +718,20 @@ namespace Gorgon.Editor.ViewModels
         /// <returns>A task for asynchronous operation.</returns>
         public async Task SaveProjectMetadataAsync()
         {
-            if (SavingTask != null)
+            if (_saveEvent != null) 
             {
-                await SavingTask;
+                // Wait for our previous task to finish, or wait for 30 seconds for the previous save operation to complete (if it takes this long, we're in big trouble).
+                Task finishedTask = await Task.WhenAny(_saveEvent, Task.Delay(30000));
+
+                // We timed out, try again later.                
+                if (finishedTask != _saveEvent)
+                {
+                    Log.Print("[WARNING] A previous project metadata task was scheduled and has not yet completed after 30 seconds.  The current save project metadata task will be abandoned.", LoggingLevel.Intermediate);
+                    return;
+                }                
             }
 
-            SavingTask = Task.Run(() =>
+            _saveEvent = Task.Run(() =>
                                 {
                                     // Rebuild the project item metadata list.
                                     _projectData.ProjectItems.Clear();
@@ -746,7 +744,10 @@ namespace Gorgon.Editor.ViewModels
                                     {
                                         foreach (IFileExplorerNodeVm depNode in node.Dependencies)
                                         {
-                                            depNode.Metadata.Dependencies.Add(node.FullPath);
+                                            if (!string.IsNullOrWhiteSpace(node.Metadata.ContentMetadata?.ContentTypeID))
+                                            {
+                                                depNode.Metadata.Dependencies[node.Metadata.ContentMetadata.ContentTypeID] = node.FullPath;
+                                            }                                            
                                         }
 
                                         _projectData.ProjectItems[node.FullPath] = node.Metadata;
@@ -755,7 +756,7 @@ namespace Gorgon.Editor.ViewModels
                                     _projectManager.PersistMetadata(_projectData);
                                 });
 
-            await SavingTask;
+            await _saveEvent;
         }
 
         /// <summary>
@@ -812,6 +813,12 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         public override void OnUnload()
         {
+            // Wait for 30 seconds if we've not finished our save operation.
+            if (_saveEvent != null)
+            {
+                _saveEvent.Wait(30000);
+            }
+
             // TODO: This should probably be placed in a command.
             if (_projectData != null)
             {

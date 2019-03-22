@@ -35,5 +35,9 @@ namespace Gorgon.Editor.SpriteEditor
         /// The type of content related to the plug in.
         /// </summary>
         public const string ContentType = "Sprite";
+        /// <summary>
+        /// The type of dependency for sprite texture images.
+        /// </summary>
+        public const string ImageDependencyType = "Image";
     }
 }

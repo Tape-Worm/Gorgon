@@ -113,6 +113,9 @@ namespace Gorgon.Editor.SpriteEditor
             get;
         }
 
+        /// <summary>Property to return the ID for the type of content produced by this plug in.</summary>
+        public override string ContentTypeID => SpriteEditorCommonConstants.ContentType;
+
         /// <summary>Property to return the friendly (i.e shown on the UI) name for the type of content.</summary>
         public string ContentType => Resources.GORSPR_CONTENT_TYPE;
         #endregion
@@ -190,17 +193,36 @@ namespace Gorgon.Editor.SpriteEditor
         /// <returns>The file representing the image associated with the sprite.</returns>
         private IContentFile FindImage(IContentFile spriteFile, IContentFileManager fileManager)
         {
-#pragma warning disable IDE0046 // Convert to conditional expression
-            if (spriteFile.Metadata.Dependencies.Count == 0)
+            if ((spriteFile.Metadata.Dependencies.Count == 0)
+                || (!spriteFile.Metadata.Dependencies.TryGetValue(SpriteEditorCommonConstants.ImageDependencyType, out string texturePath)))
             {
                 return null;
             }
 
-            return spriteFile.Metadata.Dependencies
-                                        .Select(item => fileManager.GetFile(item))
-                                        .FirstOrDefault(item => (item != null) 
-                                            && (string.Equals(item.Metadata.Attributes[SpriteContent.ContentTypeAttr], "image", StringComparison.OrdinalIgnoreCase)));
-#pragma warning restore IDE0046 // Convert to conditional expression
+            IContentFile textureFile = fileManager.GetFile(texturePath);
+
+            if (textureFile == null)
+            {
+                Log.Print($"[ERROR] Sprite '{spriteFile.Path}' has texture '{texturePath}', but the file was not found on the file system.", LoggingLevel.Verbose);
+                return null;
+            }
+
+            string textureFileContentType = textureFile.Metadata.ContentMetadata?.ContentTypeID;
+
+            if (string.IsNullOrWhiteSpace(textureFileContentType))
+            {
+                Log.Print($"[ERROR] Sprite texture '{texturePath}' was found but has no content type ID.", LoggingLevel.Verbose);
+                return null;
+            }
+
+            if ((!textureFile.Metadata.Attributes.TryGetValue(SpriteContent.ContentTypeAttr, out string imageType))
+                || (!string.Equals(imageType, textureFileContentType, StringComparison.OrdinalIgnoreCase)))
+            {
+                Log.Print($"[ERROR] Sprite '{spriteFile.Path}' has texture '{texturePath}', but the texture has a content type ID of '{textureFileContentType}', and the sprite requires a content type ID of '{imageType}'.", LoggingLevel.Verbose);
+                return null;
+            }
+
+            return textureFile;            
         }
 
         /// <summary>
@@ -545,15 +567,14 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="fileStream">The stream for the file.</param>
         /// <param name="dependencyList">The list of dependency file paths.</param>
         /// <param name="fileManager">The content file management system.</param>
-        private void UpdateDependencies(Stream fileStream, List<string> dependencyList, IContentFileManager fileManager)
+        private void UpdateDependencies(Stream fileStream, Dictionary<string, string> dependencyList, IContentFileManager fileManager)
         {
             string textureName = _defaultCodec.GetAssociatedTextureName(fileStream);
 
             if (string.IsNullOrWhiteSpace(textureName))
             {
                 return;
-            }                       
-
+            }
             IContentFile textureFile = fileManager.GetFile(textureName);
 
             // If we lack the texture (e.g. it's been deleted or something), then reset the value from the metadata.
@@ -563,10 +584,7 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-            if (!dependencyList.Any(item => string.Equals(textureName, item, StringComparison.OrdinalIgnoreCase)))
-            {
-                dependencyList.Add(textureName);
-            }
+            dependencyList[SpriteEditorCommonConstants.ImageDependencyType] = textureName;
         }
 
         /// <summary>Function to retrieve the default content for the plug in.</summary>

@@ -245,4 +245,7 @@ This content will now close in order to avoid corrupting the file.</value>
   <data name="GOREDIT_ZOOM_TO_WINDOW" xml:space="preserve">
     <value>To Window</value>
   </data>
+  <data name="GOREDIT_TOSTR_DEPENDENCY" xml:space="preserve">
+    <value>{0} dependency at '{1}'.</value>
+  </data>
 </root>

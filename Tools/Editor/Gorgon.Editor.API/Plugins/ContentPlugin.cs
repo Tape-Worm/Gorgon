@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,7 +36,6 @@ using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
-using Gorgon.Graphics.Imaging;
 using Gorgon.IO;
 
 namespace Gorgon.Editor.Plugins
@@ -91,6 +89,14 @@ namespace Gorgon.Editor.Plugins
         /// When plugin authors return <b>true</b> for this property, they should also override the <see cref="GetDefaultContentAsync(string)"/> method to pre-populate the content with default data.
         /// </remarks>
         public abstract bool CanCreateContent
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the ID for the type of content produced by this plug in.
+        /// </summary>
+        public abstract string ContentTypeID
         {
             get;
         }

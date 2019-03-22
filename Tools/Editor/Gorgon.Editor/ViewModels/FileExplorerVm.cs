@@ -1654,9 +1654,9 @@ namespace Gorgon.Editor.ViewModels
                 return;
             }
 
-            string[] dependencyPaths = node.Metadata.Dependencies.ToArray();
+            var dependencyPaths = node.Metadata.Dependencies.ToDictionary(k => k.Key, v => v.Value, StringComparer.OrdinalIgnoreCase);
 
-            if (dependencyPaths.Length == 0)
+            if (dependencyPaths.Count == 0)
             {
                 return;
             }
@@ -1668,9 +1668,9 @@ namespace Gorgon.Editor.ViewModels
                 return;
             }
 
-            foreach (string path in dependencyPaths)
+            foreach (KeyValuePair<string, string> path in dependencyPaths)
             {
-                if (!_nodePathLookup.TryGetValue(path, out IFileExplorerNodeVm parentNode))
+                if (!_nodePathLookup.TryGetValue(path.Value, out IFileExplorerNodeVm parentNode))
                 {
                     Log.Print($"[WARNING] The node '{node.Path}' has a dependency on '{path}', but no file system node was found that represents that path.", LoggingLevel.Simple);
                     continue;
@@ -1832,21 +1832,6 @@ namespace Gorgon.Editor.ViewModels
                         Title = Resources.GOREDIT_TEXT_SCANNING,
                         PercentageComplete = percentComplete
                     });
-                }
-
-                string[] prevDeps;
-
-                if (node is IContentFile)
-                {
-                    prevDeps = node.Metadata.Dependencies.ToArray();
-                }
-                else
-                {
-                    prevDeps = node.Children.Traverse(item => item.Children)
-                        .OfType<IContentFile>()
-                        .SelectMany(item => item.Metadata.Dependencies)
-                        .OrderBy(item => item, StringComparer.Ordinal)
-                        .ToArray();
                 }
 
                 bool result = await Task.Run(() => _fileScanner.Scan(node, this, UpdateScanProgress, true, true));

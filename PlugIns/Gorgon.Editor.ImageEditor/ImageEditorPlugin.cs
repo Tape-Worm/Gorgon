@@ -94,6 +94,9 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Property to return the ID of the new icon for this plug in.</summary>
         public Guid NewIconID => Guid.Empty;
 
+        /// <summary>Property to return the ID for the type of content produced by this plug in.</summary>
+        public override string ContentTypeID => ImageEditorCommonConstants.ContentType;
+
         /// <summary>Property to return the friendly (i.e shown on the UI) name for the type of content.</summary>
         public string ContentType => string.Empty;
         #endregion

@@ -298,6 +298,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} dependency at &apos;{1}&apos;..
+        /// </summary>
+        internal static string GOREDIT_TOSTR_DEPENDENCY {
+            get {
+                return ResourceManager.GetString("GOREDIT_TOSTR_DEPENDENCY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 100%.
         /// </summary>
         internal static string GOREDIT_ZOOM_100 {
