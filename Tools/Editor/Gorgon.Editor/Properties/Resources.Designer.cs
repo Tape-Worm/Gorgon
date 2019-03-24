@@ -747,6 +747,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A file in the directory &apos;{0}&apos; is open..
+        /// </summary>
+        internal static string GOREDIT_ERR_DIRECTORY_LOCKED {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_DIRECTORY_LOCKED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The directory &apos;{0}&apos; does not contain a Gorgon Editor project.
         ///
         ///Please select another directory and try again..
@@ -754,6 +763,15 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_DIRECTORY_NO_PROJECT {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_DIRECTORY_NO_PROJECT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The directory on the path &apos;{0}&apos; is not empty..
+        /// </summary>
+        internal static string GOREDIT_ERR_DIRECTORY_NOT_EMPTY {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_DIRECTORY_NOT_EMPTY", resourceCulture);
             }
         }
         
@@ -782,6 +800,15 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_EXPORT {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_EXPORT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; is already open..
+        /// </summary>
+        internal static string GOREDIT_ERR_FILE_LOCKED {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_FILE_LOCKED", resourceCulture);
             }
         }
         
@@ -876,6 +903,15 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_NEW_PROJECT {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_NEW_PROJECT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The path &apos;{0}&apos; does not contain a file name..
+        /// </summary>
+        internal static string GOREDIT_ERR_NO_FILENAME {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_NO_FILENAME", resourceCulture);
             }
         }
         
@@ -1001,6 +1037,24 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_PASTE_FILE_OR_DIR {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_PASTE_FILE_OR_DIR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is a directory with the name &apos;{0}&apos; already on this path..
+        /// </summary>
+        internal static string GOREDIT_ERR_PATH_IS_DIRECTORY {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_PATH_IS_DIRECTORY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is a file with the name &apos;{0}&apos; already on this path..
+        /// </summary>
+        internal static string GOREDIT_ERR_PATH_IS_FILE {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_PATH_IS_FILE", resourceCulture);
             }
         }
         

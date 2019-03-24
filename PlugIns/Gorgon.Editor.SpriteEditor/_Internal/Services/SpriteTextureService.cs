@@ -112,7 +112,7 @@ namespace Gorgon.Editor.SpriteEditor
                         arrayIndex);
                     _renderer.End();
 
-                    tempImage.Dispose();
+                    tempImage?.Dispose();
                     tempImage = convertTarget.Texture.ToImage();
                     tempImage.Buffers[0].CopyTo(resultImage.Buffers[0, i]);
                 }
@@ -267,14 +267,9 @@ namespace Gorgon.Editor.SpriteEditor
         {
             using (Stream stream = file.OpenRead())
             {
-                if ((!_codec.IsReadable(stream)) 
-                    || (!IsContentImage(file)))
-
-                {
-                    return null;
-                }
-
-                return _codec.GetMetaData(stream);
+                return ((!_codec.IsReadable(stream)) || (!IsContentImage(file)))
+                    ? null
+                    : _codec.GetMetaData(stream);
             }
         }
         #endregion

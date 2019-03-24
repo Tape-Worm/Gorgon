@@ -32,6 +32,7 @@ using System.Threading.Tasks;
 using DX = SharpDX;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Imaging;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -50,11 +51,54 @@ namespace Gorgon.Editor.SpriteEditor
     }
 
     /// <summary>
+    /// The type of sub panel to make active.
+    /// </summary>
+    internal enum EditorSubPanel
+    {
+        None = 0,
+        SpriteClipManualInput = 1
+    }
+
+    /// <summary>
     /// The view model for sprite content.
     /// </summary>
     internal interface ISpriteContent
         : IEditorContent, IUndoHandler, IDragDropHandler<IContentFileDragData>
     {
+        #region Properties.
+        /// <summary>
+        /// Property to return the view model for the plug in settings.
+        /// </summary>
+        ISettings Settings
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the view model for the manual input interface.
+        /// </summary>
+        IManualRectInputVm ManualInput
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to set or return the sub panel to make active.
+        /// </summary>
+        EditorSubPanel ActiveSubPanel
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the buffer that contains the image data for the <see cref="Texture"/>, at the <see cref="ArrayIndex"/> associated with the sprite.
+        /// </summary>
+        IGorgonImageBuffer ImageData
+        {
+            get;
+        }
+
         /// <summary>
         /// Property to return the texture associated with the sprite.
         /// </summary>
@@ -80,6 +124,22 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>
+        /// Property to return the index of the texture array that the sprite uses.
+        /// </summary>
+        int ArrayIndex
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return whether the currently loaded texture supports array changes.
+        /// </summary>
+        bool SupportsArrayChange
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to set or return the currently active tool for editing the sprite.
         /// </summary>
         SpriteEditTool CurrentTool
@@ -95,5 +155,22 @@ namespace Gorgon.Editor.SpriteEditor
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the command to execute when picking a sprite.
+        /// </summary>
+        IEditorCommand<object> SpritePickCommand
+        {
+            get;
+        }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to extract the image data from a sprite.
+        /// </summary>
+        /// <returns>A task for asynchronous operation.</returns>
+        Task ExtractImageDataAsync();
+        #endregion
     }
 }

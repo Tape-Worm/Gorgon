@@ -39,6 +39,8 @@ namespace Gorgon.Editor.SpriteEditor
         private readonly List<WeakReference<KryptonRibbonGroupButton>> _ribbonButtons = new List<WeakReference<KryptonRibbonGroupButton>>();
         // The current zoom level.
         private ZoomLevels _zoomLevel = ZoomLevels.ToWindow;
+        // A list of buttons mapped to the tool structure.
+        private readonly Dictionary<SpriteEditTool, WeakReference<KryptonRibbonGroupButton>> _toolButtons = new Dictionary<SpriteEditTool, WeakReference<KryptonRibbonGroupButton>>();
         #endregion
 
         #region Properties.
@@ -83,6 +85,40 @@ namespace Gorgon.Editor.SpriteEditor
             ImageZoomed?.Invoke(this, new ZoomEventArgs(_zoomLevel));
         }
 
+        /// <summary>
+        /// Function to ensure that visual states match the current tool setting.
+        /// </summary>
+        /// <param name="dataContext">The current data context.</param>
+        private void SetToolStates(ISpriteContent dataContext)
+        {
+            KryptonRibbonGroupButton button;
+
+            if (dataContext.CurrentTool == SpriteEditTool.None)
+            {
+                foreach (KeyValuePair<SpriteEditTool, WeakReference<KryptonRibbonGroupButton>> buttonItem in _toolButtons)
+                {
+                    if (buttonItem.Value.TryGetTarget(out button))
+                    {
+                        button.Checked = false;
+                    }
+                }
+
+                return;
+            }
+
+            if (!_toolButtons.TryGetValue(dataContext.CurrentTool, out WeakReference<KryptonRibbonGroupButton> buttonRef))
+            {
+                return;
+            }
+
+            if (!buttonRef.TryGetTarget(out button))
+            {
+                return;
+            }
+
+            button.Checked = true;
+        }
+
         /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The [PropertyChangedEventArgs] instance containing the event data.</param>
@@ -90,7 +126,9 @@ namespace Gorgon.Editor.SpriteEditor
         {
             switch (e.PropertyName)
             {
-                
+                case nameof(ISpriteContent.CurrentTool):
+                    SetToolStates(DataContext);
+                    break;
             }
 
             ValidateButtons();
@@ -108,12 +146,12 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void ButtonSaveSprite_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.SaveContentCommand == null) || (!DataContext.SaveContentCommand.CanExecute(null)))
+            if ((DataContext?.SaveContentCommand == null) || (!DataContext.SaveContentCommand.CanExecute(SaveReason.UserSave)))
             {
                 return;
             }
 
-            await DataContext.SaveContentCommand.ExecuteAsync(null);
+            await DataContext.SaveContentCommand.ExecuteAsync(SaveReason.UserSave);
             ValidateButtons();
         }
 
@@ -145,6 +183,19 @@ namespace Gorgon.Editor.SpriteEditor
             ValidateButtons();
         }
 
+        /// <summary>Handles the Click event of the ButtonPickSprite control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonPickSprite_Click(object sender, EventArgs e)
+        {
+            if ((DataContext?.SpritePickCommand == null) || (!DataContext.SpritePickCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            DataContext.SpritePickCommand.Execute(null);
+            ValidateButtons();
+        }
 
         /// <summary>Handles the Click event of the ButtonClipSprite control.</summary>
         /// <param name="sender">The source of the event.</param>
@@ -155,8 +206,9 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 return;
             }
-
+            
             DataContext.CurrentTool = ButtonClipSprite.Checked ? SpriteEditTool.SpriteClip : SpriteEditTool.None;
+            ValidateButtons();
         }
 
         /// <summary>
@@ -186,6 +238,12 @@ namespace Gorgon.Editor.SpriteEditor
                     }
                 }
             }
+
+            _toolButtons[SpriteEditTool.SpriteClip] = new WeakReference<KryptonRibbonGroupButton>(ButtonClipSprite);
+            _toolButtons[SpriteEditTool.SpritePick] = new WeakReference<KryptonRibbonGroupButton>(ButtonPickSprite);
+            _toolButtons[SpriteEditTool.SetAnchor] = new WeakReference<KryptonRibbonGroupButton>(ButtonSpriteAnchor);
+            _toolButtons[SpriteEditTool.CornerResize] = new WeakReference<KryptonRibbonGroupButton>(ButtonSpriteVertexOffsets);
+            _toolButtons[SpriteEditTool.CornerColor] = new WeakReference<KryptonRibbonGroupButton>(ButtonSpriteVertexColors);
         }
 
         /// <summary>
@@ -219,10 +277,17 @@ namespace Gorgon.Editor.SpriteEditor
             // Temporary
             EnableRibbon(true);
 
+            ButtonClipSprite.Enabled = DataContext.CurrentTool == SpriteEditTool.SpriteClip || DataContext.CurrentTool == SpriteEditTool.None;
+            ButtonPickSprite.Enabled = DataContext?.SpritePickCommand?.CanExecute(null) ?? false;
+            ButtonSpriteAnchor.Enabled = DataContext.CurrentTool == SpriteEditTool.SetAnchor || DataContext.CurrentTool == SpriteEditTool.None;
+            ButtonSpriteVertexOffsets.Enabled = DataContext.CurrentTool == SpriteEditTool.CornerResize || DataContext.CurrentTool == SpriteEditTool.None;
+            ButtonSpriteVertexColors.Enabled = DataContext.CurrentTool == SpriteEditTool.CornerColor || DataContext.CurrentTool == SpriteEditTool.None;
+            ButtonSpriteColor.Enabled = DataContext.CurrentTool == SpriteEditTool.None;
+
             ButtonSpriteUndo.Enabled = DataContext.UndoCommand?.CanExecute(null) ?? false;
             ButtonSpriteRedo.Enabled = DataContext.RedoCommand?.CanExecute(null) ?? false;
 
-            ButtonSaveSprite.Enabled = DataContext.SaveContentCommand?.CanExecute(null) ?? false;
+            ButtonSaveSprite.Enabled = DataContext.SaveContentCommand?.CanExecute(SaveReason.UserSave) ?? false;
         }
 
         /// <summary>

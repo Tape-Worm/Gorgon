@@ -537,12 +537,20 @@ namespace Gorgon.Editor.UI.Views
         /// <summary>
         /// Function to begin rendering on the control.
         /// </summary>
-        public void Start() => GorgonApplication.IdleMethod = IdleMethod;
+        public void Start()
+        {
+            GorgonApplication.AllowBackground = true;
+            GorgonApplication.IdleMethod = IdleMethod;
+        }
 
         /// <summary>
         /// Function to cease rendering on the control.
         /// </summary>
-        public void Stop() => GorgonApplication.IdleMethod = null;
+        public void Stop()
+        {
+            GorgonApplication.AllowBackground = false;
+            GorgonApplication.IdleMethod = null;
+        }
 
         /// <summary>
         /// Function to initialize the graphics context for the control.

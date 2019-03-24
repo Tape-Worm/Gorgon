@@ -65,7 +65,6 @@
     <Compile Include="Boot.cs" />
     <Compile Include="CommonCommands.cs" />
     <Compile Include="ContentRibbonEventArgs.cs" />
-    <Compile Include="Converters\JsonSharpDxRectConverter.cs" />
     <Compile Include="Data\FileSystemClipboardData.cs" />
     <Compile Include="FormMain.cs">
       <SubType>Form</SubType>
@@ -378,6 +377,9 @@
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
       <Version>4.5.2</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Converters\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -20,58 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: March 22, 2019 10:06:04 AM
+// Created: March 25, 2019 9:53:42 AM
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using Gorgon.Graphics;
-using Newtonsoft.Json;
 using DX = SharpDX;
+using Gorgon.Graphics;
 
 namespace Gorgon.Editor.SpriteEditor
 {
     /// <summary>
-    /// The settings for the sprite editor plug in.
+    /// The view model used to manipulate the settings for the plug in.
     /// </summary>
-    internal class SpriteEditorSettings
+    internal interface ISettings
     {
         /// <summary>
-        /// Property to return the list of additional sprite codec plug ins to load.
+        /// Property to set or return the type of masking to perform when picking a sprite using the <see cref="SpriteEditTool.SpritePick"/> tool.
         /// </summary>
-        [JsonProperty]
-        public Dictionary<string, string> CodecPluginPaths
-        {
-            get;
-            private set;
-        } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-        /// <summary>
-        /// Property to set or return the position of the manual input window.
-        /// </summary>
-        [JsonProperty]
-        public DX.Rectangle? ManualRectInputPos
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return whether to show a warning dialog for large images.
-        /// </summary>
-        [JsonProperty]
-        public bool ShowImageSizeWarning
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the type of masking to perform when picking and clipping.
-        /// </summary>
-        [JsonProperty]
-        public ClipMask ClipMaskType
+        ClipMask ClipMaskType
         {
             get;
             set;
@@ -80,11 +46,28 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Property to set or return the sprite picker mask color.
         /// </summary>
-        [JsonProperty]
-        public int ClipMaskValue
+        GorgonColor ClipMaskValue
         {
             get;
             set;
-        } = new GorgonColor(1, 0, 1, 0).ToRGBA();
+        }
+
+        /// <summary>
+        /// Property to set or return the position of the manual input window.
+        /// </summary>
+        DX.Rectangle? ManualRectInputBounds
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the flag used to show a warning when a large image is being used with the <see cref="SpriteEditTool.SpritePick"/> tool.
+        /// </summary>
+        bool ShowImageSizeWarning
+        {
+            get;
+            set;
+        }
     }
 }

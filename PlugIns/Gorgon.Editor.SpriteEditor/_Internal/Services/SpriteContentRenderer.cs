@@ -78,8 +78,12 @@ namespace Gorgon.Editor.SpriteEditor
         private IRectClipperService _clipperService;
         // The sprite that we are editing.
         private ISpriteContent _sprite;
+        // The current zoom scale.
         private float _zoomScaleValue;
+        // The current image scroll offset.
         private DX.Vector2 _scrollOffset;
+        // The sprite picker used to automatically clip sprite data.
+        private IPickClipperService _pickClipper;
         #endregion
 
         #region Properties.
@@ -145,14 +149,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             var scaling = new DX.Vector2(_swapChain.Width / imageSize.Width, _swapChain.Height / imageSize.Height);
 
-            if (scaling.X > scaling.Y)
-            {
-                return scaling.Y;
-            }
-            else
-            {
-                return scaling.X;
-            }
+            return scaling.X.Min(scaling.Y);
         }
 
         /// <summary>
@@ -161,15 +158,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="zoom">The current zoom level.</param>
         /// <param name="imageSize">The size of the sprite texture.</param>
         /// <returns>A scalar value used to scale the rendering area by.</returns>
-        private float GetZoomScaleFactor(ZoomLevels zoom, DX.Size2F imageSize) 
-        {
-            if (zoom == ZoomLevels.ToWindow)
-            {
-                return CalcToWindow(imageSize);
-            }
-
-            return zoom.GetScale();
-        }
+        private float GetZoomScaleFactor(ZoomLevels zoom, DX.Size2F imageSize) => zoom == ZoomLevels.ToWindow ? CalcToWindow(imageSize) : zoom.GetScale();
 
         /// <summary>
         /// Function to destroy the image buffer.
@@ -452,8 +441,41 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Function to render the sprite.
         /// </summary>
-        private void RenderSprite()
+        private void RenderPicker()
         {
+            DX.RectangleF spriteRegion = _pickClipper.Rectangle;
+            var imageRegion = new DX.RectangleF(0, 0, _spriteTextureSize.Width, _spriteTextureSize.Height);
+
+            _graphics.SetRenderTarget(_imageBuffer);
+            _imageBuffer.Clear(GorgonColor.BlackTransparent);
+
+            _renderer.Begin();
+            RenderRect(imageRegion, GorgonColor.White, _sprite.Texture, sampler: GorgonSamplerState.PointFiltering);
+            RenderRect(spriteRegion, GorgonColor.BlackTransparent);
+            _renderer.End();
+
+            _graphics.SetRenderTarget(_swapChain.RenderTargetView);
+            _swapChain.RenderTargetView.Clear(BackgroundColor);
+
+            _renderer.Begin();
+
+            // Draw the pattern layer.
+            RenderRect(imageRegion, GorgonColor.White, _bgPattern, new DX.RectangleF(0, 0, (imageRegion.Width * ZoomScaleValue) / _bgPattern.Width, (imageRegion.Height * ZoomScaleValue) / _bgPattern.Height));
+            // Draw the image buffer layer.
+            _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _swapChain.Width, _swapChain.Height), new GorgonColor(GorgonColor.White, 0.5f), _imageBufferTexture, new DX.RectangleF(0, 0, 1, 1));
+            // Draw the sprite layer.
+            RenderRect(spriteRegion, GorgonColor.White, _sprite.Texture, _sprite.Texture.ToTexel(spriteRegion.ToRectangle()));
+
+            _marchAnts.Draw(ImageRectToSwap(spriteRegion));
+
+            _renderer.End();
+        }
+
+        /// <summary>
+        /// Function to render the sprite.
+        /// </summary>
+        private void RenderSprite()
+        {            
             var spriteRegion = _sprite.Texture.ToPixel(_sprite.TextureCoordinates).ToRectangleF();
             var imageRegion = new DX.RectangleF(0, 0, _spriteTextureSize.Width, _spriteTextureSize.Height);
 
@@ -475,7 +497,7 @@ namespace Gorgon.Editor.SpriteEditor
             // Draw the image buffer layer.
             _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _swapChain.Width, _swapChain.Height), new GorgonColor(GorgonColor.White, 0.5f), _imageBufferTexture, new DX.RectangleF(0, 0, 1, 1));
             // Draw the sprite layer.
-            RenderRect(spriteRegion, GorgonColor.White, _sprite.Texture, _sprite.TextureCoordinates);
+            RenderRect(spriteRegion, GorgonColor.White, _sprite.Texture, _sprite.Texture.ToTexel(spriteRegion.ToRectangle()));
 
             _marchAnts.Draw(ImageRectToSwap(spriteRegion));
 
@@ -570,16 +592,19 @@ namespace Gorgon.Editor.SpriteEditor
                         ZoomScaleValue = newScale;
                     }
 
-                    if (tool == SpriteEditTool.None)
+                    switch (tool)
                     {
-                        RenderSprite();
-                    }
-                    else
-                    {
-                        // Adjust the presentation rate if we're dragging so we can get quicker visual feedback.
-                        presentRate = _clipperService.IsDragging ? 0 : 1;
-
-                        RenderClipping();
+                        case SpriteEditTool.SpriteClip:
+                            // Adjust the presentation rate if we're dragging so we can get quicker visual feedback.
+                            presentRate = _clipperService.IsDragging ? 0 : 1;
+                            RenderClipping();
+                            break;
+                        case SpriteEditTool.SpritePick:
+                            RenderPicker();
+                            break;
+                        default:
+                            RenderSprite();
+                            break;
                     }
                     break;
             }
@@ -600,20 +625,24 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 _sprite = null;
                 _spriteTextureSize = DX.Size2F.Empty;
-                _clipperService.Rectangle = DX.RectangleF.Empty;
+                _pickClipper.Rectangle = _clipperService.Rectangle = DX.RectangleF.Empty;
+                _pickClipper.ImageData = null;
                 return;
             }
 
             _sprite = sprite;
             _spriteTextureSize = new DX.Size2F(sprite.Texture.Width, sprite.Texture.Height);
-            _clipperService.Rectangle = sprite.Texture.ToPixel(sprite.TextureCoordinates).ToRectangleF();
+            _clipperService.Bounds = new DX.RectangleF(0, 0, sprite.Texture.Width, sprite.Texture.Height);
+            _pickClipper.Rectangle = _clipperService.Rectangle = sprite.Texture.ToPixel(sprite.TextureCoordinates).ToRectangleF();            
 
             _clipperService.TransformImageAreaToClient = r => ImageRectToSwap(r).Truncate();
-            _clipperService.TransformMouseToImage = p =>
+            _pickClipper.TransformMouseToImage =_clipperService.TransformMouseToImage = p =>
             {
                 DX.Vector2 pos = SwapToImagePoint(p);
                 return new DX.Vector2((int)pos.X, (int)pos.Y);
             };
+
+            _pickClipper.ImageData = _sprite.ImageData;
         }
         #endregion
 
@@ -623,14 +652,16 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="swapChain">The swap chain for the render area.</param>
         /// <param name="renderer">The 2D renderer for the application.</param>
         /// <param name="rectClipper">The rectangle clipper used to clip out sprite data.</param>
+        /// <param name="pickClipper">The sprite picker used to automatically clip sprite data.</param>
         /// <param name="ants">The marching ants rectangle used to draw selection rectangles.</param>
-        public SpriteContentRenderer(GorgonGraphics graphics, GorgonSwapChain swapChain, Gorgon2D renderer, IRectClipperService rectClipper, IMarchingAnts ants)
+        public SpriteContentRenderer(GorgonGraphics graphics, GorgonSwapChain swapChain, Gorgon2D renderer, IRectClipperService rectClipper, IPickClipperService pickClipper, IMarchingAnts ants)
         {
             _graphics = graphics;
             _swapChain = swapChain;
             _renderer = renderer;
             _marchAnts = ants;
             _clipperService = rectClipper;
+            _pickClipper = pickClipper;
         }
         #endregion
     }

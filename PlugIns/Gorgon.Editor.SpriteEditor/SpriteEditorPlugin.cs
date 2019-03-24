@@ -47,6 +47,7 @@ using Gorgon.IO;
 using Gorgon.Plugins;
 using Gorgon.Renderers;
 using Gorgon.Math;
+using Gorgon.Editor.Converters;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -292,10 +293,12 @@ namespace Gorgon.Editor.SpriteEditor
                     inStream = thumbnailFile.Open(FileMode.Open, FileAccess.Read, FileShare.Read);
                     spriteImage = thumbnailCodec.LoadFromStream(inStream);
 
+#pragma warning disable IDE0046 // Convert to conditional expression
                     if (cancelToken.IsCancellationRequested)
                     {
                         return (null, null, null);
                     }
+#pragma warning restore IDE0046 // Convert to conditional expression
 
                     return (spriteImage, null, null);
                 }
@@ -460,16 +463,30 @@ namespace Gorgon.Editor.SpriteEditor
                 stream = file.OpenRead();
                 sprite = _defaultCodec.FromStream(stream, spriteImage);
 
+                var manualRectInput = new ManualRectInputVm();
+                manualRectInput.Initialize(injector);
+
+                var settings = new Settings();
+                settings.Initialize(new SettingsParameters(_settings));
+
                 content.Initialize(new SpriteContentParameters(file, 
                     imageFile, 
                     fileManager, 
                     textureService,
                     sprite,
                     _defaultCodec,
+                    manualRectInput,                    
+                    settings,
                     undoService, 
                     scratchArea, 
                     injector.MessageDisplay, 
                     injector.BusyService));
+
+                // If we have a texture, then read its data into RAM.
+                if (sprite.Texture != null)
+                {
+                    await content.ExtractImageDataAsync();
+                }
 
                 return content;
             }
@@ -497,7 +514,7 @@ namespace Gorgon.Editor.SpriteEditor
                 if (_settings != null)
                 {
                     // Persist any settings.
-                    _pluginService.WriteContentSettings(this, _settings);
+                    _pluginService.WriteContentSettings(this, _settings, new JsonSharpDxRectConverter());
                 }
             }
             catch (Exception ex)
@@ -523,7 +540,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             ViewFactory.Register<ISpriteContent>(() => new SpriteEditorView());
 
-            _pluginService = pluginService;
+            _pluginService = pluginService;            
             _pluginCache = new GorgonMefPluginCache(Log);
 
             // Get built-in codec list.
@@ -533,7 +550,7 @@ namespace Gorgon.Editor.SpriteEditor
             _codecList.Add(new GorgonV2SpriteCodec(GraphicsContext.Renderer2D));
             _codecList.Add(new GorgonV1SpriteBinaryCodec(GraphicsContext.Renderer2D));
 
-            SpriteEditorSettings settings = pluginService.ReadContentSettings<SpriteEditorSettings>(this);
+            SpriteEditorSettings settings = pluginService.ReadContentSettings<SpriteEditorSettings>(this, new JsonSharpDxRectConverter());
 
             if (settings != null)
             {

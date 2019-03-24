@@ -294,4 +294,23 @@ Please try again.</value>
   <data name="pan_hand_close" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\pan_hand_close.cur;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="GORSPR_ERR_CANNOT_ACTIVATE_PANEL" xml:space="preserve">
+    <value>Cannot activate the panel [{0}].</value>
+  </data>
+  <data name="GORSPR_CONFIRM_CLOSE" xml:space="preserve">
+    <value>The sprite '{0}' has unsaved changes. 
+
+Would you like to save these changes now?</value>
+  </data>
+  <data name="GORSPR_ERR_TOOL_CHANGE" xml:space="preserve">
+    <value>There was an error changing the current tool to [{0}].</value>
+  </data>
+  <data name="GORSPR_WRN_LARGE_IMAGE" xml:space="preserve">
+    <value>The currently loaded sprite texture is very large ({0}x{1} pixels).
+
+The performance of the current tool may be impacted by this.</value>
+  </data>
+  <data name="GORSPR_TEXT_SPRITE_INFO" xml:space="preserve">
+    <value>Sprite Dimensions: {0}x{1} - {2}x{3} ({4}x{5})</value>
+  </data>
 </root>

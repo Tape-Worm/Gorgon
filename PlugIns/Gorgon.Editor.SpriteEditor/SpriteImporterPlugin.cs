@@ -35,6 +35,7 @@ using Gorgon.Editor.Services;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Plugins;
+using System;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -175,6 +176,25 @@ namespace Gorgon.Editor.SpriteEditor
                 {
                     _codecs.Add((extension, codec));
                 }
+            }
+        }
+
+        /// <summary>Function to provide clean up for the plugin.</summary>
+        /// <param name="log">The logging interface for debug messages.</param>
+        protected override void OnShutdown(IGorgonLog log)
+        {
+            try
+            {
+                if (_settings != null)
+                {
+                    // Persist any settings.
+                    _pluginService.WriteContentSettings(this, _settings);
+                }
+            }
+            catch (Exception ex)
+            {
+                // We don't care if it crashes. The worst thing that'll happen is your settings won't persist.
+                log.LogException(ex);
             }
         }
 

@@ -144,6 +144,16 @@ namespace Gorgon.Editor.Services
         /// Function to create a new directory.
         /// </summary>
         /// <param name="parentDirectory">The parent directory on the physical file system.</param>
+        /// <param name="newDirName">The name of the new directory.</param>
+        /// <returns>A new directory information object for the new directory.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="parentDirectory"/>, or the <paramref name="newDirName"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="newDirName"/> parameter is empty.</exception>
+        DirectoryInfo CreateDirectory(DirectoryInfo parentDirectory, string newDirName);
+
+        /// <summary>
+        /// Function to create a new directory.
+        /// </summary>
+        /// <param name="parentDirectory">The parent directory on the physical file system.</param>
         /// <returns>A new directory information object for the new directory.</returns>
         DirectoryInfo CreateDirectory(DirectoryInfo parentDirectory);
 

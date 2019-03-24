@@ -883,14 +883,16 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <summary>
         /// Function to determine if the current content can be saved.
         /// </summary>
+        /// <param name="saveReason">The reason why the content is being saved.</param>
         /// <returns><b>true</b> if the content can be saved, <b>false</b> if not.</returns>
-        private bool CanSaveImage() => ContentState != ContentState.Unmodified;
+        private bool CanSaveImage(SaveReason saveReason) => ContentState != ContentState.Unmodified;
 
         /// <summary>
         /// Function to save the image back to the project file system.
         /// </summary>
+        /// <param name="saveReason">The reason why the content is being saved.</param>
         /// <returns>A task for asynchronous operation.</returns>
-        private async Task DoSaveImageTask()
+        private async Task DoSaveImageTask(SaveReason saveReason)
         {
             Stream inStream = null;
             Stream outStream = null;
@@ -2060,7 +2062,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             switch (response)
             {
                 case MessageResponse.Yes:
-                    await DoSaveImageTask();
+                    await DoSaveImageTask(SaveReason.UserSave);
                     return true;
                 case MessageResponse.Cancel:
                     return false;
@@ -2325,7 +2327,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             RedoCommand = new EditorCommand<object>(DoRedoAsync, CanRedo);
             ExportImageCommand = new EditorCommand<IGorgonImageCodec>(DoExportImage);
             ConvertFormatCommand = new EditorCommand<BufferFormat>(DoConvertFormat, CanConvertFormat);
-            SaveContentCommand = new EditorAsyncCommand<object>(DoSaveImageTask, CanSaveImage);
+            SaveContentCommand = new EditorAsyncCommand<SaveReason>(DoSaveImageTask, CanSaveImage);
             ChangeImageTypeCommand = new EditorCommand<ImageType>(DoChangeImageType, CanChangeImageType);
             ImportFileCommand = new EditorCommand<object>(DoImportFile, CanImportFile);
             ShowImageDimensionsCommand = new EditorCommand<object>(DoShowImageDimensions, CanShowImageDimensions);

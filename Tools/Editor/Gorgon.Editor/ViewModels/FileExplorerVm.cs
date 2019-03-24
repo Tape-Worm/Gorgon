@@ -606,6 +606,7 @@ namespace Gorgon.Editor.ViewModels
                 file = _fileSystemService.CreateEmptyFile(physicalParent, args.Name);
                                 
                 SelectedNode = args.Node = _factory.CreateFileExplorerFileNodeVm(_project, _fileSystemService, parent, file);
+                _nodePathLookup[args.Node.FullPath] = args.Node;
             }
             catch (Exception ex)
             {
@@ -2273,6 +2274,264 @@ namespace Gorgon.Editor.ViewModels
             }
 
             return !_nodePathLookup.TryGetValue(path, out IFileExplorerNodeVm node) ? null : node as IContentFile;
+        }
+
+        /// <summary>
+        /// Function to create a new content file on the path specified.
+        /// </summary>
+        /// <param name="path">The path to the file.</param>
+        /// <param name="dataStream">A callback method to write the file data.</param>
+        /// <returns>The content file.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/>, or the <paramref name="dataStream"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+        /// <exception cref="ArgumentException">Thrown if the <paramref name="path"/> does not contain a file name.</exception>
+        /// <exception cref="IOException">Thrown if the file in the <paramref name="path"/> has the same name as a directory.</exception>
+        IContentFile IContentFileManager.WriteFile(string path, Action<Stream> dataStream)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentEmptyException(nameof(path));
+            }
+
+            if (path.EndsWith("/", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_NO_FILENAME, path), nameof(path));
+            }
+
+            IContentFile existing = null;
+
+            if (_nodePathLookup.TryGetValue(path, out IFileExplorerNodeVm node))
+            {
+                existing = node as IContentFile;
+
+                if (node.IsOpen)
+                {
+                    throw new IOException(string.Format(Resources.GOREDIT_ERR_FILE_LOCKED, path));
+                }
+
+                if (existing != null)
+                {
+                    throw new IOException(string.Format(Resources.GOREDIT_ERR_PATH_IS_DIRECTORY, path));
+                }
+            }
+
+            string fileName = Path.GetFileName(path);
+            string directoryName = Path.GetDirectoryName(path)?.FormatDirectory('/') ?? string.Empty;
+
+            if (!directoryName.StartsWith("/", StringComparison.OrdinalIgnoreCase))
+            {
+                directoryName = "/" + directoryName;
+            }
+
+            IFileExplorerNodeVm dirNode = null;
+
+            if (string.Equals(directoryName, "/", StringComparison.OrdinalIgnoreCase))
+            {
+                dirNode = RootNode;
+            }
+            else
+            {
+                if (!_nodePathLookup.TryGetValue(directoryName, out dirNode))
+                {
+                    throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, directoryName));
+                }                    
+            }
+
+            var physicalParent = new DirectoryInfo(dirNode.PhysicalPath);
+            FileInfo physicalFile = _fileSystemService.CreateEmptyFile(physicalParent, fileName);
+
+            using (Stream stream = physicalFile.Open(FileMode.Create, FileAccess.Write))
+            {
+                dataStream(stream);
+            }
+
+            if (node != null)
+            {
+                dirNode.Children.Remove(node);
+            }
+
+            IFileExplorerNodeVm selected = SelectedNode;
+
+            // Add the node to the tree.
+            IFileExplorerNodeVm fileNode = _factory.CreateFileExplorerFileNodeVm(_project, _fileSystemService, dirNode, physicalFile);
+            
+            var result = (IContentFile)fileNode;
+            _contentPlugins.AssignContentPlugin(result, this, false);
+            
+            dirNode.IsExpanded = true;
+            SelectedNode = selected;           
+
+            OnFileSystemChanged();
+
+            return result;
+        }
+
+        /// <summary>
+        /// Function to determine if a directory exists or not.
+        /// </summary>
+        /// <param name="path">The path to the directory.</param>
+        /// <returns><b>true</b> if the directory exists, <b>false</b> if not.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+        public bool DirectoryExists(string path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentEmptyException(nameof(path));
+            }
+
+            if (!path.StartsWith("/"))
+            {
+                path = "/" + path;
+            }
+
+            return _nodePathLookup.ContainsKey(path.FormatDirectory('/'));
+        }
+
+        /// <summary>
+        /// Function to create a new directory
+        /// </summary>
+        /// <param name="path">The path to the directory.</param>        
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+        /// <exception cref="IOException">Thrown when the <paramref name="path"/> points to an existing file.</exception>
+        void IContentFileManager.CreateDirectory(string path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentEmptyException(nameof(path));
+            }
+
+            if (!path.StartsWith("/"))
+            {
+                path = "/" + path;
+            }
+
+            if (path == "/")
+            {
+                return;
+            }
+
+            if (path.EndsWith("/", StringComparison.OrdinalIgnoreCase))
+            {
+                path = path.Substring(0, path.Length - 1);
+            }
+            else
+            {
+                // If the directory is already here, then move on.
+                if (_nodePathLookup.ContainsKey(path))
+                {
+                    return;
+                }
+            }
+
+            if (_nodePathLookup.ContainsKey(path))
+            {
+                throw new IOException(string.Format(Resources.GOREDIT_ERR_PATH_IS_FILE, path));
+            }
+
+            int lastSlash = path.LastIndexOf("/", StringComparison.Ordinal);            
+            string directoryName = path.Substring(lastSlash + 1);
+            string directoryPath = path.Substring(0, lastSlash);
+            IFileExplorerNodeVm parentDir;
+
+            if (string.IsNullOrWhiteSpace(directoryPath))
+            {
+                parentDir = RootNode;
+            }
+            else if (!_nodePathLookup.TryGetValue(directoryPath, out parentDir))
+            {
+                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, directoryPath));
+            }
+
+            IFileExplorerNodeVm selectedNode = SelectedNode;
+
+            DirectoryInfo newDir = _fileSystemService.CreateDirectory(new DirectoryInfo(parentDir.PhysicalPath), directoryName);
+            IFileExplorerNodeVm dirNode = _factory.CreateFileExplorerDirectoryNodeVm(_project, _fileSystemService, parentDir, newDir, true);
+
+            SelectedNode = selectedNode;
+
+            OnFileSystemChanged();
+        }
+
+        /// <summary>
+        /// Function to delete a directory.
+        /// </summary>
+        /// <param name="path">The path to the directory.</param>
+        /// <param name="deleteChildren"><b>true</b> true to delete child directories and files, <b>false</b> to delete only this directory (must be empty).</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>        
+        /// <exception cref="IOException">Thrown if the directory is not empty and <paramref name="deleteChildren"/> is <b>false</b>.
+        /// <para>-or-</para>
+        /// <para>A file contained within the directory, or sub directories is open.</para>
+        /// </exception>
+        /// <exception cref="GorgonException">Thrown if the root directory is used for the <paramref name="path"/> parameter.</exception>
+        void IContentFileManager.DeleteDirectory(string path, bool deleteChildren)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentEmptyException(nameof(path));
+            }
+
+            if (!path.StartsWith("/"))
+            {
+                path = "/" + path;
+            }
+
+            path = path.FormatDirectory('/');
+
+            if (path == "/")
+            {
+                throw new GorgonException(GorgonResult.AccessDenied);                
+            }
+
+            if (!_nodePathLookup.TryGetValue(path, out IFileExplorerNodeVm node))
+            {
+                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, path));
+            }
+
+            if ((node.Children.Count > 0) && (!deleteChildren))
+            {
+                throw new IOException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_EMPTY, path));
+            }
+
+            if (node.Children.Traverse(item => item.Children).Any(item => item.IsOpen))
+            {
+                throw new IOException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_LOCKED, path));
+            }
+
+            IFileExplorerNodeVm selectedNode = SelectedNode;
+
+            if (!_fileSystemService.DeleteDirectory(new DirectoryInfo(node.PhysicalPath), null, CancellationToken.None))
+            {
+                return;
+            }
+
+            node.Parent.Children.Remove(node);
+
+            SelectedNode = selectedNode;
+
+            OnFileSystemChanged();
         }
         #endregion
 

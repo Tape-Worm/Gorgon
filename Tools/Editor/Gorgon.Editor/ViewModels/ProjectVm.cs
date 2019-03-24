@@ -443,13 +443,13 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to persist the changed content (if any).
         /// </summary>
+        /// <param name="saveReason">The reason why the content is being saved.</param>
         /// <returns><b>true</b> if saved or skipped, <b>false</b> if cancelled.</returns>
-        private async Task<bool> UpdateChangedContentAsync()
+        private async Task<bool> UpdateChangedContentAsync(SaveReason saveReason)
         {
             if ((CurrentContent == null)
-                || (CurrentContent.ContentState == ContentState.Unmodified)
                 || (CurrentContent.SaveContentCommand == null)
-                || (!CurrentContent.SaveContentCommand.CanExecute(null)))
+                || (!CurrentContent.SaveContentCommand.CanExecute(saveReason)))
             {
                 return true;
             }
@@ -459,7 +459,7 @@ namespace Gorgon.Editor.ViewModels
             switch (response)
             {
                 case MessageResponse.Yes:
-                    await CurrentContent.SaveContentCommand.ExecuteAsync(null);
+                    await CurrentContent.SaveContentCommand.ExecuteAsync(saveReason);
                     break;
                 case MessageResponse.Cancel:
                     return false;
@@ -477,7 +477,7 @@ namespace Gorgon.Editor.ViewModels
         {
             try
             {
-                bool result = await UpdateChangedContentAsync();
+                bool result = await UpdateChangedContentAsync(SaveReason.AppProjectShutdown);
                 args.Cancel = !result;
             }
             catch (Exception ex)
@@ -495,7 +495,7 @@ namespace Gorgon.Editor.ViewModels
         {
             try
             {
-                bool continueOpen = await UpdateChangedContentAsync();
+                bool continueOpen = await UpdateChangedContentAsync(SaveReason.ContentShutdown);
 
                 if (!continueOpen)
                 {

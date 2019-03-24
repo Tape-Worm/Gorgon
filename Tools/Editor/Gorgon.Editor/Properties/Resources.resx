@@ -776,4 +776,22 @@ Content IDs should be GUID values.</value>
 
 Please try again.</value>
   </data>
+  <data name="GOREDIT_ERR_DIRECTORY_LOCKED" xml:space="preserve">
+    <value>A file in the directory '{0}' is open.</value>
+  </data>
+  <data name="GOREDIT_ERR_DIRECTORY_NOT_EMPTY" xml:space="preserve">
+    <value>The directory on the path '{0}' is not empty.</value>
+  </data>
+  <data name="GOREDIT_ERR_FILE_LOCKED" xml:space="preserve">
+    <value>The file '{0}' is already open.</value>
+  </data>
+  <data name="GOREDIT_ERR_NO_FILENAME" xml:space="preserve">
+    <value>The path '{0}' does not contain a file name.</value>
+  </data>
+  <data name="GOREDIT_ERR_PATH_IS_DIRECTORY" xml:space="preserve">
+    <value>There is a directory with the name '{0}' already on this path.</value>
+  </data>
+  <data name="GOREDIT_ERR_PATH_IS_FILE" xml:space="preserve">
+    <value>There is a file with the name '{0}' already on this path.</value>
+  </data>
 </root>

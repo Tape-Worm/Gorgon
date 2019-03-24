@@ -46,6 +46,14 @@ namespace Gorgon.Editor.SpriteEditor
 
             if (disposing)
             {
+                if (ParentForm != null)
+                {
+                    ParentForm.ResizeEnd -= ParentForm_Move;
+                }
+
+                _manualRectInput.Move -= ManualRectInput_Move;
+                _manualRectInput.FormClosing -= ManualInput_ClosePanel;
+                _manualRectInput.Dispose();
                 _clipperService?.Dispose();
                 PanelRenderWindow.MouseWheel -= PanelRenderWindow_MouseWheel;
                 _ribbonForm.ImageZoomed -= RibbonForm_ImageZoomed;

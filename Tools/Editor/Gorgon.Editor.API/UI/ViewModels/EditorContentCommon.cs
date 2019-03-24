@@ -26,6 +26,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
@@ -62,7 +63,7 @@ namespace Gorgon.Editor.UI
         private ContentState _state = ContentState.New;
 
         // The command used to save the content.
-        private IEditorAsyncCommand<object> _saveContentCommand;
+        private IEditorAsyncCommand<SaveReason> _saveContentCommand;
         #endregion
 
         #region Properties.
@@ -157,7 +158,7 @@ namespace Gorgon.Editor.UI
         /// <summary>
         /// Property to set or return the command used to save the content.
         /// </summary>
-        public IEditorAsyncCommand<object> SaveContentCommand
+        public IEditorAsyncCommand<SaveReason> SaveContentCommand
         {
             get => _saveContentCommand;
             set

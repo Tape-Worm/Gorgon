@@ -181,6 +181,17 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The sprite &apos;{0}&apos; has unsaved changes. 
+        ///
+        ///Would you like to save these changes now?.
+        /// </summary>
+        internal static string GORSPR_CONFIRM_CLOSE {
+            get {
+                return ResourceManager.GetString("GORSPR_CONFIRM_CLOSE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sprite.
         /// </summary>
         internal static string GORSPR_CONTENT_TYPE {
@@ -195,6 +206,15 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         internal static string GORSPR_DESC {
             get {
                 return ResourceManager.GetString("GORSPR_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot activate the panel [{0}]..
+        /// </summary>
+        internal static string GORSPR_ERR_CANNOT_ACTIVATE_PANEL {
+            get {
+                return ResourceManager.GetString("GORSPR_ERR_CANNOT_ACTIVATE_PANEL", resourceCulture);
             }
         }
         
@@ -281,6 +301,15 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error changing the current tool to [{0}]..
+        /// </summary>
+        internal static string GORSPR_ERR_TOOL_CHANGE {
+            get {
+                return ResourceManager.GetString("GORSPR_ERR_TOOL_CHANGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error performing the undo action.
         ///
         ///Please try again..
@@ -321,6 +350,15 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sprite Dimensions: {0}x{1} - {2}x{3} ({4}x{5}).
+        /// </summary>
+        internal static string GORSPR_TEXT_SPRITE_INFO {
+            get {
+                return ResourceManager.GetString("GORSPR_TEXT_SPRITE_INFO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Zoom: {0}.
         /// </summary>
         internal static string GORSPR_TEXT_ZOOM_BUTTON {
@@ -344,6 +382,17 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         internal static string GORSPR_UNDO_DESC_TEXTURE {
             get {
                 return ResourceManager.GetString("GORSPR_UNDO_DESC_TEXTURE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The currently loaded sprite texture is very large ({0}x{1} pixels).
+        ///
+        ///The performance of the current tool may be impacted by this..
+        /// </summary>
+        internal static string GORSPR_WRN_LARGE_IMAGE {
+            get {
+                return ResourceManager.GetString("GORSPR_WRN_LARGE_IMAGE", resourceCulture);
             }
         }
         

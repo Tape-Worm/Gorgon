@@ -28,12 +28,12 @@ using System;
 using DX = SharpDX;
 using Newtonsoft.Json;
 
-namespace Gorgon.Editor
+namespace Gorgon.Editor.Converters
 {
     /// <summary>
     /// A JSON converter for a SharpDX rectangle type.
     /// </summary>
-    internal class JsonSharpDxRectConverter
+    public class JsonSharpDxRectConverter
         : JsonConverter<DX.Rectangle?>
     {
         /// <summary>Writes the JSON representation of the object.</summary>

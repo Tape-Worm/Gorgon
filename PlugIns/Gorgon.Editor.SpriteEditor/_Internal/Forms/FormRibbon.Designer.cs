@@ -44,9 +44,7 @@
             this.GroupSpriteEdit = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
             this.kryptonRibbonGroupTriple2 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
             this.ButtonClipSprite = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.kryptonRibbonGroupLines1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
             this.ButtonPickSprite = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.ButtonSpriteVertexOffsets = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.kryptonRibbonGroupSeparator2 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
             this.kryptonRibbonGroupLines2 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
             this.ButtonSpriteUndo = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
@@ -56,13 +54,13 @@
             this.ButtonSpriteColor = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.ButtonSpriteAnchor = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.LinesSpriteVertex = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
-            this.ButtonSpriteTextureCoords = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonSpriteVertexOffsets = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.ButtonSpriteVertexColors = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.GroupSpriteImage = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
-            this.kryptonRibbonGroupSeparator3 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
             this.LinesImageSampling = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
             this.ButtonSpriteImageFilter = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.ButtonSpriteImageWrap = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.kryptonRibbonGroupSeparator1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
             this.kryptonRibbonGroupLines3 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
             this.ButtonZoomSprite = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.MenuZoom = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -124,6 +122,7 @@
             this.ButtonNewSprite.ImageLarge = global::Gorgon.Editor.SpriteEditor.Properties.Resources.sprite_48x48;
             this.ButtonNewSprite.ImageSmall = global::Gorgon.Editor.SpriteEditor.Properties.Resources.sprite_16x16;
             this.ButtonNewSprite.KeyTip = "N";
+            this.ButtonNewSprite.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
             this.ButtonNewSprite.TextLine1 = "New";
             this.ButtonNewSprite.TextLine2 = "Sprite";
             this.ButtonNewSprite.ToolTipBody = "Creates a new sprite for the currently loaded image.";
@@ -148,7 +147,6 @@
             this.GroupSpriteEdit.DialogBoxLauncher = false;
             this.GroupSpriteEdit.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupContainer[] {
             this.kryptonRibbonGroupTriple2,
-            this.kryptonRibbonGroupLines1,
             this.kryptonRibbonGroupSeparator2,
             this.kryptonRibbonGroupLines2});
             this.GroupSpriteEdit.KeyTipGroup = "E";
@@ -157,7 +155,8 @@
             // kryptonRibbonGroupTriple2
             // 
             this.kryptonRibbonGroupTriple2.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
-            this.ButtonClipSprite});
+            this.ButtonClipSprite,
+            this.ButtonPickSprite});
             // 
             // ButtonClipSprite
             // 
@@ -171,12 +170,6 @@
             this.ButtonClipSprite.ToolTipTitle = "Clip sprite";
             this.ButtonClipSprite.Click += new System.EventHandler(this.ButtonClipSprite_Click);
             // 
-            // kryptonRibbonGroupLines1
-            // 
-            this.kryptonRibbonGroupLines1.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
-            this.ButtonPickSprite,
-            this.ButtonSpriteVertexOffsets});
-            // 
             // ButtonPickSprite
             // 
             this.ButtonPickSprite.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.Check;
@@ -188,18 +181,7 @@
     " the extents.\r\n\r\nThis will only work on images that can be converted to a 32 bit" +
     " RGBA or BGRA pixel format.";
             this.ButtonPickSprite.ToolTipTitle = "Pick sprite";
-            // 
-            // ButtonSpriteVertexOffsets
-            // 
-            this.ButtonSpriteVertexOffsets.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.Check;
-            this.ButtonSpriteVertexOffsets.ImageLarge = global::Gorgon.Editor.SpriteEditor.Properties.Resources.rectangle_edit_48x48;
-            this.ButtonSpriteVertexOffsets.ImageSmall = global::Gorgon.Editor.SpriteEditor.Properties.Resources.rectangle_edit_16x16;
-            this.ButtonSpriteVertexOffsets.KeyTip = "V";
-            this.ButtonSpriteVertexOffsets.TextLine1 = "Corner";
-            this.ButtonSpriteVertexOffsets.TextLine2 = "Offsets";
-            this.ButtonSpriteVertexOffsets.ToolTipBody = "Adds an offset to an individual corner on the sprite rectangle, to create a defor" +
-    "med sprite.";
-            this.ButtonSpriteVertexOffsets.ToolTipTitle = "Sprite vertex offsets";
+            this.ButtonPickSprite.Click += new System.EventHandler(this.ButtonPickSprite_Click);
             // 
             // kryptonRibbonGroupLines2
             // 
@@ -211,7 +193,7 @@
             // 
             this.ButtonSpriteUndo.ImageLarge = global::Gorgon.Editor.SpriteEditor.Properties.Resources.undo_48x48;
             this.ButtonSpriteUndo.ImageSmall = global::Gorgon.Editor.SpriteEditor.Properties.Resources.undo_16x16;
-            this.ButtonSpriteUndo.KeyTip = "Z";
+            this.ButtonSpriteUndo.KeyTip = "U";
             this.ButtonSpriteUndo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
             this.ButtonSpriteUndo.TextLine1 = "Undo";
             this.ButtonSpriteUndo.ToolTipBody = "Reverts the previous change made to the sprite\r\n.";
@@ -222,7 +204,7 @@
             // 
             this.ButtonSpriteRedo.ImageLarge = global::Gorgon.Editor.SpriteEditor.Properties.Resources.redo_48x48;
             this.ButtonSpriteRedo.ImageSmall = global::Gorgon.Editor.SpriteEditor.Properties.Resources.redo_16x16;
-            this.ButtonSpriteRedo.KeyTip = "Y";
+            this.ButtonSpriteRedo.KeyTip = "R";
             this.ButtonSpriteRedo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
             this.ButtonSpriteRedo.TextLine1 = "Redo";
             this.ButtonSpriteRedo.ToolTipBody = "Restores the next change made to the sprite.";
@@ -269,27 +251,27 @@
             // LinesSpriteVertex
             // 
             this.LinesSpriteVertex.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
-            this.ButtonSpriteTextureCoords,
+            this.ButtonSpriteVertexOffsets,
             this.ButtonSpriteVertexColors});
             // 
-            // ButtonSpriteTextureCoords
+            // ButtonSpriteVertexOffsets
             // 
-            this.ButtonSpriteTextureCoords.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.Check;
-            this.ButtonSpriteTextureCoords.ImageLarge = global::Gorgon.Editor.SpriteEditor.Properties.Resources.edit_texture_coordinates_48x48;
-            this.ButtonSpriteTextureCoords.ImageSmall = global::Gorgon.Editor.SpriteEditor.Properties.Resources.edit_texture_coordinates_16x16;
-            this.ButtonSpriteTextureCoords.KeyTip = "T";
-            this.ButtonSpriteTextureCoords.TextLine1 = "Texture";
-            this.ButtonSpriteTextureCoords.TextLine2 = "Coordinates";
-            this.ButtonSpriteTextureCoords.ToolTipBody = "Allows altering of the texture coordinates for a sprite so that the sprite can co" +
-    "ver more, or less of an area on the texture without altering the sprite size.";
-            this.ButtonSpriteTextureCoords.ToolTipTitle = "Sprite texture coordinates";
+            this.ButtonSpriteVertexOffsets.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.Check;
+            this.ButtonSpriteVertexOffsets.ImageLarge = global::Gorgon.Editor.SpriteEditor.Properties.Resources.rectangle_edit_48x48;
+            this.ButtonSpriteVertexOffsets.ImageSmall = global::Gorgon.Editor.SpriteEditor.Properties.Resources.rectangle_edit_16x16;
+            this.ButtonSpriteVertexOffsets.KeyTip = "V";
+            this.ButtonSpriteVertexOffsets.TextLine1 = "Corner";
+            this.ButtonSpriteVertexOffsets.TextLine2 = "Offsets";
+            this.ButtonSpriteVertexOffsets.ToolTipBody = "Adds an offset to an individual corner on the sprite rectangle, to create a defor" +
+    "med sprite.";
+            this.ButtonSpriteVertexOffsets.ToolTipTitle = "Sprite vertex offsets";
             // 
             // ButtonSpriteVertexColors
             // 
             this.ButtonSpriteVertexColors.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.Check;
             this.ButtonSpriteVertexColors.ImageLarge = global::Gorgon.Editor.SpriteEditor.Properties.Resources.edit_vertex_colors_48x48;
             this.ButtonSpriteVertexColors.ImageSmall = global::Gorgon.Editor.SpriteEditor.Properties.Resources.edit_vertex_colors_16x16;
-            this.ButtonSpriteVertexColors.KeyTip = "X";
+            this.ButtonSpriteVertexColors.KeyTip = "K";
             this.ButtonSpriteVertexColors.TextLine1 = "Corner";
             this.ButtonSpriteVertexColors.TextLine2 = "Colors";
             this.ButtonSpriteVertexColors.ToolTipBody = "Allows altering the tint color for a single corner in a sprite rectangle.";
@@ -300,8 +282,8 @@
             this.GroupSpriteImage.AllowCollapsed = false;
             this.GroupSpriteImage.DialogBoxLauncher = false;
             this.GroupSpriteImage.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupContainer[] {
-            this.kryptonRibbonGroupSeparator3,
             this.LinesImageSampling,
+            this.kryptonRibbonGroupSeparator1,
             this.kryptonRibbonGroupLines3});
             this.GroupSpriteImage.KeyTipGroup = "I";
             this.GroupSpriteImage.TextLine1 = "Image";
@@ -327,7 +309,7 @@
             // 
             // ButtonSpriteImageWrap
             // 
-            this.ButtonSpriteImageWrap.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.Check;
+            this.ButtonSpriteImageWrap.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.DropDown;
             this.ButtonSpriteImageWrap.ImageLarge = global::Gorgon.Editor.SpriteEditor.Properties.Resources.wrapping_48x48;
             this.ButtonSpriteImageWrap.ImageSmall = global::Gorgon.Editor.SpriteEditor.Properties.Resources.wrapping_16x16;
             this.ButtonSpriteImageWrap.KeyTip = "W";
@@ -369,7 +351,7 @@
             this.Item3200Percent,
             this.Item6400Percent});
             this.MenuZoom.Name = "ZoomMenu";
-            this.MenuZoom.Size = new System.Drawing.Size(181, 274);
+            this.MenuZoom.Size = new System.Drawing.Size(135, 252);
             // 
             // ItemZoomToWindow
             // 
@@ -377,7 +359,7 @@
             this.ItemZoomToWindow.CheckOnClick = true;
             this.ItemZoomToWindow.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ItemZoomToWindow.Name = "ItemZoomToWindow";
-            this.ItemZoomToWindow.Size = new System.Drawing.Size(180, 22);
+            this.ItemZoomToWindow.Size = new System.Drawing.Size(134, 22);
             this.ItemZoomToWindow.Tag = "ToWindow";
             this.ItemZoomToWindow.Text = "To Window";
             this.ItemZoomToWindow.Click += new System.EventHandler(this.ItemZoom_Click);
@@ -385,13 +367,13 @@
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(177, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(131, 6);
             // 
             // Item12Percent
             // 
             this.Item12Percent.CheckOnClick = true;
             this.Item12Percent.Name = "Item12Percent";
-            this.Item12Percent.Size = new System.Drawing.Size(180, 22);
+            this.Item12Percent.Size = new System.Drawing.Size(134, 22);
             this.Item12Percent.Tag = "Percent12";
             this.Item12Percent.Text = "12.5%";
             this.Item12Percent.Click += new System.EventHandler(this.ItemZoom_Click);
@@ -400,7 +382,7 @@
             // 
             this.Item25Percent.CheckOnClick = true;
             this.Item25Percent.Name = "Item25Percent";
-            this.Item25Percent.Size = new System.Drawing.Size(180, 22);
+            this.Item25Percent.Size = new System.Drawing.Size(134, 22);
             this.Item25Percent.Tag = "Percent25";
             this.Item25Percent.Text = "25%";
             this.Item25Percent.Click += new System.EventHandler(this.ItemZoom_Click);
@@ -409,7 +391,7 @@
             // 
             this.Item50Percent.CheckOnClick = true;
             this.Item50Percent.Name = "Item50Percent";
-            this.Item50Percent.Size = new System.Drawing.Size(180, 22);
+            this.Item50Percent.Size = new System.Drawing.Size(134, 22);
             this.Item50Percent.Tag = "Percent50";
             this.Item50Percent.Text = "50%";
             this.Item50Percent.Click += new System.EventHandler(this.ItemZoom_Click);
@@ -418,7 +400,7 @@
             // 
             this.Item100Percent.CheckOnClick = true;
             this.Item100Percent.Name = "Item100Percent";
-            this.Item100Percent.Size = new System.Drawing.Size(180, 22);
+            this.Item100Percent.Size = new System.Drawing.Size(134, 22);
             this.Item100Percent.Tag = "Percent100";
             this.Item100Percent.Text = "100%";
             this.Item100Percent.Click += new System.EventHandler(this.ItemZoom_Click);
@@ -427,7 +409,7 @@
             // 
             this.Item200Percent.CheckOnClick = true;
             this.Item200Percent.Name = "Item200Percent";
-            this.Item200Percent.Size = new System.Drawing.Size(180, 22);
+            this.Item200Percent.Size = new System.Drawing.Size(134, 22);
             this.Item200Percent.Tag = "Percent200";
             this.Item200Percent.Text = "200%";
             this.Item200Percent.Click += new System.EventHandler(this.ItemZoom_Click);
@@ -436,7 +418,7 @@
             // 
             this.Item400Percent.CheckOnClick = true;
             this.Item400Percent.Name = "Item400Percent";
-            this.Item400Percent.Size = new System.Drawing.Size(180, 22);
+            this.Item400Percent.Size = new System.Drawing.Size(134, 22);
             this.Item400Percent.Tag = "Percent400";
             this.Item400Percent.Text = "400%";
             this.Item400Percent.Click += new System.EventHandler(this.ItemZoom_Click);
@@ -445,7 +427,7 @@
             // 
             this.Item800Percent.CheckOnClick = true;
             this.Item800Percent.Name = "Item800Percent";
-            this.Item800Percent.Size = new System.Drawing.Size(180, 22);
+            this.Item800Percent.Size = new System.Drawing.Size(134, 22);
             this.Item800Percent.Tag = "Percent800";
             this.Item800Percent.Text = "800%";
             this.Item800Percent.Click += new System.EventHandler(this.ItemZoom_Click);
@@ -454,7 +436,7 @@
             // 
             this.Item1600Percent.CheckOnClick = true;
             this.Item1600Percent.Name = "Item1600Percent";
-            this.Item1600Percent.Size = new System.Drawing.Size(180, 22);
+            this.Item1600Percent.Size = new System.Drawing.Size(134, 22);
             this.Item1600Percent.Tag = "Percent1600";
             this.Item1600Percent.Text = "1600%";
             this.Item1600Percent.Click += new System.EventHandler(this.ItemZoom_Click);
@@ -462,7 +444,7 @@
             // Item3200Percent
             // 
             this.Item3200Percent.Name = "Item3200Percent";
-            this.Item3200Percent.Size = new System.Drawing.Size(180, 22);
+            this.Item3200Percent.Size = new System.Drawing.Size(134, 22);
             this.Item3200Percent.Tag = "Percent3200";
             this.Item3200Percent.Text = "3200%";
             this.Item3200Percent.Click += new System.EventHandler(this.ItemZoom_Click);
@@ -470,7 +452,7 @@
             // Item6400Percent
             // 
             this.Item6400Percent.Name = "Item6400Percent";
-            this.Item6400Percent.Size = new System.Drawing.Size(180, 22);
+            this.Item6400Percent.Size = new System.Drawing.Size(134, 22);
             this.Item6400Percent.Tag = "Percent6400";
             this.Item6400Percent.Text = "6400%";
             this.Item6400Percent.Click += new System.EventHandler(this.ItemZoom_Click);
@@ -503,7 +485,6 @@
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines2;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonSpriteUndo;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonSpriteRedo;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator3;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines3;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonZoomSprite;
         private System.Windows.Forms.ContextMenuStrip MenuZoom;
@@ -520,7 +501,6 @@
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonNewSprite;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple2;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonClipSprite;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines1;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonPickSprite;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonSpriteColor;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonSpriteVertexOffsets;
@@ -528,12 +508,12 @@
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup GroupSprite;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple TripleSpriteColor;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines LinesSpriteVertex;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonSpriteTextureCoords;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonSpriteImageFilter;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonSpriteImageWrap;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonSpriteAnchor;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines LinesImageSampling;
         private System.Windows.Forms.ToolStripMenuItem Item3200Percent;
         private System.Windows.Forms.ToolStripMenuItem Item6400Percent;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator1;
     }
 }

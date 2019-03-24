@@ -66,6 +66,8 @@
       <DependentUpon>FormRibbon.cs</DependentUpon>
     </Compile>
     <Compile Include="_Internal\ImageAnimationController.cs" />
+    <Compile Include="_Internal\Services\_Interfaces\IPickClipperService.cs" />
+    <Compile Include="_Internal\Services\PickClipperService.cs" />
     <Compile Include="_Internal\SpriteEditorSettings.cs" />
     <Compile Include="_Internal\Services\GorgonSpriteImporter.cs" />
     <Compile Include="_Internal\Services\SpriteContentRenderer.cs" />
@@ -74,9 +76,26 @@
     <Compile Include="_Internal\Services\_Interfaces\ISpriteTextureService.cs" />
     <Compile Include="_Internal\SpriteImporterSettings.cs" />
     <Compile Include="_Internal\SpriteEditorCommonConstants.cs" />
+    <Compile Include="_Internal\ViewModels\_Interfaces\ISettings.cs" />
+    <Compile Include="_Internal\ViewModels\Settings.cs" />
+    <Compile Include="_Internal\ViewModels\SettingsParameters.cs" />
+    <Compile Include="_Internal\ViewModels\_Interfaces\IManualRectInputVm.cs" />
+    <Compile Include="_Internal\ViewModels\ManualRectInputVm.cs" />
     <Compile Include="_Internal\ViewModels\SpriteContent.cs" />
     <Compile Include="_Internal\ViewModels\SpriteContentParameters.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\ISpriteContent.cs" />
+    <Compile Include="_Internal\Views\FormManualRectInput.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="_Internal\Views\FormManualRectInput.Designer.cs">
+      <DependentUpon>FormManualRectInput.cs</DependentUpon>
+    </Compile>
+    <Compile Include="_Internal\Views\ManualRectInput.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="_Internal\Views\ManualRectInput.Designer.cs">
+      <DependentUpon>ManualRectInput.cs</DependentUpon>
+    </Compile>
     <Compile Include="_Internal\Views\SpriteEditorView.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -131,6 +150,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="_Internal\Forms\FormRibbon.resx">
       <DependentUpon>FormRibbon.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="_Internal\Views\FormManualRectInput.resx">
+      <DependentUpon>FormManualRectInput.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="_Internal\Views\ManualRectInput.resx">
+      <DependentUpon>ManualRectInput.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="_Internal\Views\SpriteEditorView.resx">
       <DependentUpon>SpriteEditorView.cs</DependentUpon>

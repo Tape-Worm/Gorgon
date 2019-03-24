@@ -78,6 +78,11 @@ namespace Gorgon.Editor.Services
         #region Events.
         /// <summary>Event triggered when the keyboard icon is clicked.</summary>
         public event EventHandler KeyboardIconClicked;
+
+        /// <summary>
+        /// Event triggered when the rectangle coordinates have been altered.
+        /// </summary>
+        public event EventHandler RectChanged;
         #endregion
 
         #region Properties.
@@ -88,6 +93,15 @@ namespace Gorgon.Editor.Services
         {
             get;
             private set;
+        }
+
+        /// <summary>
+        /// Property to set or return the boundaries for the clipping rectangle.
+        /// </summary>
+        public DX.RectangleF Bounds
+        {
+            get;
+            set;
         }
 
         /// <summary>
@@ -156,8 +170,29 @@ namespace Gorgon.Editor.Services
                     value.Top = temp;
                 }
 
+                if (!Bounds.IsEmpty)
+                {
+                    Bounds.Contains(ref value, out bool contains);
+
+                    if (!contains)
+                    {
+                        value = DX.RectangleF.Intersect(Bounds, value);
+
+                        if (value.Width < 1)
+                        {
+                            value.Width = 1;
+                        }
+
+                        if (value.Height < 1)
+                        {
+                            value.Height = 1;
+                        }
+                    }
+                }
+
                 _clipRect = value.Truncate();
                 SetupHandles();
+                OnRectChanged();
             }
         }
 
@@ -190,6 +225,15 @@ namespace Gorgon.Editor.Services
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function called when the rectangle dimensions have been updated.
+        /// </summary>
+        private void OnRectChanged()
+        {
+            EventHandler handler = RectChanged;
+            handler?.Invoke(this, EventArgs.Empty);
+        }
+
         /// <summary>
         /// Function to initialize the handle locations.
         /// </summary>

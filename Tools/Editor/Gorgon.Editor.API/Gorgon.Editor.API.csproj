@@ -55,6 +55,7 @@
     <Compile Include="CommonEditorConstants.cs" />
     <Compile Include="Content\ContentFileRenamedEventArgs.cs" />
     <Compile Include="Content\_Interfaces\IContentFileManager.cs" />
+    <Compile Include="Converters\JsonSharpDxRectConverter.cs" />
     <Compile Include="Plugins\ContentImportPlugin.cs" />
     <Compile Include="ProjectData\RecentItem.cs" />
     <Compile Include="PropertyMonitor.cs" />

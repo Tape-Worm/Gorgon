@@ -41,6 +41,11 @@ namespace Gorgon.Editor.Services
         /// Event triggered when the keyboard icon is clicked.
         /// </summary>
         event EventHandler KeyboardIconClicked;
+
+        /// <summary>
+        /// Event triggered when the rectangle coordinates have been altered.
+        /// </summary>
+        event EventHandler RectChanged;
         #endregion
 
         #region Properties.
@@ -74,6 +79,15 @@ namespace Gorgon.Editor.Services
         /// Property to set or return the rectangular region marked for clipping.
         /// </summary>
         DX.RectangleF Rectangle
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the boundaries for the clipping rectangle.
+        /// </summary>
+        DX.RectangleF Bounds
         {
             get;
             set;

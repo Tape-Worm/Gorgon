@@ -49,6 +49,25 @@ namespace Gorgon.Editor.UI
     }
 
     /// <summary>
+    /// The reason why the application is saving the content.
+    /// </summary>
+    public enum SaveReason
+    {
+        /// <summary>
+        /// The user hit the save button.
+        /// </summary>
+        UserSave = 0,
+        /// <summary>
+        /// The application or project is shutting down.
+        /// </summary>
+        AppProjectShutdown = 1,
+        /// <summary>
+        /// The content is closing.
+        /// </summary>
+        ContentShutdown = 2
+    }
+
+    /// <summary>
     /// Common interface for editor content view models.
     /// </summary>
     public interface IEditorContent
@@ -99,19 +118,11 @@ namespace Gorgon.Editor.UI
         /// <summary>
         /// Property to set or return the command used to save the content.
         /// </summary>
-        IEditorAsyncCommand<object> SaveContentCommand
+        IEditorAsyncCommand<SaveReason> SaveContentCommand
         {
             get;
             set;
         }
-        #endregion
-
-        #region Methods.
-        /*/// <summary>
-        /// Function to retrieve the view for the content.
-        /// </summary>
-        /// <returns>A UI for the content, must not be <b>null</b>.</returns>
-        ContentBaseControl GetView();*/
         #endregion
     }
 }

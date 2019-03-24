@@ -59,17 +59,9 @@ namespace Gorgon.Editor.SpriteEditor
         private class SpriteUndoArgs
         {
             /// <summary>
-            /// The sprite data at the time of the undo.
-            /// </summary>
-            public GorgonSprite Sprite;
-            /// <summary>
             /// The sprite texture coordinates, in pixel space.
             /// </summary>
             public DX.RectangleF TextureCoordinates;
-            /// <summary>
-            /// The original texture file associated with the sprite.
-            /// </summary>
-            public IContentFile OriginalTexture;
             /// <summary>
             /// The current texture file associated with the sprite.
             /// </summary>
@@ -103,12 +95,52 @@ namespace Gorgon.Editor.SpriteEditor
         private IContentFile _originalTexture;
         // The currently active tool for editing the sprite.
         private SpriteEditTool _currentTool = SpriteEditTool.None;
+        // The currently active editor sub panel.
+        private EditorSubPanel _subPanel = EditorSubPanel.None;
+        // The image data for the sprite texture.
+        private IGorgonImage _imageData;
         #endregion
 
         #region Properties.
         /// <summary>Property to return the type of content.</summary>
         public override string ContentType => SpriteEditorCommonConstants.ContentType;
 
+        /// <summary>
+        /// Property to return the view model for the plug in settings.
+        /// </summary>
+        public ISettings Settings
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the view model for the manual input interface.
+        /// </summary>
+        public IManualRectInputVm ManualInput
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to set or return the sub panel to make active.
+        /// </summary>
+        public EditorSubPanel ActiveSubPanel
+        {
+            get => _subPanel;
+            set
+            {
+                if (_subPanel == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _subPanel = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// Property to set or return the currently active tool for editing the sprite.
@@ -126,6 +158,10 @@ namespace Gorgon.Editor.SpriteEditor
                 OnPropertyChanging();
                 _currentTool = value;
                 OnPropertyChanged();
+
+                ActiveSubPanel = EditorSubPanel.None;
+
+                NotifyPropertyChanged(nameof(SupportsArrayChange));
             }
         }
 
@@ -148,6 +184,26 @@ namespace Gorgon.Editor.SpriteEditor
             }
         }
 
+
+        /// <summary>
+        /// Property to return the index of the texture array that the sprite uses.
+        /// </summary>
+        public int ArrayIndex
+        {
+            get => _sprite.TextureArrayIndex;
+            private set
+            {
+                if (_sprite.TextureArrayIndex == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _sprite.TextureArrayIndex = value.Min((Texture?.Texture.ArrayCount ?? 1) - 1).Max(0);
+                OnPropertyChanged();
+            }
+        }
+
         /// <summary>
         /// Property to return the texture associated with the sprite.
         /// </summary>
@@ -166,9 +222,19 @@ namespace Gorgon.Editor.SpriteEditor
                 OnPropertyChanged();
 
                 ContentState = ContentState.Modified;
+                NotifyPropertyChanged(nameof(SupportsArrayChange));
             }
         }
 
+        /// <summary>
+        /// Property to return the buffer that contains the image data for the <see cref="Texture"/>, at the <see cref="ArrayIndex"/> associated with the sprite.
+        /// </summary>
+        public IGorgonImageBuffer ImageData => _imageData?.Buffers[0, _sprite.TextureArrayIndex.Max(0).Min(_imageData.ArrayCount - 1)];
+
+        /// <summary>
+        /// Property to return whether the currently loaded texture supports array changes.
+        /// </summary>
+        public bool SupportsArrayChange => (Texture != null) && (Texture.Texture.ArrayCount > 1) && ((CurrentTool == SpriteEditTool.SpritePick) || (CurrentTool == SpriteEditTool.SpriteClip));
 
         /// <summary>
         /// Property to set or return the size of the sprite.
@@ -212,13 +278,22 @@ namespace Gorgon.Editor.SpriteEditor
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the command to execute when picking a sprite.
+        /// </summary>
+        public IEditorCommand<object> SpritePickCommand
+        {
+            get;
+        }
+
         #endregion
 
         #region Methods.
         /// <summary>
         /// Function to set up a texture file that is associated with the sprite.
         /// </summary>
-        /// <param name="textureFile"></param>
+        /// <param name="textureFile">The current texture file.</param>
         private void SetupTextureFile(IContentFile textureFile)
         {
             if (_textureFile != null)
@@ -294,14 +369,16 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Function to determine if the current content can be saved.
         /// </summary>
+        /// <param name="saveReason">The reason why the content is being saved.</param>
         /// <returns><b>true</b> if the content can be saved, <b>false</b> if not.</returns>
-        private bool CanSaveSprite() => ContentState != ContentState.Unmodified && _currentTool == SpriteEditTool.None;
+        private bool CanSaveSprite(SaveReason saveReason) => (ContentState != ContentState.Unmodified) && ((CurrentTool == SpriteEditTool.None) || (saveReason != SaveReason.UserSave));
 
         /// <summary>
         /// Function to save the sprite back to the project file system.
         /// </summary>
+        /// <param name="saveReason">The reason why the content is being saved.</param>
         /// <returns>A task for asynchronous operation.</returns>
-        private Task DoSaveSpriteTask()
+        private Task DoSaveSpriteTask(SaveReason saveReason)
         {
             Stream outStream = null;
 
@@ -353,6 +430,8 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 try
                 {
+                    ActiveSubPanel = EditorSubPanel.None;
+
                     TextureCoordinates = Texture.ToTexel(coordinates.ToRectangle());                    
                     Size = new DX.Size2F((int)coordinates.Size.Width, (int)coordinates.Size.Height);
                     
@@ -398,13 +477,64 @@ namespace Gorgon.Editor.SpriteEditor
             NotifyPropertyChanged(nameof(UndoCommand));
         }
 
+        /// <summary>
+        /// Function to determine if the sprite picker can activate or not.
+        /// </summary>
+        /// <returns><b>true</b> if it can activate, <b>false</b> if not.</returns>
+        private bool CanSpritePick() => ((CurrentTool == SpriteEditTool.None) || (CurrentTool == SpriteEditTool.SpritePick))
+                                            && (ImageData != null)
+                                            && (ImageData.Format == BufferFormat.R8G8B8A8_UNorm);
+
+        /// <summary>
+        /// Function to activate (or deactivate) the sprite picker tool.
+        /// </summary>
+        private void DoSpritePick()
+        {
+            try
+            {
+                if (CurrentTool == SpriteEditTool.SpritePick)
+                {
+                    CurrentTool = SpriteEditTool.None;
+                    return;
+                }
+
+                // Let the user know that performance may be an issue here with a large texture (32 bit 4096x4096 image should be around 67 MB).
+                if ((Settings.ShowImageSizeWarning) && (ImageData.Data.SizeInBytes > 67108864))
+                {
+                    MessageDisplay.ShowWarning(string.Format(Resources.GORSPR_WRN_LARGE_IMAGE, ImageData.Width, ImageData.Height));
+                }
+
+                CurrentTool = SpriteEditTool.SpritePick;
+            }
+            catch (Exception ex)
+            {
+                MessageDisplay.ShowError(ex, string.Format(Resources.GORSPR_ERR_TOOL_CHANGE, SpriteEditTool.SpritePick));
+            }
+        }
+
         /// <summary>Function to determine the action to take when this content is closing.</summary>
         /// <returns>
         ///   <b>true</b> to continue with closing, <b>false</b> to cancel the close request.</returns>
         /// <remarks>Plugin authors should override this method to confirm whether save changed content, continue without saving, or cancel the operation entirely.</remarks>
-        protected override Task<bool> OnCloseContentTask()
+        protected override async Task<bool> OnCloseContentTask()
         {
-            return base.OnCloseContentTask();
+            if (ContentState == ContentState.Unmodified)
+            {
+                return true;
+            }
+
+            MessageResponse response = MessageDisplay.ShowConfirmation(string.Format(Resources.GORSPR_CONFIRM_CLOSE, File.Name), allowCancel: true);
+
+            switch (response)
+            {
+                case MessageResponse.Yes:
+                    await DoSaveSpriteTask(SaveReason.ContentShutdown);
+                    return true;
+                case MessageResponse.Cancel:
+                    return false;
+                default:
+                    return true;
+            }
         }
 
         /// <summary>Function to initialize the content.</summary>
@@ -419,10 +549,12 @@ namespace Gorgon.Editor.SpriteEditor
             _scratchArea = injectionParameters.ScratchArea ?? throw new ArgumentMissingException(nameof(injectionParameters.ScratchArea), nameof(injectionParameters));
             _textureService = injectionParameters.TextureService ?? throw new ArgumentMissingException(nameof(injectionParameters.TextureService), nameof(injectionParameters));
             _spriteCodec = injectionParameters.SpriteCodec ?? throw new ArgumentMissingException(nameof(injectionParameters.SpriteCodec), nameof(injectionParameters));
+            ManualInput = injectionParameters.ManualInput ?? throw new ArgumentMissingException(nameof(injectionParameters.ManualInput), nameof(injectionParameters));
+            Settings = injectionParameters.Settings ?? throw new ArgumentMissingException(nameof(injectionParameters.Settings), nameof(injectionParameters));
 
             _originalTexture = injectionParameters.SpriteTextureFile;
 
-            SetupTextureFile(injectionParameters.SpriteTextureFile);
+            SetupTextureFile(injectionParameters.SpriteTextureFile);            
         }
 
         /// <summary>Function called when the associated view is loaded.</summary>
@@ -447,6 +579,8 @@ namespace Gorgon.Editor.SpriteEditor
                 _textureFile?.UnlinkContent(File);
                 _originalTexture?.LinkContent(File);
             }
+
+            _imageData?.Dispose();
 
             SetupTextureFile(null);
             _sprite?.Texture?.Dispose();
@@ -511,6 +645,9 @@ namespace Gorgon.Editor.SpriteEditor
                     Texture?.Dispose();
                     Texture = texture;
 
+                    // Copy the image data.
+                    await ExtractImageDataAsync();
+
                     _textureFile?.UnlinkContent(File);
 
                     SetupTextureFile(newTextureFile);
@@ -523,6 +660,8 @@ namespace Gorgon.Editor.SpriteEditor
                         Size = new DX.Size2F(texture.Width, texture.Height);
                         File.Metadata.Attributes.Remove(CommonEditorConstants.IsNewAttr);
                     }
+
+                    NotifyPropertyChanged(nameof(ImageData));
                 }
                 catch (Exception ex)
                 {
@@ -563,16 +702,38 @@ namespace Gorgon.Editor.SpriteEditor
                 NotifyPropertyChanged(nameof(UndoCommand));
             }
         }
+
+        /// <summary>
+        /// Function to extract the image data from a sprite.
+        /// </summary>
+        /// <returns>A task for asynchronous operation.</returns>
+        public async Task ExtractImageDataAsync()
+        {
+            IGorgonImage image = Interlocked.Exchange(ref _imageData, null);
+            image?.Dispose();
+
+            if (_sprite.Texture == null)
+            {
+                return;
+            }                        
+            
+            image = await _textureService.GetSpriteTextureImageDataAsync(_sprite.Texture, _sprite.TextureArrayIndex);
+
+            Interlocked.Exchange(ref _imageData, image);
+
+            NotifyPropertyChanged(nameof(ImageData));
+        }
         #endregion
 
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.SpriteEditor.SpriteContent"/> class.</summary>
         public SpriteContent()
         {
-            SaveContentCommand = new EditorAsyncCommand<object>(DoSaveSpriteTask, CanSaveSprite);
+            SaveContentCommand = new EditorAsyncCommand<SaveReason>(DoSaveSpriteTask, CanSaveSprite);
             UndoCommand = new EditorCommand<object>(DoUndoAsync, CanUndo);
             RedoCommand = new EditorCommand<object>(DoRedoAsync, CanRedo);
             SetTextureCoordinatesCommand = new EditorCommand<DX.RectangleF>(DoSetTextureCoordinates, CanSetTextureCoordinates);
+            SpritePickCommand = new EditorCommand<object>(DoSpritePick, CanSpritePick);
         }
         #endregion
     }

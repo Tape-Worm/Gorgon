@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,17 +38,42 @@ namespace Gorgon.Editor.Content
     /// </summary>
     public interface IContentFileManager
     {
-        #region Properties.
-
-        #endregion
-
         #region Methods.
+        /// <summary>
+        /// Function to create a new directory
+        /// </summary>
+        /// <param name="path">The path to the directory.</param>        
+        /// <returns><b>true</b> if the directory exists, <b>false</b> if not.</returns>
+        void CreateDirectory(string path);
+
+        /// <summary>
+        /// Function to delete a directory.
+        /// </summary>
+        /// <param name="path">The path to the directory.</param>
+        /// <param name="deleteChildren"><b>true</b> true to delete child directories and files, <b>false</b> to delete only this directory (must be empty).</param>
+        void DeleteDirectory(string path, bool deleteChildren);
+
+        /// <summary>
+        /// Function to determine if a directory exists or not.
+        /// </summary>
+        /// <param name="path">The path to the directory.</param>
+        /// <returns><b>true</b> if the directory exists, <b>false</b> if not.</returns>
+        bool DirectoryExists(string path);
+
         /// <summary>
         /// Function to retrieve a file based on the path specified.
         /// </summary>
         /// <param name="path">The path to the file.</param>
         /// <returns>A <see cref="IContentFile"/> if found, <b>null</b> if not.</returns>
         IContentFile GetFile(string path);
+
+        /// <summary>
+        /// Function to create a new content file on the path specified.
+        /// </summary>
+        /// <param name="path">The path to the file.</param>
+        /// <param name="dataStream">A callback method to write the file data.</param>
+        /// <returns>The content file.</returns>
+        IContentFile WriteFile(string path, Action<Stream> dataStream);
         #endregion
     }
 }

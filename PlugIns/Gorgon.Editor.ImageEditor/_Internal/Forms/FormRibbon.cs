@@ -278,12 +278,12 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void ButtonSaveImage_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.SaveContentCommand == null) || (!DataContext.SaveContentCommand.CanExecute(null)))
+            if ((DataContext?.SaveContentCommand == null) || (!DataContext.SaveContentCommand.CanExecute(SaveReason.UserSave)))
             {
                 return;
             }
 
-            await DataContext.SaveContentCommand.ExecuteAsync(null);
+            await DataContext.SaveContentCommand.ExecuteAsync(SaveReason.UserSave);
             ValidateButtons();
         }
 
@@ -334,7 +334,7 @@ namespace Gorgon.Editor.ImageEditor
             ButtonImageUndo.Enabled = DataContext.UndoCommand?.CanExecute(null) ?? false;
             ButtonImageRedo.Enabled = DataContext.RedoCommand?.CanExecute(null) ?? false;
             ButtonExport.Enabled = MenuCodecs.Items.Count > 0;            
-            ButtonSaveImage.Enabled = DataContext.SaveContentCommand?.CanExecute(null) ?? false;
+            ButtonSaveImage.Enabled = DataContext.SaveContentCommand?.CanExecute(SaveReason.UserSave) ?? false;
 
             if (DataContext.ChangeImageTypeCommand == null)
             {
