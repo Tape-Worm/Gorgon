@@ -260,6 +260,7 @@ namespace Gorgon.Editor.SpriteEditor
             this.ButtonPrevArrayIndex.Name = "ButtonPrevArrayIndex";
             this.ButtonPrevArrayIndex.Size = new System.Drawing.Size(22, 22);
             this.ButtonPrevArrayIndex.TabIndex = 8;
+            this.ButtonPrevArrayIndex.Click += new System.EventHandler(this.ButtonPrevArrayIndex_Click);
             // 
             // ButtonNextArrayIndex
             // 
@@ -278,6 +279,7 @@ namespace Gorgon.Editor.SpriteEditor
             this.ButtonNextArrayIndex.Name = "ButtonNextArrayIndex";
             this.ButtonNextArrayIndex.Size = new System.Drawing.Size(22, 22);
             this.ButtonNextArrayIndex.TabIndex = 10;
+            this.ButtonNextArrayIndex.Click += new System.EventHandler(this.ButtonNextArrayIndex_Click);
             // 
             // LabelArrayIndex
             // 

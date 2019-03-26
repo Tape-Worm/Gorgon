@@ -181,6 +181,15 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enter Sprite Name.
+        /// </summary>
+        internal static string GORSPR_CAPTION_SPRITE_NAME {
+            get {
+                return ResourceManager.GetString("GORSPR_CAPTION_SPRITE_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The sprite &apos;{0}&apos; has unsaved changes. 
         ///
         ///Would you like to save these changes now?.

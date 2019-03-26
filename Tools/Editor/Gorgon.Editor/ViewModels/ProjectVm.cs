@@ -39,6 +39,7 @@ using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
+using Gorgon.IO;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -646,12 +647,58 @@ namespace Gorgon.Editor.ViewModels
             {
                 throw new ArgumentNullException(nameof(plugin));
             }
+            
+            // Function to retrieve the name for the new content file node.
+            string GetContentFileName(string baseName, IFileExplorerNodeVm parent)
+            {
+                int count = 0;
+                string name = baseName;
+
+                if (parent == null)
+                {
+                    parent = _fileExplorer.RootNode;
+                }
+
+                while (parent.Children.Any(item => string.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase)))
+                {
+                    name = $"{baseName} ({++count})";
+                }
+
+                return name;
+            }
 
             // TODO: Add prompt if we have opened, unsaved changes.
-            var args = new CreateContentFileArgs
+
+            IFileExplorerNodeVm parentNode = _fileExplorer.SelectedNode ?? _fileExplorer.RootNode;
+            var args = new CreateContentFileArgs(parentNode)
             {
-                Name = metadata.ContentType
+                Name = GetContentFileName(metadata.ContentType.FormatFileName(), parentNode)
             };
+
+            // Get the name of the object from the plugin.
+            do
+            {
+                string newName = plugin.GetDefaultContentName(args.Name);
+
+                // Cancel the operation.
+                if (newName == null)
+                {
+                    return null;
+                }
+
+                if ((!string.IsNullOrWhiteSpace(newName)) && (!string.Equals(newName, args.Name, StringComparison.CurrentCultureIgnoreCase)))
+                {
+                    args.Name = newName.FormatFileName();
+                }
+
+                if (parentNode.Children.Any(item => string.Equals(args.Name, item.Name, StringComparison.CurrentCultureIgnoreCase)))
+                {
+                    _messageService.ShowError(string.Format(Resources.GOREDIT_ERR_NODE_EXISTS, args.Name));
+                    continue;
+                }
+
+                break;
+            } while (true);
 
             if ((_fileExplorer?.CreateContentFileCommand == null) || (!_fileExplorer.CreateContentFileCommand.CanExecute(args)))
             {
@@ -672,7 +719,7 @@ namespace Gorgon.Editor.ViewModels
                 // Now that we have a file, we need to populate it with default data from the content plugin.
                 contentStream = args.ContentFile.OpenWrite();
 
-                byte[] contentData = await plugin.GetDefaultContentAsync(args.Name);
+                byte[] contentData = await plugin.GetDefaultContentAsync(args.Name);                
 
                 contentStream.Write(contentData, 0, contentData.Length);
                 contentStream.Dispose();

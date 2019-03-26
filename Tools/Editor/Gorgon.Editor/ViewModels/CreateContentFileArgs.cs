@@ -45,6 +45,14 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Property to return the parent of the new content file node.
+        /// </summary>
+        public IFileExplorerNodeVm ParentNode
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to set or return the node that was created for the content file.
         /// </summary>
         public IFileExplorerNodeVm Node
@@ -57,5 +65,9 @@ namespace Gorgon.Editor.ViewModels
         /// Property to return the content file created.
         /// </summary>
         public IContentFile ContentFile => Node as IContentFile;
+
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ViewModels.CreateContentFileArgs"/> class.</summary>
+        /// <param name="parent">The parent of the content file.</param>
+        public CreateContentFileArgs(IFileExplorerNodeVm parent) => ParentNode = parent;
     }
 }

@@ -575,20 +575,13 @@ namespace Gorgon.Editor.ViewModels
             FileInfo file = null;
             
             // Find out which directory is selected.
-            IFileExplorerNodeVm parent = SelectedNode;
+            IFileExplorerNodeVm parent = args.ParentNode ?? RootNode;
 
             try
             {
-                if (parent == null)
+                while (!parent.AllowChildCreation)
                 {
-                    parent = RootNode;
-                }
-                else
-                {
-                    while (!parent.AllowChildCreation)
-                    {
-                        parent = parent.Parent;
-                    }
+                    parent = parent.Parent;
                 }
 
                 int count = 0;
@@ -605,8 +598,7 @@ namespace Gorgon.Editor.ViewModels
                 var physicalParent = new DirectoryInfo(parent.PhysicalPath);
                 file = _fileSystemService.CreateEmptyFile(physicalParent, args.Name);
                                 
-                SelectedNode = args.Node = _factory.CreateFileExplorerFileNodeVm(_project, _fileSystemService, parent, file);
-                _nodePathLookup[args.Node.FullPath] = args.Node;
+                SelectedNode = args.Node = _factory.CreateFileExplorerFileNodeVm(_project, _fileSystemService, parent, file);                
             }
             catch (Exception ex)
             {

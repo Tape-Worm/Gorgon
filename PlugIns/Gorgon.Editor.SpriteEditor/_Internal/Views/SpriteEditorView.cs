@@ -92,10 +92,53 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
+            int arrayIndex = DataContext.ArrayIndex;
+
+            switch (DataContext.CurrentTool)
+            {
+                case SpriteEditTool.SpriteClip:
+                case SpriteEditTool.SpritePick:
+                    arrayIndex = _renderer.TextureArrayIndex;
+                    break;
+            }
+
             LabelArrayIndex.Visible = LabelArrayIndexDetails.Visible = LabelSpriteInfo.Visible = true;
             ButtonNextArrayIndex.Visible = ButtonPrevArrayIndex.Visible = DataContext.SupportsArrayChange;
-            ButtonNextArrayIndex.Enabled = DataContext.ArrayIndex < DataContext.Texture.ArrayCount - 1;
-            ButtonPrevArrayIndex.Enabled = DataContext.ArrayIndex > 0;
+            ButtonNextArrayIndex.Enabled = DataContext.SetTextureCoordinatesCommand?.CanExecute((DataContext.TextureCoordinates, arrayIndex + 1)) ?? false;
+            ButtonPrevArrayIndex.Enabled = DataContext.SetTextureCoordinatesCommand?.CanExecute((DataContext.TextureCoordinates, arrayIndex - 1)) ?? false;
+        }
+
+
+        /// <summary>Handles the Click event of the ButtonPrevArrayIndex control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonPrevArrayIndex_Click(object sender, EventArgs e)
+        {
+            if ((DataContext == null) || ((DataContext.CurrentTool != SpriteEditTool.SpriteClip) && (DataContext.CurrentTool != SpriteEditTool.SpritePick)))
+            {
+                return;
+            }
+
+            --_renderer.TextureArrayIndex;
+            ValidateControls();
+
+            UpdateArrayPanel(DataContext);
+        }
+
+        /// <summary>Handles the Click event of the ButtonNextArrayIndex control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonNextArrayIndex_Click(object sender, EventArgs e)
+        {
+            if ((DataContext == null) || ((DataContext.CurrentTool != SpriteEditTool.SpriteClip) && (DataContext.CurrentTool != SpriteEditTool.SpritePick)))
+            {
+                return;
+            }
+
+            ++_renderer.TextureArrayIndex;
+            ValidateControls();
+
+            UpdateArrayPanel(DataContext);
         }
 
         /// <summary>Handles the Move event of the ParentForm control.</summary>
@@ -267,14 +310,18 @@ namespace Gorgon.Editor.SpriteEditor
                         e.IsInputKey = true;
                         return;
                     case Keys.Escape:
-                        if (DataContext.Texture != null)
-                        {
-                            // Reset to the original coordinates so we don't apply anything.
-                            _clipperService.Rectangle = DX.RectangleF.Empty;
-                        }                        
+                        // Reset to the original coordinates so we don't apply anything.
+                        _clipperService.Rectangle = DX.RectangleF.Empty;
+                        _renderer.TextureArrayIndex = DataContext.ArrayIndex;
                         _ribbonForm.SetTool(SpriteEditTool.None);
                         e.IsInputKey = true;
                         return;
+                    case Keys.OemPeriod:
+                        ButtonNextArrayIndex.PerformClick();
+                        break;
+                    case Keys.Oemcomma:
+                        ButtonPrevArrayIndex.PerformClick();
+                        break;
                 }
 
                 e.IsInputKey = _clipperService.KeyDown(e.KeyCode, e.Modifiers);
@@ -567,12 +614,12 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         private void SpritePickFinished()
         {
-            if ((DataContext?.SetTextureCoordinatesCommand == null) || (!DataContext.SetTextureCoordinatesCommand.CanExecute(_pickService.Rectangle)))
+            if ((DataContext?.SetTextureCoordinatesCommand == null) || (!DataContext.SetTextureCoordinatesCommand.CanExecute((_pickService.Rectangle, _renderer.TextureArrayIndex))))
             {
                 return;
             }
 
-            DataContext.SetTextureCoordinatesCommand.Execute(_pickService.Rectangle);
+            DataContext.SetTextureCoordinatesCommand.Execute((_pickService.Rectangle, _renderer.TextureArrayIndex));
         }
 
         /// <summary>
@@ -580,12 +627,12 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         private void SpriteClipFinished()
         {
-            if ((DataContext?.SetTextureCoordinatesCommand == null) || (!DataContext.SetTextureCoordinatesCommand.CanExecute(_clipperService.Rectangle)))
+            if ((DataContext?.SetTextureCoordinatesCommand == null) || (!DataContext.SetTextureCoordinatesCommand.CanExecute((_clipperService.Rectangle, _renderer.TextureArrayIndex))))
             {
                 return;
             }
 
-            DataContext.SetTextureCoordinatesCommand.Execute(_clipperService.Rectangle);
+            DataContext.SetTextureCoordinatesCommand.Execute((_clipperService.Rectangle, _renderer.TextureArrayIndex));
             ValidateControls();
         }
 
@@ -636,7 +683,17 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-            LabelArrayIndexDetails.Text = $"{dataContext.ArrayIndex + 1}/{dataContext.Texture?.Texture.ArrayCount ?? 0}";
+            int arrayIndex = dataContext.ArrayIndex;
+
+            switch (dataContext.CurrentTool)
+            {
+                case SpriteEditTool.SpriteClip:
+                case SpriteEditTool.SpritePick:
+                    arrayIndex = _renderer.TextureArrayIndex;
+                    break;
+            }
+
+            LabelArrayIndexDetails.Text = $"{arrayIndex + 1}/{dataContext.Texture?.Texture.ArrayCount ?? 0}";
         }
 
         /// <summary>Function called when a property is changing on the data context.</summary>
@@ -703,6 +760,7 @@ namespace Gorgon.Editor.SpriteEditor
                     UpdateSpriteDimensionsPanel(DataContext);
                     break;
                 case nameof(ISpriteContent.ArrayIndex):
+                    _renderer.TextureArrayIndex = DataContext.ArrayIndex;
                     UpdateArrayPanel(DataContext);                    
                     break;
                 case nameof(ISpriteContent.ActiveSubPanel):

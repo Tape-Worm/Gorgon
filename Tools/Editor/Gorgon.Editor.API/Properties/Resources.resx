@@ -248,4 +248,7 @@ This content will now close in order to avoid corrupting the file.</value>
   <data name="GOREDIT_TOSTR_DEPENDENCY" xml:space="preserve">
     <value>{0} dependency at '{1}'.</value>
   </data>
+  <data name="GOREDIT_TEXT_NAME_CUE" xml:space="preserve">
+    <value>Enter a name for the {0}...</value>
+  </data>
 </root>

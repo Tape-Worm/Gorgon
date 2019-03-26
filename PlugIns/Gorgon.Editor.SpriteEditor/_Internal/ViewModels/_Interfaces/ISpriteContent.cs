@@ -151,7 +151,10 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Property to return the command to execute when applying texture coordinates to the sprite.
         /// </summary>
-        IEditorCommand<DX.RectangleF> SetTextureCoordinatesCommand
+        /// <remarks>
+        /// The command takes a tuple containing the texture coordinate values, and the texture array index to use.
+        /// </remarks>
+        IEditorCommand<(DX.RectangleF, int)> SetTextureCoordinatesCommand
         {
             get;
         }

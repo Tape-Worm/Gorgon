@@ -77,6 +77,15 @@ namespace Gorgon.Editor.SpriteEditor
         {
             get;
         }
+        
+        /// <summary>
+        /// Property to set or return the current texture array index to use.
+        /// </summary>
+        int TextureArrayIndex
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Methods.

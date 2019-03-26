@@ -66,6 +66,10 @@ namespace Gorgon.Editor.SpriteEditor
             /// The current texture file associated with the sprite.
             /// </summary>
             public IContentFile CurrentTexture;
+            /// <summary>
+            /// The current texture array index.
+            /// </summary>
+            public int ArrayIndex;
         }
         #endregion
 
@@ -201,6 +205,8 @@ namespace Gorgon.Editor.SpriteEditor
                 OnPropertyChanging();
                 _sprite.TextureArrayIndex = value.Min((Texture?.Texture.ArrayCount ?? 1) - 1).Max(0);
                 OnPropertyChanged();
+
+                NotifyPropertyChanged(nameof(ImageData));
             }
         }
 
@@ -274,7 +280,10 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Property to return the command to execute when applying texture coordinates to the sprite.
         /// </summary>
-        public IEditorCommand<DX.RectangleF> SetTextureCoordinatesCommand
+        /// <remarks>
+        /// The command takes a tuple containing the texture coordinate values, and the texture array index to use.
+        /// </remarks>
+        public IEditorCommand<(DX.RectangleF, int)> SetTextureCoordinatesCommand
         {
             get;
         }
@@ -414,19 +423,21 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Function to determine if the texture coordinates can be updated for the sprite.
         /// </summary>
-        /// <param name="textureCoords">The texture coordinates to apply.</param>
+        /// <param name="coords">The texture coordinates and array index to use.</param>
         /// <returns><b>true</b> if the texture coordinates can be applied, <b>false</b> if not.</returns>
-        private bool CanSetTextureCoordinates(DX.RectangleF textureCoords) => (Texture != null)
-            && (!textureCoords.IsEmpty)
-            && (!textureCoords.ToRectangle().Equals(Texture.ToPixel(TextureCoordinates)));
+        private bool CanSetTextureCoordinates((DX.RectangleF textureCoords, int arrayIndex) coords) => (Texture != null)
+            && (!coords.textureCoords.IsEmpty)
+            && (coords.arrayIndex >= 0)
+            && (coords.arrayIndex <= Texture.Texture.ArrayCount - 1)
+            && ((!coords.textureCoords.ToRectangle().Equals(Texture.ToPixel(TextureCoordinates))) || (coords.arrayIndex != ArrayIndex));
 
         /// <summary>
         /// Function called to update the texture coordinates for the sprite.
         /// </summary>
-        /// <param name="textureCoords">The texture coordinates to apply.</param>
-        private void DoSetTextureCoordinates(DX.RectangleF textureCoords)
+        /// <param name="coords">The texture coordinates and array index to use.</param>
+        private void DoSetTextureCoordinates((DX.RectangleF textureCoords, int arrayIndex) coords)
         {
-            bool SetTextureCoordinates(DX.RectangleF coordinates)
+            bool SetTextureCoordinates(DX.RectangleF coordinates, int index)
             {
                 try
                 {
@@ -434,6 +445,7 @@ namespace Gorgon.Editor.SpriteEditor
 
                     TextureCoordinates = Texture.ToTexel(coordinates.ToRectangle());                    
                     Size = new DX.Size2F((int)coordinates.Size.Width, (int)coordinates.Size.Height);
+                    ArrayIndex = index;
                     
                     ContentState = ContentState.Modified;
 
@@ -448,30 +460,31 @@ namespace Gorgon.Editor.SpriteEditor
 
             Task UndoAction(SpriteUndoArgs undoArgs, CancellationToken cancelToken)
             {
-                SetTextureCoordinates(undoArgs.TextureCoordinates);
+                SetTextureCoordinates(undoArgs.TextureCoordinates, undoArgs.ArrayIndex);
                 return Task.CompletedTask;
             }
 
             Task RedoAction(SpriteUndoArgs redoArgs, CancellationToken cancelToken)
             {
-                SetTextureCoordinates(redoArgs.TextureCoordinates);
+                SetTextureCoordinates(redoArgs.TextureCoordinates, redoArgs.ArrayIndex);
                 return Task.CompletedTask;
             }
 
             var texCoordUndoArgs = new SpriteUndoArgs
             {
-                TextureCoordinates = Texture.ToPixel(TextureCoordinates).ToRectangleF()
+                TextureCoordinates = Texture.ToPixel(TextureCoordinates).ToRectangleF(),
+                ArrayIndex = ArrayIndex
             };
             var texCoordRedoArgs = new SpriteUndoArgs
             {
-                TextureCoordinates = textureCoords
+                TextureCoordinates = coords.textureCoords,
+                ArrayIndex = coords.arrayIndex
             };
 
-            if (!SetTextureCoordinates(textureCoords))
+            if (!SetTextureCoordinates(coords.textureCoords, coords.arrayIndex))
             {
                 return;                
-            }
-            
+            }            
 
             _undoService.Record(Resources.GORSPR_UNDO_DESC_CLIP, UndoAction, RedoAction, texCoordUndoArgs, texCoordRedoArgs);
             NotifyPropertyChanged(nameof(UndoCommand));
@@ -509,6 +522,33 @@ namespace Gorgon.Editor.SpriteEditor
             catch (Exception ex)
             {
                 MessageDisplay.ShowError(ex, string.Format(Resources.GORSPR_ERR_TOOL_CHANGE, SpriteEditTool.SpritePick));
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if the <see cref="ArrayIndex"/> can be updated.
+        /// </summary>
+        /// <param name="index">The new index.</param>
+        /// <returns><b>true</b> if the index can be updated, <b>false</b> if not.</returns>
+        private bool CanSetArrayIndex(int index) => ((CurrentTool == SpriteEditTool.SpriteClip) || (CurrentTool == SpriteEditTool.SpritePick)) 
+            && (Texture != null) 
+            && (Texture.Texture.ArrayCount > 0) 
+            && (index >= 0) 
+            && (index <= Texture.Texture.ArrayCount - 1);
+
+        /// <summary>
+        /// Function to set the new array index for the sprite.
+        /// </summary>
+        /// <param name="index">The new index to set.</param>
+        private void DoSetArrayIndex(int index)
+        {
+            try
+            {
+                ArrayIndex = index;
+            }
+            catch (Exception ex)
+            {
+                MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
             }
         }
 
@@ -661,6 +701,13 @@ namespace Gorgon.Editor.SpriteEditor
                         File.Metadata.Attributes.Remove(CommonEditorConstants.IsNewAttr);
                     }
 
+                    // Store the sprite array index as this may change based on the texture array count.
+                    if (args.ArrayIndex == -1)
+                    {
+                        args.ArrayIndex = ArrayIndex.Min(texture.Texture.ArrayCount - 1);
+                    }
+
+                    ArrayIndex = args.ArrayIndex;
                     NotifyPropertyChanged(nameof(ImageData));
                 }
                 catch (Exception ex)
@@ -682,11 +729,13 @@ namespace Gorgon.Editor.SpriteEditor
 
             textureUndoArgs = new SpriteUndoArgs
             {
-                CurrentTexture = _textureFile
+                CurrentTexture = _textureFile,
+                ArrayIndex = ArrayIndex
             };
             textureRedoArgs = new SpriteUndoArgs
             {
-                CurrentTexture = dragData.File
+                CurrentTexture = dragData.File,
+                ArrayIndex = -1
             };
 
             if (!await AssignTextureAsync(textureRedoArgs))
@@ -732,7 +781,7 @@ namespace Gorgon.Editor.SpriteEditor
             SaveContentCommand = new EditorAsyncCommand<SaveReason>(DoSaveSpriteTask, CanSaveSprite);
             UndoCommand = new EditorCommand<object>(DoUndoAsync, CanUndo);
             RedoCommand = new EditorCommand<object>(DoRedoAsync, CanRedo);
-            SetTextureCoordinatesCommand = new EditorCommand<DX.RectangleF>(DoSetTextureCoordinates, CanSetTextureCoordinates);
+            SetTextureCoordinatesCommand = new EditorCommand<(DX.RectangleF, int)>(DoSetTextureCoordinates, CanSetTextureCoordinates);
             SpritePickCommand = new EditorCommand<object>(DoSpritePick, CanSpritePick);
         }
         #endregion

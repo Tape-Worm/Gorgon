@@ -313,4 +313,7 @@ The performance of the current tool may be impacted by this.</value>
   <data name="GORSPR_TEXT_SPRITE_INFO" xml:space="preserve">
     <value>Sprite Dimensions: {0}x{1} - {2}x{3} ({4}x{5})</value>
   </data>
+  <data name="GORSPR_CAPTION_SPRITE_NAME" xml:space="preserve">
+    <value>Enter Sprite Name</value>
+  </data>
 </root>

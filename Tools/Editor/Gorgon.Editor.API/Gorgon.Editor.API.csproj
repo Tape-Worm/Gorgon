@@ -69,6 +69,12 @@
     <Compile Include="Services\_Interfaces\ISearchService.cs" />
     <Compile Include="Services\_Interfaces\IUndoService.cs" />
     <Compile Include="UI\ExplorerFilesDragData.cs" />
+    <Compile Include="UI\Forms\FormName.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\FormName.Designer.cs">
+      <DependentUpon>FormName.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\ZoomEventArgs.cs" />
     <Compile Include="UI\RecentFilesControl.cs">
       <SubType>UserControl</SubType>
@@ -185,6 +191,9 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Forms\FormName.resx">
+      <DependentUpon>FormName.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\RecentFilesControl.resx">
       <DependentUpon>RecentFilesControl.cs</DependentUpon>

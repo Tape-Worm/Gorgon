@@ -140,6 +140,7 @@ namespace Gorgon.Editor.Services
                 SetupHandles();
             }
         }
+
         /// <summary>
         /// Property to return the rectangular region marked for clipping.
         /// </summary>
