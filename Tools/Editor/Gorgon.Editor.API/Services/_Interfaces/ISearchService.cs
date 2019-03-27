@@ -40,9 +40,9 @@ namespace Gorgon.Editor.Services
     public enum SearchMode
     {
         /// <summary>
-        /// No search.
+        /// Search for the word that contains the value typed.
         /// </summary>
-        None = 0,
+        Contains = 0,
         /// <summary>
         /// Search everything, use a single * to enable this.
         /// </summary>
@@ -81,6 +81,6 @@ namespace Gorgon.Editor.Services
         /// </summary>
         /// <param name="searchText">The text to search for.</param>
         /// <returns>A list of items that match the search, or <b>null</b> search should be disabled, or an empty list if no matches were found.</returns>
-        IReadOnlyList<T> Search(string searchText);
+        IEnumerable<T> Search(string searchText);
     }
 }

@@ -296,9 +296,53 @@ namespace Gorgon.Editor.SpriteEditor
             get;
         }
 
+        /// <summary>
+        /// Property to return the command to execute when creating a new sprite.
+        /// </summary>
+        public IEditorCommand<object> NewSpriteCommand
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to reset the state of the view model.
+        /// </summary>
+        private void ResetState()
+        {
+            // TODO (In the command): 
+            // 1. Prior to calling this, prompt for a sprite name.
+            //    a. If OK, continue to 2
+            //    b. If cancel, then stop.
+            // 2. Call this method.
+            // 3. Create a new content file with the name we specified, and save the empty sprite to it.
+            // 4. Set content file.Metadata.Attributes[CommonEditorConstants.IsNewAttr] = "true"; <-- This value doesn't matter.
+            // 5. Assign new content file to File property.
+            //
+            // If this messes up, we'll probably have corrupt state on our hands, so, if we can close the view, we should. May need to add some means of doing that.
+            Texture?.Dispose();
+            _imageData?.Dispose();
+            SetupTextureFile(null);
+            _originalTexture = null;
+
+            // TODO: This should be done in the command, after the file is created.
+
+            // Reset all state.
+            _undoService.ClearStack();
+            CurrentTool = SpriteEditTool.None;
+
+            _sprite = new GorgonSprite();
+
+#warning Do not forget to add all properties here.
+            NotifyPropertyChanged(nameof(ArrayIndex));
+            NotifyPropertyChanged(nameof(TextureCoordinates));
+            NotifyPropertyChanged(nameof(ImageData));
+            NotifyPropertyChanged(nameof(Texture));
+
+            ContentState = ContentState.Unmodified;
+        }
+
         /// <summary>
         /// Function to set up a texture file that is associated with the sprite.
         /// </summary>

@@ -45,6 +45,7 @@ using System.Linq;
 using Gorgon.Editor.Content;
 using System.Collections.Generic;
 using Gorgon.Editor.Plugins;
+using System.Collections.Specialized;
 
 namespace Gorgon.Editor
 {
@@ -690,49 +691,53 @@ namespace Gorgon.Editor
 
                 MenuCreate.Items.Add(menuItem);                
             }
-        }
 
+            ValidateRibbonButtons();
+        }
+        
         /// <summary>
         /// Function to update the icons used for the "new" buttons.
         /// </summary>
-        /// <param name="oldMetadata">The previous metadata at updated location in the list.</param>
         /// <param name="metadata">The metadata for plug ins that can create content.</param>
-        private void UpdateNewIcons(IContentPluginMetadata oldMetadata, IContentPluginMetadata metadata)
+        private void RemoveNewIcons(IEnumerable<IContentPluginMetadata> metadata)
         {
-            if ((metadata == null) || (oldMetadata == null))
+            if (metadata == null)
             {
                 return;
             }
 
-            string oldId = oldMetadata.NewIconID.ToString("N");
-
-            if (!MenuCreate.Items.ContainsKey(oldId))
+            foreach (IContentPluginMetadata item in metadata)
             {
-                return;
+                string id = item.NewIconID.ToString("N");
+
+                if (!MenuCreate.Items.ContainsKey(id))
+                {
+                    continue;
+                }
+
+                ToolStripItem menuItem = MenuCreate.Items[id];
+                MenuCreate.Items.RemoveByKey(id);
+                menuItem.Click -= NewItem_Click;
+                menuItem.Dispose();
             }
 
-            ToolStripItem menuItem = MenuCreate.Items[oldId];
-            string newId = metadata.NewIconID.ToString("N");
-            Image icon = oldMetadata.GetNewIcon();
+            ValidateRibbonButtons();
+        }
 
-            if ((MenuCreate.Items.ContainsKey(newId))
-                || (icon == null))
+        /// <summary>
+        /// Function to clear the new icons list.
+        /// </summary>
+        private void ClearNewIcons()
+        {
+            ToolStripItem[] items = MenuCreate.Items.OfType<ToolStripItem>().ToArray();
+            MenuCreate.Items.Clear();
+
+            for (int i = 0; i < items.Length; ++i)
             {
-                return;
+                items[i]?.Dispose();
             }
 
-            int index = MenuCreate.Items.IndexOfKey(oldId);
-            var newItem = new ToolStripMenuItem(metadata.ContentType, icon)
-            {
-                Name = newId
-            };
-
-            newItem.Click += NewItem_Click;
-
-            MenuCreate.Items.Insert(index, newItem);
-            MenuCreate.Items.Remove(menuItem);
-            menuItem.Click -= NewItem_Click;
-            menuItem.Dispose();
+            ValidateRibbonButtons();
         }
 
         /// <summary>Handles the Click event of the NewItem control.</summary>
@@ -748,34 +753,6 @@ namespace Gorgon.Editor
             }
 
             DataContext.CreateContentCommand.Execute(item.Name);
-        }
-
-        /// <summary>
-        /// Function to update the icons used for the "new" buttons.
-        /// </summary>
-        /// <param name="metadata">The metadata for plug ins that can create content.</param>
-        private void RemoveNewIcons(IEnumerable<IContentPluginMetadata> metadata)
-        {
-            if (metadata == null)
-            {
-                return;
-            }
-                        
-            foreach (IContentPluginMetadata item in metadata)
-            {
-                string id = item.NewIconID.ToString("N");
-
-                if (!MenuCreate.Items.ContainsKey(id))
-                {
-                    continue;
-                }
-
-                ToolStripItem menuItem = MenuCreate.Items[id];
-                MenuCreate.Items.RemoveByKey(id);
-                menuItem.Click += NewItem_Click;
-                menuItem.Dispose();
-            }
-            
         }
 
         /// <summary>
@@ -801,8 +778,26 @@ namespace Gorgon.Editor
                 _clipboardContext.DataUpdated += ClipboardContext_DataUpdated;
             }
 
-#warning Add event handler for the collection.
-            AddNewIcons(dataContext.ContentCreators);
+            AddNewIcons(dataContext.ContentCreators);            
+        }
+
+        /// <summary>Handles the CollectionChanged event of the ContentCreators control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
+        private void ContentCreators_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    AddNewIcons(e.NewItems.OfType<IContentPluginMetadata>());
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    RemoveNewIcons(e.OldItems.OfType<IContentPluginMetadata>());
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    ClearNewIcons();
+                    break;
+            }
         }
 
         /// <summary>
@@ -818,7 +813,10 @@ namespace Gorgon.Editor
                 return;
             }
 
-#warning Remove event handler for new item collection.
+            if (DataContext.ContentCreators != null)
+            {
+                DataContext.ContentCreators.CollectionChanged -= ContentCreators_CollectionChanged;
+            }
 
             if (_clipboardContext != null)
             {
@@ -1080,6 +1078,7 @@ namespace Gorgon.Editor
                     DataContext.CurrentProject.FileExplorer.PropertyChanged += FileExplorer_PropertyChanged;
                 }
 
+                DataContext.ContentCreators.CollectionChanged += ContentCreators_CollectionChanged;
                 DataContext.ProgressUpdated += DataContext_ProgressUpdated;
                 DataContext.ProgressDeactivated += DataContext_ProgressDeactivated;
                 DataContext.WaitPanelActivated += DataContext_WaitPanelActivated;

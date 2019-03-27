@@ -167,7 +167,7 @@ namespace Gorgon.Editor.Services
         /// <returns>The search mode and the raw search text.</returns>
         private (SearchMode mode, string searchText) ExtractSearchMode(string searchText)
         {
-            SearchMode mode = SearchMode.None;
+            SearchMode mode = SearchMode.Contains;
 
             // Check for search mode.
             if (searchText.Length > 1)
@@ -204,11 +204,11 @@ namespace Gorgon.Editor.Services
         /// </summary>
         /// <param name="searchText">The text to search for.</param>
         /// <returns>A list of items that match the search, or <b>null</b> search should be disabled, or an empty list if no matches were found.</returns>
-        public IReadOnlyList<IFileExplorerNodeVm> Search(string searchText)
+        public IEnumerable<IFileExplorerNodeVm> Search(string searchText)
         {
             if (string.IsNullOrWhiteSpace(searchText))
             {
-                return null;
+                return new IFileExplorerNodeVm[0];
             }
             
             // Extract any keyword that might be embedded in the start of the search text.
@@ -242,7 +242,7 @@ namespace Gorgon.Editor.Services
                     case SearchMode.OnlyWord when string.Equals(node.Name, searchText, StringComparison.CurrentCultureIgnoreCase):
                     case SearchMode.StartsWith when node.Name.StartsWith(searchText, StringComparison.CurrentCultureIgnoreCase):
                     case SearchMode.EndsWith when node.Name.EndsWith(searchText, StringComparison.CurrentCultureIgnoreCase):
-                    case SearchMode.None when (node.Name.IndexOf(searchText, StringComparison.CurrentCultureIgnoreCase) != -1):                        
+                    case SearchMode.Contains when (node.Name.IndexOf(searchText, StringComparison.CurrentCultureIgnoreCase) != -1):                        
                     case SearchMode.All:
                         searchResults.Add(node);
                         break;

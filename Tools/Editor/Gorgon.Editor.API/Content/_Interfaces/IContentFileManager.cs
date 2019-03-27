@@ -27,9 +27,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Gorgon.Editor.Content
 {
@@ -38,7 +35,6 @@ namespace Gorgon.Editor.Content
     /// </summary>
     public interface IContentFileManager
     {
-        #region Methods.
         /// <summary>
         /// Function to create a new directory
         /// </summary>
@@ -74,6 +70,47 @@ namespace Gorgon.Editor.Content
         /// <param name="dataStream">A callback method to write the file data.</param>
         /// <returns>The content file.</returns>
         IContentFile WriteFile(string path, Action<Stream> dataStream);
-        #endregion
+
+        /// <summary>
+        /// Function to retrieve the content files for a given directory path.
+        /// </summary>
+        /// <param name="directoryPath">The directory path to search under.</param>
+        /// <param name="searchMask">The search mask to use.</param>
+        /// <param name="recursive">[Optional] <b>true</b> to retrieve all files under the path, including those in sub directories, or <b>false</b> to retrieve files in the immediate path.</param>
+        /// <returns>An <c>IEnumerable</c> containing the content files found on the path.</returns>
+        /// <remarks>
+        /// <para>
+        /// This will search on the specified <paramref name="directoryPath"/> for all content files that match the <paramref name="searchMask"/>. 
+        /// </para>
+        /// <para>
+        /// The <paramref name="searchMask"/> parameter can be a full file name, or can contain a wildcard character (<b>*</b>) to filter the search. If the <paramref name="searchMask"/> is set to <b>*</b>, then 
+        /// all content files under the directory will be returned.
+        /// </para>
+        /// </remarks>
+        IEnumerable<IContentFile> EnumerateContentFiles(string directoryPath, string searchMask, bool recursive = false);
+
+        /// <summary>
+        /// Function to retrieve the paths under a given directory.
+        /// </summary>
+        /// <param name="directoryPath">The directory path to search under.</param>
+        /// <param name="searchMask">The search mask to use.</param>
+        /// <param name="recursive">[Optional] <b>true</b> to retrieve all paths under the directory, including those in sub directories, or <b>false</b> to retrieve paths in the immediate directory path.</param>
+        /// <returns>An <c>IEnumerable</c> containing the paths found on the directory.</returns>
+        /// <remarks>
+        /// <para>
+        /// This will search on the specified <paramref name="directoryPath"/> for all paths (i.e. both directories and files) that match the <paramref name="searchMask"/>. 
+        /// </para>
+        /// <para>
+        /// The <paramref name="searchMask"/> parameter can be a full path part, or can contain a wildcard character (<b>*</b>) to filter the search. If the <paramref name="searchMask"/> is set to <b>*</b>, then 
+        /// all paths under the directory will be returned.
+        /// </para>
+        /// </remarks>
+        IEnumerable<string> EnumeratePaths(string directoryPath, string searchMask, bool recursive = false);
+
+        /// <summary>
+        /// Function to delete a file.
+        /// </summary>
+        /// <param name="path">The path to the file to delete.</param>
+        void DeleteFile(string path);
     }
 }

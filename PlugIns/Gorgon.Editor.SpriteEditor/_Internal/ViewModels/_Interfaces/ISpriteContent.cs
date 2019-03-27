@@ -166,6 +166,14 @@ namespace Gorgon.Editor.SpriteEditor
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the command to execute when creating a new sprite.
+        /// </summary>
+        IEditorCommand<object> NewSpriteCommand
+        {
+            get;
+        }
         #endregion
 
         #region Methods.

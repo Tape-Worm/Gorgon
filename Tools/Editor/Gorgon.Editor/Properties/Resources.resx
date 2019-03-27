@@ -794,4 +794,7 @@ Please try again.</value>
   <data name="GOREDIT_ERR_PATH_IS_FILE" xml:space="preserve">
     <value>There is a file with the name '{0}' already on this path.</value>
   </data>
+  <data name="GOREDIT_ERR_PATH_NOT_FOUND" xml:space="preserve">
+    <value>The path '{0}' was not found.</value>
+  </data>
 </root>

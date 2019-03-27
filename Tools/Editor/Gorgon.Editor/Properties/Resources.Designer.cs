@@ -1068,6 +1068,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The path &apos;{0}&apos; was not found..
+        /// </summary>
+        internal static string GOREDIT_ERR_PATH_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_PATH_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The path &apos;{0}&apos; does not exist in the project metadata..
         /// </summary>
         internal static string GOREDIT_ERR_PATH_NOT_INCLUDED {

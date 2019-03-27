@@ -253,6 +253,73 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Methods.
+
+        /// <summary>
+        /// Function to search for files on the file system given a directory and a search mask.
+        /// </summary>
+        /// <param name="directoryPath">The path to the directory to search in.</param>
+        /// <param name="searchMask">The mask to filter on.</param>
+        /// <param name="recursive"><b>true</b> to search all sub directories, or <b>false</b> to search only the specified directory.</param>
+        /// <returns>A list of <see cref="IFileExplorerNodeVm"/> nodes that match the criteria.</returns>
+        private IEnumerable<IFileExplorerNodeVm> EnumerateNodes(string directoryPath, string searchMask, bool recursive)
+        {
+            if (!directoryPath.StartsWith("/", StringComparison.OrdinalIgnoreCase))
+            {
+                directoryPath = "/" + directoryPath;
+            }
+
+            directoryPath = directoryPath.FormatDirectory('/');
+
+            IFileExplorerNodeVm directory = null;
+
+            if (directoryPath == "/")
+            {
+                directory = RootNode;
+            }
+            else if (!_nodePathLookup.TryGetValue(directoryPath, out directory))
+            {
+                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, directoryPath));
+            }
+
+            int searchPatternState = 0;
+            bool searchFilePattern = (!string.Equals(searchMask, "*", StringComparison.OrdinalIgnoreCase)) && (!string.Equals(searchMask, "*.*", StringComparison.OrdinalIgnoreCase));
+
+            if (searchFilePattern)
+            {
+                if ((searchMask.StartsWith("*", StringComparison.OrdinalIgnoreCase)) && (searchMask.EndsWith("*", StringComparison.OrdinalIgnoreCase)))
+                {
+                    searchMask = searchMask.Substring(1);
+                    searchMask = searchMask.Substring(0, searchMask.Length - 1);
+                    searchPatternState = 3;
+                }
+                else if (searchMask.StartsWith("*", StringComparison.OrdinalIgnoreCase))
+                {
+                    searchMask = searchMask.Substring(1);
+                    searchPatternState = 1;
+                }
+                else if (searchMask.EndsWith("*", StringComparison.OrdinalIgnoreCase))
+                {
+                    searchMask = searchMask.Substring(0, searchMask.Length - 1);
+                    searchPatternState = 2;
+                }
+            }
+
+            IEnumerable<IFileExplorerNodeVm> fileList = recursive ? directory.Children.Traverse(n => n.Children).OfType<IFileExplorerNodeVm>()
+                : directory.Children.OfType<IFileExplorerNodeVm>();
+
+            switch (searchPatternState)
+            {
+                case 1:
+                    return fileList.Where(item => item.Name.EndsWith(searchMask, StringComparison.OrdinalIgnoreCase));
+                case 2:
+                    return fileList.Where(item => item.Name.StartsWith(searchMask, StringComparison.OrdinalIgnoreCase));
+                case 3:
+                    return fileList.Where(item => item.Name.IndexOf(searchMask, StringComparison.OrdinalIgnoreCase) != -1);
+                default:
+                    return searchFilePattern ? fileList.Where(item => string.Equals(item.Name, searchMask, StringComparison.OrdinalIgnoreCase)) : fileList;
+            }
+        }
+
         /// <summary>
         /// Function to ensure that a node can be moved (or copied).
         /// </summary>
@@ -2269,6 +2336,48 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Function to delete a file.
+        /// </summary>
+        /// <param name="path">The path to the file to delete.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+        /// <exception cref="ArgumentException">Thrown if the <paramref name="path"/> does not contain a file name.</exception>
+        void IContentFileManager.DeleteFile(string path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentEmptyException(nameof(path));
+            }
+
+            if (path.EndsWith("/", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_NO_FILENAME, path), nameof(path));
+            }
+
+            if (!_nodePathLookup.TryGetValue(path, out IFileExplorerNodeVm node))
+            {
+                throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, path));
+            }
+
+            IFileExplorerNodeVm selectedNode = SelectedNode;
+
+            _fileSystemService.DeleteFile(new FileInfo(node.PhysicalPath));
+            node.Parent.Children.Remove(node);
+
+            if (selectedNode != node)
+            {
+                SelectedNode = node;
+            }
+
+            OnFileSystemChanged();
+        }
+
+        /// <summary>
         /// Function to create a new content file on the path specified.
         /// </summary>
         /// <param name="path">The path to the file.</param>
@@ -2521,9 +2630,98 @@ namespace Gorgon.Editor.ViewModels
 
             node.Parent.Children.Remove(node);
 
-            SelectedNode = selectedNode;
+            if (selectedNode != node)
+            {
+                SelectedNode = selectedNode;
+            }
 
             OnFileSystemChanged();
+        }
+
+        /// <summary>
+        /// Function to retrieve the paths under a given directory.
+        /// </summary>
+        /// <param name="directoryPath">The directory path to search under.</param>
+        /// <param name="searchMask">The search mask to use.</param>
+        /// <param name="recursive">[Optional] <b>true</b> to retrieve all paths under the directory, including those in sub directories, or <b>false</b> to retrieve paths in the immediate directory path.</param>
+        /// <returns>An <c>IEnumerable</c> containing the paths found on the directory.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryPath"/>, or the <paramref name="searchMask"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="directoryPath"/>, or the <paramref name="searchMask"/> parameter is empty.</exception>        
+        /// <remarks>
+        /// <para>
+        /// This will search on the specified <paramref name="directoryPath"/> for all paths (i.e. both directories and files) that match the <paramref name="searchMask"/>. 
+        /// </para>
+        /// <para>
+        /// The <paramref name="searchMask"/> parameter can be a full path part, or can contain a wildcard character (<b>*</b>) to filter the search. If the <paramref name="searchMask"/> is set to <b>*</b>, then 
+        /// all paths under the directory will be returned.
+        /// </para>
+        /// </remarks>
+        IEnumerable<string> IContentFileManager.EnumeratePaths(string directoryPath, string searchMask, bool recursive)
+        {
+            if (directoryPath == null)
+            {
+                throw new ArgumentNullException(nameof(directoryPath));
+            }
+
+            if (searchMask == null)
+            {
+                throw new ArgumentNullException(nameof(searchMask));
+            }
+
+            if (string.IsNullOrWhiteSpace(directoryPath))
+            {
+                throw new ArgumentEmptyException(nameof(directoryPath));
+            }
+
+            if (string.IsNullOrWhiteSpace(searchMask))
+            {
+                throw new ArgumentEmptyException(nameof(searchMask));
+            }
+
+            return EnumerateNodes(directoryPath, searchMask, recursive).Select(item => item.FullPath);
+        }
+
+        /// <summary>
+        /// Function to retrieve the content files for a given directory path.
+        /// </summary>
+        /// <param name="directoryPath">The directory path to search under.</param>
+        /// <param name="searchMask">The search mask to use.</param>
+        /// <param name="recursive">[Optional] <b>true</b> to retrieve all files under the path, including those in sub directories, or <b>false</b> to retrieve files in the immediate path.</param>
+        /// <returns>An <c>IEnumerable</c> containing the content files found on the path.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryPath"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="directoryPath"/> parameter is empty.</exception>        
+        /// <remarks>
+        /// <para>
+        /// This will search on the specified <paramref name="directoryPath"/> for all content files that match the <paramref name="searchMask"/>. 
+        /// </para>
+        /// <para>
+        /// The <paramref name="searchMask"/> parameter can be a full file name, or can contain a wildcard character (<b>*</b>) to filter the search. If the <paramref name="searchMask"/> is set to <b>*</b>, then 
+        /// all content files under the directory will be returned.
+        /// </para>
+        /// </remarks>
+        IEnumerable<IContentFile> IContentFileManager.EnumerateContentFiles(string directoryPath, string searchMask, bool recursive)
+        {
+            if (directoryPath == null)
+            {
+                throw new ArgumentNullException(nameof(directoryPath));
+            }
+
+            if (searchMask == null)
+            {
+                throw new ArgumentNullException(nameof(searchMask));
+            }
+
+            if (string.IsNullOrWhiteSpace(directoryPath))
+            {
+                throw new ArgumentEmptyException(nameof(directoryPath));
+            }
+
+            if (string.IsNullOrWhiteSpace(searchMask))
+            {
+                throw new ArgumentEmptyException(nameof(searchMask));
+            }
+
+            return EnumerateNodes(directoryPath, searchMask, recursive).OfType<IContentFile>();
         }
         #endregion
 
