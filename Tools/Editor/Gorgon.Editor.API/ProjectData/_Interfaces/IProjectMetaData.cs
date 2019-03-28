@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,46 +20,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: September 5, 2018 12:57:32 PM
+// Created: March 27, 2019 10:51:12 PM
 // 
 #endregion
 
 using System.Collections.Generic;
-using System.IO;
-using Gorgon.Editor.ProjectData;
+using Gorgon.Editor.Metadata;
 
-namespace Gorgon.Editor.Metadata
+namespace Gorgon.Editor.ProjectData
 {
     /// <summary>
-    /// The metadata access interface.
+    /// JSON specific properties for project data.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// Plug in writers can use this to create, remove and retrieve metadata items for their plug ins, plus handle standard meta data items.
-    /// </para>
-    /// </remarks>
-    public interface IMetadataProvider
+    public interface IProjectMetadata
     {
         /// <summary>
-        /// Property to return the file pointing to the metadata database.
+        /// Property to return the version for the project file.
         /// </summary>
-        FileInfo MetadataFile
+        string Version
         {
             get;
         }
-
+        
         /// <summary>
-        /// Function to update project data and metadata.
+        /// Property to return the list of project items.
         /// </summary>
-        /// <param name="project">The project data to send.</param>
-        /// <param name="title">The title of the project.</param>
-        /// <param name="writerType">The type of writer used to write the project data.</param>
-        void UpdateProjectData(string title, string writerType, IProject project);
-
-        /// <summary>
-        /// Function to retrieve the list of files included in this project.
-        /// </summary>
-        /// <returns>A list of included paths.</returns>
-        IList<ProjectItemMetadata> GetIncludedPaths();
+        Dictionary<string, ProjectItemMetadata> ProjectItems
+        {
+            get;
+        }
     }
 }

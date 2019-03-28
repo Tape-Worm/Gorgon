@@ -201,6 +201,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; was not found on the file system..
+        /// </summary>
+        internal static string GOREDIT_ERR_FILE_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_FILE_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The plug in &apos;{0}&apos; did not produce any content..
         /// </summary>
         internal static string GOREDIT_ERR_NO_CONTENT_FROM_PLUGIN {
@@ -228,6 +237,24 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This file system does not contain a Gorgon Editor project..
+        /// </summary>
+        internal static string GOREDIT_ERR_NOT_EDITOR_PROJECT {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_NOT_EDITOR_PROJECT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; is not a sprite..
+        /// </summary>
+        internal static string GOREDIT_ERR_NOT_SPRITE {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_NOT_SPRITE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The property &apos;{0}&apos; is not a member of this object..
         /// </summary>
         internal static string GOREDIT_ERR_PROPERTY_DOES_NOT_EXIST {
@@ -242,6 +269,24 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_STREAM_READ_ONLY {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_STREAM_READ_ONLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The codec &apos;{0}&apos; is not supported at this time..
+        /// </summary>
+        internal static string GOREDIT_ERR_UNSUPPORTED_CODEC {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_UNSUPPORTED_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The editor project data requires version {0}, but this API only supports up to version {1}..
+        /// </summary>
+        internal static string GOREDIT_ERR_VERSION_MISMATCH {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_VERSION_MISMATCH", resourceCulture);
             }
         }
         

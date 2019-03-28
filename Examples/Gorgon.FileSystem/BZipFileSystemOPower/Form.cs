@@ -352,9 +352,9 @@ namespace Gorgon.Examples
             // The sprites are in the v2 format.
             IEnumerable<IGorgonSpriteCodec> v2Codec = new [] { new GorgonV2SpriteCodec(_renderer) };
 		    IEnumerable<IGorgonImageCodec> pngCodec = new[] { new GorgonCodecPng() };
-		    _sprites[0] = _fileSystem.LoadSprite(_renderer, "/Sprites/base.gorSprite", v2Codec, pngCodec);
-		    _sprites[1] = _fileSystem.LoadSprite(_renderer, "/Sprites/Mother.gorSprite", v2Codec, pngCodec);
-		    _sprites[2] = _fileSystem.LoadSprite(_renderer, "/Sprites/Mother2c.gorSprite", v2Codec, pngCodec);
+		    _sprites[0] = _fileSystem.LoadSpriteFromFileSystem(_renderer, "/Sprites/base.gorSprite", v2Codec, pngCodec);
+		    _sprites[1] = _fileSystem.LoadSpriteFromFileSystem(_renderer, "/Sprites/Mother.gorSprite", v2Codec, pngCodec);
+		    _sprites[2] = _fileSystem.LoadSpriteFromFileSystem(_renderer, "/Sprites/Mother2c.gorSprite", v2Codec, pngCodec);
             
             // This is how you would get the sprites in v2 of Gorgon:
 		    /*_spriteImage = _graphics.Textures.FromMemory<GorgonTexture2D>("0_HardVacuum", LoadFile("/Images/0_HardVacuum.png"), new GorgonCodecPNG());

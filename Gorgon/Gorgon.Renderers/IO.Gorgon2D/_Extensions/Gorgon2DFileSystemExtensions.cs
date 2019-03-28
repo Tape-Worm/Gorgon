@@ -246,7 +246,7 @@ namespace Gorgon.IO.Extensions
         /// <seealso cref="GorgonFileSystem"/>
         /// <seealso cref="GorgonTexture2DView"/>
         /// <seealso cref="GorgonSprite"/>
-        public static GorgonSprite LoadSprite(this IGorgonFileSystem fileSystem,
+        public static GorgonSprite LoadSpriteFromFileSystem(this IGorgonFileSystem fileSystem,
                                               Gorgon2D renderer,
                                               string path,
                                               IEnumerable<IGorgonSpriteCodec> spriteCodecs = null,
@@ -403,7 +403,7 @@ namespace Gorgon.IO.Extensions
         /// <seealso cref="GorgonFileSystem"/>
         /// <seealso cref="GorgonTexture2DView"/>
         /// <seealso cref="GorgonPolySprite"/>
-        public static GorgonPolySprite LoadPolySprite(this GorgonFileSystem fileSystem,
+        public static GorgonPolySprite LoadPolySpriteFromFileSystem(this GorgonFileSystem fileSystem,
                                               Gorgon2D renderer,
                                               string path,
                                               IEnumerable<IGorgonPolySpriteCodec> spriteCodecs = null,
@@ -558,7 +558,7 @@ namespace Gorgon.IO.Extensions
         /// <seealso cref="GorgonFileSystem"/>
         /// <seealso cref="GorgonTexture2DView"/>
         /// <seealso cref="IGorgonAnimation"/>
-        public static IGorgonAnimation LoadAnimation(this GorgonFileSystem fileSystem,
+        public static IGorgonAnimation LoadAnimationFromFileSystem(this GorgonFileSystem fileSystem,
                                               Gorgon2D renderer,
                                               string path,
                                               IEnumerable<IGorgonAnimationCodec> animationCodecs = null,

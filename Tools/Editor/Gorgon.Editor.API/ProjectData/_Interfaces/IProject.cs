@@ -24,10 +24,7 @@
 // 
 #endregion
 
-using System.Collections.Generic;
 using System.IO;
-using Gorgon.Editor.Metadata;
-using Gorgon.Editor.Plugins;
 using Newtonsoft.Json;
 
 namespace Gorgon.Editor.ProjectData
@@ -36,16 +33,9 @@ namespace Gorgon.Editor.ProjectData
     /// The project data used by the editor.
     /// </summary>
     public interface IProject
+        : IProjectMetadata
     {
         #region Properties.
-        /// <summary>
-        /// Property to return the version for the project file.
-        /// </summary>
-        string Version
-        {
-            get;
-        }
-
         /// <summary>
         /// Property to return the workspace used by the project.
         /// </summary>
@@ -95,14 +85,6 @@ namespace Gorgon.Editor.ProjectData
         /// </remarks>
         [JsonIgnore]
         DirectoryInfo FileSystemDirectory
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the list of project items.
-        /// </summary>
-        Dictionary<string, ProjectItemMetadata> ProjectItems
         {
             get;
         }

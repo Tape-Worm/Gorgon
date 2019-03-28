@@ -256,4 +256,19 @@ This content will now close in order to avoid corrupting the file.</value>
 
 Please try again.</value>
   </data>
+  <data name="GOREDIT_ERR_FILE_NOT_FOUND" xml:space="preserve">
+    <value>The file '{0}' was not found on the file system.</value>
+  </data>
+  <data name="GOREDIT_ERR_NOT_EDITOR_PROJECT" xml:space="preserve">
+    <value>This file system does not contain a Gorgon Editor project.</value>
+  </data>
+  <data name="GOREDIT_ERR_NOT_SPRITE" xml:space="preserve">
+    <value>The file '{0}' is not a sprite.</value>
+  </data>
+  <data name="GOREDIT_ERR_UNSUPPORTED_CODEC" xml:space="preserve">
+    <value>The codec '{0}' is not supported at this time.</value>
+  </data>
+  <data name="GOREDIT_ERR_VERSION_MISMATCH" xml:space="preserve">
+    <value>The editor project data requires version {0}, but this API only supports up to version {1}.</value>
+  </data>
 </root>
