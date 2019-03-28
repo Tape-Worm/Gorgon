@@ -78,6 +78,9 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         #endregion
 
         #region Properties.
+        /// <summary>Property to return whether the panel is modal.</summary>
+        public bool IsModal => true;
+
         /// <summary>Property to set or return whether the crop/resize settings is active or not.</summary>
         public bool IsActive
         {

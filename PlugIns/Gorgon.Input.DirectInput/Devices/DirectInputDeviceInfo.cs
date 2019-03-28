@@ -236,7 +236,7 @@ namespace Gorgon.Input.DirectInput
 		/// <param name="devInstance">The DirectInput device instance.</param>
 		public DirectInputDeviceInfo(DI.DeviceInstance devInstance)
 		{
-			VibrationMotorRanges = new GorgonRange[0];
+			VibrationMotorRanges = Array.Empty<GorgonRange>();
 			InstanceGuid = devInstance.InstanceGuid;
 			ProductGuid = devInstance.ProductGuid;
 			Description = devInstance.ProductName;

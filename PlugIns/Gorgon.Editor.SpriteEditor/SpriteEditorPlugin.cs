@@ -61,7 +61,7 @@ namespace Gorgon.Editor.SpriteEditor
     {
         #region Variables.
         // The loaded image codecs.
-        private List<IGorgonSpriteCodec> _codecList = new List<IGorgonSpriteCodec>();
+        private readonly List<IGorgonSpriteCodec> _codecList = new List<IGorgonSpriteCodec>();
 
         // The image editor settings.
         //private ImageEditorSettings _settings = new ImageEditorSettings();
@@ -77,9 +77,6 @@ namespace Gorgon.Editor.SpriteEditor
 
         // The image codec to use.
         private IGorgonImageCodec _ddsCodec;
-
-        // The synchronization lock for threads.
-        private readonly object _syncLock = new object();
 
         // The image used to display a broken image link to a sprite.
         private IGorgonImage _noImage;
@@ -151,53 +148,6 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>
-        /// Function to retrieve the sprite texture from the dependency metadata.
-        /// </summary>
-        /// <param name="dependencies">The dependencies for the sprite file.</param>
-        /// <param name = "fileManager" > The file manager used to access other content files.</param>
-        /// <returns>A tuple containing the sprite image, and the file for the sprite image, or <b>null</b> for both entries if no image was found in the dependency list.</returns>
-        private (IGorgonImage spriteImage, IContentFile imageFile) GetSpriteImageFromMetadata(IList<string> dependencies, IContentFileManager fileManager)
-        {
-            if (dependencies.Count == 0)
-            {
-                return (null, null);
-            }
-
-            IGorgonImage depImage = null;
-
-            // Find the sprite texture dependency.
-            foreach (string dependencyPath in dependencies)
-            {
-                if (string.IsNullOrWhiteSpace(dependencyPath))
-                {
-                    continue;
-                }
-
-                IContentFile dependency = fileManager.GetFile(dependencyPath);
-
-                if ((!dependency.Metadata.Attributes.TryGetValue(SpriteContent.ContentTypeAttr, out string contentType))
-                    || (!string.Equals(contentType, "image", StringComparison.OrdinalIgnoreCase)))
-                {
-                    continue;
-                }
-
-                using (Stream depStream = dependency.OpenRead())
-                {
-                    if (!_ddsCodec.IsReadable(depStream))
-                    {
-                        Log.Print("Sprite dependency '{dependency}' found. But is not DDS file.", LoggingLevel.Verbose);
-                        continue;
-                    }
-
-                    depImage = _ddsCodec.LoadFromStream(depStream);
-                    return (depImage, dependency);
-                }
-            }
-
-            return (null, null);
-        }
-
-        /// <summary>
         /// Function to load external image codec plug ins.
         /// </summary>
         private void LoadCodecPlugins()
@@ -234,31 +184,6 @@ namespace Gorgon.Editor.SpriteEditor
                     _codecList.Add(plugin.CreateCodec(desc.Name));
                 }
             }
-        }
-
-        /// <summary>
-        /// Function to retrieve the path to the texture converted used to convert compressed images.
-        /// </summary>
-        /// <returns>The file info for the texture converter file.</returns>
-        private FileInfo GetTexConvExe()
-        {
-            FileInfo result;
-
-            // The availability of texconv.exe determines whether or not we can use block compressed formats or not.
-            Log.Print("Checking for texconv.exe...", LoggingLevel.Simple);
-            var pluginDir = new DirectoryInfo(Path.GetDirectoryName(GetType().Assembly.Location));
-            result = new FileInfo(Path.Combine(pluginDir.FullName, "texconv.exe"));
-
-            if (!result.Exists)
-            {
-                Log.Print($"WARNING: Texconv.exe was not found at {pluginDir.FullName}. Block compressed formats will be unavailable.", LoggingLevel.Simple);
-            }
-            else
-            {
-                Log.Print($"Found texconv.exe at '{result.FullName}'.", LoggingLevel.Simple);
-            }
-
-            return result;
         }
 
         /// <summary>
@@ -475,9 +400,9 @@ namespace Gorgon.Editor.SpriteEditor
         {
             var content = new SpriteContent();
             GorgonTexture2DView spriteImage = null;
-            IContentFile imageFile = null;
-            GorgonSprite sprite = null;
-            ISpriteTextureService textureService = null;
+            IContentFile imageFile;
+            GorgonSprite sprite;
+            ISpriteTextureService textureService;
             Stream stream = null;
 
             try
@@ -497,6 +422,12 @@ namespace Gorgon.Editor.SpriteEditor
                 var settings = new Settings();
                 settings.Initialize(new SettingsParameters(_settings));
 
+                var colorEditor = new SpriteColorEdit();
+                colorEditor.Initialize(injector);
+
+                var anchorEditor = new SpriteAnchorEdit();
+                anchorEditor.Initialize(injector);
+
                 content.Initialize(new SpriteContentParameters(this,
                     file, 
                     imageFile, 
@@ -504,7 +435,9 @@ namespace Gorgon.Editor.SpriteEditor
                     textureService,
                     sprite,
                     _defaultCodec,
-                    manualRectInput,                    
+                    manualRectInput,             
+                    colorEditor,
+                    anchorEditor,
                     settings,
                     undoService, 
                     scratchArea, 
@@ -620,7 +553,11 @@ namespace Gorgon.Editor.SpriteEditor
         /// </remarks>
         protected override Task<(string name, byte[] data)> OnGetDefaultContentAsync(string generatedName)
         {
-            var sprite = new GorgonSprite();
+            var sprite = new GorgonSprite
+            {
+                Anchor = new DX.Vector2(0.5f, 0.5f),
+                Size = new DX.Size2F(1, 1)
+            };
             byte[] data;
 
             using (var stream = new MemoryStream())

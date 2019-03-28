@@ -40,7 +40,7 @@ namespace Gorgon.Editor.UI
     {
         #region Variables.
         // A list of view builders used to create views.
-        private static Dictionary<string, Func<Control>> _viewBuilders = new Dictionary<string, Func<Control>>(StringComparer.OrdinalIgnoreCase);
+        private static readonly Dictionary<string, Func<Control>> _viewBuilders = new Dictionary<string, Func<Control>>(StringComparer.OrdinalIgnoreCase);
         #endregion
 
         #region Methods.
@@ -89,12 +89,12 @@ namespace Gorgon.Editor.UI
         /// <summary>
         /// Function to create a new view based on the view model type passed in.
         /// </summary>
-        /// <typeparam name="Tv">The type of view. Must inherit from <see cref="Control"/>.</typeparam>
+        /// <typeparam name="T">The type of view. Must inherit from <see cref="Control"/>.</typeparam>
         /// <param name="viewModel">The view model that is associated with the view.</param>
         /// <returns>The view for the view model.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="viewModel"/> parameter is <b>null</b>.</exception>
-        public static Tv CreateView<Tv>(IViewModel viewModel)
-            where Tv : Control
+        public static T CreateView<T>(IViewModel viewModel)
+            where T : Control
         {
             if (viewModel == null)
             {
@@ -106,7 +106,7 @@ namespace Gorgon.Editor.UI
 
             if (_viewBuilders.TryGetValue(typeName, out Func<Control> constructor))
             {
-                return (Tv)constructor();
+                return (T)constructor();
             }
 
             Type[] interfaces = viewModelType.GetInterfaces();
@@ -118,7 +118,7 @@ namespace Gorgon.Editor.UI
                 throw new KeyNotFoundException(string.Format(Resources.GOREDIT_ERR_CANNOT_FIND_VIEW_FACTORY, typeName));
             }
 
-            return (Tv)_viewBuilders[interfaceType.AssemblyQualifiedName]();
+            return (T)_viewBuilders[interfaceType.AssemblyQualifiedName]();
         }
         #endregion
     }

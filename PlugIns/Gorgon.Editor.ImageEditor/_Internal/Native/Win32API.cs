@@ -221,7 +221,7 @@ namespace Gorgon.Editor.ImageEditor.Native
         /// <param name="lpResult">The path to the executable file.</param>
         /// <returns>An integer value greater than 32 if successful, less than or equal to 32 if not.</returns>
         [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
-        private static extern int FindExecutable(string lpFile, string lpDirectory, [Out] StringBuilder lpResult);
+        private static extern IntPtr FindExecutable(string lpFile, string lpDirectory, [Out] StringBuilder lpResult);
 
         /// <summary>
         /// Function to retrieve a string for a file.
@@ -249,9 +249,9 @@ namespace Gorgon.Editor.ImageEditor.Native
         public static bool HasAssociation(string filePath)
         {
             var exePath = new StringBuilder(1024);
-            int result = FindExecutable(filePath, null, exePath);
+            IntPtr result = FindExecutable(filePath, null, exePath);
 
-            return result > 32 && exePath.Length > 0;
+            return result.ToInt32() > 32 && exePath.Length > 0;
         }
 
         /// <summary>
@@ -261,14 +261,13 @@ namespace Gorgon.Editor.ImageEditor.Native
         /// <returns>A string containing the friendly name, or an empty string if no friendly name is found.</returns>
         public static string GetFriendlyExeName(string filePath)
         {
-            int size;
 
-            AssocQueryString(AssociationFlags.InitializeByExeName | AssociationFlags.OpenByExeName,
+            _ = AssocQueryString(AssociationFlags.InitializeByExeName | AssociationFlags.OpenByExeName,
                              AssociationStringType.FriendlyApplicationName,
                              filePath,
                              null,
                              null,
-                             out size);
+                             out int size);
 
             if (size <= 0)
             {
@@ -282,7 +281,7 @@ namespace Gorgon.Editor.ImageEditor.Native
                                     filePath,
                                     null,
                                     result,
-                                    out size) != 0 ? string.Empty : result.ToString();
+                                    out _) != 0 ? string.Empty : result.ToString();
         }
 
         /// <summary>
@@ -293,9 +292,9 @@ namespace Gorgon.Editor.ImageEditor.Native
         public static string GetAssociatedExecutable(string filePath)
         {
             var exePath = new StringBuilder(1024);
-            int errorCode = FindExecutable(filePath, null, exePath);
+            IntPtr errorCode = FindExecutable(filePath, null, exePath);
 
-            if (errorCode > 32)
+            if (errorCode.ToInt32() > 32)
             {
                 return exePath.ToString();
             }

@@ -128,7 +128,7 @@ namespace Gorgon.Editor.Native
                     pFrom = path + '\0' + '\0',
                     fFlags = (FileOperationFlags)0x40 | flags // This combines the UNDO flag with our chosen flags.
                 };
-                SHFileOperation(ref fs);
+                _ = SHFileOperation(ref fs);
                 return true;
             }
             catch (Exception)

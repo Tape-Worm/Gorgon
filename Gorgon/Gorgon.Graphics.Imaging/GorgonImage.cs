@@ -471,7 +471,7 @@ namespace Gorgon.Graphics.Imaging
 			if ((destFormats == null)
 				|| (destFormats.Length == 0))
 			{
-				return new BufferFormat[0];
+				return Array.Empty<BufferFormat>();
 			}
 
 			// If we're converting from B4G4R4A4, then we need to use another path.

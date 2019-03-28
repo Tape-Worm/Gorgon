@@ -95,9 +95,9 @@ namespace Gorgon.Editor.SpriteEditor
 
 
         /// <summary>
-        /// Property to set or return the function used to transform the window client area mouse position to the image pixel space.
+        /// Property to set or return the function used to transform a point from window client space into local clip space.
         /// </summary>
-        Func<DX.Vector2, DX.Vector2> TransformMouseToImage
+        Func<DX.Vector2, DX.Vector2> PointFromClient
         {
             get;
             set;

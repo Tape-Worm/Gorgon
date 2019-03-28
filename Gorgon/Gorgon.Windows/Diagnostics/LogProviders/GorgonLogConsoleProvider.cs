@@ -193,7 +193,7 @@ namespace Gorgon.Diagnostics.LogProviders
         {
             if (string.IsNullOrWhiteSpace(message))
             {
-                return new string[0];
+                return Array.Empty<string>();
             }
 
             return message.Split(new[]

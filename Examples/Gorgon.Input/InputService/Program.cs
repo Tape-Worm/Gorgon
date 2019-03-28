@@ -122,7 +122,7 @@ namespace Gorgon.Examples
 
 			if (_pluginCache.PluginAssemblies.Count == 0)
 			{
-				return new IGorgonGamingDeviceDriver[0];
+				return Array.Empty<IGorgonGamingDeviceDriver>();
 			}
 			
 			// Create our plugin service.

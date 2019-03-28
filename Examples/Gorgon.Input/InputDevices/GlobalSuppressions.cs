@@ -1,0 +1,12 @@
+﻿
+// This file is used by Code Analysis to maintain SuppressMessage 
+// attributes that are applied to this project.
+// Project-level suppressions either have no target or are given 
+// a specific target and scoped to a namespace, type, member, etc.
+
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Build", "CA2213:'Form' contains field '_cursor' that is of IDisposable type 'MouseCursor', but it is never disposed. Change the Dispose method on 'Form' to call Close or Dispose on this field.", Justification = "<Pending>", Scope = "member", Target = "~F:Gorgon.Examples.Form._cursor")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Build", "CA2213:'Form' contains field '_rawInput' that is of IDisposable type 'GorgonRawInput', but it is never disposed. Change the Dispose method on 'Form' to call Close or Dispose on this field.", Justification = "<Pending>", Scope = "member", Target = "~F:Gorgon.Examples.Form._rawInput")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Build", "CA2213:'Form' contains field '_spray' that is of IDisposable type 'Spray', but it is never disposed. Change the Dispose method on 'Form' to call Close or Dispose on this field.", Justification = "<Pending>", Scope = "member", Target = "~F:Gorgon.Examples.Form._spray")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Build", "CA1031:Modify 'OnLoad' to catch a more specific exception type, or rethrow the exception.", Justification = "<Pending>", Scope = "member", Target = "~M:Gorgon.Examples.Form.OnLoad(System.EventArgs)")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Build", "CA1305:The behavior of 'string.Format(string, object, object, object)' could vary based on the current user's locale settings. Replace this call in 'Form.UpdateKeyboard(Keys, Keys)' with a call to 'string.Format(IFormatProvider, string, params object[])'.", Justification = "<Pending>", Scope = "member", Target = "~M:Gorgon.Examples.Form.UpdateKeyboard(System.Windows.Forms.Keys,System.Windows.Forms.Keys)")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Build", "CA1031:Modify 'Main' to catch a more specific exception type, or rethrow the exception.", Justification = "<Pending>", Scope = "member", Target = "~M:Gorgon.Examples.Program.Main")]

@@ -212,43 +212,42 @@ namespace Gorgon.Diagnostics
 
 				while (inner != null)
 				{
-					var gorgonException = inner as GorgonException;
 
-					if ((inner == ex) || (LogFilterLevel == LoggingLevel.Verbose) || (LogFilterLevel == LoggingLevel.All))
-					{
-						FormatMessage(inner.Message, indicator, exception);
+                    if ((inner == ex) || (LogFilterLevel == LoggingLevel.Verbose) || (LogFilterLevel == LoggingLevel.All))
+                    {
+                        FormatMessage(inner.Message, indicator, exception);
 
                         exception.AppendFormat("{1}{2}: {0}\r\n",
-							        inner.GetType().FullName,
-							        indicator,
-							        Resources.GOR_EXCEPT_EXCEPT_TYPE);
+                                    inner.GetType().FullName,
+                                    indicator,
+                                    Resources.GOR_EXCEPT_EXCEPT_TYPE);
 
-						if (inner.Source != null)
-						{
+                        if (inner.Source != null)
+                        {
                             exception.AppendFormat("{1}{2}: {0}\r\n", inner.Source, indicator, Resources.GOR_EXCEPT_SRC);
-						}
+                        }
 
-						if (inner.TargetSite?.DeclaringType != null)
-						{
+                        if (inner.TargetSite?.DeclaringType != null)
+                        {
                             exception.AppendFormat("{2}{3}: {0}.{1}\r\n",
-								        inner.TargetSite.DeclaringType.FullName, 
+                                        inner.TargetSite.DeclaringType.FullName,
                                         inner.TargetSite.Name,
-								        indicator,
-								        Resources.GOR_EXCEPT_TARGET_SITE);
-						}
+                                        indicator,
+                                        Resources.GOR_EXCEPT_TARGET_SITE);
+                        }
 
-						if (gorgonException != null)
-						{
+                        if (inner is GorgonException gorgonException)
+                        {
                             exception.AppendFormat("{3}{4}: [{0}] {1} (0x{2:X})\r\n",
-								        gorgonException.ResultCode.Name,
-								        gorgonException.ResultCode.Description,
-								        gorgonException.ResultCode.Code,
-								        indicator,
-								        Resources.GOR_EXCEPT_GOREXCEPT_RESULT);
-						}
-					}
+                                        gorgonException.ResultCode.Name,
+                                        gorgonException.ResultCode.Description,
+                                        gorgonException.ResultCode.Code,
+                                        indicator,
+                                        Resources.GOR_EXCEPT_GOREXCEPT_RESULT);
+                        }
+                    }
 
-					IDictionary extraInfo = inner.Data;
+                    IDictionary extraInfo = inner.Data;
 
 					// Print custom information.
 					if (((LogFilterLevel == LoggingLevel.Verbose) || (LogFilterLevel == LoggingLevel.All)) 

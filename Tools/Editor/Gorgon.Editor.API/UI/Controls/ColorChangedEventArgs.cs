@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,38 +20,48 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: August 29, 2018 8:41:07 PM
+// Created: March 28, 2019 9:45:09 AM
 // 
 #endregion
 
-using System.ComponentModel;
-using System.IO;
+using System;
+using Gorgon.Graphics;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.UI.Controls
 {
     /// <summary>
-    /// Arguments for the <see cref="IStageNewVm.WorkspaceSelectedCommand"/>.
+    /// Event arguments for the <see cref="ColorPicker.ColorChanged"/> event.
     /// </summary>
-    internal class WorkspaceSelectedArgs
-        : CancelEventArgs
+    public class ColorChangedEventArgs
+        : EventArgs
     {
         #region Properties.
         /// <summary>
-        /// Property to return the selected folder for the workspace.
+        /// Property to return the selected color.
         /// </summary>
-        public DirectoryInfo WorkspaceLocation
+        public GorgonColor Color
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the original color.
+        /// </summary>
+        public GorgonColor OriginalColor
         {
             get;
         }
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WorkspaceSelectedArgs"/> class.
-        /// </summary>
-        /// <param name="workSpaceLocation">The directory to use.</param>
-        public WorkspaceSelectedArgs(DirectoryInfo workSpaceLocation)
-            : base(false) => WorkspaceLocation = workSpaceLocation;
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.UI.Controls.ColorChangedEventArgs"/> class.</summary>
+        /// <param name="newColor">The new color.</param>
+        /// <param name="originalColor">The original color.</param>
+        public ColorChangedEventArgs(GorgonColor newColor, GorgonColor originalColor)
+        {
+            Color = newColor;
+            OriginalColor = originalColor;
+        }
         #endregion
     }
 }

@@ -63,7 +63,7 @@ namespace Gorgon.Editor.SpriteEditor
 
         #region Variables.
         // A list of pixels that have been checked by the clipper.
-        private bool[] _pixels = new bool[0];
+        private bool[] _pixels = Array.Empty<bool>();
         // The image data.
         private IGorgonImageBuffer _imageData;
         #endregion
@@ -117,7 +117,7 @@ namespace Gorgon.Editor.SpriteEditor
 
                 if (value == null)
                 {
-                    _pixels = new bool[0];
+                    _pixels = Array.Empty<bool>();
                     return;
                 }
 
@@ -125,11 +125,10 @@ namespace Gorgon.Editor.SpriteEditor
             }
         }
 
-
         /// <summary>
-        /// Property to set or return the function used to transform the window client area mouse position to the image pixel space.
+        /// Property to set or return the function used to transform a point from window client space into local clip space.
         /// </summary>
-        public Func<DX.Vector2, DX.Vector2> TransformMouseToImage
+        public Func<DX.Vector2, DX.Vector2> PointFromClient
         {
             get;
             set;
@@ -144,7 +143,6 @@ namespace Gorgon.Editor.SpriteEditor
         /// <returns><b>true</b> if the pixel is a masked value, or <b>false</b> if not.</returns>
         private bool IsMaskValue(DX.Point position)
         {
-
             int color = ClipMask == ClipMask.Alpha ? (int)(ClipMaskValue.Alpha * 255) : ClipMaskValue.ToABGR();
 
             // The linear memory address.
@@ -229,8 +227,7 @@ namespace Gorgon.Editor.SpriteEditor
                 return false;
             }
 
-            mousePosition = TransformMouseToImage == null ? mousePosition : TransformMouseToImage(mousePosition);
-            var mouse = new DX.Point((int)mousePosition.X, (int)mousePosition.Y);
+            var mouse = (PointFromClient == null ? mousePosition : PointFromClient(mousePosition)).ToPoint();
             var imageBounds = new DX.RectangleF(0, 0, ImageData.Width, ImageData.Height);
 
             // If we clicked outside of the image, then there's nothing to click.

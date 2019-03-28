@@ -46,7 +46,7 @@ namespace Gorgon.Editor.SpriteEditor
     {
         #region Variables.
         // The loaded image codecs.
-        private List<IGorgonSpriteCodec> _codecList = new List<IGorgonSpriteCodec>();
+        private readonly List<IGorgonSpriteCodec> _codecList = new List<IGorgonSpriteCodec>();
 
         // The list of available codecs matched by extension.
         private readonly List<(GorgonFileExtension extension, IGorgonSpriteCodec codec)> _codecs = new List<(GorgonFileExtension extension, IGorgonSpriteCodec codec)>();

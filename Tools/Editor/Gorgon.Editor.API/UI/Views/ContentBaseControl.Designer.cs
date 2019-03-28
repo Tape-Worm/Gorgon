@@ -20,6 +20,7 @@
 
             if (disposing)
             {
+                _panelViews.Clear();
                 UnassignEvents();
                 Shutdown();
             }
@@ -43,7 +44,7 @@
             this.ButtonClose = new ComponentFactory.Krypton.Toolkit.KryptonButton();
             this.TipButton = new System.Windows.Forms.ToolTip(this.components);
             this.PanelHost = new System.Windows.Forms.Panel();
-            this.PanelContentControls = new System.Windows.Forms.Panel();
+            this.PanelHostControls = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.PanelPresenter)).BeginInit();
             this.PanelContentName.SuspendLayout();
             this.panel4.SuspendLayout();
@@ -141,25 +142,26 @@
             // PanelHost
             // 
             this.PanelHost.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
-            this.PanelHost.Controls.Add(this.PanelContentControls);
+            this.PanelHost.Controls.Add(this.PanelHostControls);
+            this.PanelHost.Dock = System.Windows.Forms.DockStyle.Right;
             this.PanelHost.ForeColor = System.Drawing.Color.White;
             this.PanelHost.Location = new System.Drawing.Point(240, 21);
-            this.PanelHost.MinimumSize = new System.Drawing.Size(360, 0);
+            this.PanelHost.MinimumSize = new System.Drawing.Size(160, 0);
             this.PanelHost.Name = "PanelHost";
-            this.PanelHost.Padding = new System.Windows.Forms.Padding(1, 0, 0, 0);
+            this.PanelHost.Padding = new System.Windows.Forms.Padding(1, 0, 0, 1);
             this.PanelHost.Size = new System.Drawing.Size(360, 447);
             this.PanelHost.TabIndex = 1;
             this.PanelHost.Visible = false;
             // 
-            // PanelContentControls
+            // PanelHostControls
             // 
-            this.PanelContentControls.AutoScroll = true;
-            this.PanelContentControls.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.PanelContentControls.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PanelContentControls.Location = new System.Drawing.Point(1, 0);
-            this.PanelContentControls.Name = "PanelContentControls";
-            this.PanelContentControls.Size = new System.Drawing.Size(359, 447);
-            this.PanelContentControls.TabIndex = 0;
+            this.PanelHostControls.AutoScroll = true;
+            this.PanelHostControls.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.PanelHostControls.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PanelHostControls.Location = new System.Drawing.Point(1, 0);
+            this.PanelHostControls.Name = "PanelHostControls";
+            this.PanelHostControls.Size = new System.Drawing.Size(359, 446);
+            this.PanelHostControls.TabIndex = 0;
             // 
             // ContentBaseControl
             // 
@@ -193,6 +195,6 @@
         private ComponentFactory.Krypton.Toolkit.KryptonButton ButtonClose;
         private System.Windows.Forms.ToolTip TipButton;
         private System.Windows.Forms.Panel PanelHost;
-        private System.Windows.Forms.Panel PanelContentControls;
+        private System.Windows.Forms.Panel PanelHostControls;
     }
 }

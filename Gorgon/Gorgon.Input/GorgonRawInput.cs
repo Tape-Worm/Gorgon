@@ -335,7 +335,7 @@ namespace Gorgon.Input
 					continue;
 				}
 
-				_log.Print("Found mouse: '{0}' on HID path {1}, class {2}.", LoggingLevel.Verbose, info.Description, info.HIDPath, info.Class);
+				_log.Print("Found mouse: '{0}' on HID path {1}, class {2}.", LoggingLevel.Verbose, info.Description, info.HIDPath, info.DeviceClass);
 
 				result.Add(info);
 			}
@@ -362,7 +362,7 @@ namespace Gorgon.Input
 					continue;
 				}
 
-				_log.Print("Found keyboard: '{0}' on HID path {1}, class {2}.", LoggingLevel.Verbose, info.Description, info.HIDPath, info.Class);
+				_log.Print("Found keyboard: '{0}' on HID path {1}, class {2}.", LoggingLevel.Verbose, info.Description, info.HIDPath, info.DeviceClass);
 
 				result.Add(info);
 			}
@@ -389,7 +389,7 @@ namespace Gorgon.Input
 					continue;
 				}
 
-				_log.Print("Found human interface device: '{0}' on HID path {1}, class {2}.", LoggingLevel.Verbose, info.Description, info.HIDPath, info.Class);
+				_log.Print("Found human interface device: '{0}' on HID path {1}, class {2}.", LoggingLevel.Verbose, info.Description, info.HIDPath, info.DeviceClass);
 
 				result.Add(info);
 			}

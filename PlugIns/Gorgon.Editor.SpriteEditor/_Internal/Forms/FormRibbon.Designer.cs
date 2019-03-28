@@ -20,6 +20,7 @@
 
             if (disposing)
             {
+                UnassignEvents();
                 DataContext = null;
             }
 
@@ -35,6 +36,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            ComponentFactory.Krypton.Toolkit.Values.PopupPositionValues popupPositionValues1 = new ComponentFactory.Krypton.Toolkit.Values.PopupPositionValues();
             this.RibbonSpriteContent = new ComponentFactory.Krypton.Ribbon.KryptonRibbon();
             this.TabSprite = new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab();
             this.GroupSpriteFile = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
@@ -91,6 +93,9 @@
             this.RibbonSpriteContent.SelectedTab = this.TabSprite;
             this.RibbonSpriteContent.Size = new System.Drawing.Size(1594, 115);
             this.RibbonSpriteContent.TabIndex = 0;
+            popupPositionValues1.PlacementRectangle = new System.Drawing.Rectangle(0, 0, 0, 0);
+            popupPositionValues1.PlacementTarget = null;
+            this.RibbonSpriteContent.ToolTipValues.ToolTipPosition = popupPositionValues1;
             // 
             // TabSprite
             // 
@@ -231,17 +236,16 @@
             // 
             // ButtonSpriteColor
             // 
-            this.ButtonSpriteColor.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.Check;
             this.ButtonSpriteColor.ImageLarge = global::Gorgon.Editor.SpriteEditor.Properties.Resources.sprite_color_48x48;
             this.ButtonSpriteColor.ImageSmall = global::Gorgon.Editor.SpriteEditor.Properties.Resources.sprite_color_16x16;
             this.ButtonSpriteColor.KeyTip = "C";
             this.ButtonSpriteColor.TextLine1 = "Color";
             this.ButtonSpriteColor.ToolTipBody = "Defines the color tint, and/or opacity to apply to the sprite.";
             this.ButtonSpriteColor.ToolTipTitle = "Sprite color";
+            this.ButtonSpriteColor.Click += new System.EventHandler(this.ButtonSpriteColor_Click);
             // 
             // ButtonSpriteAnchor
             // 
-            this.ButtonSpriteAnchor.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.Check;
             this.ButtonSpriteAnchor.ImageLarge = global::Gorgon.Editor.SpriteEditor.Properties.Resources.anchor_48x48;
             this.ButtonSpriteAnchor.ImageSmall = global::Gorgon.Editor.SpriteEditor.Properties.Resources.anchor_16x16;
             this.ButtonSpriteAnchor.KeyTip = "A";
@@ -249,6 +253,7 @@
             this.ButtonSpriteAnchor.ToolTipBody = "Defines the anchor point on the sprite where rotations, scaling and positioning a" +
     "ll center on.";
             this.ButtonSpriteAnchor.ToolTipTitle = "Sprite anchor";
+            this.ButtonSpriteAnchor.Click += new System.EventHandler(this.ButtonSpriteAnchor_Click);
             // 
             // LinesSpriteVertex
             // 

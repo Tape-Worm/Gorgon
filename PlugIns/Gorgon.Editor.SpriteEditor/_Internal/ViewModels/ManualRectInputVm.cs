@@ -24,11 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DX = SharpDX;
 using Gorgon.Editor.UI;
 
@@ -43,9 +38,30 @@ namespace Gorgon.Editor.SpriteEditor
         #region Variables.
         // The rectangle to update.
         private DX.RectangleF _rect;
+        // Flag to indicate whether the interface is active or not.
+        private bool _isActive;
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to set or return whether the manual input interface is active or not.
+        /// </summary>
+        public bool IsActive
+        {
+            get => _isActive;
+            set
+            {
+                if (_isActive == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _isActive = value;
+                OnPropertyChanged();
+            }
+        }
+
         /// <summary>
         /// Property to set or return the rectangle dimensions.
         /// </summary>

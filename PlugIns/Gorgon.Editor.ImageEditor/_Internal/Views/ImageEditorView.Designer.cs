@@ -20,7 +20,6 @@
 
             if (disposing)
             {
-                _panels.Clear();
                 _ribbonForm.ImageZoomed -= RibbonForm_ImageZoomed;
                 _ribbonForm?.Dispose();                
             }

@@ -64,15 +64,7 @@ namespace Gorgon.Native
         /// <param name="obj">The object to compare with the current instance. </param>
         /// <returns>
         /// <see langword="true" /> if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, <see langword="false" />. </returns>
-        public override bool Equals(object obj)
-        {
-            if (obj is GorgonReadOnlyPointer ptr)
-            {
-                return ptr.Equals(this);
-            }
-
-            return false;
-        }
+        public override bool Equals(object obj) => obj is GorgonReadOnlyPointer ptr ? ptr.Equals(this) : false;
 
         /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
         /// <param name="other">An object to compare with this object.</param>
@@ -125,15 +117,7 @@ namespace Gorgon.Native
         /// <summary>Compares the current instance with another object of the same type and returns an integer that indicates whether the current instance precedes, follows, or occurs in the same position in the sort order as the other object. </summary>
         /// <param name="other">An object to compare with this instance. </param>
         /// <returns>A value that indicates the relative order of the objects being compared. The return value has these meanings: Value Meaning Less than zero This instance precedes <paramref name="other" /> in the sort order.  Zero This instance occurs in the same position in the sort order as <paramref name="other" />. Greater than zero This instance follows <paramref name="other" /> in the sort order. </returns>
-        int IComparable<GorgonReadOnlyPointer>.CompareTo(GorgonReadOnlyPointer other)
-        {
-            if (other._data == _data)
-            {
-                return 0;
-            }
-
-            return other._data < _data ? -1 : 1;
-        }
+        int IComparable<GorgonReadOnlyPointer>.CompareTo(GorgonReadOnlyPointer other) => other._data == _data ? 0 : other._data < _data ? -1 : 1;
 
         /// <summary>Returns the hash code for this instance.</summary>
         /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
@@ -141,15 +125,9 @@ namespace Gorgon.Native
 
         /// <summary>Returns the fully qualified type name of this instance.</summary>
         /// <returns>The fully qualified type name.</returns>
-        public override string ToString()
-        {
-            if (Environment.Is64BitOperatingSystem)
-            {
-                return _data == null ? 0ul.FormatHex() : ((ulong)_data).FormatHex();
-            }
-
-            return _data == null ? 0.FormatHex() : ((uint)_data).FormatHex();
-        }
+        public override string ToString() => Environment.Is64BitOperatingSystem
+                ? _data == null ? 0ul.FormatHex() : ((ulong)_data).FormatHex()
+                : _data == null ? 0.FormatHex() : ((uint)_data).FormatHex();
 
         /// <summary>
         /// Function to compare two pointer values.
@@ -180,10 +158,7 @@ namespace Gorgon.Native
         /// </note>
         /// </para>
         /// </remarks>
-        public static explicit operator void*(GorgonReadOnlyPointer pointer)
-        {
-            return pointer._data;
-        }
+        public static explicit operator void* (GorgonReadOnlyPointer pointer) => pointer._data;
 
         /// <summary>
         /// Operator to test if two pointers are at the same address.
@@ -191,10 +166,7 @@ namespace Gorgon.Native
         /// <param name="left">The left pointer to compare.</param>
         /// <param name="right">The right pointer to compare.</param>
         /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-        public static bool operator ==(GorgonReadOnlyPointer left, GorgonReadOnlyPointer right)
-        {
-            return left._data == right._data;
-        }
+        public static bool operator ==(GorgonReadOnlyPointer left, GorgonReadOnlyPointer right) => left._data == right._data;
 
         /// <summary>
         /// Operator to test if two pointers are not at the same address.
@@ -202,10 +174,7 @@ namespace Gorgon.Native
         /// <param name="left">The left pointer to compare.</param>
         /// <param name="right">The right pointer to compare.</param>
         /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
-        public static bool operator !=(GorgonReadOnlyPointer left, GorgonReadOnlyPointer right)
-        {
-            return left._data == right._data;
-        }
+        public static bool operator !=(GorgonReadOnlyPointer left, GorgonReadOnlyPointer right) => left._data == right._data;
 
         /// <summary>
         /// Operator to test if one pointer is less than the other.
@@ -213,10 +182,7 @@ namespace Gorgon.Native
         /// <param name="left">The left pointer to compare.</param>
         /// <param name="right">The right pointer to compare.</param>
         /// <returns><b>true</b> if left is less than the right, <b>false</b> if not.</returns>
-        public static bool operator <(GorgonReadOnlyPointer left, GorgonReadOnlyPointer right)
-        {
-            return left._data < right._data;
-        }
+        public static bool operator <(GorgonReadOnlyPointer left, GorgonReadOnlyPointer right) => left._data < right._data;
 
         /// <summary>
         /// Operator to test if one pointer is greater than the other.
@@ -224,10 +190,7 @@ namespace Gorgon.Native
         /// <param name="left">The left pointer to compare.</param>
         /// <param name="right">The right pointer to compare.</param>
         /// <returns><b>true</b> if left is greater than the right, <b>false</b> if not.</returns>
-        public static bool operator >(GorgonReadOnlyPointer left, GorgonReadOnlyPointer right)
-        {
-            return left._data > right._data;
-        }
+        public static bool operator >(GorgonReadOnlyPointer left, GorgonReadOnlyPointer right) => left._data > right._data;
 
         /// <summary>
         /// Operator to test if one pointer is less than or equal to the other.
@@ -235,10 +198,7 @@ namespace Gorgon.Native
         /// <param name="left">The left pointer to compare.</param>
         /// <param name="right">The right pointer to compare.</param>
         /// <returns><b>true</b> if left is less than or equal to the right, <b>false</b> if not.</returns>
-        public static bool operator <=(GorgonReadOnlyPointer left, GorgonReadOnlyPointer right)
-        {
-            return left._data <= right._data;
-        }
+        public static bool operator <=(GorgonReadOnlyPointer left, GorgonReadOnlyPointer right) => left._data <= right._data;
 
         /// <summary>
         /// Operator to test if one pointer is greater than or equal to the other.
@@ -246,46 +206,31 @@ namespace Gorgon.Native
         /// <param name="left">The left pointer to compare.</param>
         /// <param name="right">The right pointer to compare.</param>
         /// <returns><b>true</b> if left is greater than or equal to the right, <b>false</b> if not.</returns>
-        public static bool operator >=(GorgonReadOnlyPointer left, GorgonReadOnlyPointer right)
-        {
-            return left._data >= right._data;
-        }
+        public static bool operator >=(GorgonReadOnlyPointer left, GorgonReadOnlyPointer right) => left._data >= right._data;
 
         /// <summary>
         /// Operator to convert the pointer to an int32 value.
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
-        public static implicit operator int(GorgonReadOnlyPointer pointer)
-        {
-            return (int)pointer._data;
-        }
+        public static implicit operator int(GorgonReadOnlyPointer pointer) => (int)pointer._data;
 
         /// <summary>
         /// Operator to convert the pointer to an int64 value.
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
-        public static implicit operator long(GorgonReadOnlyPointer pointer)
-        {
-            return (long)pointer._data;
-        }
+        public static implicit operator long(GorgonReadOnlyPointer pointer) => (long)pointer._data;
 
         /// <summary>
         /// Operator to convert the pointer to a uint32 value.
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
-        public static implicit operator uint(GorgonReadOnlyPointer pointer)
-        {
-            return (uint)pointer._data;
-        }
+        public static implicit operator uint(GorgonReadOnlyPointer pointer) => (uint)pointer._data;
 
         /// <summary>
         /// Operator to convert the pointer to a uint64 value.
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
-        public static implicit operator ulong(GorgonReadOnlyPointer pointer)
-        {
-            return (ulong)pointer._data;
-        }
+        public static implicit operator ulong(GorgonReadOnlyPointer pointer) => (ulong)pointer._data;
 
         /// <summary>
         /// Function to return this pointer as a read only reference.

@@ -510,7 +510,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 		    EncodingOptions = encodingOptions;
 		    DecodingOptions = decodingOptions;
-			CodecCommonExtensions = new string[] { };
+			CodecCommonExtensions = Array.Empty<string>();
 		}
 		#endregion
 	}

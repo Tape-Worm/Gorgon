@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using Gorgon.Core;
 
 namespace Gorgon.Graphics.Core
 {
@@ -245,6 +246,28 @@ namespace Gorgon.Graphics.Core
                                        && (LogicOperation == state.LogicOperation)
                                        && (SourceAlphaBlend == state.SourceAlphaBlend)
                                        && (SourceColorBlend == state.SourceColorBlend));
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="obj">An object to compare with this object.</param>
+        /// <returns><see langword="true" /> if the current object is equal to the <paramref name="obj" /> parameter; otherwise, <see langword="false" />.</returns>
+        public override bool Equals(object obj) => Equals(obj as GorgonBlendState);
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode() => 281.GenerateHash(WriteMask)
+            .GenerateHash(AlphaBlendOperation)
+            .GenerateHash(ColorBlendOperation)
+            .GenerateHash(DestinationAlphaBlend)
+            .GenerateHash(DestinationColorBlend)
+            .GenerateHash(IsBlendingEnabled)
+            .GenerateHash(SourceAlphaBlend)
+            .GenerateHash(SourceColorBlend);
         #endregion
 
         #region Constructor/Finalizer.

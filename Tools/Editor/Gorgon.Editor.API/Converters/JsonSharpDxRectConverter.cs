@@ -86,20 +86,20 @@ namespace Gorgon.Editor.Converters
                     continue;
                 }
 
-                string propName = reader.Value.ToString().ToLowerInvariant();
+                string propName = reader.Value.ToString().ToUpperInvariant();
 
                 switch (propName)
                 {
-                    case "left":
+                    case "LEFT":
                         left = reader.ReadAsInt32() ?? 0;
                         break;
-                    case "top":
+                    case "TOP":
                         top = reader.ReadAsInt32() ?? 0;
                         break;
-                    case "right":
+                    case "RIGHT":
                         right = reader.ReadAsInt32() ?? 0;
                         break;
-                    case "bottom":
+                    case "BOTTOM":
                         bottom = reader.ReadAsInt32() ?? 0;
                         break;
                 }

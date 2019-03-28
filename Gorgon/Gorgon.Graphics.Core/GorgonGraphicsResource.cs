@@ -215,15 +215,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         public EvictionPriority EvictionPriority
         {
-            get
-            {
-                if (D3DResource == null)
-                {
-                    return EvictionPriority.Minimum;
-                }
-
-                return (EvictionPriority)D3DResource.EvictionPriority;
-            }
+            get => D3DResource == null ? EvictionPriority.Minimum : (EvictionPriority)D3DResource.EvictionPriority;
             set
             {
                 if (D3DResource != null)

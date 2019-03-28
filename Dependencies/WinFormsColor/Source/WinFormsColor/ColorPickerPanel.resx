@@ -119,7 +119,7 @@
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="radioHue.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Right</value>
+    <value>Left</value>
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="radioHue.AutoSize" type="System.Boolean, mscorlib">
@@ -130,13 +130,16 @@
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="radioHue.Location" type="System.Drawing.Point, System.Drawing">
-    <value>363, 82</value>
+    <value>18, 4</value>
+  </data>
+  <data name="radioHue.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 1</value>
   </data>
   <data name="radioHue.Size" type="System.Drawing.Size, System.Drawing">
     <value>33, 17</value>
   </data>
   <data name="radioHue.TabIndex" type="System.Int32, mscorlib">
-    <value>3</value>
+    <value>0</value>
   </data>
   <data name="radioHue.Text" xml:space="preserve">
     <value>H</value>
@@ -148,13 +151,13 @@
     <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;radioHue.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>tableLayoutPanel2</value>
   </data>
   <data name="&gt;&gt;radioHue.ZOrder" xml:space="preserve">
-    <value>18</value>
+    <value>14</value>
   </data>
   <data name="radioSaturation.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Right</value>
+    <value>Left</value>
   </data>
   <data name="radioSaturation.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -163,13 +166,16 @@
     <value>NoControl</value>
   </data>
   <data name="radioSaturation.Location" type="System.Drawing.Point, System.Drawing">
-    <value>363, 108</value>
+    <value>18, 28</value>
+  </data>
+  <data name="radioSaturation.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 1</value>
   </data>
   <data name="radioSaturation.Size" type="System.Drawing.Size, System.Drawing">
     <value>32, 17</value>
   </data>
   <data name="radioSaturation.TabIndex" type="System.Int32, mscorlib">
-    <value>5</value>
+    <value>2</value>
   </data>
   <data name="radioSaturation.Text" xml:space="preserve">
     <value>S</value>
@@ -181,13 +187,13 @@
     <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;radioSaturation.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>tableLayoutPanel2</value>
   </data>
   <data name="&gt;&gt;radioSaturation.ZOrder" xml:space="preserve">
-    <value>17</value>
+    <value>13</value>
   </data>
   <data name="radioValue.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Right</value>
+    <value>Left</value>
   </data>
   <data name="radioValue.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -196,13 +202,16 @@
     <value>NoControl</value>
   </data>
   <data name="radioValue.Location" type="System.Drawing.Point, System.Drawing">
-    <value>363, 134</value>
+    <value>18, 52</value>
+  </data>
+  <data name="radioValue.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 1</value>
   </data>
   <data name="radioValue.Size" type="System.Drawing.Size, System.Drawing">
     <value>32, 17</value>
   </data>
   <data name="radioValue.TabIndex" type="System.Int32, mscorlib">
-    <value>7</value>
+    <value>4</value>
   </data>
   <data name="radioValue.Text" xml:space="preserve">
     <value>V</value>
@@ -214,13 +223,13 @@
     <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;radioValue.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>tableLayoutPanel2</value>
   </data>
   <data name="&gt;&gt;radioValue.ZOrder" xml:space="preserve">
-    <value>16</value>
+    <value>11</value>
   </data>
   <data name="radioRed.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Right</value>
+    <value>Left</value>
   </data>
   <data name="radioRed.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -229,13 +238,16 @@
     <value>NoControl</value>
   </data>
   <data name="radioRed.Location" type="System.Drawing.Point, System.Drawing">
-    <value>363, 165</value>
+    <value>130, 4</value>
+  </data>
+  <data name="radioRed.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>5, 3, 3, 1</value>
   </data>
   <data name="radioRed.Size" type="System.Drawing.Size, System.Drawing">
     <value>33, 17</value>
   </data>
   <data name="radioRed.TabIndex" type="System.Int32, mscorlib">
-    <value>9</value>
+    <value>6</value>
   </data>
   <data name="radioRed.Text" xml:space="preserve">
     <value>R</value>
@@ -247,13 +259,13 @@
     <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;radioRed.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>tableLayoutPanel2</value>
   </data>
   <data name="&gt;&gt;radioRed.ZOrder" xml:space="preserve">
-    <value>15</value>
+    <value>9</value>
   </data>
   <data name="radioBlue.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Right</value>
+    <value>Left</value>
   </data>
   <data name="radioBlue.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -262,13 +274,16 @@
     <value>NoControl</value>
   </data>
   <data name="radioBlue.Location" type="System.Drawing.Point, System.Drawing">
-    <value>363, 217</value>
+    <value>130, 52</value>
+  </data>
+  <data name="radioBlue.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>5, 3, 3, 1</value>
   </data>
   <data name="radioBlue.Size" type="System.Drawing.Size, System.Drawing">
     <value>32, 17</value>
   </data>
   <data name="radioBlue.TabIndex" type="System.Int32, mscorlib">
-    <value>13</value>
+    <value>10</value>
   </data>
   <data name="radioBlue.Text" xml:space="preserve">
     <value>B</value>
@@ -280,13 +295,13 @@
     <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;radioBlue.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>tableLayoutPanel2</value>
   </data>
   <data name="&gt;&gt;radioBlue.ZOrder" xml:space="preserve">
-    <value>14</value>
+    <value>5</value>
   </data>
   <data name="radioGreen.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Right</value>
+    <value>Left</value>
   </data>
   <data name="radioGreen.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -295,13 +310,16 @@
     <value>NoControl</value>
   </data>
   <data name="radioGreen.Location" type="System.Drawing.Point, System.Drawing">
-    <value>363, 191</value>
+    <value>130, 28</value>
+  </data>
+  <data name="radioGreen.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>5, 3, 3, 1</value>
   </data>
   <data name="radioGreen.Size" type="System.Drawing.Size, System.Drawing">
     <value>33, 17</value>
   </data>
   <data name="radioGreen.TabIndex" type="System.Int32, mscorlib">
-    <value>11</value>
+    <value>8</value>
   </data>
   <data name="radioGreen.Text" xml:space="preserve">
     <value>G</value>
@@ -313,22 +331,25 @@
     <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;radioGreen.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>tableLayoutPanel2</value>
   </data>
   <data name="&gt;&gt;radioGreen.ZOrder" xml:space="preserve">
-    <value>13</value>
+    <value>7</value>
   </data>
   <data name="numHue.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Right</value>
+    <value>Left, Right</value>
   </data>
   <data name="numHue.Location" type="System.Drawing.Point, System.Drawing">
-    <value>402, 82</value>
+    <value>57, 3</value>
+  </data>
+  <data name="numHue.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 1</value>
   </data>
   <data name="numHue.Size" type="System.Drawing.Size, System.Drawing">
     <value>65, 20</value>
   </data>
   <data name="numHue.TabIndex" type="System.Int32, mscorlib">
-    <value>4</value>
+    <value>1</value>
   </data>
   <data name="numHue.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
     <value>Right</value>
@@ -340,22 +361,25 @@
     <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;numHue.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>tableLayoutPanel2</value>
   </data>
   <data name="&gt;&gt;numHue.ZOrder" xml:space="preserve">
-    <value>12</value>
+    <value>15</value>
   </data>
   <data name="numSaturation.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Right</value>
+    <value>Left, Right</value>
   </data>
   <data name="numSaturation.Location" type="System.Drawing.Point, System.Drawing">
-    <value>402, 108</value>
+    <value>57, 27</value>
+  </data>
+  <data name="numSaturation.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 1</value>
   </data>
   <data name="numSaturation.Size" type="System.Drawing.Size, System.Drawing">
     <value>65, 20</value>
   </data>
   <data name="numSaturation.TabIndex" type="System.Int32, mscorlib">
-    <value>6</value>
+    <value>3</value>
   </data>
   <data name="numSaturation.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
     <value>Right</value>
@@ -367,22 +391,25 @@
     <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;numSaturation.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>tableLayoutPanel2</value>
   </data>
   <data name="&gt;&gt;numSaturation.ZOrder" xml:space="preserve">
-    <value>11</value>
+    <value>12</value>
   </data>
   <data name="numValue.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Right</value>
+    <value>Left</value>
   </data>
   <data name="numValue.Location" type="System.Drawing.Point, System.Drawing">
-    <value>402, 134</value>
+    <value>57, 51</value>
+  </data>
+  <data name="numValue.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 1</value>
   </data>
   <data name="numValue.Size" type="System.Drawing.Size, System.Drawing">
     <value>65, 20</value>
   </data>
   <data name="numValue.TabIndex" type="System.Int32, mscorlib">
-    <value>8</value>
+    <value>5</value>
   </data>
   <data name="numValue.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
     <value>Right</value>
@@ -394,22 +421,25 @@
     <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;numValue.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>tableLayoutPanel2</value>
   </data>
   <data name="&gt;&gt;numValue.ZOrder" xml:space="preserve">
     <value>10</value>
   </data>
   <data name="numRed.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Right</value>
+    <value>Left, Right</value>
   </data>
   <data name="numRed.Location" type="System.Drawing.Point, System.Drawing">
-    <value>402, 165</value>
+    <value>169, 3</value>
+  </data>
+  <data name="numRed.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 1</value>
   </data>
   <data name="numRed.Size" type="System.Drawing.Size, System.Drawing">
     <value>65, 20</value>
   </data>
   <data name="numRed.TabIndex" type="System.Int32, mscorlib">
-    <value>10</value>
+    <value>7</value>
   </data>
   <data name="numRed.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
     <value>Right</value>
@@ -421,22 +451,25 @@
     <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;numRed.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>tableLayoutPanel2</value>
   </data>
   <data name="&gt;&gt;numRed.ZOrder" xml:space="preserve">
-    <value>9</value>
+    <value>8</value>
   </data>
   <data name="numGreen.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Right</value>
+    <value>Left</value>
   </data>
   <data name="numGreen.Location" type="System.Drawing.Point, System.Drawing">
-    <value>402, 191</value>
+    <value>169, 51</value>
+  </data>
+  <data name="numGreen.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 1</value>
   </data>
   <data name="numGreen.Size" type="System.Drawing.Size, System.Drawing">
     <value>65, 20</value>
   </data>
   <data name="numGreen.TabIndex" type="System.Int32, mscorlib">
-    <value>12</value>
+    <value>11</value>
   </data>
   <data name="numGreen.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
     <value>Right</value>
@@ -448,22 +481,25 @@
     <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;numGreen.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>tableLayoutPanel2</value>
   </data>
   <data name="&gt;&gt;numGreen.ZOrder" xml:space="preserve">
-    <value>8</value>
+    <value>3</value>
   </data>
   <data name="numBlue.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Right</value>
+    <value>Left, Right</value>
   </data>
   <data name="numBlue.Location" type="System.Drawing.Point, System.Drawing">
-    <value>402, 217</value>
+    <value>169, 27</value>
+  </data>
+  <data name="numBlue.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 1</value>
   </data>
   <data name="numBlue.Size" type="System.Drawing.Size, System.Drawing">
     <value>65, 20</value>
   </data>
   <data name="numBlue.TabIndex" type="System.Int32, mscorlib">
-    <value>14</value>
+    <value>9</value>
   </data>
   <data name="numBlue.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
     <value>Right</value>
@@ -475,22 +511,25 @@
     <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;numBlue.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>tableLayoutPanel2</value>
   </data>
   <data name="&gt;&gt;numBlue.ZOrder" xml:space="preserve">
-    <value>7</value>
+    <value>6</value>
   </data>
   <data name="textBoxHex.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Right</value>
+    <value>Left, Right</value>
   </data>
   <data name="textBoxHex.Location" type="System.Drawing.Point, System.Drawing">
-    <value>402, 279</value>
+    <value>280, 51</value>
+  </data>
+  <data name="textBoxHex.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 1</value>
   </data>
   <data name="textBoxHex.Size" type="System.Drawing.Size, System.Drawing">
     <value>65, 20</value>
   </data>
   <data name="textBoxHex.TabIndex" type="System.Int32, mscorlib">
-    <value>16</value>
+    <value>15</value>
   </data>
   <data name="textBoxHex.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
     <value>Right</value>
@@ -502,13 +541,13 @@
     <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;textBoxHex.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>tableLayoutPanel2</value>
   </data>
   <data name="&gt;&gt;textBoxHex.ZOrder" xml:space="preserve">
-    <value>5</value>
+    <value>0</value>
   </data>
   <data name="labelHex.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Right</value>
+    <value>Left</value>
   </data>
   <data name="labelHex.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -517,16 +556,19 @@
     <value>NoControl</value>
   </data>
   <data name="labelHex.Location" type="System.Drawing.Point, System.Drawing">
-    <value>379, 281</value>
+    <value>240, 54</value>
+  </data>
+  <data name="labelHex.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 1</value>
   </data>
   <data name="labelHex.Size" type="System.Drawing.Size, System.Drawing">
-    <value>14, 13</value>
+    <value>30, 13</value>
   </data>
   <data name="labelHex.TabIndex" type="System.Int32, mscorlib">
-    <value>17</value>
+    <value>14</value>
   </data>
   <data name="labelHex.Text" xml:space="preserve">
-    <value>#</value>
+    <value>Web</value>
   </data>
   <data name="&gt;&gt;labelHex.Name" xml:space="preserve">
     <value>labelHex</value>
@@ -535,94 +577,25 @@
     <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;labelHex.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>tableLayoutPanel2</value>
   </data>
   <data name="&gt;&gt;labelHex.ZOrder" xml:space="preserve">
-    <value>4</value>
-  </data>
-  <data name="labelOld.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Right</value>
-  </data>
-  <data name="labelOld.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="labelOld.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="labelOld.Location" type="System.Drawing.Point, System.Drawing">
-    <value>438, 18</value>
-  </data>
-  <data name="labelOld.Size" type="System.Drawing.Size, System.Drawing">
-    <value>23, 13</value>
-  </data>
-  <data name="labelOld.TabIndex" type="System.Int32, mscorlib">
-    <value>18</value>
-  </data>
-  <data name="labelOld.Text" xml:space="preserve">
-    <value>Old</value>
-  </data>
-  <data name="labelOld.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>MiddleLeft</value>
-  </data>
-  <data name="&gt;&gt;labelOld.Name" xml:space="preserve">
-    <value>labelOld</value>
-  </data>
-  <data name="&gt;&gt;labelOld.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;labelOld.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;labelOld.ZOrder" xml:space="preserve">
-    <value>3</value>
-  </data>
-  <data name="labelNew.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Right</value>
-  </data>
-  <data name="labelNew.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="labelNew.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="labelNew.Location" type="System.Drawing.Point, System.Drawing">
-    <value>438, 43</value>
-  </data>
-  <data name="labelNew.Size" type="System.Drawing.Size, System.Drawing">
-    <value>29, 13</value>
-  </data>
-  <data name="labelNew.TabIndex" type="System.Int32, mscorlib">
-    <value>19</value>
-  </data>
-  <data name="labelNew.Text" xml:space="preserve">
-    <value>New</value>
-  </data>
-  <data name="labelNew.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>MiddleLeft</value>
-  </data>
-  <data name="&gt;&gt;labelNew.Name" xml:space="preserve">
-    <value>labelNew</value>
-  </data>
-  <data name="&gt;&gt;labelNew.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;labelNew.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;labelNew.ZOrder" xml:space="preserve">
-    <value>2</value>
+    <value>1</value>
   </data>
   <data name="numAlpha.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Right</value>
+    <value>Left, Right</value>
   </data>
   <data name="numAlpha.Location" type="System.Drawing.Point, System.Drawing">
-    <value>402, 248</value>
+    <value>280, 3</value>
+  </data>
+  <data name="numAlpha.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 1</value>
   </data>
   <data name="numAlpha.Size" type="System.Drawing.Size, System.Drawing">
     <value>65, 20</value>
   </data>
   <data name="numAlpha.TabIndex" type="System.Int32, mscorlib">
-    <value>15</value>
+    <value>13</value>
   </data>
   <data name="numAlpha.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
     <value>Right</value>
@@ -634,13 +607,13 @@
     <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;numAlpha.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>tableLayoutPanel2</value>
   </data>
   <data name="&gt;&gt;numAlpha.ZOrder" xml:space="preserve">
-    <value>1</value>
+    <value>2</value>
   </data>
   <data name="labelAlpha.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Right</value>
+    <value>Left</value>
   </data>
   <data name="labelAlpha.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -649,16 +622,19 @@
     <value>NoControl</value>
   </data>
   <data name="labelAlpha.Location" type="System.Drawing.Point, System.Drawing">
-    <value>379, 250</value>
+    <value>240, 6</value>
+  </data>
+  <data name="labelAlpha.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 1</value>
   </data>
   <data name="labelAlpha.Size" type="System.Drawing.Size, System.Drawing">
-    <value>14, 13</value>
+    <value>34, 13</value>
   </data>
   <data name="labelAlpha.TabIndex" type="System.Int32, mscorlib">
-    <value>23</value>
+    <value>12</value>
   </data>
   <data name="labelAlpha.Text" xml:space="preserve">
-    <value>A</value>
+    <value>Alpha</value>
   </data>
   <data name="&gt;&gt;labelAlpha.Name" xml:space="preserve">
     <value>labelAlpha</value>
@@ -667,19 +643,19 @@
     <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;labelAlpha.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>tableLayoutPanel2</value>
   </data>
   <data name="&gt;&gt;labelAlpha.ZOrder" xml:space="preserve">
-    <value>0</value>
+    <value>4</value>
   </data>
   <data name="alphaSlider.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Bottom, Right</value>
+    <value>Top, Bottom</value>
   </data>
   <data name="alphaSlider.Location" type="System.Drawing.Point, System.Drawing">
-    <value>312, 0</value>
+    <value>251, 3</value>
   </data>
   <data name="alphaSlider.Size" type="System.Drawing.Size, System.Drawing">
-    <value>32, 309</value>
+    <value>32, 181</value>
   </data>
   <data name="alphaSlider.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -688,46 +664,22 @@
     <value>alphaSlider</value>
   </data>
   <data name="&gt;&gt;alphaSlider.Type" xml:space="preserve">
-    <value>Fetze.WinFormsColor.ColorSlider, WinFormsColor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c8418a0c0b5a8145</value>
+    <value>Fetze.WinFormsColor.ColorSlider, WinFormsColor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</value>
   </data>
   <data name="&gt;&gt;alphaSlider.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>tableLayoutPanel1</value>
   </data>
   <data name="&gt;&gt;alphaSlider.ZOrder" xml:space="preserve">
-    <value>6</value>
-  </data>
-  <data name="colorShowBox.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Right</value>
-  </data>
-  <data name="colorShowBox.Location" type="System.Drawing.Point, System.Drawing">
-    <value>363, 12</value>
-  </data>
-  <data name="colorShowBox.Size" type="System.Drawing.Size, System.Drawing">
-    <value>69, 50</value>
-  </data>
-  <data name="colorShowBox.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
-  </data>
-  <data name="&gt;&gt;colorShowBox.Name" xml:space="preserve">
-    <value>colorShowBox</value>
-  </data>
-  <data name="&gt;&gt;colorShowBox.Type" xml:space="preserve">
-    <value>Fetze.WinFormsColor.ColorShowBox, WinFormsColor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c8418a0c0b5a8145</value>
-  </data>
-  <data name="&gt;&gt;colorShowBox.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;colorShowBox.ZOrder" xml:space="preserve">
-    <value>19</value>
+    <value>3</value>
   </data>
   <data name="colorSlider.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Bottom, Right</value>
+    <value>Top, Bottom</value>
   </data>
   <data name="colorSlider.Location" type="System.Drawing.Point, System.Drawing">
-    <value>274, 0</value>
+    <value>213, 3</value>
   </data>
   <data name="colorSlider.Size" type="System.Drawing.Size, System.Drawing">
-    <value>32, 309</value>
+    <value>32, 181</value>
   </data>
   <data name="colorSlider.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -736,22 +688,22 @@
     <value>colorSlider</value>
   </data>
   <data name="&gt;&gt;colorSlider.Type" xml:space="preserve">
-    <value>Fetze.WinFormsColor.ColorSlider, WinFormsColor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c8418a0c0b5a8145</value>
+    <value>Fetze.WinFormsColor.ColorSlider, WinFormsColor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</value>
   </data>
   <data name="&gt;&gt;colorSlider.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>tableLayoutPanel1</value>
   </data>
   <data name="&gt;&gt;colorSlider.ZOrder" xml:space="preserve">
-    <value>20</value>
+    <value>2</value>
   </data>
   <data name="colorPanel.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Bottom, Left, Right</value>
+    <value>None</value>
   </data>
   <data name="colorPanel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 3</value>
+    <value>9, 6</value>
   </data>
   <data name="colorPanel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>265, 306</value>
+    <value>198, 175</value>
   </data>
   <data name="colorPanel.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -767,19 +719,241 @@
     <value>colorPanel</value>
   </data>
   <data name="&gt;&gt;colorPanel.Type" xml:space="preserve">
-    <value>Fetze.WinFormsColor.ColorPanel, WinFormsColor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c8418a0c0b5a8145</value>
+    <value>Fetze.WinFormsColor.ColorPanel, WinFormsColor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</value>
   </data>
   <data name="&gt;&gt;colorPanel.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>tableLayoutPanel1</value>
   </data>
   <data name="&gt;&gt;colorPanel.ZOrder" xml:space="preserve">
-    <value>21</value>
+    <value>1</value>
+  </data>
+  <data name="tableLayoutPanel1.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="tableLayoutPanel1.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
+    <value>GrowAndShrink</value>
+  </data>
+  <data name="tableLayoutPanel1.ColumnCount" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="tableLayoutPanel3.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Left</value>
+  </data>
+  <data name="tableLayoutPanel3.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="tableLayoutPanel3.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
+    <value>GrowAndShrink</value>
+  </data>
+  <data name="tableLayoutPanel3.ColumnCount" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="colorShowBox.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Bottom, Left, Right</value>
+  </data>
+  <data name="colorShowBox.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="colorShowBox.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 22</value>
+  </data>
+  <data name="colorShowBox.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 3, 0, 3</value>
+  </data>
+  <data name="colorShowBox.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 58</value>
+  </data>
+  <data name="colorShowBox.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;colorShowBox.Name" xml:space="preserve">
+    <value>colorShowBox</value>
+  </data>
+  <data name="&gt;&gt;colorShowBox.Type" xml:space="preserve">
+    <value>Fetze.WinFormsColor.ColorShowBox, WinFormsColor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</value>
+  </data>
+  <data name="&gt;&gt;colorShowBox.Parent" xml:space="preserve">
+    <value>tableLayoutPanel3</value>
+  </data>
+  <data name="&gt;&gt;colorShowBox.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="label2.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>None</value>
+  </data>
+  <data name="label2.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="label2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>11, 86</value>
+  </data>
+  <data name="label2.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 3</value>
+  </data>
+  <data name="label2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>41, 13</value>
+  </data>
+  <data name="label2.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="label2.Text" xml:space="preserve">
+    <value>Current</value>
+  </data>
+  <data name="label2.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>MiddleCenter</value>
+  </data>
+  <data name="&gt;&gt;label2.Name" xml:space="preserve">
+    <value>label2</value>
+  </data>
+  <data name="&gt;&gt;label2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;label2.Parent" xml:space="preserve">
+    <value>tableLayoutPanel3</value>
+  </data>
+  <data name="&gt;&gt;label2.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="label1.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>None</value>
+  </data>
+  <data name="label1.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="label1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>20, 3</value>
+  </data>
+  <data name="label1.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 3</value>
+  </data>
+  <data name="label1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 13</value>
+  </data>
+  <data name="label1.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="label1.Text" xml:space="preserve">
+    <value>Old</value>
+  </data>
+  <data name="label1.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>MiddleCenter</value>
+  </data>
+  <data name="&gt;&gt;label1.Name" xml:space="preserve">
+    <value>label1</value>
+  </data>
+  <data name="&gt;&gt;label1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;label1.Parent" xml:space="preserve">
+    <value>tableLayoutPanel3</value>
+  </data>
+  <data name="&gt;&gt;label1.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="tableLayoutPanel3.Location" type="System.Drawing.Point, System.Drawing">
+    <value>289, 42</value>
+  </data>
+  <data name="tableLayoutPanel3.MinimumSize" type="System.Drawing.Size, System.Drawing">
+    <value>64, 102</value>
+  </data>
+  <data name="tableLayoutPanel3.RowCount" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="tableLayoutPanel3.Size" type="System.Drawing.Size, System.Drawing">
+    <value>64, 102</value>
+  </data>
+  <data name="tableLayoutPanel3.TabIndex" type="System.Int32, mscorlib">
+    <value>9</value>
+  </data>
+  <data name="&gt;&gt;tableLayoutPanel3.Name" xml:space="preserve">
+    <value>tableLayoutPanel3</value>
+  </data>
+  <data name="&gt;&gt;tableLayoutPanel3.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TableLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;tableLayoutPanel3.Parent" xml:space="preserve">
+    <value>tableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;tableLayoutPanel3.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="tableLayoutPanel3.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="colorShowBox" Row="1" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="label2" Row="2" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="label1" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Percent,100" /&gt;&lt;Rows Styles="AutoSize,0,Absolute,64,AutoSize,0" /&gt;&lt;/TableLayoutSettings&gt;</value>
+  </data>
+  <data name="tableLayoutPanel1.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Top</value>
+  </data>
+  <data name="tableLayoutPanel1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="tableLayoutPanel1.RowCount" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="tableLayoutPanel1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>363, 187</value>
+  </data>
+  <data name="tableLayoutPanel1.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;tableLayoutPanel1.Name" xml:space="preserve">
+    <value>tableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;tableLayoutPanel1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TableLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;tableLayoutPanel1.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;tableLayoutPanel1.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="tableLayoutPanel1.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="tableLayoutPanel3" Row="0" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="colorPanel" Row="0" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="colorSlider" Row="0" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="alphaSlider" Row="0" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Percent,50,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,Percent,50" /&gt;&lt;Rows Styles="AutoSize,0" /&gt;&lt;/TableLayoutSettings&gt;</value>
+  </data>
+  <data name="tableLayoutPanel2.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="tableLayoutPanel2.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
+    <value>GrowAndShrink</value>
+  </data>
+  <data name="tableLayoutPanel2.ColumnCount" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
+  <data name="tableLayoutPanel2.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="tableLayoutPanel2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 187</value>
+  </data>
+  <data name="tableLayoutPanel2.RowCount" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="tableLayoutPanel2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>363, 88</value>
+  </data>
+  <data name="tableLayoutPanel2.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;tableLayoutPanel2.Name" xml:space="preserve">
+    <value>tableLayoutPanel2</value>
+  </data>
+  <data name="&gt;&gt;tableLayoutPanel2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TableLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;tableLayoutPanel2.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;tableLayoutPanel2.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="tableLayoutPanel2.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="textBoxHex" Row="2" RowSpan="1" Column="6" ColumnSpan="1" /&gt;&lt;Control Name="labelHex" Row="2" RowSpan="1" Column="5" ColumnSpan="1" /&gt;&lt;Control Name="numAlpha" Row="0" RowSpan="1" Column="6" ColumnSpan="1" /&gt;&lt;Control Name="numGreen" Row="2" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="labelAlpha" Row="0" RowSpan="1" Column="5" ColumnSpan="1" /&gt;&lt;Control Name="radioBlue" Row="2" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="numBlue" Row="1" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="radioGreen" Row="1" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="numRed" Row="0" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="radioRed" Row="0" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="numValue" Row="2" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="radioValue" Row="2" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="numSaturation" Row="1" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="radioSaturation" Row="1" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="radioHue" Row="0" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="numHue" Row="0" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Percent,50,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,Percent,50" /&gt;&lt;Rows Styles="AutoSize,0,AutoSize,0,AutoSize,0,Absolute,4" /&gt;&lt;/TableLayoutSettings&gt;</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
   <data name="$this.Size" type="System.Drawing.Size, System.Drawing">
-    <value>484, 312</value>
+    <value>363, 275</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>ColorPickerPanel</value>

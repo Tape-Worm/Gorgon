@@ -35,25 +35,22 @@ namespace Gorgon.Editor.SpriteEditor
     /// An animation controller for the image view.
     /// </summary>
     internal class ImageAnimationController
-        : GorgonAnimationController<ISpriteContentRenderer>
+        : GorgonAnimationController<SpriteContentRenderer>
     {
         /// <summary>Function called when the color needs to be updated on the object.</summary>
         /// <param name="animObject">The object being animated.</param>
         /// <param name="color">The new color.</param>
-        protected override void OnColorUpdate(ISpriteContentRenderer animObject, GorgonColor color)
-        {
-
-        }
+        protected override void OnColorUpdate(SpriteContentRenderer animObject, GorgonColor color) => animObject.TextureAlpha = color.Alpha;
 
         /// <summary>Function called when a position needs to be updated on the object.</summary>
         /// <param name="animObject">The object being animated.</param>
         /// <param name="position">The new position.</param>
-        protected override void OnPositionUpdate(ISpriteContentRenderer animObject, Vector3 position) => animObject.ScrollOffset = new Vector2(position.X, position.Y);
+        protected override void OnPositionUpdate(SpriteContentRenderer animObject, Vector3 position) => animObject.ScrollOffset = new Vector2(position.X, position.Y);
 
         /// <summary>Function called when a rectangle boundary needs to be updated on the object.</summary>
         /// <param name="animObject">The object being animated.</param>
         /// <param name="bounds">The new bounds.</param>
-        protected override void OnRectBoundsUpdate(ISpriteContentRenderer animObject, RectangleF bounds)
+        protected override void OnRectBoundsUpdate(SpriteContentRenderer animObject, RectangleF bounds)
         {
 
         }
@@ -61,7 +58,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Function called when the angle of rotation needs to be updated on the object.</summary>
         /// <param name="animObject">The object being animated.</param>
         /// <param name="rotation">The new angle of rotation, in degrees, on the x, y and z axes.</param>
-        protected override void OnRotationUpdate(ISpriteContentRenderer animObject, Vector3 rotation)
+        protected override void OnRotationUpdate(SpriteContentRenderer animObject, Vector3 rotation)
         {
 
         }
@@ -69,14 +66,14 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Function called when a scale needs to be updated on the object.</summary>
         /// <param name="animObject">The object being animated.</param>
         /// <param name="scale">The new scale.</param>
-        protected override void OnScaleUpdate(ISpriteContentRenderer animObject, Vector3 scale) => animObject.ZoomScaleValue = scale.X;
+        protected override void OnScaleUpdate(SpriteContentRenderer animObject, Vector3 scale) => animObject.ZoomScaleValue = scale.X;
 
         /// <summary></summary>
         /// <param name="animObject"></param>
         /// <param name="texture"></param>
         /// <param name="textureCoordinates"></param>
         /// <param name="textureArrayIndex"></param>
-        protected override void OnTexture2DUpdate(ISpriteContentRenderer animObject, GorgonTexture2DView texture, RectangleF textureCoordinates, int textureArrayIndex)
+        protected override void OnTexture2DUpdate(SpriteContentRenderer animObject, GorgonTexture2DView texture, RectangleF textureCoordinates, int textureArrayIndex)
         {
 
         }

@@ -312,10 +312,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 if (CurrentContent?.File != null)
                 {
-                    if ((ContentPreviewer?.RefreshPreviewCommand != null) && (ContentPreviewer.RefreshPreviewCommand.CanExecute(CurrentContent.File)))
-                    {
-                        ContentPreviewer.RefreshPreviewCommand.Execute(CurrentContent.File);
-                    }                    
+                    RefreshFilePreview(CurrentContent.File);
                 }
                 CurrentContent = null;
                 ProjectState = ProjectState.Unmodified;
@@ -391,7 +388,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>Handles the PropertyChanged event of the CurrentContent control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
-        private async void CurrentContent_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void CurrentContent_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
             {
@@ -404,10 +401,7 @@ namespace Gorgon.Editor.ViewModels
                             break;
                         case ContentState.Unmodified:
                             // If the state turns to unmodified, then refresh the thumbnail.
-                            if ((ContentPreviewer?.RefreshPreviewCommand != null) && (ContentPreviewer.RefreshPreviewCommand.CanExecute(CurrentContent.File)))
-                            {
-                                await ContentPreviewer.RefreshPreviewCommand.ExecuteAsync(CurrentContent.File);
-                            }
+                            RefreshFilePreview(CurrentContent.File);
                             break;
                     }
                     break;
@@ -470,6 +464,18 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Function to force a refresh of the specified file preview.
+        /// </summary>
+        /// <param name="file">The file to refresh.</param>
+        private void RefreshFilePreview(IContentFile file)
+        {
+            if ((ContentPreviewer.RefreshPreviewCommand != null) && (ContentPreviewer.RefreshPreviewCommand.CanExecute(file)))
+            {
+                ContentPreviewer.RefreshPreviewCommand.Execute(file);
+            }
+        }
+
+        /// <summary>
         /// Function to determine whether the content can be opened or not.
         /// </summary>
         /// <param name="file">The node being opened.</param>
@@ -495,7 +501,14 @@ namespace Gorgon.Editor.ViewModels
             switch (response)
             {
                 case MessageResponse.Yes:
-                    await CurrentContent.SaveContentCommand.ExecuteAsync(saveReason);
+                    if ((CurrentContent.SaveContentCommand != null) && (CurrentContent.SaveContentCommand.CanExecute(saveReason)))
+                    {
+                        await CurrentContent.SaveContentCommand.ExecuteAsync(saveReason);
+
+                        // Refresh the preview after we've saved.
+                        RefreshFilePreview(CurrentContent.File);
+                    }
+
                     break;
                 case MessageResponse.Cancel:
                     return false;
@@ -579,10 +592,7 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 // Always generate a thumbnail now so we don't have to later, this also serves to refresh the thumbnail.
-                if ((ContentPreviewer?.RefreshPreviewCommand != null) && (ContentPreviewer.RefreshPreviewCommand.CanExecute(file)))
-                {
-                    await ContentPreviewer.RefreshPreviewCommand.ExecuteAsync(file);
-                }
+                RefreshFilePreview(file);
 
                 // Load the content.
                 file.IsOpen = true;                
@@ -753,10 +763,7 @@ namespace Gorgon.Editor.ViewModels
                 await SaveProjectMetadataAsync();
 
                 // Always generate a thumbnail now so we don't have to later, this also serves to refresh the thumbnail.
-                if ((ContentPreviewer?.RefreshPreviewCommand != null) && (ContentPreviewer.RefreshPreviewCommand.CanExecute(args.ContentFile)))
-                {                    
-                    await ContentPreviewer.RefreshPreviewCommand.ExecuteAsync(args.ContentFile);
-                }
+                RefreshFilePreview(args.ContentFile);
             }
             catch (Exception)
             {

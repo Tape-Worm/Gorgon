@@ -621,7 +621,7 @@ namespace Gorgon.UI
             }
 
             // Force the handle to create so any images that need to be copied are copied now.
-            IntPtr unused = Images.Handle;
+            _ = Images.Handle;
 
             // If we've not been initialized yet, then return.
             if (index >= Images.Images.Count)

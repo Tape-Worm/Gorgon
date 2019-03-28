@@ -58,7 +58,7 @@ namespace Gorgon.Editor.ImageEditor
     {
         #region Variables.
         // The loaded image codecs.
-        private List<IGorgonImageCodec> _codecList = new List<IGorgonImageCodec>();
+        private readonly List<IGorgonImageCodec> _codecList = new List<IGorgonImageCodec>();
 
         // The image editor settings.
         private ImageEditorSettings _settings = new ImageEditorSettings();
@@ -70,7 +70,7 @@ namespace Gorgon.Editor.ImageEditor
         private IContentPluginService _pluginService;
 
         // This is the only codec supported by the image plug in.  Images will be converted when imported.
-        private GorgonCodecDds _ddsCodec = new GorgonCodecDds();
+        private readonly GorgonCodecDds _ddsCodec = new GorgonCodecDds();
 
         // The synchronization lock for threads.
         private readonly object _syncLock = new object();

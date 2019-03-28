@@ -157,24 +157,6 @@ namespace Gorgon.Core
         public static float SimplexNoise(float x, float y, float z) => 1.0f + (Noise.Generate(x, y, z) - 1.0f);
 
         /// <summary>
-        /// Function to generate 4 dimensional simplex noise.
-        /// </summary>
-        /// <param name="x">The horizontal value to use to generate the simplex noise value.</param>
-        /// <param name="y">The vertical value to use to generate the simplex noise value.</param>
-        /// <param name="z">The depth value to use to generate the simplex noise value.</param>
-        /// <param name="w">The w value to use to generate the simplex noise value.</param>
-		/// <returns>A <see cref="float"/> representing the simplex noise value.</returns>
-        /// <remarks>
-        /// <para>
-        /// Simplex noise values similar to Perlin noise but with fewer artifacts and better performance. 
-        /// </para>
-        /// <para>
-        /// This produces predictable random numbers based on the seed values passed to the method. 
-        /// </para>
-        /// </remarks>
-        public static float SimplexNoise(float x, float y, float z, float w) => SimplexNoise(x, y, z);
-
-        /// <summary>
         /// Function to return a random <see cref="float"/> number.
         /// </summary>
         /// <param name="start">The starting value for the random number.</param>

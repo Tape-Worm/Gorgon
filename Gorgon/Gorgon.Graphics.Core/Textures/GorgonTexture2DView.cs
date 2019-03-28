@@ -401,19 +401,25 @@ namespace Gorgon.Graphics.Core
 
             if (mipLevel == null)
             {
-                return new DX.Rectangle((int)(texelCoordinates.X * width),
-                                         (int)(texelCoordinates.Y * height),
-                                         (int)(texelCoordinates.Width * width),
-                                         (int)(texelCoordinates.Height * height));
+                return new DX.Rectangle
+                {
+                    Left = (int)(texelCoordinates.X * width),
+                    Top = (int)(texelCoordinates.Y * height),
+                    Right = (int)(texelCoordinates.Right * width),
+                    Bottom = (int)(texelCoordinates.Bottom * height)
+                };
             }
 
             width = GetMipWidth(mipLevel.Value);
             height = GetMipHeight(mipLevel.Value);
 
-            return new DX.Rectangle((int)(texelCoordinates.X * width),
-                                    (int)(texelCoordinates.Y * height),
-                                    (int)(texelCoordinates.Width * width),
-                                    (int)(texelCoordinates.Height * height));
+            return new DX.Rectangle
+            {
+                Left = (int)(texelCoordinates.X * width),
+                Top = (int)(texelCoordinates.Y * height),
+                Right = (int)(texelCoordinates.Right * width),
+                Bottom = (int)(texelCoordinates.Bottom * height)
+            };
         }
 
         /// <summary>
@@ -436,16 +442,25 @@ namespace Gorgon.Graphics.Core
 
             if (mipLevel == null)
             {
-                return new DX.RectangleF(pixelCoordinates.X / width,
-                                         pixelCoordinates.Y / height,
-                                         pixelCoordinates.Width / width,
-                                         pixelCoordinates.Height / height);
+                return new DX.RectangleF
+                {
+                    Left = pixelCoordinates.Left / width,
+                    Top = pixelCoordinates.Top / height,
+                    Right = pixelCoordinates.Right / width,
+                    Bottom = pixelCoordinates.Bottom / height
+                };
             }
 
             width = GetMipWidth(mipLevel.Value);
             height = GetMipHeight(mipLevel.Value);
 
-            return new DX.RectangleF(pixelCoordinates.X / width, pixelCoordinates.Y / height, pixelCoordinates.Width / width, pixelCoordinates.Height / height);
+            return new DX.RectangleF
+            {
+                Left = pixelCoordinates.Left / width,
+                Top = pixelCoordinates.Top / height,
+                Right = pixelCoordinates.Right / width,
+                Bottom = pixelCoordinates.Bottom / height
+            };
         }
 
         /// <summary>

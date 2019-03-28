@@ -152,15 +152,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>
         ///   <b>true</b> if the specified <see cref="object"/> is equal to this instance; otherwise, <b>false</b>.
         /// </returns>
-        public override bool Equals(object obj)
-		{
-			if (obj is GorgonInputElement element)
-			{
-				return element.Equals(this);
-			}
-
-			return base.Equals(obj);
-		}
+        public override bool Equals(object obj) => obj is GorgonInputElement element ? element.Equals(this) : base.Equals(obj);
 
         /// <summary>
         /// Function to determine if two instances are equal.
@@ -180,23 +172,17 @@ namespace Gorgon.Graphics.Core
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator ==(in GorgonInputElement left, in GorgonInputElement right)
-		{
-			return Equals(in left, in right);
-		}
+        public static bool operator ==(in GorgonInputElement left, in GorgonInputElement right) => Equals(in left, in right);
 
-		/// <summary>
-		/// Implements the operator !=.
-		/// </summary>
-		/// <param name="left">The left.</param>
-		/// <param name="right">The right.</param>
-		/// <returns>
-		/// The result of the operator.
-		/// </returns>
-		public static bool operator !=(in GorgonInputElement left, in GorgonInputElement right)
-		{
-			return !Equals(in left, in right);
-		}
+        /// <summary>
+        /// Implements the operator !=.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
+        public static bool operator !=(in GorgonInputElement left, in GorgonInputElement right) => !Equals(in left, in right);
 
         /// <summary>
         /// Returns a hash code for this instance.

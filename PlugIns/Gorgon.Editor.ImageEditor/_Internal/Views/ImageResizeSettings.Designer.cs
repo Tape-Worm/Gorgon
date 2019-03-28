@@ -34,9 +34,6 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ImageResizeSettings));
-            this.PanelCaptionBorder = new System.Windows.Forms.Panel();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.LabelCaption = new System.Windows.Forms.Label();
             this.TableBody = new System.Windows.Forms.TableLayoutPanel();
             this.LabelImageFilter = new System.Windows.Forms.Label();
             this.AlignmentPicker = new Gorgon.Windows.UI.GorgonAlignmentPicker();
@@ -51,49 +48,15 @@
             this.RadioCrop = new System.Windows.Forms.RadioButton();
             this.RadioResize = new System.Windows.Forms.RadioButton();
             this.PanelOptionsCaption = new System.Windows.Forms.Panel();
-            this.PanelConfirmCancel = new System.Windows.Forms.Panel();
-            this.ButtonOK = new System.Windows.Forms.Button();
-            this.ButtonCancel = new System.Windows.Forms.Button();
-            this.PanelCaptionBorder.SuspendLayout();
-            this.panel2.SuspendLayout();
+            this.PanelBody.SuspendLayout();
             this.TableBody.SuspendLayout();
             this.panelAnchor.SuspendLayout();
-            this.PanelConfirmCancel.SuspendLayout();
             this.SuspendLayout();
             // 
-            // PanelCaptionBorder
+            // PanelBody
             // 
-            this.PanelCaptionBorder.AutoSize = true;
-            this.PanelCaptionBorder.BackColor = System.Drawing.Color.SteelBlue;
-            this.PanelCaptionBorder.Controls.Add(this.panel2);
-            this.PanelCaptionBorder.Dock = System.Windows.Forms.DockStyle.Top;
-            this.PanelCaptionBorder.Location = new System.Drawing.Point(0, 0);
-            this.PanelCaptionBorder.Name = "PanelCaptionBorder";
-            this.PanelCaptionBorder.Padding = new System.Windows.Forms.Padding(2, 0, 0, 0);
-            this.PanelCaptionBorder.Size = new System.Drawing.Size(382, 21);
-            this.PanelCaptionBorder.TabIndex = 0;
-            // 
-            // panel2
-            // 
-            this.panel2.AutoSize = true;
-            this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(75)))), ((int)(((byte)(75)))));
-            this.panel2.Controls.Add(this.LabelCaption);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(2, 0);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(380, 21);
-            this.panel2.TabIndex = 0;
-            // 
-            // LabelCaption
-            // 
-            this.LabelCaption.AutoSize = true;
-            this.LabelCaption.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.LabelCaption.Font = new System.Drawing.Font("Segoe UI", 12F);
-            this.LabelCaption.Location = new System.Drawing.Point(0, 0);
-            this.LabelCaption.Name = "LabelCaption";
-            this.LabelCaption.Size = new System.Drawing.Size(138, 21);
-            this.LabelCaption.TabIndex = 0;
-            this.LabelCaption.Text = "Resize/crop image";
+            this.PanelBody.Controls.Add(this.TableBody);
+            this.PanelBody.Size = new System.Drawing.Size(382, 441);
             // 
             // TableBody
             // 
@@ -114,7 +77,7 @@
             this.TableBody.Controls.Add(this.RadioResize, 0, 7);
             this.TableBody.Controls.Add(this.PanelOptionsCaption, 1, 4);
             this.TableBody.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.TableBody.Location = new System.Drawing.Point(0, 21);
+            this.TableBody.Location = new System.Drawing.Point(0, 0);
             this.TableBody.Name = "TableBody";
             this.TableBody.Padding = new System.Windows.Forms.Padding(0, 8, 0, 0);
             this.TableBody.RowCount = 11;
@@ -292,76 +255,20 @@
             this.PanelOptionsCaption.Size = new System.Drawing.Size(0, 0);
             this.PanelOptionsCaption.TabIndex = 13;
             // 
-            // PanelConfirmCancel
-            // 
-            this.PanelConfirmCancel.AutoSize = true;
-            this.PanelConfirmCancel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.PanelConfirmCancel.Controls.Add(this.ButtonOK);
-            this.PanelConfirmCancel.Controls.Add(this.ButtonCancel);
-            this.PanelConfirmCancel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.PanelConfirmCancel.Location = new System.Drawing.Point(0, 462);
-            this.PanelConfirmCancel.Name = "PanelConfirmCancel";
-            this.PanelConfirmCancel.Size = new System.Drawing.Size(382, 36);
-            this.PanelConfirmCancel.TabIndex = 11;
-            // 
-            // ButtonOK
-            // 
-            this.ButtonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.ButtonOK.AutoSize = true;
-            this.ButtonOK.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ButtonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.ButtonOK.Enabled = false;
-            this.ButtonOK.FlatAppearance.BorderColor = System.Drawing.Color.Gray;
-            this.ButtonOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.DarkOrange;
-            this.ButtonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
-            this.ButtonOK.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ButtonOK.Location = new System.Drawing.Point(173, 3);
-            this.ButtonOK.MinimumSize = new System.Drawing.Size(100, 30);
-            this.ButtonOK.Name = "ButtonOK";
-            this.ButtonOK.Size = new System.Drawing.Size(100, 30);
-            this.ButtonOK.TabIndex = 10;
-            this.ButtonOK.Text = "OK";
-            this.ButtonOK.UseVisualStyleBackColor = true;
-            this.ButtonOK.Click += new System.EventHandler(this.ButtonOK_Click);
-            // 
-            // ButtonCancel
-            // 
-            this.ButtonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.ButtonCancel.AutoSize = true;
-            this.ButtonCancel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ButtonCancel.FlatAppearance.BorderColor = System.Drawing.Color.Gray;
-            this.ButtonCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.DarkOrange;
-            this.ButtonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
-            this.ButtonCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ButtonCancel.Location = new System.Drawing.Point(279, 3);
-            this.ButtonCancel.MinimumSize = new System.Drawing.Size(100, 30);
-            this.ButtonCancel.Name = "ButtonCancel";
-            this.ButtonCancel.Size = new System.Drawing.Size(100, 30);
-            this.ButtonCancel.TabIndex = 11;
-            this.ButtonCancel.Text = "Cancel";
-            this.ButtonCancel.UseVisualStyleBackColor = true;
-            this.ButtonCancel.Click += new System.EventHandler(this.ButtonCancel_Click);
-            // 
             // ImageResizeSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.TableBody);
-            this.Controls.Add(this.PanelConfirmCancel);
-            this.Controls.Add(this.PanelCaptionBorder);
             this.ForeColor = System.Drawing.Color.White;
             this.Name = "ImageResizeSettings";
             this.Size = new System.Drawing.Size(382, 498);
-            this.PanelCaptionBorder.ResumeLayout(false);
-            this.PanelCaptionBorder.PerformLayout();
-            this.panel2.ResumeLayout(false);
-            this.panel2.PerformLayout();
+            this.Text = "Resize Image";
+            this.PanelBody.ResumeLayout(false);
+            this.PanelBody.PerformLayout();
             this.TableBody.ResumeLayout(false);
             this.TableBody.PerformLayout();
             this.panelAnchor.ResumeLayout(false);
             this.panelAnchor.PerformLayout();
-            this.PanelConfirmCancel.ResumeLayout(false);
-            this.PanelConfirmCancel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -369,9 +276,6 @@
 
         #endregion
 
-        private System.Windows.Forms.Panel PanelCaptionBorder;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Label LabelCaption;
         private System.Windows.Forms.TableLayoutPanel TableBody;
         private System.Windows.Forms.Label LabelDesc;
         private System.Windows.Forms.Label LabelImportImageName;
@@ -379,9 +283,6 @@
         private System.Windows.Forms.Label LabelTargetImageDimensions;
         private System.Windows.Forms.RadioButton RadioCrop;
         private System.Windows.Forms.RadioButton RadioResize;
-        private System.Windows.Forms.Panel PanelConfirmCancel;
-        private System.Windows.Forms.Button ButtonOK;
-        private System.Windows.Forms.Button ButtonCancel;
         private System.Windows.Forms.Panel PanelOptionsCaption;
         private System.Windows.Forms.Label LabelImageFilter;
         private Windows.UI.GorgonAlignmentPicker AlignmentPicker;

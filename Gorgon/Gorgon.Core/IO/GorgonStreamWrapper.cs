@@ -235,7 +235,7 @@ namespace Gorgon.IO
 	        {
 	            ParentStream.Position = _currentPosition + _parentOffset;
 
-	            await ParentStream.CopyToAsync(destination, bufferSize, cancellationToken);
+	            await ParentStream.CopyToAsync(destination, bufferSize, cancellationToken).ConfigureAwait(false);
 
 	            _currentPosition = Length;
 	        }
@@ -297,7 +297,7 @@ namespace Gorgon.IO
 	        {
 	            ParentStream.Position = _currentPosition + _parentOffset;
 				
-	            int result = await ParentStream.ReadAsync(buffer, offset, actualCount, cancellationToken);
+	            int result = await ParentStream.ReadAsync(buffer, offset, actualCount, cancellationToken).ConfigureAwait(false);
 
 	            _currentPosition += result;
 
@@ -349,7 +349,7 @@ namespace Gorgon.IO
             {
                 ParentStream.Position = _parentOffset + _currentPosition;
 
-                await ParentStream.WriteAsync(buffer, offset, count, cancellationToken);
+                await ParentStream.WriteAsync(buffer, offset, count, cancellationToken).ConfigureAwait(false);
 
                 _currentPosition += count;
 

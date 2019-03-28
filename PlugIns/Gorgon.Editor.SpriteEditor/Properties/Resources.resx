@@ -326,4 +326,10 @@ Please open the sprite editor and try again.</value>
 
 Please try again.</value>
   </data>
+  <data name="GORSPR_UNDO_DESC_ANCHOR" xml:space="preserve">
+    <value>Anchor change</value>
+  </data>
+  <data name="GORSPR_UNDO_DESC_COLOR" xml:space="preserve">
+    <value>Color change</value>
+  </data>
 </root>

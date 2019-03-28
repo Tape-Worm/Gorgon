@@ -34,25 +34,19 @@ namespace Gorgon.Graphics.Fonts
 	/// <summary>
 	/// An interpolation value used to weight the color blending in a gradient brush.
 	/// </summary>
-	public class GorgonGlyphBrushInterpolator
+	public struct GorgonGlyphBrushInterpolator
 		: IEquatable<GorgonGlyphBrushInterpolator>, IComparable<GorgonGlyphBrushInterpolator>
 	{
-		#region Properties.
-		/// <summary>
-		/// Property to return the interpolation weight.
-		/// </summary>
-		public float Weight
-		{
-			get;
-		}
+        #region Properties.
+        /// <summary>
+        /// Property to return the interpolation weight.
+        /// </summary>
+        public readonly float Weight;
 
-		/// <summary>
-		/// Property to return the interpolation color.
-		/// </summary>
-		public GorgonColor Color
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the interpolation color.
+        /// </summary>
+        public readonly GorgonColor Color;
         #endregion
 
         #region Methods.
@@ -69,6 +63,14 @@ namespace Gorgon.Graphics.Fonts
                                  Color.Blue,
                                  Color.Alpha);
 
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="obj">An object to compare with this object.</param>
+        /// <returns><see langword="true" /> if the current object is equal to the <paramref name="obj" /> parameter; otherwise, <see langword="false" />.</returns>
+        public override bool Equals(object obj) => (obj is GorgonGlyphBrushInterpolator brush) && (brush.Equals(this));
+
         /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
@@ -76,6 +78,86 @@ namespace Gorgon.Graphics.Fonts
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
         public override int GetHashCode() => 281.GenerateHash(Weight);
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+        /// </returns>
+        public bool Equals(GorgonGlyphBrushInterpolator other) => other == null ? false : other.Weight.EqualsEpsilon(Weight) && Color.Equals(other.Color);
+
+        /// <summary>
+        /// Compares the current object with another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />.
+        /// </returns>
+        public int CompareTo(GorgonGlyphBrushInterpolator other)
+        {
+            if (other == null)
+            {
+                return -1;
+            }
+
+            if (Weight < other.Weight)
+            {
+                return -1;
+            }
+
+            return Weight > other.Weight ? 1 : 0;
+        }
+
+
+        /// <summary>
+        /// Performs an equality check on two instances.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+        public static bool operator ==(GorgonGlyphBrushInterpolator left, GorgonGlyphBrushInterpolator right) => left.Equals(right);
+
+        /// <summary>
+        /// Performs an inequality check on two instances.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
+        public static bool operator !=(GorgonGlyphBrushInterpolator left, GorgonGlyphBrushInterpolator right) => !(left == right);
+
+        /// <summary>
+        /// Performs a less than test on two instances.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns><b>true</b> if <paramref name="left"/> is less than <paramref name="right"/>, <b>false</b> if not.</returns>
+        public static bool operator <(GorgonGlyphBrushInterpolator left, GorgonGlyphBrushInterpolator right) => left.CompareTo(right) < 0;
+
+        /// <summary>
+        /// Performs a less or equal to than test on two instances.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns><b>true</b> if <paramref name="left"/> is less than or equal to <paramref name="right"/>, <b>false</b> if not.</returns>
+        public static bool operator <=(GorgonGlyphBrushInterpolator left, GorgonGlyphBrushInterpolator right) => left.CompareTo(right) <= 0;
+
+        /// <summary>
+        /// Performs a greater than test on two instances.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns><b>true</b> if <paramref name="left"/> is greater than <paramref name="right"/>, <b>false</b> if not.</returns>
+        public static bool operator >(GorgonGlyphBrushInterpolator left, GorgonGlyphBrushInterpolator right) => left.CompareTo(right) > 0;
+
+        /// <summary>
+        /// Performs a greater than or equal to than test on two instances.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns><b>true</b> if <paramref name="left"/> is greater than or equal to <paramref name="right"/>, <b>false</b> if not.</returns>
+        public static bool operator >=(GorgonGlyphBrushInterpolator left, GorgonGlyphBrushInterpolator right) => left.CompareTo(right) >= 0;
         #endregion
 
         #region Constructor/Destructor.
@@ -89,49 +171,6 @@ namespace Gorgon.Graphics.Fonts
 			Weight = weight.Min(1.0f).Max(0);
 			Color = color;
 		}
-		#endregion
-
-		#region IEquatable<GorgonGlyphBrushInterpolator> Members
-		/// <summary>
-		/// Indicates whether the current object is equal to another object of the same type.
-		/// </summary>
-		/// <param name="other">An object to compare with this object.</param>
-		/// <returns>
-		/// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
-		/// </returns>
-		public bool Equals(GorgonGlyphBrushInterpolator other)
-		{
-			if (other == null)
-			{
-				return false;
-			}
-
-			return other.Weight.EqualsEpsilon(Weight) && Color.Equals(other.Color);
-		}
-		#endregion
-
-		#region IComparable<GorgonGlyphBrushInterpolator> Members
-		/// <summary>
-		/// Compares the current object with another object of the same type.
-		/// </summary>
-		/// <param name="other">An object to compare with this object.</param>
-		/// <returns>
-		/// A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />.
-		/// </returns>
-		public int CompareTo(GorgonGlyphBrushInterpolator other)
-		{
-			if (other == null)
-			{
-				return -1;
-			}
-
-			if (Weight < other.Weight)
-			{
-				return -1;
-			}
-
-			return Weight > other.Weight ? 1 : 0;
-		}
-		#endregion
-	}
+        #endregion
+    }
 }

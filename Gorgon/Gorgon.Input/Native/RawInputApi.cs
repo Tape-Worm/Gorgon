@@ -469,7 +469,7 @@ namespace Gorgon.Native
 
 		        if (deviceCount == 0)
 		        {
-		            return new RAWINPUTDEVICELIST[0];
+		            return Array.Empty<RAWINPUTDEVICELIST>();
 		        }
 
 		        RAWINPUTDEVICELIST[] deviceList = ArrayPool<RAWINPUTDEVICELIST>.Shared.Rent(deviceCount);

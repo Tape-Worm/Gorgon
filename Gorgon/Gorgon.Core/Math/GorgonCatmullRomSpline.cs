@@ -121,13 +121,12 @@ namespace Gorgon.Math
         /// If the <paramref name="delta"/> is less than 0, or greater than 1, the value will be wrapped to fit within the 0..1 range.
         /// </para>
         /// </remarks>
-        /// <exception cref="ArgumentOutOfRangeException"><c>[Debug only]</c> Thrown when the <paramref name="startPointIndex"/> is less than 0, or greater than/equal to the number of points - 1 in the <see cref="IGorgonSpline.Points"/> parameter.</exception>
-        [SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "startPointIndex+1")]
+        /// <exception cref="ArgumentOutOfRangeException"><c>[Debug only]</c> Thrown when the <paramref name="startPointIndex"/> is less than 0, or greater than/equal to the number of points - 1 in the <see cref="IGorgonSpline.Points"/> parameter.</exception>        
 		public DX.Vector4 GetInterpolatedValue(int startPointIndex, float delta)
         {
             DX.Matrix calculations = DX.Matrix.Identity;
 
-			startPointIndex.ValidateRange("startPointIndex", 0, Points.Count - 1);
+			startPointIndex.ValidateRange(nameof(startPointIndex), 0, Points.Count - 1);
 
             if (delta.EqualsEpsilon(0.0f))
             {

@@ -4,11 +4,13 @@
 // Licensed under the MIT license.
 // https://github.com/nickgravelyn/Triangulator/blob/master/LICENSE
 
+using System;
 using SharpDX;
 
 namespace GorgonTriangulator
 {
     internal struct Vertex
+        : IEquatable<Vertex>
 	{
 		public readonly Vector2 Position;
 		public readonly int Index;

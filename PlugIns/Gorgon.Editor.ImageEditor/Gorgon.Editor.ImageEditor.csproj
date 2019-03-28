@@ -54,6 +54,7 @@
     <Compile Include="..\..\Gorgon\Gorgon.Core\SharedAssemblyInfo.cs">
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="_Internal\Forms\FormRibbon.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -133,6 +134,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="..\..\Gorgon\NoLiteralBugFix.ruleset">
+      <Link>NoLiteralBugFix.ruleset</Link>
+    </None>
     <None Include="Resources\center_24x24.png" />
     <None Include="Resources\arrow_w_24x24.png" />
     <None Include="Resources\arrow_sw_24x24.png" />
@@ -202,7 +206,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="KryptonToolkitSuite5470">
-      <Version>5.470.741</Version>
+      <Version>5.470.856</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
+      <Version>2.9.1</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.1</Version>
@@ -215,6 +222,9 @@
     </PackageReference>
     <PackageReference Include="System.Buffers">
       <Version>4.5.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Runtime">
+      <Version>4.3.1</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
       <Version>4.5.2</Version>

@@ -151,7 +151,7 @@ namespace Gorgon.Plugins
 		/// </note>
 		/// </para>
 		/// </remarks>
-		public AssemblySigningResult VerifyAssemblyStrongName(string assemblyPath, byte[] publicKey = null)
+		public static AssemblySigningResult VerifyAssemblyStrongName(string assemblyPath, byte[] publicKey = null)
 		{
 			if ((string.IsNullOrWhiteSpace(assemblyPath)) || (!File.Exists(assemblyPath)))
 			{
@@ -192,7 +192,7 @@ namespace Gorgon.Plugins
 		    lock (_syncLock)
 		    {
                 return _container == null
-                    ? (new Lazy<GorgonPlugin, IDictionary<string, object>>[0])
+                    ? (Array.Empty<Lazy<GorgonPlugin, IDictionary<string, object>>>())
                     : _container.GetExports<GorgonPlugin, IDictionary<string, object>>(_contractName);
             }
         }

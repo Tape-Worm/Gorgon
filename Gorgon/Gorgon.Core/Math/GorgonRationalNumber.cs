@@ -91,127 +91,86 @@ namespace Gorgon.Math
         /// </returns>
         /// <param name="obj">The object to compare with the current object. </param>
         /// <filterpriority>2</filterpriority>
-        public override bool Equals(object obj)
-		{
-			if (obj is GorgonRationalNumber rational)
-			{
-				return rational.Equals(this);
-			}
-			return base.Equals(obj);
-		}
+        public override bool Equals(object obj) => obj is GorgonRationalNumber rational ? rational.Equals(this) : base.Equals(obj);
 
-		/// <summary>
-		/// Indicates whether the current object is equal to another object of the same type.
-		/// </summary>
-		/// <returns>
-		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
-		/// </returns>
-		/// <param name="other">An object to compare with this object.</param>
-		public bool Equals(GorgonRationalNumber other) => Equals(this, other);
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+        /// </returns>
+        /// <param name="other">An object to compare with this object.</param>
+        public bool Equals(GorgonRationalNumber other) => Equals(this, other);
 
-		/// <summary>
-		/// Compares the current instance with another object of the same type and returns an integer that indicates whether the current instance precedes, follows, or occurs in the same position in the sort order as the other object. 
-		/// </summary>
-		/// <returns>
-		/// A value that indicates the relative order of the objects being compared. The return value has these meanings: Value Meaning Less than zero This instance precedes <paramref  name="other"/> in the sort order.  Zero This instance occurs in the same position in the sort order as <paramref  name="other"/>. Greater than zero This instance follows <paramref  name="other"/> in the sort order. 
-		/// </returns>
-		/// <param name="other">An object to compare with this instance. </param>
-		public int CompareTo(GorgonRationalNumber other)
-		{
-			if (Equals(this, other))
-			{
-				return 0;
-			}
+        /// <summary>
+        /// Compares the current instance with another object of the same type and returns an integer that indicates whether the current instance precedes, follows, or occurs in the same position in the sort order as the other object. 
+        /// </summary>
+        /// <returns>
+        /// A value that indicates the relative order of the objects being compared. The return value has these meanings: Value Meaning Less than zero This instance precedes <paramref  name="other"/> in the sort order.  Zero This instance occurs in the same position in the sort order as <paramref  name="other"/>. Greater than zero This instance follows <paramref  name="other"/> in the sort order. 
+        /// </returns>
+        /// <param name="other">An object to compare with this instance. </param>
+        public int CompareTo(GorgonRationalNumber other) => Equals(this, other) ? 0 : this < other ? -1 : 1;
+        #endregion
 
-			if (this < other)
-			{
-				return -1;
-			}
+        #region Operators.
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="GorgonRationalNumber"/> to <see cref="decimal"/>.
+        /// </summary>
+        /// <param name="value">The value convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator decimal(GorgonRationalNumber value) => (decimal)value.Numerator / value.Denominator;
 
-			return 1;
-		}
-		#endregion
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="GorgonRationalNumber"/> to <see cref="double"/>.
+        /// </summary>
+        /// <param name="value">The value convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator double(GorgonRationalNumber value) => (double)value.Numerator / value.Denominator;
 
-		#region Operators.
-		/// <summary>
-		/// Performs an implicit conversion from <see cref="GorgonRationalNumber"/> to <see cref="decimal"/>.
-		/// </summary>
-		/// <param name="value">The value convert.</param>
-		/// <returns>The result of the conversion.</returns>
-		public static implicit operator decimal(GorgonRationalNumber value)
-		{
-			return (decimal)value.Numerator / value.Denominator;
-		}
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="GorgonRationalNumber"/> to <see cref="float"/>.
+        /// </summary>
+        /// <param name="value">The value convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator float(GorgonRationalNumber value) => (float)value.Numerator / value.Denominator;
 
-		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonRationalNumber"/> to <see cref="double"/>.
-		/// </summary>
-		/// <param name="value">The value convert.</param>
-		/// <returns>The result of the conversion.</returns>
-		public static explicit operator double (GorgonRationalNumber value)
-		{
-			return (double)value.Numerator / value.Denominator;
-		}
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="GorgonRationalNumber"/> to <see cref="int"/>.
+        /// </summary>
+        /// <param name="value">The value convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator int(GorgonRationalNumber value) => value.Numerator / value.Denominator;
 
-		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonRationalNumber"/> to <see cref="float"/>.
-		/// </summary>
-		/// <param name="value">The value convert.</param>
-		/// <returns>The result of the conversion.</returns>
-		public static explicit operator float (GorgonRationalNumber value)
-		{
-			return (float)value.Numerator / value.Denominator;
-		}
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="int"/> to <see cref="GorgonRationalNumber"/>.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator GorgonRationalNumber(int value) => new GorgonRationalNumber(value, 1);
 
-		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonRationalNumber"/> to <see cref="int"/>.
-		/// </summary>
-		/// <param name="value">The value convert.</param>
-		/// <returns>The result of the conversion.</returns>
-		public static explicit operator int (GorgonRationalNumber value)
-		{
-			return value.Numerator / value.Denominator;
-		}
+        /// <summary>
+        /// Operator to compare two instances for equality.
+        /// </summary>
+        /// <param name="left">Left instance to compare.</param>
+        /// <param name="right">Right instance to compare.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+        public static bool operator ==(GorgonRationalNumber left, GorgonRationalNumber right) => Equals(left, right);
 
-		/// <summary>
-		/// Performs an implicit conversion from <see cref="int"/> to <see cref="GorgonRationalNumber"/>.
-		/// </summary>
-		/// <param name="value">The value to convert.</param>
-		/// <returns>The result of the conversion.</returns>
-		public static implicit operator GorgonRationalNumber(int value)
-		{
-			return new GorgonRationalNumber(value, 1);
-		}
+        /// <summary>
+        /// Operator to compare two instances for inequality.
+        /// </summary>
+        /// <param name="left">Left instance to compare.</param>
+        /// <param name="right">Right instance to compare.</param>
+        /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
+        public static bool operator !=(GorgonRationalNumber left, GorgonRationalNumber right) => !Equals(left, right);
 
-		/// <summary>
-		/// Operator to compare two instances for equality.
-		/// </summary>
-		/// <param name="left">Left instance to compare.</param>
-		/// <param name="right">Right instance to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool operator ==(GorgonRationalNumber left, GorgonRationalNumber right)
-		{
-			return Equals(left, right);
-		}
-
-		/// <summary>
-		/// Operator to compare two instances for inequality.
-		/// </summary>
-		/// <param name="left">Left instance to compare.</param>
-		/// <param name="right">Right instance to compare.</param>
-		/// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
-		public static bool operator !=(GorgonRationalNumber left, GorgonRationalNumber right)
-		{
-			return !Equals(left, right);
-		}
-
-		/// <summary>
-		/// Operator to determine if the left rational is less than the right rational.
-		/// </summary>
-		/// <param name="left">Left rational to compare.</param>
-		/// <param name="right">Right rational to compare.</param>
-		/// <returns><b>true</b> if the <paramref  name="left"/> is less than the <paramref  name="right"/>, <b>false</b> if not.</returns>
-		public static bool operator <(GorgonRationalNumber left, GorgonRationalNumber right)
+        /// <summary>
+        /// Operator to determine if the left rational is less than the right rational.
+        /// </summary>
+        /// <param name="left">Left rational to compare.</param>
+        /// <param name="right">Right rational to compare.</param>
+        /// <returns><b>true</b> if the <paramref  name="left"/> is less than the <paramref  name="right"/>, <b>false</b> if not.</returns>
+        public static bool operator <(GorgonRationalNumber left, GorgonRationalNumber right)
 		{
 			decimal leftRational = left;
 			decimal rightRational = right;

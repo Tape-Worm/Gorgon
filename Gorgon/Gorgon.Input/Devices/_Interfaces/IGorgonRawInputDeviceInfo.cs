@@ -63,7 +63,7 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return the device class name.
 		/// </summary>
-		string Class
+		string DeviceClass
 		{
 			get;
 		}

@@ -204,33 +204,27 @@ namespace Gorgon.Core
         /// <param name="left">The left item to test.</param>
         /// <param name="right">The right item to test.</param>
         /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-        public static bool operator ==(GorgonResult left, GorgonResult right)
-		{
-			return ((left.Code == right.Code) && (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase)));
-		}
+        public static bool operator ==(GorgonResult left, GorgonResult right) => ((left.Code == right.Code) && (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase)));
 
-		/// <summary>
-		/// Operator to test for inequality.
-		/// </summary>
-		/// <param name="left">The left item to test.</param>
-		/// <param name="right">The right item to test.</param>
-		/// <returns><b>true</b> if not equal, <b>false</b> if the items are equal.</returns>
-		public static bool operator !=(GorgonResult left, GorgonResult right)
-		{
-			return ((left.Code != right.Code) || (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase)));
-		}
-		#endregion
+        /// <summary>
+        /// Operator to test for inequality.
+        /// </summary>
+        /// <param name="left">The left item to test.</param>
+        /// <param name="right">The right item to test.</param>
+        /// <returns><b>true</b> if not equal, <b>false</b> if the items are equal.</returns>
+        public static bool operator !=(GorgonResult left, GorgonResult right) => ((left.Code != right.Code) || (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase)));
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonResult"/> struct.
-		/// </summary>
-		/// <param name="name">The name of the error.</param>
-		/// <param name="code">The numeric code assigned to the error.</param>
-		/// <param name="description">The full description of the error.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> or <paramref name="description"/> parameter is <b>null</b></exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> or <paramref name="description"/> parameter is an empty string.</exception>
-		public GorgonResult(string name, int code, string description)
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonResult"/> struct.
+        /// </summary>
+        /// <param name="name">The name of the error.</param>
+        /// <param name="code">The numeric code assigned to the error.</param>
+        /// <param name="description">The full description of the error.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> or <paramref name="description"/> parameter is <b>null</b></exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> or <paramref name="description"/> parameter is an empty string.</exception>
+        public GorgonResult(string name, int code, string description)
 		{
 			if (name == null)
 			{

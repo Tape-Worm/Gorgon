@@ -127,10 +127,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-        public static bool operator ==(in GorgonReadWriteViewBinding left, in GorgonReadWriteViewBinding right)
-        {
-            return Equals(in left, in right);
-        }
+        public static bool operator ==(in GorgonReadWriteViewBinding left, in GorgonReadWriteViewBinding right) => Equals(in left, in right);
 
         /// <summary>
         /// Operator to determine inequality between two instances.
@@ -138,10 +135,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
-        public static bool operator !=(in GorgonReadWriteViewBinding left, in GorgonReadWriteViewBinding right)
-        {
-            return !Equals(in left, in right);
-        }
+        public static bool operator !=(in GorgonReadWriteViewBinding left, in GorgonReadWriteViewBinding right) => !Equals(in left, in right);
         #endregion
 
         #region Constructor

@@ -67,7 +67,7 @@
     <Compile Include="Types\_Interfaces\IGorgonTrack.cs" />
     <Compile Include="_Interfaces\IGorgonAnimation.cs" />
     <Compile Include="_Interfaces\IGorgonTrackKeyBuilder.cs" />
-    <Compile Include="_Internal\Animation.cs" />
+    <Compile Include="_Internal\AnimationData.cs" />
     <Compile Include="GorgonAnimationController.cs" />
     <Compile Include="_Interfaces\IGorgonKeyFrame.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -91,6 +91,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
+      <Version>2.9.1</Version>
+    </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.1</Version>
     </PackageReference>
@@ -102,6 +105,9 @@
     </PackageReference>
     <PackageReference Include="System.Buffers">
       <Version>4.5.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Runtime">
+      <Version>4.3.1</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
       <Version>4.5.2</Version>
@@ -117,6 +123,10 @@
       <Name>Gorgon.Graphics.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="..\NoLiteralBugFix.ruleset">
+      <Link>NoLiteralBugFix.ruleset</Link>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

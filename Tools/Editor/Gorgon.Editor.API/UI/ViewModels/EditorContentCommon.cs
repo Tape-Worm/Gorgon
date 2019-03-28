@@ -222,16 +222,18 @@ namespace Gorgon.Editor.UI
                     {
                         return;
                     }
-                }
 
-                BusyState.SetBusy();
-                EventHandler handler = CloseContent;
-                CloseContent?.Invoke(this, EventArgs.Empty);
+                    ContentState = ContentState.Unmodified;
+                }
 
                 if (File != null)
                 {
                     File.IsChanged = false;
                 }
+
+                BusyState.SetBusy();
+                EventHandler handler = CloseContent;
+                CloseContent?.Invoke(this, EventArgs.Empty);
             }
             catch (Exception ex)
             {
@@ -287,6 +289,7 @@ namespace Gorgon.Editor.UI
             _file.Renamed -= File_Renamed;
             _file.Deleted -= File_Deleted;
             _file.IsOpen = false;
+            _file.IsChanged = false;
         }
         #endregion
 

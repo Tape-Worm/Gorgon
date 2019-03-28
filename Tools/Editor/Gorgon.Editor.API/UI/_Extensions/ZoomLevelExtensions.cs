@@ -74,8 +74,12 @@ namespace Gorgon.Editor.UI
               {  ZoomLevels.Percent6400,
                     Resources.GOREDIT_ZOOM_6400
             },
-              {  ZoomLevels.ToWindow,
+            {  ZoomLevels.ToWindow,
                     Resources.GOREDIT_ZOOM_TO_WINDOW
+            },
+            {
+                ZoomLevels.Custom,
+                    Resources.GOREDIT_ZOOM_CUSTOM
             }
         };
 
@@ -146,6 +150,7 @@ namespace Gorgon.Editor.UI
                     return 32;
                 case ZoomLevels.Percent6400:
                     return 64;
+                case ZoomLevels.Custom:
                 case ZoomLevels.ToWindow:
                     return -1;
             }

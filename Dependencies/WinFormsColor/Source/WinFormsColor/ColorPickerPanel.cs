@@ -435,30 +435,65 @@ namespace Fetze.WinFormsColor
 			UpdateColorControls();
 		}
 
+        private void SetStates(RadioButton button)
+        {
+            radioHue.Checked = button == radioHue;
+            radioSaturation.Checked = button == radioSaturation;
+            radioValue.Checked = button == radioValue;
+
+            radioRed.Checked = button == radioRed;
+            radioGreen.Checked = button == radioGreen;
+            radioBlue.Checked = button == radioBlue;
+        }
+
 		private void radioHue_CheckedChanged(object sender, EventArgs e)
 		{
-			if (radioHue.Checked) PrimaryAttribute = PrimaryAttrib.Hue;
+            if (radioHue.Checked)
+            {
+                PrimaryAttribute = PrimaryAttrib.Hue;
+                SetStates(radioHue);
+            }
 		}
 		private void radioSaturation_CheckedChanged(object sender, EventArgs e)
 		{
-			if (radioSaturation.Checked) PrimaryAttribute = PrimaryAttrib.Saturation;
-		}
+            if (radioSaturation.Checked)
+            {
+                PrimaryAttribute = PrimaryAttrib.Saturation;
+                SetStates(radioSaturation);
+            }
+        }
 		private void radioValue_CheckedChanged(object sender, EventArgs e)
 		{
-			if (radioValue.Checked) PrimaryAttribute = PrimaryAttrib.Brightness;
-		}
+            if (radioValue.Checked)
+            {
+                PrimaryAttribute = PrimaryAttrib.Brightness;
+                SetStates(radioValue);
+            }
+        }
 		private void radioRed_CheckedChanged(object sender, EventArgs e)
 		{
-			if (radioRed.Checked) PrimaryAttribute = PrimaryAttrib.Red;
-		}
+            if (radioRed.Checked)
+            {
+                PrimaryAttribute = PrimaryAttrib.Red;
+                SetStates(radioRed);
+            }
+        }
 		private void radioGreen_CheckedChanged(object sender, EventArgs e)
 		{
-			if (radioGreen.Checked) PrimaryAttribute = PrimaryAttrib.Green;
-		}
+            if (radioGreen.Checked)
+            {
+                PrimaryAttribute = PrimaryAttrib.Green;
+                SetStates(radioGreen);
+            }
+        }
 		private void radioBlue_CheckedChanged(object sender, EventArgs e)
 		{
-			if (radioBlue.Checked) PrimaryAttribute = PrimaryAttrib.Blue;
-		}
+            if (radioBlue.Checked)
+            {
+                PrimaryAttribute = PrimaryAttrib.Blue;
+                SetStates(radioBlue);
+            }
+        }
 
 		private void colorPanel_PercentualValueChanged(object sender, EventArgs e)
 		{

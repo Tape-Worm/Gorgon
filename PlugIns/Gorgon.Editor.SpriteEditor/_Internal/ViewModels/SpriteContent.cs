@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using DX = SharpDX;
 using Gorgon.Editor.Content;
@@ -37,12 +36,13 @@ using Gorgon.Editor.UI;
 using Gorgon.Graphics.Core;
 using Gorgon.IO;
 using Gorgon.Renderers;
-using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Math;
 using System.Threading;
 using Gorgon.Graphics;
+using System.ComponentModel;
+using Gorgon.Diagnostics;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -70,6 +70,14 @@ namespace Gorgon.Editor.SpriteEditor
             /// The current texture array index.
             /// </summary>
             public int ArrayIndex;
+            /// <summary>
+            /// The color of the sprite
+            /// </summary>
+            public IReadOnlyList<GorgonColor> VertexColor;
+            /// <summary>
+            /// The anchor position for the sprite.
+            /// </summary>
+            public DX.Vector2 Anchor;
         }
         #endregion
 
@@ -81,6 +89,15 @@ namespace Gorgon.Editor.SpriteEditor
         #endregion
 
         #region Variables.
+        // The default color for a sprite.
+        private static readonly GorgonColor[] _defaultColor = new GorgonColor[]
+        {
+            GorgonColor.White,
+            GorgonColor.White,
+            GorgonColor.White,
+            GorgonColor.White
+        };
+
         // The sprite being edited.
         private GorgonSprite _sprite;
         // The undo service.
@@ -89,8 +106,6 @@ namespace Gorgon.Editor.SpriteEditor
         private IContentFile _textureFile;
         // The file manager used to access external content files.
         private IContentFileManager _contentFiles;
-        // The file system for temporary working data.
-        private IGorgonFileSystemWriter<Stream> _scratchArea;
         // The sprite texture service.
         private ISpriteTextureService _textureService;
         // The codec used to read/write sprite data.
@@ -99,15 +114,69 @@ namespace Gorgon.Editor.SpriteEditor
         private IContentFile _originalTexture;
         // The currently active tool for editing the sprite.
         private SpriteEditTool _currentTool = SpriteEditTool.None;
-        // The currently active editor sub panel.
-        private EditorSubPanel _subPanel = EditorSubPanel.None;
         // The image data for the sprite texture.
         private IGorgonImage _imageData;
         // The factory used to create sprite content data.
         private ISpriteContentFactory _factory;
+        // The currently active panel.
+        private IHostedPanelViewModel _currentPanel;
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return the sprite color editor.
+        /// </summary>
+        public ISpriteColorEdit ColorEditor
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the sprite anchor editor.
+        /// </summary>
+        public ISpriteAnchorEdit AnchorEditor
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return whether the sub panel is modal or not.
+        /// </summary>
+        public bool IsSubPanelModal => (CurrentPanel != null) && (CurrentPanel.IsModal);
+
+        /// <summary>Property to return the currently active panel.</summary>
+        public IHostedPanelViewModel CurrentPanel
+        {
+            get => _currentPanel;
+            private set
+            {
+                if (_currentPanel == value)
+                {
+                    return;
+                }
+
+                if (_currentPanel != null)
+                {
+                    _currentPanel.PropertyChanged -= CurrentPanel_PropertyChanged;
+                    _currentPanel.IsActive = false;
+                }
+
+                OnPropertyChanging();
+                _currentPanel = value;
+                OnPropertyChanged();
+
+                if (_currentPanel != null)
+                {
+                    _currentPanel.IsActive = true;
+                    _currentPanel.PropertyChanged += CurrentPanel_PropertyChanged;
+                }
+
+                NotifyPropertyChanged(nameof(IsSubPanelModal));
+            }
+        }
+
         /// <summary>Property to return the type of content.</summary>
         public override string ContentType => SpriteEditorCommonConstants.ContentType;
 
@@ -130,25 +199,6 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>
-        /// Property to set or return the sub panel to make active.
-        /// </summary>
-        public EditorSubPanel ActiveSubPanel
-        {
-            get => _subPanel;
-            set
-            {
-                if (_subPanel == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _subPanel = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
         /// Property to set or return the currently active tool for editing the sprite.
         /// </summary>
         public SpriteEditTool CurrentTool
@@ -165,9 +215,14 @@ namespace Gorgon.Editor.SpriteEditor
                 _currentTool = value;
                 OnPropertyChanged();
 
-                ActiveSubPanel = EditorSubPanel.None;
+                CurrentPanel = null;
 
                 NotifyPropertyChanged(nameof(SupportsArrayChange));
+
+                if (ManualInput != null)
+                {
+                    ManualInput.IsActive = false;
+                }
             }
         }
 
@@ -231,6 +286,80 @@ namespace Gorgon.Editor.SpriteEditor
 
                 ContentState = ContentState.Modified;
                 NotifyPropertyChanged(nameof(SupportsArrayChange));
+            }
+        }
+
+        /// <summary>Property to set or return the color of each sprite vertex.</summary>
+        public IReadOnlyList<GorgonColor> VertexColors
+        {
+            get => _sprite.CornerColors;
+            set
+            {
+                if (value == _sprite.CornerColors)
+                {
+                    return;
+                }
+
+                if (value == null)
+                {
+                    value = _defaultColor;
+                }
+
+                if (_sprite.CornerColors.SequenceEqual(value))
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                for (int i = 0; i < _sprite.CornerColors.Count; ++i)
+                {
+                    _sprite.CornerColors[i] = i >= value.Count ? GorgonColor.White : value[i];
+                }
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Property to return offsets for each vertex in the sprite.
+        /// </summary>
+        public IReadOnlyList<DX.Vector3> VertexOffsets
+        {
+            get => _sprite.CornerOffsets;
+            private set
+            {
+                if (value == _sprite.CornerOffsets)
+                {
+                    return;
+                }
+
+                if (_sprite.CornerOffsets.SequenceEqual(value))
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                for (int i = 0; i < _sprite.CornerOffsets.Count; ++i)
+                {
+                    _sprite.CornerOffsets[i] = i >= value.Count ? DX.Vector3.Zero : value[i];
+                }
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>Property to return the anchor position for for the sprite.</summary>
+        public DX.Vector2 Anchor
+        {
+            get => _sprite.Anchor;
+            private set
+            {
+                if (_sprite.Anchor.Equals(ref value))
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _sprite.Anchor = value;
+                OnPropertyChanged();
             }
         }
 
@@ -305,6 +434,30 @@ namespace Gorgon.Editor.SpriteEditor
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the command to execute when toggling the manual input.
+        /// </summary>
+        public IEditorCommand<object> ToggleManualInputCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to show the sprite color editor.
+        /// </summary>
+        public IEditorCommand<object> ShowColorEditorCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to show the sprite anchor editor.
+        /// </summary>
+        public IEditorCommand<object> ShowAnchorEditorCommand
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
@@ -314,22 +467,10 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="defaultSprite">The sprite data to use as default.</param>
         private void ResetState(GorgonSprite defaultSprite)
         {
-            // TODO (In the command): 
-            // 1. Prior to calling this, prompt for a sprite name.
-            //    a. If OK, continue to 2
-            //    b. If cancel, then stop.
-            // 2. Call this method.
-            // 3. Create a new content file with the name we specified, and save the empty sprite to it.
-            // 4. Set content file.Metadata.Attributes[CommonEditorConstants.IsNewAttr] = "true"; <-- This value doesn't matter.
-            // 5. Assign new content file to File property.
-            //
-            // If this messes up, we'll probably have corrupt state on our hands, so, if we can close the view, we should. May need to add some means of doing that.
             Texture?.Dispose();
             _imageData?.Dispose();
             SetupTextureFile(null);
             _originalTexture = null;
-
-            // TODO: This should be done in the command, after the file is created.
 
             // Reset all state.
             _undoService.ClearStack();
@@ -342,6 +483,8 @@ namespace Gorgon.Editor.SpriteEditor
             NotifyPropertyChanged(nameof(TextureCoordinates));
             NotifyPropertyChanged(nameof(ImageData));
             NotifyPropertyChanged(nameof(Texture));
+            NotifyPropertyChanged(nameof(VertexColors));
+            NotifyPropertyChanged(nameof(VertexOffsets));
 
             ContentState = ContentState.Unmodified;
         }
@@ -383,13 +526,13 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to determine if an undo operation is possible.
         /// </summary>
         /// <returns><b>true</b> if the last action can be undone, <b>false</b> if not.</returns>
-        private bool CanUndo() => _undoService.CanUndo && _currentTool == SpriteEditTool.None;
+        private bool CanUndo() => (_undoService.CanUndo) && (_currentTool == SpriteEditTool.None) && (CurrentPanel == null);
 
         /// <summary>
         /// Function to determine if a redo operation is possible.
         /// </summary>
         /// <returns><b>true</b> if the last action can be redone, <b>false</b> if not.</returns>
-        private bool CanRedo() => _undoService.CanRedo && _currentTool == SpriteEditTool.None;
+        private bool CanRedo() => (_undoService.CanRedo) && (_currentTool == SpriteEditTool.None) && (CurrentPanel == null);
 
         /// <summary>
         /// Function called when a redo operation is requested.
@@ -425,7 +568,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to determine if a new sprite can be created.
         /// </summary>
         /// <returns><b>true</b> if a new sprite can be created, <b>false</b> if not.</returns>
-        private bool CanCreateSprite() => CurrentTool == SpriteEditTool.None;
+        private bool CanCreateSprite() => (CurrentTool == SpriteEditTool.None) && (CurrentPanel == null);
 
         /// <summary>
         /// Function to create a new sprite.
@@ -502,6 +645,74 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>
+        /// Function to determine if the current color can be comitted.
+        /// </summary>
+        /// <returns><b>true</b> if the color can be comitted, <b>false</b> if not.</returns>
+        private bool CanCommitColorChange() => (ColorEditor != null) && (!ColorEditor.SpriteColor.Equals(ColorEditor.OriginalSpriteColor));
+
+        /// <summary>
+        /// Function called to change the color of the sprite.
+        /// </summary>
+        private void DoCommitColorChange()
+        {
+            
+            bool SetColor(IReadOnlyList<GorgonColor> colors)
+            {
+                try
+                {                    
+                    VertexColors = colors;
+                    ContentState = ContentState.Modified;
+
+                    CurrentPanel = null;                    
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
+                    return false;
+                }
+            }
+
+            Task UndoAction(SpriteUndoArgs undoArgs, CancellationToken cancelToken)
+            {
+                SetColor(undoArgs.VertexColor);
+                return Task.CompletedTask;
+            }
+
+            Task RedoAction(SpriteUndoArgs redoArgs, CancellationToken cancelToken)
+            {
+                SetColor(redoArgs.VertexColor);
+                return Task.CompletedTask;
+            }
+
+            var newColors = new GorgonColor[_sprite.CornerColors.Count];
+
+            for (int i = 0; i < newColors.Length; ++i)
+            {
+                newColors[i] = ColorEditor.SpriteColor;
+            }
+
+            var colorUndoArgs = new SpriteUndoArgs
+            {
+                VertexColor = _sprite.CornerColors.ToArray()
+            };
+
+            var colorRedoArgs = new SpriteUndoArgs
+            {
+                VertexColor = newColors
+            };
+
+            if (!SetColor(newColors))
+            {
+                return;
+            }
+
+            _undoService.Record(Resources.GORSPR_UNDO_DESC_COLOR, UndoAction, RedoAction, colorUndoArgs, colorRedoArgs);
+            NotifyPropertyChanged(nameof(UndoCommand));
+        }
+
+        /// <summary>
         /// Function to save the sprite data back to the content file.
         /// </summary>
         private void SaveSprite()
@@ -533,7 +744,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         /// <param name="saveReason">The reason why the content is being saved.</param>
         /// <returns><b>true</b> if the content can be saved, <b>false</b> if not.</returns>
-        private bool CanSaveSprite(SaveReason saveReason) => (ContentState != ContentState.Unmodified) && ((CurrentTool == SpriteEditTool.None) || (saveReason != SaveReason.UserSave));
+        private bool CanSaveSprite(SaveReason saveReason) => (ContentState != ContentState.Unmodified) && (((CurrentTool == SpriteEditTool.None) && (CurrentPanel == null)) || (saveReason != SaveReason.UserSave));
 
         /// <summary>
         /// Function to save the sprite back to the project file system.
@@ -569,7 +780,8 @@ namespace Gorgon.Editor.SpriteEditor
             && (!coords.textureCoords.IsEmpty)
             && (coords.arrayIndex >= 0)
             && (coords.arrayIndex <= Texture.Texture.ArrayCount - 1)
-            && ((!coords.textureCoords.ToRectangle().Equals(Texture.ToPixel(TextureCoordinates))) || (coords.arrayIndex != ArrayIndex));
+            && ((!coords.textureCoords.ToRectangle().Equals(Texture.ToPixel(TextureCoordinates))) || (coords.arrayIndex != ArrayIndex))
+            && (CurrentPanel == null);
 
         /// <summary>
         /// Function called to update the texture coordinates for the sprite.
@@ -581,7 +793,7 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 try
                 {
-                    ActiveSubPanel = EditorSubPanel.None;
+                    ManualInput.IsActive = false;
 
                     TextureCoordinates = Texture.ToTexel(coordinates.ToRectangle());                    
                     Size = new DX.Size2F((int)coordinates.Size.Width, (int)coordinates.Size.Height);
@@ -636,7 +848,8 @@ namespace Gorgon.Editor.SpriteEditor
         /// <returns><b>true</b> if it can activate, <b>false</b> if not.</returns>
         private bool CanSpritePick() => ((CurrentTool == SpriteEditTool.None) || (CurrentTool == SpriteEditTool.SpritePick))
                                             && (ImageData != null)
-                                            && (ImageData.Format == BufferFormat.R8G8B8A8_UNorm);
+                                            && (ImageData.Format == BufferFormat.R8G8B8A8_UNorm)
+                                            && (CurrentPanel == null);
 
         /// <summary>
         /// Function to activate (or deactivate) the sprite picker tool.
@@ -666,29 +879,161 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>
-        /// Function to determine if the <see cref="ArrayIndex"/> can be updated.
+        /// Function to determine if manual input can be toggled.
         /// </summary>
-        /// <param name="index">The new index.</param>
-        /// <returns><b>true</b> if the index can be updated, <b>false</b> if not.</returns>
-        private bool CanSetArrayIndex(int index) => ((CurrentTool == SpriteEditTool.SpriteClip) || (CurrentTool == SpriteEditTool.SpritePick)) 
-            && (Texture != null) 
-            && (Texture.Texture.ArrayCount > 0) 
-            && (index >= 0) 
-            && (index <= Texture.Texture.ArrayCount - 1);
+        /// <returns><b>true</b> if it can be toggled, <b>false</b> if not.</returns>
+        private bool CanToggleManualInput() => (ManualInput != null) && (CurrentTool == SpriteEditTool.SpriteClip);
 
         /// <summary>
-        /// Function to set the new array index for the sprite.
+        /// Function to toggle the manual input interface.
         /// </summary>
-        /// <param name="index">The new index to set.</param>
-        private void DoSetArrayIndex(int index)
+        private void DoToggleManualInput()
         {
             try
             {
-                ArrayIndex = index;
+                ManualInput.IsActive = !ManualInput.IsActive;
+            }
+            catch (Exception ex)
+            {
+                Log.Print("[ERROR] Could not toggle the manual input system.", LoggingLevel.Simple);
+                Log.LogException(ex);
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if the color editor panel can be shown.
+        /// </summary>
+        /// <returns><b>true</b> if the color editor panel can be shown, <b>false</b> if not.</returns>
+        private bool CanShowColorEditor() => (Texture != null) && (CurrentTool == SpriteEditTool.None) && (CurrentPanel == null);
+
+        /// <summary>
+        /// Function to show or hide the sprite color editor.
+        /// </summary>
+        private void DoShowSpriteColorEditor()
+        {
+            try
+            {
+                CurrentTool = SpriteEditTool.None;
+                ColorEditor.OriginalSpriteColor = ColorEditor.SpriteColor = _sprite.Color;
+                CurrentPanel = ColorEditor;
             }
             catch (Exception ex)
             {
                 MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if the anchor editor panel can be shown.
+        /// </summary>
+        /// <returns><b>true</b> if the anchor editor can be shown, or <b>false</b> if not.</returns>
+        private bool CanShowAnchorEditor() => (Texture != null) && (CurrentTool == SpriteEditTool.None) && (CurrentPanel == null);
+
+        /// <summary>
+        /// Function to show or hide the sprite anchor editor.
+        /// </summary>
+        private void DoShowSpriteAnchorEditor()
+        {
+            try
+            {
+                CurrentTool = SpriteEditTool.None;
+                AnchorEditor.Bounds = new DX.RectangleF(0, 0, _sprite.Size.Width, _sprite.Size.Height);
+                AnchorEditor.AnchorPosition = new DX.Vector2(_sprite.Anchor.X * _sprite.Size.Width, _sprite.Anchor.Y * _sprite.Size.Height);
+                CurrentPanel = AnchorEditor;
+            }
+            catch (Exception ex)
+            {
+                MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if the current anchor value can be comitted.
+        /// </summary>
+        /// <returns><b>true</b> if the anchor value can be comitted, <b>false</b> if not.</returns>
+        private bool CanCommitAnchorChange()
+        {
+            if ((AnchorEditor == null) || (Texture == null))
+            {
+                return false;
+            }
+
+            var anchorPosition = new DX.Vector2(_sprite.Anchor.X * Size.Width, _sprite.Anchor.Y * Size.Height).Truncate();
+            return (!AnchorEditor.AnchorPosition.Equals(ref anchorPosition));
+        }
+
+        /// <summary>
+        /// Function called to change the anchor value of the sprite.
+        /// </summary>
+        private void DoCommitAnchorChange()
+        {
+
+            bool SetAnchor(DX.Vector2 anchor)
+            {
+                try
+                {
+                    Anchor = new DX.Vector2(anchor.X / Size.Width, anchor.Y / Size.Height);
+                    ContentState = ContentState.Modified;
+
+                    CurrentPanel = null;
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
+                    return false;
+                }
+            }
+
+            Task UndoAction(SpriteUndoArgs undoArgs, CancellationToken cancelToken)
+            {
+                SetAnchor(undoArgs.Anchor);
+                return Task.CompletedTask;
+            }
+
+            Task RedoAction(SpriteUndoArgs redoArgs, CancellationToken cancelToken)
+            {
+                SetAnchor(redoArgs.Anchor);
+                return Task.CompletedTask;
+            }
+
+            var anchorUndoArgs = new SpriteUndoArgs
+            {
+                Anchor = new DX.Vector2(_sprite.Anchor.X * Size.Width, _sprite.Anchor.Y * Size.Height)
+            };
+
+            var anchorRedoArgs = new SpriteUndoArgs
+            {
+                Anchor = AnchorEditor.AnchorPosition
+            };
+
+            if (!SetAnchor(AnchorEditor.AnchorPosition))
+            {
+                return;
+            }
+
+            _undoService.Record(Resources.GORSPR_UNDO_DESC_ANCHOR, UndoAction, RedoAction, anchorUndoArgs, anchorRedoArgs);
+            NotifyPropertyChanged(nameof(UndoCommand));
+        }
+
+        /// <summary>Handles the PropertyChanged event of the CurrentPanel control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+        private void CurrentPanel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(IHostedPanelViewModel.IsActive):
+                    if (CurrentPanel != null)
+                    {
+                        CurrentPanel = null;
+                    }
+                    else
+                    {
+                        CurrentPanel = (IHostedPanelViewModel)sender;
+                    }
+                    break;
             }
         }
 
@@ -727,15 +1072,19 @@ namespace Gorgon.Editor.SpriteEditor
             _contentFiles = injectionParameters.ContentFileManager ?? throw new ArgumentMissingException(nameof(injectionParameters.ContentFileManager), nameof(injectionParameters));
             _sprite = injectionParameters.Sprite ?? throw new ArgumentMissingException(nameof(injectionParameters.Sprite), nameof(injectionParameters));
             _undoService = injectionParameters.UndoService ?? throw new ArgumentMissingException(nameof(injectionParameters.UndoService), nameof(injectionParameters));
-            _scratchArea = injectionParameters.ScratchArea ?? throw new ArgumentMissingException(nameof(injectionParameters.ScratchArea), nameof(injectionParameters));
             _textureService = injectionParameters.TextureService ?? throw new ArgumentMissingException(nameof(injectionParameters.TextureService), nameof(injectionParameters));
             _spriteCodec = injectionParameters.SpriteCodec ?? throw new ArgumentMissingException(nameof(injectionParameters.SpriteCodec), nameof(injectionParameters));
             ManualInput = injectionParameters.ManualInput ?? throw new ArgumentMissingException(nameof(injectionParameters.ManualInput), nameof(injectionParameters));
+            ColorEditor = injectionParameters.ColorEditor ?? throw new ArgumentMissingException(nameof(injectionParameters.ColorEditor), nameof(injectionParameters));
+            AnchorEditor = injectionParameters.AnchorEditor ?? throw new ArgumentMissingException(nameof(injectionParameters.AnchorEditor), nameof(injectionParameters));
             Settings = injectionParameters.Settings ?? throw new ArgumentMissingException(nameof(injectionParameters.Settings), nameof(injectionParameters));
 
             _originalTexture = injectionParameters.SpriteTextureFile;
 
-            SetupTextureFile(injectionParameters.SpriteTextureFile);            
+            SetupTextureFile(injectionParameters.SpriteTextureFile);
+
+            ColorEditor.OkCommand = new EditorCommand<object>(DoCommitColorChange, CanCommitColorChange);
+            AnchorEditor.OkCommand = new EditorCommand<object>(DoCommitAnchorChange, CanCommitAnchorChange);
         }
 
         /// <summary>Function called when the associated view is loaded.</summary>
@@ -747,12 +1096,21 @@ namespace Gorgon.Editor.SpriteEditor
             if (_textureFile != null)
             {
                 _textureFile.IsOpen = true;
-            }            
+            }
         }
 
         /// <summary>Function called when the associated view is unloaded.</summary>
         public override void OnUnload()
         {
+            CurrentPanel = null;
+
+            if (ColorEditor != null)
+            {
+                ColorEditor.OkCommand = null;
+            }
+
+            CurrentTool = SpriteEditTool.None;
+
             // If a texture was assigned, but not saved, then remove the link.
             // TODO: When undoing this, we will need to reset the linkages at each undo level (store in params).
             if (_originalTexture != _textureFile)
@@ -778,7 +1136,8 @@ namespace Gorgon.Editor.SpriteEditor
             // Don't open the same file, it's already loaded, or is not a content image, or a tool is active.            
             if (((_textureFile != null)  && (string.Equals(_textureFile.Path, dragData.File.Path, StringComparison.OrdinalIgnoreCase))) 
                 || (!_textureService.IsContentImage(dragData.File))
-                || (_currentTool != SpriteEditTool.None))
+                || (_currentTool != SpriteEditTool.None)
+                || (CurrentPanel != null))
             {
                 dragData.Cancel = true;
                 return false;
@@ -925,6 +1284,9 @@ namespace Gorgon.Editor.SpriteEditor
             SetTextureCoordinatesCommand = new EditorCommand<(DX.RectangleF, int)>(DoSetTextureCoordinates, CanSetTextureCoordinates);
             SpritePickCommand = new EditorCommand<object>(DoSpritePick, CanSpritePick);
             NewSpriteCommand = new EditorCommand<object>(DoCreateSprite, CanCreateSprite);
+            ToggleManualInputCommand = new EditorCommand<object>(DoToggleManualInput, CanToggleManualInput);
+            ShowColorEditorCommand = new EditorCommand<object>(DoShowSpriteColorEditor, CanShowColorEditor);
+            ShowAnchorEditorCommand = new EditorCommand<object>(DoShowSpriteAnchorEditor, CanShowAnchorEditor);
         }
         #endregion
     }

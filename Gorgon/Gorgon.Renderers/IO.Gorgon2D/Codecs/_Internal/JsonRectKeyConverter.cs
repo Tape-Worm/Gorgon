@@ -85,23 +85,23 @@ namespace Gorgon.IO
                     continue;
                 }
 
-                string propName = reader.Value.ToString().ToLowerInvariant();
+                string propName = reader.Value.ToString().ToUpperInvariant();
 
                 switch (propName)
                 {
-                    case "time":
+                    case "TIME":
                         time = (float?)reader.ReadAsDecimal() ?? 0;
                         break;
-                    case "l":
+                    case "L":
                         left = (float?)reader.ReadAsDecimal() ?? 0;
                         break;
-                    case "t":
+                    case "T":
                         top = (float?)reader.ReadAsDecimal() ?? 0;
                         break;
-                    case "r":
+                    case "R":
                         right = (float?)reader.ReadAsDecimal() ?? 0;
                         break;
-                    case "b":
+                    case "B":
                         bottom = (float?)reader.ReadAsDecimal() ?? 0;
                         break;
                 }

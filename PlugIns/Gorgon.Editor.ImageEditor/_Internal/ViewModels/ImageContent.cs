@@ -2212,6 +2212,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
             finally
             {
+                imageFile?.Dispose();
+
                 if (tempFile != null)
                 {
                     _imageIO.ScratchArea.DeleteFile(tempFile.FullPath);

@@ -449,6 +449,39 @@ namespace Gorgon.Renderers
             }
         }
 
+
+        /// <summary>
+        /// Property to return the bounds of the sprite, with transformation applied.
+        /// </summary>
+        /// <param name="renderable">The renderable to interrogate.</param>
+        /// <returns>The bounds with transformation applied.</returns>
+        /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>        
+        private DX.RectangleF GetTransformedBounds(BatchRenderable renderable)
+        {
+            float left = float.MaxValue;
+            float top = float.MaxValue;
+            float right = float.MinValue;
+            float bottom = float.MinValue;
+
+            for (int i = 0; i < renderable.ActualVertexCount; ++i)
+            {
+                ref readonly Gorgon2DVertex vertex = ref renderable.Vertices[i];
+
+                left = vertex.Position.X.Min(left);
+                top = vertex.Position.Y.Min(top);
+                right = vertex.Position.X.Max(right);
+                bottom = vertex.Position.Y.Max(bottom);
+            }
+
+            return new DX.RectangleF
+            {
+                Left = left,
+                Top = top,
+                Right = right,
+                Bottom = bottom
+            };
+        }
+
         /// <summary>
         /// Function to begin rendering a batch.
         /// </summary>
@@ -706,6 +739,189 @@ namespace Gorgon.Renderers
             }
 
             _lastBatchState.PixelShader = prevPShader;
+        }
+
+        /// <summary>
+        /// Property to return the bounds of the sprite, with transformation applied.
+        /// </summary>
+        /// <param name="sprite">The sprite to retrieve the boundaries from.</param>
+        /// <returns>The bounds with transformation applied.</returns>
+        /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>        
+        public DX.RectangleF MeasureSprite(GorgonSprite sprite)
+        {
+            sprite.ValidateObject(nameof(sprite));
+
+            if (_initialized != Initialized)
+            {
+                Initialize();
+            }
+
+            if (sprite.IsUpdated)
+            {
+                _batchRenderer.SpriteTransformer.Transform(sprite.Renderable);
+            }
+
+            return GetTransformedBounds(sprite.Renderable);
+        }
+
+        /// <summary>
+        /// Property to return the bounds of the sprite, with transformation applied.
+        /// </summary>
+        /// <param name="sprite">The sprite to retrieve the boundaries from.</param>
+        /// <returns>The bounds with transformation applied.</returns>
+        /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>        
+        public DX.RectangleF MeasureSprite(GorgonTextSprite sprite)
+        {
+            // The number of characters evaluated.
+            int charCount = 0;
+            // The index into the vertex array for the sprite.
+            int vertexOffset = 0;
+            // The position of the current glyph.
+            DX.Vector2 position = DX.Vector2.Zero;            
+
+            sprite.ValidateObject(nameof(sprite));
+
+            if (_initialized != Initialized)
+            {
+                Initialize();
+            }
+
+            if ((sprite.Renderable.HasTransformChanges) || (sprite.Renderable.HasVertexChanges) || (sprite.Renderable.VertexCountChanged))
+            {
+                _textBuffer.Length = 0;
+                int textLength = sprite.Text.Length;
+
+                // If there's no text, then there's nothing to render.
+                if (textLength == 0)
+                {
+                    return DX.RectangleF.Empty;
+                }
+
+                TextRenderable renderable = sprite.Renderable;
+
+                _textBuffer.Append(sprite.Text);
+
+                Alignment alignment = renderable.Alignment;
+                GorgonFont font = renderable.Font;
+                bool drawOutlines = ((renderable.DrawMode != TextDrawMode.GlyphsOnly) && (font.HasOutline));
+                float fontHeight = font.FontHeight.FastFloor();
+                bool hasKerning = (font.Info.UseKerningPairs) && (font.KerningPairs.Count > 0);
+                IDictionary<GorgonKerningPair, int> kerningValues = font.KerningPairs;
+                float lineSpaceMultiplier = renderable.LineSpaceMultiplier;
+
+                renderable.IndexCount = 0;
+                renderable.ActualVertexCount = 0;
+
+                for (int line = 0; line < renderable.Lines.Length; ++line)
+                {
+                    string textLine = sprite.Lines[line];
+                    textLength = textLine.Length;
+
+                    DX.Size2F lineMeasure = DX.Size2F.Empty;
+
+                    if (alignment != Alignment.UpperLeft)
+                    {
+                        lineMeasure = font.MeasureLine(textLine, drawOutlines, lineSpaceMultiplier);
+                    }
+
+                    position.X = 0;
+
+                    for (int i = 0; i < textLength; ++i)
+                    {
+                        char character = textLine[i];
+                        int kernAmount = 0;
+
+                        if (!font.Glyphs.TryGetValue(character, out GorgonGlyph glyph))
+                        {
+                            if (!font.TryGetDefaultGlyph(out glyph))
+                            {
+                                // Only update when we're in non-outline.
+                                ++charCount;
+                                continue;
+                            }
+                        }
+
+                        // Handle whitespace by just advancing our position, we don't need geometry for this.
+                        if ((char.IsWhiteSpace(character))
+                            || (glyph.TextureView == null))
+                        {
+                            if (character == '\t')
+                            {
+                                position.X += glyph.Advance * renderable.TabSpaceCount;
+                            }
+                            // We don't use carriage returns.
+                            else if (character != '\r')
+                            {
+                                position.X += glyph.Advance;
+                            }
+
+                            // Only update when we're in non-outline.
+                            ++charCount;
+                            continue;
+                        }
+
+                        if ((hasKerning) && (i < textLength - 1))
+                        {
+                            var kernPair = new GorgonKerningPair(character, textLine[i + 1]);
+                            kerningValues.TryGetValue(kernPair, out kernAmount);
+                        }
+
+
+                        _batchRenderer.TextSpriteTransformer.Transform(renderable,
+                                                                        glyph,
+                                                                        null,
+                                                                        ref position,
+                                                                        vertexOffset,
+                                                                        drawOutlines,
+                                                                        lineMeasure.Width);
+
+                        vertexOffset += 4;
+                        position.X += glyph.Advance + kernAmount;
+
+                        // Only update when we're in non-outline.
+                        ++charCount;
+
+                        renderable.IndexCount += 6;
+                        renderable.ActualVertexCount += 4;
+                    }
+
+                    // This is to account for the new line character.
+                    ++charCount;
+                    position.Y += fontHeight * lineSpaceMultiplier;
+                }
+
+                if (renderable.IndexCount == 0)
+                {
+                    return DX.RectangleF.Empty;
+                }
+
+                renderable.VertexCountChanged = false;
+                renderable.HasTransformChanges = false;
+                renderable.HasVertexChanges = false;
+            }
+
+            return GetTransformedBounds(sprite.Renderable);
+        }
+
+        /// <summary>
+        /// Property to return the bounds of the sprite, with transformation applied.
+        /// </summary>
+        /// <param name="sprite">The sprite to retrieve the boundaries from.</param>
+        /// <returns>The bounds with transformation applied.</returns>
+        /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>        
+        public DX.RectangleF MeasureSprite(GorgonPolySprite sprite)
+        {
+            if (_initialized != Initialized)
+            {
+                Initialize();
+            }
+
+            if (sprite.IsUpdated)
+            {
+                _polyTransformer.Transform(sprite.Renderable);
+            }
+
+            return GetTransformedBounds(sprite.Renderable);
         }
 
         /// <summary>

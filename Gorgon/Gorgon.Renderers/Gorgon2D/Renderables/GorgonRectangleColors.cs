@@ -25,6 +25,8 @@
 #endregion
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using Gorgon.Graphics;
 
 namespace Gorgon.Renderers
@@ -33,6 +35,7 @@ namespace Gorgon.Renderers
 	/// Defines the colors for each corner of a rectangle.
 	/// </summary>
 	public class GorgonRectangleColors
+        : IReadOnlyList<GorgonColor>
 	{
 		#region Variables.
         // The renderable that owns this object.
@@ -40,6 +43,53 @@ namespace Gorgon.Renderers
 		#endregion 
 
 		#region Properties.
+        /// <summary>
+        /// Property to set or return the corner color by index.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is not between 0 and 3.</exception>
+        /// <remarks>
+        /// The ordering of the indices is as follows: 0 - Upper left, 1 - Upper right, 2 - Lower right, 3 - Lower left.
+        /// </remarks>
+        public GorgonColor this[int index]
+        {
+            get
+            {
+                switch (index)
+                {
+                    case 0:
+                        return _renderable.UpperLeftColor;
+                    case 1:
+                        return _renderable.UpperRightColor;
+                    case 2:
+                        return _renderable.LowerRightColor;
+                    case 3:
+                        return _renderable.LowerLeftColor;
+                }
+
+                throw new ArgumentOutOfRangeException();
+            }
+            set
+            {
+                switch (index)
+                {
+                    case 0:
+                        UpperLeft = value;                        
+                        return;
+                    case 1:
+                        UpperRight = value;
+                        return;
+                    case 2:
+                        LowerRight = value;                        
+                        return;
+                    case 3:
+                        LowerLeft = value;
+                        return;
+                }
+
+                throw new ArgumentOutOfRangeException();
+            }
+        }
+
 		/// <summary>
 		/// Property to set or return the color of the upper left corner.
 		/// </summary>
@@ -111,14 +161,17 @@ namespace Gorgon.Renderers
 				_renderable.HasVertexColorChanges = true;
 			}
 		}
-		#endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to assign a single color to all corners.
-		/// </summary>
-		/// <param name="color">The color to assign.</param>
-		public void SetAll(in GorgonColor color)
+        /// <summary>Gets the number of elements in the collection.</summary>
+        public int Count => 4;
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to assign a single color to all corners.
+        /// </summary>
+        /// <param name="color">The color to assign.</param>
+        public void SetAll(in GorgonColor color)
 		{
 		    if ((_renderable.LowerLeftColor.Equals(in color))
 		        && (_renderable.LowerRightColor.Equals(in color))
@@ -149,6 +202,26 @@ namespace Gorgon.Renderers
 			destination.UpperRight = UpperRight;
 			destination.UpperLeft = UpperLeft;
 		}
+
+        /// <summary>Returns an enumerator that iterates through the collection.</summary>
+        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
+        public IEnumerator<GorgonColor> GetEnumerator()
+        {
+            for (int i = 0; i < 4; ++i)
+            {
+                yield return this[i];
+            }
+        }
+
+        /// <summary>Returns an enumerator that iterates through a collection.</summary>
+        /// <returns>An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.</returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            for (int i = 0; i < 4; ++i)
+            {
+                yield return this[i];
+            }
+        }
         #endregion
 
         #region Constructor

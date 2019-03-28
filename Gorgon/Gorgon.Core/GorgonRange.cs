@@ -271,15 +271,7 @@ namespace Gorgon.Core
         /// <returns>
         /// true if <paramref name="obj"/> and this instance are the same type and represent the same value; otherwise, false.
         /// </returns>
-        public override bool Equals(object obj)
-		{
-			if (obj is GorgonRangeD range)
-			{
-				return range.Equals(this);
-			}
-
-			return base.Equals(obj);
-		}
+        public override bool Equals(object obj) => obj is GorgonRangeD range ? range.Equals(this) : base.Equals(obj);
 
         /// <summary>
         /// Returns the hash code for this instance.
@@ -331,60 +323,45 @@ namespace Gorgon.Core
         /// </summary>
         /// <param name="range">The range.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator GorgonRangeM(GorgonRangeD range)
-		{
-			return new GorgonRangeM((decimal)range.Minimum, (decimal)range.Maximum);
-		}
+        public static explicit operator GorgonRangeM(GorgonRangeD range) => new GorgonRangeM((decimal)range.Minimum, (decimal)range.Maximum);
 
-		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonRangeD"/> to <see cref="GorgonRange"/>.
-		/// </summary>
-		/// <param name="range">The range.</param>
-		/// <returns>The result of the conversion.</returns>
-		public static explicit operator GorgonRange(GorgonRangeD range)
-		{
-			return new GorgonRange((int)range.Minimum, (int)range.Maximum);
-		}
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="GorgonRangeD"/> to <see cref="GorgonRange"/>.
+        /// </summary>
+        /// <param name="range">The range.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator GorgonRange(GorgonRangeD range) => new GorgonRange((int)range.Minimum, (int)range.Maximum);
 
-		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonRangeD"/> to <see cref="GorgonRangeF"/>.
-		/// </summary>
-		/// <param name="range">The range.</param>
-		/// <returns>The result of the conversion.</returns>
-		public static explicit operator GorgonRangeF(GorgonRangeD range)
-		{
-			return new GorgonRangeF((float)range.Minimum, (float)range.Maximum);
-		}
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="GorgonRangeD"/> to <see cref="GorgonRangeF"/>.
+        /// </summary>
+        /// <param name="range">The range.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator GorgonRangeF(GorgonRangeD range) => new GorgonRangeF((float)range.Minimum, (float)range.Maximum);
 
-		/// <summary>
-		/// Implements the operator ==.
-		/// </summary>
-		/// <param name="left">The left.</param>
-		/// <param name="right">The right.</param>
-		/// <returns>The result of the operator.</returns>
-		public static bool operator ==(GorgonRangeD left, GorgonRangeD right)
-		{
-			return left.Minimum.Equals(right.Minimum) && left.Maximum.Equals(right.Maximum);
-		}
+        /// <summary>
+        /// Implements the operator ==.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator ==(GorgonRangeD left, GorgonRangeD right) => left.Minimum.Equals(right.Minimum) && left.Maximum.Equals(right.Maximum);
 
-		/// <summary>
-		/// Implements the operator ==.
-		/// </summary>
-		/// <param name="left">The left.</param>
-		/// <param name="right">The right.</param>
-		/// <returns>The result of the operator.</returns>
-		public static bool operator !=(GorgonRangeD left, GorgonRangeD right)
-		{
-			return !(left.Minimum.Equals(right.Minimum) && left.Maximum.Equals(right.Maximum));
-		}
+        /// <summary>
+        /// Implements the operator ==.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator !=(GorgonRangeD left, GorgonRangeD right) => !(left.Minimum.Equals(right.Minimum) && left.Maximum.Equals(right.Maximum));
 
-		/// <summary>
-		/// Implements the operator +.
-		/// </summary>
-		/// <param name="left">The left range.</param>
-		/// <param name="right">The right range.</param>
-		/// <returns>The result of the operator.</returns>
-		public static GorgonRangeD operator +(GorgonRangeD left, GorgonRangeD right)
+        /// <summary>
+        /// Implements the operator +.
+        /// </summary>
+        /// <param name="left">The left range.</param>
+        /// <param name="right">The right range.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GorgonRangeD operator +(GorgonRangeD left, GorgonRangeD right)
 		{
 			Add(in left, in right, out GorgonRangeD result);
 			return result;
@@ -456,10 +433,7 @@ namespace Gorgon.Core
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns><b>true</b> if left is greater than right.</returns>
-        public static bool operator >(GorgonRangeD left, GorgonRangeD right)
-        {
-            return left.Range > right.Range;
-        }
+        public static bool operator >(GorgonRangeD left, GorgonRangeD right) => left.Range > right.Range;
 
         /// <summary>
         /// Implements the operator >=.
@@ -467,10 +441,7 @@ namespace Gorgon.Core
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns><b>true</b> if left is greater than right.</returns>
-        public static bool operator >=(GorgonRangeD left, GorgonRangeD right)
-        {
-            return left.Range >= right.Range;
-        }
+        public static bool operator >=(GorgonRangeD left, GorgonRangeD right) => left.Range >= right.Range;
 
         /// <summary>
         /// Implements the operator >.
@@ -478,10 +449,7 @@ namespace Gorgon.Core
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns><b>true</b> if left is greater than right.</returns>
-        public static bool operator <(GorgonRangeD left, GorgonRangeD right)
-        {
-            return left.Range < right.Range;
-        }
+        public static bool operator <(GorgonRangeD left, GorgonRangeD right) => left.Range < right.Range;
 
         /// <summary>
         /// Implements the operator >=.
@@ -489,18 +457,15 @@ namespace Gorgon.Core
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns><b>true</b> if left is greater than right.</returns>
-        public static bool operator <=(GorgonRangeD left, GorgonRangeD right)
-        {
-            return left.Range <= right.Range;
-        }
-		#endregion
+        public static bool operator <=(GorgonRangeD left, GorgonRangeD right) => left.Range <= right.Range;
+        #endregion
 
-		#region Constructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRangeD" /> struct.
-		/// </summary>
-		/// <param name="minMax">The min max value to copy.</param>
-		public GorgonRangeD(GorgonRangeD minMax)
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonRangeD" /> struct.
+        /// </summary>
+        /// <param name="minMax">The min max value to copy.</param>
+        public GorgonRangeD(GorgonRangeD minMax)
 			: this(minMax.Minimum, minMax.Maximum)
 		{		
 		}
@@ -766,15 +731,7 @@ namespace Gorgon.Core
         /// <returns>
         /// true if <paramref name="obj"/> and this instance are the same type and represent the same value; otherwise, false.
         /// </returns>
-        public override bool Equals(object obj)
-		{
-			if (obj is GorgonRangeM range)
-			{
-				return range.Equals(this);
-			}
-
-			return base.Equals(obj);
-		}
+        public override bool Equals(object obj) => obj is GorgonRangeM range ? range.Equals(this) : base.Equals(obj);
 
         /// <summary>
         /// Returns the hash code for this instance.
@@ -827,60 +784,45 @@ namespace Gorgon.Core
         /// </summary>
         /// <param name="range">The range.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator GorgonRange(GorgonRangeM range)
-		{
-			return new GorgonRange((int)range.Minimum, (int)range.Maximum);
-		}
+        public static explicit operator GorgonRange(GorgonRangeM range) => new GorgonRange((int)range.Minimum, (int)range.Maximum);
 
-		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonRangeM"/> to <see cref="GorgonRangeF"/>.
-		/// </summary>
-		/// <param name="range">The range.</param>
-		/// <returns>The result of the conversion.</returns>
-		public static explicit operator GorgonRangeF(GorgonRangeM range)
-		{
-			return new GorgonRangeF((float)range.Minimum, (float)range.Maximum);
-		}
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="GorgonRangeM"/> to <see cref="GorgonRangeF"/>.
+        /// </summary>
+        /// <param name="range">The range.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator GorgonRangeF(GorgonRangeM range) => new GorgonRangeF((float)range.Minimum, (float)range.Maximum);
 
-		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonRangeM"/> to <see cref="GorgonRangeD"/>.
-		/// </summary>
-		/// <param name="range">The range.</param>
-		/// <returns>The result of the conversion.</returns>
-		public static explicit operator GorgonRangeD(GorgonRangeM range)
-		{
-			return new GorgonRangeD((double)range.Minimum, (double)range.Maximum);
-		}
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="GorgonRangeM"/> to <see cref="GorgonRangeD"/>.
+        /// </summary>
+        /// <param name="range">The range.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator GorgonRangeD(GorgonRangeM range) => new GorgonRangeD((double)range.Minimum, (double)range.Maximum);
 
-		/// <summary>
-		/// Implements the operator ==.
-		/// </summary>
-		/// <param name="left">The left.</param>
-		/// <param name="right">The right.</param>
-		/// <returns>The result of the operator.</returns>
-		public static bool operator ==(GorgonRangeM left, GorgonRangeM right)
-		{
-			return left.Minimum.Equals(right.Minimum) && left.Maximum.Equals(right.Maximum);
-		}
+        /// <summary>
+        /// Implements the operator ==.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator ==(GorgonRangeM left, GorgonRangeM right) => left.Minimum.Equals(right.Minimum) && left.Maximum.Equals(right.Maximum);
 
-		/// <summary>
-		/// Implements the operator ==.
-		/// </summary>
-		/// <param name="left">The left.</param>
-		/// <param name="right">The right.</param>
-		/// <returns>The result of the operator.</returns>
-		public static bool operator !=(GorgonRangeM left, GorgonRangeM right)
-		{
-			return !(left.Minimum.Equals(right.Minimum) && left.Maximum.Equals(right.Maximum));
-		}
+        /// <summary>
+        /// Implements the operator ==.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator !=(GorgonRangeM left, GorgonRangeM right) => !(left.Minimum.Equals(right.Minimum) && left.Maximum.Equals(right.Maximum));
 
-		/// <summary>
-		/// Implements the operator +.
-		/// </summary>
-		/// <param name="left">The left range.</param>
-		/// <param name="right">The right range.</param>
-		/// <returns>The result of the operator.</returns>
-		public static GorgonRangeM operator +(GorgonRangeM left, GorgonRangeM right)
+        /// <summary>
+        /// Implements the operator +.
+        /// </summary>
+        /// <param name="left">The left range.</param>
+        /// <param name="right">The right range.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GorgonRangeM operator +(GorgonRangeM left, GorgonRangeM right)
 		{
 			Add(in left, in right, out GorgonRangeM result);
 			return result;
@@ -946,57 +888,45 @@ namespace Gorgon.Core
 			return result;
 		}
 
-		/// <summary>
-		/// Implements the operator >.
-		/// </summary>
-		/// <param name="left">The left instance to compare.</param>
-		/// <param name="right">The right instance to compare.</param>
-		/// <returns><b>true</b> if left is greater than right.</returns>
-		public static bool operator >(GorgonRangeM left, GorgonRangeM right)
-		{
-			return left.Range > right.Range;
-		}
+        /// <summary>
+        /// Implements the operator >.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns><b>true</b> if left is greater than right.</returns>
+        public static bool operator >(GorgonRangeM left, GorgonRangeM right) => left.Range > right.Range;
 
-		/// <summary>
-		/// Implements the operator >=.
-		/// </summary>
-		/// <param name="left">The left instance to compare.</param>
-		/// <param name="right">The right instance to compare.</param>
-		/// <returns><b>true</b> if left is greater than right.</returns>
-		public static bool operator >=(GorgonRangeM left, GorgonRangeM right)
-		{
-			return left.Range >= right.Range;
-		}
+        /// <summary>
+        /// Implements the operator >=.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns><b>true</b> if left is greater than right.</returns>
+        public static bool operator >=(GorgonRangeM left, GorgonRangeM right) => left.Range >= right.Range;
 
-		/// <summary>
-		/// Implements the operator >.
-		/// </summary>
-		/// <param name="left">The left instance to compare.</param>
-		/// <param name="right">The right instance to compare.</param>
-		/// <returns><b>true</b> if left is greater than right.</returns>
-		public static bool operator <(GorgonRangeM left, GorgonRangeM right)
-		{
-			return left.Range < right.Range;
-		}
+        /// <summary>
+        /// Implements the operator >.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns><b>true</b> if left is greater than right.</returns>
+        public static bool operator <(GorgonRangeM left, GorgonRangeM right) => left.Range < right.Range;
 
-		/// <summary>
-		/// Implements the operator >=.
-		/// </summary>
-		/// <param name="left">The left instance to compare.</param>
-		/// <param name="right">The right instance to compare.</param>
-		/// <returns><b>true</b> if left is greater than right.</returns>
-		public static bool operator <=(GorgonRangeM left, GorgonRangeM right)
-		{
-			return left.Range <= right.Range;
-		}
-		#endregion
+        /// <summary>
+        /// Implements the operator >=.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns><b>true</b> if left is greater than right.</returns>
+        public static bool operator <=(GorgonRangeM left, GorgonRangeM right) => left.Range <= right.Range;
+        #endregion
 
-		#region Constructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRangeM" /> struct.
-		/// </summary>
-		/// <param name="minMax">The min max value to copy.</param>
-		public GorgonRangeM(GorgonRangeM minMax)
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonRangeM" /> struct.
+        /// </summary>
+        /// <param name="minMax">The min max value to copy.</param>
+        public GorgonRangeM(GorgonRangeM minMax)
 			: this(minMax.Minimum, minMax.Maximum)
 		{
 		}
@@ -1263,15 +1193,7 @@ namespace Gorgon.Core
         /// <returns>
         /// true if <paramref name="obj"/> and this instance are the same type and represent the same value; otherwise, false.
         /// </returns>
-        public override bool Equals(object obj)
-		{
-			if (obj is GorgonRangeF range)
-			{
-				return range.Equals(this);
-			}
-
-			return base.Equals(obj);
-		}
+        public override bool Equals(object obj) => obj is GorgonRangeF range ? range.Equals(this) : base.Equals(obj);
 
         /// <summary>
         /// Returns the hash code for this instance.
@@ -1345,68 +1267,53 @@ namespace Gorgon.Core
 				Minimum = max;
 			}
 		}
-		#endregion
+        #endregion
 
-		#region Operators.
-		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonRangeF"/> to <see cref="GorgonRange"/>.
-		/// </summary>
-		/// <param name="range">The range.</param>
-		/// <returns>The result of the conversion.</returns>
-		public static explicit operator GorgonRange(GorgonRangeF range)
-		{
-			return new GorgonRange((int)range.Minimum, (int)range.Maximum);
-		}
+        #region Operators.
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="GorgonRangeF"/> to <see cref="GorgonRange"/>.
+        /// </summary>
+        /// <param name="range">The range.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator GorgonRange(GorgonRangeF range) => new GorgonRange((int)range.Minimum, (int)range.Maximum);
 
-		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonRangeF"/> to <see cref="GorgonRangeM"/>.
-		/// </summary>
-		/// <param name="range">The range.</param>
-		/// <returns>The result of the conversion.</returns>
-		public static explicit operator GorgonRangeM(GorgonRangeF range)
-		{
-			return new GorgonRangeM((decimal)range.Minimum, (decimal)range.Maximum);
-		}
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="GorgonRangeF"/> to <see cref="GorgonRangeM"/>.
+        /// </summary>
+        /// <param name="range">The range.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator GorgonRangeM(GorgonRangeF range) => new GorgonRangeM((decimal)range.Minimum, (decimal)range.Maximum);
 
-		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonRangeF"/> to <see cref="GorgonRangeD"/>.
-		/// </summary>
-		/// <param name="range">The range.</param>
-		/// <returns>The result of the conversion.</returns>
-		public static implicit operator GorgonRangeD(GorgonRangeF range)
-		{
-			return new GorgonRangeD(range.Minimum, range.Maximum);
-		}
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="GorgonRangeF"/> to <see cref="GorgonRangeD"/>.
+        /// </summary>
+        /// <param name="range">The range.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator GorgonRangeD(GorgonRangeF range) => new GorgonRangeD(range.Minimum, range.Maximum);
 
-		/// <summary>
-		/// Implements the operator ==.
-		/// </summary>
-		/// <param name="left">The left.</param>
-		/// <param name="right">The right.</param>
-		/// <returns>The result of the operator.</returns>
-		public static bool operator ==(GorgonRangeF left, GorgonRangeF right)
-		{
-			return left.Minimum.Equals(right.Minimum) && left.Maximum.Equals(right.Maximum);
-		}
+        /// <summary>
+        /// Implements the operator ==.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator ==(GorgonRangeF left, GorgonRangeF right) => left.Minimum.Equals(right.Minimum) && left.Maximum.Equals(right.Maximum);
 
-		/// <summary>
-		/// Implements the operator ==.
-		/// </summary>
-		/// <param name="left">The left.</param>
-		/// <param name="right">The right.</param>
-		/// <returns>The result of the operator.</returns>
-		public static bool operator !=(GorgonRangeF left, GorgonRangeF right)
-		{
-			return !(left.Minimum.Equals(right.Minimum) && left.Maximum.Equals(right.Maximum));
-		}
+        /// <summary>
+        /// Implements the operator ==.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator !=(GorgonRangeF left, GorgonRangeF right) => !(left.Minimum.Equals(right.Minimum) && left.Maximum.Equals(right.Maximum));
 
-		/// <summary>
-		/// Implements the operator +.
-		/// </summary>
-		/// <param name="left">The left range.</param>
-		/// <param name="right">The right range.</param>
-		/// <returns>The result of the operator.</returns>
-		public static GorgonRangeF operator +(GorgonRangeF left, GorgonRangeF right)
+        /// <summary>
+        /// Implements the operator +.
+        /// </summary>
+        /// <param name="left">The left range.</param>
+        /// <param name="right">The right range.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GorgonRangeF operator +(GorgonRangeF left, GorgonRangeF right)
 		{
 			Add(in left, in right, out GorgonRangeF result);
 			return result;
@@ -1472,51 +1379,39 @@ namespace Gorgon.Core
 			return result;
 		}
 
-		/// <summary>
-		/// Implements the operator >.
-		/// </summary>
-		/// <param name="left">The left instance to compare.</param>
-		/// <param name="right">The right instance to compare.</param>
-		/// <returns><b>true</b> if left is greater than right.</returns>
-		public static bool operator >(GorgonRangeF left, GorgonRangeF right)
-		{
-			return left.Range > right.Range;
-		}
+        /// <summary>
+        /// Implements the operator >.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns><b>true</b> if left is greater than right.</returns>
+        public static bool operator >(GorgonRangeF left, GorgonRangeF right) => left.Range > right.Range;
 
-		/// <summary>
-		/// Implements the operator >=.
-		/// </summary>
-		/// <param name="left">The left instance to compare.</param>
-		/// <param name="right">The right instance to compare.</param>
-		/// <returns><b>true</b> if left is greater than right.</returns>
-		public static bool operator >=(GorgonRangeF left, GorgonRangeF right)
-		{
-			return left.Range >= right.Range;
-		}
+        /// <summary>
+        /// Implements the operator >=.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns><b>true</b> if left is greater than right.</returns>
+        public static bool operator >=(GorgonRangeF left, GorgonRangeF right) => left.Range >= right.Range;
 
-		/// <summary>
-		/// Implements the operator >.
-		/// </summary>
-		/// <param name="left">The left instance to compare.</param>
-		/// <param name="right">The right instance to compare.</param>
-		/// <returns><b>true</b> if left is greater than right.</returns>
-		public static bool operator <(GorgonRangeF left, GorgonRangeF right)
-		{
-			return left.Range < right.Range;
-		}
+        /// <summary>
+        /// Implements the operator >.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns><b>true</b> if left is greater than right.</returns>
+        public static bool operator <(GorgonRangeF left, GorgonRangeF right) => left.Range < right.Range;
 
-		/// <summary>
-		/// Implements the operator >=.
-		/// </summary>
-		/// <param name="left">The left instance to compare.</param>
-		/// <param name="right">The right instance to compare.</param>
-		/// <returns><b>true</b> if left is greater than right.</returns>
-		public static bool operator <=(GorgonRangeF left, GorgonRangeF right)
-		{
-			return left.Range <= right.Range;
-		}
-		#endregion
-	}
+        /// <summary>
+        /// Implements the operator >=.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns><b>true</b> if left is greater than right.</returns>
+        public static bool operator <=(GorgonRangeF left, GorgonRangeF right) => left.Range <= right.Range;
+        #endregion
+    }
 	#endregion
 
 	#region int
@@ -1758,15 +1653,7 @@ namespace Gorgon.Core
         /// <returns>
         /// true if <paramref name="obj"/> and this instance are the same type and represent the same value; otherwise, false.
         /// </returns>
-        public override bool Equals(object obj)
-		{
-			if (obj is GorgonRange range)
-			{
-				return range.Equals(this);
-			}
-
-			return base.Equals(obj);
-		}
+        public override bool Equals(object obj) => obj is GorgonRange range ? range.Equals(this) : base.Equals(obj);
 
         /// <summary>
         /// Returns the hash code for this instance.
@@ -1840,69 +1727,54 @@ namespace Gorgon.Core
 				Minimum = max;
 			}
 		}
-		#endregion
+        #endregion
 
-		#region Operators.
-		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonRange"/> to <see cref="GorgonRangeF"/>.
-		/// </summary>
-		/// <param name="range">The range.</param>
-		/// <returns>The result of the conversion.</returns>
-		public static implicit operator GorgonRangeF(GorgonRange range)
-		{
-			return new GorgonRangeF(range.Minimum, range.Maximum);
-		}
+        #region Operators.
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="GorgonRange"/> to <see cref="GorgonRangeF"/>.
+        /// </summary>
+        /// <param name="range">The range.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator GorgonRangeF(GorgonRange range) => new GorgonRangeF(range.Minimum, range.Maximum);
 
-		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonRange"/> to <see cref="GorgonRangeM"/>.
-		/// </summary>
-		/// <param name="range">The range.</param>
-		/// <returns>The result of the conversion.</returns>
-		public static implicit operator GorgonRangeM(GorgonRange range)
-		{
-			return new GorgonRangeM(range.Minimum, range.Maximum);
-		}
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="GorgonRange"/> to <see cref="GorgonRangeM"/>.
+        /// </summary>
+        /// <param name="range">The range.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator GorgonRangeM(GorgonRange range) => new GorgonRangeM(range.Minimum, range.Maximum);
 
 
-		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonRange"/> to <see cref="GorgonRangeD"/>.
-		/// </summary>
-		/// <param name="range">The range.</param>
-		/// <returns>The result of the conversion.</returns>
-		public static implicit operator GorgonRangeD(GorgonRange range)
-		{
-			return new GorgonRangeD(range.Minimum, range.Maximum);
-		}
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="GorgonRange"/> to <see cref="GorgonRangeD"/>.
+        /// </summary>
+        /// <param name="range">The range.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator GorgonRangeD(GorgonRange range) => new GorgonRangeD(range.Minimum, range.Maximum);
 
-		/// <summary>
-		/// Implements the operator ==.
-		/// </summary>
-		/// <param name="left">The left.</param>
-		/// <param name="right">The right.</param>
-		/// <returns>The result of the operator.</returns>
-		public static bool operator ==(GorgonRange left, GorgonRange right)
-		{
-			return left.Minimum.Equals(right.Minimum) && left.Maximum.Equals(right.Maximum);
-		}
+        /// <summary>
+        /// Implements the operator ==.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator ==(GorgonRange left, GorgonRange right) => left.Minimum.Equals(right.Minimum) && left.Maximum.Equals(right.Maximum);
 
-		/// <summary>
-		/// Implements the operator ==.
-		/// </summary>
-		/// <param name="left">The left.</param>
-		/// <param name="right">The right.</param>
-		/// <returns>The result of the operator.</returns>
-		public static bool operator !=(GorgonRange left, GorgonRange right)
-		{
-			return !(left.Minimum.Equals(right.Minimum) && left.Maximum.Equals(right.Maximum));
-		}
+        /// <summary>
+        /// Implements the operator ==.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator !=(GorgonRange left, GorgonRange right) => !(left.Minimum.Equals(right.Minimum) && left.Maximum.Equals(right.Maximum));
 
-		/// <summary>
-		/// Implements the operator +.
-		/// </summary>
-		/// <param name="left">The left range.</param>
-		/// <param name="right">The right range.</param>
-		/// <returns>The result of the operator.</returns>
-		public static GorgonRange operator +(GorgonRange left, GorgonRange right)
+        /// <summary>
+        /// Implements the operator +.
+        /// </summary>
+        /// <param name="left">The left range.</param>
+        /// <param name="right">The right range.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GorgonRange operator +(GorgonRange left, GorgonRange right)
 		{
 			Add(in left, in right, out GorgonRange result);
 			return result;
@@ -1968,50 +1840,38 @@ namespace Gorgon.Core
 			return result;
 		}
 
-		/// <summary>
-		/// Implements the operator >.
-		/// </summary>
-		/// <param name="left">The left instance to compare.</param>
-		/// <param name="right">The right instance to compare.</param>
-		/// <returns><b>true</b> if left is greater than right.</returns>
-		public static bool operator >(GorgonRange left, GorgonRange right)
-		{
-			return left.Range > right.Range;
-		}
+        /// <summary>
+        /// Implements the operator >.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns><b>true</b> if left is greater than right.</returns>
+        public static bool operator >(GorgonRange left, GorgonRange right) => left.Range > right.Range;
 
-		/// <summary>
-		/// Implements the operator >=.
-		/// </summary>
-		/// <param name="left">The left instance to compare.</param>
-		/// <param name="right">The right instance to compare.</param>
-		/// <returns><b>true</b> if left is greater than right.</returns>
-		public static bool operator >=(GorgonRange left, GorgonRange right)
-		{
-			return left.Range >= right.Range;
-		}
+        /// <summary>
+        /// Implements the operator >=.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns><b>true</b> if left is greater than right.</returns>
+        public static bool operator >=(GorgonRange left, GorgonRange right) => left.Range >= right.Range;
 
-		/// <summary>
-		/// Implements the operator >.
-		/// </summary>
-		/// <param name="left">The left instance to compare.</param>
-		/// <param name="right">The right instance to compare.</param>
-		/// <returns><b>true</b> if left is greater than right.</returns>
-		public static bool operator <(GorgonRange left, GorgonRange right)
-		{
-			return left.Range < right.Range;
-		}
+        /// <summary>
+        /// Implements the operator >.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns><b>true</b> if left is greater than right.</returns>
+        public static bool operator <(GorgonRange left, GorgonRange right) => left.Range < right.Range;
 
-		/// <summary>
-		/// Implements the operator >=.
-		/// </summary>
-		/// <param name="left">The left instance to compare.</param>
-		/// <param name="right">The right instance to compare.</param>
-		/// <returns><b>true</b> if left is greater than right.</returns>
-		public static bool operator <=(GorgonRange left, GorgonRange right)
-		{
-			return left.Range <= right.Range;
-		}
-		#endregion
-	}
+        /// <summary>
+        /// Implements the operator >=.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns><b>true</b> if left is greater than right.</returns>
+        public static bool operator <=(GorgonRange left, GorgonRange right) => left.Range <= right.Range;
+        #endregion
+    }
 	#endregion
 }

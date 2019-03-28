@@ -19,7 +19,7 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -399,11 +399,29 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Anchor change.
+        /// </summary>
+        internal static string GORSPR_UNDO_DESC_ANCHOR {
+            get {
+                return ResourceManager.GetString("GORSPR_UNDO_DESC_ANCHOR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sprite clipping.
         /// </summary>
         internal static string GORSPR_UNDO_DESC_CLIP {
             get {
                 return ResourceManager.GetString("GORSPR_UNDO_DESC_CLIP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Color change.
+        /// </summary>
+        internal static string GORSPR_UNDO_DESC_COLOR {
+            get {
+                return ResourceManager.GetString("GORSPR_UNDO_DESC_COLOR", resourceCulture);
             }
         }
         

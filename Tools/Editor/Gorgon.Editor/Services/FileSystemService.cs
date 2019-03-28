@@ -101,24 +101,6 @@ namespace Gorgon.Editor.Services
         }
 
         /// <summary>
-        /// Function to remap a directory to the a new destination directory path.
-        /// </summary>
-        /// <param name="directory">The source directory to remap.</param>
-        /// <param name="newDirectory">The base directory used to replace.</param>
-        /// <param name="root">The common root directory for the source.</param>
-        /// <returns>The remapped path.</returns>
-        private string RemapDirectory(DirectoryInfo directory, DirectoryInfo newDirectory, DirectoryInfo root)
-        {
-            string dirPath = directory.FullName.FormatDirectory(Path.DirectorySeparatorChar);
-            string parentPath = root.FullName.FormatDirectory(Path.DirectorySeparatorChar);
-            string newPath = newDirectory.FullName.FormatDirectory(Path.DirectorySeparatorChar);
-
-            return string.Equals(dirPath, newPath, StringComparison.OrdinalIgnoreCase)
-                ? directory.FullName
-                : Path.Combine(newPath, dirPath.Substring(parentPath.Length)).FormatDirectory(Path.DirectorySeparatorChar);
-        }
-
-        /// <summary>
         /// Function to check the root of a path and ensure it matches our root directory.
         /// </summary>
         /// <param name="directory">The directory to evaluate.</param>
@@ -170,7 +152,7 @@ namespace Gorgon.Editor.Services
 
             if (!directory.Exists)
             {
-                return new DirectoryInfo[0];
+                return Array.Empty<DirectoryInfo>();
             }
 
             CheckRootOfPath(directory);
@@ -237,7 +219,7 @@ namespace Gorgon.Editor.Services
             CheckRootOfPath(directory);
 
             return !directory.Exists
-                ? (new FileInfo[0])
+                ? (Array.Empty<FileInfo>())
                 : directory.GetFiles("*", recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
                             .Where(item => (item.Attributes & FileAttributes.Directory) != FileAttributes.Directory
                                         && (item.Attributes & FileAttributes.System) != FileAttributes.System
@@ -276,7 +258,7 @@ namespace Gorgon.Editor.Services
 
                 if (!string.IsNullOrWhiteSpace(file.Extension))
                 {
-                    newPath = newPath + file.Extension;
+                    newPath += file.Extension;
                 }
 
                 file = new FileInfo(newPath);
@@ -665,7 +647,7 @@ namespace Gorgon.Editor.Services
 
             CheckRootOfPath(filePath.Directory);
 
-            BlockCopyFile(filePath, destPath, exportProgress, cancelToken, writeBuffer);
+            BlockCopyFile(filePath, destPath, exportProgress, writeBuffer, cancelToken);
         }
 
         /// <summary>
@@ -673,15 +655,15 @@ namespace Gorgon.Editor.Services
         /// </summary>
         /// <param name="filePath">The path to the file.</param>
         /// <param name="destFile">The destination file.</param>
-        /// <param name="progressCallback">The method that reports the file copy progress back.</param>
-        /// <param name="cancelToken">The token used to cancel the operation.</param>
+        /// <param name="progressCallback">The method that reports the file copy progress back.</param>        
         /// <param name="writeBuffer">The buffer used to write out the file in chunks.</param>
+        /// <param name="cancelToken">The token used to cancel the operation.</param>
         /// <remarks>
         /// <para>
         /// This performs a block copy of a file from one location to another. These locations can be anywhere on the physical file system(s) and are not checked.  
         /// </para>
         /// </remarks>
-        private void BlockCopyFile(FileInfo filePath, FileInfo destFile, Action<long, long> progressCallback, CancellationToken cancelToken, byte[] writeBuffer)
+        private void BlockCopyFile(FileInfo filePath, FileInfo destFile, Action<long, long> progressCallback, byte[] writeBuffer, CancellationToken cancelToken)
         {
             long fileSize = filePath.Length;
             long maxBlockSize;
@@ -772,7 +754,7 @@ namespace Gorgon.Editor.Services
                 throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, destFile.Directory.Name));
             }
 
-            BlockCopyFile(filePath, destFile, progressCallback, cancelToken, writeBuffer);
+            BlockCopyFile(filePath, destFile, progressCallback, writeBuffer, cancelToken);
         }
 
         /// <summary>
@@ -964,7 +946,7 @@ namespace Gorgon.Editor.Services
                 throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, dest.Directory.Name));
             }                        
 
-            BlockCopyFile(file, dest, importProgress, cancelToken, writeBuffer);
+            BlockCopyFile(file, dest, importProgress, writeBuffer, cancelToken);
         }
         #endregion
 

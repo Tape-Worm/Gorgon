@@ -121,6 +121,22 @@ namespace Gorgon.Editor.SpriteEditor
             get;
         }
 
+        /// <summary>
+        /// Property to return the view model for the sprite color editor.
+        /// </summary>
+        public ISpriteColorEdit ColorEditor
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the view model for the sprite anchor editor.
+        /// </summary>
+        public ISpriteAnchorEdit AnchorEditor
+        {
+            get;
+        }
+
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.SpriteEditor.SpriteContentParameters"/> class.</summary>
         /// <param name="factory">The factory for building sprite content data.</param>
         /// <param name="spriteFile">The sprite file.</param>
@@ -130,6 +146,8 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="sprite">The sprite being edited.</param>
         /// <param name="codec">The codec to use when reading/writing sprite data.</param>
         /// <param name="manualInput">The manual input view model.</param>
+        /// <param name="colorEditor">The color editor for the sprite.</param>
+        /// <param name="anchorEditor">The anchor editor for the sprite.</param>
         /// <param name="settings">The plug in settings view model.</param>
         /// <param name="undoService">The undo service.</param>
         /// <param name="scratchArea">The file system used to write out temporary working data.</param>
@@ -144,6 +162,8 @@ namespace Gorgon.Editor.SpriteEditor
             GorgonSprite sprite, 
             IGorgonSpriteCodec codec, 
             IManualRectInputVm manualInput,
+            ISpriteColorEdit colorEditor,
+            ISpriteAnchorEdit anchorEditor,
             ISettings settings,
             IUndoService undoService, 
             IGorgonFileSystemWriter<Stream> scratchArea, 
@@ -160,6 +180,8 @@ namespace Gorgon.Editor.SpriteEditor
             SpriteCodec = codec ?? throw new ArgumentNullException(nameof(codec));
             ManualInput = manualInput ?? throw new ArgumentNullException(nameof(manualInput));
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            ColorEditor = colorEditor ?? throw new ArgumentNullException(nameof(colorEditor));
+            AnchorEditor = anchorEditor ?? throw new ArgumentNullException(nameof(anchorEditor));
             SpriteTextureFile = spriteTextureFile;            
         }
     }

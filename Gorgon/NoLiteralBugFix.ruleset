@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="Code analysis rules for Gorgon" Description="Code analysis rules for Gorgon - Disables CA2213 as it's being deprecated (see https://github.com/dotnet/roslyn-analyzers/issues/310)" ToolsVersion="15.0">
+<RuleSet Name="Code analysis rules for Gorgon" Description="Code analysis rules for Gorgon - Disables CA2213 as it's being deprecated (see https://github.com/dotnet/roslyn-analyzers/issues/310)" ToolsVersion="16.0">
   <Include Path="basiccorrectnessrules.ruleset" Action="Default" />
   <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
     <Rule Id="CA1032" Action="Warning" />
@@ -22,6 +22,7 @@
     <Rule Id="CA1414" Action="Warning" />
     <Rule Id="CA1600" Action="Warning" />
     <Rule Id="CA1601" Action="Warning" />
+    <Rule Id="CA1724" Action="Warning" />
     <Rule Id="CA1816" Action="None" />
     <Rule Id="CA1819" Action="None" />
     <Rule Id="CA1821" Action="Warning" />
@@ -36,7 +37,7 @@
     <Rule Id="CA2143" Action="Warning" />
     <Rule Id="CA2144" Action="Warning" />
     <Rule Id="CA2145" Action="Warning" />
-    <Rule Id="CA2204" Action="Warning" />
+    <Rule Id="CA2202" Action="None" />
     <Rule Id="CA2211" Action="Warning" />
     <Rule Id="CA2213" Action="None" />
     <Rule Id="CA2217" Action="Warning" />
@@ -49,5 +50,34 @@
     <Rule Id="CA2233" Action="Warning" />
     <Rule Id="CA2234" Action="Warning" />
     <Rule Id="CA2243" Action="Warning" />
+  </Rules>
+  <Rules AnalyzerId="Microsoft.CodeQuality.Analyzers" RuleNamespace="Microsoft.CodeQuality.Analyzers">
+    <Rule Id="CA1031" Action="None" />
+    <Rule Id="CA1043" Action="None" />
+    <Rule Id="CA1051" Action="None" />
+    <Rule Id="CA1707" Action="None" />
+    <Rule Id="CA1710" Action="None" />
+    <Rule Id="CA1714" Action="None" />
+    <Rule Id="CA1716" Action="None" />
+    <Rule Id="CA1717" Action="None" />
+    <Rule Id="CA1720" Action="None" />
+    <Rule Id="CA1801" Action="None" />
+    <Rule Id="CA1812" Action="None" />
+    <Rule Id="CA1815" Action="None" />
+    <Rule Id="CA1822" Action="None" />
+    <Rule Id="CA1823" Action="None" />
+    <Rule Id="CA2007" Action="None" />
+  </Rules>
+  <Rules AnalyzerId="Microsoft.CodeQuality.CSharp.Analyzers" RuleNamespace="Microsoft.CodeQuality.CSharp.Analyzers">
+    <Rule Id="CA1200" Action="None" />
+  </Rules>
+  <Rules AnalyzerId="Microsoft.NetCore.Analyzers" RuleNamespace="Microsoft.NetCore.Analyzers">
+    <Rule Id="CA1304" Action="None" />
+    <Rule Id="CA1305" Action="None" />
+    <Rule Id="CA1307" Action="None" />
+    <Rule Id="CA2208" Action="None" />
+  </Rules>
+  <Rules AnalyzerId="Microsoft.NetCore.CSharp.Analyzers" RuleNamespace="Microsoft.NetCore.CSharp.Analyzers">
+    <Rule Id="CA1810" Action="None" />
   </Rules>
 </RuleSet>

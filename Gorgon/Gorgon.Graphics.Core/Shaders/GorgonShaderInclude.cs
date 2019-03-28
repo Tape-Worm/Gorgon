@@ -127,27 +127,21 @@ namespace Gorgon.Graphics.Core
 			return base.Equals(obj);
 		}
 
-		/// <summary>
-		/// Equality operator.
-		/// </summary>
-		/// <param name="left">Left instance to compare.</param>
-		/// <param name="right">Right instance to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool operator ==(GorgonShaderInclude left, GorgonShaderInclude right)
-		{
-			return Equals(left, right);
-		}
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="left">Left instance to compare.</param>
+        /// <param name="right">Right instance to compare.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+        public static bool operator ==(GorgonShaderInclude left, GorgonShaderInclude right) => Equals(left, right);
 
-		/// <summary>
-		/// Inequality operator.
-		/// </summary>
-		/// <param name="left">Left instance to compare.</param>
-		/// <param name="right">Right instance to compare.</param>
-		/// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
-		public static bool operator !=(GorgonShaderInclude left, GorgonShaderInclude right)
-		{
-			return !Equals(left, right);
-		}
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="left">Left instance to compare.</param>
+        /// <param name="right">Right instance to compare.</param>
+        /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
+        public static bool operator !=(GorgonShaderInclude left, GorgonShaderInclude right) => !Equals(left, right);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.

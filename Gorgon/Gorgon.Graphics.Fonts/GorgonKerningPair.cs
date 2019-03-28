@@ -97,23 +97,17 @@ namespace Gorgon.Graphics.Fonts
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator ==(in GorgonKerningPair left, in GorgonKerningPair right)
-		{
-			return Equals(in left, in right);
-		}
+        public static bool operator ==(in GorgonKerningPair left, in GorgonKerningPair right) => Equals(in left, in right);
 
-		/// <summary>
-		/// Implements the operator !=.
-		/// </summary>
-		/// <param name="left">The left.</param>
-		/// <param name="right">The right.</param>
-		/// <returns>
-		/// The result of the operator.
-		/// </returns>
-		public static bool operator !=(in GorgonKerningPair left, in GorgonKerningPair right)
-		{
-			return !Equals(in left, in right);
-		}
+        /// <summary>
+        /// Implements the operator !=.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
+        public static bool operator !=(in GorgonKerningPair left, in GorgonKerningPair right) => !Equals(in left, in right);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.

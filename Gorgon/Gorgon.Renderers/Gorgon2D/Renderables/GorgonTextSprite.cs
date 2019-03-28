@@ -610,7 +610,7 @@ namespace Gorgon.Renderers
         {
             if (_formattedText.Length == 0)
             {
-                Renderable.Lines = new string[0];
+                Renderable.Lines = Array.Empty<string>();
                 return;
             }
 

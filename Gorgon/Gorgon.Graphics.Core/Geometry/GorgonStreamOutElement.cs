@@ -143,23 +143,17 @@ namespace Gorgon.Graphics.Core
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator ==(in GorgonStreamOutElement left, in GorgonStreamOutElement right)
-		{
-			return Equals(in left, in right);
-		}
+        public static bool operator ==(in GorgonStreamOutElement left, in GorgonStreamOutElement right) => Equals(in left, in right);
 
-		/// <summary>
-		/// Implements the operator !=.
-		/// </summary>
-		/// <param name="left">The left.</param>
-		/// <param name="right">The right.</param>
-		/// <returns>
-		/// The result of the operator.
-		/// </returns>
-		public static bool operator !=(in GorgonStreamOutElement left, in GorgonStreamOutElement right)
-		{
-			return !Equals(in left, in right);
-		}
+        /// <summary>
+        /// Implements the operator !=.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
+        public static bool operator !=(in GorgonStreamOutElement left, in GorgonStreamOutElement right) => !Equals(in left, in right);
 
         /// <summary>
         /// Returns a hash code for this instance.

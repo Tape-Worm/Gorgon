@@ -237,8 +237,8 @@ namespace Gorgon.Editor.Services
         /// <param name="file">The file being imported.</param>
         /// <param name="dest">The destination for the imported file.</param>
         /// <param name="importProgress">The method used to report the progress of the import.</param>
-        /// <param name="cancelToken">The token used to cancel the operation.</param>
         /// <param name="writeBuffer">[Optional] The buffer used to copy the file in blocks.</param>
+        /// <param name="cancelToken">The token used to cancel the operation.</param>
         void ImportFile(FileInfo file, FileInfo dest, Action<long, long> importProgress, CancellationToken cancelToken, byte[] writeBuffer = null);
         #endregion
     }

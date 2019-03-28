@@ -129,23 +129,23 @@ namespace Gorgon.IO
 		/// This value is set to a constant value of <c>::\\Memory</c>. This is required for the <see cref="GorgonFileSystemRamDiskProvider"/> to mount its files/directories.
 		/// </remarks>
 		public string WriteLocation => @"::\\Memory";
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to copy data from a file system to the file system linked to this writer.
-		/// </summary>
-		/// <param name="progress">The callback for copy progress.</param>
-		/// <param name="token">The cancellation token for asynchronous copy.</param>
-		/// <param name="allowOverwrite">Flag to indicate whether to allow overwriting files or not.</param>
-		/// <param name="files">The files in the source file system to copy.</param>
-		/// <param name="directories">The directories in the source file system to copy.</param>
-		/// <returns>A tuple containing the count of the directories and files copied.</returns>
-		private (int DirectoryCount, int FileCount)? CopyInternal(Func<GorgonWriterCopyProgress, bool> progress,
-		                                                          CancellationToken token,
+        #region Methods.
+        /// <summary>
+        /// Function to copy data from a file system to the file system linked to this writer.
+        /// </summary>
+        /// <param name="progress">The callback for copy progress.</param>
+        /// <param name="allowOverwrite">Flag to indicate whether to allow overwriting files or not.</param>
+        /// <param name="files">The files in the source file system to copy.</param>
+        /// <param name="directories">The directories in the source file system to copy.</param>
+        /// <param name="token">The cancellation token for asynchronous copy.</param>
+        /// <returns>A tuple containing the count of the directories and files copied.</returns>
+        private (int DirectoryCount, int FileCount)? CopyInternal(Func<GorgonWriterCopyProgress, bool> progress,
 		                                                          bool allowOverwrite,
 		                                                          IGorgonVirtualFile[] files,
-		                                                          IGorgonVirtualDirectory[] directories)
+		                                                          IGorgonVirtualDirectory[] directories,
+                                                                  CancellationToken token)
 		{
 			int directoryCount = 0;
 			int fileCount = 0;
@@ -160,6 +160,11 @@ namespace Gorgon.IO
 
 				CreateDirectory(directory.FullPath);
 				++directoryCount;
+
+                if (token.IsCancellationRequested)
+                {
+                    return (0, 0);
+                }
 			}
 
 			foreach (IGorgonVirtualFile file in files)
@@ -230,52 +235,49 @@ namespace Gorgon.IO
 			IGorgonVirtualFile[] files = sourceFileSystem.FindFiles("/", "*").ToArray();
 			IGorgonVirtualDirectory[] directories = sourceFileSystem.FindDirectories("/", "*").ToArray();
 
-			if ((files.Length == 0) && (directories.Length == 0))
-			{
-				return (0, 0);
-			}
+            return (files.Length == 0) && (directories.Length == 0)
+                ? ((int DirectoryCount, int FileCount)?)(0, 0)
+                : CopyInternal(copyProgress, allowOverwrite, files, directories, CancellationToken.None);
+        }
 
-			return CopyInternal(copyProgress, new CancellationToken(false), allowOverwrite, files, directories);
-		}
-
-		/// <summary>
-		/// Function to asynchronously copy the contents of a file system to the writable area.
-		/// </summary>
-		/// <param name="sourceFileSystem">The <see cref="IGorgonFileSystem"/> to copy.</param>
-		/// <param name="cancelToken">The <see cref="CancellationToken"/> used to cancel an in progress copy.</param>
-		/// <param name="copyProgress">A method callback used to track the progress of the copy operation.</param>
-		/// <param name="allowOverwrite">[Optional] <b>true</b> to allow overwriting of files that already exist in the file system with the same path, <b>false</b> to throw an exception when a file with the same path is encountered.</param>
-		/// <returns>A <see cref="ValueTuple{T1,T2}"/> containing the number of directories (<c>item1</c>) and the number of files (<c>item2</c>) copied, or <b>null</b> if the operation was cancelled.</returns>
-		/// <remarks>
-		/// <para>
-		/// This copies all the file and directory information from one file system, into the <see cref="IGorgonFileSystemWriter{T}.FileSystem"/> linked to this writer. 
-		/// </para>
-		/// <para>
-		/// When the <paramref name="allowOverwrite"/> is set to <b>false</b>, and a <see cref="IGorgonVirtualFile"/> already exists with the same path as another <see cref="IGorgonVirtualFile"/> in the 
-		/// <paramref name="sourceFileSystem"/>, then an exception will be raised.
-		/// </para>
-		/// <para>
-		/// This version of the copy method allows for an asynchronous copy of a set of a files and directories from another <see cref="IGorgonFileSystem"/>. This method should be used when there is a large 
-		/// amount of data to transfer between the file systems.
-		/// </para>
-		/// <para>
-		/// Unlike the <see cref="IGorgonFileSystemWriter{T}.CopyFrom"/> method, this method will report the progress of the copy through the <paramref name="copyProgress"/> callback. This callback is a method that takes a 
-		/// <see cref="GorgonWriterCopyProgress"/> value as a parameter that will report the current state, and will return a <see cref="bool"/> to indicate whether to continue the copy or not (<b>true</b> to 
-		/// continue, <b>false</b> to stop). 
-		/// </para>
-		/// <para>
-		/// <note type="warning">
-		/// <para>
-		/// The <paramref name="copyProgress"/> method does not switch back to the UI context. Ensure that you invoke any operations that update a UI on the appropriate thread (e.g <c>BeginInvoke</c> on a 
-		/// WinForms UI element or <c>Dispatcher</c> on a WPF element).
-		/// </para>
-		/// </note>
-		/// </para>
-		/// <para>
-		/// This method also allows for cancellation of the copy operation by passing a <see cref="CancellationToken"/> to the <paramref name="cancelToken"/> parameter.
-		/// </para>
-		/// </remarks>
-		public async Task<(int DirectoryCount, int FileCount)?> CopyFromAsync(IGorgonFileSystem sourceFileSystem, CancellationToken cancelToken, Func<GorgonWriterCopyProgress, bool> copyProgress = null, bool allowOverwrite = true)
+        /// <summary>
+        /// Function to asynchronously copy the contents of a file system to the writable area.
+        /// </summary>
+        /// <param name="sourceFileSystem">The <see cref="IGorgonFileSystem"/> to copy.</param>
+        /// <param name="cancelToken">The <see cref="CancellationToken"/> used to cancel an in progress copy.</param>
+        /// <param name="copyProgress">A method callback used to track the progress of the copy operation.</param>
+        /// <param name="allowOverwrite">[Optional] <b>true</b> to allow overwriting of files that already exist in the file system with the same path, <b>false</b> to throw an exception when a file with the same path is encountered.</param>
+        /// <returns>A <see cref="ValueTuple{T1,T2}"/> containing the number of directories (<c>item1</c>) and the number of files (<c>item2</c>) copied, or <b>null</b> if the operation was cancelled.</returns>
+        /// <remarks>
+        /// <para>
+        /// This copies all the file and directory information from one file system, into the <see cref="IGorgonFileSystemWriter{T}.FileSystem"/> linked to this writer. 
+        /// </para>
+        /// <para>
+        /// When the <paramref name="allowOverwrite"/> is set to <b>false</b>, and a <see cref="IGorgonVirtualFile"/> already exists with the same path as another <see cref="IGorgonVirtualFile"/> in the 
+        /// <paramref name="sourceFileSystem"/>, then an exception will be raised.
+        /// </para>
+        /// <para>
+        /// This version of the copy method allows for an asynchronous copy of a set of a files and directories from another <see cref="IGorgonFileSystem"/>. This method should be used when there is a large 
+        /// amount of data to transfer between the file systems.
+        /// </para>
+        /// <para>
+        /// Unlike the <see cref="IGorgonFileSystemWriter{T}.CopyFrom"/> method, this method will report the progress of the copy through the <paramref name="copyProgress"/> callback. This callback is a method that takes a 
+        /// <see cref="GorgonWriterCopyProgress"/> value as a parameter that will report the current state, and will return a <see cref="bool"/> to indicate whether to continue the copy or not (<b>true</b> to 
+        /// continue, <b>false</b> to stop). 
+        /// </para>
+        /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// The <paramref name="copyProgress"/> method does not switch back to the UI context. Ensure that you invoke any operations that update a UI on the appropriate thread (e.g <c>BeginInvoke</c> on a 
+        /// WinForms UI element or <c>Dispatcher</c> on a WPF element).
+        /// </para>
+        /// </note>
+        /// </para>
+        /// <para>
+        /// This method also allows for cancellation of the copy operation by passing a <see cref="CancellationToken"/> to the <paramref name="cancelToken"/> parameter.
+        /// </para>
+        /// </remarks>
+        public async Task<(int DirectoryCount, int FileCount)?> CopyFromAsync(IGorgonFileSystem sourceFileSystem, CancellationToken cancelToken, Func<GorgonWriterCopyProgress, bool> copyProgress = null, bool allowOverwrite = true)
 		{
 			if (sourceFileSystem == null)
 			{
@@ -289,49 +291,46 @@ namespace Gorgon.IO
 				IGorgonVirtualDirectory[] directories = sourceFileSystem.FindDirectories("/", "*").ToArray();
 
 				return (Files: files, Directories: directories);
-			});
+			}).ConfigureAwait(false);
 
-			if ((Files.Length == 0) && (Directories.Length == 0))
-			{
-				return (0, 0);
-			}
+            return (Files.Length == 0) && (Directories.Length == 0)
+                ? ((int DirectoryCount, int FileCount)?)(0, 0)
+                : await Task.Run(() => CopyInternal(copyProgress, allowOverwrite, Files, Directories, cancelToken), cancelToken).ConfigureAwait(false);
+            // ReSharper restore MethodSupportsCancellation
+        }
 
-			return await Task.Run(() => CopyInternal(copyProgress, cancelToken, allowOverwrite, Files, Directories));
-			// ReSharper restore MethodSupportsCancellation
-		}
-
-		/// <summary>
-		/// Function to create a new directory in the writable area on the physical file system.
-		/// </summary>
-		/// <param name="path">Path to the directory (or directories) to create.</param>
-		/// <returns>A <see cref="IGorgonVirtualDirectory"/> representing the final directory in the <paramref name="path"/>.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">
-		/// Thrown when the <paramref name="path"/> is empty.
-		/// <para>-or-</para>
-		/// <para>Thrown if the <paramref name="path"/> does not contain any meaningful names.</para>
-		/// </exception>
-		/// <exception cref="IOException">
-		/// Thrown when a part of the <paramref name="path"/> has the same name as a file name in the parent of the directory being created.
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="path"/> is set to the root directory: <c>/</c>.</para>
-		/// </exception>
-		/// <remarks>
-		/// <para>
-		/// This will create a new directory within the physical file system directory specified by the <see cref="IGorgonFileSystemWriter{T}.WriteLocation"/>. If the <paramref name="path"/> contains multiple directories that don't 
-		/// exist (e.g. <c><![CDATA[/Exists/AlsoExists/DoesNotExist/DoesNotExistEither/]]></c>), then those directories will be created until the path is completely parsed. The file system will be updated 
-		/// to ensure that those directories will exist and can be referenced.
-		/// </para>
-		/// <para>
-		/// If the directory path contains a name that is the same as a file name within a directory (e.g. <c><![CDATA[/MyDirectory/SomeFile.txt/AnotherDirectory]]></c>, where <c>SomeFile.txt</c> already 
-		/// exists as a file under <c>MyDirectory</c>), then an exception will be thrown.
-		/// </para>
-		/// <para>
-		/// If the directory already exists (either in the <see cref="IGorgonFileSystem"/> or on the physical file system), then nothing will be done and the existing directory will be returned from the 
-		/// method.
-		/// </para>
-		/// </remarks>
-		public IGorgonVirtualDirectory CreateDirectory(string path)
+        /// <summary>
+        /// Function to create a new directory in the writable area on the physical file system.
+        /// </summary>
+        /// <param name="path">Path to the directory (or directories) to create.</param>
+        /// <returns>A <see cref="IGorgonVirtualDirectory"/> representing the final directory in the <paramref name="path"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> is <b>null</b>.</exception>
+        /// <exception cref="ArgumentException">
+        /// Thrown when the <paramref name="path"/> is empty.
+        /// <para>-or-</para>
+        /// <para>Thrown if the <paramref name="path"/> does not contain any meaningful names.</para>
+        /// </exception>
+        /// <exception cref="IOException">
+        /// Thrown when a part of the <paramref name="path"/> has the same name as a file name in the parent of the directory being created.
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="path"/> is set to the root directory: <c>/</c>.</para>
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// This will create a new directory within the physical file system directory specified by the <see cref="IGorgonFileSystemWriter{T}.WriteLocation"/>. If the <paramref name="path"/> contains multiple directories that don't 
+        /// exist (e.g. <c><![CDATA[/Exists/AlsoExists/DoesNotExist/DoesNotExistEither/]]></c>), then those directories will be created until the path is completely parsed. The file system will be updated 
+        /// to ensure that those directories will exist and can be referenced.
+        /// </para>
+        /// <para>
+        /// If the directory path contains a name that is the same as a file name within a directory (e.g. <c><![CDATA[/MyDirectory/SomeFile.txt/AnotherDirectory]]></c>, where <c>SomeFile.txt</c> already 
+        /// exists as a file under <c>MyDirectory</c>), then an exception will be thrown.
+        /// </para>
+        /// <para>
+        /// If the directory already exists (either in the <see cref="IGorgonFileSystem"/> or on the physical file system), then nothing will be done and the existing directory will be returned from the 
+        /// method.
+        /// </para>
+        /// </remarks>
+        public IGorgonVirtualDirectory CreateDirectory(string path)
 		{
 			if (path == null)
 			{

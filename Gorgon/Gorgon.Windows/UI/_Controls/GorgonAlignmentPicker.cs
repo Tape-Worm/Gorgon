@@ -105,8 +105,19 @@ namespace Gorgon.Windows.UI
                 case Alignment.LowerRight:
                     radioBottomRight.Checked = true;
                     break;
-                default:
+                case Alignment.Center:
                     radioCenter.Checked = true;
+                    break;
+                default:
+                    radioMiddleLeft.Checked = 
+                    radioMiddleRight.Checked = 
+                    radioTopCenter.Checked = 
+                    radioBottomCenter.Checked = 
+                    radioTopLeft.Checked = 
+                    radioTopRight.Checked = 
+                    radioBottomLeft.Checked = 
+                    radioBottomRight.Checked = 
+                    radioCenter.Checked = false;
                     break;
             }
         }        

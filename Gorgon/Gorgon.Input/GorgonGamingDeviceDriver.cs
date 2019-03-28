@@ -140,7 +140,7 @@ namespace Gorgon.Input
 
 			if ((infoList == null) || (infoList.Count == 0))
 			{
-				return new GorgonGamingDevice[0];
+				return Array.Empty<GorgonGamingDevice>();
 			}
 
 			var result = new List<IGorgonGamingDevice>();

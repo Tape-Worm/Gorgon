@@ -245,10 +245,7 @@ namespace Gorgon.Graphics
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-	    public static bool operator ==(GorgonBox left, GorgonBox right)
-	    {
-	        return Equals(in left, in right);
-	    }
+	    public static bool operator ==(GorgonBox left, GorgonBox right) => Equals(in left, in right);
 
         /// <summary>
         /// Operator to determine if 2 instances are not equal.
@@ -256,10 +253,7 @@ namespace Gorgon.Graphics
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
-        public static bool operator !=(GorgonBox left, GorgonBox right)
-	    {
-	        return !Equals(in left, in right);
-	    }
+        public static bool operator !=(GorgonBox left, GorgonBox right) => !Equals(in left, in right);
 
         /// <summary>
         /// Returns a hash code for this instance.

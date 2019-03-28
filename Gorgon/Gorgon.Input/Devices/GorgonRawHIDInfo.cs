@@ -39,7 +39,7 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return the device class name.
 		/// </summary>
-		public string Class
+		public string DeviceClass
 		{
 			get;
 		}
@@ -122,7 +122,7 @@ namespace Gorgon.Input
 		{
 			Handle = deviceHandle;
 			HIDPath = hidPath;
-			Class = className;
+			DeviceClass = className;
 			Description = description;
 
 			ProductID = deviceInfo.dwProductId;

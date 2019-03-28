@@ -185,7 +185,7 @@ namespace Gorgon.Native
 				// If we have no pairs, then leave here.
 				if (size == 0)
 				{
-					return new KERNINGPAIR[0];
+					return Array.Empty<KERNINGPAIR>();
 				}
 
 				pairs = new KERNINGPAIR[size];

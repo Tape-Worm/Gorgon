@@ -43,14 +43,17 @@
             this.numBlue = new System.Windows.Forms.NumericUpDown();
             this.textBoxHex = new System.Windows.Forms.TextBox();
             this.labelHex = new System.Windows.Forms.Label();
-            this.labelOld = new System.Windows.Forms.Label();
-            this.labelNew = new System.Windows.Forms.Label();
             this.numAlpha = new System.Windows.Forms.NumericUpDown();
             this.labelAlpha = new System.Windows.Forms.Label();
             this.alphaSlider = new Fetze.WinFormsColor.ColorSlider();
-            this.colorShowBox = new Fetze.WinFormsColor.ColorShowBox();
             this.colorSlider = new Fetze.WinFormsColor.ColorSlider();
             this.colorPanel = new Fetze.WinFormsColor.ColorPanel();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.colorShowBox = new Fetze.WinFormsColor.ColorShowBox();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)(this.numHue)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numSaturation)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numValue)).BeginInit();
@@ -58,6 +61,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.numGreen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numBlue)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numAlpha)).BeginInit();
+            this.tableLayoutPanel1.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
+            this.tableLayoutPanel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // radioHue
@@ -193,16 +199,6 @@
             resources.ApplyResources(this.labelHex, "labelHex");
             this.labelHex.Name = "labelHex";
             // 
-            // labelOld
-            // 
-            resources.ApplyResources(this.labelOld, "labelOld");
-            this.labelOld.Name = "labelOld";
-            // 
-            // labelNew
-            // 
-            resources.ApplyResources(this.labelNew, "labelNew");
-            this.labelNew.Name = "labelNew";
-            // 
             // numAlpha
             // 
             resources.ApplyResources(this.numAlpha, "numAlpha");
@@ -228,16 +224,6 @@
             this.alphaSlider.Name = "alphaSlider";
             this.alphaSlider.PercentualValueChanged += new System.EventHandler(this.alphaSlider_PercentualValueChanged);
             // 
-            // colorShowBox
-            // 
-            resources.ApplyResources(this.colorShowBox, "colorShowBox");
-            this.colorShowBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.colorShowBox.Color = System.Drawing.Color.DarkRed;
-            this.colorShowBox.LowerColor = System.Drawing.Color.Maroon;
-            this.colorShowBox.Name = "colorShowBox";
-            this.colorShowBox.UpperColor = System.Drawing.Color.DarkRed;
-            this.colorShowBox.UpperClick += new System.EventHandler(this.colorShowBox_UpperClick);
-            // 
             // colorSlider
             // 
             resources.ApplyResources(this.colorSlider, "colorSlider");
@@ -255,31 +241,69 @@
             this.colorPanel.ValuePercentual = ((System.Drawing.PointF)(resources.GetObject("colorPanel.ValuePercentual")));
             this.colorPanel.PercentualValueChanged += new System.EventHandler(this.colorPanel_PercentualValueChanged);
             // 
+            // tableLayoutPanel1
+            // 
+            resources.ApplyResources(this.tableLayoutPanel1, "tableLayoutPanel1");
+            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel3, 4, 0);
+            this.tableLayoutPanel1.Controls.Add(this.colorPanel, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.colorSlider, 2, 0);
+            this.tableLayoutPanel1.Controls.Add(this.alphaSlider, 3, 0);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            // 
+            // label2
+            // 
+            resources.ApplyResources(this.label2, "label2");
+            this.label2.Name = "label2";
+            // 
+            // label1
+            // 
+            resources.ApplyResources(this.label1, "label1");
+            this.label1.Name = "label1";
+            // 
+            // colorShowBox
+            // 
+            resources.ApplyResources(this.colorShowBox, "colorShowBox");
+            this.colorShowBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.colorShowBox.Color = System.Drawing.Color.DarkRed;
+            this.colorShowBox.LowerColor = System.Drawing.Color.Maroon;
+            this.colorShowBox.Name = "colorShowBox";
+            this.colorShowBox.UpperColor = System.Drawing.Color.DarkRed;
+            this.colorShowBox.UpperClick += new System.EventHandler(this.colorShowBox_UpperClick);
+            // 
+            // tableLayoutPanel2
+            // 
+            resources.ApplyResources(this.tableLayoutPanel2, "tableLayoutPanel2");
+            this.tableLayoutPanel2.Controls.Add(this.textBoxHex, 6, 2);
+            this.tableLayoutPanel2.Controls.Add(this.labelHex, 5, 2);
+            this.tableLayoutPanel2.Controls.Add(this.numAlpha, 6, 0);
+            this.tableLayoutPanel2.Controls.Add(this.numGreen, 4, 2);
+            this.tableLayoutPanel2.Controls.Add(this.labelAlpha, 5, 0);
+            this.tableLayoutPanel2.Controls.Add(this.radioBlue, 3, 2);
+            this.tableLayoutPanel2.Controls.Add(this.numBlue, 4, 1);
+            this.tableLayoutPanel2.Controls.Add(this.radioGreen, 3, 1);
+            this.tableLayoutPanel2.Controls.Add(this.numRed, 4, 0);
+            this.tableLayoutPanel2.Controls.Add(this.radioRed, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.numValue, 2, 2);
+            this.tableLayoutPanel2.Controls.Add(this.radioValue, 1, 2);
+            this.tableLayoutPanel2.Controls.Add(this.numSaturation, 2, 1);
+            this.tableLayoutPanel2.Controls.Add(this.radioSaturation, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.radioHue, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.numHue, 2, 0);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            // 
+            // tableLayoutPanel3
+            // 
+            resources.ApplyResources(this.tableLayoutPanel3, "tableLayoutPanel3");
+            this.tableLayoutPanel3.Controls.Add(this.colorShowBox, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.label2, 0, 2);
+            this.tableLayoutPanel3.Controls.Add(this.label1, 0, 0);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            // 
             // ColorPickerPanel
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
-            this.Controls.Add(this.labelAlpha);
-            this.Controls.Add(this.numAlpha);
-            this.Controls.Add(this.labelNew);
-            this.Controls.Add(this.labelOld);
-            this.Controls.Add(this.labelHex);
-            this.Controls.Add(this.textBoxHex);
-            this.Controls.Add(this.alphaSlider);
-            this.Controls.Add(this.numBlue);
-            this.Controls.Add(this.numGreen);
-            this.Controls.Add(this.numRed);
-            this.Controls.Add(this.numValue);
-            this.Controls.Add(this.numSaturation);
-            this.Controls.Add(this.numHue);
-            this.Controls.Add(this.radioGreen);
-            this.Controls.Add(this.radioBlue);
-            this.Controls.Add(this.radioRed);
-            this.Controls.Add(this.radioValue);
-            this.Controls.Add(this.radioSaturation);
-            this.Controls.Add(this.radioHue);
-            this.Controls.Add(this.colorShowBox);
-            this.Controls.Add(this.colorSlider);
-            this.Controls.Add(this.colorPanel);
+            this.Controls.Add(this.tableLayoutPanel2);
+            this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "ColorPickerPanel";
             resources.ApplyResources(this, "$this");
             ((System.ComponentModel.ISupportInitialize)(this.numHue)).EndInit();
@@ -289,16 +313,18 @@
             ((System.ComponentModel.ISupportInitialize)(this.numGreen)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numBlue)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numAlpha)).EndInit();
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel1.PerformLayout();
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel2.PerformLayout();
+            this.tableLayoutPanel3.ResumeLayout(false);
+            this.tableLayoutPanel3.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
 		}
 
 		#endregion
-
-		private ColorPanel colorPanel;
-		private ColorSlider colorSlider;
-		private ColorShowBox colorShowBox;
 		private System.Windows.Forms.RadioButton radioHue;
 		private System.Windows.Forms.RadioButton radioSaturation;
 		private System.Windows.Forms.RadioButton radioValue;
@@ -311,12 +337,18 @@
 		private System.Windows.Forms.NumericUpDown numRed;
 		private System.Windows.Forms.NumericUpDown numGreen;
 		private System.Windows.Forms.NumericUpDown numBlue;
-		private ColorSlider alphaSlider;
 		private System.Windows.Forms.TextBox textBoxHex;
 		private System.Windows.Forms.Label labelHex;
-		private System.Windows.Forms.Label labelOld;
-		private System.Windows.Forms.Label labelNew;
 		private System.Windows.Forms.NumericUpDown numAlpha;
         private System.Windows.Forms.Label labelAlpha;
-	}
+        private ColorSlider alphaSlider;
+        private ColorSlider colorSlider;
+        private ColorPanel colorPanel;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private ColorShowBox colorShowBox;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+    }
 }

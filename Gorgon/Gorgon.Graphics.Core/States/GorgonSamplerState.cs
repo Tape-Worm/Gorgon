@@ -339,6 +339,30 @@ namespace Gorgon.Graphics.Core
                                        && (other.MinimumLevelOfDetail.EqualsEpsilon(MinimumLevelOfDetail))
                                        && (other.MaximumLevelOfDetail.EqualsEpsilon(MaximumLevelOfDetail))
                                        && (other.MipLevelOfDetailBias.EqualsEpsilon(MipLevelOfDetailBias)));
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="obj">An object to compare with this object.</param>
+        /// <returns><see langword="true" /> if the current object is equal to the <paramref name="obj" /> parameter; otherwise, <see langword="false" />.</returns>
+        public override bool Equals(object obj) => Equals(obj as GorgonSamplerState);
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode() => 281.GenerateHash(WrapU)
+            .GenerateHash(WrapV)
+            .GenerateHash(WrapW)
+            .GenerateHash(BorderColor)
+            .GenerateHash(ComparisonFunction)
+            .GenerateHash(Filter)
+            .GenerateHash(MaxAnisotropy)
+            .GenerateHash(MinimumLevelOfDetail)
+            .GenerateHash(MaximumLevelOfDetail)
+            .GenerateHash(MipLevelOfDetailBias);
         #endregion
 
         #region Constructor/Finalizer.

@@ -60,7 +60,7 @@ namespace Gorgon.Editor.Plugins
     {
         #region Variables.
         // Empty string array for IsPluginAvailable.
-        private readonly IReadOnlyList<string> _defaultPluginAvailablity = new string[0];
+        private readonly IReadOnlyList<string> _defaultPluginAvailablity = Array.Empty<string>();
         #endregion
 
         #region Properties.

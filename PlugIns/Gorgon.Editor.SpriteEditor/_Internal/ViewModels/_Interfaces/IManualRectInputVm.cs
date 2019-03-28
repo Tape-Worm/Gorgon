@@ -36,6 +36,15 @@ namespace Gorgon.Editor.SpriteEditor
         : IViewModel
     {
         /// <summary>
+        /// Property to set or return whether the manual input interface is active or not.
+        /// </summary>
+        bool IsActive
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to set or return the rectangle dimensions.
         /// </summary>
         DX.RectangleF Rectangle

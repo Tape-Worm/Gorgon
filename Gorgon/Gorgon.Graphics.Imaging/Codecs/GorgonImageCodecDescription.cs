@@ -91,29 +91,23 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns><b>true</b> if the two instances are equal, <b>false</b> if not.</returns>
-        public static bool operator ==(GorgonImageCodecDescription left, GorgonImageCodecDescription right)
-		{
-			return Equals(left, right);
-		}
+        public static bool operator ==(GorgonImageCodecDescription left, GorgonImageCodecDescription right) => Equals(left, right);
 
-		/// <summary>
-		/// Operator to determine if two instances are not equal.
-		/// </summary>
-		/// <param name="left">The left instance to compare.</param>
-		/// <param name="right">The right instance to compare.</param>
-		/// <returns><b>true</b> if the two instances are not equal, <b>false</b> if they are.</returns>
-		public static bool operator !=(GorgonImageCodecDescription left, GorgonImageCodecDescription right)
-		{
-			return !Equals(left, right);
-		}
-		#endregion
+        /// <summary>
+        /// Operator to determine if two instances are not equal.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns><b>true</b> if the two instances are not equal, <b>false</b> if they are.</returns>
+        public static bool operator !=(GorgonImageCodecDescription left, GorgonImageCodecDescription right) => !Equals(left, right);
+        #endregion
 
-		#region Constructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonImageCodecDescription"/> struct.
-		/// </summary>
-		/// <param name="type">The type of codec object.</param>
-		public GorgonImageCodecDescription(Type type)
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonImageCodecDescription"/> struct.
+        /// </summary>
+        /// <param name="type">The type of codec object.</param>
+        public GorgonImageCodecDescription(Type type)
 		{
 			if (type == null)
 			{

@@ -49,7 +49,7 @@ namespace Gorgon.Editor.Services
         // The index of the current undo item in the stack.
         private int _undoIndex = -1;
         // The stack of undo items.
-        private List<IUndoCommand> _undoStack = new List<IUndoCommand>();
+        private readonly List<IUndoCommand> _undoStack = new List<IUndoCommand>();
         // The cancellation source cancelling the undo/redo operation.
         private CancellationTokenSource _cancelSource;
         #endregion

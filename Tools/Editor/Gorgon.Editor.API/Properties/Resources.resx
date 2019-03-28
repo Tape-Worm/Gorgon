@@ -271,4 +271,13 @@ Please try again.</value>
   <data name="GOREDIT_ERR_VERSION_MISMATCH" xml:space="preserve">
     <value>The editor project data requires version {0}, but this API only supports up to version {1}.</value>
   </data>
+  <data name="GOREDIT_ZOOM_CUSTOM" xml:space="preserve">
+    <value>Custom Zoom</value>
+  </data>
+  <data name="GOREDIT_ERR_PANEL_ALREADY_REGISTERED" xml:space="preserve">
+    <value>The panel '{0}' is already registered on this view.</value>
+  </data>
+  <data name="GOREDIT_ERR_PANEL_NOT_REGISTERED" xml:space="preserve">
+    <value>The panel '{0}' is not registered on this view.</value>
+  </data>
 </root>

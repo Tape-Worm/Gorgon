@@ -164,7 +164,7 @@
             this.ButtonExport.KeyTip = "E";
             this.ButtonExport.TextLine1 = "Export";
             this.ButtonExport.ToolTipBody = "Exports the image to a file on the disk as the specified codec.\r\n\r\nOnly codecs th" +
-    "at support the current pixel format, mip level count, array level count \r\nand im" +
+    "at support the current pixel format, mip map level count, array level count \r\nand im" +
     "age type will appear in this list.";
             this.ButtonExport.ToolTipTitle = "Export Image";
             // 
@@ -260,7 +260,7 @@
             this.ButtonDimensions.TextLine1 = "Dimensions";
             this.ButtonDimensions.ToolTipBody = "Alters the width, height (and depth if applicable) of the image.  This is also \r\n" +
     "used to update the number of array indices (for 2D and cube images), and \r\nthe n" +
-    "umber of mip-map levels for the image.";
+    "umber of mip map levels for the image.";
             this.ButtonDimensions.ToolTipTitle = "Image Dimensions";
             this.ButtonDimensions.Click += new System.EventHandler(this.ButtonDimensions_Click);
             // 

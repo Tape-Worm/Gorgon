@@ -100,23 +100,20 @@ namespace Gorgon.Editor.Services
         /// </summary>
         /// <param name="allowMultiSelect"><b>true</b> to allow multiple file selection, or <b>false</b> to only allow single selection.</param>
         /// <returns>The open file dialog.</returns>
-        private OpenFileDialog GetDialog(bool allowMultiSelect)
+        private OpenFileDialog GetDialog(bool allowMultiSelect) => new OpenFileDialog
         {
-            return new OpenFileDialog
-            {
-                Title = string.IsNullOrWhiteSpace(DialogTitle) ? Resources.GOREDIT_TITLE_OPEN_FILE : DialogTitle,
-                ValidateNames = true,
-                SupportMultiDottedExtensions = true,
-                Multiselect = allowMultiSelect,
-                AutoUpgradeEnabled = true,
-                CheckFileExists = true,
-                CheckPathExists = true,
-                Filter = FileFilter ?? string.Empty,
-                InitialDirectory = InitialDirectory?.FullName,
-                RestoreDirectory = true,
-                FileName = InitialFilePath
-            };
-        }
+            Title = string.IsNullOrWhiteSpace(DialogTitle) ? Resources.GOREDIT_TITLE_OPEN_FILE : DialogTitle,
+            ValidateNames = true,
+            SupportMultiDottedExtensions = true,
+            Multiselect = allowMultiSelect,
+            AutoUpgradeEnabled = true,
+            CheckFileExists = true,
+            CheckPathExists = true,
+            Filter = FileFilter ?? string.Empty,
+            InitialDirectory = InitialDirectory?.FullName,
+            RestoreDirectory = true,
+            FileName = InitialFilePath
+        };
 
         /// <summary>
         /// Function to retrieve a single file name.

@@ -150,6 +150,21 @@ namespace Gorgon.Graphics.Core
 
             return other._view == _view;
         }
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="obj">An object to compare with this object.</param>
+        /// <returns><see langword="true" /> if the current object is equal to the <paramref name="obj" /> parameter; otherwise, <see langword="false" />.</returns>
+        public override bool Equals(object obj) => Equals(obj as GorgonResourceView);
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode() => _view.GetHashCode();
         #endregion
 
         #region Constructor/Finalizer.

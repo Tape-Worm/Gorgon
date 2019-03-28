@@ -37,11 +37,11 @@ namespace Gorgon.IO
 	/// </summary>
 	internal struct RamDiskFileInfo
 		: IEquatable<RamDiskFileInfo>
-	{
-		/// <summary>
-		/// Full path to the file.
-		/// </summary>
-		public readonly string FullPath;
+	{        
+        /// <summary>
+        /// Full path to the file.
+        /// </summary>
+        public readonly string FullPath;
 		/// <summary>
 		/// Size of the file.
 		/// </summary>

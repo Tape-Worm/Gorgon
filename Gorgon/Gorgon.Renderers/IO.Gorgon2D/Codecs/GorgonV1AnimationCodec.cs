@@ -447,9 +447,9 @@ namespace Gorgon.IO
                     }
 
                     // We only use the following tracks, everything else can be skipped.
-                    switch (trackName.ToLowerInvariant())
+                    switch (trackName.ToUpperInvariant())
                     {
-                        case "position":
+                        case "POSITION":
                             builder.PositionInterpolationMode((TrackInterpolationMode)reader.ReadInt32());
                             IReadOnlyList<(float time, DX.Vector2 position)> positions = ReadVec2(reader, keyCount);
                             if (positions.Count > 0)
@@ -459,7 +459,7 @@ namespace Gorgon.IO
                                        .EndEdit();
                             }
                             break;
-                        case "scale":
+                        case "SCALE":
                             builder.ScaleInterpolationMode((TrackInterpolationMode)reader.ReadInt32());
                             IReadOnlyList<(float time, DX.Vector2 scale)> scales = ReadVec2(reader, keyCount);
                             if (scales.Count > 0)
@@ -469,7 +469,7 @@ namespace Gorgon.IO
                                        .EndEdit();
                             }
                             break;
-                        case "size":
+                        case "SIZE":
                             builder.ScaleInterpolationMode((TrackInterpolationMode)reader.ReadInt32());
                             IReadOnlyList<(float time, DX.Vector2 sizes)> bounds = ReadVec2(reader, keyCount);
                             if (bounds.Count > 0)
@@ -479,7 +479,7 @@ namespace Gorgon.IO
                                        .EndEdit();
                             }
                             break;
-                        case "rotation":
+                        case "ROTATION":
                             builder.RotationInterpolationMode((TrackInterpolationMode)reader.ReadInt32());
                             IReadOnlyList<(float time, float angle)> angles = ReadFloat(reader, keyCount);
                             if (angles.Count > 0)
@@ -489,7 +489,7 @@ namespace Gorgon.IO
                                        .EndEdit();
                             }
                             break;
-                        case "color":
+                        case "COLOR":
                             builder.ColorInterpolationMode((TrackInterpolationMode)reader.ReadInt32());
                             IReadOnlyList<(float time, int argb)> colors = ReadInt32(reader, keyCount);
                             if (colors.Count > 0)
@@ -499,7 +499,7 @@ namespace Gorgon.IO
                                        .EndEdit();
                             }
                             break;
-                        case "opacity":
+                        case "OPACITY":
                             builder.ColorInterpolationMode((TrackInterpolationMode)reader.ReadInt32());
                             IReadOnlyList<(float time, int argb)> opacities = ReadInt32(reader, keyCount);
                             if (opacities.Count > 0)
@@ -509,7 +509,7 @@ namespace Gorgon.IO
                                        .EndEdit();
                             }
                             break;
-                        case "image":
+                        case "IMAGE":
                             reader.ReadInt32(); // We don't support interpolation.
                             IReadOnlyList<(float time, GorgonTexture2DView texture, DX.RectangleF uv, string name)> textures = ReadTexture(reader, keyCount);
                             if (textures.Count > 0)
@@ -521,23 +521,23 @@ namespace Gorgon.IO
                                        .EndEdit();
                             }
                             break;
-                        case "alphamaskvalue":
+                        case "ALPHAMASKVALUE":
                             // We don't support this, so leave.
                             ReadInt32(reader, keyCount);
                             break;
-                        case "scaledwidth":
-                        case "scaledheight":
-                        case "width":
-                        case "height":
+                        case "SCALEDWIDTH":
+                        case "SCALEDHEIGHT":
+                        case "WIDTH":
+                        case "HEIGHT":
                             ReadFloat(reader, keyCount);
                             break;
-                        case "axis":
-                        case "scaleddimensions":
-                        case "imageoffset":
+                        case "AXIS":
+                        case "SCALEDDIMENSIONS":
+                        case "IMAGEOFFSET":
                             // We don't support this, so leave.
                             ReadVec2(reader, keyCount);
                             break;
-                        case "uniformscale":
+                        case "UNIFORMSCALE":
                             builder.ScaleInterpolationMode((TrackInterpolationMode)reader.ReadInt32());
                             IReadOnlyList<(float time, float scale)> uniScales = ReadFloat(reader, keyCount);
                             if (uniScales.Count > 0)
@@ -850,12 +850,7 @@ namespace Gorgon.IO
                 
                 string header = reader.ReadString();
 
-                if (!string.Equals(header, "GORANM11", StringComparison.OrdinalIgnoreCase))
-                {
-                    return 0;
-                }
-
-                return count;
+                return !string.Equals(header, "GORANM11", StringComparison.OrdinalIgnoreCase) ? 0 : count;
             }
             finally
             {

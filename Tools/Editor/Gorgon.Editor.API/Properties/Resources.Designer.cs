@@ -19,7 +19,7 @@ namespace Gorgon.Editor.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -255,6 +255,24 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The panel &apos;{0}&apos; is already registered on this view..
+        /// </summary>
+        internal static string GOREDIT_ERR_PANEL_ALREADY_REGISTERED {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_PANEL_ALREADY_REGISTERED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The panel &apos;{0}&apos; is not registered on this view..
+        /// </summary>
+        internal static string GOREDIT_ERR_PANEL_NOT_REGISTERED {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_PANEL_NOT_REGISTERED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The property &apos;{0}&apos; is not a member of this object..
         /// </summary>
         internal static string GOREDIT_ERR_PROPERTY_DOES_NOT_EXIST {
@@ -458,6 +476,15 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ZOOM_800 {
             get {
                 return ResourceManager.GetString("GOREDIT_ZOOM_800", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom Zoom.
+        /// </summary>
+        internal static string GOREDIT_ZOOM_CUSTOM {
+            get {
+                return ResourceManager.GetString("GOREDIT_ZOOM_CUSTOM", resourceCulture);
             }
         }
         

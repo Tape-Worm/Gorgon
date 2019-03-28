@@ -180,7 +180,7 @@ namespace Gorgon.Editor.Plugins
         /// If an empty string (or whitespace) is returned for the name, then the <paramref name="generatedName"/> will be used.
         /// </para>
         /// </remarks>
-        protected virtual Task<(string name, byte[] data)> OnGetDefaultContentAsync(string generatedName) => Task.FromResult((generatedName, new byte[0]));
+        protected virtual Task<(string name, byte[] data)> OnGetDefaultContentAsync(string generatedName) => Task.FromResult((generatedName, Array.Empty<byte>()));
 
         /// <summary>
         /// Function to register plug in specific search keywords with the system search.
@@ -230,7 +230,7 @@ namespace Gorgon.Editor.Plugins
             {
                 (string name, byte[] data) = await OnGetDefaultContentAsync(generatedName);
 
-                if ((name == string.Empty) && (!string.IsNullOrWhiteSpace(generatedName)))
+                if ((string.IsNullOrEmpty(string.Empty)) && (!string.IsNullOrWhiteSpace(generatedName)))
                 {
                     name = generatedName;
                 }

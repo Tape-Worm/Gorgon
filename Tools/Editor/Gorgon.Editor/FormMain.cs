@@ -967,6 +967,18 @@ namespace Gorgon.Editor
             _clipboardContext.Copy();
         }
 
+        /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.ResizeEnd"/> event.</summary>
+        /// <param name="e">A <see cref="T:System.EventArgs"/> that contains the event data.</param>
+        protected override void OnResizeEnd(EventArgs e)
+        {
+            if ((WindowState != FormWindowState.Normal) || (DataContext == null))
+            {
+                return;
+            }
+
+            DataContext.Settings.WindowBounds = new DX.Rectangle(DesktopBounds.X, DesktopBounds.Y, DesktopBounds.Width, DesktopBounds.Height);
+        }
+
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.</summary>
         /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data. </param>
         protected override void OnLoad(EventArgs e)
@@ -1006,8 +1018,7 @@ namespace Gorgon.Editor
                     e.Cancel = true;
 
                     DX.Rectangle windowDimensions;
-                    int windowState = (int)FormWindowState.Normal;
-
+                    int windowState;
                     switch (WindowState)
                     {
                         case FormWindowState.Normal:

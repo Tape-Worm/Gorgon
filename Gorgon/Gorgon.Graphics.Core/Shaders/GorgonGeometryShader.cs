@@ -102,7 +102,7 @@ namespace Gorgon.Graphics.Core
 	            throw new ArgumentNullException(nameof(streamOutLayout));
 	        }
 
-	        int[] strideList = strides?.Take(4).ToArray() ?? new int[0];
+	        int[] strideList = strides?.Take(4).ToArray() ?? Array.Empty<int>();
             // Clone the byte code just in case we decide to destroy the original.
 	        var byteCode = new ShaderBytecode(D3DByteCode.Data);
 

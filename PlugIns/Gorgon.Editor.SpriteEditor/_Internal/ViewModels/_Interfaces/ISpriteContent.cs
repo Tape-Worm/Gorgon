@@ -24,15 +24,13 @@
 // 
 #endregion
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using DX = SharpDX;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
+using Gorgon.Graphics;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -44,19 +42,7 @@ namespace Gorgon.Editor.SpriteEditor
         None = 0,
         SpriteClip = 1,
         SpritePick = 2,
-        CornerResize = 3,
-        CornerColor = 4,
-        TextureResize = 5,
-        SetAnchor = 6
-    }
-
-    /// <summary>
-    /// The type of sub panel to make active.
-    /// </summary>
-    internal enum EditorSubPanel
-    {
-        None = 0,
-        SpriteClipManualInput = 1
+        CornerResize = 3
     }
 
     /// <summary>
@@ -66,6 +52,36 @@ namespace Gorgon.Editor.SpriteEditor
         : IEditorContent, IUndoHandler, IDragDropHandler<IContentFileDragData>
     {
         #region Properties.
+        /// <summary>
+        /// Property to return the sprite color editor.
+        /// </summary>
+        ISpriteColorEdit ColorEditor
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the sprite anchor editor.
+        /// </summary>
+        ISpriteAnchorEdit AnchorEditor
+        {
+            get;
+        }
+
+        /// <summary>Property to return the currently active panel.</summary>
+        IHostedPanelViewModel CurrentPanel
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return whether the sub panel is modal or not.
+        /// </summary>
+        bool IsSubPanelModal
+        {
+            get;
+        }
+
         /// <summary>
         /// Property to return the view model for the plug in settings.
         /// </summary>
@@ -80,15 +96,6 @@ namespace Gorgon.Editor.SpriteEditor
         IManualRectInputVm ManualInput
         {
             get;
-        }
-
-        /// <summary>
-        /// Property to set or return the sub panel to make active.
-        /// </summary>
-        EditorSubPanel ActiveSubPanel
-        {
-            get;
-            set;
         }
 
         /// <summary>
@@ -127,6 +134,31 @@ namespace Gorgon.Editor.SpriteEditor
         /// Property to return the index of the texture array that the sprite uses.
         /// </summary>
         int ArrayIndex
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to set or return the color of each sprite vertex.
+        /// </summary>
+        IReadOnlyList<GorgonColor> VertexColors
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return offsets for each vertex in the sprite.
+        /// </summary>
+        IReadOnlyList<DX.Vector3> VertexOffsets
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the anchor position for for the sprite.
+        /// </summary>
+        DX.Vector2 Anchor
         {
             get;
         }
@@ -171,6 +203,30 @@ namespace Gorgon.Editor.SpriteEditor
         /// Property to return the command to execute when creating a new sprite.
         /// </summary>
         IEditorCommand<object> NewSpriteCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command to execute when toggling the manual input.
+        /// </summary>
+        IEditorCommand<object> ToggleManualInputCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to show the sprite color editor.
+        /// </summary>
+        IEditorCommand<object> ShowColorEditorCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to show the sprite anchor editor.
+        /// </summary>
+        IEditorCommand<object> ShowAnchorEditorCommand
         {
             get;
         }

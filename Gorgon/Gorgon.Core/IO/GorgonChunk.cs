@@ -115,31 +115,25 @@ namespace Gorgon.IO
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns><b>true</b> if equal, <b>false</b> otherwise.</returns>
-        public static bool operator ==(in GorgonChunk left, in GorgonChunk right)
-		{
-			return Equals(in left, in right);
-		}
+        public static bool operator ==(in GorgonChunk left, in GorgonChunk right) => Equals(in left, in right);
 
-		/// <summary>
-		/// Operator used to compare two instances for inequality.
-		/// </summary>
-		/// <param name="left">The left instance to compare.</param>
-		/// <param name="right">The right instance to compare.</param>
-		/// <returns><b>true</b> if not equal, <b>false</b> otherwise.</returns>
-		public static bool operator !=(in GorgonChunk left, in GorgonChunk right)
-		{
-			return !Equals(in left, in right);
-		}
-		#endregion
+        /// <summary>
+        /// Operator used to compare two instances for inequality.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns><b>true</b> if not equal, <b>false</b> otherwise.</returns>
+        public static bool operator !=(in GorgonChunk left, in GorgonChunk right) => !Equals(in left, in right);
+        #endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonChunk"/> struct.
-		/// </summary>
-		/// <param name="id">The identifier for the chunk.</param>
-		/// <param name="size">The size of the chunk, in bytes.</param>
-		/// <param name="offset">The offset within the file, in bytes.</param>
-		public GorgonChunk(ulong id, int size, ulong offset)
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonChunk"/> struct.
+        /// </summary>
+        /// <param name="id">The identifier for the chunk.</param>
+        /// <param name="size">The size of the chunk, in bytes.</param>
+        /// <param name="offset">The offset within the file, in bytes.</param>
+        public GorgonChunk(ulong id, int size, ulong offset)
 		{
 			ID = id;
 			Size = size;

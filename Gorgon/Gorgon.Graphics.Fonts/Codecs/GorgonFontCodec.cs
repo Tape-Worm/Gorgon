@@ -443,7 +443,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         protected GorgonFontCodec(GorgonFontFactory factory)
 		{
 			Factory = factory ?? throw new ArgumentNullException(nameof(factory));
-			CodecCommonExtensions = new string[] { };
+			CodecCommonExtensions = Array.Empty<string>();
 		}
 		#endregion
 	}

@@ -88,7 +88,7 @@ namespace Gorgon.Graphics.Imaging
 			{
 				(int, int) offsetSize;
 
-				mipLevel.ValidateRange("mipLevel", 0, _image.MipCount);
+				mipLevel.ValidateRange(nameof(mipLevel), 0, _image.MipCount);
 
 				if (_image.ImageType == ImageType.Image3D)
 				{
@@ -206,23 +206,15 @@ namespace Gorgon.Graphics.Imaging
         /// </summary>
         /// <param name="buffer">The buffer to look up.</param>
         /// <returns>The index of the buffer within the list, or -1 if not found.</returns>
-        public int IndexOf(IGorgonImageBuffer buffer)
-		{
-			if (buffer == null)
-			{
-				return -1;
-			}
+        public int IndexOf(IGorgonImageBuffer buffer) => buffer == null ? -1 : Array.IndexOf(_buffers, buffer);
 
-			return Array.IndexOf(_buffers, buffer);
-		}
-
-		/// <summary>
-		/// Function to retrieve the index of a buffer within the list using a mip map level and optional depth slice or array index.
-		/// </summary>
-		/// <param name="mipLevel">The mip map level to look up.</param>
-		/// <param name="depthSliceOrArrayIndex">[Optional] The depth slice (for 3D images) or array index (for 1D or 2D images) to look up.</param>
-		/// <returns>The index of the buffer within the list, or -1 if not found.</returns>
-		public int IndexOf(int mipLevel, int depthSliceOrArrayIndex = 0)
+        /// <summary>
+        /// Function to retrieve the index of a buffer within the list using a mip map level and optional depth slice or array index.
+        /// </summary>
+        /// <param name="mipLevel">The mip map level to look up.</param>
+        /// <param name="depthSliceOrArrayIndex">[Optional] The depth slice (for 3D images) or array index (for 1D or 2D images) to look up.</param>
+        /// <returns>The index of the buffer within the list, or -1 if not found.</returns>
+        public int IndexOf(int mipLevel, int depthSliceOrArrayIndex = 0)
 		{
 			(int, int) offsetSize;
 
@@ -258,7 +250,7 @@ namespace Gorgon.Graphics.Imaging
         internal ImageBufferList(IGorgonImage image)
 		{
 			_image = image;
-			_buffers = new IGorgonImageBuffer[0];
+			_buffers = Array.Empty<IGorgonImageBuffer>();
 		}
 		#endregion
 	}

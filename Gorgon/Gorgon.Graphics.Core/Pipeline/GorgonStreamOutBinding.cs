@@ -148,10 +148,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="left">The left.</param>
         /// <param name="right">The right.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator ==(in GorgonStreamOutBinding left, in GorgonStreamOutBinding right)
-        {
-            return Equals(in left, in right);
-        }
+        public static bool operator ==(in GorgonStreamOutBinding left, in GorgonStreamOutBinding right) => Equals(in left, in right);
 
         /// <summary>
         /// Implements the operator ==.
@@ -159,10 +156,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="left">The left.</param>
         /// <param name="right">The right.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator !=(in GorgonStreamOutBinding left, in GorgonStreamOutBinding right)
-        {
-            return !Equals(in left, in right);
-        }
+        public static bool operator !=(in GorgonStreamOutBinding left, in GorgonStreamOutBinding right) => !Equals(in left, in right);
         #endregion
 
         #region Constructor.

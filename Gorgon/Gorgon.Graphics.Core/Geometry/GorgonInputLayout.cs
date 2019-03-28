@@ -613,10 +613,23 @@ namespace Gorgon.Graphics.Core
 			return true;
 		}
 
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose()
+        /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+        /// <returns>true if the current object is equal to the <paramref name="obj" /> parameter; otherwise, false.</returns>
+        /// <param name="obj">An object to compare with this object.</param>
+        public override bool Equals(object obj) => Equals(obj as GorgonInputLayout);
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode() => base.GetHashCode();
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
 		{
 			D3D11.InputLayout layout = Interlocked.Exchange(ref _d3DInputLayout, null);
 			layout?.Dispose();
@@ -674,6 +687,6 @@ namespace Gorgon.Graphics.Core
 
             this.RegisterDisposable(graphics);
 		}
-		#endregion
-	}
+        #endregion
+    }
 }

@@ -46,15 +46,15 @@ namespace Gorgon.Editor.SpriteEditor
 
             if (disposing)
             {
-                if (ParentForm != null)
+                if (_parentForm != null)
                 {
-                    ParentForm.ResizeEnd -= ParentForm_Move;
+                    _parentForm.ResizeEnd -= ParentForm_Move;
+                    _parentForm = null;
                 }
 
-                _manualRectInput.Move -= ManualRectInput_Move;
+                _manualRectInput.ResizeEnd -= ManualRectInput_ResizeEnd;
                 _manualRectInput.FormClosing -= ManualInput_ClosePanel;
                 _manualRectInput.Dispose();
-                _clipperService?.Dispose();
                 PanelRenderWindow.MouseWheel -= PanelRenderWindow_MouseWheel;
                 _ribbonForm.ImageZoomed -= RibbonForm_ImageZoomed;
                 _ribbonForm?.Dispose();
@@ -75,6 +75,8 @@ namespace Gorgon.Editor.SpriteEditor
             this.ScrollHorizontal = new System.Windows.Forms.HScrollBar();
             this.ScrollVertical = new System.Windows.Forms.VScrollBar();
             this.PanelRenderWindow = new Gorgon.Windows.UI.GorgonSelectablePanel();
+            this.SpriteAnchorSelector = new Gorgon.Editor.SpriteEditor.SpriteAnchor();
+            this.SpriteColorSelector = new Gorgon.Editor.SpriteEditor.SpriteColor();
             this.ButtonCenter = new System.Windows.Forms.Button();
             this.PanelBottomBar = new System.Windows.Forms.Panel();
             this.PanelImageViewControls = new System.Windows.Forms.TableLayoutPanel();
@@ -86,6 +88,7 @@ namespace Gorgon.Editor.SpriteEditor
             ((System.ComponentModel.ISupportInitialize)(this.PresentationPanel)).BeginInit();
             this.PresentationPanel.SuspendLayout();
             this.TableViewControls.SuspendLayout();
+            this.PanelRenderWindow.SuspendLayout();
             this.PanelBottomBar.SuspendLayout();
             this.PanelImageViewControls.SuspendLayout();
             this.SuspendLayout();
@@ -142,6 +145,8 @@ namespace Gorgon.Editor.SpriteEditor
             // PanelRenderWindow
             // 
             this.PanelRenderWindow.AllowDrop = true;
+            this.PanelRenderWindow.Controls.Add(this.SpriteAnchorSelector);
+            this.PanelRenderWindow.Controls.Add(this.SpriteColorSelector);
             this.PanelRenderWindow.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PanelRenderWindow.Location = new System.Drawing.Point(3, 3);
             this.PanelRenderWindow.Name = "PanelRenderWindow";
@@ -157,6 +162,31 @@ namespace Gorgon.Editor.SpriteEditor
             this.PanelRenderWindow.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PanelRenderWindow_MouseMove);
             this.PanelRenderWindow.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PanelRenderWindow_MouseUp);
             this.PanelRenderWindow.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.PanelRenderWindow_PreviewKeyDown);
+            // 
+            // SpriteAnchorSelector
+            // 
+            this.SpriteAnchorSelector.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.SpriteAnchorSelector.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.SpriteAnchorSelector.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.SpriteAnchorSelector.Location = new System.Drawing.Point(117, 67);
+            this.SpriteAnchorSelector.Name = "SpriteAnchorSelector";
+            this.SpriteAnchorSelector.Size = new System.Drawing.Size(248, 241);
+            this.SpriteAnchorSelector.TabIndex = 1;
+            this.SpriteAnchorSelector.Text = "Sprite Anchor";
+            this.SpriteAnchorSelector.Visible = false;
+            // 
+            // SpriteColorSelector
+            // 
+            this.SpriteColorSelector.AutoSize = true;
+            this.SpriteColorSelector.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.SpriteColorSelector.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.SpriteColorSelector.ForeColor = System.Drawing.Color.White;
+            this.SpriteColorSelector.Location = new System.Drawing.Point(414, 47);
+            this.SpriteColorSelector.Name = "SpriteColorSelector";
+            this.SpriteColorSelector.Size = new System.Drawing.Size(423, 406);
+            this.SpriteColorSelector.TabIndex = 0;
+            this.SpriteColorSelector.Text = "Sprite Color";
+            this.SpriteColorSelector.Visible = false;
             // 
             // ButtonCenter
             // 
@@ -309,6 +339,8 @@ namespace Gorgon.Editor.SpriteEditor
             this.PresentationPanel.ResumeLayout(false);
             this.TableViewControls.ResumeLayout(false);
             this.TableViewControls.PerformLayout();
+            this.PanelRenderWindow.ResumeLayout(false);
+            this.PanelRenderWindow.PerformLayout();
             this.PanelBottomBar.ResumeLayout(false);
             this.PanelBottomBar.PerformLayout();
             this.PanelImageViewControls.ResumeLayout(false);
@@ -332,5 +364,7 @@ namespace Gorgon.Editor.SpriteEditor
         private System.Windows.Forms.Button ButtonPrevArrayIndex;
         private System.Windows.Forms.Button ButtonNextArrayIndex;
         private System.Windows.Forms.Label LabelArrayIndex;
+        private SpriteColor SpriteColorSelector;
+        private SpriteAnchor SpriteAnchorSelector;
     }
 }

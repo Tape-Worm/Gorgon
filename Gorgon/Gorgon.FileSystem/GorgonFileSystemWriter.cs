@@ -193,13 +193,13 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="sourceFileSystem">The file system to copy from.</param>
         /// <param name="progress">The callback for copy progress.</param>
-        /// <param name="token">The cancellation token for asynchronous copy.</param>
         /// <param name="allowOverwrite">Flag to indicate whether to allow overwriting files or not.</param>
+        /// <param name="token">The cancellation token for asynchronous copy.</param>
         /// <returns>A tuple containing the count of the directories and files copied.</returns>
         private (int DirectoryCount, int FileCount)? CopyInternal(IGorgonFileSystem sourceFileSystem,
-		                                                          Func<GorgonWriterCopyProgress, bool> progress,
-		                                                          CancellationToken token,
-		                                                          bool allowOverwrite)
+		                                                          Func<GorgonWriterCopyProgress, bool> progress,		                                                          
+		                                                          bool allowOverwrite,
+                                                                  CancellationToken token)
 		{
 			int directoryCount = 0;
 			int fileCount = 0;
@@ -290,7 +290,7 @@ namespace Gorgon.IO
 				throw new ArgumentNullException(nameof(sourceFileSystem));
 			}
 			
-			return CopyInternal(sourceFileSystem, copyProgress, new CancellationToken(false), allowOverwrite);
+			return CopyInternal(sourceFileSystem, copyProgress, allowOverwrite, CancellationToken.None);
 		}
 
 		/// <summary>
@@ -338,7 +338,7 @@ namespace Gorgon.IO
 			}
 
 			// ReSharper disable MethodSupportsCancellation
-			return Task.Run(() => CopyInternal(sourceFileSystem, copyProgress, cancelToken, allowOverwrite));
+			return Task.Run(() => CopyInternal(sourceFileSystem, copyProgress, allowOverwrite, cancelToken), cancelToken);
 			// ReSharper restore MethodSupportsCancellation
 		}
 

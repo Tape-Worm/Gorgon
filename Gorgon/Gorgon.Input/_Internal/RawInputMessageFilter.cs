@@ -38,10 +38,10 @@ namespace Gorgon.Native
 	internal class RawInputMessageFilter
 		: IDisposable, IMessageFilter
 	{
-		#region Constants.
-		// Mouse messages.
-	    // ReSharper disable UnusedMember.Local
-		private const int WM_XBUTTONDBLCLK = 0x020D;
+        #region Constants.
+        // Mouse messages.
+#pragma warning disable IDE0051 // Remove unused private members
+        private const int WM_XBUTTONDBLCLK = 0x020D;
 	    private const int WM_XBUTTONDOWN = 0x020B;
 		private const int WM_XBUTTONUP = 0x020C;
 		private const int WM_RBUTTONDBLCLK = 0x0206;
@@ -70,12 +70,12 @@ namespace Gorgon.Native
 		private const int WM_MOUSEACTIVATE = 0x0021;
 		private const int WM_LBUTTONDBLCLK = 0x0203;
 		private const int WM_LBUTTONDOWN = 0x0201;
-		private const int WM_LBUTTONUP = 0x0202;
-		private const int WM_MBUTTONDBLCLK = 0x0209;
+        private const int WM_LBUTTONUP = 0x0202;
+        private const int WM_MBUTTONDBLCLK = 0x0209;
 		private const int WM_MBUTTONDOWN = 0x0207;
 		private const int WM_MBUTTONUP = 0x0208;
 		private const int WM_CAPTURECHANGED = 0x0215;
-	    // ReSharper restore UnusedMember.Local
+#pragma warning restore IDE0051 // Remove unused private members
         #endregion
 
         #region Variables.

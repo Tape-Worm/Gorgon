@@ -93,7 +93,7 @@ namespace Gorgon.IO
                 if ((string.Equals(reader.Path, "header", StringComparison.Ordinal))
                     && (reader.TokenType == JsonToken.PropertyName))
                 {
-                    var id = (ulong?)reader.ReadAsDecimal();
+                    ulong? id = (ulong?)reader.ReadAsDecimal();
 
                     if ((id == null) || (id != CurrentFileHeader))
                     {
@@ -113,12 +113,9 @@ namespace Gorgon.IO
                     continue;
                 }
 
-                if (!reader.Read())
-                {
-                    return false;
-                }
-
-                return (Version.TryParse(reader.Value.ToString(), out Version version)) 
+                return !reader.Read()
+                    ? false
+                    : (Version.TryParse(reader.Value.ToString(), out Version version))
                        && (version.Equals(Version));
             }
 
@@ -162,14 +159,14 @@ namespace Gorgon.IO
                     continue;
                 }
 
-                string propName = reader.Value.ToString().ToLowerInvariant();
+                string propName = reader.Value.ToString().ToUpperInvariant();
 
                 switch (propName)
                 {
-                    case "interpolationmode":
+                    case "INTERPOLATIONMODE":
                         interpolation = (TrackInterpolationMode)(reader.ReadAsInt32() ?? 0);
                         break;
-                    case "keyframes":
+                    case "KEYFRAMES":
                         bounds = ReadKeys();
                         break;
                 }
@@ -215,14 +212,14 @@ namespace Gorgon.IO
                     continue;
                 }
 
-                string propName = reader.Value.ToString().ToLowerInvariant();
+                string propName = reader.Value.ToString().ToUpperInvariant();
 
                 switch (propName)
                 {
-                    case "interpolationmode":
+                    case "INTERPOLATIONMODE":
                         interpolation = (TrackInterpolationMode)(reader.ReadAsInt32() ?? 0);
                         break;
-                    case "keyframes":
+                    case "KEYFRAMES":
                         colors = ReadKeys();
                         break;
                 }
@@ -273,7 +270,7 @@ namespace Gorgon.IO
 
                 string propName = reader.Value.ToString();
 
-                if (string.Equals(propName, "keyframes", StringComparison.InvariantCultureIgnoreCase))
+                if (string.Equals(propName, "KEYFRAMES", StringComparison.InvariantCultureIgnoreCase))
                 {
                     textures = ReadKeys();
                 }
@@ -319,14 +316,14 @@ namespace Gorgon.IO
                     continue;
                 }
 
-                string propName = reader.Value.ToString().ToLowerInvariant();
+                string propName = reader.Value.ToString().ToUpperInvariant();
 
                 switch (propName)
                 {
-                    case "interpolationmode":
+                    case "INTERPOLATIONMODE":
                         interpolation = (TrackInterpolationMode)(reader.ReadAsInt32() ?? 0);
                         break;
-                    case "keyframes":
+                    case "KEYFRAMES":
                         positions = ReadVec3Keys();
                         break;
                 }
@@ -400,38 +397,38 @@ namespace Gorgon.IO
                         continue;
                     }
                     
-                    string propName = reader.Value.ToString().ToLowerInvariant();
+                    string propName = reader.Value.ToString().ToUpperInvariant();
 
                     switch (propName)
                     {
-                        case "positions":
+                        case "POSITIONS":
                             positions = ReadVector3(reader, vec3Converter, out posInterp);
                             break;
-                        case "scales":
+                        case "SCALES":
                             scales = ReadVector3(reader, vec3Converter, out scaleInterp);
                             break;
-                        case "rotations":
+                        case "ROTATIONS":
                             rotations = ReadVector3(reader, vec3Converter, out rotInterp);
                             break;
-                        case "bounds":
+                        case "BOUNDS":
                             bounds = ReadRects(reader, rectConverter, out boundInterp);
                             break;
-                        case "colors":
+                        case "COLORS":
                             colors = ReadColors(reader, colorConvert, out colorInterp);
                             break;
-                        case "textures":
+                        case "TEXTURES":
                             textures = ReadTextures(reader, textureConvert);
                             break;
-                        case "name":
+                        case "NAME":
                             animName = reader.ReadAsString();
                             break;
-                        case "length":
+                        case "LENGTH":
                             animLength = (float)(reader.ReadAsDecimal() ?? 0);
                             break;
-                        case "islooped":
+                        case "ISLOOPED":
                             isLooped = (reader.ReadAsBoolean() ?? false);
                             break;
-                        case "loopcount":
+                        case "LOOPCOUNT":
                             loopCount = (reader.ReadAsInt32() ?? 0);
                             break;
                     }

@@ -76,14 +76,14 @@ namespace Gorgon.IO
                     continue;
                 }
 
-                string propName = reader.Value.ToString().ToLowerInvariant();
+                string propName = reader.Value.ToString().ToUpperInvariant();
 
                 switch (propName)
                 {
-                        case "time":
+                        case "TIME":
                             time = (float)(reader.ReadAsDecimal() ?? 0);
                             break;
-                        case "argb":
+                        case "ARGB":
                             argb = reader.ReadAsInt32() ?? 0;
                             break;
                 }

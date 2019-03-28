@@ -47,7 +47,7 @@ namespace Gorgon.Editor.ImageEditor
     {
         #region Variables.
         // The loaded image codecs.
-        private List<IGorgonImageCodec> _codecList = new List<IGorgonImageCodec>();
+        private readonly List<IGorgonImageCodec> _codecList = new List<IGorgonImageCodec>();
 
         // The list of available codecs matched by extension.
         private readonly List<(GorgonFileExtension extension, IGorgonImageCodec codec)> _codecs = new List<(GorgonFileExtension extension, IGorgonImageCodec codec)>();

@@ -32,48 +32,52 @@ namespace Gorgon.Editor.UI
     public enum ZoomLevels
     {
         /// <summary>
+        /// Custom resize value.
+        /// </summary>
+        Custom = 0,
+        /// <summary>
         /// Resize to the client area of the window.
         /// </summary>
-        ToWindow = 0,
+        ToWindow = 1,
         /// <summary>
         /// Shrink to 12% of normal size.
         /// </summary>
-        Percent12 = 1,
+        Percent12 = 2,
         /// <summary>
         /// Shrink to 25% of normal size.
         /// </summary>
-        Percent25 = 2,
+        Percent25 = 3,
         /// <summary>
         /// Shrink to 50% of normal size.
         /// </summary>
-        Percent50 = 3,
+        Percent50 = 4,
         /// <summary>
         /// Shrink to 100% of normal size.
         /// </summary>
-        Percent100 = 4,
+        Percent100 = 5,
         /// <summary>
         /// Shrink to 200% of normal size.
         /// </summary>
-        Percent200 = 5,
+        Percent200 = 6,
         /// <summary>
         /// Shrink to 400% of normal size.
         /// </summary>
-        Percent400 = 6,
+        Percent400 = 7,
         /// <summary>
         /// Shrink to 800% of normal size.
         /// </summary>
-        Percent800 = 7,
+        Percent800 = 8,
         /// <summary>
         /// Shrink to 1600% of normal size.
         /// </summary>
-        Percent1600 = 8,
+        Percent1600 = 9,
         /// <summary>
         /// Shrink to 3200% of normal size.
         /// </summary>
-        Percent3200 = 9,
+        Percent3200 = 10,
         /// <summary>
         /// Shrink to 6400% of normal size.
         /// </summary>
-        Percent6400 = 10
+        Percent6400 = 11
     }
 }

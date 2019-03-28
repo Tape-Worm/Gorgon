@@ -436,7 +436,7 @@ namespace Gorgon.Graphics.Imaging
 				return null;
 			}
 
-			IList<GorgonColor> paletteColors = options?.Options[DecOptPalette].GetValue<IList<GorgonColor>>() ?? new GorgonColor[0];
+			IList<GorgonColor> paletteColors = options?.Options[DecOptPalette].GetValue<IList<GorgonColor>>() ?? Array.Empty<GorgonColor>();
 			float alpha = options?.Options[DecOptAlphaThreshold].GetValue<float>() ?? 0.0f;
 
 			// If there are no colors set, then extract it from the frame.
@@ -489,7 +489,7 @@ namespace Gorgon.Graphics.Imaging
 				return null;
 			}
 
-			IList<GorgonColor> paletteColors = options?.Options[DecOptPalette].GetValue<IList<GorgonColor>>() ?? new GorgonColor[0];
+			IList<GorgonColor> paletteColors = options?.Options[DecOptPalette].GetValue<IList<GorgonColor>>() ?? Array.Empty<GorgonColor>();
 			float alpha = options?.Options[DecOptAlphaThreshold].GetValue<float>() ?? 0.0f;
 			Palette wicPalette;
 
@@ -637,7 +637,7 @@ namespace Gorgon.Graphics.Imaging
 
 			if (sourceGuid == Guid.Empty)
 			{
-				return new BufferFormat[0];
+				return Array.Empty<BufferFormat>();
 			}
 
 			var result = new List<BufferFormat>();
@@ -1034,7 +1034,7 @@ namespace Gorgon.Graphics.Imaging
 
 				if (!decoder.DecoderInfo.IsMultiframeSupported)
 				{
-					return new DX.Point[0];
+					return Array.Empty<DX.Point>();
 				}
 
 				var result = new DX.Point[decoder.FrameCount];
@@ -1102,6 +1102,8 @@ namespace Gorgon.Graphics.Imaging
 		/// <returns>A <see cref="IGorgonImage"/> containing the decoded image file data.</returns>
 		public IGorgonImage DecodeImageData(Stream stream, long length, Guid imageFileFormat, IGorgonWicDecodingOptions decodingOptions, IReadOnlyList<string> frameOffsetMetadataItems)
 		{
+            _ = length;
+
 		    (GorgonImageInfo ImageInfo,
 		        BitmapFrameDecode FrameDecoder,
 		        BitmapDecoder Decoder,
@@ -1429,7 +1431,7 @@ namespace Gorgon.Graphics.Imaging
 
 				if (!decoder.DecoderInfo.IsMultiframeSupported)
 				{
-					return new int[0];
+					return Array.Empty<int>();
 				}
 
 				int[] result = new int[decoder.FrameCount];

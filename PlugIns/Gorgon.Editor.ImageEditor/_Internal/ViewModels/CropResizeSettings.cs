@@ -75,6 +75,9 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         #endregion
 
         #region Properties.
+        /// <summary>Property to return whether the panel is modal.</summary>
+        public bool IsModal => true;
+
         /// <summary>
         /// Property to set or return whether to preserve the aspect ratio of the image being resized.
         /// </summary>

@@ -125,12 +125,6 @@ namespace Gorgon.Graphics.Imaging.Codecs
         protected virtual IReadOnlyDictionary<string, object> GetCustomEncodingMetadata(int frameIndex, IGorgonImageInfo settings) => null;
 
         /// <summary>
-        /// Function to retrieve the names of the metadata items used to get frame offsets.
-        /// </summary>
-        /// <returns>A hashset of metadata names.</returns>
-        protected virtual HashSet<string> GetFrameOffsetMetadataNames() => new HashSet<string>();
-
-        /// <summary>
         /// Function to load an image from a stream.
         /// </summary>
         /// <param name="stream">The stream containing the image data to read.</param>
@@ -356,7 +350,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			if (!SupportsMultipleFrames)
 			{
-				return new DX.Point[0];
+				return Array.Empty<DX.Point>();
 			}
 
 			var wic = new WicUtilities();
@@ -365,7 +359,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 			{
 				if ((FrameOffsetMetadataNames == null) || (FrameOffsetMetadataNames.Count == 0))
 				{
-					return new DX.Point[0];
+					return Array.Empty<DX.Point>();
 				}
 
 				IReadOnlyList<DX.Point> result = wic.GetFrameOffsetMetadata(stream, SupportedFileFormat, FrameOffsetMetadataNames);
@@ -423,14 +417,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
 			{
 				GorgonImageInfo info = wic.GetImageMetaDataFromStream(stream, SupportedFileFormat, null);
 
-				if (info == null)
-				{
-					return false;
-				}
-
-				return info.Format != BufferFormat.Unknown;
-			}
-			catch(DX.SharpDXException)
+                return info == null ? false : info.Format != BufferFormat.Unknown;
+            }
+            catch (DX.SharpDXException)
 			{
 				return false;
 			}
@@ -468,7 +457,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 			Codec = codec;
 			CodecDescription = description ?? string.Empty;
-			CodecCommonExtensions = extensions ?? new string[0];
+			CodecCommonExtensions = extensions ?? Array.Empty<string>();
 			SupportedFileFormat = containerGUID;			
 		}
 		#endregion

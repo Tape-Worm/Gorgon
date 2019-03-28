@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using Gorgon.Core;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -278,6 +279,28 @@ namespace Gorgon.Graphics.Core
                                       && (IsStencilEnabled == info.IsStencilEnabled)
                                       && (StencilReadMask == info.StencilReadMask)
                                       && (StencilWriteMask == info.StencilWriteMask));
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="obj">An object to compare with this object.</param>
+        /// <returns><see langword="true" /> if the current object is equal to the <paramref name="obj" /> parameter; otherwise, <see langword="false" />.</returns>
+        public override bool Equals(object obj) => Equals(obj as GorgonDepthStencilState);
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode() => 281.GenerateHash(BackFaceStencilOp)
+            .GenerateHash(FrontFaceStencilOp)
+            .GenerateHash(DepthComparison)
+            .GenerateHash(IsDepthEnabled)
+            .GenerateHash(IsDepthWriteEnabled)
+            .GenerateHash(IsStencilEnabled)
+            .GenerateHash(StencilReadMask)
+            .GenerateHash(StencilWriteMask);
         #endregion
 
         #region Constructor/Finalizer.

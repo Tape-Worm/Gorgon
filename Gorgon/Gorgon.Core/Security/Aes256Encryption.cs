@@ -73,7 +73,7 @@ namespace Gorgon.Security
 
 			if ((data == null) || (data.Length == 0))
 			{
-				return new byte[0];
+				return Array.Empty<byte>();
 			}
 
 			using (var aes = new AesManaged())
@@ -108,7 +108,7 @@ namespace Gorgon.Security
 
 			if ((data == null) || (data.Length == 0))
 			{
-				return new byte[0];
+				return Array.Empty<byte>();
 			}
 
 			using (var aes = new AesManaged())
@@ -137,7 +137,7 @@ namespace Gorgon.Security
 		{
 			if (string.IsNullOrEmpty(value))
 			{
-				return new byte[0];
+				return Array.Empty<byte>();
 			}
 
 			if (textEncoding == null)

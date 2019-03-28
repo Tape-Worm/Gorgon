@@ -487,13 +487,13 @@ namespace Gorgon.Graphics.Fonts.Codecs
 				fileNameExtension = "." + fileNameExtension;
 			}
 
-			switch (fileNameExtension.ToLowerInvariant())
+            switch (fileNameExtension.ToUpperInvariant())
 			{
-				case ".dds":
+				case ".DDS":
 					return new GorgonCodecDds();
-				case ".png":
+				case ".PNG":
 					return new GorgonCodecPng();
-				case ".tga":
+				case ".TGA":
 					return new GorgonCodecTga();
 				default:
 					throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORGFX_ERR_FONT_TEXTURE_NOT_VALID, "*.dds\n*.png\n*.tga"));

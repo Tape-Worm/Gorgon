@@ -89,21 +89,21 @@ namespace Gorgon.IO
                     continue;
                 }
 
-                string propName = reader.Value.ToString().ToLowerInvariant();
+                string propName = reader.Value.ToString().ToUpperInvariant();
 
                 switch (propName)
                 {
-                    case "time":
+                    case "TIME":
                         time = (float)(reader.ReadAsDecimal() ?? 0);
                         break;
-                    case "arrayindex":
+                    case "ARRAYINDEX":
                         arrayIndex = reader.ReadAsInt32() ?? 0;
                         break;
-                    case "uv":
+                    case "UV":
                         reader.Read();
                         uv = _rectConverter.ReadJson(reader, typeof(DX.RectangleF), DX.RectangleF.Empty, false, serializer);
                         break;
-                    case "texture":
+                    case "TEXTURE":
                         reader.Read();
                         texture = _textureConverter.ReadTexture(reader, out textureName);
 

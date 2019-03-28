@@ -25,10 +25,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using DX = SharpDX;
 using Gorgon.Core;
@@ -39,7 +36,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
-using Gorgon.IO;
 using Gorgon.Renderers;
 
 namespace Gorgon.Editor.SpriteEditor

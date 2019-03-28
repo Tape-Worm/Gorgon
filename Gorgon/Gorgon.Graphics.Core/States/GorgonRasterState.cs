@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using Gorgon.Math;
 using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
+using Gorgon.Core;
 
 namespace Gorgon.Graphics.Core
 {
@@ -367,6 +368,32 @@ namespace Gorgon.Graphics.Core
                                        && (HasScissors == state.HasScissors)
                                        && (SlopeScaledDepthBias.EqualsEpsilon(state.SlopeScaledDepthBias))
                                        && (UseConservativeRasterization == state.UseConservativeRasterization));
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="obj">An object to compare with this object.</param>
+        /// <returns><see langword="true" /> if the current object is equal to the <paramref name="obj" /> parameter; otherwise, <see langword="false" />.</returns>
+        public override bool Equals(object obj) => Equals(obj as GorgonRasterState);
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode() => 281.GenerateHash(IsAntialiasedLineEnabled)
+            .GenerateHash(CullMode)
+            .GenerateHash(DepthBias)
+            .GenerateHash(DepthBiasClamp)
+            .GenerateHash(IsDepthClippingEnabled)
+            .GenerateHash(FillMode)
+            .GenerateHash(ForcedReadWriteViewSampleCount)
+            .GenerateHash(IsFrontCounterClockwise)
+            .GenerateHash(IsMultisamplingEnabled)
+            .GenerateHash(HasScissors)
+            .GenerateHash(SlopeScaledDepthBias)
+            .GenerateHash(UseConservativeRasterization);
         #endregion
 
         #region Constructor/Finalizer.

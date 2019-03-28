@@ -1841,7 +1841,7 @@ namespace Gorgon.Graphics.Core
         {
             try
             {
-                for (int count = D3D11.Device.MultisampleCountMaximum; count >= 1; count = count / 2)
+                for (int count = D3D11.Device.MultisampleCountMaximum; count >= 1; count /= 2)
                 {
                     int quality = device.CheckMultisampleQualityLevels1(format, count, D3D11.CheckMultisampleQualityLevelsFlags.None);
 

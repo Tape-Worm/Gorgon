@@ -770,7 +770,7 @@ namespace Gorgon.Graphics.Imaging
             if ((sourceFormat == BufferFormat.Unknown)
                 || (destFormat == null))
             {
-                return new BufferFormat[0];
+                return Array.Empty<BufferFormat>();
             }
 
             if (destFormat.All(item => item == sourceFormat))

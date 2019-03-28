@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Gorgon.Native;
 using Microsoft.Win32;
@@ -35,7 +34,7 @@ namespace Gorgon.Input
 	/// <summary>
 	/// Functionality to return information about a gaming device from the registry.
 	/// </summary>
-	public class GorgonGamingDeviceRegistryInfo
+	public static class GorgonGamingDeviceRegistryInfo
 	{
 		/// <summary>
 		/// Function to get the human readable name for a gaming device from a <see cref="GorgonRawHIDInfo"/> object.
@@ -133,7 +132,6 @@ namespace Gorgon.Input
 		/// <remarks>
 		/// This is a helper method that will get the device name from the registry when using Windows Multimedia Joysticks (joyPosEx).
 		/// </remarks>
-		[SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "joystickID+1", Justification = "No.")]
 		public static string GetGamingDeviceName(string registryKey, int joystickID)
 		{
 			RegistryKey rootKey = null;			// Root key.

@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Gorgon.Core;
 using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Properties;
@@ -567,15 +568,51 @@ namespace Gorgon.Native
         /// </list>
         /// </para>
         /// </remarks>
-        public bool Equals(GorgonNativeBuffer<T> other)
-        {
-            if (other == this)
-            {
-                return true;
-            }
+        public bool Equals(GorgonNativeBuffer<T> other) => other == this ? true : (other != null) && (other._memoryBlock == _memoryBlock) && (SizeInBytes == other.SizeInBytes);
 
-            return (other != null) && (other._memoryBlock == _memoryBlock) && (SizeInBytes == other.SizeInBytes);
-        }
+        /// <summary>
+        /// Function to determine if this buffer is equal to another.
+        /// </summary>
+        /// <param name="obj">The other buffer to compare.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+        /// <remarks>
+        /// <para>
+        /// This method determines equality between two <see cref="GorgonNativeBuffer{T}"/> instances. The method of determining equality in this method is different from the standard <c>==</c> or <c>!=</c> 
+        /// operators or even the <see cref="object.Equals(object)"/> method. To determine equality, the set of rules below will be used to tell if two instances are equal or not.
+        /// </para>
+        /// <para>
+        /// <h3>Rules for determining equality</h3>
+        /// <list type="bullet">
+        /// <listheader>
+        ///     <term>Condition</term>
+        ///     <description>Returns</description>
+        /// </listheader>
+        /// <item>
+        ///     <term>If <paramref name="obj"/> is the same reference as this instance.</term>
+        ///     <description><b>true</b></description>
+        /// </item>
+        /// <item>
+        ///     <term>If <paramref name="obj"/> <b>false</b>.</term>
+        ///     <description><b>false</b></description>
+        /// </item>
+        /// <item>
+        ///     <term>If <paramref name="obj"/> is not the same reference as this instance, and but has the same location in memory, and has the same <see cref="SizeInBytes"/>.</term>
+        ///     <description><b>true</b></description>
+        /// </item>
+        /// <item>
+        ///     <term>If <paramref name="obj"/> is not the same reference as this instance, and does not have the same location in memory, or does not have the same <see cref="SizeInBytes"/>.</term>
+        ///     <description><b>false</b></description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </remarks>
+        public override bool Equals(object obj) => Equals(obj as GorgonNativeBuffer<T>);
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        public override int GetHashCode() => base.GetHashCode(); // Shut the analyzer up.
 
         /// <summary>
         /// Explicit operator to return a <see cref="GorgonReadOnlyPointer"/> to the underlying data in the buffer.
@@ -587,11 +624,8 @@ namespace Gorgon.Native
         /// The pointer returned is read only, and has bounds checking. It should be safe for normal usage.
         /// </para>
         /// </remarks>
-        public static explicit operator GorgonReadOnlyPointer(GorgonNativeBuffer<T> buffer)
-        {
-            return buffer._memoryBlock == null ? GorgonReadOnlyPointer.Null : new GorgonReadOnlyPointer(buffer._memoryBlock, buffer.SizeInBytes);
-        }
-        
+        public static explicit operator GorgonReadOnlyPointer(GorgonNativeBuffer<T> buffer) => buffer._memoryBlock == null ? GorgonReadOnlyPointer.Null : new GorgonReadOnlyPointer(buffer._memoryBlock, buffer.SizeInBytes);
+
         /// <summary>
         /// Explicit operator to return the pointer to the underlying data in the buffer.
         /// </summary>
@@ -613,10 +647,7 @@ namespace Gorgon.Native
         /// </note>
         /// </para>
         /// </remarks>
-        public static explicit operator void*(GorgonNativeBuffer<T> buffer)
-        {
-            return buffer == null ? null : buffer._memoryBlock;
-        }
+        public static explicit operator void* (GorgonNativeBuffer<T> buffer) => buffer == null ? null : buffer._memoryBlock;
 
         /// <summary>
         /// Function to fill the buffer with a specific value.
@@ -666,8 +697,8 @@ namespace Gorgon.Native
                 throw new ArgumentException(Resources.GOR_ERR_DATABUFF_BUFFER_OVERRUN);
             }
 
-            count = count * _typeSize;
-            index = index * _typeSize;
+            count *= _typeSize;
+            index *= _typeSize;
 
             return new UnmanagedMemoryStream(_memoryBlock + index, count.Value, count.Value, FileAccess.ReadWrite);
         }

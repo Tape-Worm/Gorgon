@@ -199,7 +199,7 @@ namespace Gorgon.Animation
                                         .Max(item => item.Time);
             }
 
-            return new Animation(name, length.Value)
+            return new AnimationData(name, length.Value)
                    {
                        PositionTrack = new Vector3Track(_trackPositions.GetSortedKeys(length.Value), Resources.GORANM_NAME_POSITION)
                                        {

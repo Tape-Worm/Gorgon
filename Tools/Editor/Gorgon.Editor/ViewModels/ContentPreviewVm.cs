@@ -33,7 +33,6 @@ using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Imaging;
-using Gorgon.Graphics.Imaging.Codecs;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -50,8 +49,6 @@ namespace Gorgon.Editor.ViewModels
         private IContentFileManager _contentFileManager;
         // The image to display.
         private IGorgonImage _image;
-        // The PNG image codec.  Our thumbnails will be stored as png files.
-        private readonly IGorgonImageCodec _pngCodec = new GorgonCodecPng();
         // The task used to load the preview.
         private Task<IGorgonImage> _loadPreviewTask;
         // The cancellation source.
@@ -217,13 +214,6 @@ namespace Gorgon.Editor.ViewModels
         private void File_Renamed(object sender, ContentFileRenamedEventArgs e) => Title = e.NewName;
 
         /// <summary>
-        /// Function to determine if the preview image can be refreshed at this time.
-        /// </summary>
-        /// <param name="file">The file to retrieve the preview from.</param>
-        /// <returns><b>true</b> if the image can be refreshed, <b>false</b> if not.</returns>
-        private bool CanRefreshPreview(IContentFile file) => _contentFile == file;
-
-        /// <summary>
         /// Function to refresh the preview image for the content file.
         /// </summary>
         /// <param name="file">The file to refresh the preview for.</param>
@@ -244,6 +234,12 @@ namespace Gorgon.Editor.ViewModels
                     }
 
                     file.Metadata.Attributes.Remove(thumbnailName);
+                }
+
+                // If our currently selected file is not the one being dispayed at this moment, then do not update the render window.
+                if (file != _contentFile)
+                {
+                    return;
                 }
 
                 // Reload.
@@ -290,7 +286,7 @@ namespace Gorgon.Editor.ViewModels
 
         #region Constructor.
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ViewModels.ContentPreviewVm"/> class.</summary>
-        public ContentPreviewVm() => RefreshPreviewCommand = new EditorAsyncCommand<IContentFile>(DoRefreshPreview, CanRefreshPreview);
+        public ContentPreviewVm() => RefreshPreviewCommand = new EditorAsyncCommand<IContentFile>(DoRefreshPreview);
         #endregion
     }
 }

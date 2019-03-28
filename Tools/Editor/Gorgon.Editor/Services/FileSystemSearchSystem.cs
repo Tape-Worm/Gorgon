@@ -208,7 +208,7 @@ namespace Gorgon.Editor.Services
         {
             if (string.IsNullOrWhiteSpace(searchText))
             {
-                return new IFileExplorerNodeVm[0];
+                return Array.Empty<IFileExplorerNodeVm>();
             }
             
             // Extract any keyword that might be embedded in the start of the search text.

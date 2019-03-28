@@ -31,41 +31,45 @@ namespace Gorgon.UI
 	/// </summary>
 	public enum Alignment
 	{
-		/// <summary>
-		/// Upper left corner.
-		/// </summary>
-		UpperLeft = 0,
+        /// <summary>
+        /// No alignment.
+        /// </summary>
+        None = 0,
+        /// <summary>
+        /// Upper left corner.
+        /// </summary>
+        UpperLeft = 1,
 		/// <summary>
 		/// Vertically centered, and left aligned.
 		/// </summary>
-		CenterLeft = 1,
+		CenterLeft = 2,
 		/// <summary>
 		/// Lower left corner.
 		/// </summary>
-		LowerLeft = 2,
+		LowerLeft = 3,
 		/// <summary>
 		/// Centered horizontally, aligned to the top.
 		/// </summary>
-		UpperCenter = 3,
+		UpperCenter = 4,
 		/// <summary>
 		/// Centered vertically and horizontally.
 		/// </summary>
-		Center = 4,
+		Center = 5,
 		/// <summary>
 		/// Centered horizontally, aligned to the bottom.
 		/// </summary>
-		LowerCenter = 5,
+		LowerCenter = 6,
 		/// <summary>
 		/// Upper right corner.
 		/// </summary>
-		UpperRight = 6,
+		UpperRight = 7,
 		/// <summary>
 		/// Vertically centered, aligned to the right.
 		/// </summary>
-		CenterRight = 7,
+		CenterRight = 8,
 		/// <summary>
 		/// Lower right corner.
 		/// </summary>
-		LowerRight = 8
+		LowerRight = 9        
 	}
 }

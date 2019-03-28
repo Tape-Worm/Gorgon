@@ -52,11 +52,11 @@ namespace Gorgon.Editor.Services
         // The clipped area.
         private DX.RectangleF _clipRect;
         // The marching ants rectangle.
-        private IMarchingAnts _marchingAnts;
+        private readonly IMarchingAnts _marchingAnts;
         // The 2D renderer.
-        private Gorgon2D _renderer;
+        private readonly Gorgon2D _renderer;
         // The handles for grabbing.
-        private RectHandle[] _handles = new RectHandle[10];
+        private readonly RectHandle[] _handles = new RectHandle[10];
         // The currently active handle (the mouse is over it).
         private int _activeHandleIndex = -1;
         // Starting drag position.
@@ -73,6 +73,8 @@ namespace Gorgon.Editor.Services
         private bool _allowResize = true;
         // Flag to indicate that manual input is allowed.
         private bool _showManualInput = true;
+        // The boundaries for the clipping rectangle.
+        private DX.RectangleF _bounds;
         #endregion
 
         #region Events.
@@ -100,8 +102,17 @@ namespace Gorgon.Editor.Services
         /// </summary>
         public DX.RectangleF Bounds
         {
-            get;
-            set;
+            get => _bounds;
+            set
+            {
+                if (_bounds.Equals(ref value))
+                {
+                    return;
+                }
+                
+                _bounds = value;
+                SetupHandles();
+            }
         }
 
         /// <summary>
@@ -156,7 +167,7 @@ namespace Gorgon.Editor.Services
                 }
 
                 // Flip the coordinates if needed.
-                float temp = 0;
+                float temp;
                 if (value.Width < 0)
                 {
                     temp = value.Right;
@@ -207,18 +218,18 @@ namespace Gorgon.Editor.Services
         }
 
         /// <summary>
-        /// Property to set or return the function used to transform the window client area mouse position to the image pixel space.
+        /// Property to set or return the function used to transform a rectangle from local clip space to window client space.
         /// </summary>
-        public Func<DX.Vector2, DX.Vector2> TransformMouseToImage
+        public Func<DX.RectangleF, DX.RectangleF> RectToClient
         {
             get;
             set;
         }
 
         /// <summary>
-        /// Property to set or return the function used to transform a rectangle from image space to window client space.
+        /// Property to set or return the function used to transform a point from window client space into local clip space.
         /// </summary>
-        public Func<DX.RectangleF, DX.RectangleF> TransformImageAreaToClient
+        public Func<DX.Vector2, DX.Vector2> PointFromClient
         {
             get;
             set;
@@ -250,7 +261,7 @@ namespace Gorgon.Editor.Services
                 return;
             }
 
-            _screenRect = TransformImageAreaToClient == null ? _clipRect : TransformImageAreaToClient(_clipRect);
+            _screenRect = RectToClient == null ? _clipRect : RectToClient(_clipRect);
 
             _handles[0].HandleBounds = AllowResize ? new DX.RectangleF(_screenRect.Left - 8, _screenRect.Top - 8, 8, 8) : DX.RectangleF.Empty;
             _handles[1].HandleBounds = AllowResize ? new DX.RectangleF(_screenRect.Right, _screenRect.Top - 8, 8, 8) : DX.RectangleF.Empty;
@@ -281,6 +292,7 @@ namespace Gorgon.Editor.Services
         private void DragHandles(DX.Vector2 mouse)
         {
             DX.Vector2.Subtract(ref mouse, ref _startDrag, out DX.Vector2 dragDelta);
+
 
             switch (_activeHandleIndex)
             {
@@ -366,7 +378,43 @@ namespace Gorgon.Editor.Services
                     break;
                 // Drag body.
                 case 8:
-                    Rectangle = new DX.RectangleF(_dragRect.Left + dragDelta.X, _dragRect.Top + dragDelta.Y, Rectangle.Width, Rectangle.Height);
+                    var moveRect = new DX.RectangleF
+                    {
+                        Left = _dragRect.Left + dragDelta.X,
+                        Top = _dragRect.Top + dragDelta.Y,
+                        Right = _dragRect.Right + dragDelta.X,
+                        Bottom = _dragRect.Bottom + dragDelta.Y
+                    };
+
+                    if (!Bounds.IsEmpty)
+                    {
+                        if (moveRect.Left < Bounds.Left)
+                        {
+                            moveRect.Left = Bounds.Left;
+                            moveRect.Right = _clipRect.Right;
+                        }
+
+                        if (moveRect.Top < Bounds.Top)
+                        {
+                            moveRect.Top = Bounds.Top;
+                            moveRect.Bottom = _clipRect.Bottom;
+                        }
+
+                        if (moveRect.Right > Bounds.Right)
+                        {
+                            moveRect.Left = _clipRect.Left;
+                            moveRect.Right = Bounds.Right;
+                        }
+
+                        if (moveRect.Bottom > Bounds.Bottom)
+                        {
+                            moveRect.Top = _clipRect.Top;
+                            moveRect.Bottom = Bounds.Bottom;
+                        }
+                    }
+
+                    Rectangle = moveRect;
+
                     break;
             }
         }
@@ -383,7 +431,6 @@ namespace Gorgon.Editor.Services
 
             Cursor mouseCursor = Cursor.Current;
 
-            int prevActiveIndex = _activeHandleIndex;
             _activeHandleIndex = -1;
 
             for (int i = 0; i < _handles.Length; ++i)
@@ -428,8 +475,6 @@ namespace Gorgon.Editor.Services
                 return false;
             }
 
-            DX.Vector2 mouse = TransformMouseToImage == null ? MousePosition : TransformMouseToImage(MousePosition);
-
             if (button != MouseButtons.Left)
             {
                 IsDragging = false;
@@ -437,7 +482,7 @@ namespace Gorgon.Editor.Services
 
             if (IsDragging)
             {
-                DragHandles(mouse);
+                DragHandles(PointFromClient != null ? PointFromClient(MousePosition) : MousePosition);
             }
 
             return true;
@@ -459,7 +504,7 @@ namespace Gorgon.Editor.Services
 
             // Only drag if we've moved a little bit while having the mouse button held down.
             IsDragging = true;
-            _startDrag = TransformMouseToImage == null ? MousePosition : TransformMouseToImage(MousePosition);
+            _startDrag = PointFromClient != null ? PointFromClient(MousePosition) : MousePosition;
             _dragRect = _clipRect;
             return true;
         }
@@ -521,12 +566,14 @@ namespace Gorgon.Editor.Services
             }
 
             _dragRect = _clipRect;
-            _startDrag = TransformMouseToImage == null ? MousePosition : TransformMouseToImage(MousePosition);
+            _startDrag = PointFromClient != null ? PointFromClient(MousePosition) : MousePosition;
+            int scale = (int)(_screenRect.Width / _clipRect.Width).Max(1);
+            offset *= scale;
 
             switch (key)
             {
                 case Keys.Up:
-                case Keys.NumPad8:                    
+                case Keys.NumPad8:
                     Cursor.Position = new Drawing.Point(Cursor.Position.X, Cursor.Position.Y - offset);
                     MousePosition = new DX.Vector2(MousePosition.X, MousePosition.Y - offset);
                     break;
@@ -538,7 +585,7 @@ namespace Gorgon.Editor.Services
                 case Keys.Right:
                 case Keys.NumPad6:
                     Cursor.Position = new Drawing.Point(Cursor.Position.X + offset, Cursor.Position.Y);
-                    MousePosition = new DX.Vector2(MousePosition.X + offset , MousePosition.Y);
+                    MousePosition = new DX.Vector2(MousePosition.X + offset, MousePosition.Y);
                     break;
                 case Keys.Left:
                 case Keys.NumPad4:
@@ -546,7 +593,7 @@ namespace Gorgon.Editor.Services
                     MousePosition = new DX.Vector2(MousePosition.X - offset, MousePosition.Y);
                     break;
                 case Keys.NumPad7:
-                    Cursor.Position = new Drawing.Point(Cursor.Position.X - offset, Cursor.Position.Y -offset);
+                    Cursor.Position = new Drawing.Point(Cursor.Position.X - offset, Cursor.Position.Y - offset);
                     MousePosition = new DX.Vector2(MousePosition.X - offset, MousePosition.Y - offset);
                     break;
                 case Keys.NumPad9:
@@ -565,7 +612,7 @@ namespace Gorgon.Editor.Services
                     return false;
             }
 
-            DragHandles(TransformMouseToImage == null ? MousePosition : TransformMouseToImage(MousePosition));
+            DragHandles(PointFromClient != null ? PointFromClient(MousePosition) : MousePosition);
 
             return true;
         }

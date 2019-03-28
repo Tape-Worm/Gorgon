@@ -78,15 +78,7 @@ namespace Gorgon.IO
         /// <returns>
         ///   <b>true</b> if the specified <see cref="object" /> is equal to this instance; otherwise, <b>false</b>.
         /// </returns>
-        public override bool Equals(object obj)
-		{
-			if (obj is GorgonFileSystemMountPoint mountPoint)
-			{
-				return mountPoint.Equals(this);
-			}
-
-			return base.Equals(obj);
-		}
+        public override bool Equals(object obj) => obj is GorgonFileSystemMountPoint mountPoint ? mountPoint.Equals(this) : base.Equals(obj);
 
         /// <summary>
         /// Function to determine if this instance is equal to another instance.
@@ -119,48 +111,44 @@ namespace Gorgon.IO
         /// </returns>
         public override int GetHashCode()
 		{
-			if ((Provider == null) || (PhysicalPath == null) || (MountLocation == null))
-			{
+#pragma warning disable IDE0046 // Convert to conditional expression
+            if ((Provider == null) || (PhysicalPath == null) || (MountLocation == null))
+            {
 				return 0;
 			}
 
 			return 281.GenerateHash(Provider).GenerateHash(PhysicalPath).GenerateHash(MountLocation);
-		}
+#pragma warning restore IDE0046 // Convert to conditional expression
+        }
 
-		/// <summary>
-		/// Equality operator.
-		/// </summary>
-		/// <param name="left">Left instance to compare.</param>
-		/// <param name="right">Right instance to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool operator ==(in GorgonFileSystemMountPoint left, in GorgonFileSystemMountPoint right)
-		{
-			return Equals(in left, in right);
-		}
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="left">Left instance to compare.</param>
+        /// <param name="right">Right instance to compare.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+        public static bool operator ==(in GorgonFileSystemMountPoint left, in GorgonFileSystemMountPoint right) => Equals(in left, in right);
 
-		/// <summary>
-		/// Inequality operator.
-		/// </summary>
-		/// <param name="left">Left instance to compare.</param>
-		/// <param name="right">Right instance to compare.</param>
-		/// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
-		public static bool operator !=(in GorgonFileSystemMountPoint left, in GorgonFileSystemMountPoint right)
-		{
-			return !Equals(in left, in right);
-		}
-		#endregion
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="left">Left instance to compare.</param>
+        /// <param name="right">Right instance to compare.</param>
+        /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
+        public static bool operator !=(in GorgonFileSystemMountPoint left, in GorgonFileSystemMountPoint right) => !Equals(in left, in right);
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonFileSystemMountPoint" /> struct.
-		/// </summary>
-		/// <param name="provider">The provider for this mount point.</param>
-		/// <param name="physicalPath">The physical path.</param>
-		/// <param name="mountLocation">[Optional] The mount location.</param>
-		/// <param name="isFakeMountPoint">[Optional] <b>true</b> if the mount point doesn't use a real physical location, or <b>false</b> if it does.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalPath"/>, <paramref name="provider"/>, or <paramref name="mountLocation"/> parameters are <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalPath"/>, or the <paramref name="mountLocation"/> parameter is empty.</exception>
-		internal GorgonFileSystemMountPoint(IGorgonFileSystemProvider provider, string physicalPath, string mountLocation, bool isFakeMountPoint = false)
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonFileSystemMountPoint" /> struct.
+        /// </summary>
+        /// <param name="provider">The provider for this mount point.</param>
+        /// <param name="physicalPath">The physical path.</param>
+        /// <param name="mountLocation">[Optional] The mount location.</param>
+        /// <param name="isFakeMountPoint">[Optional] <b>true</b> if the mount point doesn't use a real physical location, or <b>false</b> if it does.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalPath"/>, <paramref name="provider"/>, or <paramref name="mountLocation"/> parameters are <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalPath"/>, or the <paramref name="mountLocation"/> parameter is empty.</exception>
+        internal GorgonFileSystemMountPoint(IGorgonFileSystemProvider provider, string physicalPath, string mountLocation, bool isFakeMountPoint = false)
 		{
 			if (physicalPath == null)
 			{

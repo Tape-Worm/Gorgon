@@ -1639,20 +1639,26 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="texelCoordinates">The texel rectangle to convert.</param>
         /// <returns>The pixel rectangle.</returns>
-        public DX.Rectangle ToPixel(DX.RectangleF texelCoordinates) => new DX.Rectangle((int)(texelCoordinates.Left * Width),
-                                    (int)(texelCoordinates.Top * Height),
-                                    (int)(texelCoordinates.Width * Width),
-                                    (int)(texelCoordinates.Height * Height));
+        public DX.Rectangle ToPixel(DX.RectangleF texelCoordinates) => new DX.Rectangle
+        {
+            Left = (int)(texelCoordinates.Left * Width),
+            Top = (int)(texelCoordinates.Top * Height),
+            Right = (int)(texelCoordinates.Right * Width),
+            Bottom = (int)(texelCoordinates.Bottom * Height)
+        };
 
         /// <summary>
         /// Function to convert a pixel rectangle into a texel rectangle.
         /// </summary>
         /// <param name="pixelCoordinates">The pixel rectangle to convert.</param>
         /// <returns>The texel rectangle.</returns>
-        public DX.RectangleF ToTexel(DX.Rectangle pixelCoordinates) => new DX.RectangleF(pixelCoordinates.Left / (float)Width,
-                                     pixelCoordinates.Top / (float)Height,
-                                     pixelCoordinates.Width / (float)Width,
-                                     pixelCoordinates.Height / (float)Height);
+        public DX.RectangleF ToTexel(DX.Rectangle pixelCoordinates) => new DX.RectangleF
+        {
+            Left = pixelCoordinates.Left / (float)Width,
+            Top = pixelCoordinates.Top / (float)Height,
+            Right = pixelCoordinates.Right / (float)Width,
+            Bottom = pixelCoordinates.Bottom / (float)Height
+        };
 
         /// <summary>
         /// Function to create a new <see cref="GorgonTexture2DView"/> for this texture.

@@ -154,21 +154,15 @@ namespace Gorgon.Graphics.Imaging
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns><b>true</b> if equal, <b>false</b> if not</returns>
-        public static bool operator ==(GorgonPitchLayout left, GorgonPitchLayout right)
-		{
-			return Equals(left, right);
-		}
+        public static bool operator ==(GorgonPitchLayout left, GorgonPitchLayout right) => Equals(left, right);
 
-		/// <summary>
-		/// Inequality operator.
-		/// </summary>
-		/// <param name="left">The left instance to compare.</param>
-		/// <param name="right">The right instance to compare.</param>
-		/// <returns><b>true</b> if not equal, <b>false</b> if they are.</returns>
-		public static bool operator !=(GorgonPitchLayout left, GorgonPitchLayout right)
-		{
-			return !Equals(left, right);
-		}
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns><b>true</b> if not equal, <b>false</b> if they are.</returns>
+        public static bool operator !=(GorgonPitchLayout left, GorgonPitchLayout right) => !Equals(left, right);
         #endregion
 
         #region Constructor.

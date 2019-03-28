@@ -302,6 +302,46 @@ namespace Gorgon.Graphics.Core
             return Native;
         }
 
+        /// <summary>
+        /// Function to convert a rectangle of texel coordinates to pixel space.
+        /// </summary>
+        /// <param name="texelCoordinates">The texel coordinates to convert.</param>
+        /// <param name="mipLevel">[Optional] The mip level to use.</param>
+        /// <returns>A rectangle containing the pixel space coordinates.</returns>
+        /// <remarks>
+        /// <para>
+        /// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> for this view, it will be constrained if it falls outside of that range.
+        /// Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first mip level
+        /// for the underlying <see cref="Texture"/> is used.
+        /// </para>
+        /// </remarks>
+        public DX.Rectangle ToPixel(DX.RectangleF texelCoordinates, int? mipLevel = null)
+        {
+            float width = Texture.Width;
+            float height = Texture.Height;
+
+            if (mipLevel == null)
+            {
+                return new DX.Rectangle
+                {
+                    Left = (int)(texelCoordinates.X * width),
+                    Top = (int)(texelCoordinates.Y * height),
+                    Right = (int)(texelCoordinates.Right * width),
+                    Bottom = (int)(texelCoordinates.Bottom * height)
+                };
+            }
+
+            width = GetMipWidth(mipLevel.Value);
+            height = GetMipHeight(mipLevel.Value);
+
+            return new DX.Rectangle
+            {
+                Left = (int)(texelCoordinates.X * width),
+                Top = (int)(texelCoordinates.Y * height),
+                Right = (int)(texelCoordinates.Right * width),
+                Bottom = (int)(texelCoordinates.Bottom * height)
+            };
+        }
 
         /// <summary>
         /// Function to convert a rectangle of pixel coordinates to texel space.
@@ -323,16 +363,25 @@ namespace Gorgon.Graphics.Core
 
             if (mipLevel == null)
             {
-                return new DX.RectangleF(pixelCoordinates.X / width,
-                                         pixelCoordinates.Y / height,
-                                         pixelCoordinates.Width / width,
-                                         pixelCoordinates.Height / height);
+                return new DX.RectangleF
+                {
+                    Left = pixelCoordinates.Left / width,
+                    Top = pixelCoordinates.Top / height,
+                    Right = pixelCoordinates.Right / width,
+                    Bottom = pixelCoordinates.Bottom / height
+                };
             }
 
             width = GetMipWidth(mipLevel.Value);
             height = GetMipHeight(mipLevel.Value);
 
-            return new DX.RectangleF(pixelCoordinates.X / width, pixelCoordinates.Y / height, pixelCoordinates.Width / width, pixelCoordinates.Height / height);
+            return new DX.RectangleF
+            {
+                Left = pixelCoordinates.Left / width,
+                Top = pixelCoordinates.Top / height,
+                Right = pixelCoordinates.Right / width,
+                Bottom = pixelCoordinates.Bottom / height
+            };
         }
 
         /// <summary>

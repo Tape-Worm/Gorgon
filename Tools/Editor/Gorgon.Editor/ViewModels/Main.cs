@@ -76,6 +76,11 @@ namespace Gorgon.Editor.ViewModels
 
         #region Properties.
         /// <summary>
+        /// Property to return the settings for the application.
+        /// </summary>
+        public EditorSettings Settings => _settings;
+
+        /// <summary>
         /// Property to return a list of content plugins that can create their own content.
         /// </summary>
         public ObservableCollection<IContentPluginMetadata> ContentCreators

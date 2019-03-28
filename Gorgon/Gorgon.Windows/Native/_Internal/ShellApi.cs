@@ -208,8 +208,8 @@ namespace Gorgon.Native
                 // COM interface ID for the shell image list.
                 var IID = new Guid(IID_IImageList);
 
-                SHGetImageList((int)ShellIconSize.ExtraLarge, ref IID, ref imageList);
-                imageList.GetIcon(iImage, ILD_TRANSPARENT | ILD_IMAGE, ref hIcon);
+                _ = SHGetImageList((int)ShellIconSize.ExtraLarge, ref IID, ref imageList);
+                _ = imageList.GetIcon(iImage, ILD_TRANSPARENT | ILD_IMAGE, ref hIcon);
 
                 return hIcon;
             }

@@ -27,10 +27,10 @@
 using System;
 using System.ComponentModel;
 using Gorgon.Editor.UI;
-using Gorgon.Editor.UI.Views;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Graphics.Imaging;
+using Gorgon.Editor.UI.Controls;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -38,7 +38,7 @@ namespace Gorgon.Editor.ImageEditor
     /// The panel used to provide settings for image import resizing.
     /// </summary>
     internal partial class ImageResizeSettings 
-        : EditorBaseControl, IDataContext<ICropResizeSettings>
+        : EditorSubPanelCommon, IDataContext<ICropResizeSettings>
     {
         #region Properties.
         /// <summary>Property to return the data context assigned to this view.</summary>
@@ -57,7 +57,7 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         private void ValidateControls()
         {
-            ButtonOK.Enabled = (DataContext?.OkCommand != null) && (DataContext.OkCommand.CanExecute(null));
+            ValidateOk();            
 
             if (DataContext == null)
             {
@@ -152,34 +152,6 @@ namespace Gorgon.Editor.ImageEditor
             }
             UpdateLabels(DataContext);
             ValidateControls();
-        }
-
-
-        /// <summary>Handles the Click event of the ButtonCancel control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="T:System.EventArgs"/> instance containing the event data.</param>
-        private void ButtonCancel_Click(object sender, EventArgs e)
-        {
-            if ((DataContext?.CancelCommand == null) || (!DataContext.CancelCommand.CanExecute(null)))
-            {
-                return;
-            }
-
-            DataContext.CancelCommand.Execute(null);
-        }
-
-
-        /// <summary>Handles the Click event of the ButtonOK control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonOK_Click(object sender, EventArgs e)
-        {
-            if ((DataContext?.OkCommand == null) || (!DataContext.OkCommand.CanExecute(null)))
-            {
-                return;
-            }
-
-            DataContext.OkCommand.Execute(null);
         }
 
         /// <summary>Handles the AlignmentChanged event of the AlignmentPicker control.</summary>
@@ -278,6 +250,37 @@ namespace Gorgon.Editor.ImageEditor
             ComboImageFilter.SelectedItem = dataContext.ImageFilter;
             CheckPreserveAspect.Checked = dataContext.PreserveAspect;
         }
+        
+        /// <summary>Function to cancel the change.</summary>
+        protected override void OnCancel()
+        {
+            base.OnCancel();
+
+            if ((DataContext?.CancelCommand == null) || (!DataContext.CancelCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            DataContext.CancelCommand.Execute(null);
+        }
+
+        /// <summary>Function to submit the change.</summary>
+        protected override void OnSubmit()
+        {
+            base.OnSubmit();
+
+            if ((DataContext?.OkCommand == null) || (!DataContext.OkCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            DataContext.OkCommand.Execute(null);
+        }
+
+        /// <summary>Function called to validate the OK button.</summary>
+        /// <returns>
+        ///   <b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
+        protected override bool OnValidateOk() => (DataContext?.OkCommand != null) && (DataContext.OkCommand.CanExecute(null));
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
         /// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>

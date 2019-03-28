@@ -76,10 +76,7 @@ namespace Gorgon.IO
         /// <param name="left">Left instance to compare.</param>
         /// <param name="right">Right instance to compare.</param>
         /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-        public static bool operator ==(GorgonFileExtension left, GorgonFileExtension right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(GorgonFileExtension left, GorgonFileExtension right) => Equals(left, right);
 
         /// <summary>
         /// Operator to return whether 2 instances are not equal.
@@ -87,10 +84,7 @@ namespace Gorgon.IO
         /// <param name="left">Left instance to compare.</param>
         /// <param name="right">Right instance to compare.</param>
         /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
-        public static bool operator !=(GorgonFileExtension left, GorgonFileExtension right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(GorgonFileExtension left, GorgonFileExtension right) => !Equals(left, right);
 
         /// <summary>
         /// Operator to return whether one instance is less or equal to the other.
@@ -130,10 +124,7 @@ namespace Gorgon.IO
         /// <param name="left">Left instance to compare.</param>
         /// <param name="right">Right instance to compare.</param>
         /// <returns><b>true</b> if less than, <b>false</b> if not.</returns>
-        public static bool operator <(GorgonFileExtension left, GorgonFileExtension right)
-        {
-            return string.Compare(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase) == -1;
-        }
+        public static bool operator <(GorgonFileExtension left, GorgonFileExtension right) => string.Compare(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase) == -1;
 
         /// <summary>
         /// Operator to return whether one instance is greater than the other.
@@ -141,10 +132,7 @@ namespace Gorgon.IO
         /// <param name="left">Left instance to compare.</param>
         /// <param name="right">Right instance to compare.</param>
         /// <returns><b>true</b> if greater than, <b>false</b> if not.</returns>
-        public static bool operator >(GorgonFileExtension left, GorgonFileExtension right)
-        {
-            return string.Compare(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase) == 1;
-        }
+        public static bool operator >(GorgonFileExtension left, GorgonFileExtension right) => string.Compare(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase) == 1;
         #endregion
 
         #region Methods.

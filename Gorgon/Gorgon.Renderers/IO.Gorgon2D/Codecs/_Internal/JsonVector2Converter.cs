@@ -65,13 +65,13 @@ namespace Gorgon.Renderers
                 return DX.Vector2.Zero;
             }
 
-            var x = (float)(reader.ReadAsDouble() ?? 0);
+            float x = (float)(reader.ReadAsDouble() ?? 0);
             if (!reader.Read())
             {
                 return new DX.Vector2(x, 0);
             }
 
-            var y = (float)(reader.ReadAsDouble() ?? 0);
+            float y = (float)(reader.ReadAsDouble() ?? 0);
             reader.Read();
 
             return new DX.Vector2(x, y);

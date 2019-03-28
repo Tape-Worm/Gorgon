@@ -91,29 +91,23 @@ namespace Gorgon.IO
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns><b>true</b> if the two instances are equal, <b>false</b> if not.</returns>
-        public static bool operator ==(GorgonAnimationCodecDescription left, GorgonAnimationCodecDescription right)
-		{
-			return Equals(left, right);
-		}
+        public static bool operator ==(GorgonAnimationCodecDescription left, GorgonAnimationCodecDescription right) => Equals(left, right);
 
-		/// <summary>
-		/// Operator to determine if two instances are not equal.
-		/// </summary>
-		/// <param name="left">The left instance to compare.</param>
-		/// <param name="right">The right instance to compare.</param>
-		/// <returns><b>true</b> if the two instances are not equal, <b>false</b> if they are.</returns>
-		public static bool operator !=(GorgonAnimationCodecDescription left, GorgonAnimationCodecDescription right)
-		{
-			return !Equals(left, right);
-		}
-		#endregion
+        /// <summary>
+        /// Operator to determine if two instances are not equal.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns><b>true</b> if the two instances are not equal, <b>false</b> if they are.</returns>
+        public static bool operator !=(GorgonAnimationCodecDescription left, GorgonAnimationCodecDescription right) => !Equals(left, right);
+        #endregion
 
-		#region Constructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonAnimationCodecDescription"/> struct.
-		/// </summary>
-		/// <param name="type">The type of codec object.</param>
-		public GorgonAnimationCodecDescription(Type type)
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonAnimationCodecDescription"/> struct.
+        /// </summary>
+        /// <param name="type">The type of codec object.</param>
+        public GorgonAnimationCodecDescription(Type type)
 		{
 			if (type == null)
 			{

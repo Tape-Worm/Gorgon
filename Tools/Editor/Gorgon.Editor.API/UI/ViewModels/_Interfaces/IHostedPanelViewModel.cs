@@ -40,6 +40,14 @@ namespace Gorgon.Editor.UI
             get;
             set;
         }
+
+        /// <summary>
+        /// Property to return whether the panel is modal.
+        /// </summary>
+        bool IsModal
+        {
+            get;
+        }
         
         /// <summary>
         /// Property to return the command used to cancel the operation.

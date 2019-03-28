@@ -28,10 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gorgon.Editor.Rendering;
 using Gorgon.Graphics.Core;
@@ -41,6 +38,8 @@ using ComponentFactory.Krypton.Ribbon;
 using Gorgon.Math;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.GdiPlus;
+using Gorgon.Core;
+using Gorgon.Editor.Properties;
 
 namespace Gorgon.Editor.UI.Views
 {
@@ -55,6 +54,8 @@ namespace Gorgon.Editor.UI.Views
         private GorgonSwapChain _swapChain;
         // The data context for the editor context.
         private IEditorContent _dataContext;
+        // A list of child panel views identified by name.
+        private readonly Dictionary<string, Control> _panelViews = new Dictionary<string, Control>(StringComparer.OrdinalIgnoreCase);
         #endregion
 
         #region Events.
@@ -337,26 +338,53 @@ namespace Gorgon.Editor.UI.Views
                 throw new ArgumentNullException(nameof(control));
             }
 
-            // Remove any controls within the host panel.
-            control.SuspendLayout();
-            PanelContentControls.Controls.Clear();
-            PanelContentControls.Controls.Add(control);
-            control.Left = 0;
-            control.Top = 0;
-            if (control.Width > PanelHost.ClientSize.Width)
+            try
             {
-                PanelHost.ClientSize = new Size(control.Width.Min(640), PanelHost.ClientSize.Height);                
+                PanelHost.SuspendLayout();
+                PanelHostControls.SuspendLayout();
+                control.SuspendLayout();
+
+                PanelHostControls.Controls.Clear();
+                PanelHostControls.Controls.Add(control);
+                control.Left = 0;
+                control.Top = 0;
+
+                // Our control width should be within this range.  
+                if (control.Width > 640)
+                {
+                    control.Width = 640;
+                }
+
+                if (control.Width < 160)
+                {
+                    control.Width = 160;
+                }
+
+                PanelHost.Width = control.Width + PanelHost.Padding.Left;
+                if (control.Height > PanelHostControls.ClientSize.Height)
+                {
+                    PanelHost.Width += SystemInformation.VerticalScrollBarWidth;
+                }
+
+                PanelHostControls.AutoScrollMinSize = new Size(0, control.Height);
+            }
+            finally
+            {
+                control.ResumeLayout(false);
+                control.PerformLayout();
+                PanelHostControls.ResumeLayout(false);
+                PanelHostControls.PerformLayout();
+                PanelHost.ResumeLayout(false);
+                PanelHost.PerformLayout();
             }
 
-            control.Width = PanelContentControls.ClientSize.Width;
-            PanelContentControls.AutoScrollMinSize = new Size(0, control.Height);
-            control.ResumeLayout(true);
+
         }
 
         /// <summary>
         /// Function to clear the host panel controls.
         /// </summary>
-        protected void ClearPanelHost() => PanelContentControls.Controls.Clear();
+        protected void ClearPanelHost() => PanelHostControls.Controls.Clear();
 
         /// <summary>
         /// Function to render the swap chain contents to a GDI+ bitmap.
@@ -532,6 +560,90 @@ namespace Gorgon.Editor.UI.Views
         /// </remarks>
         protected virtual void OnShutdown()
         {
+        }
+
+        /// <summary>
+        /// Function to determine if a child panel is registered on this view or not.
+        /// </summary>
+        /// <typeparam name="T">The type of panel.</typeparam>
+        /// <param name="id">The ID of the panel.</param>
+        /// <returns>The registered panel if found, or <b>null</b> if not.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="id"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="id"/> parameter is empty.</exception>
+        protected T GetRegisteredPanel<T>(string id)
+            where T : Control
+        {
+            if (id == null)
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentEmptyException(nameof(id));
+            }
+
+            return !_panelViews.TryGetValue(id, out Control result) ? null : (T)result;
+        }
+
+        /// <summary>
+        /// Function to register a child panel with this content control.
+        /// </summary>
+        /// <param name="id">The ID of the panel.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="id"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="id"/> parameter is empty.</exception>
+        /// <exception cref="KeyNotFoundException">Thrown when the <paramref name="id"/> is not registered.</exception>
+        protected void UnregisterChildPanel(string id)
+        {
+            if (id == null)
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentEmptyException(nameof(id));
+            }
+
+            if (!_panelViews.ContainsKey(id))
+            {
+                throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_PANEL_NOT_REGISTERED, id));
+            }
+
+            _panelViews.Remove(id);
+        }
+
+        /// <summary>
+        /// Function to register a child panel with this content control.
+        /// </summary>
+        /// <param name="id">The ID of the panel.</param>
+        /// <param name="control">The control representing the child panel.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="id"/>, or the <paramref name="control"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="id"/> parameter is empty.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="id"/> is already registered.</exception>
+        protected void RegisterChildPanel(string id, Control control)
+        {
+            if (id == null)
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            if (control == null)
+            {
+                throw new ArgumentNullException(nameof(control));
+            }
+
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentEmptyException(nameof(id));
+            }
+
+            if (_panelViews.ContainsKey(id))
+            {
+                throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_PANEL_ALREADY_REGISTERED, id));
+            }
+
+            _panelViews.Add(id, control);
         }
 
         /// <summary>

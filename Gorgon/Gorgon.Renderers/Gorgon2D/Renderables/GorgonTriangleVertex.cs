@@ -105,10 +105,7 @@ namespace Gorgon.Renderers
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns><b>true</b> if both instances are equal, <b>false</b> if not.</returns>
-        public static bool operator ==(in GorgonTriangleVertex left, in GorgonTriangleVertex right)
-        {
-            return Equals(in left, in right);
-        }
+        public static bool operator ==(in GorgonTriangleVertex left, in GorgonTriangleVertex right) => Equals(in left, in right);
 
         /// <summary>
         /// Operator to determine if two instances are not equal.
@@ -116,10 +113,7 @@ namespace Gorgon.Renderers
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns><b>true</b> if both instances are not equal, <b>false</b> if equal.</returns>
-        public static bool operator !=(in GorgonTriangleVertex left, in GorgonTriangleVertex right)
-        {
-            return !Equals(in left, in right);
-        }
+        public static bool operator !=(in GorgonTriangleVertex left, in GorgonTriangleVertex right) => !Equals(in left, in right);
         #endregion
 
         #region Constructor/Finalizer.

@@ -116,27 +116,21 @@ namespace Gorgon.Graphics.Core
 		    return base.Equals(obj);
 		}
 
-		/// <summary>
-		/// Equality operator.
-		/// </summary>
-		/// <param name="left">The left.</param>
-		/// <param name="right">The right.</param>
-		/// <returns></returns>
-		public static bool operator ==(GorgonMultisampleInfo left, GorgonMultisampleInfo right)
-		{
-			return Equals(left, right);
-		}
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns></returns>
+        public static bool operator ==(GorgonMultisampleInfo left, GorgonMultisampleInfo right) => Equals(left, right);
 
-		/// <summary>
-		/// Inequality operator.
-		/// </summary>
-		/// <param name="left">The left.</param>
-		/// <param name="right">The right.</param>
-		/// <returns></returns>
-		public static bool operator !=(GorgonMultisampleInfo left, GorgonMultisampleInfo right)
-		{
-			return !Equals(left, right);
-		}
+        /// <summary>
+        /// Inequality operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns></returns>
+        public static bool operator !=(GorgonMultisampleInfo left, GorgonMultisampleInfo right) => !Equals(left, right);
 
         /// <summary>
         /// Returns a hash code for this instance.

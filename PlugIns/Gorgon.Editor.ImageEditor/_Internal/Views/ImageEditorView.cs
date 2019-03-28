@@ -50,15 +50,13 @@ namespace Gorgon.Editor.ImageEditor
     {
         #region Variables.        
         // The form for the ribbon.
-        private FormRibbon _ribbonForm;
+        private readonly FormRibbon _ribbonForm;
         // The background texture.
         private GorgonTexture2DView _background;
         // The texture viewer service.
         private ITextureViewerService _textureViewer;
         // The available viewers.
         private readonly Dictionary<ImageType, ITextureViewerService> _viewers = new Dictionary<ImageType, ITextureViewerService>();
-        // The list of panels associated with a view model.
-        private readonly Dictionary<Type, Control> _panels = new Dictionary<Type, Control>();
         #endregion
 
         #region Properties.
@@ -213,14 +211,12 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="dataContext">The current data context.</param>
         private void UpdateMipDetails(IImageContent dataContext)
         {
-            DX.Size2 size = DX.Size2.Zero;
-
             if ((dataContext == null) || (_textureViewer == null))
             {
                 return;
             }
 
-            size = _textureViewer.GetMipSize(dataContext);
+            DX.Size2 size = _textureViewer.GetMipSize(dataContext);
 
             LabelMipDetails.Text = string.Format(Resources.GORIMG_TEXT_MIP_DETAILS, dataContext.CurrentMipLevel + 1, DataContext.MipCount, size.Width, size.Height);
         }
@@ -336,10 +332,12 @@ namespace Gorgon.Editor.ImageEditor
             switch (e.PropertyName)
             {
                 case nameof(IImageContent.CurrentPanel):
-                    if ((DataContext.CurrentPanel == null) || (!_panels.TryGetValue(DataContext.CurrentPanel.GetType(), out Control panel)))
+                    if (DataContext.CurrentPanel == null)
                     {
                         break;
                     }
+
+                    Control panel = GetRegisteredPanel<Control>(DataContext.CurrentPanel.GetType().FullName);
                     
                     if (Controls.Contains(panel))
                     {
@@ -764,9 +762,9 @@ namespace Gorgon.Editor.ImageEditor
             _ribbonForm.ImageZoomed += RibbonForm_ImageZoomed;
             Ribbon = _ribbonForm.RibbonImageContent;
 
-            _panels[typeof(DimensionSettings)] = DimensionSettings;
-            _panels[typeof(CropResizeSettings)] = CropResizeSettings;
-            _panels[typeof(MipMapSettings)] = GenMipMapSettings;
+            RegisterChildPanel(typeof(DimensionSettings).FullName, DimensionSettings);
+            RegisterChildPanel(typeof(CropResizeSettings).FullName, CropResizeSettings);
+            RegisterChildPanel(typeof(MipMapSettings).FullName, GenMipMapSettings);
         }
         #endregion
     }

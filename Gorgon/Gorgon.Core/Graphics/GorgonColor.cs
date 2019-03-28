@@ -298,22 +298,14 @@ namespace Gorgon.Graphics
         /// <returns>
         /// 	<b>true</b> if the specified <see cref="object"/> is equal to this instance; otherwise, <b>false</b>.
         /// </returns>
-        public override bool Equals(object obj)
-		{
-		    if (obj is GorgonColor color)
-		    {
-		        return color.Equals(this);
-		    }
+        public override bool Equals(object obj) => obj is GorgonColor color ? color.Equals(this) : base.Equals(obj);
 
-		    return base.Equals(obj);
-		}
-
-		/// <summary>
-		/// Function to convert a ABGR color into a <see cref="GorgonColor"/>.
-		/// </summary>
-		/// <param name="abgrColor">An <see cref="int"/> representing the color in ABGR format.</param>
-		/// <returns>The <see cref="GorgonColor"/> representation.</returns>
-		public static GorgonColor FromABGR(int abgrColor)
+        /// <summary>
+        /// Function to convert a ABGR color into a <see cref="GorgonColor"/>.
+        /// </summary>
+        /// <param name="abgrColor">An <see cref="int"/> representing the color in ABGR format.</param>
+        /// <returns>The <see cref="GorgonColor"/> representation.</returns>
+        public static GorgonColor FromABGR(int abgrColor)
 		{
 			byte a = (byte)((abgrColor >> 24) & 0xff);
 			byte b = (byte)((abgrColor >> 16) & 0xff);
@@ -743,137 +735,107 @@ namespace Gorgon.Graphics
 			return result;
 		}
 
-		/// <summary>
-		/// An operator to determine if two instances are equal.
-		/// </summary>
-		/// <param name="left">The left value.</param>
-		/// <param name="right">The right value.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool operator ==(GorgonColor left, GorgonColor right)
-		{
-			return Equals(in left, in right);
-		}
+        /// <summary>
+        /// An operator to determine if two instances are equal.
+        /// </summary>
+        /// <param name="left">The left value.</param>
+        /// <param name="right">The right value.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+        public static bool operator ==(GorgonColor left, GorgonColor right) => Equals(in left, in right);
 
-		/// <summary>
-		/// An operator to determine if two instances are not equal.
-		/// </summary>
-		/// <param name="left">The left value.</param>
-		/// <param name="right">The right value.</param>
-		/// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
-		public static bool operator !=(GorgonColor left, GorgonColor right)
-		{
-			return !Equals(in left, in right);
-		}
+        /// <summary>
+        /// An operator to determine if two instances are not equal.
+        /// </summary>
+        /// <param name="left">The left value.</param>
+        /// <param name="right">The right value.</param>
+        /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
+        public static bool operator !=(GorgonColor left, GorgonColor right) => !Equals(in left, in right);
 
-		/// <summary>
-		/// Performs an implicit conversion from <see cref="GorgonColor"/> to <see cref="Color"/>.
-		/// </summary>
-		/// <param name="color">The color to convert.</param>
-		/// <returns>The result of the conversion.</returns>
-		public static implicit operator Color(GorgonColor color)
-		{
-			return color.ToColor();
-		}
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="GorgonColor"/> to <see cref="Color"/>.
+        /// </summary>
+        /// <param name="color">The color to convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator Color(GorgonColor color) => color.ToColor();
 
-		/// <summary>
-		/// Performs an implicit conversion from <see cref="Color"/> to <see cref="GorgonColor"/>.
-		/// </summary>
-		/// <param name="color">The color to convert.</param>
-		/// <returns>The result of the conversion.</returns>
-		public static implicit operator GorgonColor(Color color)
-		{
-			return new GorgonColor(color);
-		}
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="Color"/> to <see cref="GorgonColor"/>.
+        /// </summary>
+        /// <param name="color">The color to convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator GorgonColor(Color color) => new GorgonColor(color);
 
-		/// <summary>
-		/// Performs an implicit conversion from <see cref="GorgonColor"/> to <see cref="int"/>.
-		/// </summary>
-		/// <param name="color">The color to convert.</param>
-		/// <returns>The result of the conversion.</returns>
-		/// <remarks>
-		/// This will return the color in ARGB format.
-		/// </remarks>
-		public static implicit operator int(GorgonColor color)
-		{
-			return color.ToARGB();
-		}
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="GorgonColor"/> to <see cref="int"/>.
+        /// </summary>
+        /// <param name="color">The color to convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        /// <remarks>
+        /// This will return the color in ARGB format.
+        /// </remarks>
+        public static implicit operator int(GorgonColor color) => color.ToARGB();
 
-		/// <summary>
-		/// Performs an implicit conversion from <see cref="int"/> to <see cref="GorgonColor"/>.
-		/// </summary>
-		/// <param name="color">The color.</param>
-		/// <returns>The result of the conversion.</returns>
-		/// <remarks>
-		/// This operator assumes the <paramin name="color"/> is in ARGB format.
-		/// </remarks>
-		public static implicit operator GorgonColor(int color)
-		{
-			return new GorgonColor(color);
-		}
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="int"/> to <see cref="GorgonColor"/>.
+        /// </summary>
+        /// <param name="color">The color.</param>
+        /// <returns>The result of the conversion.</returns>
+        /// <remarks>
+        /// This operator assumes the <paramin name="color"/> is in ARGB format.
+        /// </remarks>
+        public static implicit operator GorgonColor(int color) => new GorgonColor(color);
 
-		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonColor"/> to <see cref="DX.Vector3"/>.
-		/// </summary>
-		/// <param name="color">The color.</param>
-		/// <returns>The result of the conversion.</returns>
-		/// <remarks>
-		/// This will map the <see cref="Red"/>, <see cref="Green"/> and <see cref="Blue"/> components to the <see cref="DX.Vector3.X"/>, <see cref="DX.Vector3.Y"/> and <see cref="DX.Vector3.Z"/> values respectively.
-		/// </remarks>
-		public static explicit operator DX.Vector3(GorgonColor color)
-		{
-			return color.ToVector3();
-		}
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="GorgonColor"/> to <see cref="DX.Vector3"/>.
+        /// </summary>
+        /// <param name="color">The color.</param>
+        /// <returns>The result of the conversion.</returns>
+        /// <remarks>
+        /// This will map the <see cref="Red"/>, <see cref="Green"/> and <see cref="Blue"/> components to the <see cref="DX.Vector3.X"/>, <see cref="DX.Vector3.Y"/> and <see cref="DX.Vector3.Z"/> values respectively.
+        /// </remarks>
+        public static explicit operator DX.Vector3(GorgonColor color) => color.ToVector3();
 
-		/// <summary>
-		/// Performs an explicit conversion from <see cref="DX.Vector3"/> to <see cref="GorgonColor"/>.
-		/// </summary>
-		/// <param name="color">The color.</param>
-		/// <returns>The result of the conversion.</returns>
-		/// <remarks>
-		/// This will map the <see cref="DX.Vector3.X"/>, <see cref="DX.Vector3.Y"/> and <see cref="DX.Vector3.Z"/> components to the <see cref="Red"/>, <see cref="Green"/> and <see cref="Blue"/> values respectively. 
-		/// The <see cref="Alpha"/> value is set to 1.0f (opaque) for this conversion.
-		/// </remarks>
-		public static explicit operator GorgonColor(DX.Vector3 color)
-		{
-			return new GorgonColor(color);
-		}
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="DX.Vector3"/> to <see cref="GorgonColor"/>.
+        /// </summary>
+        /// <param name="color">The color.</param>
+        /// <returns>The result of the conversion.</returns>
+        /// <remarks>
+        /// This will map the <see cref="DX.Vector3.X"/>, <see cref="DX.Vector3.Y"/> and <see cref="DX.Vector3.Z"/> components to the <see cref="Red"/>, <see cref="Green"/> and <see cref="Blue"/> values respectively. 
+        /// The <see cref="Alpha"/> value is set to 1.0f (opaque) for this conversion.
+        /// </remarks>
+        public static explicit operator GorgonColor(DX.Vector3 color) => new GorgonColor(color);
 
-		/// <summary>
-		/// Performs an implicit conversion from <see cref="GorgonColor"/> to <see cref="DX.Vector4"/>.
-		/// </summary>
-		/// <param name="color">The color.</param>
-		/// <returns>The result of the conversion.</returns>
-		/// <remarks>
-		/// This will map the <see cref="Red"/>, <see cref="Green"/>, <see cref="Blue"/> and <see cref="Alpha"/> components to the <see cref="DX.Vector4.X"/>, <see cref="DX.Vector4.Y"/>, <see cref="DX.Vector4.Z"/> and <see cref="DX.Vector4.W"/> values respectively.
-		/// </remarks>
-		public static implicit operator DX.Vector4(GorgonColor color)
-		{
-			return color.ToVector4();
-		}
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="GorgonColor"/> to <see cref="DX.Vector4"/>.
+        /// </summary>
+        /// <param name="color">The color.</param>
+        /// <returns>The result of the conversion.</returns>
+        /// <remarks>
+        /// This will map the <see cref="Red"/>, <see cref="Green"/>, <see cref="Blue"/> and <see cref="Alpha"/> components to the <see cref="DX.Vector4.X"/>, <see cref="DX.Vector4.Y"/>, <see cref="DX.Vector4.Z"/> and <see cref="DX.Vector4.W"/> values respectively.
+        /// </remarks>
+        public static implicit operator DX.Vector4(GorgonColor color) => color.ToVector4();
 
-		/// <summary>
-		/// Performs an implicit conversion from <see cref="DX.Vector4"/> to <see cref="GorgonColor"/>.
-		/// </summary>
-		/// <param name="color">The color.</param>
-		/// <returns>The result of the conversion.</returns>
-		/// <remarks>
-		/// This will map the <see cref="DX.Vector4.X"/>, <see cref="DX.Vector4.Y"/>, <see cref="DX.Vector4.Z"/> and <see cref="DX.Vector4.W"/> components to the <see cref="Red"/>, <see cref="Green"/>, <see cref="Blue"/> and <see cref="Alpha"/> values respectively.
-		/// </remarks>
-		public static implicit operator GorgonColor(DX.Vector4 color)
-		{
-			return new GorgonColor(color);
-		}
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="DX.Vector4"/> to <see cref="GorgonColor"/>.
+        /// </summary>
+        /// <param name="color">The color.</param>
+        /// <returns>The result of the conversion.</returns>
+        /// <remarks>
+        /// This will map the <see cref="DX.Vector4.X"/>, <see cref="DX.Vector4.Y"/>, <see cref="DX.Vector4.Z"/> and <see cref="DX.Vector4.W"/> components to the <see cref="Red"/>, <see cref="Green"/>, <see cref="Blue"/> and <see cref="Alpha"/> values respectively.
+        /// </remarks>
+        public static implicit operator GorgonColor(DX.Vector4 color) => new GorgonColor(color);
         #endregion
-		
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonColor"/> struct.
-		/// </summary>
-		/// <param name="r">The red component.</param>
-		/// <param name="g">The green component.</param>
-		/// <param name="b">The blue component.</param>
-		/// <param name="a">The alpha component.</param>
-		public GorgonColor(float r, float g, float b, float a)
+
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonColor"/> struct.
+        /// </summary>
+        /// <param name="r">The red component.</param>
+        /// <param name="g">The green component.</param>
+        /// <param name="b">The blue component.</param>
+        /// <param name="a">The alpha component.</param>
+        public GorgonColor(float r, float g, float b, float a)
 		{
 			Alpha = a;
 			Red = r;

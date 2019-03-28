@@ -32,6 +32,7 @@ namespace Gorgon.Editor.UI
     /// Arguments used for the 
     /// </summary>
     public class ProgressPanelUpdateArgs
+        : EventArgs
     {
         /// <summary>
         /// Property to set or return the method to execute when the operation is cancelled from the panel.

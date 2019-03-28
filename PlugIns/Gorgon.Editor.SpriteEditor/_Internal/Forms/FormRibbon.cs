@@ -1,18 +1,40 @@
-﻿using System;
+﻿#region MIT
+// 
+// Gorgon.
+// Copyright (C) 2019 Michael Winsor
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+// 
+// Created: April 2, 2019 11:23:30 PM
+// 
+#endregion
+
+using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Forms;
 using ComponentFactory.Krypton.Ribbon;
 using ComponentFactory.Krypton.Toolkit;
 using Gorgon.Editor.Rendering;
-using Gorgon.Editor.SpriteEditor;
 using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Editor.UI;
-using Gorgon.Graphics;
-using Gorgon.Graphics.Imaging;
-using Gorgon.Graphics.Imaging.Codecs;
+using Gorgon.Math;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -22,7 +44,7 @@ namespace Gorgon.Editor.SpriteEditor
     /// <remarks>
     /// We cannot provide a ribbon on the control directly. For some reason, the krypton components will only allow ribbons on forms.
     /// </remarks>
-    internal partial class FormRibbon 
+    internal partial class FormRibbon
         : KryptonForm, IDataContext<ISpriteContent>
     {
         #region Events.
@@ -37,13 +59,53 @@ namespace Gorgon.Editor.SpriteEditor
         private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuItems = new Dictionary<ZoomLevels, ToolStripMenuItem>();
         // The buttons on the ribbon.
         private readonly List<WeakReference<KryptonRibbonGroupButton>> _ribbonButtons = new List<WeakReference<KryptonRibbonGroupButton>>();
-        // The current zoom level.
-        private ZoomLevels _zoomLevel = ZoomLevels.ToWindow;
         // A list of buttons mapped to the tool structure.
         private readonly Dictionary<SpriteEditTool, WeakReference<KryptonRibbonGroupButton>> _toolButtons = new Dictionary<SpriteEditTool, WeakReference<KryptonRibbonGroupButton>>();
+        // The currently selected zoom level
+        private ZoomLevels _zoomLevel = ZoomLevels.ToWindow;
+        // The current scaling value applied for zooming.
+        private float _zoomScale = -1.0f;
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to set or return the current zoom level value.
+        /// </summary>
+        public ZoomLevels ZoomLevel
+        {
+            get => _zoomLevel;
+            set
+            {
+                if (_zoomLevel == value)
+                {
+                    return;
+                }
+
+                _zoomLevel = value;
+                UpdateZoomMenu(false);
+                ValidateButtons();
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the current scaling value used for zooming.
+        /// </summary>
+        public float ZoomScaling
+        {
+            get => _zoomScale;
+            set
+            {
+                if (_zoomScale.EqualsEpsilon(value))
+                {
+                    return;
+                }
+
+                _zoomScale = value;
+                UpdateZoomMenu(false);
+                ValidateButtons();
+            }
+        }
+
         /// <summary>
         /// Property to set or return the current graphics context.
         /// </summary>        
@@ -67,9 +129,15 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Function to update the zoom item menu to reflect the current selection.
         /// </summary>
-        private void UpdateZoomMenu()
+        /// <param name="fireEvent"><b>true</b> to fire the zoom update event, <b>false</b> to only update the menu.</param>
+        private void UpdateZoomMenu(bool fireEvent)
         {
-            if (!_menuItems.TryGetValue(_zoomLevel, out ToolStripMenuItem currentItem))
+            if (ZoomLevel == ZoomLevels.Custom)
+            {
+                ButtonZoomSprite.TextLine1 = string.Format(Resources.GORSPR_TEXT_ZOOM_BUTTON, (_zoomScale * 100.0f).ToString("0.#") + "%");
+            }
+
+            if (!_menuItems.TryGetValue(ZoomLevel, out ToolStripMenuItem currentItem))
             {
                 return;
             }
@@ -79,10 +147,15 @@ namespace Gorgon.Editor.SpriteEditor
                 item.Checked = false;
             }
 
-            ButtonZoomSprite.TextLine1 = string.Format(Resources.GORSPR_TEXT_ZOOM_BUTTON, _zoomLevel.GetName());
+            ButtonZoomSprite.TextLine1 = string.Format(Resources.GORSPR_TEXT_ZOOM_BUTTON, ZoomLevel.GetName());
+
+            if (!fireEvent)
+            {
+                return;
+            }
 
             EventHandler<ZoomEventArgs> handler = ImageZoomed;
-            ImageZoomed?.Invoke(this, new ZoomEventArgs(_zoomLevel));
+            ImageZoomed?.Invoke(this, new ZoomEventArgs(ZoomLevel));
         }
 
         /// <summary>
@@ -139,6 +212,35 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The [PropertyChangingEventArgs] instance containing the event data.</param>
         private void DataContext_PropertyChanging(object sender, PropertyChangingEventArgs e)
         {
+            // Not used yet.
+        }
+
+        /// <summary>Handles the Click event of the ButtonSpriteColor control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonSpriteColor_Click(object sender, EventArgs e)
+        {
+            if ((DataContext?.ShowColorEditorCommand == null) || (!DataContext.ShowColorEditorCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            DataContext.ShowColorEditorCommand.Execute(null);
+            ValidateButtons();
+        }
+
+        /// <summary>Handles the Click event of the ButtonSpriteAnchor control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonSpriteAnchor_Click(object sender, EventArgs e)
+        {
+            if ((DataContext?.ShowAnchorEditorCommand == null) || (!DataContext.ShowAnchorEditorCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            DataContext.ShowAnchorEditorCommand.Execute(null);
+            ValidateButtons();
         }
 
         /// <summary>Handles the Click event of the ButtonSaveSprite control.</summary>
@@ -206,7 +308,7 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 return;
             }
-            
+
             DataContext.CurrentTool = ButtonClipSprite.Checked ? SpriteEditTool.SpriteClip : SpriteEditTool.None;
             ValidateButtons();
         }
@@ -255,9 +357,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             _toolButtons[SpriteEditTool.SpriteClip] = new WeakReference<KryptonRibbonGroupButton>(ButtonClipSprite);
             _toolButtons[SpriteEditTool.SpritePick] = new WeakReference<KryptonRibbonGroupButton>(ButtonPickSprite);
-            _toolButtons[SpriteEditTool.SetAnchor] = new WeakReference<KryptonRibbonGroupButton>(ButtonSpriteAnchor);
             _toolButtons[SpriteEditTool.CornerResize] = new WeakReference<KryptonRibbonGroupButton>(ButtonSpriteVertexOffsets);
-            _toolButtons[SpriteEditTool.CornerColor] = new WeakReference<KryptonRibbonGroupButton>(ButtonSpriteVertexColors);
         }
 
         /// <summary>
@@ -291,13 +391,15 @@ namespace Gorgon.Editor.SpriteEditor
             // Temporary
             EnableRibbon(true);
 
+            ButtonZoomSprite.Enabled = !DataContext.IsSubPanelModal;
+
             ButtonNewSprite.Enabled = DataContext.NewSpriteCommand?.CanExecute(null) ?? false;
-            ButtonClipSprite.Enabled = DataContext.CurrentTool == SpriteEditTool.SpriteClip || DataContext.CurrentTool == SpriteEditTool.None;
+            ButtonClipSprite.Enabled = ((DataContext.CurrentTool == SpriteEditTool.SpriteClip) || (DataContext.CurrentTool == SpriteEditTool.None)) && (!DataContext.IsSubPanelModal);
             ButtonPickSprite.Enabled = DataContext?.SpritePickCommand?.CanExecute(null) ?? false;
-            ButtonSpriteAnchor.Enabled = DataContext.CurrentTool == SpriteEditTool.SetAnchor || DataContext.CurrentTool == SpriteEditTool.None;
-            ButtonSpriteVertexOffsets.Enabled = DataContext.CurrentTool == SpriteEditTool.CornerResize || DataContext.CurrentTool == SpriteEditTool.None;
-            ButtonSpriteVertexColors.Enabled = DataContext.CurrentTool == SpriteEditTool.CornerColor || DataContext.CurrentTool == SpriteEditTool.None;
-            ButtonSpriteColor.Enabled = DataContext.CurrentTool == SpriteEditTool.None;
+            ButtonSpriteAnchor.Enabled = DataContext.ShowAnchorEditorCommand?.CanExecute(null) ?? false;
+            ButtonSpriteVertexOffsets.Enabled = DataContext.CurrentTool == SpriteEditTool.None && !DataContext.IsSubPanelModal;
+            ButtonSpriteVertexColors.Enabled = DataContext.CurrentTool == SpriteEditTool.None && !DataContext.IsSubPanelModal;
+            ButtonSpriteColor.Enabled = DataContext.ShowColorEditorCommand?.CanExecute(null) ?? false;
 
             ButtonSpriteUndo.Enabled = DataContext.UndoCommand?.CanExecute(null) ?? false;
             ButtonSpriteRedo.Enabled = DataContext.RedoCommand?.CanExecute(null) ?? false;
@@ -309,7 +411,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to unassign the events for the data context.
         /// </summary>
         private void UnassignEvents()
-        {            
+        {
             if (DataContext == null)
             {
                 return;
@@ -325,7 +427,7 @@ namespace Gorgon.Editor.SpriteEditor
         private void ResetDataContext()
         {
             RibbonSpriteContent.Enabled = false;
-            UpdateZoomMenu();
+            UpdateZoomMenu(true);
             ItemZoomToWindow.Checked = true;
         }
 
@@ -345,14 +447,14 @@ namespace Gorgon.Editor.SpriteEditor
             try
             {
                 // Do not let us uncheck.
-                if (_zoomLevel == zoom)
+                if (ZoomLevel == zoom)
                 {
                     item.Checked = true;
                     return;
                 }
 
-                _zoomLevel = zoom;
-                UpdateZoomMenu();
+                ZoomLevel = zoom;
+                UpdateZoomMenu(true);
             }
             finally
             {
@@ -372,7 +474,7 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-            UpdateZoomMenu();
+            UpdateZoomMenu(true);
         }
 
         /// <summary>Function to assign a data context to the view as a view model.</summary>
@@ -394,27 +496,6 @@ namespace Gorgon.Editor.SpriteEditor
 
             DataContext.PropertyChanged += DataContext_PropertyChanged;
             DataContext.PropertyChanging += DataContext_PropertyChanging;
-        }
-
-        /// <summary>
-        /// Function to reset the zoom back to the default.
-        /// </summary>
-        public void ResetZoom()
-        {
-            _zoomLevel = ZoomLevels.ToWindow;
-            UpdateZoomMenu();
-            ValidateButtons();
-        }
-
-        /// <summary>
-        /// Function to assign a specific zoom level.
-        /// </summary>
-        /// <param name="zoomLevel">The zoom level to assign.</param>
-        public void SetZoom(ZoomLevels zoomLevel)
-        {
-            _zoomLevel = zoomLevel;
-            UpdateZoomMenu();
-            ValidateButtons();
         }
 
         /// <summary>
@@ -451,10 +532,10 @@ namespace Gorgon.Editor.SpriteEditor
                     if (ButtonClipSprite.Checked)
                     {
                         ButtonClipSprite.PerformClick();
-                    }                    
+                    }
                     break;
             }
-            
+
             switch (tool)
             {
                 case SpriteEditTool.CornerResize:
@@ -475,7 +556,7 @@ namespace Gorgon.Editor.SpriteEditor
                         ButtonClipSprite.PerformClick();
                     }
                     break;
-            }            
+            }
         }
         #endregion
 

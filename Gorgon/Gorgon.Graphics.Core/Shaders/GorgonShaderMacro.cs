@@ -103,21 +103,15 @@ namespace Gorgon.Graphics.Core
         /// <param name="left">Left instance to compare.</param>
         /// <param name="right">Right instance to compare.</param>
         /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-        public static bool operator ==(GorgonShaderMacro left, GorgonShaderMacro right)
-		{
-			return Equals(left, right);
-		}
+        public static bool operator ==(GorgonShaderMacro left, GorgonShaderMacro right) => Equals(left, right);
 
-		/// <summary>
-		/// Operator to compare two instances for inequality.
-		/// </summary>
-		/// <param name="left">Left instance to compare.</param>
-		/// <param name="right">Right instance to compare.</param>
-		/// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
-		public static bool operator !=(GorgonShaderMacro left, GorgonShaderMacro right)
-		{
-			return !Equals(left, right);
-		}
+        /// <summary>
+        /// Operator to compare two instances for inequality.
+        /// </summary>
+        /// <param name="left">Left instance to compare.</param>
+        /// <param name="right">Right instance to compare.</param>
+        /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
+        public static bool operator !=(GorgonShaderMacro left, GorgonShaderMacro right) => !Equals(left, right);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
