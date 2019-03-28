@@ -114,6 +114,24 @@ namespace Gorgon.Editor.ViewModels
 
         #region Properties.
         /// <summary>
+        /// Property to return the current directory.
+        /// </summary>
+        string IContentFileManager.CurrentDirectory
+        {
+            get
+            {
+                IFileExplorerNodeVm current = SelectedNode ?? RootNode;
+
+                while (!current.AllowChildCreation)
+                {
+                    current = current.Parent;
+                }
+
+                return current.FullPath;
+            }
+        }
+
+        /// <summary>
         /// Property to return the currently selected node for the file system.
         /// </summary>
         public IFileExplorerNodeVm SelectedNode

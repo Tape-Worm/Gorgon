@@ -211,6 +211,20 @@ namespace Gorgon.Editor.SpriteEditor
             ValidateButtons();
         }
 
+        /// <summary>Handles the Click event of the ButtonNewSprite control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonNewSprite_Click(object sender, EventArgs e)
+        {
+            if ((DataContext?.NewSpriteCommand == null) || (!DataContext.NewSpriteCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            DataContext.NewSpriteCommand.Execute(null);
+            ValidateButtons();
+        }
+
         /// <summary>
         /// Function to build the list of available ribbon buttons for ease of access.
         /// </summary>
@@ -277,6 +291,7 @@ namespace Gorgon.Editor.SpriteEditor
             // Temporary
             EnableRibbon(true);
 
+            ButtonNewSprite.Enabled = DataContext.NewSpriteCommand?.CanExecute(null) ?? false;
             ButtonClipSprite.Enabled = DataContext.CurrentTool == SpriteEditTool.SpriteClip || DataContext.CurrentTool == SpriteEditTool.None;
             ButtonPickSprite.Enabled = DataContext?.SpritePickCommand?.CanExecute(null) ?? false;
             ButtonSpriteAnchor.Enabled = DataContext.CurrentTool == SpriteEditTool.SetAnchor || DataContext.CurrentTool == SpriteEditTool.None;

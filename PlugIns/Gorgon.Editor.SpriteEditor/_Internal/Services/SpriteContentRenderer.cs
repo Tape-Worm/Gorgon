@@ -86,6 +86,8 @@ namespace Gorgon.Editor.SpriteEditor
         private IPickClipperService _pickClipper;
         // The current texture array index to use.
         private int _textureArrayIndex = 0;
+        // The actual sprite to render.
+        private GorgonSprite _renderSprite = new GorgonSprite();
         #endregion
 
         #region Properties.
@@ -152,7 +154,7 @@ namespace Gorgon.Editor.SpriteEditor
                     return;
                 }
 
-                _textureArrayIndex = value.Max(0).Max(_imageBufferTexture.Texture.ArrayCount - 1);
+                _renderSprite.TextureArrayIndex = _textureArrayIndex = value.Max(0).Max(_imageBufferTexture.Texture.ArrayCount - 1);                
                 _clipperService.Refresh();
             }
         }
@@ -431,6 +433,24 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>
+        /// Function to render the sprite texture to a render target.
+        /// </summary>
+        /// <param name="imageRegion">The region encompassing the sprite texture.</param>
+        /// <param name="spriteRegion">The region encompassing the sprite texture coordinates.</param>
+        private void RenderSpriteTexture(DX.RectangleF imageRegion, DX.RectangleF spriteRegion)
+        {
+            _graphics.SetRenderTarget(_imageBuffer);
+            _imageBuffer.Clear(GorgonColor.BlackTransparent);
+
+            _renderer.Begin();
+            RenderRect(imageRegion, GorgonColor.White, _sprite.Texture, textureArrayIndex: _textureArrayIndex);
+            RenderRect(spriteRegion, GorgonColor.BlackTransparent);
+            _renderer.End();
+
+            _graphics.SetRenderTarget(_swapChain.RenderTargetView);
+        }
+
+        /// <summary>
         /// Function to render the sprite in a clipping context.
         /// </summary>
         private void RenderClipping()
@@ -438,15 +458,17 @@ namespace Gorgon.Editor.SpriteEditor
             var spriteRegion = _sprite.Texture.ToPixel(_sprite.TextureCoordinates).ToRectangleF();
             var imageRegion = new DX.RectangleF(0, 0, _spriteTextureSize.Width, _spriteTextureSize.Height);
 
-            _graphics.SetRenderTarget(_swapChain.RenderTargetView);
+            RenderSpriteTexture(imageRegion, spriteRegion);
+
             _swapChain.RenderTargetView.Clear(BackgroundColor);
-
-            _renderer.Begin();
-
+            
+            _renderer.Begin(Gorgon2DBatchState.NoBlend);
+            
             // Draw the pattern layer.
             RenderRect(imageRegion, GorgonColor.White, _bgPattern, new DX.RectangleF(0, 0, (imageRegion.Width * ZoomScaleValue) / _bgPattern.Width, (imageRegion.Height * ZoomScaleValue) / _bgPattern.Height));
+
             // Draw the image buffer layer.
-            RenderRect(imageRegion, new GorgonColor(GorgonColor.White, 0.5f), _sprite.Texture, new DX.RectangleF(0, 0, 1, 1), _textureArrayIndex, GorgonSamplerState.PointFiltering);
+            _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _swapChain.Width, _swapChain.Height), new GorgonColor(GorgonColor.White, 0.5f), _imageBufferTexture, new DX.RectangleF(0, 0, 1, 1));
 
             DX.RectangleF textureRegion = _clipperService.Rectangle.Truncate();
 
@@ -465,15 +487,8 @@ namespace Gorgon.Editor.SpriteEditor
             DX.RectangleF spriteRegion = _pickClipper.Rectangle;
             var imageRegion = new DX.RectangleF(0, 0, _spriteTextureSize.Width, _spriteTextureSize.Height);
 
-            _graphics.SetRenderTarget(_imageBuffer);
-            _imageBuffer.Clear(GorgonColor.BlackTransparent);
+            RenderSpriteTexture(imageRegion, spriteRegion);
 
-            _renderer.Begin();
-            RenderRect(imageRegion, GorgonColor.White, _sprite.Texture, textureArrayIndex: _textureArrayIndex,sampler: GorgonSamplerState.PointFiltering);
-            RenderRect(spriteRegion, GorgonColor.BlackTransparent);
-            _renderer.End();
-
-            _graphics.SetRenderTarget(_swapChain.RenderTargetView);
             _swapChain.RenderTargetView.Clear(BackgroundColor);
 
             _renderer.Begin();
@@ -483,7 +498,7 @@ namespace Gorgon.Editor.SpriteEditor
             // Draw the image buffer layer.
             _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _swapChain.Width, _swapChain.Height), new GorgonColor(GorgonColor.White, 0.5f), _imageBufferTexture, new DX.RectangleF(0, 0, 1, 1));
             // Draw the sprite layer.
-            RenderRect(spriteRegion, GorgonColor.White, _sprite.Texture, _sprite.Texture.ToTexel(spriteRegion.ToRectangle()), _textureArrayIndex);
+            RenderRect(spriteRegion, GorgonColor.White, _sprite.Texture, _sprite.Texture.ToTexel(spriteRegion.ToRectangle()), _textureArrayIndex, GorgonSamplerState.PointFiltering);
 
             _marchAnts.Draw(ImageRectToSwap(spriteRegion));
 
@@ -498,25 +513,24 @@ namespace Gorgon.Editor.SpriteEditor
             var spriteRegion = _sprite.Texture.ToPixel(_sprite.TextureCoordinates).ToRectangleF();
             var imageRegion = new DX.RectangleF(0, 0, _spriteTextureSize.Width, _spriteTextureSize.Height);
 
-            _graphics.SetRenderTarget(_imageBuffer);
-            _imageBuffer.Clear(GorgonColor.BlackTransparent);
+            RenderSpriteTexture(imageRegion, spriteRegion);
 
-            _renderer.Begin();
-            RenderRect(imageRegion, GorgonColor.White, _sprite.Texture, textureArrayIndex: _textureArrayIndex, sampler: GorgonSamplerState.PointFiltering);
-            RenderRect(spriteRegion, GorgonColor.BlackTransparent);
-            _renderer.End();
-
-            _graphics.SetRenderTarget(_swapChain.RenderTargetView);
             _swapChain.RenderTargetView.Clear(BackgroundColor);
 
-            _renderer.Begin();
+            DX.RectangleF scaledSprite = ImageRectToSwap(spriteRegion);
+            _renderSprite.Size = new DX.Size2F(scaledSprite.Width, scaledSprite.Height);
+            _renderSprite.TextureRegion = _sprite.TextureCoordinates;            
+            _renderSprite.Position = scaledSprite.TopLeft;
 
+            _renderer.Begin();
             // Draw the pattern layer.
             RenderRect(imageRegion, GorgonColor.White, _bgPattern, new DX.RectangleF(0, 0, (imageRegion.Width * ZoomScaleValue) / _bgPattern.Width, (imageRegion.Height * ZoomScaleValue) / _bgPattern.Height));
-            // Draw the image buffer layer.
+            
+            // Draw the image buffer layer.            
             _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _swapChain.Width, _swapChain.Height), new GorgonColor(GorgonColor.White, 0.5f), _imageBufferTexture, new DX.RectangleF(0, 0, 1, 1));
+
             // Draw the sprite layer.
-            RenderRect(spriteRegion, GorgonColor.White, _sprite.Texture, _sprite.Texture.ToTexel(spriteRegion.ToRectangle()), _textureArrayIndex);
+            _renderer.DrawSprite(_renderSprite);
 
             _marchAnts.Draw(ImageRectToSwap(spriteRegion));
 
@@ -632,8 +646,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             _animController.Update();
         }
-
-
+        
         /// <summary>
         /// Function to assign the sprite to use.
         /// </summary>
@@ -649,10 +662,12 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
+            DX.Rectangle spriteBounds = sprite.Texture.ToPixel(sprite.TextureCoordinates);
+
             _sprite = sprite;
             _spriteTextureSize = new DX.Size2F(sprite.Texture.Width, sprite.Texture.Height);
             _clipperService.Bounds = new DX.RectangleF(0, 0, sprite.Texture.Width, sprite.Texture.Height);
-            _pickClipper.Rectangle = _clipperService.Rectangle = sprite.Texture.ToPixel(sprite.TextureCoordinates).ToRectangleF();
+            _pickClipper.Rectangle = _clipperService.Rectangle = spriteBounds.ToRectangleF();
             TextureArrayIndex = sprite.ArrayIndex;
 
             _clipperService.TransformImageAreaToClient = r => ImageRectToSwap(r).Truncate();
@@ -661,8 +676,24 @@ namespace Gorgon.Editor.SpriteEditor
                 DX.Vector2 pos = SwapToImagePoint(p);
                 return new DX.Vector2((int)pos.X, (int)pos.Y);
             };
-
+                        
             _pickClipper.ImageData = _sprite.ImageData;
+                        
+            _renderSprite.Texture = sprite.Texture;
+            _renderSprite.TextureRegion = sprite.TextureCoordinates;
+            _renderSprite.TextureArrayIndex = TextureArrayIndex;
+            _renderSprite.Size = new DX.Size2F(spriteBounds.Width, spriteBounds.Height);
+
+#warning These properties are not set yet on the view model.
+            _renderSprite.CornerColors.LowerLeft = GorgonColor.White;
+            _renderSprite.CornerColors.UpperLeft = GorgonColor.White;
+            _renderSprite.CornerColors.LowerRight = GorgonColor.White;
+            _renderSprite.CornerColors.UpperRight = GorgonColor.White;
+            _renderSprite.CornerOffsets.LowerLeft = DX.Vector3.Zero;
+            _renderSprite.CornerOffsets.UpperLeft = DX.Vector3.Zero;
+            _renderSprite.CornerOffsets.LowerRight = DX.Vector3.Zero;
+            _renderSprite.CornerOffsets.UpperRight = DX.Vector3.Zero;
+            _renderSprite.TextureSampler = GorgonSamplerState.Default;            
         }
         #endregion
 

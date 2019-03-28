@@ -228,6 +228,28 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error creating the new sprite and the editor must now close.
+        ///
+        ///Please open the sprite editor and try again..
+        /// </summary>
+        internal static string GORSPR_ERR_CREATE_SPRITE {
+            get {
+                return ResourceManager.GetString("GORSPR_ERR_CREATE_SPRITE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is already file or directory on the file system with the name &apos;{0}&apos;.
+        ///
+        ///Please try again..
+        /// </summary>
+        internal static string GORSPR_ERR_FILESYSTEM_ITEM_EXISTS {
+            get {
+                return ResourceManager.GetString("GORSPR_ERR_FILESYSTEM_ITEM_EXISTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sprites can only use 2D images as a texture.
         ///
         ///Please select a 2D image and try again..

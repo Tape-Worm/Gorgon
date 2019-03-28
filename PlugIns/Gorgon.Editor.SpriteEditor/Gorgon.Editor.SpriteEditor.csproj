@@ -102,6 +102,7 @@
     <Compile Include="_Internal\Views\SpriteEditorView.Designer.cs">
       <DependentUpon>SpriteEditorView.cs</DependentUpon>
     </Compile>
+    <Compile Include="_Internal\_Interfaces\ISpriteContentFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />

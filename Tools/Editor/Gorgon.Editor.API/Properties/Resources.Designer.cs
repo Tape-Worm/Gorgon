@@ -181,6 +181,17 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There is already a content file or a directory with the name &apos;{0}&apos;.
+        ///
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_CONTENT_ALREADY_EXISTS {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CONTENT_ALREADY_EXISTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The directory &apos;{0}&apos; was not found..
         /// </summary>
         internal static string GOREDIT_ERR_DIR_NOT_FOUND {

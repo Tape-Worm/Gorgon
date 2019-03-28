@@ -57,7 +57,7 @@ namespace Gorgon.Editor.SpriteEditor
     /// Gorgon sprite editor content plug-in interface.
     /// </summary>
     internal class SpriteEditorPlugin
-        : ContentPlugin, IContentPluginMetadata
+        : ContentPlugin, IContentPluginMetadata, ISpriteContentFactory
     {
         #region Variables.
         // The loaded image codecs.
@@ -124,6 +124,79 @@ namespace Gorgon.Editor.SpriteEditor
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to update the dependencies for the sprite.
+        /// </summary>
+        /// <param name="fileStream">The stream for the file.</param>
+        /// <param name="dependencyList">The list of dependency file paths.</param>
+        /// <param name="fileManager">The content file management system.</param>
+        private void UpdateDependencies(Stream fileStream, Dictionary<string, string> dependencyList, IContentFileManager fileManager)
+        {
+            string textureName = _defaultCodec.GetAssociatedTextureName(fileStream);
+
+            if (string.IsNullOrWhiteSpace(textureName))
+            {
+                return;
+            }
+            IContentFile textureFile = fileManager.GetFile(textureName);
+
+            // If we lack the texture (e.g. it's been deleted or something), then reset the value from the metadata.
+            if (textureFile == null)
+            {
+                dependencyList.Remove(textureName);
+                return;
+            }
+
+            dependencyList[SpriteEditorCommonConstants.ImageDependencyType] = textureName;
+        }
+
+        /// <summary>
+        /// Function to retrieve the sprite texture from the dependency metadata.
+        /// </summary>
+        /// <param name="dependencies">The dependencies for the sprite file.</param>
+        /// <param name = "fileManager" > The file manager used to access other content files.</param>
+        /// <returns>A tuple containing the sprite image, and the file for the sprite image, or <b>null</b> for both entries if no image was found in the dependency list.</returns>
+        private (IGorgonImage spriteImage, IContentFile imageFile) GetSpriteImageFromMetadata(IList<string> dependencies, IContentFileManager fileManager)
+        {
+            if (dependencies.Count == 0)
+            {
+                return (null, null);
+            }
+
+            IGorgonImage depImage = null;
+
+            // Find the sprite texture dependency.
+            foreach (string dependencyPath in dependencies)
+            {
+                if (string.IsNullOrWhiteSpace(dependencyPath))
+                {
+                    continue;
+                }
+
+                IContentFile dependency = fileManager.GetFile(dependencyPath);
+
+                if ((!dependency.Metadata.Attributes.TryGetValue(SpriteContent.ContentTypeAttr, out string contentType))
+                    || (!string.Equals(contentType, "image", StringComparison.OrdinalIgnoreCase)))
+                {
+                    continue;
+                }
+
+                using (Stream depStream = dependency.OpenRead())
+                {
+                    if (!_ddsCodec.IsReadable(depStream))
+                    {
+                        Log.Print("Sprite dependency '{dependency}' found. But is not DDS file.", LoggingLevel.Verbose);
+                        continue;
+                    }
+
+                    depImage = _ddsCodec.LoadFromStream(depStream);
+                    return (depImage, dependency);
+                }
+            }
+
+            return (null, null);
+        }
+
         /// <summary>
         /// Function to load external image codec plug ins.
         /// </summary>
@@ -387,53 +460,6 @@ namespace Gorgon.Editor.SpriteEditor
             // Not needed yet.
         }
 
-        /// <summary>
-        /// Function to retrieve the sprite texture from the dependency metadata.
-        /// </summary>
-        /// <param name="dependencies">The dependencies for the sprite file.</param>
-        /// <param name = "fileManager" > The file manager used to access other content files.</param>
-        /// <returns>A tuple containing the sprite image, and the file for the sprite image, or <b>null</b> for both entries if no image was found in the dependency list.</returns>
-        private (IGorgonImage spriteImage, IContentFile imageFile) GetSpriteImageFromMetadata(IList<string> dependencies, IContentFileManager fileManager)
-        {
-            if (dependencies.Count == 0)
-            {
-                return (null, null);
-            }
-
-            IGorgonImage depImage = null;
-
-            // Find the sprite texture dependency.
-            foreach (string dependencyPath in dependencies)
-            {
-                if (string.IsNullOrWhiteSpace(dependencyPath))
-                {
-                    continue;
-                }
-
-                IContentFile dependency = fileManager.GetFile(dependencyPath);
-                
-                if ((!dependency.Metadata.Attributes.TryGetValue(SpriteContent.ContentTypeAttr, out string contentType))
-                    || (!string.Equals(contentType, "image", StringComparison.OrdinalIgnoreCase)))
-                {
-                    continue;
-                }
-
-                using (Stream depStream = dependency.OpenRead())
-                {
-                    if (!_ddsCodec.IsReadable(depStream))
-                    {
-                        Log.Print("Sprite dependency '{dependency}' found. But is not DDS file.", LoggingLevel.Verbose);
-                        continue;
-                    }
-
-                    depImage = _ddsCodec.LoadFromStream(depStream);
-                    return (depImage, dependency);
-                }
-            }
-
-            return (null, null);
-        }
-
         /// <summary>Function to open a content object from this plugin.</summary>
         /// <param name="file">The file that contains the content.</param>
         /// <param name = "fileManager" > The file manager used to access other content files.</param>
@@ -471,7 +497,8 @@ namespace Gorgon.Editor.SpriteEditor
                 var settings = new Settings();
                 settings.Initialize(new SettingsParameters(_settings));
 
-                content.Initialize(new SpriteContentParameters(file, 
+                content.Initialize(new SpriteContentParameters(this,
+                    file, 
                     imageFile, 
                     fileManager, 
                     textureService,
@@ -580,73 +607,42 @@ namespace Gorgon.Editor.SpriteEditor
             });
         }
 
-        /// <summary>
-        /// Function to update the dependencies for the sprite.
-        /// </summary>
-        /// <param name="fileStream">The stream for the file.</param>
-        /// <param name="dependencyList">The list of dependency file paths.</param>
-        /// <param name="fileManager">The content file management system.</param>
-        private void UpdateDependencies(Stream fileStream, Dictionary<string, string> dependencyList, IContentFileManager fileManager)
-        {
-            string textureName = _defaultCodec.GetAssociatedTextureName(fileStream);
-
-            if (string.IsNullOrWhiteSpace(textureName))
-            {
-                return;
-            }
-            IContentFile textureFile = fileManager.GetFile(textureName);
-
-            // If we lack the texture (e.g. it's been deleted or something), then reset the value from the metadata.
-            if (textureFile == null)
-            {
-                dependencyList.Remove(textureName);
-                return;
-            }
-
-            dependencyList[SpriteEditorCommonConstants.ImageDependencyType] = textureName;
-        }
-
-        /// <summary>Function to retrieve the default content for the plug in.</summary>
-        /// <param name="name">The name of the content (if applicable).</param>
-        /// <returns>A byte array containing the default content data.</returns>
+        /// <summary>Function to retrieve the default content name, and data.</summary>
+        /// <param name="generatedName">A default name generated by the application.</param>
+        /// <returns>The default content name along with the content data serialized as a byte array. If either the name or data are <b>null</b>, then the user cancelled..</returns>
         /// <remarks>
-        ///   <para>
-        /// This is used to generate default content data when creating new content.
+        /// <para>
+        /// Plug in authors may override this method so a custom UI can be presented when creating new content, or return a default set of data and a default name, or whatever they wish. 
         /// </para>
-        ///   <para>
-        /// This method will not be called if <see cref="P:Gorgon.Editor.Plugins.ContentPlugin.CanCreateContent"/> is <b>false</b>.
+        /// <para>
+        /// If an empty string (or whitespace) is returned for the name, then the <paramref name="generatedName"/> will be used.
         /// </para>
         /// </remarks>
-        public override Task<byte[]> GetDefaultContentAsync(string name)
+        protected override Task<(string name, byte[] data)> OnGetDefaultContentAsync(string generatedName)
         {
-            var defaultSprite = new GorgonSprite();
+            var sprite = new GorgonSprite();
+            byte[] data;
 
             using (var stream = new MemoryStream())
             {
-                _defaultCodec.Save(defaultSprite, stream);
-                return Task.FromResult(stream.ToArray());
+                _defaultCodec.Save(sprite, stream);
+                data = stream.ToArray();
             }
-        }
 
-        /// <summary>Function to retrieve the default content name.</summary>
-        /// <param name="generatedName">The name generated by the application.</param>
-        /// <returns>The default content name, or <b>null</b> if the user cancelled.  If the return value is an empty string, then the <paramref name="generatedName"/> is used.</returns>
-        public override string GetDefaultContentName(string generatedName)
-        {
             using (var formName = new FormName
             {
                 Text = Resources.GORSPR_CAPTION_SPRITE_NAME,
-                ObjectName = generatedName,
+                ObjectName = generatedName ?? string.Empty,
                 ObjectType = ContentType
             })
             {
                 if (formName.ShowDialog(GorgonApplication.MainForm) == DialogResult.OK)
                 {
-                    return formName.ObjectName;
+                    return Task.FromResult((formName.ObjectName, data));
                 }
             }
 
-            return null;
+            return Task.FromResult<(string, byte[])>((null, null));
         }
 
         /// <summary>Function to determine if the content plugin can open the specified file.</summary>

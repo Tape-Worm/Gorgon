@@ -87,6 +87,7 @@
             this.RibbonSpriteContent.Name = "RibbonSpriteContent";
             this.RibbonSpriteContent.RibbonTabs.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab[] {
             this.TabSprite});
+            this.RibbonSpriteContent.SelectedContext = null;
             this.RibbonSpriteContent.SelectedTab = this.TabSprite;
             this.RibbonSpriteContent.Size = new System.Drawing.Size(1594, 115);
             this.RibbonSpriteContent.TabIndex = 0;
@@ -127,6 +128,7 @@
             this.ButtonNewSprite.TextLine2 = "Sprite";
             this.ButtonNewSprite.ToolTipBody = "Creates a new sprite for the currently loaded image.";
             this.ButtonNewSprite.ToolTipTitle = "New sprite";
+            this.ButtonNewSprite.Click += new System.EventHandler(this.ButtonNewSprite_Click);
             // 
             // ButtonSaveSprite
             // 

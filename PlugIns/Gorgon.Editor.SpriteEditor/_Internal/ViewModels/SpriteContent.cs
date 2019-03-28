@@ -103,6 +103,8 @@ namespace Gorgon.Editor.SpriteEditor
         private EditorSubPanel _subPanel = EditorSubPanel.None;
         // The image data for the sprite texture.
         private IGorgonImage _imageData;
+        // The factory used to create sprite content data.
+        private ISpriteContentFactory _factory;
         #endregion
 
         #region Properties.
@@ -309,7 +311,8 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Function to reset the state of the view model.
         /// </summary>
-        private void ResetState()
+        /// <param name="defaultSprite">The sprite data to use as default.</param>
+        private void ResetState(GorgonSprite defaultSprite)
         {
             // TODO (In the command): 
             // 1. Prior to calling this, prompt for a sprite name.
@@ -332,7 +335,7 @@ namespace Gorgon.Editor.SpriteEditor
             _undoService.ClearStack();
             CurrentTool = SpriteEditTool.None;
 
-            _sprite = new GorgonSprite();
+            _sprite = defaultSprite;
 
 #warning Do not forget to add all properties here.
             NotifyPropertyChanged(nameof(ArrayIndex));
@@ -375,7 +378,6 @@ namespace Gorgon.Editor.SpriteEditor
             Texture?.Dispose();
             Texture = null;            
         }
-
 
         /// <summary>
         /// Function to determine if an undo operation is possible.
@@ -420,6 +422,113 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>
+        /// Function to determine if a new sprite can be created.
+        /// </summary>
+        /// <returns><b>true</b> if a new sprite can be created, <b>false</b> if not.</returns>
+        private bool CanCreateSprite() => CurrentTool == SpriteEditTool.None;
+
+        /// <summary>
+        /// Function to create a new sprite.
+        /// </summary>
+        private async void DoCreateSprite()
+        {
+            MemoryStream stream = null;
+
+            try
+            {
+                // If this content is currently in a modified state, ask if we want to save first.
+                if (ContentState != ContentState.Unmodified)
+                {
+                    MessageResponse response = MessageDisplay.ShowConfirmation(string.Format(Resources.GORSPR_CONFIRM_CLOSE, File.Name), allowCancel: true);
+
+                    switch (response)
+                    {
+                        case MessageResponse.Yes:
+                            // This task is synchronous, so we can call Wait() here and not require an async method.
+                            BusyState.SetBusy();
+                            SaveSprite();
+                            BusyState.SetIdle();
+                            return;
+                        case MessageResponse.Cancel:
+                            return;
+                    }
+                }
+
+                var existingItems = new HashSet<string>(_contentFiles.EnumeratePaths(_contentFiles.CurrentDirectory, "*").Select(item =>
+                {
+                    // Get the last path part.
+                    if (item.EndsWith("/", StringComparison.OrdinalIgnoreCase))
+                    {
+                        item = item.Substring(0, item.Length - 1);
+                    }
+
+                    return Path.GetFileName(item);
+                }), StringComparer.CurrentCultureIgnoreCase);
+
+                (string newName, byte[] newContent) = await _factory.GetDefaultContentAsync(File.Name, existingItems);
+
+                if ((newName == null) || (newContent == null))
+                {
+                    return;
+                }
+
+                BusyState.SetBusy();
+
+                // Deserialize the sprite, might as well use it since we have it.
+                stream = new MemoryStream(newContent);
+                GorgonSprite newSprite = _spriteCodec.FromStream(stream);
+
+                IContentFile newFile = _contentFiles.WriteFile(Path.Combine(_contentFiles.CurrentDirectory, newName), s => _spriteCodec.Save(newSprite, s));
+                newFile.Metadata.Attributes[CommonEditorConstants.IsNewAttr] = "true";
+                newFile.SaveMetadata();
+
+                ResetState(newSprite);
+
+                // Update our file.
+                File = newFile;
+            }
+            catch (Exception ex)
+            {
+                MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_CREATE_SPRITE);
+                // TODO: Close this content.  We'll need an event or something.
+                
+                CloseContentCommand.Execute(new CloseContentArgs(false));
+            }
+            finally
+            {
+                stream?.Dispose();
+                BusyState.SetIdle();
+            }
+        }
+
+        /// <summary>
+        /// Function to save the sprite data back to the content file.
+        /// </summary>
+        private void SaveSprite()
+        {
+            Stream outStream = null;
+
+            try            
+            {
+                outStream = File.OpenWrite();
+                _spriteCodec.Save(_sprite, outStream);
+                outStream.Dispose();
+                 
+                // This file is no longer "new".
+                File.Metadata.Attributes.Remove(CommonEditorConstants.IsNewAttr);
+                File.Refresh();
+                File.SaveMetadata();
+
+                _originalTexture = _textureFile;
+                ContentState = ContentState.Unmodified;
+            }
+            finally
+            {
+                outStream?.Dispose();
+            }
+        }
+
+        /// <summary>
         /// Function to determine if the current content can be saved.
         /// </summary>
         /// <param name="saveReason">The reason why the content is being saved.</param>
@@ -433,23 +542,11 @@ namespace Gorgon.Editor.SpriteEditor
         /// <returns>A task for asynchronous operation.</returns>
         private Task DoSaveSpriteTask(SaveReason saveReason)
         {
-            Stream outStream = null;
-
             BusyState.SetBusy();
 
             try
             {
-                outStream = File.OpenWrite();
-                _spriteCodec.Save(_sprite, outStream);
-                outStream.Dispose();
-
-                // This file is no longer "new".
-                File.Metadata.Attributes.Remove(CommonEditorConstants.IsNewAttr);
-                File.Refresh();
-                File.SaveMetadata();
-
-                _originalTexture = _textureFile;
-                ContentState = ContentState.Unmodified;                
+                SaveSprite();
             }
             catch (Exception ex)
             {
@@ -457,7 +554,6 @@ namespace Gorgon.Editor.SpriteEditor
             }
             finally
             {
-                outStream?.Dispose();
                 BusyState.SetIdle();
             }
 
@@ -627,6 +723,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             base.OnInitialize(injectionParameters);
 
+            _factory = injectionParameters.Factory ?? throw new ArgumentMissingException(nameof(injectionParameters.Factory), nameof(injectionParameters));
             _contentFiles = injectionParameters.ContentFileManager ?? throw new ArgumentMissingException(nameof(injectionParameters.ContentFileManager), nameof(injectionParameters));
             _sprite = injectionParameters.Sprite ?? throw new ArgumentMissingException(nameof(injectionParameters.Sprite), nameof(injectionParameters));
             _undoService = injectionParameters.UndoService ?? throw new ArgumentMissingException(nameof(injectionParameters.UndoService), nameof(injectionParameters));
@@ -827,6 +924,7 @@ namespace Gorgon.Editor.SpriteEditor
             RedoCommand = new EditorCommand<object>(DoRedoAsync, CanRedo);
             SetTextureCoordinatesCommand = new EditorCommand<(DX.RectangleF, int)>(DoSetTextureCoordinates, CanSetTextureCoordinates);
             SpritePickCommand = new EditorCommand<object>(DoSpritePick, CanSpritePick);
+            NewSpriteCommand = new EditorCommand<object>(DoCreateSprite, CanCreateSprite);
         }
         #endregion
     }

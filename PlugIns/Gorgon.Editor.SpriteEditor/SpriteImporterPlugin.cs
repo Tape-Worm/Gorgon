@@ -32,7 +32,6 @@ using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Editor.SpriteEditor.Services;
 using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Services;
-using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Plugins;
 using System;

@@ -251,4 +251,9 @@ This content will now close in order to avoid corrupting the file.</value>
   <data name="GOREDIT_TEXT_NAME_CUE" xml:space="preserve">
     <value>Enter a name for the {0}...</value>
   </data>
+  <data name="GOREDIT_ERR_CONTENT_ALREADY_EXISTS" xml:space="preserve">
+    <value>There is already a content file or a directory with the name '{0}'.
+
+Please try again.</value>
+  </data>
 </root>

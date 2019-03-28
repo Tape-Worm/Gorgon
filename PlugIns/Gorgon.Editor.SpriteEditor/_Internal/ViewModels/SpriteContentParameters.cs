@@ -113,7 +113,16 @@ namespace Gorgon.Editor.SpriteEditor
             get;
         }
 
+        /// <summary>
+        /// Property to return the factory used to build sprite content data.
+        /// </summary>
+        public ISpriteContentFactory Factory
+        {
+            get;
+        }
+
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.SpriteEditor.SpriteContentParameters"/> class.</summary>
+        /// <param name="factory">The factory for building sprite content data.</param>
         /// <param name="spriteFile">The sprite file.</param>
         /// <param name="spriteTextureFile">The sprite texture file.</param>
         /// <param name="fileManager">The file manager used to access external content.</param>
@@ -126,7 +135,9 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="scratchArea">The file system used to write out temporary working data.</param>
         /// <param name="messageService">The message service.</param>
         /// <param name="busyService">The busy service.</param>
-        public SpriteContentParameters(IContentFile spriteFile, 
+        public SpriteContentParameters(
+            ISpriteContentFactory factory,
+            IContentFile spriteFile, 
             IContentFile spriteTextureFile, 
             IContentFileManager fileManager, 
             ISpriteTextureService textureService, 
@@ -140,6 +151,7 @@ namespace Gorgon.Editor.SpriteEditor
             IBusyStateService busyService)
             : base(spriteFile, messageService, busyService)
         {
+            Factory = factory ?? throw new ArgumentNullException(nameof(factory));
             Sprite = sprite ?? throw new ArgumentNullException(nameof(sprite));
             UndoService = undoService ?? throw new ArgumentNullException(nameof(undoService));
             ContentFileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));

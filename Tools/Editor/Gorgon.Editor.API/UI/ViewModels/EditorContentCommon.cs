@@ -117,16 +117,30 @@ namespace Gorgon.Editor.UI
         public IContentFile File
         {
             get => _file;
-            private set
+            protected set
             {
                 if (_file == value)
                 {
                     return;
                 }
 
+                if (_file != null)
+                {
+                    _file.Renamed -= File_Renamed;
+                    _file.Deleted -= File_Deleted;
+                    _file.IsOpen = false;
+                }
+
                 OnPropertyChanging();
                 _file = value;
                 OnPropertyChanged();
+
+                if (_file != null)
+                {
+                    _file.Renamed += File_Renamed;
+                    _file.Deleted += File_Deleted;
+                    _file.IsOpen = true;
+                }
             }
         }
 
@@ -189,10 +203,7 @@ namespace Gorgon.Editor.UI
             DoCloseContent(new CloseContentArgs(false));
 
             // Detach this object from the content.
-            _file.Renamed -= File_Renamed;
-            _file.Deleted -= File_Deleted;
-            _file.IsOpen = false;
-            _file = null;
+            File = null;
         }
 
         /// <summary>
@@ -272,8 +283,7 @@ namespace Gorgon.Editor.UI
         /// <summary>Function called when the associated view is unloaded.</summary>
         public override void OnUnload()
         {
-            // TODO: This should get marked when we commit the file data back to the file system.
-            // _file.IsChanged = true;            
+            // Unassign events and reset state, but do not set to NULL, that'll be handled later on.
             _file.Renamed -= File_Renamed;
             _file.Deleted -= File_Deleted;
             _file.IsOpen = false;

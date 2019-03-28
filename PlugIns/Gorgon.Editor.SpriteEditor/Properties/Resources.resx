@@ -316,4 +316,14 @@ The performance of the current tool may be impacted by this.</value>
   <data name="GORSPR_CAPTION_SPRITE_NAME" xml:space="preserve">
     <value>Enter Sprite Name</value>
   </data>
+  <data name="GORSPR_ERR_CREATE_SPRITE" xml:space="preserve">
+    <value>There was an error creating the new sprite and the editor must now close.
+
+Please open the sprite editor and try again.</value>
+  </data>
+  <data name="GORSPR_ERR_FILESYSTEM_ITEM_EXISTS" xml:space="preserve">
+    <value>There is already file or directory on the file system with the name '{0}'.
+
+Please try again.</value>
+  </data>
 </root>

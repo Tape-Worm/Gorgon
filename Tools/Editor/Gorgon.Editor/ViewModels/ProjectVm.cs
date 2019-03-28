@@ -126,13 +126,14 @@ namespace Gorgon.Editor.ViewModels
 
                 if (_currentContent != null)
                 {
-                    CurrentContent.File.DependenciesUpdated -= ContentFile_DependenciesUpdated;
-                    CurrentContent.PropertyChanged -= CurrentContent_PropertyChanged;
-                    CurrentContent.CloseContent -= CurrentContent_CloseContent;
-                    CurrentContent.WaitPanelActivated -= FileExplorer_WaitPanelActivated;
-                    CurrentContent.WaitPanelDeactivated -= FileExplorer_WaitPanelDeactivated;
-                    CurrentContent.ProgressUpdated -= FileExplorer_ProgressUpdated;
-                    CurrentContent.ProgressDeactivated -= FileExplorer_ProgressDeactivated;                    
+                    _currentContent.File.DependenciesUpdated -= ContentFile_DependenciesUpdated;
+                    _currentContent.PropertyChanging -= CurrentContent_PropertyChanging;
+                    _currentContent.PropertyChanged -= CurrentContent_PropertyChanged;
+                    _currentContent.CloseContent -= CurrentContent_CloseContent;
+                    _currentContent.WaitPanelActivated -= FileExplorer_WaitPanelActivated;
+                    _currentContent.WaitPanelDeactivated -= FileExplorer_WaitPanelDeactivated;
+                    _currentContent.ProgressUpdated -= FileExplorer_ProgressUpdated;
+                    _currentContent.ProgressDeactivated -= FileExplorer_ProgressDeactivated;                    
                 }
 
                 OnPropertyChanging();
@@ -141,13 +142,14 @@ namespace Gorgon.Editor.ViewModels
 
                 if (_currentContent != null)
                 {
-                    CurrentContent.PropertyChanged += CurrentContent_PropertyChanged;
-                    CurrentContent.WaitPanelActivated += FileExplorer_WaitPanelActivated;
-                    CurrentContent.WaitPanelDeactivated += FileExplorer_WaitPanelDeactivated;
-                    CurrentContent.ProgressUpdated += FileExplorer_ProgressUpdated;
-                    CurrentContent.ProgressDeactivated += FileExplorer_ProgressDeactivated;
-                    CurrentContent.CloseContent += CurrentContent_CloseContent;
-                    CurrentContent.File.DependenciesUpdated += ContentFile_DependenciesUpdated;
+                    _currentContent.PropertyChanging += CurrentContent_PropertyChanging;
+                    _currentContent.PropertyChanged += CurrentContent_PropertyChanged;
+                    _currentContent.WaitPanelActivated += FileExplorer_WaitPanelActivated;
+                    _currentContent.WaitPanelDeactivated += FileExplorer_WaitPanelDeactivated;
+                    _currentContent.ProgressUpdated += FileExplorer_ProgressUpdated;
+                    _currentContent.ProgressDeactivated += FileExplorer_ProgressDeactivated;
+                    _currentContent.CloseContent += CurrentContent_CloseContent;                    
+                    _currentContent.File.DependenciesUpdated += ContentFile_DependenciesUpdated;
                 }
             }
         }
@@ -308,6 +310,13 @@ namespace Gorgon.Editor.ViewModels
         {
             try
             {
+                if (CurrentContent?.File != null)
+                {
+                    if ((ContentPreviewer?.RefreshPreviewCommand != null) && (ContentPreviewer.RefreshPreviewCommand.CanExecute(CurrentContent.File)))
+                    {
+                        ContentPreviewer.RefreshPreviewCommand.Execute(CurrentContent.File);
+                    }                    
+                }
                 CurrentContent = null;
                 ProjectState = ProjectState.Unmodified;
             }
@@ -362,6 +371,22 @@ namespace Gorgon.Editor.ViewModels
             }
         }
 
+        /// <summary>Handles the PropertyChanging event of the CurrentContent control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PropertyChangingEventArgs"/> instance containing the event data.</param>
+        private void CurrentContent_PropertyChanging(object sender, PropertyChangingEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(IEditorContent.File):
+                    if (CurrentContent.File != null)
+                    {
+                        CurrentContent.File.DependenciesUpdated -= ContentFile_DependenciesUpdated;
+                    }
+                    break;
+            }
+        }
+
 
         /// <summary>Handles the PropertyChanged event of the CurrentContent control.</summary>
         /// <param name="sender">The source of the event.</param>
@@ -384,6 +409,12 @@ namespace Gorgon.Editor.ViewModels
                                 await ContentPreviewer.RefreshPreviewCommand.ExecuteAsync(CurrentContent.File);
                             }
                             break;
+                    }
+                    break;
+                case nameof(IEditorContent.File):
+                    if (CurrentContent.File != null)
+                    {
+                        CurrentContent.File.DependenciesUpdated += ContentFile_DependenciesUpdated;
                     }
                     break;
             }
@@ -415,6 +446,10 @@ namespace Gorgon.Editor.ViewModels
         {
             if (_currentContent != null)
             {
+                if (CurrentContent.File != null)
+                {
+                    CurrentContent.File.DependenciesUpdated -= ContentFile_DependenciesUpdated;
+                }
                 CurrentContent.CloseContent -= CurrentContent_CloseContent;
                 CurrentContent.WaitPanelActivated -= FileExplorer_WaitPanelActivated;
                 CurrentContent.WaitPanelDeactivated -= FileExplorer_WaitPanelDeactivated;
@@ -646,81 +681,64 @@ namespace Gorgon.Editor.ViewModels
             if (plugin == null)
             {
                 throw new ArgumentNullException(nameof(plugin));
-            }
-            
-            // Function to retrieve the name for the new content file node.
-            string GetContentFileName(string baseName, IFileExplorerNodeVm parent)
-            {
-                int count = 0;
-                string name = baseName;
-
-                if (parent == null)
-                {
-                    parent = _fileExplorer.RootNode;
-                }
-
-                while (parent.Children.Any(item => string.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase)))
-                {
-                    name = $"{baseName} ({++count})";
-                }
-
-                return name;
-            }
-
-            // TODO: Add prompt if we have opened, unsaved changes.
+            }                                   
 
             IFileExplorerNodeVm parentNode = _fileExplorer.SelectedNode ?? _fileExplorer.RootNode;
-            var args = new CreateContentFileArgs(parentNode)
-            {
-                Name = GetContentFileName(metadata.ContentType.FormatFileName(), parentNode)
-            };
+            Stream contentStream = null;
+            var args = new CreateContentFileArgs(parentNode);
 
-            // Get the name of the object from the plugin.
-            do
+            try
             {
-                string newName = plugin.GetDefaultContentName(args.Name);
+                ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_CREATING_CONTENT, metadata.ContentType));
 
-                // Cancel the operation.
-                if (newName == null)
+                // Ensure we don't wipe out any changes.
+                if ((CurrentContent?.SaveContentCommand != null) && (CurrentContent.ContentState != ContentState.Unmodified))
+                {
+                    MessageResponse response = _messageService.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_SAVE_CONTENT, CurrentContent.File.Name));
+
+                    switch (response)
+                    {
+                        case MessageResponse.Cancel:
+                            return null;
+                        case MessageResponse.Yes:
+                            if (CurrentContent.SaveContentCommand.CanExecute(SaveReason.ContentShutdown))
+                            {
+                                await CurrentContent.SaveContentCommand.ExecuteAsync(SaveReason.ContentShutdown);
+                            }                                 
+                            break;
+                    }
+
+                    // Shut down the current stuff.
+                    CurrentContent = null;
+                }
+
+                // Create the actual file.
+                args.Name = plugin.ContentTypeID;
+
+                // Get a new name (and any default data).
+                (string contentName, byte[] contentData) = await plugin.GetDefaultContentAsync(args.Name, parentNode.Children.Select(item => item.Name).ToHashSet(StringComparer.OrdinalIgnoreCase));
+
+                if ((contentName == null) || (contentData == null))
                 {
                     return null;
                 }
 
-                if ((!string.IsNullOrWhiteSpace(newName)) && (!string.Equals(newName, args.Name, StringComparison.CurrentCultureIgnoreCase)))
+                args.Name = contentName;
+
+                if ((_fileExplorer?.CreateContentFileCommand == null) || (!_fileExplorer.CreateContentFileCommand.CanExecute(args)))
                 {
-                    args.Name = newName.FormatFileName();
+                    return null;
                 }
 
-                if (parentNode.Children.Any(item => string.Equals(args.Name, item.Name, StringComparison.CurrentCultureIgnoreCase)))
+                _fileExplorer.CreateContentFileCommand.Execute(args);
+
+                if (args.Cancel)
                 {
-                    _messageService.ShowError(string.Format(Resources.GOREDIT_ERR_NODE_EXISTS, args.Name));
-                    continue;
+                    return null;
                 }
 
-                break;
-            } while (true);
-
-            if ((_fileExplorer?.CreateContentFileCommand == null) || (!_fileExplorer.CreateContentFileCommand.CanExecute(args)))
-            {
-                return null;
-            }
-            
-            _fileExplorer.CreateContentFileCommand.Execute(args);
-
-            if (args.Cancel)
-            {
-                return null;
-            }
-
-            Stream contentStream = null;
-
-            try
-            {
                 // Now that we have a file, we need to populate it with default data from the content plugin.
                 contentStream = args.ContentFile.OpenWrite();
-
-                byte[] contentData = await plugin.GetDefaultContentAsync(args.Name);                
-
                 contentStream.Write(contentData, 0, contentData.Length);
                 contentStream.Dispose();
 
@@ -754,6 +772,7 @@ namespace Gorgon.Editor.ViewModels
             finally
             {
                 contentStream?.Dispose();
+                HideWaitPanel();
             }
 
             return args.ContentFile;

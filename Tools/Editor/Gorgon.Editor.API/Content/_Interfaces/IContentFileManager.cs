@@ -35,6 +35,17 @@ namespace Gorgon.Editor.Content
     /// </summary>
     public interface IContentFileManager
     {
+        #region Properties.
+        /// <summary>
+        /// Property to return the current directory.
+        /// </summary>
+        string CurrentDirectory
+        {
+            get;
+        }
+        #endregion
+
+        #region Methods.
         /// <summary>
         /// Function to create a new directory
         /// </summary>
@@ -112,5 +123,6 @@ namespace Gorgon.Editor.Content
         /// </summary>
         /// <param name="path">The path to the file to delete.</param>
         void DeleteFile(string path);
+        #endregion
     }
 }
