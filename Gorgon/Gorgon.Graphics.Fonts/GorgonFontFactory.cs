@@ -59,7 +59,7 @@ namespace Gorgon.Graphics.Fonts
 	/// factory.
 	/// </para>
 	/// </remarks>
-	public class GorgonFontFactory
+	public sealed class GorgonFontFactory
 		: IDisposable
 	{
 		#region Variables.
@@ -107,8 +107,9 @@ namespace Gorgon.Graphics.Fonts
                     || (left.FontHeightMode != right.FontHeightMode)
                     || (left.TextureWidth != right.TextureWidth)
                     || (left.TextureHeight != right.TextureHeight)
-                    || (left.AntiAliasingMode != right.AntiAliasingMode)
-                    || (left.Brush?.BrushType != right.Brush?.BrushType)
+                    || (left.AntiAliasingMode != right.AntiAliasingMode)            
+                    || (((left.Brush == null) && (right.Brush == null))
+                            || ((left.Brush != null) && (left.Brush.Equals(right.Brush))))
                     || (left.DefaultCharacter != right.DefaultCharacter)
                     || (!string.Equals(left.FontFamilyName, right.FontFamilyName, StringComparison.CurrentCultureIgnoreCase))
                     || (left.FontStyle != right.FontStyle)

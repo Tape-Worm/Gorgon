@@ -315,6 +315,35 @@ namespace Gorgon.Graphics.Fonts
 
             return brush;
         }
+
+        /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        ///   <span class="keyword">
+        ///     <span class="languageSpecificText">
+        ///       <span class="cs">true</span>
+        ///       <span class="vb">True</span>
+        ///       <span class="cpp">true</span>
+        ///     </span>
+        ///   </span>
+        ///   <span class="nu">
+        ///     <span class="keyword">true</span> (<span class="keyword">True</span> in Visual Basic)</span> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <span class="keyword"><span class="languageSpecificText"><span class="cs">false</span><span class="vb">False</span><span class="cpp">false</span></span></span><span class="nu"><span class="keyword">false</span> (<span class="keyword">False</span> in Visual Basic)</span>.
+        /// </returns>
+        public override bool Equals(GorgonGlyphBrush other)
+        {
+            var brush = other as GorgonGlyphPathGradientBrush;
+
+            return ((brush == this) || ((brush != null)
+                && (brush.WrapMode == WrapMode)
+                && (brush.CenterColor == CenterColor)
+                && (brush.CenterPoint.Equals(CenterPoint))
+                && (brush.FocusScales.Equals(FocusScales))
+                && (brush.Points.SequenceEqual(Points))
+                && (brush.BlendFactors.SequenceEqual(BlendFactors))
+                && (brush.BlendPositions.SequenceEqual(BlendPositions))
+                && (brush.Interpolation.SequenceEqual(Interpolation))
+                && (brush.SurroundColors.SequenceEqual(SurroundColors))));
+        }
         #endregion
 
         #region Constructor
