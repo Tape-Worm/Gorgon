@@ -228,6 +228,37 @@ namespace Gorgon.Graphics.Fonts
             IGorgonImage image = Interlocked.Exchange(ref _image, null);
             image?.Dispose();
         }
+
+
+        /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        ///   <span class="keyword">
+        ///     <span class="languageSpecificText">
+        ///       <span class="cs">true</span>
+        ///       <span class="vb">True</span>
+        ///       <span class="cpp">true</span>
+        ///     </span>
+        ///   </span>
+        ///   <span class="nu">
+        ///     <span class="keyword">true</span> (<span class="keyword">True</span> in Visual Basic)</span> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <span class="keyword"><span class="languageSpecificText"><span class="cs">false</span><span class="vb">False</span><span class="cpp">false</span></span></span><span class="nu"><span class="keyword">false</span> (<span class="keyword">False</span> in Visual Basic)</span>.
+        /// </returns>
+        public override bool Equals(GorgonGlyphBrush other)
+        {
+            var brush = other as GorgonGlyphTextureBrush;
+
+            return ((brush == this) || ((brush != null)
+                && (brush.WrapMode == WrapMode)
+                && (brush.TextureRegion.Equals(TextureRegion))
+                && ((brush.Image == Image) || ((brush.Image.ImageType == Image.ImageType)
+                        && (brush.Image.SizeInBytes == Image.SizeInBytes)
+                        && (brush.Image.Format == Image.Format)
+                        && (brush.Image.Width == Image.Width)
+                        && (brush.Image.Height == Image.Height)
+                        && (brush.Image.MipCount == Image.MipCount)
+                        && (brush.Image.ArrayCount == Image.ArrayCount)
+                        && (brush.Image.Depth == Image.Depth)))));
+        }
         #endregion
 
         #region Constructor

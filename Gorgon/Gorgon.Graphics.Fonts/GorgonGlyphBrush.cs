@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using System.Drawing;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
@@ -62,8 +63,8 @@ namespace Gorgon.Graphics.Fonts
 	/// A brush used to paint the glyphs when generating a font.
 	/// </summary>
 	public abstract class GorgonGlyphBrush
-        : IGorgonCloneable<GorgonGlyphBrush>
-	{
+        : IGorgonCloneable<GorgonGlyphBrush>, IEquatable<GorgonGlyphBrush>
+    {
 		#region Properties.
 		/// <summary>
 		/// Property to return the type of brush.
@@ -96,6 +97,31 @@ namespace Gorgon.Graphics.Fonts
         /// <summary>Function to clone an object.</summary>
         /// <returns>The cloned object.</returns>
         public abstract GorgonGlyphBrush Clone();
+
+        /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        ///   <span class="keyword">
+        ///     <span class="languageSpecificText">
+        ///       <span class="cs">true</span>
+        ///       <span class="vb">True</span>
+        ///       <span class="cpp">true</span>
+        ///     </span>
+        ///   </span>
+        ///   <span class="nu">
+        ///     <span class="keyword">true</span> (<span class="keyword">True</span> in Visual Basic)</span> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <span class="keyword"><span class="languageSpecificText"><span class="cs">false</span><span class="vb">False</span><span class="cpp">false</span></span></span><span class="nu"><span class="keyword">false</span> (<span class="keyword">False</span> in Visual Basic)</span>.
+        /// </returns>
+        public abstract bool Equals(GorgonGlyphBrush other);
+
+        /// <summary>Returns a hash code for this instance.</summary>
+        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        public override int GetHashCode() => base.GetHashCode();
+
+        /// <summary>Determines whether the specified <see cref="System.Object"/> is equal to this instance.</summary>
+        /// <param name="obj">The object to compare with the current object.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.</returns>
+        public override bool Equals(object obj) => (obj as GorgonGlyphBrush).Equals(this);
         #endregion
     }
 }
