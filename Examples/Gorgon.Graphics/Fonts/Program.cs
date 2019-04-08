@@ -183,6 +183,10 @@ namespace Gorgon.Examples
                                    };
 
                     _font.Add(_fontFactory.GetFont(fontInfo));
+
+                    // Texture brushes have to be disposed when we're done with them.
+                    var disposableBrush = brush as IDisposable;
+                    disposableBrush?.Dispose();
                 }
             }
         }

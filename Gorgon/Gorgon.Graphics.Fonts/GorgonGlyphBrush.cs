@@ -25,7 +25,9 @@
 #endregion
 
 using System.Drawing;
+using Gorgon.Core;
 using Gorgon.Graphics.Core;
+using Gorgon.IO;
 
 namespace Gorgon.Graphics.Fonts
 {
@@ -60,6 +62,7 @@ namespace Gorgon.Graphics.Fonts
 	/// A brush used to paint the glyphs when generating a font.
 	/// </summary>
 	public abstract class GorgonGlyphBrush
+        : IGorgonCloneable<GorgonGlyphBrush>
 	{
 		#region Properties.
 		/// <summary>
@@ -73,33 +76,26 @@ namespace Gorgon.Graphics.Fonts
 
 		#region Methods.
 		/// <summary>
-		/// Function to create a glyph brush object.
-		/// </summary>
-		/// <param name="type">Type of glyph brush object.</param>
-		/// <param name="graphics">Graphics interface required by texture brush type.</param>
-		/// <returns>The glyph brush object.</returns>
-		internal static GorgonGlyphBrush CreateBrush(GlyphBrushType type, GorgonGraphics graphics)
-		{
-			switch (type)
-			{
-				case GlyphBrushType.PathGradient:
-					return new GorgonGlyphPathGradientBrush();
-				case GlyphBrushType.LinearGradient:
-					return new GorgonGlyphLinearGradientBrush();
-				case GlyphBrushType.Texture:
-					//return new GorgonGlyphTextureBrush(graphics);
-				case GlyphBrushType.Hatched:
-					return new GorgonGlyphHatchBrush();
-				default:
-					return new GorgonGlyphSolidBrush();
-			}
-		}
-
-		/// <summary>
 		/// Function to convert this brush to the equivalent GDI+ brush type.
 		/// </summary>
 		/// <returns>The GDI+ brush type for this object.</returns>
 		internal abstract Brush ToGDIBrush();
-		#endregion
-	}
+
+        /// <summary>
+        /// Function to write out the specifics of the font brush data to a file writer.
+        /// </summary>
+        /// <param name="writer">The writer used to write the brush data.</param>
+        internal abstract void WriteBrushData(GorgonBinaryWriter writer);
+
+        /// <summary>
+        /// Function to read back the specifics of the font brush data from a file reader.
+        /// </summary>
+        /// <param name="reader">The reader used to read the brush data.</param>
+        internal abstract void ReadBrushData(GorgonBinaryReader reader);
+
+        /// <summary>Function to clone an object.</summary>
+        /// <returns>The cloned object.</returns>
+        public abstract GorgonGlyphBrush Clone();
+        #endregion
+    }
 }

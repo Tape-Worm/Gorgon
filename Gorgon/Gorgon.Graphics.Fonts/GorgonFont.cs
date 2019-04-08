@@ -799,6 +799,8 @@ namespace Gorgon.Graphics.Fonts
 				texture?.Dispose();
 			}
 
+            var brush = _info.Brush as IDisposable;
+            brush?.Dispose();
 			_internalTextures.Clear();
 			KerningPairs.Clear();
 			Glyphs.Clear();
@@ -926,8 +928,11 @@ namespace Gorgon.Graphics.Fonts
 			: base(name)
 		{
 			Factory = factory;
-			_info = new GorgonFontInfo(info);
-			Graphics = Factory.Graphics;
+            _info = new GorgonFontInfo(info)
+            {
+                Brush = info.Brush.Clone()
+            };
+            Graphics = Factory.Graphics;
 			FontHeight = fontHeight;
 			LineHeight = lineHeight;
 			Ascent = ascent;
@@ -948,8 +953,11 @@ namespace Gorgon.Graphics.Fonts
 		{
 			Factory = factory;
 			Graphics = Factory.Graphics;
-			_info = new GorgonFontInfo(info);
-			_internalTextures = new List<GorgonTexture2D>();
+            _info = new GorgonFontInfo(info)
+            {
+                Brush = info.Brush?.Clone()
+            };
+            _internalTextures = new List<GorgonTexture2D>();
 			Glyphs = new GorgonGlyphCollection();
 			KerningPairs = new Dictionary<GorgonKerningPair, int>();
 		}
