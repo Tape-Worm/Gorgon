@@ -108,7 +108,7 @@ namespace Gorgon.Graphics.Fonts
                     || (left.TextureWidth != right.TextureWidth)
                     || (left.TextureHeight != right.TextureHeight)
                     || (left.AntiAliasingMode != right.AntiAliasingMode)
-                    || (left.Brush != right.Brush)
+                    || (left.Brush?.BrushType != right.Brush?.BrushType)
                     || (left.DefaultCharacter != right.DefaultCharacter)
                     || (!string.Equals(left.FontFamilyName, right.FontFamilyName, StringComparison.CurrentCultureIgnoreCase))
                     || (left.FontStyle != right.FontStyle)

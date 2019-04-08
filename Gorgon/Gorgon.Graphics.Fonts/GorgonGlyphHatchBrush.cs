@@ -26,6 +26,7 @@
 
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using Gorgon.IO;
 
 namespace Gorgon.Graphics.Fonts
 {
@@ -367,6 +368,33 @@ namespace Gorgon.Graphics.Fonts
         /// The GDI+ brush type for this object.
         /// </returns>
         internal override Brush ToGDIBrush() => new HatchBrush((HatchStyle)HatchStyle, ForegroundColor, BackgroundColor);
+
+        /// <summary>Function to write out the specifics of the font brush data to a file writer.</summary>
+        /// <param name="writer">The writer used to write the brush data.</param>
+        internal override void WriteBrushData(GorgonBinaryWriter writer)
+        {   
+            writer.Write((int)HatchStyle);
+            writer.Write(ForegroundColor.ToARGB());
+            writer.Write(BackgroundColor.ToARGB());
+        }
+
+        /// <summary>Function to read back the specifics of the font brush data from a file reader.</summary>
+        /// <param name="reader">The reader used to read the brush data.</param>
+        internal override void ReadBrushData(GorgonBinaryReader reader)
+        {
+            HatchStyle = (GlyphBrushHatchStyle)reader.ReadInt32();
+            ForegroundColor = new GorgonColor(reader.ReadInt32());
+            BackgroundColor = new GorgonColor(reader.ReadInt32());
+        }
+
+        /// <summary>Function to clone an object.</summary>
+        /// <returns>The cloned object.</returns>
+        public override GorgonGlyphBrush Clone() => new GorgonGlyphHatchBrush
+        {
+            HatchStyle = HatchStyle,
+            BackgroundColor = BackgroundColor,
+            ForegroundColor = ForegroundColor
+        };
         #endregion
     }
 }

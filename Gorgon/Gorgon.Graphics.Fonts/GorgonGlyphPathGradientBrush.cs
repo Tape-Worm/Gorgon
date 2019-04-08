@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
+using Gorgon.IO;
 using Gorgon.Math;
 using DX = SharpDX;
 
@@ -129,16 +130,111 @@ namespace Gorgon.Graphics.Fonts
 		{
 			get;
 		}
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to convert this brush to the equivalent GDI+ brush type.
-		/// </summary>
-		/// <returns>
-		/// The GDI+ brush type for this object.
-		/// </returns>
-		internal override Brush ToGDIBrush()
+        #region Methods.
+        /// <summary>Function to write out the specifics of the font brush data to a file writer.</summary>
+        /// <param name="writer">The writer used to write the brush data.</param>
+        internal override void WriteBrushData(GorgonBinaryWriter writer)
+        {
+            writer.Write((int)WrapMode);
+
+            writer.Write(Points.Count);
+
+            for (int i = 0; i < Points.Count; ++i)
+            {
+                writer.WriteValue(Points[i]);
+            }
+
+            writer.Write(BlendFactors.Count);
+
+            for (int i = 0; i < BlendFactors.Count; ++i)
+            {
+                writer.Write(BlendFactors[i]);
+            }
+
+            writer.Write(BlendPositions.Count);
+
+            for (int i = 0; i < BlendPositions.Count; ++i)
+            {
+                writer.Write(BlendPositions[i]);
+            }
+
+            writer.Write(CenterColor.ToARGB());
+            writer.WriteValue(CenterPoint);
+            writer.WriteValue(FocusScales);
+
+            writer.Write(Interpolation.Count);
+            for (int i = 0; i < Interpolation.Count; ++i)
+            {
+                GorgonGlyphBrushInterpolator interp = Interpolation[i];
+                writer.Write(interp.Weight);
+                writer.Write(interp.Color.ToARGB());
+            }
+
+            writer.Write(SurroundColors.Count);
+
+            for (int i = 0; i < SurroundColors.Count; ++i)
+            {
+                writer.Write(SurroundColors[i].ToARGB());
+            }
+        }
+
+        /// <summary>Function to read back the specifics of the font brush data from a file reader.</summary>
+        /// <param name="reader">The reader used to read the brush data.</param>
+        internal override void ReadBrushData(GorgonBinaryReader reader)
+        {
+            WrapMode = (GlyphBrushWrapMode)reader.ReadInt32();
+            int count = reader.ReadInt32();
+
+            Points.Clear();
+            for (int i = 0; i < count; ++i)
+            {
+                Points.Add(reader.ReadValue<DX.Vector2>());
+            }
+
+            BlendFactors.Clear();
+            count = reader.ReadInt32();
+            for (int i = 0; i < count; ++i)
+            {
+                BlendFactors.Add(reader.ReadSingle());
+            }
+
+            BlendPositions.Clear();
+            count = reader.ReadInt32();
+            for (int i = 0; i < count; ++i)
+            {
+                BlendPositions.Add(reader.ReadSingle());
+            }
+
+            CenterColor = new GorgonColor(reader.ReadInt32());
+            CenterPoint = reader.ReadValue<DX.Vector2>();
+            FocusScales = reader.ReadValue<DX.Vector2>();
+
+            count = reader.ReadInt32();
+            Interpolation.Clear();
+
+            for (int i = 0; i < count; ++i)
+            {
+                Interpolation.Add(new GorgonGlyphBrushInterpolator(reader.ReadSingle(), new GorgonColor(reader.ReadInt32())));
+            }
+
+            count = reader.ReadInt32();
+            SurroundColors.Clear();
+
+            for (int i = 0; i < count; ++i)
+            {
+                SurroundColors.Add(new GorgonColor(reader.ReadInt32()));
+            }
+        }
+
+        /// <summary>
+        /// Function to convert this brush to the equivalent GDI+ brush type.
+        /// </summary>
+        /// <returns>
+        /// The GDI+ brush type for this object.
+        /// </returns>
+        internal override Brush ToGDIBrush()
 		{
 			var result = new PathGradientBrush(Points.Select(item => new PointF(item.X, item.Y)).ToArray(), (WrapMode)WrapMode);
 
@@ -179,13 +275,53 @@ namespace Gorgon.Graphics.Fonts
 
 			return result;
 		}
-		#endregion
 
-		#region Constructor
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonGlyphPathGradientBrush"/> class.
-		/// </summary>
-		public GorgonGlyphPathGradientBrush()
+        /// <summary>Function to clone an object.</summary>
+        /// <returns>The cloned object.</returns>
+        public override GorgonGlyphBrush Clone()
+        {
+            var brush = new GorgonGlyphPathGradientBrush
+            {
+                WrapMode = WrapMode,
+                CenterColor = CenterColor,
+                CenterPoint = CenterPoint,
+                FocusScales = FocusScales                
+            };
+
+            for (int i = 0; i < Points.Count; ++i)
+            {
+                brush.Points.Add(Points[i]);
+            }
+
+            for (int i = 0; i < BlendFactors.Count; ++i)
+            {
+                brush.BlendFactors.Add(BlendFactors[i]);
+            }
+
+            for (int i = 0; i < BlendPositions.Count; ++i)
+            {
+                brush.BlendPositions.Add(BlendPositions[i]);
+            }
+
+            for (int i = 0; i < Interpolation.Count; ++i)
+            {
+                brush.Interpolation.Add(new GorgonGlyphBrushInterpolator(Interpolation[i].Weight, Interpolation[i].Color));
+            }
+
+            for (int i = 0; i < SurroundColors.Count; ++i)
+            {
+                brush.SurroundColors.Add(SurroundColors[i]);
+            }
+
+            return brush;
+        }
+        #endregion
+
+        #region Constructor
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonGlyphPathGradientBrush"/> class.
+        /// </summary>
+        public GorgonGlyphPathGradientBrush()
 		{
 			Points = new List<DX.Vector2>();
 			BlendFactors = new List<float>();

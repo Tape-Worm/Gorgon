@@ -27,6 +27,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using Gorgon.IO;
 using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts
@@ -166,16 +167,54 @@ namespace Gorgon.Graphics.Fonts
 		{
 			get;
 		}
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to convert this brush to the equivalent GDI+ brush type.
-		/// </summary>
-		/// <returns>
-		/// The GDI+ brush type for this object.
-		/// </returns>
-		internal override Brush ToGDIBrush()
+        #region Methods.
+        /// <summary>Function to write out the specifics of the font brush data to a file writer.</summary>
+        /// <param name="writer">The writer used to write the brush data.</param>
+        internal override void WriteBrushData(GorgonBinaryWriter writer)
+        {
+            writer.Write(Angle);
+            writer.Write(ScaleAngle);
+            writer.Write(GammaCorrection);
+            writer.Write(Interpolation.Count);
+            for (int i = 0; i < Interpolation.Count; ++i)
+            {
+                GorgonGlyphBrushInterpolator interp = Interpolation[i];
+                writer.Write(interp.Weight);
+                writer.Write(interp.Color.ToARGB());
+            }
+        }
+
+        /// <summary>Function to read back the specifics of the font brush data from a file reader.</summary>
+        /// <param name="reader">The reader used to read the brush data.</param>
+        internal override void ReadBrushData(GorgonBinaryReader reader)
+        {
+            Angle = reader.ReadSingle();
+            ScaleAngle = reader.ReadBoolean();
+            GammaCorrection = reader.ReadBoolean();
+
+            int interpCount = reader.ReadInt32();
+            if (interpCount == 0)
+            {
+                return;
+            }
+
+            Interpolation.Clear();
+
+            for (int i = 0; i < interpCount; ++i)
+            {
+                Interpolation.Add(new GorgonGlyphBrushInterpolator(reader.ReadSingle(), new GorgonColor(reader.ReadInt32())));
+            }
+        }
+
+        /// <summary>
+        /// Function to convert this brush to the equivalent GDI+ brush type.
+        /// </summary>
+        /// <returns>
+        /// The GDI+ brush type for this object.
+        /// </returns>
+        internal override Brush ToGDIBrush()
 		{
 			var result = new LinearGradientBrush(new Rectangle(GradientRegion.X, GradientRegion.Y, GradientRegion.Width, GradientRegion.Height),
 			                                     StartColor,
@@ -198,6 +237,25 @@ namespace Gorgon.Graphics.Fonts
 
 			return result;
 		}
+
+        /// <summary>Function to clone an object.</summary>
+        /// <returns>The cloned object.</returns>
+        public override GorgonGlyphBrush Clone()
+        {
+            var brush = new GorgonGlyphLinearGradientBrush
+            {
+                Angle = Angle,
+                ScaleAngle = ScaleAngle,
+                GammaCorrection = GammaCorrection
+            };
+
+            for (int i = 0; i < Interpolation.Count; ++i)
+            {
+                brush.Interpolation.Add(new GorgonGlyphBrushInterpolator(Interpolation[i].Weight, Interpolation[i].Color));
+            }
+
+            return brush;
+        }
         #endregion
 
         #region Constructor
