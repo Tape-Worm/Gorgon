@@ -277,10 +277,9 @@ namespace Gorgon.Editor.Services
             _handles[9].Texture = _keyboardIcon.Value;
 
             var keyBounds = new DX.RectangleF(_screenRect.Left + 8, _screenRect.Top + 8, _keyboardIcon.Value.Width, _keyboardIcon.Value.Height);
-            _handles[9].HandleBounds = (AllowResize)
-                && (ShowManualInput)
+            _handles[9].HandleBounds = (ShowManualInput)
                 && ((_handles[8].HandleBounds.IsEmpty) || (!_handles[8].HandleBounds.Intersects(keyBounds)))
-                && ((_screenRect.Width >= 32) && (_screenRect.Height >= 32)) ? keyBounds : DX.RectangleF.Empty;
+                && ((_screenRect.Width >= _keyboardIcon.Value.Width * 2) && (_screenRect.Height >= _keyboardIcon.Value.Height * 2)) ? keyBounds : DX.RectangleF.Empty;
 
             GetActiveHandle();
         }

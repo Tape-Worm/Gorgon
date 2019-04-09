@@ -48,11 +48,11 @@ namespace Gorgon.Editor.ImageEditor
         // The view for the texture.
         private GorgonTexture2DView _textureView;
         // Bounds for each cube image.
-        private DX.RectangleF[] _cubeImageBounds = new DX.RectangleF[6];
+        private readonly DX.RectangleF[] _cubeImageBounds = new DX.RectangleF[6];
         // The font used to print each axis.
         private GorgonFont _axisFont;
         // The current swap chain.
-        private GorgonSwapChain _swapChain;
+        private readonly GorgonSwapChain _swapChain;
         // The selection rectangle.
         private IMarchingAnts _selectionRect;
         #endregion

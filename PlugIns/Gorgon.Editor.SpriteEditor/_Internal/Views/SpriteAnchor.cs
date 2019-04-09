@@ -267,7 +267,11 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="dataContext">The data context being assigned.</param>
         private void InitializeDataContext(ISpriteAnchorEdit dataContext)
         {
-            ResetDataContext();
+            if (dataContext == null)
+            {
+                ResetDataContext();
+                return;
+            }
 
             NumericHorizontal.Value = (decimal)dataContext.AnchorPosition.X;
             NumericVertical.Value = (decimal)dataContext.AnchorPosition.Y;

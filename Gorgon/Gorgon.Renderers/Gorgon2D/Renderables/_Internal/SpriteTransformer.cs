@@ -132,12 +132,17 @@ namespace Gorgon.Renderers
                                               ref DX.Vector3 cornerLowerLeft,
                                               ref DX.Vector3 cornerLowerRight)
         {
-            DX.Vector4 localCorners = corners;
+            var upperLeft = new DX.Vector2(corners.X + cornerUpperLeft.X, corners.Y + cornerUpperLeft.Y);
+            var upperRight = new DX.Vector2(corners.Z + cornerUpperRight.X, corners.Y + cornerUpperRight.Y);
+            var lowerRight = new DX.Vector2(corners.Z + cornerLowerRight.X, corners.W + cornerLowerRight.Y);
+            var lowerLeft = new DX.Vector2(corners.X + cornerLowerLeft.X, corners.W + cornerLowerLeft.Y);
 
             if ((scale.X != 1.0f) || (scale.Y != 1.0f))
             {
-                var cornerScale = new DX.Vector4(scale.X, scale.Y, scale.X, scale.Y);
-                DX.Vector4.Multiply(ref localCorners, ref cornerScale, out localCorners);
+                DX.Vector2.Multiply(ref upperLeft, ref scale, out upperLeft);
+                DX.Vector2.Multiply(ref upperRight, ref scale, out upperRight);
+                DX.Vector2.Multiply(ref lowerRight, ref scale, out lowerRight);
+                DX.Vector2.Multiply(ref lowerLeft, ref scale, out lowerLeft);
             }
 
             ref Gorgon2DVertex v1 = ref vertices[0];
@@ -147,42 +152,42 @@ namespace Gorgon.Renderers
 
             if (angleRads != 0.0f)
             {
-                v1.Position.X = ((localCorners.X * angleCos) - (localCorners.Y * angleSin)) + bounds.X + cornerUpperLeft.X;
-                v1.Position.Y = ((localCorners.X * angleSin) + (localCorners.Y * angleCos)) + bounds.Y + cornerUpperLeft.Y;
+                v1.Position.X = ((upperLeft.X * angleCos) - (upperLeft.Y * angleSin)) + bounds.X;
+                v1.Position.Y = ((upperLeft.X * angleSin) + (upperLeft.Y * angleCos)) + bounds.Y;
                 v1.Position.Z = depth + cornerUpperLeft.Z;
                 v1.Angle = new DX.Vector2(angleCos, angleSin);
 
-                v2.Position.X = ((localCorners.Z * angleCos) - (localCorners.Y * angleSin)) + bounds.X + cornerUpperRight.X;
-                v2.Position.Y = ((localCorners.Z * angleSin) + (localCorners.Y * angleCos)) + bounds.Y + cornerUpperRight.Y;
+                v2.Position.X = ((upperRight.X * angleCos) - (upperRight.Y * angleSin)) + bounds.X;
+                v2.Position.Y = ((upperRight.X * angleSin) + (upperRight.Y * angleCos)) + bounds.Y;
                 v2.Position.Z = depth + cornerUpperRight.Z;
                 v2.Angle = new DX.Vector2(angleCos, angleSin);
 
-                v3.Position.X = ((localCorners.X * angleCos) - (localCorners.W * angleSin)) + bounds.X + cornerLowerLeft.X;
-                v3.Position.Y = ((localCorners.X * angleSin) + (localCorners.W * angleCos)) + bounds.Y + cornerLowerLeft.Y;
+                v3.Position.X = ((lowerLeft.X * angleCos) - (lowerLeft.Y * angleSin)) + bounds.X;
+                v3.Position.Y = ((lowerLeft.X * angleSin) + (lowerLeft.Y * angleCos)) + bounds.Y;
                 v3.Position.Z = depth + cornerLowerLeft.Z;
                 v3.Angle = new DX.Vector2(angleCos, angleSin);
 
-                v4.Position.X = ((localCorners.Z * angleCos) - (localCorners.W * angleSin)) + bounds.X + cornerLowerRight.X;
-                v4.Position.Y = ((localCorners.Z * angleSin) + (localCorners.W * angleCos)) + bounds.Y + cornerLowerRight.Y;
+                v4.Position.X = ((lowerRight.X * angleCos) - (lowerRight.Y * angleSin)) + bounds.X;
+                v4.Position.Y = ((lowerRight.X * angleSin) + (lowerRight.Y * angleCos)) + bounds.Y;
                 v4.Position.Z = depth + cornerLowerRight.Z;
                 v4.Angle = new DX.Vector2(angleCos, angleSin);
             }
             else
             {
-                v1.Position.X = localCorners.X + bounds.X + cornerUpperLeft.X;
-                v1.Position.Y = localCorners.Y + bounds.Y + cornerUpperLeft.Y;
+                v1.Position.X = upperLeft.X + bounds.X;
+                v1.Position.Y = upperLeft.Y + bounds.Y;
                 v1.Position.Z = depth + cornerUpperLeft.Z;
                 v1.Angle = DX.Vector2.UnitX;
-                v2.Position.X = localCorners.Z + bounds.X + cornerUpperRight.X;
-                v2.Position.Y = localCorners.Y + bounds.Y + cornerUpperRight.Y;
+                v2.Position.X = upperRight.X + bounds.X;
+                v2.Position.Y = upperRight.Y + bounds.Y;
                 v2.Position.Z = depth + cornerUpperRight.Z;
                 v2.Angle = DX.Vector2.UnitX;
-                v3.Position.X = localCorners.X + bounds.X + cornerLowerLeft.X;
-                v3.Position.Y = localCorners.W + bounds.Y + cornerLowerLeft.Y;
+                v3.Position.X = lowerLeft.X + bounds.X;
+                v3.Position.Y = lowerLeft.Y + bounds.Y;
                 v3.Position.Z = depth + cornerLowerLeft.Z;
                 v3.Angle = DX.Vector2.UnitX;
-                v4.Position.X = localCorners.Z + bounds.X + cornerLowerRight.X;
-                v4.Position.Y = localCorners.W + bounds.Y + cornerLowerRight.Y;
+                v4.Position.X = lowerRight.X + bounds.X;
+                v4.Position.Y = lowerRight.Y + bounds.Y;
                 v4.Position.Z = depth + cornerLowerRight.Z;
                 v4.Angle = DX.Vector2.UnitX;
             }

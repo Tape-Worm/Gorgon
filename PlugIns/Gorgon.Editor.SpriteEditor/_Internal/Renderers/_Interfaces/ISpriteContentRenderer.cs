@@ -100,6 +100,14 @@ namespace Gorgon.Editor.SpriteEditor
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the initial texture alpha for the background sprite texture (starting value for animation).
+        /// </summary>
+        float InitialTextureAlpha
+        {
+            get;
+        }
         
         /// <summary>
         /// Property to return the currently active cursor.

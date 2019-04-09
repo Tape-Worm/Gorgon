@@ -48,7 +48,7 @@ namespace Gorgon.Editor
     {
         #region Variables.
         // The list of merged items.
-        private HashSet<Component> _mergedItems = new HashSet<Component>();
+        private readonly HashSet<Component> _mergedItems = new HashSet<Component>();
         #endregion
 
         #region Properties.

@@ -41,6 +41,7 @@ using System.Diagnostics;
 using Gorgon.Collections;
 using Gorgon.Editor.Content;
 using System.Threading.Tasks;
+using Gorgon.UI;
 
 namespace Gorgon.Editor.Views
 {
@@ -66,8 +67,6 @@ namespace Gorgon.Editor.Views
         private readonly Dictionary<KryptonTreeNode, IFileExplorerNodeVm> _nodeLinks = new Dictionary<KryptonTreeNode, IFileExplorerNodeVm>();
         // The reverse of the above.
         private readonly Dictionary<IFileExplorerNodeVm, KryptonTreeNode> _revNodeLinks = new Dictionary<IFileExplorerNodeVm, KryptonTreeNode>();
-        // The sorting comparer for the tree.
-        private readonly FileSystemNodeComparer _sortComparer;
         // The node being renamed.
         private IFileExplorerNodeVm _renameNode;
         // Font used for excluded items.
@@ -88,6 +87,10 @@ namespace Gorgon.Editor.Views
         private ExplorerFileDragData _explorerDragData;
         // The nodes returned from a search.
         private IReadOnlyList<IFileExplorerNodeVm> _searchNodes;
+		// The background color for the list view header.
+        private readonly SolidBrush _listViewHeaderBackColor;
+        // The background color for the list view header.
+        private readonly SolidBrush _listViewHeaderForeColor;
         #endregion
 
         #region Properties.
@@ -154,6 +157,26 @@ namespace Gorgon.Editor.Views
         /// <param name="deleteNode">The node to delete.</param>
         private void RemoveNode(IFileExplorerNodeVm deleteNode)
         {
+            if (_searchNodes != null)
+            {
+				// If the search pane is active, and the node being deleted, or any of its children are in the list, then we should remove it.
+                ListViewItem searchItem = ListSearchResults.Items.OfType<ListViewItem>().FirstOrDefault(item => item.Tag == deleteNode);
+
+                if (searchItem != null)
+                {
+                    ListSearchResults.Items.Remove(searchItem);
+                }
+
+                foreach (IFileExplorerNodeVm childNode in deleteNode.Children.Traverse(n => n.Children))
+                {
+                    searchItem = ListSearchResults.Items.OfType<ListViewItem>().FirstOrDefault(item => item.Tag == deleteNode);
+                    if (searchItem != null)
+                    {
+                        ListSearchResults.Items.Remove(searchItem);
+                    }
+                }
+            }
+
             // This node is not on the tree, so just leave.  There's nothing we can do here.
             if (!_revNodeLinks.TryGetValue(deleteNode, out KryptonTreeNode deleteTreeNode))
             {
@@ -225,9 +248,43 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
+            // Always add the new node to the search list (when it's active), even if it doesn't meet the criteria.
+            // Otherwise, it'd be confusing to not see the new node after creation.  This is how Visual Studio's 
+            // solution explorer tree works as well.
+            if (_searchNodes != null)
+            {
+                ListViewItem item = null;
+
+                if (ListSearchResults.Items.ContainsKey(newNode.FullPath))
+                {
+                    item = ListSearchResults.Items[newNode.FullPath];
+                    item.Tag = newNode;
+                    UpdateSearchItemVisualState(item, newNode);
+                }
+                else
+                {
+                    item = new ListViewItem
+                    {
+                        Name = newNode.FullPath,
+                        Text = newNode.Name,
+                        Tag = newNode
+                    };
+
+                    UpdateSearchItemVisualState(item, newNode);
+
+                    item.SubItems.Add(new ListViewItem.ListViewSubItem
+                    {
+                        Text = newNode.FullPath,
+                        ForeColor = Color.Silver
+                    });
+
+                    ListSearchResults.Items.Add(item);
+                }
+            }
+
             // Locate the tree node that has our parent node.
             KryptonTreeNode parentTreeNode = null;
-            IFileExplorerNodeVm parent = newNode.Parent ?? DataContext.RootNode;
+            IFileExplorerNodeVm parent = newNode.Parent ?? DataContext.RootNode;			
 
             if (parent != DataContext.RootNode)
             {
@@ -369,6 +426,7 @@ namespace Gorgon.Editor.Views
             Debug.Assert(node != null, "Node property changed, but no actual node was present.");
 
             _revNodeLinks.TryGetValue(node, out KryptonTreeNode treeNode);
+            ListViewItem searchItem = ListSearchResults.Items.OfType<ListViewItem>().FirstOrDefault(item => item.Tag == node);			
 
             switch (e.PropertyName)
             {
@@ -376,6 +434,11 @@ namespace Gorgon.Editor.Views
                     if (treeNode != null)
                     {
                         treeNode.Text = node.Name;
+                    }
+
+                    if (searchItem != null)
+                    {
+                        searchItem.Text = node.Name;
                     }
                     break;
                 case nameof(IFileExplorerNodeVm.IsExpanded):
@@ -391,17 +454,10 @@ namespace Gorgon.Editor.Views
                         }
                     }
                     break;
-                case nameof(IFileExplorerNodeVm.Metadata):
-                    // If the tree node is present, then we just recolor it.
-                    if (treeNode != null)
-                    {
-                        UpdateNodeVisualState(treeNode, node);
-                        break;
-                    }
-                    break;
                 case nameof(IFileExplorerNodeVm.Visible):
                     UpdateNodeVisibility(DataContext, node, treeNode);
                     break;
+                case nameof(IFileExplorerNodeVm.Metadata):
                 case nameof(IFileExplorerNodeVm.IsChanged):
                 case nameof(IFileExplorerNodeVm.IsOpen):
                 case nameof(IFileExplorerNodeVm.ImageName):
@@ -409,6 +465,11 @@ namespace Gorgon.Editor.Views
                     if (treeNode != null)
                     {
                         UpdateNodeVisualState(treeNode, node);
+                    }
+
+                    if (searchItem != null)
+                    {
+                        UpdateSearchItemVisualState(searchItem, node);
                     }
                     break;
             }
@@ -502,18 +563,32 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            IFileExplorerNodeVm selectedNode = null;
+            IFileExplorerNodeVm selectedNode;
 
-            if (TreeFileSystem.SelectedNode is KryptonTreeNode treeNode)
+            if (_searchNodes == null)
             {
-                if (!_nodeLinks.TryGetValue(treeNode, out selectedNode))
+                if (TreeFileSystem.SelectedNode is KryptonTreeNode treeNode)
                 {
-                    return;
+                    if (!_nodeLinks.TryGetValue(treeNode, out selectedNode))
+                    {
+                        return;
+                    }
+                }
+                else
+                {
+                    selectedNode = DataContext.RootNode;
                 }
             }
             else
             {
-                selectedNode = DataContext.RootNode;
+                if (ListSearchResults.SelectedItems.Count == 0)
+                {
+                    selectedNode = DataContext.RootNode;
+                }
+                else
+                {
+                    selectedNode = ListSearchResults.SelectedItems[0].Tag as IFileExplorerNodeVm;
+                }
             }
 
             if ((DataContext?.ExportNodeToCommand == null)
@@ -523,7 +598,6 @@ namespace Gorgon.Editor.Views
             }
 
             DataContext.ExportNodeToCommand.Execute(selectedNode);
-
         }
 
         /// <summary>
@@ -531,7 +605,21 @@ namespace Gorgon.Editor.Views
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ItemRename_Click(object sender, EventArgs e) => TreeFileSystem.SelectedNode?.BeginEdit();
+        private void ItemRename_Click(object sender, EventArgs e)
+        {
+            if (_searchNodes == null)
+            {
+                TreeFileSystem.SelectedNode?.BeginEdit();
+                return;
+            }            
+
+            if (ListSearchResults.SelectedItems.Count != 1)
+            {
+                return;
+            }
+
+            ListSearchResults.SelectedItems[0].BeginEdit();
+        }
 
         /// <summary>
         /// Handles the Click event of the ItemDelete control.
@@ -540,16 +628,31 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ItemDelete_Click(object sender, EventArgs e)
         {
+            IFileExplorerNodeVm node;
+
             // If we're renaming, then ignore our delete.
-            if ((TreeFileSystem.SelectedNode != null) && (TreeFileSystem.SelectedNode.IsEditing))
+            if (_searchNodes == null)
             {
-                return;
+                if ((TreeFileSystem.SelectedNode != null) && (TreeFileSystem.SelectedNode.IsEditing))
+                {
+                    return;
+                }
+
+                if (!_nodeLinks.TryGetValue((KryptonTreeNode)TreeFileSystem.SelectedNode, out node))
+                {
+                    return;
+                }
+            }
+            else
+            {
+                if (ListSearchResults.SelectedItems.Count == 0)
+                {
+                    return;
+                }
+
+                node = (IFileExplorerNodeVm)ListSearchResults.SelectedItems[0].Tag;
             }
 
-            if (!_nodeLinks.TryGetValue((KryptonTreeNode)TreeFileSystem.SelectedNode, out IFileExplorerNodeVm node))
-            {
-                return;
-            }
 
             var args = new DeleteNodeArgs(node);
 
@@ -1017,6 +1120,168 @@ namespace Gorgon.Editor.Views
             e.Effect = DragDropEffects.Copy;
         }
 
+        /// <summary>Handles the KeyUp event of the ListSearchResults control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
+        private void ListSearchResults_KeyUp(object sender, KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.F2:
+                    if ((ListSearchResults.SelectedItems.Count == 1) && (_renameNode == null))
+                    {
+                        ListSearchResults.SelectedItems[0].BeginEdit();
+                    }
+                    break;
+                case Keys.Delete:
+                    if ((ListSearchResults.SelectedItems.Count == 1) && (_renameNode == null))
+                    {						
+                        MenuItemDelete.PerformClick();
+                    }
+                    break;
+            }
+        }
+
+        /// <summary>Handles the BeforeLabelEdit event of the ListSearchResults control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="LabelEditEventArgs"/> instance containing the event data.</param>
+        private void ListSearchResults_BeforeLabelEdit(object sender, LabelEditEventArgs e)
+        {
+            // Is this even possible?
+            ListViewItem item = ListSearchResults.Items[e.Item];
+            _renameNode = (IFileExplorerNodeVm)item.Tag;
+
+            EventHandler handler = RenameBegin;
+            handler?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>Handles the AfterLabelEdit event of the ListSearchResults control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="LabelEditEventArgs"/> instance containing the event data.</param>
+        private void ListSearchResults_AfterLabelEdit(object sender, LabelEditEventArgs e)
+        {
+            ListSearchResults.BeforeLabelEdit -= ListSearchResults_BeforeLabelEdit;
+            ListSearchResults.AfterLabelEdit -= ListSearchResults_AfterLabelEdit;
+
+            try
+            {
+                // If we didn't change the name, or there's no node being renamed, then leave.
+                if ((DataContext?.RenameNodeCommand == null) || (_renameNode == null))
+                {
+                    e.CancelEdit = true;
+                    return;
+                }
+
+                string oldName = _renameNode.Name;
+                var args = new FileExplorerNodeRenameArgs(_renameNode, oldName, e.Label);
+
+                if (!DataContext.RenameNodeCommand.CanExecute(args))
+                {
+                    e.CancelEdit = true;
+                    return;
+                }
+
+                DataContext.RenameNodeCommand.Execute(args);
+
+                e.CancelEdit = args.Cancel;
+            }
+            finally
+            {
+                // We're no longer renaming anything.
+                _renameNode = null;
+
+                EventHandler handler = RenameEnd;
+                handler?.Invoke(this, EventArgs.Empty);
+
+                ListSearchResults.BeforeLabelEdit += ListSearchResults_BeforeLabelEdit;
+                ListSearchResults.AfterLabelEdit += ListSearchResults_AfterLabelEdit;
+            }
+        }
+
+        /// <summary>Handles the DoubleClick event of the ListSearchResults control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ListSearchResults_DoubleClick(object sender, EventArgs e)
+        {
+            ListViewHitTestInfo info = ListSearchResults.HitTest(ListSearchResults.PointToClient(Cursor.Position));
+
+            if (info?.Item == null)
+            {
+                return;
+            }
+
+            var contentFile = info.Item.Tag as IContentFile;
+
+            if ((DataContext?.OpenContentFileCommand == null) || (!DataContext.OpenContentFileCommand.CanExecute(contentFile)))
+            {
+                return;
+            }
+
+            DataContext.OpenContentFileCommand.Execute(contentFile);
+        }
+
+        /// <summary>Handles the SelectedIndexChanged event of the ListSearchResults control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ListSearchResults_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            IFileExplorerNodeVm node = null;
+
+            if (DataContext?.SelectNodeCommand == null)
+            {
+                return;
+            }
+
+            ListViewItem item = null;
+
+            if (ListSearchResults.SelectedItems.Count > 0)
+            {
+                item = ListSearchResults.SelectedItems[0];
+            }
+
+            if (item != null)
+            {
+                node = (IFileExplorerNodeVm)item.Tag;
+            }
+
+            if (!DataContext.SelectNodeCommand.CanExecute(node))
+            {
+                return;
+            }
+
+            DataContext.SelectNodeCommand.Execute(node);
+
+            ValidateMenuItems(DataContext);
+        }
+
+        /// <summary>Handles the DrawColumnHeader event of the ListSearchResults control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DrawListViewColumnHeaderEventArgs"/> instance containing the event data.</param>
+        private void ListSearchResults_DrawColumnHeader(object sender, DrawListViewColumnHeaderEventArgs e)
+        {
+            e.PaintNcHeader(_listViewHeaderBackColor);
+
+            if (_listViewHeaderForeColor != null)
+            {
+                TextRenderer.DrawText(e.Graphics,
+                    e.Header.Text,
+                    ListSearchResults.Font,
+                    e.Bounds,
+                    Color.FromArgb(ListSearchResults.ForeColor.R / 2, ListSearchResults.ForeColor.G / 2, ListSearchResults.ForeColor.B / 2),
+					TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.EndEllipsis | TextFormatFlags.SingleLine);
+            }
+        }
+
+        /// <summary>Handles the DrawItem event of the ListSearchResults control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DrawListViewItemEventArgs"/> instance containing the event data.</param>
+        private void ListSearchResults_DrawItem(object sender, DrawListViewItemEventArgs e) => e.DrawDefault = false;
+
+        /// <summary>Handles the DrawSubItem event of the ListSearchResults control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DrawListViewSubItemEventArgs"/> instance containing the event data.</param>
+        private void ListSearchResults_DrawSubItem(object sender, DrawListViewSubItemEventArgs e) => e.DrawDefault = true;
+
         /// <summary>Handles the NodeMouseDoubleClick event of the TreeFileSystem control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The [TreeNodeMouseClickEventArgs] instance containing the event data.</param>
@@ -1135,6 +1400,36 @@ namespace Gorgon.Editor.Views
             }
 
             e.Effect = effects;
+        }
+
+        /// <summary>Handles the ItemDrag event of the ListSearchResults control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="ItemDragEventArgs"/> instance containing the event data.</param>
+        private void ListSearchResults_ItemDrag(object sender, ItemDragEventArgs e)
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            if (!(e.Item is ListViewItem item))
+            {
+                return;
+            }
+
+            var dragData = new ListViewItemDragData(item, (IFileExplorerNodeVm)item.Tag, DragOperation.Copy);
+            item.Selected = true;
+
+            var data = new DataObject();
+            data.SetData(dragData);
+
+            if (dragData is IContentFileDragData contentFileData)
+            {
+                contentFileData.Cancel = false;
+                data.SetData(typeof(IContentFileDragData).FullName, true, contentFileData);
+            }
+
+            ListSearchResults.DoDragDrop(data, DragDropEffects.Move | DragDropEffects.Copy);
         }
 
         /// <summary>
@@ -1456,17 +1751,47 @@ namespace Gorgon.Editor.Views
         private void DataContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             KryptonTreeNode node = null;
+            ListViewItem searchItem = null;
 
             switch (e.PropertyName)
             {
                 case nameof(IFileExplorerVm.SearchResults):
                     _searchNodes = DataContext.SearchResults;
-                    FillTree(TreeFileSystem.Nodes, DataContext.RootNode.Children, true);
+
+                    if (_searchNodes == null)
+                    {
+                        TextSearch.Text = string.Empty;
+                    }
+
+                    FillSearchResults();
+
+                    if (_searchNodes == null)
+                    {
+                        ListSearchResults.SendToBack();
+                    }
+                    else
+                    {
+                        ListSearchResults.BringToFront();
+                    }                    
                     break;
                 case nameof(IFileExplorerVm.SelectedNode):
                     if (DataContext.SelectedNode != null)
                     {
                         _revNodeLinks.TryGetValue(DataContext.SelectedNode, out node);
+
+                        if (_searchNodes != null)
+                        {
+                            searchItem = ListSearchResults.Items.OfType<ListViewItem>().FirstOrDefault(item => item.Tag == DataContext.SelectedNode);
+                        }
+                    }
+                    else if (_searchNodes != null)
+                    {
+                        ListSearchResults.SelectedItems.Clear();
+                    }
+
+                    if ((searchItem != null) && (!searchItem.Selected))
+                    {
+                        searchItem.Selected = true;
                     }
 
                     if (TreeFileSystem.SelectedNode == node)
@@ -1568,6 +1893,70 @@ namespace Gorgon.Editor.Views
             TextSearch.Text = string.Empty;
             SendSearchCommand(null);
             SelectNextControl(this, true, true, true, true);
+        }
+
+        /// <summary>
+        /// Function to update the visual state of the node based on the node data.
+        /// </summary>
+        /// <param name="searchItem">The item to update.</param>
+        /// <param name="node">The file system node to evaluate.</param>
+        private void UpdateSearchItemVisualState(ListViewItem searchItem, IFileExplorerNodeVm node)
+        {
+            if (node == null)
+            {
+                searchItem.Font = _excludedFont;
+                searchItem.ForeColor = Color.DimGray;
+                return;
+            }
+
+            if (node.Metadata == null)
+            {
+                searchItem.Font = _excludedFont;
+                searchItem.ForeColor = Color.DimGray;
+            }
+            else
+            {
+                searchItem.ForeColor = node.IsChanged ? Color.LightGreen : Color.Empty;
+
+                if (node.IsOpen)
+                {
+                    searchItem.Font = _openFont;
+                }
+                else
+                {
+                    searchItem.Font = null;
+                }
+            }
+
+            if (node.IsCut)
+            {
+                // Make the text translucent if we're in cut mode.
+                searchItem.ForeColor = Color.FromArgb(128, searchItem.ForeColor);
+            }
+
+            // Check for an icon.            
+            if (node.Metadata?.ContentMetadata != null)
+            {
+                Image icon = node.Metadata.ContentMetadata.GetSmallIcon();
+
+                // This ID has not been registered in the image list, do so now.
+                if ((!TreeImages.Images.ContainsKey(node.ImageName))
+                    && (icon != null))
+                {
+                    TreeImages.Images.Add(node.ImageName, icon);
+                }
+            }
+            else if (node.IsContent)
+            {
+                searchItem.Font = _excludedFont;
+                searchItem.ForeColor = Color.DimGray;
+            }
+
+            int imageIndex = FindImageIndexFromNode(node);
+            if (imageIndex != -1)
+            {
+                searchItem.ImageIndex = imageIndex;
+            }
         }
 
         /// <summary>
@@ -1737,6 +2126,60 @@ namespace Gorgon.Editor.Views
             TreeFileSystem.SelectedNode.Expand();
         }
 
+		/// <summary>
+        /// Function to fill the search result list view.
+        /// </summary>
+        private void FillSearchResults()
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            ListSearchResults.BeginUpdate();
+
+            try
+            {
+                ListSearchResults.Items.Clear();
+
+                if ((_searchNodes == null) || (_searchNodes.Count == 0))
+                {
+                    return;
+                }
+
+                foreach (IFileExplorerNodeVm node in _searchNodes)
+                {
+                    var item = new ListViewItem
+                    {
+                        Name = node.FullPath,
+                        Text = node.Name,
+						Tag = node
+                    };
+
+                    if (node == DataContext.SelectedNode)
+                    {
+                        item.Selected = true;
+                    }
+
+                    UpdateSearchItemVisualState(item, node);
+
+                    item.SubItems.Add(new ListViewItem.ListViewSubItem
+                    {
+                        Text = node.FullPath,
+                        ForeColor = Color.Silver						
+                    });
+
+                    ListSearchResults.Items.Add(item);
+                }
+            }
+            finally
+            {                
+                ListSearchResults.EndUpdate();
+
+                ListSearchResults.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+            }
+        }
+
         /// <summary>
         /// Function to populate the tree with file system nodes.
         /// </summary>
@@ -1744,7 +2187,7 @@ namespace Gorgon.Editor.Views
         /// <param name="nodes">The nodes used to populate.</param>
         /// <param name="doNotExpand"><b>true</b> to keep nodes from expanding if their node state is set to expanded, <b>false</b> to automatically expand.</param>
         private void FillTree(TreeNodeCollection treeNodes, IReadOnlyList<IFileExplorerNodeVm> nodes, bool doNotExpand)
-        {
+        {		
             TreeFileSystem.BeginUpdate();
 
             try
@@ -1756,36 +2199,13 @@ namespace Gorgon.Editor.Views
                     return;
                 }
 
-                IEnumerable<IFileExplorerNodeVm> nodeList = nodes;
-
-                if (_searchNodes != null)
-                {
-                    nodeList = _searchNodes;
-
-                    // Remove these nodes from their parents.  They'll be added again below.
-                    // If we fail to do this, the linkage between the nodes gets broken and the tree will end up in an infinite loop.
-                    foreach (IFileExplorerNodeVm node in nodeList)
-                    {
-                        if (!_revNodeLinks.TryGetValue(node, out KryptonTreeNode treeNode))
-                        {
-                            continue;
-                        }
-
-                        treeNode.Remove();
-                    }
-                }
-
-                nodeList = nodeList.OrderBy(item => item.NodeType).ThenBy(item => item.Name, StringComparer.OrdinalIgnoreCase);
+                IEnumerable<IFileExplorerNodeVm> nodeList = nodes.OrderBy(item => item.NodeType)
+																 .ThenBy(item => item.Name, StringComparer.OrdinalIgnoreCase);
 
                 // Sort the nodes by type and then by name (I knew that NodeType enum would come in handy one day).
                 foreach (IFileExplorerNodeVm node in nodeList)
                 {
                     if (!node.Visible)
-                    {
-                        continue;
-                    }
-
-                    if ((_searchNodes != null) && (!_searchNodes.Contains(node)))
                     {
                         continue;
                     }
@@ -1809,6 +2229,7 @@ namespace Gorgon.Editor.Views
                                         
                     if (!treeNodes.Contains(treeNode))
                     {
+						// Remove the parent event, it will be re-added after.
                         treeNodes.Add(treeNode);
                     }                    
 
@@ -1947,16 +2368,12 @@ namespace Gorgon.Editor.Views
                 _searchNodes = dataContext.SearchResults;
                 FillTree(TreeFileSystem.Nodes, dataContext.RootNode.Children, false);
 
-                AssignNodeEvents(dataContext.RootNode.Children);
-
-                if (dataContext.SearchResults != null)
+                if (_searchNodes != null)
                 {
-                    // Expand all search results.
-                    foreach (IFileExplorerNodeVm node in dataContext.SearchResults)
-                    {
-                        node.IsExpanded = true;
-                    }
+                    FillSearchResults();
                 }
+
+                AssignNodeEvents(dataContext.RootNode.Children);
             }
             finally
             {
@@ -1973,7 +2390,7 @@ namespace Gorgon.Editor.Views
             if (IsDesignTime)
             {
                 return;
-            }
+            }            
 
             _excludedFont = new Font(KryptonManager.CurrentGlobalPalette
                                                    .GetContentShortTextFont((PaletteContentStyle)TreeFileSystem.ItemStyle, PaletteState.Normal),
@@ -2096,9 +2513,12 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
+            _listViewHeaderBackColor = new SolidBrush(ListSearchResults.BackColor);
+            _listViewHeaderForeColor = new SolidBrush(Color.FromArgb(ListSearchResults.ForeColor.R / 2, ListSearchResults.ForeColor.G / 2, ListSearchResults.ForeColor.B / 2));
+
             // Bug in krypton treeview:
             TreeFileSystem.TreeView.MouseUp += TreeFileSystem_MouseUp;
-            TreeFileSystem.TreeViewNodeSorter = _sortComparer = new FileSystemNodeComparer(_nodeLinks);            
+            TreeFileSystem.TreeViewNodeSorter = new FileSystemNodeComparer(_nodeLinks);            
         }
         #endregion
     }

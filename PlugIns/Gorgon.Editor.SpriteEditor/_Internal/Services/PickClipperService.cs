@@ -77,6 +77,15 @@ namespace Gorgon.Editor.SpriteEditor
             get;
             set;
         }
+        
+        /// <summary>
+        /// Property to set or return the padding for the clipping rectangle.
+        /// </summary>
+        public int Padding
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Property to set or return the flag to determine which data to use as a mask when determining clip boundaries.
@@ -323,12 +332,34 @@ namespace Gorgon.Editor.SpriteEditor
                     clipRegion.Bottom = spanRegion.Bottom.Max((int)clipRegion.Bottom);
                 }
 
+                clipRegion.Inflate(Padding, Padding);
+
+                if (clipRegion.Left < 0)
+                {
+                    clipRegion.Left = 0;
+                }
+
+                if (clipRegion.Top < 0)
+                {
+                    clipRegion.Top = 0;
+                }
+
+                if (clipRegion.Right > ImageData.Width)
+                {
+                    clipRegion.Right = ImageData.Width;
+                }
+
+                if (clipRegion.Bottom > ImageData.Height)
+                {
+                    clipRegion.Bottom = ImageData.Height;
+                }
+
                 // Ensure that we don't get a degenerate rectangle.
                 if ((clipRegion.IsEmpty) || (clipRegion.Width < 0) || (clipRegion.Height < 0))
                 {
                     return true;
                 }
-
+                
                 Rectangle = clipRegion;
             }
             finally

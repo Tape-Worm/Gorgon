@@ -173,7 +173,7 @@ namespace Gorgon.Graphics.Core
         // The previously assigned render target views captured when using flip mode.
         private readonly GorgonRenderTargetView[] _previousViews = new GorgonRenderTargetView[D3D11.OutputMergerStage.SimultaneousRenderTargetCount];
         // Flag to indicate that tearing support is enabled (for flip mode).
-        private int _supportsTearing = 1;
+        private readonly int _supportsTearing = 1;
         #endregion
 
         #region Events.

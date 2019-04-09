@@ -20,34 +20,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: March 23, 2019 4:30:59 PM
+// Created: March 25, 2019 9:53:42 AM
 // 
 #endregion
 
+using Gorgon.Graphics;
 using Gorgon.Editor.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
     /// <summary>
-    /// The view model for the manual input for sprite clipping.
+    /// The view model used to manipulate the settings for the plug in.
     /// </summary>
-    internal interface IManualRectInputVm
-        : IViewModel
+    internal interface ISpritePickMaskEditor
+		: IHostedPanelViewModel
     {
         /// <summary>
-        /// Property to set or return whether the manual input interface is active or not.
+        /// Property to set or return the type of masking to perform when picking a sprite using the <see cref="SpriteEditTool.SpritePick"/> tool.
         /// </summary>
-        bool IsActive
+        ClipMask ClipMaskType
         {
             get;
             set;
         }
 
         /// <summary>
-        /// Property to set or return the rectangle dimensions.
+        /// Property to set or return the sprite picker mask color.
         /// </summary>
-        DX.RectangleF Rectangle
+        GorgonColor ClipMaskValue
         {
             get;
             set;

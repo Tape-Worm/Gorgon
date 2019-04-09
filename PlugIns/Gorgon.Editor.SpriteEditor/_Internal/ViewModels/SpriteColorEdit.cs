@@ -25,6 +25,8 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Editor.UI;
@@ -42,30 +44,91 @@ namespace Gorgon.Editor.SpriteEditor
         // The service used to show messages to the user.
         private IMessageDisplayService _messageDisplay; 
         // The original color for the sprite.
-        private GorgonColor _originalSpriteColor = GorgonColor.BlackTransparent;
+        private readonly GorgonColor[] _originalColor = new GorgonColor[4];
         // The current color for the sprite.
-        private GorgonColor _color = GorgonColor.BlackTransparent;
+        private readonly GorgonColor[] _color = new GorgonColor[4];
+		// The currently selected vertex.
+        private readonly bool[] _selectedVertex = new bool[4];
         // Flag to indicate whether the panel is active or not.
         private bool _isActive;
+		// The currently selected color.
+        private GorgonColor _selectedColor = GorgonColor.BlackTransparent;
         #endregion
 
         #region Properties.
         /// <summary>Property to return whether the panel is modal.</summary>
         public bool IsModal => true;
 
-        /// <summary>Property to set or return the color to apply to the sprite.</summary>
-        public GorgonColor SpriteColor
+
+        /// <summary>
+        /// Property to set or return the currently selected color for an individual vertex.
+        /// </summary>
+        public GorgonColor SelectedColor
         {
-            get => _color;
+            get => _selectedColor;
             set
             {
-                if (_color.Equals(in value))
+                if (_selectedColor.Equals(in value))
                 {
                     return;
                 }
 
                 OnPropertyChanging();
-                _color = value;
+                _selectedColor = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>Property to set or return the selected vertex.</summary>
+        public IReadOnlyList<bool> SelectedVertices
+        {
+            get => _selectedVertex;
+            set
+            {
+                if (value == null)
+                {
+                    for (int i = 0; i < _selectedVertex.Length; ++i)
+                    {
+                        _selectedVertex[i] = false;
+                    }
+                    return;
+                }
+
+                if (value.SequenceEqual(_selectedVertex))
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                for (int i = 0; i < _selectedVertex.Length; ++i)
+                {
+                    _selectedVertex[i] = i < value.Count ? value[i] : false;
+                }
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>Property to set or return the color to apply to the sprite.</summary>
+        public IReadOnlyList<GorgonColor> SpriteColor
+        {
+            get => _color;
+            set
+            {
+                if (value == null)
+                {
+                    return;
+                }
+								
+                if (_color.SequenceEqual(value))
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                for (int i = 0; i < _color.Length; ++i)
+                {
+                    _color[i] = i < value.Count ? value[i] : GorgonColor.BlackTransparent;
+                }
                 OnPropertyChanged();
             }
         }
@@ -88,18 +151,26 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>Property to set or return the original color for the sprite.</summary>
-        public GorgonColor OriginalSpriteColor
+        public IReadOnlyList<GorgonColor> OriginalSpriteColor
         {
-            get => _originalSpriteColor;
+            get => _originalColor;
             set
             {
-                if (_originalSpriteColor.Equals(in value))
+                if (value == null)
+                {
+                    return;
+                }
+
+                if (_originalColor.SequenceEqual(value))
                 {
                     return;
                 }
 
                 OnPropertyChanging();
-                _originalSpriteColor = value;
+                for (int i = 0; i < _originalColor.Length; ++i)
+                {
+                    _originalColor[i] = i < value.Count ? value[i] : GorgonColor.BlackTransparent;
+                }
                 OnPropertyChanged();
             }
         }
@@ -145,7 +216,16 @@ namespace Gorgon.Editor.SpriteEditor
 
         #region Constructor.
         /// <summary>Initializes a new instance of the <see cref="SpriteColorEdit"/> class.</summary>
-        public SpriteColorEdit() => CancelCommand = new EditorCommand<object>(DoCancel);
+        public SpriteColorEdit()
+        {
+            CancelCommand = new EditorCommand<object>(DoCancel);
+
+            for (int i = 0; i < 4; ++i)
+            {
+                _selectedVertex[i] = true;
+                _color[i] = _originalColor[i] = GorgonColor.BlackTransparent;
+            }
+        }
         #endregion
     }
 }

@@ -192,6 +192,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\manual_input_24x24.dds" />
+    <None Include="Resources\manual_vertex_edit_64x64.dds" />
     <None Include="..\..\..\Gorgon\NoLiteralBugFix.ruleset">
       <Link>NoLiteralBugFix.ruleset</Link>
     </None>
@@ -240,8 +242,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="KryptonToolkitSuite5470">
-      <Version>5.470.856</Version>
+    <PackageReference Include="KryptonToolkitSuite5472">
+      <Version>5.472.901</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
       <Version>2.9.1</Version>

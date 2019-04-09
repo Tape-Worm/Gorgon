@@ -58,6 +58,15 @@ namespace Gorgon.Editor
         }
 
         /// <summary>
+        /// Property to return a large (64x64) version of the keybaord icon (encoded as DDS/DXT5 data).
+        /// </summary>
+        public static IGorgonImage KeyboardIconLarge
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// Function to load the common resources at application start up.
         /// </summary>
         public static void LoadResources()
@@ -69,9 +78,14 @@ namespace Gorgon.Editor
                 CheckerBoardPatternImage = dds.LoadFromStream(stream);
             }
 
-            using (var stream = new MemoryStream(Resources.keyboard_20x20, false))
+            using (var stream = new MemoryStream(Resources.manual_input_24x24, false))
             {
                 KeyboardIcon = dds.LoadFromStream(stream);
+            }
+
+            using (var stream = new MemoryStream(Resources.manual_vertex_edit_64x64, false))
+            {
+                KeyboardIconLarge = dds.LoadFromStream(stream);
             }
         }
 

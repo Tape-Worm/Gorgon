@@ -82,13 +82,15 @@ namespace Gorgon.Editor
         // The timer used to indicate how fast messages can be sent to the progress meter.
         private IGorgonTimer _progressTimer;
         // The current synchronization context.
-        private SynchronizationContext _syncContext;
+        private readonly SynchronizationContext _syncContext;
         // The context for a clipboard handler object.
         private IClipboardHandler _clipboardContext;
-        // The context for an undo operation.
-        private IUndoHandler _undoContext;
         // The flag to indicate that the application is already closing.
         private CloseStates _closeFlag;
+        // The ribbon merger for the main ribbon.
+        private readonly IRibbonMerger _ribbonMerger;
+		// The currently selected tab prior to showing a context tab.
+        private KryptonRibbonTab _prevTabBeforeContext;
         #endregion
 
         #region Properties.
@@ -110,15 +112,6 @@ namespace Gorgon.Editor
         {
             get => PanelProject.GraphicsContext;
             set => PanelProject.GraphicsContext = value;
-        }
-
-        /// <summary>
-        /// Property to return the ribbon merger for the main ribbon.
-        /// </summary>
-        [Browsable(false)]
-        public IRibbonMerger RibbonMerger
-        {
-            get;
         }
         #endregion
 
@@ -154,7 +147,7 @@ namespace Gorgon.Editor
                 firstTab = e.Ribbon.RibbonTabs[0];
             }
             
-            RibbonMerger.Merge(e.Ribbon);            
+            _ribbonMerger.Merge(e.Ribbon);            
 
             // Default to the first tab on the joined ribbon.
             if (firstTab != null)
@@ -168,7 +161,7 @@ namespace Gorgon.Editor
         /// <summary>Handles the RibbonRemoved event of the PanelProject control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The [ContentRibbonEventArgs] instance containing the event data.</param>
-        private void PanelProject_RibbonRemoved(object sender, ContentRibbonEventArgs e) => RibbonMerger.Unmerge(e.Ribbon);
+        private void PanelProject_RibbonRemoved(object sender, ContentRibbonEventArgs e) => _ribbonMerger.Unmerge(e.Ribbon);
 
         /// <summary>
         /// Handles the Click event of the ButtonExport control.
@@ -456,7 +449,6 @@ namespace Gorgon.Editor
 
             Stage.Visible = true;
             _clipboardContext = null;
-            _undoContext = null;
             RibbonMain.Visible = false;
             PanelWorkSpace.Visible = false;
 
@@ -580,9 +572,16 @@ namespace Gorgon.Editor
             switch (e.PropertyName)
             {
                 case nameof(IMain.CurrentProject):
-                    if (DataContext.CurrentProject?.FileExplorer != null)
+                    RibbonMain.SelectedContext = string.Empty;
+
+                    if (DataContext.CurrentProject != null)
                     {
-                        DataContext.CurrentProject.FileExplorer.PropertyChanged -= FileExplorer_PropertyChanged;
+                        DataContext.CurrentProject.PropertyChanging -= CurrentProject_PropertyChanging;
+                        DataContext.CurrentProject.PropertyChanged -= CurrentProject_PropertyChanged;
+                        if (DataContext.CurrentProject.FileExplorer != null)
+                        {
+                            DataContext.CurrentProject.FileExplorer.PropertyChanged -= FileExplorer_PropertyChanged;
+                        }
                     }
 
                     // Unload this view model since we're about to replace it.
@@ -591,6 +590,52 @@ namespace Gorgon.Editor
                     ValidateRibbonButtons();
                     break;
             }            
+        }
+
+        /// <summary>Handles the PropertyChanging event of the CurrentProject control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PropertyChangingEventArgs"/> instance containing the event data.</param>
+        private void CurrentProject_PropertyChanging(object sender, PropertyChangingEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(IProjectVm.CommandContext):
+                    if (string.IsNullOrWhiteSpace(DataContext.CurrentProject.CommandContext))
+                    {
+                        _prevTabBeforeContext = RibbonMain.SelectedTab;
+                    }
+                    break;
+            }
+        }
+
+        /// <summary>Handles the PropertyChanged event of the CurrentProject control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+        private void CurrentProject_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(IProjectVm.CommandContext):
+                    RibbonMain.SelectedContext = DataContext.CurrentProject.CommandContext;
+
+                    if (string.IsNullOrWhiteSpace(DataContext.CurrentProject.CommandContext))
+                    {
+                        if (_prevTabBeforeContext != null)
+                        {
+                            RibbonMain.SelectedTab = _prevTabBeforeContext;
+                        }                       
+                    }
+                    else
+                    {
+                        // Find the first tab associated with this context.
+                        KryptonRibbonTab contextTab = RibbonMain.RibbonTabs.FirstOrDefault(item => string.Equals(DataContext.CurrentProject.CommandContext, item.ContextName, StringComparison.OrdinalIgnoreCase));
+                        if (contextTab != null)
+                        {
+                            RibbonMain.SelectedTab = contextTab;
+                        }
+                    }
+                    break;
+            }
         }
 
         /// <summary>
@@ -631,9 +676,6 @@ namespace Gorgon.Editor
                     Text = DataContext.Text;
                     ValidateRibbonButtons();
                     break;
-                case nameof(IMain.UndoContext):
-                    _undoContext = DataContext.UndoContext;
-                    break;
                 case nameof(IMain.ClipboardContext):
                     if (_clipboardContext != null)
                     {
@@ -650,11 +692,18 @@ namespace Gorgon.Editor
                 case nameof(IMain.CurrentProject):
                     NavigateToProjectView(DataContext);
 
-                    if (DataContext.CurrentProject?.FileExplorer != null)
+                    if (DataContext.CurrentProject != null)
                     {
-                        DataContext.CurrentProject.FileExplorer.PropertyChanged += FileExplorer_PropertyChanged;
+                        DataContext.CurrentProject.PropertyChanging += CurrentProject_PropertyChanging;
+                        DataContext.CurrentProject.PropertyChanged += CurrentProject_PropertyChanged;
+
+                        if (DataContext.CurrentProject.FileExplorer != null)
+                        {
+                            DataContext.CurrentProject.FileExplorer.PropertyChanged += FileExplorer_PropertyChanged;
+                        }
+
+                        RibbonMain.SelectedContext = DataContext.CurrentProject.CommandContext;
                     }
-                    ValidateRibbonButtons();
                     break;
             }
 
@@ -764,18 +813,21 @@ namespace Gorgon.Editor
             if (dataContext == null)
             {
                 _clipboardContext = null;
-                _undoContext = null;
                 Text = Resources.GOREDIT_CAPTION_NO_FILE;
                 return;
             }
 
             Text = string.Empty;
             _clipboardContext = dataContext.CurrentProject?.ClipboardContext;
-            _undoContext = dataContext.CurrentProject?.UndoContext;
 
             if (_clipboardContext != null)
             {
                 _clipboardContext.DataUpdated += ClipboardContext_DataUpdated;
+            }
+
+            if (dataContext.CurrentProject != null)
+            {
+                RibbonMain.SelectedContext = dataContext.CurrentProject.CommandContext;
             }
 
             AddNewIcons(dataContext.ContentCreators);            
@@ -823,9 +875,15 @@ namespace Gorgon.Editor
                 _clipboardContext.DataUpdated -= ClipboardContext_DataUpdated;
             }
 
-            if (DataContext.CurrentProject?.FileExplorer != null)
+            if (DataContext.CurrentProject != null)
             {
-                DataContext.CurrentProject.FileExplorer.PropertyChanged -= FileExplorer_PropertyChanged;
+                DataContext.CurrentProject.PropertyChanging -= CurrentProject_PropertyChanging;
+                DataContext.CurrentProject.PropertyChanged -= CurrentProject_PropertyChanged;
+
+                if (DataContext.CurrentProject.FileExplorer != null)
+                {
+                    DataContext.CurrentProject.FileExplorer.PropertyChanged -= FileExplorer_PropertyChanged;
+                }
             }
 
             DataContext.ProgressUpdated -= DataContext_ProgressUpdated;
@@ -1083,10 +1141,16 @@ namespace Gorgon.Editor
                 {
                     return;
                 }
-
+                                
                 if (DataContext.CurrentProject != null)
                 {
-                    DataContext.CurrentProject.FileExplorer.PropertyChanged += FileExplorer_PropertyChanged;
+                    DataContext.CurrentProject.PropertyChanging += CurrentProject_PropertyChanging;
+                    DataContext.CurrentProject.PropertyChanged += CurrentProject_PropertyChanged;
+
+                    if (DataContext.CurrentProject.FileExplorer != null)
+                    {
+                        DataContext.CurrentProject.FileExplorer.PropertyChanged += FileExplorer_PropertyChanged;
+                    }
                 }
 
                 DataContext.ContentCreators.CollectionChanged += ContentCreators_CollectionChanged;
@@ -1114,11 +1178,12 @@ namespace Gorgon.Editor
 
             if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
             {
-                RibbonMerger = new RibbonMerger(RibbonMain);
+                _ribbonMerger = new RibbonMerger(RibbonMain);
             }
 
             _syncContext = SynchronizationContext.Current;            
             RibbonMain.AllowFormIntegrate = false;
+            PanelProject.MainRibbon = RibbonMain;
         }
         #endregion
     }

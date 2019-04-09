@@ -47,9 +47,9 @@ namespace Gorgon.Editor.ViewModels
     {
         #region Variables.
         // The content file dependant.
-        private IContentFile _content;
+        private readonly IContentFile _content;
         // The node represented by this dependency..
-        private IFileExplorerNodeVm _node;
+        private readonly IFileExplorerNodeVm _node;
         // The parent of this node.
         private IFileExplorerNodeVm _parent;
         #endregion
@@ -66,6 +66,9 @@ namespace Gorgon.Editor.ViewModels
 
         /// <summary>Event triggered if the dependencies list for this file is updated.</summary>
         public event EventHandler DependenciesUpdated;
+
+        /// <summary>Event triggered if the content was closed with the <see cref="IContentFile.CloseContent"/> method.</summary>
+        public event EventHandler Closed;
         #endregion
 
         #region Properties.        
@@ -225,6 +228,15 @@ namespace Gorgon.Editor.ViewModels
             handler?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>Handles the Closed event of the Content control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void Content_Closed(object sender, EventArgs e)
+        {
+            EventHandler handler = Closed;
+            handler?.Invoke(this, EventArgs.Empty);
+        }
+
         /// <summary>Handles the Renamed event of the Content control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="ContentFileRenamedEventArgs"/> instance containing the event data.</param>
@@ -368,6 +380,16 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Function to notify that the content should close if it's open.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This method will close the content forcefully, that is, it will not prompt to save and any changes will be lost.
+        /// </para>
+        /// </remarks>
+        void IContentFile.CloseContent() => _content.CloseContent();
+
+        /// <summary>
         /// Function to retrieve the size of the data on the physical file system.
         /// </summary>        
         /// <returns>The size of the data on the physical file system, in bytes.</returns>
@@ -424,6 +446,7 @@ namespace Gorgon.Editor.ViewModels
             _node.PropertyChanged -= Node_PropertyChanged;
             _content.Renamed -= Content_Renamed;
             _content.Deleted -= Content_Deleted;
+            _content.Closed -= Content_Closed;
             _content.DependenciesUpdated -= Content_DependenciesUpdated;
             base.OnUnload();
         }
@@ -455,6 +478,7 @@ namespace Gorgon.Editor.ViewModels
             Children = new ObservableCollection<IFileExplorerNodeVm>();
             _content.Renamed += Content_Renamed;
             _content.Deleted += Content_Deleted;
+            _content.Closed += Content_Closed;
             _content.DependenciesUpdated += Content_DependenciesUpdated;
         }
         #endregion

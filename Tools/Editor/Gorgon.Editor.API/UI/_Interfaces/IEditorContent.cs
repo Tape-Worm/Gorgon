@@ -123,6 +123,15 @@ namespace Gorgon.Editor.UI
             get;
             set;
         }
+
+        /// <summary>
+        /// Property to set or return the current context for commands from this content.
+        /// </summary>
+        string CommandContext
+        {
+            get;
+            set;
+        }
         #endregion
     }
 }

@@ -250,7 +250,6 @@ namespace Gorgon.Editor.SpriteEditor
                 }
 
                 sprite.Position = new DX.Vector2(128, 128);
-                sprite.TextureSampler = GorgonSamplerState.PointFiltering;
 
                 prevRtv = GraphicsContext.Graphics.RenderTargets[0];                
                 GraphicsContext.Graphics.SetRenderTarget(_rtv);
@@ -403,7 +402,7 @@ namespace Gorgon.Editor.SpriteEditor
             IContentFile imageFile;
             GorgonSprite sprite;
             ISpriteTextureService textureService;
-            Stream stream = null;
+            Stream stream = null;            
 
             try
             {                
@@ -416,17 +415,26 @@ namespace Gorgon.Editor.SpriteEditor
                 stream = file.OpenRead();
                 sprite = _defaultCodec.FromStream(stream, spriteImage);
 
-                var manualRectInput = new ManualRectInputVm();
-                manualRectInput.Initialize(injector);
-
                 var settings = new Settings();
+                ISpritePickMaskEditor spritePickMaskEditor = settings;
                 settings.Initialize(new SettingsParameters(_settings));
+
+                var manualRectEdit = new ManualRectangleEditor();
+                manualRectEdit.Initialize(new ManualInputParameters(settings, injector.MessageDisplay));
+
+                var manualVertexEdit = new ManualVertexEditor();
+                manualVertexEdit.Initialize(new ManualInputParameters(settings, injector.MessageDisplay));
 
                 var colorEditor = new SpriteColorEdit();
                 colorEditor.Initialize(injector);
 
                 var anchorEditor = new SpriteAnchorEdit();
                 anchorEditor.Initialize(injector);
+
+                var samplerBuilder = new SamplerBuildService(new GorgonSamplerStateBuilder(GraphicsContext.Graphics));
+
+                var wrapEditor = new SpriteWrappingEditor();
+                wrapEditor.Initialize(new SpriteWrappingEditorParameters(samplerBuilder, injector.MessageDisplay));
 
                 content.Initialize(new SpriteContentParameters(this,
                     file, 
@@ -435,9 +443,13 @@ namespace Gorgon.Editor.SpriteEditor
                     textureService,
                     sprite,
                     _defaultCodec,
-                    manualRectInput,             
+                    manualRectEdit,             
+                    manualVertexEdit,
+                    spritePickMaskEditor,
                     colorEditor,
                     anchorEditor,
+					wrapEditor,
+					samplerBuilder,
                     settings,
                     undoService, 
                     scratchArea, 

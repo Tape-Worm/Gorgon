@@ -276,10 +276,10 @@
             this.tableLayoutPanel2.Controls.Add(this.textBoxHex, 6, 2);
             this.tableLayoutPanel2.Controls.Add(this.labelHex, 5, 2);
             this.tableLayoutPanel2.Controls.Add(this.numAlpha, 6, 0);
-            this.tableLayoutPanel2.Controls.Add(this.numGreen, 4, 2);
+            this.tableLayoutPanel2.Controls.Add(this.numGreen, 4, 1);
             this.tableLayoutPanel2.Controls.Add(this.labelAlpha, 5, 0);
             this.tableLayoutPanel2.Controls.Add(this.radioBlue, 3, 2);
-            this.tableLayoutPanel2.Controls.Add(this.numBlue, 4, 1);
+            this.tableLayoutPanel2.Controls.Add(this.numBlue, 4, 2);
             this.tableLayoutPanel2.Controls.Add(this.radioGreen, 3, 1);
             this.tableLayoutPanel2.Controls.Add(this.numRed, 4, 0);
             this.tableLayoutPanel2.Controls.Add(this.radioRed, 3, 0);

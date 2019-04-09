@@ -46,6 +46,10 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="WinFormsColor, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Dependencies\WinFormsColor\WinFormsColor.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\Gorgon\Gorgon.Core\SharedAssemblyInfo.cs">
@@ -67,6 +71,9 @@
       <DependentUpon>FormRibbon.cs</DependentUpon>
     </Compile>
     <Compile Include="_Internal\ImageAnimationController.cs" />
+    <Compile Include="_Internal\Renderers\SpriteColorRenderer.cs" />
+    <Compile Include="_Internal\Renderers\SpriteVertexOffsetRenderer.cs" />
+    <Compile Include="_Internal\Renderers\SpriteWrappingRenderer.cs" />
     <Compile Include="_Internal\Services\AnchorEditService.cs" />
     <Compile Include="_Internal\Renderers\DefaultSpriteRenderer.cs" />
     <Compile Include="_Internal\Renderers\NoTextureRenderer.cs" />
@@ -74,9 +81,13 @@
     <Compile Include="_Internal\Renderers\SpriteAnchorRenderer.cs" />
     <Compile Include="_Internal\Renderers\SpriteClipRenderer.cs" />
     <Compile Include="_Internal\Renderers\SpritePickRenderer.cs" />
+    <Compile Include="_Internal\Services\SamplerBuildService.cs" />
+    <Compile Include="_Internal\Services\SpriteVertexEditService.cs" />
     <Compile Include="_Internal\Services\_Interfaces\IAnchorEditService.cs" />
     <Compile Include="_Internal\Services\_Interfaces\IPickClipperService.cs" />
     <Compile Include="_Internal\Services\PickClipperService.cs" />
+    <Compile Include="_Internal\Services\_Interfaces\ISamplerBuildService.cs" />
+    <Compile Include="_Internal\Services\_Interfaces\ISpriteVertexEditService.cs" />
     <Compile Include="_Internal\SpriteEditorSettings.cs" />
     <Compile Include="_Internal\Services\GorgonSpriteImporter.cs" />
     <Compile Include="_Internal\Renderers\SpriteContentRenderer.cs" />
@@ -85,29 +96,55 @@
     <Compile Include="_Internal\Services\_Interfaces\ISpriteTextureService.cs" />
     <Compile Include="_Internal\SpriteImporterSettings.cs" />
     <Compile Include="_Internal\SpriteEditorCommonConstants.cs" />
+    <Compile Include="_Internal\ViewModels\ManualInputParameters.cs" />
+    <Compile Include="_Internal\ViewModels\ManualVertexEditor.cs" />
     <Compile Include="_Internal\ViewModels\SpriteAnchorEdit.cs" />
     <Compile Include="_Internal\ViewModels\SpriteColorEdit.cs" />
+    <Compile Include="_Internal\ViewModels\SpriteWrappingEditor.cs" />
+    <Compile Include="_Internal\ViewModels\SpriteWrappingEditorParameters.cs" />
+    <Compile Include="_Internal\ViewModels\_Interfaces\IManualInputViewModel.cs" />
+    <Compile Include="_Internal\ViewModels\_Interfaces\IManualVertexEditor.cs" />
+    <Compile Include="_Internal\ViewModels\_Interfaces\ISpritePickMaskEditor.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\ISettings.cs" />
     <Compile Include="_Internal\ViewModels\Settings.cs" />
     <Compile Include="_Internal\ViewModels\SettingsParameters.cs" />
-    <Compile Include="_Internal\ViewModels\_Interfaces\IManualRectInputVm.cs" />
-    <Compile Include="_Internal\ViewModels\ManualRectInputVm.cs" />
+    <Compile Include="_Internal\ViewModels\_Interfaces\IManualRectangleEditor.cs" />
+    <Compile Include="_Internal\ViewModels\ManualRectangleEditor.cs" />
     <Compile Include="_Internal\ViewModels\SpriteContent.cs" />
     <Compile Include="_Internal\ViewModels\SpriteContentParameters.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\ISpriteAnchorEdit.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\ISpriteColorEdit.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\ISpriteContent.cs" />
-    <Compile Include="_Internal\Views\FormManualRectInput.cs">
+    <Compile Include="_Internal\ViewModels\_Interfaces\ISpriteWrappingEditor.cs" />
+    <Compile Include="_Internal\Views\FormManualRectangleEdit.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="_Internal\Views\FormManualRectInput.Designer.cs">
-      <DependentUpon>FormManualRectInput.cs</DependentUpon>
+    <Compile Include="_Internal\Views\FormManualRectangleEdit.Designer.cs">
+      <DependentUpon>FormManualRectangleEdit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="_Internal\Views\FormManualVertexEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="_Internal\Views\FormManualVertexEdit.Designer.cs">
+      <DependentUpon>FormManualVertexEdit.cs</DependentUpon>
     </Compile>
     <Compile Include="_Internal\Views\SpriteAnchor.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="_Internal\Views\SpriteAnchor.Designer.cs">
       <DependentUpon>SpriteAnchor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="_Internal\Views\SpriteWrap.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="_Internal\Views\SpriteWrap.Designer.cs">
+      <DependentUpon>SpriteWrap.cs</DependentUpon>
+    </Compile>
+    <Compile Include="_Internal\Views\SpritePickMaskColor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="_Internal\Views\SpritePickMaskColor.Designer.cs">
+      <DependentUpon>SpritePickMaskColor.cs</DependentUpon>
     </Compile>
     <Compile Include="_Internal\Views\SpriteColor.cs">
       <SubType>UserControl</SubType>
@@ -121,10 +158,27 @@
     <Compile Include="_Internal\Views\SpriteEditorView.Designer.cs">
       <DependentUpon>SpriteEditorView.cs</DependentUpon>
     </Compile>
+    <Compile Include="_Internal\Views\_Interfaces\IManualInputControl.cs" />
     <Compile Include="_Internal\_Interfaces\ISpriteContentFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\pick_padding_48x48.png" />
+    <None Include="Resources\pick_padding_16x16.png" />
+    <None Include="Resources\color_pick_48x48.png" />
+    <None Include="Resources\color_pick_16x16.png" />
+    <None Include="Resources\fixed_size_48x48.png" />
+    <None Include="Resources\fixed_size_16x16.png" />
+    <None Include="Resources\full_size_48x48.png" />
+    <None Include="Resources\full_size_16x16.png" />
+    <None Include="Resources\confirm_48x48.png" />
+    <None Include="Resources\confirm_16x16.png" />
+    <None Include="Resources\cancel_48x48.png" />
+    <None Include="Resources\cancel_16x16.png" />
+    <None Include="Resources\reset_48x48.png" />
+    <None Include="Resources\reset_16x16.png" />
+    <None Include="Resources\manual_input_48x48.png" />
+    <None Include="Resources\manual_input_16x16.png" />
     <None Include="..\..\Gorgon\NoLiteralBugFix.ruleset">
       <Link>NoLiteralBugFix.ruleset</Link>
     </None>
@@ -174,11 +228,20 @@
     <EmbeddedResource Include="_Internal\Forms\FormRibbon.resx">
       <DependentUpon>FormRibbon.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="_Internal\Views\FormManualRectInput.resx">
-      <DependentUpon>FormManualRectInput.cs</DependentUpon>
+    <EmbeddedResource Include="_Internal\Views\FormManualRectangleEdit.resx">
+      <DependentUpon>FormManualRectangleEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="_Internal\Views\FormManualVertexEdit.resx">
+      <DependentUpon>FormManualVertexEdit.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="_Internal\Views\SpriteAnchor.resx">
       <DependentUpon>SpriteAnchor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="_Internal\Views\SpriteWrap.resx">
+      <DependentUpon>SpriteWrap.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="_Internal\Views\SpritePickMaskColor.resx">
+      <DependentUpon>SpritePickMaskColor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="_Internal\Views\SpriteColor.resx">
       <DependentUpon>SpriteColor.cs</DependentUpon>
@@ -234,8 +297,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="KryptonToolkitSuite5470">
-      <Version>5.470.856</Version>
+    <PackageReference Include="KryptonToolkitSuite5472">
+      <Version>5.472.901</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
       <Version>2.9.1</Version>

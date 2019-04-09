@@ -26,7 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using Gorgon.Core;
 using Gorgon.Editor.Metadata;
@@ -45,6 +44,11 @@ namespace Gorgon.Editor.Content
         /// Event triggered if this content file was deleted.
         /// </summary>
         event EventHandler Deleted;
+
+		/// <summary>
+        /// Event triggered if the content was closed with the <see cref="CloseContent"/> method.
+        /// </summary>
+        event EventHandler Closed;
 
         /// <summary>
         /// Event triggered if this content file was renamed.
@@ -118,6 +122,16 @@ namespace Gorgon.Editor.Content
         #endregion
 
         #region Methods.  
+		/// <summary>
+        /// Function to notify that the content should close if it's open.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This method will close the content forcefully, that is, it will not prompt to save and any changes will be lost.
+        /// </para>
+        /// </remarks>
+        void CloseContent();
+
         /// <summary>
         /// Function to link a content file to be dependant upon this content.
         /// </summary>

@@ -47,7 +47,7 @@ namespace Gorgon.Animation
 	{
 		#region Variables.
         // The value for the key frame.
-	    private GorgonColor _value = GorgonColor.White;
+	    private GorgonColor _value;
         #endregion
 
         #region Properties.
@@ -90,9 +90,8 @@ namespace Gorgon.Animation
         public GorgonKeyGorgonColor(float time, GorgonColor value)
 		{
 			Time = time;
-			Value = value;
+			_value = value;
 		}
-
         #endregion
     }
 }

@@ -42,7 +42,7 @@ namespace Gorgon.Editor.Services
     {
         #region Variables.
         // The content plugins to scan through.
-        private IContentPluginManagerService _contentPlugins;
+        private readonly IContentPluginManagerService _contentPlugins;
         #endregion
 
         #region Methods.

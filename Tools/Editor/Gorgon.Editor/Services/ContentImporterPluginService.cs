@@ -47,11 +47,11 @@ namespace Gorgon.Editor.Services
     {
         #region Variables.
         // The plugin list.
-        private Dictionary<string, ContentImportPlugin> _plugins = new Dictionary<string, ContentImportPlugin>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, ContentImportPlugin> _plugins = new Dictionary<string, ContentImportPlugin>(StringComparer.OrdinalIgnoreCase);
         // The list of disabled content plug ins.
         private readonly Dictionary<string, IDisabledPlugin> _disabled = new Dictionary<string, IDisabledPlugin>(StringComparer.OrdinalIgnoreCase);
         // The directory that contains the settings for the plug ins.
-        private DirectoryInfo _settingsDir;
+        private readonly DirectoryInfo _settingsDir;
         // The application graphics context for passing to content plug ins.
         private readonly IGraphicsContext _graphicsContext;
         #endregion

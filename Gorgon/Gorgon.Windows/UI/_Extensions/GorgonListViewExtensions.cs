@@ -27,6 +27,7 @@
 
 using System;
 using System.Windows.Forms;
+using Drawing = System.Drawing;
 using Gorgon.Core;
 using Gorgon.Native;
 using Gorgon.Windows.Properties;
@@ -51,7 +52,68 @@ namespace Gorgon.UI
 		private const int HeaderSortDown = 0x200;
 		// Flag to make the column sort descending.
 		private const int HeaderSortUp = 0x400;
-		#endregion
+        #endregion
+
+		/// <summary>
+        /// Function to retrieve the boundaries for the header on a list view.
+        /// </summary>
+        /// <param name="listView">The list view to use.</param>
+        /// <returns>A rectangle containing the client area boundaries for the header.</returns>
+        public static Drawing.Rectangle GetHeaderBounds(this ListView listView)
+        {
+            if (listView.HeaderStyle == ColumnHeaderStyle.None)
+            {
+                return Drawing.Rectangle.Empty;
+            }
+
+            if (listView.View != View.Details)
+            {
+                return Drawing.Rectangle.Empty;
+            }
+
+            IntPtr columnHeader = UserApi.SendMessage(listView.Handle, LvmGetHeader, IntPtr.Zero, IntPtr.Zero);
+            UserApi.GetWindowRect(columnHeader, out RECT winRect);
+
+            return listView.RectangleToClient(Drawing.Rectangle.FromLTRB(winRect.left, winRect.top, winRect.right, winRect.bottom));
+        }
+
+
+        /// <summary>
+        /// Function to paint the non-client area of the list view header with a specific color.
+        /// </summary>
+        /// <param name="listView">The listview to update.</param>
+        /// <param name="brush">The brush to use when painting.</param>
+        public static void PaintNcHeader(this ListView listView, Drawing.Brush brush)
+        {
+            if ((listView.HeaderStyle == ColumnHeaderStyle.None) || (listView.View != View.Details) || (listView.Columns.Count == 0))
+            {
+                return;
+            }
+
+            IntPtr columnHeader = UserApi.SendMessage(listView.Handle, LvmGetHeader, IntPtr.Zero, IntPtr.Zero);
+            IntPtr dc = UserApi.GetDC(columnHeader);
+            var g = Drawing.Graphics.FromHdc(dc);
+
+            try
+            {
+                ColumnHeader header = listView.Columns[listView.Columns.Count - 1];
+                Drawing.Rectangle bounds = GetHeaderBounds(listView);
+                var ncBounds = Drawing.Rectangle.FromLTRB(bounds.Right - header.Width, bounds.Top, bounds.Right, bounds.Height);
+                g.FillRectangle(brush, ncBounds);
+            }
+            finally
+            {
+                _ = UserApi.ReleaseDC(columnHeader, dc);
+                g.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Function to paint the non-client area of the list view header with a specific color.
+        /// </summary>
+        /// <param name="headerDrawEventArgs">The event arguments from the list view header owner draw event.</param>
+        /// <param name="brush">The brush to use when painting.</param>
+        public static void PaintNcHeader(this DrawListViewColumnHeaderEventArgs headerDrawEventArgs, Drawing.Brush brush) =>  PaintNcHeader(headerDrawEventArgs.Header.ListView, brush);
 
 		/// <summary>
 		/// Function to set the sorting icon on the list view control.

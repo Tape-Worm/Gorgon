@@ -70,20 +70,22 @@ namespace Gorgon.Editor.ViewModels
         private IEditorFileSaveAsDialogService _saveDialog;
         // The directory locator service.
         private IDirectoryLocateService _directoryLocator;
-        // The settings for the project.
-        private EditorSettings _settings;
-        #endregion
+		#endregion
 
-        #region Properties.
-        /// <summary>
-        /// Property to return the settings for the application.
-        /// </summary>
-        public EditorSettings Settings => _settings;
+		#region Properties.
+		/// <summary>
+		/// Property to return the settings for the application.
+		/// </summary>
+		public EditorSettings Settings
+        {
+            get;
+            private set;
+        }
 
-        /// <summary>
-        /// Property to return a list of content plugins that can create their own content.
-        /// </summary>
-        public ObservableCollection<IContentPluginMetadata> ContentCreators
+		/// <summary>
+		/// Property to return a list of content plugins that can create their own content.
+		/// </summary>
+		public ObservableCollection<IContentPluginMetadata> ContentCreators
         {
             get;
             private set;
@@ -135,7 +137,6 @@ namespace Gorgon.Editor.ViewModels
 
                 NotifyPropertyChanged(nameof(Text));
                 NotifyPropertyChanged(nameof(ClipboardContext));
-                NotifyPropertyChanged(nameof(UndoContext));
 
                 if (_currentProject == null)
                 {
@@ -163,11 +164,6 @@ namespace Gorgon.Editor.ViewModels
         /// Property to return the current clipboard context.
         /// </summary>
         public IClipboardHandler ClipboardContext => CurrentProject?.ClipboardContext;
-
-        /// <summary>
-        /// Property to return the current undo context.
-        /// </summary>
-        public IUndoHandler UndoContext => CurrentProject?.UndoContext;
 
         /// <summary>
         /// Property to return the command used to open a project.
@@ -226,7 +222,7 @@ namespace Gorgon.Editor.ViewModels
             try
             {
                 writer = new StreamWriter(settingsFile.FullName, false, Encoding.UTF8);
-                writer.Write(JsonConvert.SerializeObject(_settings, new JsonSharpDxRectConverter()));
+                writer.Write(JsonConvert.SerializeObject(Settings, new JsonSharpDxRectConverter()));
             }
             catch (Exception ex)
             {
@@ -258,7 +254,7 @@ namespace Gorgon.Editor.ViewModels
         /// <remarks>Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.</remarks>
         protected override void OnInitialize(MainParameters injectionParameters)
         {
-            _settings = injectionParameters.Settings ?? throw new ArgumentNullException(nameof(MainParameters.Settings), nameof(injectionParameters));
+            Settings = injectionParameters.Settings ?? throw new ArgumentNullException(nameof(MainParameters.Settings), nameof(injectionParameters));
             _projectManager = injectionParameters.ProjectManager ?? throw new ArgumentMissingException(nameof(MainParameters.ProjectManager), nameof(injectionParameters));
             _viewModelFactory = injectionParameters.ViewModelFactory ?? throw new ArgumentMissingException(nameof(MainParameters.ViewModelFactory), nameof(injectionParameters));
             _openDialog = injectionParameters.OpenDialog ?? throw new ArgumentMissingException(nameof(MainParameters.OpenDialog), nameof(injectionParameters));
@@ -286,9 +282,6 @@ namespace Gorgon.Editor.ViewModels
             {
                 case nameof(IProjectVm.ClipboardContext):
                     NotifyPropertyChanged(nameof(ClipboardContext));
-                    break;
-                case nameof(IProjectVm.UndoContext):
-                    NotifyPropertyChanged(nameof(UndoContext));
                     break;
                 case nameof(IProjectVm.ProjectTitle):
                 case nameof(IProjectVm.ProjectState):
@@ -437,9 +430,9 @@ namespace Gorgon.Editor.ViewModels
             await projectVm.SaveProjectMetadataAsync();
             CurrentProject = projectVm;
 
-            _settings.LastProjectWorkingDirectory = project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
+            Settings.LastProjectWorkingDirectory = project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
 
-            RecentItem dupe = RecentFiles.Files.FirstOrDefault(item => string.Equals(_settings.LastProjectWorkingDirectory, 
+            RecentItem dupe = RecentFiles.Files.FirstOrDefault(item => string.Equals(Settings.LastProjectWorkingDirectory, 
                 item.FilePath.FormatDirectory(Path.DirectorySeparatorChar), 
                 StringComparison.OrdinalIgnoreCase));
 
@@ -585,7 +578,7 @@ namespace Gorgon.Editor.ViewModels
         /// <returns>The initial directory.</returns>
         private DirectoryInfo GetInitialProjectDirectory()
         {
-            var dir = new DirectoryInfo(string.IsNullOrEmpty(_settings.LastProjectWorkingDirectory) ? Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) : _settings.LastProjectWorkingDirectory);
+            var dir = new DirectoryInfo(string.IsNullOrEmpty(Settings.LastProjectWorkingDirectory) ? Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) : Settings.LastProjectWorkingDirectory);
             dir.Refresh();
 
             if (!dir.Exists)
@@ -648,7 +641,7 @@ namespace Gorgon.Editor.ViewModels
                 // Function used to cancel the save operation.
                 void CancelOperation() => cancelSource.Cancel();
 
-                var lastSaveDir = new DirectoryInfo(_settings.LastOpenSavePath);
+                var lastSaveDir = new DirectoryInfo(Settings.LastOpenSavePath);
 
                 if (!lastSaveDir.Exists)
                 {
@@ -762,13 +755,13 @@ namespace Gorgon.Editor.ViewModels
 
                 // Unload the current project.
                 CurrentProject = null;
-                _settings.LastProjectWorkingDirectory = string.Empty;
+                Settings.LastProjectWorkingDirectory = string.Empty;
 
                 CurrentProject = await _viewModelFactory.CreateProjectViewModelAsync(project);
-                _settings.LastProjectWorkingDirectory = project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
+                Settings.LastProjectWorkingDirectory = project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
 
                 RecentItem dupe = RecentFiles.Files.FirstOrDefault(item => string.Equals(item.FilePath.FormatDirectory(Path.DirectorySeparatorChar), 
-                    _settings.LastProjectWorkingDirectory, 
+                    Settings.LastProjectWorkingDirectory, 
                     StringComparison.OrdinalIgnoreCase));
 
                 if (dupe != null)
@@ -778,7 +771,7 @@ namespace Gorgon.Editor.ViewModels
 
                 RecentFiles.Files.Add(new RecentItem
                 {
-                    FilePath = _settings.LastProjectWorkingDirectory,
+                    FilePath = Settings.LastProjectWorkingDirectory,
                     LastUsedDate = DateTime.Now
                 });
             }
@@ -893,9 +886,9 @@ namespace Gorgon.Editor.ViewModels
                         if (args.WindowState == 0)
                         {
                             // Only store the window boundaries when we're in normal window state.
-                            _settings.WindowBounds = args.WindowDimensions;
+                            Settings.WindowBounds = args.WindowDimensions;
                         }
-                        _settings.WindowState = args.WindowState;
+                        Settings.WindowState = args.WindowState;
 
                         PersistSettings();
                     }

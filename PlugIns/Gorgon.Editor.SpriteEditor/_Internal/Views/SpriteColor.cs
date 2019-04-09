@@ -38,10 +38,16 @@ namespace Gorgon.Editor.SpriteEditor
     internal partial class SpriteColor
         : EditorSubPanelCommon, IDataContext<ISpriteColorEdit>
     {
+        #region Variables.
+		// The list of vertices that were selected.
+        private readonly GorgonColor[] _selectedColors = new GorgonColor[4];
+        #endregion
+
         #region Properties.
         /// <summary>
         /// Property to return the data context for the view.
         /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public ISpriteColorEdit DataContext
         {
             get;
@@ -60,7 +66,20 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-            DataContext.SpriteColor = e.Color;
+            for (int i = 0; i < DataContext.SelectedVertices.Count; ++i)
+            {
+                if (DataContext.SelectedVertices[i])
+                {
+                    _selectedColors[i] = e.Color;
+                }
+                else
+                {
+                    _selectedColors[i] = DataContext.SpriteColor[i];
+                }
+            }
+
+            DataContext.SpriteColor = _selectedColors;
+            DataContext.SelectedColor = e.Color;
             ValidateOk();
         }
 
@@ -82,13 +101,43 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
         private void DataContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            int firstSelected = 0;
+
             switch (e.PropertyName)
             {
+                case nameof(ISpriteColorEdit.SelectedColor):
+                    Picker.SelectedColor = DataContext.SelectedColor;
+                    break;
                 case nameof(ISpriteColorEdit.OriginalSpriteColor):
-                    Picker.OriginalColor = DataContext.OriginalSpriteColor;
+                    for (int i = 0; i < DataContext.SelectedVertices.Count; ++i)
+                    {
+                        if (DataContext.SelectedVertices[i])
+                        {
+                            firstSelected = i;
+                            break;
+                        }
+                    }
+
+                    Picker.OriginalColor = DataContext.OriginalSpriteColor[firstSelected];
                     break;
                 case nameof(ISpriteColorEdit.SpriteColor):
-                    Picker.SelectedColor = DataContext.SpriteColor;
+                    Picker.ColorChanged -= Picker_ColorChanged;
+                    try
+                    {
+                        for (int i = 0; i < DataContext.SelectedVertices.Count; ++i)
+                        {
+                            if (DataContext.SelectedVertices[i])
+                            {
+                                firstSelected = i;
+                                break;
+                            }
+                        }
+                        Picker.SelectedColor = DataContext.SpriteColor[firstSelected];
+                    }
+                    finally
+                    {
+                        Picker.ColorChanged += Picker_ColorChanged;
+                    }
                     break;
             }
         }
@@ -108,10 +157,24 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="dataContext">The data context to assign.</param>
         private void InitializeFromDataContext(ISpriteColorEdit dataContext)
         {
-            ResetDataContext();
+            if (dataContext == null)
+            {
+                ResetDataContext();
+                return;
+            }
 
-            Picker.OriginalColor = dataContext.OriginalSpriteColor;
-            Picker.SelectedColor = dataContext.SpriteColor;
+            int firstSelected = 0;
+            for (int i = 0; i < dataContext.SelectedVertices.Count; ++i)
+            {
+                if (dataContext.SelectedVertices[i])
+                {
+                    firstSelected = i;
+                    break;
+                }
+            }
+
+            Picker.OriginalColor = dataContext.OriginalSpriteColor[firstSelected];
+            Picker.SelectedColor = dataContext.SpriteColor[firstSelected];
         }
 
         /// <summary>Function to submit the change.</summary>

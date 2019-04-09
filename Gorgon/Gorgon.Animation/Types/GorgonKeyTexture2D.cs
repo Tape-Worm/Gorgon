@@ -69,12 +69,12 @@ namespace Gorgon.Animation
 	    }
 
         /// <summary>
-        /// Property to return the texture array index to use on a texture array.
+        /// Property to set or return the texture array index to use on a texture array.
         /// </summary>
 	    public ref int TextureArrayIndex => ref _textureArrayIndex;
 
 	    /// <summary>
-	    /// Property to return the texture coordinates.
+	    /// Property to set or return the texture coordinates.
 	    /// </summary>
 	    public ref DX.RectangleF TextureCoordinates => ref _textureCoordinates;
 

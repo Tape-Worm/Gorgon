@@ -55,12 +55,17 @@ namespace Gorgon.Editor.ViewModels
         // The file system information object.
         private FileInfo _fileInfo;
         // The list of content file dependant upon this file.
-        private ObservableCollection<IContentFile> _dependencies;
+        private readonly ObservableCollection<IContentFile> _dependencies;
         #endregion
 
         #region Events.
         /// <summary>Event triggered if this content file was deleted.</summary>
         public event EventHandler Deleted;
+
+        /// <summary>
+        /// Event triggered if the content was closed with the <see cref="CloseContent"/> method.
+        /// </summary>
+        public event EventHandler Closed;
 
         /// <summary>Event triggered if this content file was renamed.</summary>
         public event EventHandler<ContentFileRenamedEventArgs> Renamed;
@@ -833,6 +838,21 @@ namespace Gorgon.Editor.ViewModels
         {
             Refresh();
             NotifyPropertyChanged(nameof(Metadata));
+        }
+
+        /// <summary>
+        /// Function to notify that the content should close if it's open.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This method will close the content forcefully, that is, it will not prompt to save and any changes will be lost.
+        /// </para>
+        /// </remarks>
+        void IContentFile.CloseContent()
+        {
+            IsOpen = false;
+            EventHandler handler = Closed;
+            handler?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>

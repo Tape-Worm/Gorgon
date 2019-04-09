@@ -53,7 +53,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             get
             {
-                var spriteTextureBounds = _clipper.Rectangle.ToRectangle();
+                var spriteTextureBounds = SpriteContent.ManualRectangleEditor.Rectangle.ToRectangle();
                 return string.Format(Resources.GORSPR_TEXT_SPRITE_INFO, spriteTextureBounds.Left,
                                                                    spriteTextureBounds.Top,
                                                                    spriteTextureBounds.Right,
@@ -69,19 +69,19 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         /// <exception cref="NotImplementedException"></exception>
-        private void Clipper_RectChanged(object sender, EventArgs e) => SpriteContent.ManualInput.Rectangle = _clipper.Rectangle;
+        private void Clipper_RectChanged(object sender, EventArgs e) => SpriteContent.ManualRectangleEditor.Rectangle = _clipper.Rectangle;
 
         /// <summary>Handles the KeyboardIconClicked event of the Clipper control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void Clipper_KeyboardIconClicked(object sender, EventArgs e)
         {
-            if ((SpriteContent?.ToggleManualInputCommand == null) || (!SpriteContent.ToggleManualInputCommand.CanExecute(null)))
+            if ((SpriteContent?.ToggleManualClipRectCommand == null) || (!SpriteContent.ToggleManualClipRectCommand.CanExecute(SpriteContent.ManualRectangleEditor)))
             {
                 return;
             }
 
-            SpriteContent.ToggleManualInputCommand.Execute(null);
+            SpriteContent.ToggleManualClipRectCommand.Execute(SpriteContent.ManualRectangleEditor);
         }
 
         /// <summary>Handles the PreviewKeyDown event of the Window control.</summary>
@@ -92,20 +92,20 @@ namespace Gorgon.Editor.SpriteEditor
             switch (e.KeyCode)
             {
                 case Keys.Enter:
-                    SpriteContent.CurrentTool = SpriteEditTool.None;
-                    if (SpriteContent.ManualInput.IsActive)
+                    SubmitTextureCoordinates();                    
+                    if (SpriteContent.ManualRectangleEditor.IsActive)
                     {
                         Clipper_KeyboardIconClicked(_clipper, EventArgs.Empty);
                     }
                     e.IsInputKey = true;
                     break;
                 case Keys.Escape:
-                    // Revert the changes, when we switch tools, we'll be committing our changes to the data context, and if they haven't changed, nothing will be 
-                    // updated.
-                    _clipper.Rectangle = SpriteContent.Texture.ToPixel(SpriteContent.TextureCoordinates).ToRectangleF();
-                    TextureArrayIndex = SpriteContent.ArrayIndex;
-                    SpriteContent.CurrentTool = SpriteEditTool.None;
-                    if (SpriteContent.ManualInput.IsActive)
+                    if ((SpriteContent.ManualRectangleEditor.CancelCommand != null) && (SpriteContent.ManualRectangleEditor.CancelCommand.CanExecute(null)))
+                    {
+                        SpriteContent.ManualRectangleEditor.CancelCommand.Execute(null);
+                    }
+                    
+                    if (SpriteContent.ManualRectangleEditor.IsActive)
                     {
                         Clipper_KeyboardIconClicked(_clipper, EventArgs.Empty);
                     }
@@ -116,6 +116,7 @@ namespace Gorgon.Editor.SpriteEditor
                     break;
             }
         }
+
         /// <summary>Handles the MouseUp event of the Window control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
@@ -150,8 +151,14 @@ namespace Gorgon.Editor.SpriteEditor
         {
             switch (e.PropertyName)
             {
-                case nameof(IManualRectInputVm.Rectangle):
-                    _clipper.Rectangle = SpriteContent.ManualInput.Rectangle;
+                case nameof(IManualRectangleEditor.TextureArrayIndex):
+                    TextureArrayIndex = SpriteContent.ManualRectangleEditor.TextureArrayIndex;
+                    break;
+                case nameof(IManualRectangleEditor.Rectangle):
+                    _clipper.Rectangle = SpriteContent.ManualRectangleEditor.Rectangle;
+                    break;
+                case nameof(IManualRectangleEditor.IsFixedSize):
+                    _clipper.AllowResize = !SpriteContent.ManualRectangleEditor.IsFixedSize;
                     break;
             }
         }
@@ -161,14 +168,17 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         private void SubmitTextureCoordinates()
         {
-            (DX.RectangleF rect, int arrayIndex) args = (_clipper.Rectangle, TextureArrayIndex);
-
-            if ((SpriteContent?.SetTextureCoordinatesCommand == null) || (!SpriteContent.SetTextureCoordinatesCommand.CanExecute(args)))
+            if (SpriteContent?.ManualRectangleEditor == null)
             {
                 return;
             }
 
-            SpriteContent.SetTextureCoordinatesCommand.Execute(args);
+            if ((SpriteContent.ManualRectangleEditor.ApplyCommand == null) || (!SpriteContent.ManualRectangleEditor.ApplyCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            SpriteContent.ManualRectangleEditor.ApplyCommand.Execute(null);
         }
 
         /// <summary>Function called when the <see cref="ScrollOffset"/> property is changed.</summary>
@@ -176,6 +186,9 @@ namespace Gorgon.Editor.SpriteEditor
 
         /// <summary>Function called when the <see cref="ZoomScaleValue"/> property is changed.</summary>
         protected override void OnZoomScaleChanged() => _clipper.Refresh();
+
+        /// <summary>Function called when the texture array index value is updated.</summary>
+        protected override void OnTextureArrayIndexChanged() => SpriteContent.ManualRectangleEditor.TextureArrayIndex = TextureArrayIndex;
 
         /// <summary>Function called when after the swap chain is resized.</summary>
         protected override void OnAfterSwapChainResized() => _clipper.Refresh();
@@ -200,17 +213,20 @@ namespace Gorgon.Editor.SpriteEditor
         protected override void OnSpriteChanged(PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
-            {                
+            {
+                case nameof(ISpriteContent.ArrayIndex):
+                    TextureArrayIndex = SpriteContent.ManualRectangleEditor.TextureArrayIndex = SpriteContent.ArrayIndex;
+                    break;
                 case nameof(ISpriteContent.Texture):
                     if (SpriteContent.Texture != null)
                     {
                         _clipper.Bounds = new DX.RectangleF(0, 0, SpriteContent.Texture.Width, SpriteContent.Texture.Height);
-                        _clipper.Rectangle = SpriteContent.Texture.ToPixel(SpriteContent.TextureCoordinates).ToRectangleF();
+                        SpriteContent.ManualRectangleEditor.Rectangle = SpriteContent.Texture.ToPixel(SpriteContent.TextureCoordinates).ToRectangleF();
                     }
                     else
                     {
                         _clipper.Bounds = DX.RectangleF.Empty;
-                        _clipper.Rectangle = DX.RectangleF.Empty;
+                        SpriteContent.ManualRectangleEditor.Rectangle = DX.RectangleF.Empty;
                     }
                     break;
                 case nameof(ISpriteContent.TextureCoordinates):
@@ -219,7 +235,7 @@ namespace Gorgon.Editor.SpriteEditor
                         return;
                     }
 
-                    _clipper.Rectangle = ToClient(SpriteContent.Texture.ToPixel(SpriteContent.TextureCoordinates).ToRectangleF()).Truncate();
+                    SpriteContent.ManualRectangleEditor.Rectangle = SpriteContent.Texture.ToPixel(SpriteContent.TextureCoordinates).ToRectangleF();
                     break;
             }
         }       
@@ -246,10 +262,9 @@ namespace Gorgon.Editor.SpriteEditor
 
             RenderRect(textureRegion, GorgonColor.White, SpriteContent.Texture, SpriteContent.Texture.ToTexel(textureRegion.ToRectangle()), TextureArrayIndex, GorgonSamplerState.PointFiltering);
 
-            if ((SpriteContent.ManualInput != null) && (SpriteContent.ManualInput.IsActive))
+            if ((SpriteContent.ManualRectangleEditor != null) && (SpriteContent.ManualRectangleEditor.IsActive) && (SpriteContent.ManualRectangleEditor.IsMoving))
             {
-                Renderer.DrawFilledRectangle(new DX.RectangleF(SwapChain.Width - 182, 0, 182, 151), new GorgonColor(GorgonColor.BluePure, 0.4f));
-                Renderer.DrawRectangle(new DX.RectangleF(SwapChain.Width - 181, 1, 182, 151), GorgonColor.BluePure, 2);
+                DrawDockRect();
             }
 
             _clipper.Render();
@@ -262,19 +277,23 @@ namespace Gorgon.Editor.SpriteEditor
 
         /// <summary>Function called to perform custom loading of resources.</summary>
         protected override void OnLoad()
-        {
+        {            
             if (SpriteContent.Texture != null)
             {
                 _clipper.Bounds = new DX.RectangleF(0, 0, SpriteContent.Texture.Width, SpriteContent.Texture.Height);
-                _clipper.Rectangle = SpriteContent.Texture.ToPixel(SpriteContent.TextureCoordinates).ToRectangleF();
+                SpriteContent.ManualRectangleEditor.Rectangle = SpriteContent.Texture.ToPixel(SpriteContent.TextureCoordinates).ToRectangleF();
+                _clipper.Rectangle = SpriteContent.ManualRectangleEditor.Rectangle;
+                SpriteContent.ManualRectangleEditor.TextureArrayIndex = TextureArrayIndex;
             }
             else
             {
+                SpriteContent.ManualRectangleEditor.TextureArrayIndex = 0;
                 _clipper.Bounds = DX.RectangleF.Empty;
-                _clipper.Rectangle = DX.RectangleF.Empty;
+                SpriteContent.ManualRectangleEditor.Rectangle = _clipper.Rectangle = DX.RectangleF.Empty;
             }
-
-            SpriteContent.ManualInput.PropertyChanged += ManualInput_PropertyChanged;
+            
+            _clipper.AllowResize = !SpriteContent.ManualRectangleEditor.IsFixedSize;            
+            SpriteContent.ManualRectangleEditor.PropertyChanged += ManualInput_PropertyChanged;
 
             SwapChain.Window.MouseMove += Window_MouseMove;
             SwapChain.Window.MouseDown += Window_MouseDown;
@@ -285,7 +304,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Function called to perform custom unloading of resources.</summary>
         protected override void OnUnload()
         {
-            SpriteContent.ManualInput.PropertyChanged -= ManualInput_PropertyChanged;
+            SpriteContent.ManualRectangleEditor.PropertyChanged -= ManualInput_PropertyChanged;
 
             SwapChain.Window.MouseMove -= Window_MouseMove;
             SwapChain.Window.MouseDown -= Window_MouseDown;

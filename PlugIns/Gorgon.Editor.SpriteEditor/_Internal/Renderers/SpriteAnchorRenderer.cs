@@ -59,6 +59,11 @@ namespace Gorgon.Editor.SpriteEditor
         private void AnchorEdit_AnchorChanged(object sender, EventArgs e) => SpriteContent.AnchorEditor.AnchorPosition = new DX.Vector2(_anchorEdit.AnchorPosition.X - _anchorEdit.Bounds.X, 
                                                                                                                                         _anchorEdit.AnchorPosition.Y - _anchorEdit.Bounds.Y);
 
+        /// <summary>Handles the BoundsChanged event of the AnchorEdit control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void AnchorEdit_BoundsChanged(object sender, EventArgs e) => SpriteContent.AnchorEditor.Bounds = _anchorEdit.Bounds;
+
         /// <summary>Handles the PreviewKeyDown event of the Window control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="PreviewKeyDownEventArgs"/> instance containing the event data.</param>
@@ -126,8 +131,8 @@ namespace Gorgon.Editor.SpriteEditor
             }
 
             _anchorEdit.Bounds = SpriteContent.Texture.ToPixel(SpriteContent.TextureCoordinates).ToRectangleF();
-            _anchorEdit.AnchorPosition = (new DX.Vector2(SpriteContent.Anchor.X * SpriteContent.Size.Width + _anchorEdit.Bounds.X,
-                                                SpriteContent.Anchor.Y * SpriteContent.Size.Height + _anchorEdit.Bounds.Y));
+            _anchorEdit.AnchorPosition = (new DX.Vector2(SpriteContent.Anchor.X * _anchorEdit.Bounds.Size.Width + _anchorEdit.Bounds.X,
+                                                SpriteContent.Anchor.Y * _anchorEdit.Bounds.Size.Height + _anchorEdit.Bounds.Y));
             _anchorEdit.Refresh();
         }
 
@@ -154,7 +159,10 @@ namespace Gorgon.Editor.SpriteEditor
             base.OnSpriteChanged(e);
 
             switch (e.PropertyName)
-            {                
+            {
+                case nameof(ISpriteContent.SamplerState):
+                    SpriteSampler = GorgonSamplerState.PointFiltering;
+                    break;
                 case nameof(ISpriteContent.Texture):
                 case nameof(ISpriteContent.Anchor):
                     UpdateSpriteAnchor();
@@ -182,6 +190,8 @@ namespace Gorgon.Editor.SpriteEditor
         {
             UpdateSpriteAnchor();
 
+            // Set the sprite sampling to point so we can see the pixels when zoomed in.
+            SpriteSampler = GorgonSamplerState.PointFiltering;
             SpriteContent.AnchorEditor.PropertyChanged += AnchorEditor_PropertyChanged;
 
             SwapChain.Window.MouseMove += Window_MouseMove;
@@ -206,6 +216,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
         public override void Dispose()
         {
+            _anchorEdit.BoundsChanged -= AnchorEdit_BoundsChanged;
             _anchorEdit.AnchorChanged -= AnchorEdit_AnchorChanged;
             base.Dispose();
         }
@@ -232,6 +243,7 @@ namespace Gorgon.Editor.SpriteEditor
             };
 
             _anchorEdit.AnchorChanged += AnchorEdit_AnchorChanged;
+            _anchorEdit.BoundsChanged += AnchorEdit_BoundsChanged;
         }        
         #endregion
     }

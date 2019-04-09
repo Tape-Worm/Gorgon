@@ -46,10 +46,28 @@ namespace Gorgon.Editor.SpriteEditor
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to set or return the active sprite texture sampler.
+        /// </summary>
+        protected GorgonSamplerState SpriteSampler
+        {
+            get => _workingSprite.TextureSampler;
+            set => _workingSprite.TextureSampler = value;
+        }
 
+		/// <summary>
+        /// Property to return the sprite used for rendering.
+        /// </summary>
+        protected GorgonSprite Sprite => _workingSprite;
         #endregion
 
         #region Methods.
+		/// <summary>
+        /// Function to retrieve the sprite texture coordinates, in texel space.
+        /// </summary>
+        /// <returns>The sprite texture coordinates.</returns>
+        protected virtual DX.RectangleF GetSpriteTextureCoordinates() => SpriteContent.TextureCoordinates;
+
         /// <summary>Function called when the <see cref="P:Gorgon.Editor.SpriteEditor.SpriteContentRenderer.ZoomScaleValue"/> property is changed.</summary>
         protected override void OnZoomScaleChanged() => UpdateWorkingSprite();
 
@@ -85,14 +103,14 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
+			// Use the actual texture coordinates here because we need it to define the size and position of the sprite in image space.
             var spriteRegion = SpriteContent.Texture.ToPixel(SpriteContent.TextureCoordinates).ToRectangleF();
             DX.RectangleF scaledSprite = ToClient(spriteRegion).Truncate();
 
-            _workingSprite.TextureRegion = SpriteContent.TextureCoordinates;
+            _workingSprite.TextureRegion = GetSpriteTextureCoordinates();
             _workingSprite.Size = new DX.Size2F(scaledSprite.Width, scaledSprite.Height);
             _workingSprite.Position = new DX.Vector2(scaledSprite.Left, scaledSprite.Top);
         }
-
 
         /// <summary>Function called when the sprite has a property change.</summary>
         /// <param name="e">The event parameters.</param>
@@ -100,6 +118,9 @@ namespace Gorgon.Editor.SpriteEditor
         {
             switch (e.PropertyName)
             {
+                case nameof(ISpriteContent.SamplerState):
+                    _workingSprite.TextureSampler = SpriteContent.SamplerState;
+                    break;
                 case nameof(ISpriteContent.Texture):
                 case nameof(ISpriteContent.TextureCoordinates):
                     UpdateWorkingSprite();
@@ -110,12 +131,6 @@ namespace Gorgon.Editor.SpriteEditor
                         _workingSprite.CornerColors[i] = SpriteContent.VertexColors[i];
                     }
                     break;
-                case nameof(ISpriteContent.VertexOffsets):
-                    for (int i = 0; i < 4; ++i)
-                    {
-                        _workingSprite.CornerOffsets[i] = SpriteContent.VertexOffsets[i];
-                    }
-                    break;
             }
         }
 
@@ -123,7 +138,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <returns>The presentation interval to use when rendering.</returns>
         protected override int OnRender()
         {
-            var spriteRegion = SpriteContent.Texture.ToPixel(SpriteContent.TextureCoordinates).ToRectangleF();
+            var spriteRegion = SpriteContent.Texture.ToPixel(GetSpriteTextureCoordinates()).ToRectangleF();
             var imageRegion = new DX.RectangleF(0, 0, SpriteContent.Texture.Width, SpriteContent.Texture.Height);
 
             SwapChain.RenderTargetView.Clear(BackgroundColor);
@@ -155,7 +170,7 @@ namespace Gorgon.Editor.SpriteEditor
             if (IsAnimating)
             {                
                 Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, SwapChain.Width, SwapChain.Height), new GorgonColor(GorgonColor.White, TextureAlpha), ImageBufferTexture, new DX.RectangleF(0, 0, 1, 1));
-            }            
+            }
 
             // Draw the sprite layer.
             Renderer.DrawSprite(_workingSprite);
@@ -173,9 +188,11 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="swapChain">The swap chain for the render area.</param>
         /// <param name="renderer">The 2D renderer for the application.</param>
         /// <param name="initialZoom">The initial zoom scale value.</param>
-        public SingleSpriteRenderer(ISpriteContent sprite, GorgonGraphics graphics, GorgonSwapChain swapChain, Gorgon2D renderer, float initialZoom)
+        protected SingleSpriteRenderer(ISpriteContent sprite, GorgonGraphics graphics, GorgonSwapChain swapChain, Gorgon2D renderer, float initialZoom)
             : base(sprite, graphics, swapChain, renderer, initialZoom)
         {
+            InitialTextureAlpha = 0;
+
             _workingSprite = new GorgonSprite
             {
                 Texture = sprite.Texture,
@@ -189,7 +206,6 @@ namespace Gorgon.Editor.SpriteEditor
             for (int i = 0; i < 4; ++i)
             {
                 _workingSprite.CornerColors[i] = sprite.VertexColors[i];
-                _workingSprite.CornerOffsets[i] = sprite.VertexOffsets[i];
             }
 
             UpdateWorkingSprite();

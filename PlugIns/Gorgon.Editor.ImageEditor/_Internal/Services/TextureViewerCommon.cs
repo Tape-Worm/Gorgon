@@ -100,9 +100,9 @@ namespace Gorgon.Editor.ImageEditor
         // The swap chain for the rendering view.
         private readonly GorgonSwapChain _swapChain;
         // The horizontal scroll bar.
-        private ScrollBar _hScroll;
+        private readonly ScrollBar _hScroll;
         // The verical scroll bar.
-        private ScrollBar _vScroll;
+        private readonly ScrollBar _vScroll;
         // The pixel shader for the viewer.
         private GorgonPixelShader _pixelShader;
         // The parameters for the texture viewer shader.
@@ -112,7 +112,7 @@ namespace Gorgon.Editor.ImageEditor
         // Pixel shader used to render the image.
         private Gorgon2DShader<GorgonPixelShader> _batchShader;
         // The animation builder used to create animations.
-        private GorgonAnimationBuilder _animBuilder = new GorgonAnimationBuilder();
+        private readonly GorgonAnimationBuilder _animBuilder = new GorgonAnimationBuilder();
         // The list of available animations.
         private readonly Dictionary<AnimationType, IGorgonAnimation> _animations = new Dictionary<AnimationType, IGorgonAnimation>();
         // The current animation.

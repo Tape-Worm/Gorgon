@@ -62,14 +62,6 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the current undo context.
-        /// </summary>
-        IUndoHandler UndoContext
-        {
-            get;
-        }
-
-        /// <summary>
         /// Property to return the view model for the new project child view.
         /// </summary>
         IStageNewVm NewProject

@@ -44,7 +44,7 @@ namespace Gorgon.UI
         // The message panel to display.
         private ProgressPanel _messagePanel;
         // The synchronization context to use.
-        private SynchronizationContext _syncContext;
+        private readonly SynchronizationContext _syncContext;
         // The current progress percentage.
         private float _progress;
         #endregion

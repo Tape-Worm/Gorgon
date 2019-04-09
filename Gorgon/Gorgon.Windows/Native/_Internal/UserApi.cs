@@ -91,6 +91,32 @@ namespace Gorgon.Native
 		/// <returns></returns>
 		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
 		public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, ref HDITEM lParam);
+
+		/// <summary>
+        /// Function to retrieve the device context for a window.
+        /// </summary>
+        /// <param name="hwnd">The handle to the window.</param>
+        /// <returns>The device context handle.</returns>
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern IntPtr GetDC(IntPtr hwnd);
+
+        /// <summary>
+        /// Function to release the device context for a window.
+        /// </summary>
+        /// <param name="hwnd">The handle to the window.</param>
+        /// <param name="dc">The device context to release.</param>
+        /// <returns>The return value indicates whether the DC was released. If the DC was released, the return value is 1. If the DC was not released, the return value is zero.</returns>
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern int ReleaseDC(IntPtr hwnd, IntPtr dc);
+
+		/// <summary>
+        /// Function to retrieve the size of a window.
+        /// </summary>
+        /// <param name="hwnd">The window handle.</param>
+        /// <param name="lpRect">The resulting window boundaries.</param>
+        /// <returns><b>true</b> if failed, <b>false</b> if successful.</returns>
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern bool GetWindowRect(IntPtr hwnd, out RECT lpRect);
         #endregion
 
         #region Constructor/Finalizer.

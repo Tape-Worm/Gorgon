@@ -24,12 +24,15 @@
 // 
 #endregion
 
+using System;
+
 namespace Gorgon.Editor.Views
 {
     /// <summary>
     /// Event arguments for the <see cref="StageLive.Save"/> event.
     /// </summary>
     internal class SaveEventArgs
+        : EventArgs
     {
         /// <summary>
         /// Property to return whether the application should prompt the user for a file type and file name.

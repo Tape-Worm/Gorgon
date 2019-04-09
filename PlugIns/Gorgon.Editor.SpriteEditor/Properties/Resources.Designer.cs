@@ -93,6 +93,26 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap cancel_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("cancel_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap cancel_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("cancel_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap center_16x16 {
             get {
                 object obj = ResourceManager.GetObject("center_16x16", resourceCulture);
@@ -116,6 +136,46 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         internal static System.Drawing.Bitmap clip_sprite_48x48 {
             get {
                 object obj = ResourceManager.GetObject("clip_sprite_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap color_pick_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("color_pick_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap color_pick_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("color_pick_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap confirm_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("confirm_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap confirm_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("confirm_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -176,6 +236,46 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         internal static System.Drawing.Bitmap filtering_48x48 {
             get {
                 object obj = ResourceManager.GetObject("filtering_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap fixed_size_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("fixed_size_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap fixed_size_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("fixed_size_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap full_size_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("full_size_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap full_size_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("full_size_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -246,6 +346,17 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         internal static string GORSPR_ERR_FILESYSTEM_ITEM_EXISTS {
             get {
                 return ResourceManager.GetString("GORSPR_ERR_FILESYSTEM_ITEM_EXISTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error assigning the fixed width/height values.
+        ///
+        ///Please try again..
+        /// </summary>
+        internal static string GORSPR_ERR_FIXED_SIZE {
+            get {
+                return ResourceManager.GetString("GORSPR_ERR_FIXED_SIZE", resourceCulture);
             }
         }
         
@@ -426,11 +537,38 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Corner offset change.
+        /// </summary>
+        internal static string GORSPR_UNDO_DESC_CORNER_OFFSET {
+            get {
+                return ResourceManager.GetString("GORSPR_UNDO_DESC_CORNER_OFFSET", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Texture filter.
+        /// </summary>
+        internal static string GORSPR_UNDO_DESC_SAMPLER {
+            get {
+                return ResourceManager.GetString("GORSPR_UNDO_DESC_SAMPLER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Texture assignment.
         /// </summary>
         internal static string GORSPR_UNDO_DESC_TEXTURE {
             get {
                 return ResourceManager.GetString("GORSPR_UNDO_DESC_TEXTURE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Texture wrapping.
+        /// </summary>
+        internal static string GORSPR_UNDO_DESC_WRAP {
+            get {
+                return ResourceManager.GetString("GORSPR_UNDO_DESC_WRAP", resourceCulture);
             }
         }
         
@@ -451,6 +589,26 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         internal static System.Drawing.Bitmap left_16x16 {
             get {
                 object obj = ResourceManager.GetObject("left_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap manual_input_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("manual_input_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap manual_input_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("manual_input_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -508,6 +666,26 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap pick_padding_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("pick_padding_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap pick_padding_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("pick_padding_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap rectangle_edit_16x16 {
             get {
                 object obj = ResourceManager.GetObject("rectangle_edit_16x16", resourceCulture);
@@ -541,6 +719,26 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         internal static System.Drawing.Bitmap redo_48x48 {
             get {
                 object obj = ResourceManager.GetObject("redo_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap reset_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("reset_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap reset_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("reset_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

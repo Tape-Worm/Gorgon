@@ -29,7 +29,6 @@ using System.ComponentModel;
 using ComponentFactory.Krypton.Toolkit;
 using DX = SharpDX;
 using Gorgon.Editor.UI;
-using Gorgon.Editor.Services;
 using Gorgon.UI;
 
 namespace Gorgon.Editor.SpriteEditor
@@ -37,25 +36,26 @@ namespace Gorgon.Editor.SpriteEditor
     /// <summary>
     /// The window for the manual rectangle input interface.
     /// </summary>
-    internal partial class FormManualRectInput 
-        : KryptonForm, IDataContext<IManualRectInputVm>
+    internal partial class FormManualRectangleEdit
+        : KryptonForm, IDataContext<IManualRectangleEditor>, IManualInputControl
     {
         #region Variables.
         // Flag to indicate that the value changed event for the numeric controls should not fire.
         private bool _noValueEvent;
-        // The clipping service associated with this manual input instance.
-        private IRectClipperService _clipService;
         #endregion
 
         #region Properties.
         /// <summary>Property to return the data context assigned to this view.</summary>
         /// <value>The data context.</value>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public IManualRectInputVm DataContext
+        public IManualRectangleEditor DataContext
         {
             get;
             private set;
         }
+
+        /// <summary>Property to return the data context assigned to this view.</summary>
+        IManualInputViewModel IManualInputControl.DataContext => DataContext;
         #endregion
 
         #region Methods.
@@ -89,7 +89,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to assign the values for the rectangle into the numeric inputs.
         /// </summary>
         /// <param name="dataContext">The current data context.</param>
-        private void SetRectangleInputs(IManualRectInputVm dataContext)
+        private void SetRectangleInputs(IManualRectangleEditor dataContext)
         {
             try
             {
@@ -113,7 +113,11 @@ namespace Gorgon.Editor.SpriteEditor
         {
             switch (e.PropertyName)
             {
-                case nameof(IManualRectInputVm.IsActive):
+                case nameof(IManualRectangleEditor.IsFixedSize):
+					LabelRight.Enabled = LabelBottom.Enabled = 
+                    NumericRight.Enabled = NumericBottom.Enabled = !DataContext.IsFixedSize;
+                    break;                
+                case nameof(IManualRectangleEditor.IsActive):
                     if (DataContext.IsActive)
                     {
                         Show(GorgonApplication.MainForm);
@@ -123,13 +127,10 @@ namespace Gorgon.Editor.SpriteEditor
                         Hide();
                     }
                     break;
-                case nameof(IManualRectInputVm.Rectangle):
+                case nameof(IManualRectangleEditor.Padding):
+                case nameof(IManualRectangleEditor.FixedSize):
+                case nameof(IManualRectangleEditor.Rectangle):
                     SetRectangleInputs(DataContext);
-
-                    if (_clipService != null)
-                    {
-                        _clipService.Rectangle = DataContext.Rectangle;
-                    }
                     break;
             }
         }
@@ -150,13 +151,18 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Function called when the view should be reset by a <b>null</b> data context.
         /// </summary>
-        private void ResetDataContext() => NumericLeft.Value = NumericTop.Value = NumericRight.Value = NumericBottom.Value = 0;
+        private void ResetDataContext()
+        {
+            NumericLeft.Maximum = NumericRight.Maximum = NumericTop.Maximum = NumericBottom.Maximum = 16384;
+            NumericLeft.Value = NumericTop.Value = NumericRight.Value = NumericBottom.Value = 0;
+            LabelRight.Enabled = LabelBottom.Enabled = NumericRight.Enabled = NumericBottom.Enabled = true;
+        }
 
         /// <summary>
         /// Function to initialize the view from the current data context.
         /// </summary>
         /// <param name="dataContext">The data context being assigned.</param>
-        private void InitializeFromDataContext(IManualRectInputVm dataContext)
+        private void InitializeFromDataContext(IManualRectangleEditor dataContext)
         {
             if (dataContext == null)
             {
@@ -164,7 +170,38 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
+            LabelRight.Enabled = LabelBottom.Enabled =
+            NumericRight.Enabled = NumericBottom.Enabled = !dataContext.IsFixedSize;
+
             SetRectangleInputs(dataContext);
+        }
+
+        /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.ResizeBegin"/> event.</summary>
+        /// <param name="e">A <see cref="T:System.EventArgs"/> that contains the event data.</param>
+        protected override void OnResizeBegin(EventArgs e)
+        {
+            base.OnResizeBegin(e);
+
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            DataContext.IsMoving = true;
+        }
+
+        /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.ResizeEnd"/> event.</summary>
+        /// <param name="e">A <see cref="T:System.EventArgs"/> that contains the event data.</param>
+        protected override void OnResizeEnd(EventArgs e)
+        {
+            base.OnResizeEnd(e);
+
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            DataContext.IsMoving = false;
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
@@ -184,7 +221,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Function to assign a data context to the view as a view model.</summary>
         /// <param name="dataContext">The data context to assign.</param>
         /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
-        public void SetDataContext(IManualRectInputVm dataContext)
+        public void SetDataContext(IManualRectangleEditor dataContext)
         {
             UnassignEvents();
 
@@ -202,7 +239,7 @@ namespace Gorgon.Editor.SpriteEditor
 
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.SpriteEditor.FormManualRectInput"/> class.</summary>
-        public FormManualRectInput() => InitializeComponent();        
+        public FormManualRectangleEdit() => InitializeComponent();        
         #endregion
     }
 }

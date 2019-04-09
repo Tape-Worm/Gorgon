@@ -52,6 +52,14 @@ namespace Gorgon.Editor.SpriteEditor
         : IEditorContent, IUndoHandler, IDragDropHandler<IContentFileDragData>
     {
         #region Properties.
+		/// <summary>
+        /// Property to return the editor used to modify the texture wrapping state for a sprite.
+        /// </summary>
+		ISpriteWrappingEditor WrappingEditor
+        {
+            get;
+        }
+
         /// <summary>
         /// Property to return the sprite color editor.
         /// </summary>
@@ -91,17 +99,33 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>
-        /// Property to return the view model for the manual input interface.
+        /// Property to return the view model for the manual rectangle editor interface.
         /// </summary>
-        IManualRectInputVm ManualInput
+        IManualRectangleEditor ManualRectangleEditor
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the buffer that contains the image data for the <see cref="Texture"/>, at the <see cref="ArrayIndex"/> associated with the sprite.
+        /// Property to return the view model for the manual vertex editor interface.
         /// </summary>
-        IGorgonImageBuffer ImageData
+        IManualVertexEditor ManualVertexEditor
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property tor return the view model for the sprite picker mask color editor.
+        /// </summary>
+        ISpritePickMaskEditor SpritePickMaskEditor
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the buffer that contains the image data for the <see cref="Texture"/>.
+        /// </summary>
+        IGorgonImage ImageData
         {
             get;
         }
@@ -171,6 +195,22 @@ namespace Gorgon.Editor.SpriteEditor
             get;
         }
 
+		/// <summary>
+        /// Property to return whether the sprite will use nearest neighbour filtering, or bilinear filtering.
+        /// </summary>
+		bool IsPixellated
+        {
+            get;
+        }
+
+		/// <summary>
+        /// Property to return the current sampler state for the sprite.
+        /// </summary>
+		GorgonSamplerState SamplerState
+        {
+            get;
+        }
+
         /// <summary>
         /// Property to set or return the currently active tool for editing the sprite.
         /// </summary>
@@ -181,20 +221,17 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>
-        /// Property to return the command to execute when applying texture coordinates to the sprite.
+        /// Property to return the command to execute when picking a sprite.
         /// </summary>
-        /// <remarks>
-        /// The command takes a tuple containing the texture coordinate values, and the texture array index to use.
-        /// </remarks>
-        IEditorCommand<(DX.RectangleF, int)> SetTextureCoordinatesCommand
+        IEditorCommand<object> SpritePickCommand
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the command to execute when picking a sprite.
+        /// Property to return the command to execute when clipping a sprite.
         /// </summary>
-        IEditorCommand<object> SpritePickCommand
+        IEditorCommand<object> SpriteClipCommand
         {
             get;
         }
@@ -208,9 +245,25 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>
-        /// Property to return the command to execute when toggling the manual input.
+        /// Property to return the command to execute when toggling the manual clipping rectangle.
         /// </summary>
-        IEditorCommand<object> ToggleManualInputCommand
+        IEditorCommand<object> ToggleManualClipRectCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command to execute when toggling the manual vertex editing.
+        /// </summary>
+        IEditorCommand<object> ToggleManualVertexEditCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to show the sprite sprite picker mask color editor.
+        /// </summary>
+        IEditorCommand<object> ShowSpritePickMaskEditorCommand
         {
             get;
         }
@@ -227,6 +280,38 @@ namespace Gorgon.Editor.SpriteEditor
         /// Property to return the command used to show the sprite anchor editor.
         /// </summary>
         IEditorCommand<object> ShowAnchorEditorCommand
+        {
+            get;
+        }
+
+		/// <summary>
+        /// Property to return the command used to show the sprite texture wrapping editor.
+        /// </summary>
+		IEditorCommand<object> ShowWrappingEditorCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to execut when adjusting the sprite vertex offsets.
+        /// </summary>
+        IEditorCommand<object> SpriteVertexOffsetCommand
+        {
+            get;
+        }
+
+		/// <summary>
+        /// Property to return the command used to apply the vertex offsets to the sprite.
+        /// </summary>
+		IEditorCommand<IReadOnlyList<DX.Vector3>> SetVertexOffsetsCommand
+        {
+            get;
+        }
+
+		/// <summary>
+        /// Property to return the command used to apply texture filtering to the sprite.
+        /// </summary>
+		IEditorCommand<SampleFilter> SetTextureFilteringCommand
         {
             get;
         }

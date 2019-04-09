@@ -38,7 +38,7 @@ namespace Gorgon.Graphics.Core
     public static class GorgonCollectionExtensions
     {
         // A null video mode reference.
-        private static GorgonVideoMode _invalidMode = GorgonVideoMode.InvalidMode;
+        private static readonly GorgonVideoMode _invalidMode = GorgonVideoMode.InvalidMode;
 
         /// <summary>
         /// Function to find a display mode supported by the Gorgon.
@@ -79,7 +79,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public static void FindNearestVideoMode(this IReadOnlyList<GorgonVideoMode> videoModes, IGorgonVideoOutputInfo output, in GorgonVideoMode videoMode, out GorgonVideoMode suggestedMode)
         {
-            ref GorgonVideoMode result = ref _invalidMode;
+            ref readonly GorgonVideoMode result = ref _invalidMode;
 
             if (videoModes == null)
             {

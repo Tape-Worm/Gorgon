@@ -98,9 +98,33 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>
-        /// Property to return the manual input view model.
+        /// Property to return the manual rectangle editor view model.
         /// </summary>
-        public IManualRectInputVm ManualInput
+        public IManualRectangleEditor ManualRectangleEditor
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the manual vertex editor view model.
+        /// </summary>
+        public IManualVertexEditor ManualVertexEditor
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the sprite picker mask color editor.
+        /// </summary>
+        public ISpritePickMaskEditor SpritePickMaskEditor
+        {
+            get;
+        }
+
+		/// <summary>
+        /// Property to return the sprite texture wrapping state editor.
+        /// </summary>
+		public ISpriteWrappingEditor SpriteWrappingEditor
         {
             get;
         }
@@ -135,6 +159,14 @@ namespace Gorgon.Editor.SpriteEditor
         public ISpriteAnchorEdit AnchorEditor
         {
             get;
+        }       
+		
+		/// <summary>
+        /// Property to return the sampler builder service.
+        /// </summary>
+		public ISamplerBuildService SamplerBuilder
+        {
+            get;
         }
 
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.SpriteEditor.SpriteContentParameters"/> class.</summary>
@@ -145,9 +177,12 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="textureService">The texture service to use when reading sprite texture data.</param>
         /// <param name="sprite">The sprite being edited.</param>
         /// <param name="codec">The codec to use when reading/writing sprite data.</param>
-        /// <param name="manualInput">The manual input view model.</param>
+        /// <param name="manualRectEdit">The manual rectangle editor view model.</param>
+        /// <param name="manualVertexEdit">The manual vertex editor view model.</param>
+        /// <param name="spritePickMaskEditor">The sprite picker mask color editor.</param>
         /// <param name="colorEditor">The color editor for the sprite.</param>
         /// <param name="anchorEditor">The anchor editor for the sprite.</param>
+        /// <param name="wrapEditor">The texture wrapping state editor for the sprite.</param>
         /// <param name="settings">The plug in settings view model.</param>
         /// <param name="undoService">The undo service.</param>
         /// <param name="scratchArea">The file system used to write out temporary working data.</param>
@@ -161,9 +196,13 @@ namespace Gorgon.Editor.SpriteEditor
             ISpriteTextureService textureService, 
             GorgonSprite sprite, 
             IGorgonSpriteCodec codec, 
-            IManualRectInputVm manualInput,
+            IManualRectangleEditor manualRectEdit,
+            IManualVertexEditor manualVertexEdit,
+            ISpritePickMaskEditor spritePickMaskEditor,
             ISpriteColorEdit colorEditor,
             ISpriteAnchorEdit anchorEditor,
+			ISpriteWrappingEditor wrapEditor,
+			ISamplerBuildService samplerBuilder,
             ISettings settings,
             IUndoService undoService, 
             IGorgonFileSystemWriter<Stream> scratchArea, 
@@ -178,10 +217,14 @@ namespace Gorgon.Editor.SpriteEditor
             ScratchArea = scratchArea ?? throw new ArgumentNullException(nameof(scratchArea));
             TextureService = textureService ?? throw new ArgumentNullException(nameof(textureService));
             SpriteCodec = codec ?? throw new ArgumentNullException(nameof(codec));
-            ManualInput = manualInput ?? throw new ArgumentNullException(nameof(manualInput));
+            ManualRectangleEditor = manualRectEdit ?? throw new ArgumentNullException(nameof(manualRectEdit));
+            ManualVertexEditor = manualVertexEdit ?? throw new ArgumentNullException(nameof(manualVertexEdit));
+            SpritePickMaskEditor = spritePickMaskEditor ?? throw new ArgumentNullException(nameof(spritePickMaskEditor));
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             ColorEditor = colorEditor ?? throw new ArgumentNullException(nameof(colorEditor));
             AnchorEditor = anchorEditor ?? throw new ArgumentNullException(nameof(anchorEditor));
+            SpriteWrappingEditor = wrapEditor ?? throw new ArgumentNullException(nameof(wrapEditor));
+            SamplerBuilder = samplerBuilder ?? throw new ArgumentNullException(nameof(samplerBuilder));
             SpriteTextureFile = spriteTextureFile;            
         }
     }

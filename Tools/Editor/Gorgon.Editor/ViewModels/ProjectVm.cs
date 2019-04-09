@@ -69,8 +69,6 @@ namespace Gorgon.Editor.ViewModels
         private IFileExplorerVm _fileExplorer;
         // The current clipboard handler context.
         private IClipboardHandler _clipboardContext;
-        // The current undo handler context.
-        private IUndoHandler _undoContext;
         // The application project manager.
         private IProjectManager _projectManager;
         // The content plugin service.
@@ -151,23 +149,8 @@ namespace Gorgon.Editor.ViewModels
                     _currentContent.CloseContent += CurrentContent_CloseContent;                    
                     _currentContent.File.DependenciesUpdated += ContentFile_DependenciesUpdated;
                 }
-            }
-        }
 
-        /// <summary>Property to set or return the active undo handler context.</summary>
-        public IUndoHandler UndoContext
-        {
-            get => _undoContext;
-            set
-            {
-                if (_undoContext == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _undoContext = value;
-                OnPropertyChanged();
+                NotifyPropertyChanged(nameof(CommandContext));
             }
         }
 
@@ -293,6 +276,9 @@ namespace Gorgon.Editor.ViewModels
             }
         }
 
+        /// <summary>Property to return the current command context.</summary>
+        public string CommandContext => CurrentContent?.CommandContext ?? string.Empty;
+
         /// <summary>
         /// Property to return the command to execute when the application is closing.
         /// </summary>
@@ -381,9 +367,11 @@ namespace Gorgon.Editor.ViewModels
                         CurrentContent.File.DependenciesUpdated -= ContentFile_DependenciesUpdated;
                     }
                     break;
+                case nameof(IEditorContent.CommandContext):
+                    NotifyPropertyChanging(nameof(CommandContext));
+                    break;
             }
-        }
-
+        }		
 
         /// <summary>Handles the PropertyChanged event of the CurrentContent control.</summary>
         /// <param name="sender">The source of the event.</param>
@@ -410,6 +398,9 @@ namespace Gorgon.Editor.ViewModels
                     {
                         CurrentContent.File.DependenciesUpdated += ContentFile_DependenciesUpdated;
                     }
+                    break;
+                case nameof(IEditorContent.CommandContext):
+                    NotifyPropertyChanged(nameof(CommandContext));
                     break;
             }
         }

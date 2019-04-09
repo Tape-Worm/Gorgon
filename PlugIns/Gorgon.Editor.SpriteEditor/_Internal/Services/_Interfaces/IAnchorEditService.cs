@@ -40,6 +40,11 @@ namespace Gorgon.Editor.SpriteEditor
         /// Event triggered when the anchor coordinates have been altered.
         /// </summary>
         event EventHandler AnchorChanged;
+
+        /// <summary>
+        /// Event triggered when the anchor bounds are changed.
+        /// </summary>
+        event EventHandler BoundsChanged;
         #endregion
 
         #region Properties.

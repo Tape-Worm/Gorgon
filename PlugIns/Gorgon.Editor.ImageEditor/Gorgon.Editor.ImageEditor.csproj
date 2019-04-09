@@ -176,8 +176,6 @@
     <None Include="Resources\codec_48x48.png" />
     <None Include="Resources\save_content_16x16.png" />
     <None Include="Resources\save_content_48x48.png" />
-    <None Include="Resources\cancel_16x16.png" />
-    <None Include="Resources\cancel_48x48.png" />
     <None Include="Resources\save_16x16.png" />
     <None Include="Resources\save_48x48.png" />
     <None Include="Resources\center_16x16.png" />
@@ -205,8 +203,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="KryptonToolkitSuite5470">
-      <Version>5.470.856</Version>
+    <PackageReference Include="KryptonToolkitSuite5472">
+      <Version>5.472.901</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
       <Version>2.9.1</Version>

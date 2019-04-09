@@ -46,7 +46,7 @@ namespace Gorgon.IO
     {
         #region Variables.
         // The animation codec for the sprite.
-        private GorgonV1AnimationCodec _animationCodec;
+        private readonly GorgonV1AnimationCodec _animationCodec;
         #endregion
 
         #region Properties.

@@ -33,6 +33,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Collections;
 using Gorgon.Core;
+using Gorgon.Editor.Content;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
@@ -118,64 +119,6 @@ namespace Gorgon.Editor.ViewModels
             }
         }
 
-        /// <summary>
-        /// Function to allow a user to resolve a confict between files with the same name.
-        /// </summary>
-        /// <param name="sourceItem">The file being copied.</param>
-        /// <param name="destItem">The destination file.</param>
-        /// <param name="usePhysicalPath"><b>true</b> to display the physical path for the destination, or <b>false</b> to display the virtual path.</param>
-        /// <returns>A <see cref="FileSystemConflictResolution"/> value that indicates how to proceed.</returns>
-        private FileSystemConflictResolution ResolveExportConflict(FileSystemInfo sourceItem, FileSystemInfo destItem)
-        {
-            MessageResponse response = MessageDisplay.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_FILE_EXISTS, sourceItem.Name, destItem.FullName), toAll: true, allowCancel: true);
-
-            switch (response)
-            {
-                case MessageResponse.Yes:
-                    return FileSystemConflictResolution.Overwrite;
-                case MessageResponse.YesToAll:
-                    return FileSystemConflictResolution.OverwriteAll;
-                case MessageResponse.No:
-                    return FileSystemConflictResolution.Rename;
-                case MessageResponse.NoToAll:
-                    return FileSystemConflictResolution.RenameAll;
-                default:
-                    return FileSystemConflictResolution.Cancel;
-            }
-        }
-
-        /// <summary>
-        /// Function to allow a user to resolve a confict between files with the same name.
-        /// </summary>
-        /// <param name="sourceItem">The file being copied.</param>
-        /// <param name="destItem">The destination file.</param>
-        /// <param name="usePhysicalPath"><b>true</b> to display the physical path for the destination, or <b>false</b> to display the virtual path.</param>
-        /// <returns>A <see cref="FileSystemConflictResolution"/> value that indicates how to proceed.</returns>
-        private FileSystemConflictResolution ResolveConflict(FileSystemInfo sourceItem, FileSystemInfo destItem)
-        {
-            IFileExplorerNodeVm root = GetRoot();
-
-            Debug.Assert(root != null, "Root is null");
-
-            var rootDir = new DirectoryInfo(root.PhysicalPath);
-
-            MessageResponse response = MessageDisplay.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_FILE_EXISTS, sourceItem.Name, destItem.ToFileSystemPath(rootDir)), toAll: true, allowCancel: true);
-            
-            switch (response)
-            {
-                case MessageResponse.Yes:
-                    return FileSystemConflictResolution.Overwrite;
-                case MessageResponse.YesToAll:
-                    return FileSystemConflictResolution.OverwriteAll;
-                case MessageResponse.No:
-                    return FileSystemConflictResolution.Rename;
-                case MessageResponse.NoToAll:
-                    return FileSystemConflictResolution.RenameAll;
-                default:
-                    return FileSystemConflictResolution.Cancel;
-            }
-        }
-
         /// <summary>Function to retrieve the physical file system object for this node.</summary>
         /// <param name="path">The path to the physical file system object.</param>
         /// <returns>Information about the physical file system object.</returns>
@@ -246,6 +189,11 @@ namespace Gorgon.Editor.ViewModels
                 onDeleted?.Invoke(deletedNode);
             }
 
+            if (Children.Traverse(n => n.Children).Where(item => item.IsOpen).FirstOrDefault() is IContentFile openChild)
+            {
+                openChild.CloseContent();
+            }
+
             // Delete the physical objects first. If we fail here, our node will survive.
             // We do this asynchronously because deleting a directory with a lot of files may take a while, especially since we are dumping to the recycle bin.
             bool dirDeleted = await Task.Run(() => FileSystemService.DeleteDirectory(_directoryInfo, ProgressUpdate, cancelToken ?? CancellationToken.None));
@@ -262,6 +210,8 @@ namespace Gorgon.Editor.ViewModels
             // This will begin a chain reaction that will remove us from the UI.
             Parent.Children.Remove(this);
             Parent = null;
+
+            OnUnload();
         }
 
         /// <summary>

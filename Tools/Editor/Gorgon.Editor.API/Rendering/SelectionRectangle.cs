@@ -52,9 +52,9 @@ namespace Gorgon.Editor.Rendering
     {
         #region Variables.
         // The renderer to use.
-        private Gorgon2D _renderer;
+        private readonly Gorgon2D _renderer;
         // The texture to use for the selection overlay.
-        private Lazy<GorgonTexture2DView> _selectionTexture;
+        private readonly Lazy<GorgonTexture2DView> _selectionTexture;
         // The offset of the texture within the selection rectangle.
         private DX.Vector2 _selectionTextureOffset;
         #endregion

@@ -125,7 +125,7 @@ namespace Gorgon.Editor.Views
         /// <summary>
         /// Property to set or return the application graphics context.
         /// </summary>
-        [Browsable(false)]
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public IGraphicsContext GraphicsContext
         {
             get => _graphicsContext;
@@ -133,9 +133,19 @@ namespace Gorgon.Editor.Views
         }
 
         /// <summary>
+        /// Property to set or return the main ribbon interface on the parent control.
+        /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public KryptonRibbon MainRibbon
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to return the data context assigned to this view.
         /// </summary>
-        [Browsable(false)]
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public IProjectVm DataContext
         {
             get;
@@ -151,14 +161,25 @@ namespace Gorgon.Editor.Views
         /// <returns>The content file if dropping is allowed, or <b>null</b> if not.</returns>
         private IContentFile GetContentFileDragData(IDataObject data)
         {
+            Type dataType = typeof(TreeNodeDragData);
+
             if ((_dragDropHandler == null)
-                || (data == null)
-                || (!data.GetDataPresent(typeof(TreeNodeDragData))))
+                || (data == null))
             {
                 return null;
             }
 
-            var dragData = (IFileExplorerNodeDragData)data.GetData(typeof(TreeNodeDragData));
+            if (!data.GetDataPresent(dataType))
+            {
+                dataType = typeof(ListViewItemDragData);
+
+                if (!data.GetDataPresent(dataType))
+                {
+                    return null;
+                }
+            }
+
+            var dragData = (IFileExplorerNodeDragData)data.GetData(dataType);
 
             return dragData?.Node == null ? null : dragData.Node as IContentFile;
 
@@ -379,7 +400,40 @@ namespace Gorgon.Editor.Views
             if (DataContext != null)
             {
                 DataContext.ClipboardContext = DataContext.FileExplorer as IClipboardHandler;
-                DataContext.UndoContext = DataContext.FileExplorer as IUndoHandler;
+            }
+        }
+
+
+        /// <summary>Handles the Leave event of the FileExplorer control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void FileExplorer_Leave(object sender, EventArgs e)
+        {
+            if ((DataContext != null) && (DataContext.FileExplorer == DataContext.ClipboardContext))
+            {
+                DataContext.ClipboardContext = null;
+            }
+        }
+
+        /// <summary>Handles the Enter event of the PanelContent control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void PanelContent_Enter(object sender, EventArgs e)
+        {
+            if (DataContext != null)
+            {
+                DataContext.ClipboardContext = DataContext.CurrentContent as IClipboardHandler;
+            }
+        }
+        
+        /// <summary>Handles the Leave event of the PanelContent control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void PanelContent_Leave(object sender, EventArgs e)
+        {
+            if ((DataContext?.CurrentContent is IClipboardHandler currentHandler) && (currentHandler == DataContext.ClipboardContext))
+            {
+                DataContext.ClipboardContext = null;
             }
         }
 

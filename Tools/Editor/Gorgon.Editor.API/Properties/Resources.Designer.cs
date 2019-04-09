@@ -510,6 +510,26 @@ namespace Gorgon.Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] manual_input_24x24 {
+            get {
+                object obj = ResourceManager.GetObject("manual_input_24x24", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] manual_vertex_edit_64x64 {
+            get {
+                object obj = ResourceManager.GetObject("manual_vertex_edit_64x64", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] march_ants_diag_32x32 {
             get {
                 object obj = ResourceManager.GetObject("march_ants_diag_32x32", resourceCulture);

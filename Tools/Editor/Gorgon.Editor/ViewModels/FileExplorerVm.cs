@@ -59,15 +59,15 @@ namespace Gorgon.Editor.ViewModels
     {
         #region Events.
         // Event triggered when the clipboard is updated from the file explorer.
-        private event EventHandler _clipboardUpdated;
+        private event EventHandler ClipboardUpdated;
 
         /// <summary>
         /// Event triggered when data is stored or cleared on the clipboard.
         /// </summary>
         event EventHandler IClipboardHandler.DataUpdated
         {
-            add => _clipboardUpdated += value;
-            remove => _clipboardUpdated -= value;
+            add => ClipboardUpdated += value;
+            remove => ClipboardUpdated -= value;
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace Gorgon.Editor.ViewModels
 
         #region Variables.
         // A lookup used to find nodes.
-        private Dictionary<string, IFileExplorerNodeVm> _nodePathLookup = new Dictionary<string, IFileExplorerNodeVm>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, IFileExplorerNodeVm> _nodePathLookup = new Dictionary<string, IFileExplorerNodeVm>(StringComparer.OrdinalIgnoreCase);
 
         // Illegal file name characters.
         private static readonly HashSet<char> _illegalChars = new HashSet<char>(Path.GetInvalidFileNameChars()
@@ -658,7 +658,13 @@ namespace Gorgon.Editor.ViewModels
         private void DoCreateContentFile(CreateContentFileArgs args)
         {
             FileInfo file = null;
-            
+
+            if (SearchResults != null)
+            {
+                // Clear the search list when creating a new file.					
+                DoSearch(null);
+            }
+
             // Find out which directory is selected.
             IFileExplorerNodeVm parent = args.ParentNode ?? RootNode;
 
@@ -710,8 +716,7 @@ namespace Gorgon.Editor.ViewModels
         /// Function to perform a refresh of a node.
         /// </summary>
         /// <param name="node">The node to refresh.</param>
-        /// <param name="deepScanForAssociation"><b>true</b> to force a deep scan for file associations (much slower), <b>false</b> to do a surface scan.</param>
-        private void RefreshNode(IFileExplorerNodeVm node, bool deepScanForAssociation)
+        private void RefreshNode(IFileExplorerNodeVm node)
         {
             IFileExplorerNodeVm nodeToRefresh = node ?? RootNode;
 
@@ -812,7 +817,7 @@ namespace Gorgon.Editor.ViewModels
 
             try
             {
-                RefreshNode(node, false);
+                RefreshNode(node);
                 _busyService.SetIdle();
 
                 // Scan the files now for updated plugin information.
@@ -1194,7 +1199,7 @@ namespace Gorgon.Editor.ViewModels
 
                 // This will probably take a while to run for large file systems. But, because it modifies the UI, we can't put it on background thread.
                 // We may have to refactor this later so we can thread it and give feed back.
-                RefreshNode(node, true);
+                RefreshNode(node);
 
                 await ScanFilesAsync(node);
 
@@ -1360,22 +1365,14 @@ namespace Gorgon.Editor.ViewModels
             {
                 IFileExplorerNodeVm openNode = RootNode.Children.Traverse(n => n.Children).FirstOrDefault(n => n.IsOpen);
 
-                // If we have an open node, and it has unsaved changes, prompt with:
-                //
-                // "There is a file open in the editor that has unsaved changes.
-                // Deleting this file will result in the loss of these changes.
-                // 
-                // Are you sure you wish to delete this file?
-                //
-                // Yes/No" (no cancel because if we say no, we stop deleting).
-                if (openNode != null)
-                {
-                    // TODO: Check for changes and prompt.
-                }
-
                 if (_messageService.ShowConfirmation(Resources.GOREDIT_CONFIRM_DELETE_ALL) == MessageResponse.No)
                 {
                     return;
+                }
+
+                if (openNode is IContentFile file)
+                {
+                    file.CloseContent();
                 }
 
                 UpdateMarequeeProgress(Resources.GOREDIT_TEXT_CLEARING_FILESYSTEM);
@@ -1997,13 +1994,13 @@ namespace Gorgon.Editor.ViewModels
         /// Function to return whether or not the item can use the cut functionality for the clipboard.
         /// </summary>
         /// <returns><b>true</b> if the clipboard handler can cut an item, <b>false</b> if not.</returns>
-        bool IClipboardHandler.CanCut() => (SelectedNode != null) && (SelectedNode.AllowDelete) && (SearchResults?.Count == 0);
+        bool IClipboardHandler.CanCut() => (SelectedNode != null) && (SelectedNode.AllowDelete) && ((SearchResults?.Count ?? 0) == 0);
 
         /// <summary>
         /// Function to return whether or not the item can use the copy functionality for the clipboard.
         /// </summary>
         /// <returns><b>true</b> if the clipboard handler can copy an item, <b>false</b> if not.</returns>
-        bool IClipboardHandler.CanCopy() => SelectedNode != null && (SearchResults?.Count == 0);
+        bool IClipboardHandler.CanCopy() => SelectedNode != null && ((SearchResults?.Count ?? 0) == 0);
 
         /// <summary>
         /// Function to return whether or not the item can use the paste functionality for the clipboard.
@@ -2045,7 +2042,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         void IClipboardHandler.Cut()
         {
-            EventHandler handler = _clipboardUpdated;
+            EventHandler handler = ClipboardUpdated;
 
             try
             {
@@ -2070,7 +2067,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         void IClipboardHandler.Copy()
         {
-            EventHandler handler = _clipboardUpdated;
+            EventHandler handler = ClipboardUpdated;
 
             try
             {
@@ -2095,7 +2092,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         async void IClipboardHandler.Paste()
         {
-            EventHandler handler = _clipboardUpdated;
+            EventHandler handler = ClipboardUpdated;
 
             try
             {
@@ -2149,7 +2146,7 @@ namespace Gorgon.Editor.ViewModels
                 node.OnUnload();
             }
 
-            _clipboardUpdated = null;
+            ClipboardUpdated = null;
         }
 
         /// <summary>
@@ -2422,21 +2419,23 @@ namespace Gorgon.Editor.ViewModels
                 throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_NO_FILENAME, path), nameof(path));
             }
 
-            IContentFile existing = null;
-
             if (_nodePathLookup.TryGetValue(path, out IFileExplorerNodeVm node))
             {
-                existing = node as IContentFile;
-
                 if (node.IsOpen)
                 {
                     throw new IOException(string.Format(Resources.GOREDIT_ERR_FILE_LOCKED, path));
                 }
 
-                if (existing != null)
+                if (!(node is IContentFile))
                 {
                     throw new IOException(string.Format(Resources.GOREDIT_ERR_PATH_IS_DIRECTORY, path));
                 }
+            }
+
+			// Shut down any search items we have open, so we can see the file show up.
+            if (SearchResults != null)
+            {
+                DoSearch(null);
             }
 
             string fileName = Path.GetFileName(path);
@@ -2447,7 +2446,7 @@ namespace Gorgon.Editor.ViewModels
                 directoryName = "/" + directoryName;
             }
 
-            IFileExplorerNodeVm dirNode = null;
+            IFileExplorerNodeVm dirNode;
 
             if (string.Equals(directoryName, "/", StringComparison.OrdinalIgnoreCase))
             {
@@ -2581,7 +2580,7 @@ namespace Gorgon.Editor.ViewModels
             IFileExplorerNodeVm selectedNode = SelectedNode;
 
             DirectoryInfo newDir = _fileSystemService.CreateDirectory(new DirectoryInfo(parentDir.PhysicalPath), directoryName);
-            IFileExplorerNodeVm dirNode = _factory.CreateFileExplorerDirectoryNodeVm(_project, _fileSystemService, parentDir, newDir, true);
+            _ = _factory.CreateFileExplorerDirectoryNodeVm(_project, _fileSystemService, parentDir, newDir, true);
 
             SelectedNode = selectedNode;
 

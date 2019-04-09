@@ -46,7 +46,7 @@ namespace Gorgon.Editor.SpriteEditor
         #region Variables.
         // The texture to display when a sprite lacks a texture association.
         private GorgonTexture2DView _noImage;
-        #endregion
+        #endregion        
 
         #region Methods.
         /// <summary>Function called to render the sprite data.</summary>

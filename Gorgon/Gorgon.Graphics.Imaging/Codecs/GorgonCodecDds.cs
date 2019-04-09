@@ -197,7 +197,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         private static readonly DdsPixelFormat _pfL16 = new DdsPixelFormat(DdsPixelFormatFlags.Luminance, 0, 16, 0xffff, 0x0000, 0x0000, 0x0000);           // L16
         private static readonly DdsPixelFormat _pfA8L8 = new DdsPixelFormat(DdsPixelFormatFlags.LuminanceAlpha, 0, 16, 0x00ff, 0x0000, 0x0000, 0xff00);     // A8L8
         private static readonly DdsPixelFormat _pfA8 = new DdsPixelFormat(DdsPixelFormatFlags.Alpha, 0, 8, 0x00, 0x00, 0x00, 0xff);                         // A8
-        private static DdsPixelFormat _pfDX10 = new DdsPixelFormat(DdsPixelFormatFlags.FourCC, MakeFourCC('D', 'X', '1', '0'), 0, 0, 0, 0, 0);              // DX10 extension
+        private static readonly DdsPixelFormat _pfDX10 = new DdsPixelFormat(DdsPixelFormatFlags.FourCC, MakeFourCC('D', 'X', '1', '0'), 0, 0, 0, 0, 0);              // DX10 extension
 
         // Mappings for legacy formats.
         private readonly DdsLegacyConversion[] _legacyMapping =

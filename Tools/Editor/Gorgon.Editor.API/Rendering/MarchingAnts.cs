@@ -47,7 +47,7 @@ namespace Gorgon.Editor.Rendering
         // The texture used for the marching ants.
         private Lazy<GorgonTexture2DView> _marchAntsTexture;
         // The renderer to use.
-        private Gorgon2D _renderer;
+        private readonly Gorgon2D _renderer;
         // The step for each movement of the ants.
         private float _step;
         #endregion

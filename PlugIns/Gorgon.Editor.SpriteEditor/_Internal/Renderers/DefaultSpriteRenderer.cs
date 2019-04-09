@@ -49,6 +49,34 @@ namespace Gorgon.Editor.SpriteEditor
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to update the working sprite data from the sprite content.
+        /// </summary>
+        private void UpdateWorkingSprite()
+        {
+            if (_workingSprite == null)
+            {
+                return;
+            }
+
+            _workingSprite.Texture = SpriteContent?.Texture;
+            _workingSprite.TextureArrayIndex = TextureArrayIndex;			
+
+            if (SpriteContent?.Texture == null)
+            {
+                return;
+            }
+
+            var spriteRegion = SpriteContent.Texture.ToPixel(SpriteContent.TextureCoordinates).ToRectangleF();
+            DX.Vector2 scaledSpritePosition = ToClient(spriteRegion.TopLeft).Truncate();
+
+            _workingSprite.TextureSampler = SpriteContent.SamplerState;
+            _workingSprite.TextureRegion = SpriteContent.TextureCoordinates;
+            _workingSprite.Size = spriteRegion.Size;
+            _workingSprite.Position = scaledSpritePosition;
+            _workingSprite.Scale = new DX.Vector2(ZoomScaleValue);
+        }
+
         /// <summary>Function called when the <see cref="P:Gorgon.Editor.SpriteEditor.SpriteContentRenderer.ZoomScaleValue"/> property is changed.</summary>
         protected override void OnZoomScaleChanged() => UpdateWorkingSprite();
 
@@ -78,7 +106,7 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 // Draw the pattern layer.
                 Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, SwapChain.Width, SwapChain.Height),
-                    new GorgonColor(GorgonColor.Gray75, (0.5f - TextureAlpha.Min(0.5f).Max(0)) * 2),
+                    new GorgonColor(GorgonColor.White, (0.5f - TextureAlpha.Min(0.5f).Max(0)) * 2),
                     BackgroundPattern,
                     new DX.RectangleF(0, 0, SwapChain.Width / BackgroundPattern.Width, SwapChain.Height / BackgroundPattern.Height));
 
@@ -105,37 +133,11 @@ namespace Gorgon.Editor.SpriteEditor
             Renderer.DrawEllipse(new DX.RectangleF(anchorPos.X - 3, anchorPos.Y - 3, 6, 6), GorgonColor.White);
 
             // We convert to integer first so we can clip the decimal places.
-            _marchAnts.Draw(ToClient(spriteRegion).Truncate());
+            _marchAnts.Draw(Renderer.MeasureSprite(_workingSprite).Truncate());
 
             Renderer.End();
 
             return 1;
-        }
-
-        /// <summary>
-        /// Function to update the working sprite data from the sprite content.
-        /// </summary>
-        private void UpdateWorkingSprite()
-        {
-            if (_workingSprite == null)
-            {
-                return;
-            }
-
-            _workingSprite.Texture = SpriteContent?.Texture;
-            _workingSprite.TextureArrayIndex = TextureArrayIndex;
-
-            if (SpriteContent?.Texture == null)                
-            {
-                return;
-            }
-            
-            var spriteRegion = SpriteContent.Texture.ToPixel(SpriteContent.TextureCoordinates).ToRectangleF();
-            DX.RectangleF scaledSprite = ToClient(spriteRegion).Truncate();
-            
-            _workingSprite.TextureRegion = SpriteContent.TextureCoordinates;
-            _workingSprite.Size = new DX.Size2F(scaledSprite.Width, scaledSprite.Height);
-            _workingSprite.Position = new DX.Vector2(scaledSprite.Left, scaledSprite.Top);
         }
 
         /// <summary>Function called when the sprite has a property change.</summary>
@@ -144,6 +146,9 @@ namespace Gorgon.Editor.SpriteEditor
         {
             switch (e.PropertyName)
             {
+                case nameof(ISpriteContent.SamplerState):
+                    _workingSprite.TextureSampler = SpriteContent.SamplerState;
+                    break;
                 case nameof(ISpriteContent.Texture):
                 case nameof(ISpriteContent.TextureCoordinates):
                     UpdateWorkingSprite();

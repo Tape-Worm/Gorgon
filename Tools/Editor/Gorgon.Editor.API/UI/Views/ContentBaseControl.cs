@@ -563,6 +563,77 @@ namespace Gorgon.Editor.UI.Views
         }
 
         /// <summary>
+        /// Function to retrieve a registered child panel control.
+        /// </summary>
+        /// <typeparam name="T">The type of panel.</typeparam>
+        /// <param name="type">The type of the panel view model.</param>
+        /// <returns>The registered panel if found, or <b>null</b> if not.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="type"/> parameter is <b>null</b>.</exception>
+        protected T GetRegisteredPanel<T>(Type type)
+            where T : Control
+        {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
+            if (_panelViews.TryGetValue(type.FullName, out Control result))
+            {
+                return (T)result;
+            }
+
+            Control SearchInterfaces(Type implementingType)
+            {
+                Type[] interfaces = implementingType.GetInterfaces();
+
+                if (interfaces == null)
+                {
+                    return null;
+                }
+
+                foreach (Type interfaceType in interfaces)
+                {
+                    if (_panelViews.TryGetValue(interfaceType.FullName, out Control interfaceResult))
+                    {
+                        return interfaceResult;
+                    }
+                }
+
+                return null;
+            }
+
+            // Check interfaces.
+            result = SearchInterfaces(type);
+
+            if (result != null)
+            {
+                return (T)result;
+            }
+
+            Type baseType = type.BaseType;
+
+            // Walk the hierarchy to see if we've descended from the specified type.
+            while (baseType != null)
+            {                
+                if (_panelViews.TryGetValue(baseType.FullName, out result))
+                {
+                    return (T)result;
+                }
+
+                result = SearchInterfaces(baseType);
+
+                if (result != null)
+                {
+                    return (T)result;
+                }
+
+                baseType = baseType.BaseType;
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Function to determine if a child panel is registered on this view or not.
         /// </summary>
         /// <typeparam name="T">The type of panel.</typeparam>

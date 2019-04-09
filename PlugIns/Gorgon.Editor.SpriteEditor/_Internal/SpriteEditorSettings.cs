@@ -48,10 +48,20 @@ namespace Gorgon.Editor.SpriteEditor
         } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
-        /// Property to set or return the position of the manual input window.
+        /// Property to set or return the position of the manual rectangle editor window.
         /// </summary>
         [JsonProperty]
-        public DX.Rectangle? ManualRectInputPos
+        public DX.Rectangle? ManualRectangleEditorBounds
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the position of the manual vertex editor window.
+        /// </summary>
+        [JsonProperty]
+        public DX.Rectangle? ManualVertexEditorBounds
         {
             get;
             set;

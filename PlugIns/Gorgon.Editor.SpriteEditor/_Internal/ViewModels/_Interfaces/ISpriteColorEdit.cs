@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Collections.Generic;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 
@@ -35,10 +36,19 @@ namespace Gorgon.Editor.SpriteEditor
     internal interface ISpriteColorEdit
         : IHostedPanelViewModel
     {
+		/// <summary>
+        /// Property to set or return the selected vertex.
+        /// </summary>
+		IReadOnlyList<bool> SelectedVertices
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Property to set or return the original color for the sprite.
         /// </summary>
-        GorgonColor OriginalSpriteColor
+        IReadOnlyList<GorgonColor> OriginalSpriteColor
         {
             get;
             set;
@@ -47,7 +57,16 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Property to set or return the color to apply to the sprite.
         /// </summary>
-        GorgonColor SpriteColor
+        IReadOnlyList<GorgonColor> SpriteColor
+        {
+            get;
+            set;
+        }
+
+		/// <summary>
+        /// Property to set or return the currently selected color for an individual vertex.
+        /// </summary>
+		GorgonColor SelectedColor
         {
             get;
             set;

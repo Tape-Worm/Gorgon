@@ -145,6 +145,15 @@ namespace Gorgon.Editor.SpriteEditor
         } = 0.5f;
 
         /// <summary>
+        /// Property to return the initial texture alpha for the background sprite texture (starting value for animation).
+        /// </summary>
+        public float InitialTextureAlpha
+        {
+            get;
+            protected set;
+        } = 0.5f;
+
+        /// <summary>
         /// Property to set or return the offset for scrolling the render region.
         /// </summary>
         public DX.Vector2 ScrollOffset
@@ -354,9 +363,8 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to start the zooming animation.
         /// </summary>
         /// <param name="newZoomScale">The final scale value.</param>
-        /// <param name="spriteTextureSize">The size of the sprite texture (with current transformation applied).</param>
         /// <param name="scrollOffset">The scroll offset target.</param>
-        private void StartAnimation(float newZoomScale, DX.Size2F spriteTextureSize, DX.Vector2 scrollOffset, float targetAlpha)
+        private void StartAnimation(float newZoomScale, DX.Vector2 scrollOffset, float targetAlpha)
         {
             var builder = new GorgonAnimationBuilder();
 
@@ -378,16 +386,6 @@ namespace Gorgon.Editor.SpriteEditor
             float x = scrollOffset.X;
             float y = scrollOffset.Y;
 
-            if (SwapChain.Width >= spriteTextureSize.Width)
-            {
-                x = 0;
-            }
-
-            if (SwapChain.Height >= spriteTextureSize.Height)
-            {
-                y = 0;
-            }
-
             if (!targetAlpha.EqualsEpsilon(currentAlpha))
             {
                 builder.EditColors()
@@ -406,13 +404,16 @@ namespace Gorgon.Editor.SpriteEditor
                         .PositionInterpolationMode(TrackInterpolationMode.Spline);
             }
 
-            builder.EditScale()
-                .SetKey(new GorgonKeyVector3(0, new DX.Vector3(currentZoomScale)))
-                .SetKey(new GorgonKeyVector3(maxTime, new DX.Vector3(newZoomScale)))
-                .EndEdit()
-                .ScaleInterpolationMode(TrackInterpolationMode.Spline);
+            if (!currentZoomScale.EqualsEpsilon(newZoomScale))
+            {
+                builder.EditScale()
+                    .SetKey(new GorgonKeyVector3(0, new DX.Vector3(currentZoomScale)))
+                    .SetKey(new GorgonKeyVector3(maxTime, new DX.Vector3(newZoomScale)))
+                    .EndEdit()
+                    .ScaleInterpolationMode(TrackInterpolationMode.Spline);
+            }
 
-            _animation = builder.Build("Zoom Animation");
+            _animation = builder.Build("Sprite Renderer Transition Animation");
 
             _animController.Play(this, _animation);
         }
@@ -463,6 +464,15 @@ namespace Gorgon.Editor.SpriteEditor
         protected virtual void OnBeforeSwapChainResized()
         {
 
+        }
+
+        /// <summary>
+        /// Function to draw the docking hilight for a docked window.
+        /// </summary>
+        protected void DrawDockRect()
+        {
+            Renderer.DrawFilledRectangle(new DX.RectangleF(SwapChain.Width - 128, 0, 128, 128), new GorgonColor(GorgonColor.BluePure, 0.4f));
+            Renderer.DrawRectangle(new DX.RectangleF(SwapChain.Width - 128, 1, 128, 128), GorgonColor.BluePure, 2);
         }
 
         /// <summary>
@@ -588,7 +598,7 @@ namespace Gorgon.Editor.SpriteEditor
                 }, EditorCommonResources.CheckerBoardPatternImage);                
             }
 
-            _textureArrayIndex = SpriteContent.ArrayIndex;
+            _textureArrayIndex = SpriteContent?.ArrayIndex ?? 0;
                        
             OnLoad();
         }
@@ -725,9 +735,9 @@ namespace Gorgon.Editor.SpriteEditor
                 centerPoint.Y = 1;
             }
 
-            if ((SpriteContent?.Texture != null) && (animate) && (!zoomScaleValue.EqualsEpsilon(ZoomScaleValue)))
+            if ((SpriteContent?.Texture != null) && (animate) && ((!zoomScaleValue.EqualsEpsilon(ZoomScaleValue)) || (!targetAlpha.EqualsEpsilon(TextureAlpha))))
             {
-                StartAnimation(zoomScaleValue, new DX.Size2F(SpriteContent.Texture.Width * zoomScaleValue, SpriteContent.Texture.Height * zoomScaleValue), centerPoint, targetAlpha);
+                StartAnimation(zoomScaleValue, centerPoint, targetAlpha);
             }
             else
             {

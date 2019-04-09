@@ -64,6 +64,9 @@ namespace Gorgon.Editor.UI
 
         // The command used to save the content.
         private IEditorAsyncCommand<SaveReason> _saveContentCommand;
+
+        // The context for commands from the content.
+        private string _commandContext = string.Empty;
         #endregion
 
         #region Properties.
@@ -128,6 +131,7 @@ namespace Gorgon.Editor.UI
                 {
                     _file.Renamed -= File_Renamed;
                     _file.Deleted -= File_Deleted;
+                    _file.Closed -= File_Closed;
                     _file.IsOpen = false;
                 }
 
@@ -139,6 +143,7 @@ namespace Gorgon.Editor.UI
                 {
                     _file.Renamed += File_Renamed;
                     _file.Deleted += File_Deleted;
+                    _file.Closed += File_Closed;
                     _file.IsOpen = true;
                 }
             }
@@ -187,6 +192,26 @@ namespace Gorgon.Editor.UI
                 OnPropertyChanged();
             }
         }
+
+        /// <summary>
+        /// Property to set or return the current context for commands from this content.
+        /// </summary>
+        public string CommandContext
+        {
+            get => _commandContext;
+            set
+            {
+                if (string.Equals(_commandContext, value ?? string.Empty, StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _commandContext = value ?? string.Empty;
+                OnPropertyChanged();
+            }
+        }
+
         #endregion
 
         #region Methods.
@@ -205,6 +230,11 @@ namespace Gorgon.Editor.UI
             // Detach this object from the content.
             File = null;
         }
+
+        /// <summary>Handles the Closed event of the File control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void File_Closed(object sender, EventArgs e) => DoCloseContent(new CloseContentArgs(false));
 
         /// <summary>
         /// Function called to close the content.
@@ -278,6 +308,7 @@ namespace Gorgon.Editor.UI
                 _file.Metadata.Attributes[ContentTypeAttr] = ContentType;
             }
 
+            _file.Closed += File_Closed;
             _file.Renamed += File_Renamed;
             _file.Deleted += File_Deleted;
         }
@@ -286,6 +317,7 @@ namespace Gorgon.Editor.UI
         public override void OnUnload()
         {
             // Unassign events and reset state, but do not set to NULL, that'll be handled later on.
+            _file.Closed -= File_Closed;
             _file.Renamed -= File_Renamed;
             _file.Deleted -= File_Deleted;
             _file.IsOpen = false;

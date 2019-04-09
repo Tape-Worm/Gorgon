@@ -239,10 +239,10 @@ namespace Gorgon.Editor.Services
 
                 switch (mode)
                 {
-                    case SearchMode.OnlyWord when string.Equals(node.Name, searchText, StringComparison.CurrentCultureIgnoreCase):
-                    case SearchMode.StartsWith when node.Name.StartsWith(searchText, StringComparison.CurrentCultureIgnoreCase):
-                    case SearchMode.EndsWith when node.Name.EndsWith(searchText, StringComparison.CurrentCultureIgnoreCase):
-                    case SearchMode.Contains when (node.Name.IndexOf(searchText, StringComparison.CurrentCultureIgnoreCase) != -1):                        
+                    case SearchMode.OnlyWord when string.Equals(node.Name, modeSearchText, StringComparison.CurrentCultureIgnoreCase):
+                    case SearchMode.StartsWith when node.Name.StartsWith(modeSearchText, StringComparison.CurrentCultureIgnoreCase):
+                    case SearchMode.EndsWith when node.Name.EndsWith(modeSearchText, StringComparison.CurrentCultureIgnoreCase):
+                    case SearchMode.Contains when (node.Name.IndexOf(modeSearchText, StringComparison.CurrentCultureIgnoreCase) != -1):                        
                     case SearchMode.All:
                         searchResults.Add(node);
                         break;

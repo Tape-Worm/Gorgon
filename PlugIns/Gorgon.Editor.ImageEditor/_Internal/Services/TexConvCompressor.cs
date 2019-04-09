@@ -107,11 +107,11 @@ namespace Gorgon.Editor.ImageEditor
 
         #region Variables.
         // The path to the texture converter process.
-        private FileInfo _texConv;
+        private readonly FileInfo _texConv;
         // The file system writer to use.
-        private IGorgonFileSystemWriter<Stream> _writer;
+        private readonly IGorgonFileSystemWriter<Stream> _writer;
         // Plugin image file codec.
-        private IGorgonImageCodec _codec;
+        private readonly IGorgonImageCodec _codec;
         #endregion
 
         #region Methods.

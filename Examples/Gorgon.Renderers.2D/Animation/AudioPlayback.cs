@@ -44,9 +44,9 @@ namespace Gorgon.Examples
     {
         #region Variables.
         // The main XAudio interface.
-        private Xa.XAudio2 _audio;
+        private readonly Xa.XAudio2 _audio;
         // The master voice for playback.
-        private Xa.MasteringVoice _masterVoice;
+        private readonly Xa.MasteringVoice _masterVoice;
         // Flag to indicate that the audio is playing.
         private CancellationTokenSource _tokenSource;
         // The currently playing track.

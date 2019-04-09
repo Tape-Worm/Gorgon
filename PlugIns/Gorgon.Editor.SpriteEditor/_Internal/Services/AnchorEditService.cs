@@ -26,10 +26,10 @@
 
 using System;
 using System.Windows.Forms;
-using DX = SharpDX;
-using Gorgon.Renderers;
-using Gorgon.Graphics;
 using Gorgon.Animation;
+using Gorgon.Graphics;
+using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -56,6 +56,8 @@ namespace Gorgon.Editor.SpriteEditor
         private readonly GorgonSpriteAnimationController _animController;
         // The icon opacity animation.
         private readonly IGorgonAnimation _animation;
+		// The boundaries for the anchor.
+        private DX.RectangleF _anchorBounds;
         #endregion
 
         #region Events.
@@ -63,6 +65,11 @@ namespace Gorgon.Editor.SpriteEditor
         /// Event triggered when the anchor position is updated.
         /// </summary>
         public event EventHandler AnchorChanged;
+
+		/// <summary>
+        /// Event triggered when the anchor bounds are changed.
+        /// </summary>
+        public event EventHandler BoundsChanged;
         #endregion
 
         #region Properties.
@@ -72,7 +79,7 @@ namespace Gorgon.Editor.SpriteEditor
             get;
             private set;
         }
-
+		
         /// <summary>Property to set or return the position of the sprite anchor.</summary>
         public DX.Vector2 AnchorPosition
         {
@@ -84,42 +91,28 @@ namespace Gorgon.Editor.SpriteEditor
                     return;
                 }
 
-                if (!Bounds.IsEmpty)
-                {
-                    if (value.X < Bounds.X)
-                    {
-                        value.X = Bounds.X;
-                    }
-
-                    if (value.Y < Bounds.Y)
-                    {
-                        value.Y = Bounds.Y;
-                    }
-
-                    if (value.X > Bounds.Right)
-                    {
-                        value.X = Bounds.Right;
-                    }
-
-                    if (value.Y > Bounds.Bottom)
-                    {
-                        value.Y = Bounds.Bottom;
-                    }
-                }
-
-                _anchorPosition = value;
-                Refresh();
-
-                EventHandler handler = AnchorChanged;
-                AnchorChanged?.Invoke(this, EventArgs.Empty);
+                SetAnchorPosition(value);
             }
         }
 
         /// <summary>Property to set or return the boundaries for the anchor position.</summary>
         public DX.RectangleF Bounds
         {
-            get;
-            set;
+            get => _anchorBounds;
+            set
+            {
+                if (_anchorBounds.Equals(ref value))
+                {
+                    return;
+                }
+
+                _anchorBounds = value;
+
+                EventHandler handler = BoundsChanged;
+                BoundsChanged?.Invoke(this, EventArgs.Empty);
+
+                SetAnchorPosition(_anchorPosition);
+            }
         }
 
         /// <summary>Property to set or return the mouse position in the client area of the primary rendering window.</summary>
@@ -149,6 +142,42 @@ namespace Gorgon.Editor.SpriteEditor
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to assign the anchor position.
+        /// </summary>
+        /// <param name="value">The value to assign to the anchor position.</param>
+        private void SetAnchorPosition(DX.Vector2 value)
+        {
+            if (!Bounds.IsEmpty)
+            {
+                if (value.X < Bounds.X)
+                {
+                    value.X = Bounds.X;
+                }
+
+                if (value.Y < Bounds.Y)
+                {
+                    value.Y = Bounds.Y;
+                }
+
+                if (value.X > Bounds.Right)
+                {
+                    value.X = Bounds.Right;
+                }
+
+                if (value.Y > Bounds.Bottom)
+                {
+                    value.Y = Bounds.Bottom;
+                }
+            }
+
+            _anchorPosition = value.Truncate();
+            Refresh();
+
+            EventHandler handler = AnchorChanged;
+            AnchorChanged?.Invoke(this, EventArgs.Empty);
+        }
+
         /// <summary>Function called when a key is held down.</summary>
         /// <param name="key">The key that was held down.</param>
         /// <param name="modifiers">The modifier keys held down with the <paramref name="key" />.</param>
@@ -213,7 +242,7 @@ namespace Gorgon.Editor.SpriteEditor
             DX.Vector2 mouse = PointFromClient == null ? MousePosition : PointFromClient(MousePosition);
             DX.Vector2.Subtract(ref mouse, ref _dragStart, out DX.Vector2 dragDelta);
             AnchorPosition = new DX.Vector2(_dragStartPosition.X + dragDelta.X, _dragStartPosition.Y + dragDelta.Y);
-            
+
             return true;
         }
 
@@ -244,10 +273,14 @@ namespace Gorgon.Editor.SpriteEditor
                 _animController.Play(_anchorIcon, _animation);
             }
 
-            _anchorIcon.Position = _screenAnchor;
+            _anchorIcon.Position = _screenAnchor.Truncate();
 
             _renderer.Begin();
             _renderer.DrawSprite(_anchorIcon);
+            _renderer.DrawFilledRectangle(new DX.RectangleF(_anchorIcon.Position.X - 4, _anchorIcon.Position.Y - 1, 9, 3), GorgonColor.Black);
+            _renderer.DrawFilledRectangle(new DX.RectangleF(_anchorIcon.Position.X - 1, _anchorIcon.Position.Y - 4, 3, 9), GorgonColor.Black);
+            _renderer.DrawLine(_anchorIcon.Position.X - 3, _anchorIcon.Position.Y, _anchorIcon.Position.X + 4, _anchorIcon.Position.Y, GorgonColor.White);
+            _renderer.DrawLine(_anchorIcon.Position.X, _anchorIcon.Position.Y - 3, _anchorIcon.Position.X, _anchorIcon.Position.Y + 4, GorgonColor.White);
             _renderer.End();
 
             _animController.Update();
@@ -277,7 +310,7 @@ namespace Gorgon.Editor.SpriteEditor
                 .SetKey(new GorgonKeyGorgonColor(14.0f, new GorgonColor(GorgonColor.LightBlue, 0.3f)))
                 .SetKey(new GorgonKeyGorgonColor(16.0f, GorgonColor.White))
                 .EndEdit()
-                .Build("Icon Opacity");            
+                .Build("Icon Opacity");
         }
         #endregion
     }

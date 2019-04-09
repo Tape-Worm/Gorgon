@@ -230,7 +230,7 @@ namespace Gorgon.Editor.Plugins
             {
                 (string name, byte[] data) = await OnGetDefaultContentAsync(generatedName);
 
-                if ((string.IsNullOrEmpty(string.Empty)) && (!string.IsNullOrWhiteSpace(generatedName)))
+                if ((string.IsNullOrEmpty(name)) && (!string.IsNullOrWhiteSpace(generatedName)))
                 {
                     name = generatedName;
                 }

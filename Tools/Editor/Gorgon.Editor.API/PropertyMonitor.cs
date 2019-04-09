@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -57,7 +58,7 @@ namespace Gorgon.Editor
 
         #region Variables.
         // The list of properties to use.
-        private PropertyDescriptorCollection _properties;
+        private HashSet<string> _properties;
         #endregion
 
         #region Properties.
@@ -85,16 +86,53 @@ namespace Gorgon.Editor
         /// Function to validate whether the specified property exists on this object.
         /// </summary>
         /// <param name="propertyName">Name of the property to look up.</param>
-        [DebuggerStepThrough]
+        //[DebuggerStepThrough]
         private void ValidatePropertyName(string propertyName)
         {
             if (_properties == null)
             {
-                _properties = TypeDescriptor.GetProperties(this);
+                Type thisType = GetType();
+
+                _properties = new HashSet<string>(StringComparer.Ordinal);
+                PropertyInfo[] props = thisType.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+
+                foreach (PropertyInfo prop in props)
+                {
+                    if (!_properties.Contains(prop.Name))
+                    {
+                        _properties.Add(prop.Name);
+                    }
+                }
+
+                // Get any explicitly implemented properties from interfaces.
+                props = GetType().GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+
+                var name = new StringBuilder(128);
+
+                foreach (PropertyInfo prop in props)
+                {
+                    // We only care about the member name, not which interface owns it, so strip off the declaring part.
+                    name.Length = 0;
+                    name.Append(prop.Name);
+                    int lastIndex = name.LastIndexOf('.');
+
+                    if ((lastIndex != -1) && (lastIndex < name.Length - 1))
+                    {
+                        name.Remove(0, lastIndex + 1);
+                    }                    
+
+                    string finalName = name.ToString();
+
+                    if (!_properties.Contains(finalName))
+                    {
+                        _properties.Add(finalName);
+                    }
+                }
+
                 Debug.Assert(_properties != null, "This object does not contain public properties!");
             }
 
-            if (_properties[propertyName] == null)
+            if (!_properties.Contains(propertyName))
             {
                 throw new MissingMemberException(string.Format(Resources.GOREDIT_ERR_PROPERTY_DOES_NOT_EXIST, propertyName));
             }

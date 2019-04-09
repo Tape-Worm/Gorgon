@@ -75,14 +75,17 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         private void SubmitTextureCoordinates()
         {
-            (DX.RectangleF rect, int arrayIndex) args = (_picker.Rectangle, TextureArrayIndex);
-
-            if ((SpriteContent?.SetTextureCoordinatesCommand == null) || (!SpriteContent.SetTextureCoordinatesCommand.CanExecute(args)))
+            if (SpriteContent?.ManualRectangleEditor == null)
             {
                 return;
             }
 
-            SpriteContent.SetTextureCoordinatesCommand.Execute(args);
+            if ((SpriteContent.ManualRectangleEditor.ApplyCommand == null) || (!SpriteContent.ManualRectangleEditor.ApplyCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            SpriteContent.ManualRectangleEditor.ApplyCommand.Execute(null);
         }
 
         /// <summary>Handles the PreviewKeyDown event of the Window control.</summary>
@@ -94,14 +97,14 @@ namespace Gorgon.Editor.SpriteEditor
             switch (e.KeyCode)
             {
                 case Keys.Enter:
-                    SpriteContent.CurrentTool = SpriteEditTool.None;
+                    SubmitTextureCoordinates();
                     e.IsInputKey = true;
                     break;
                 case Keys.Escape:
-                    // Revert the changes, when we switch tools, we'll be committing our changes to the data context, and if they haven't changed, nothing will be 
-                    // updated.
-                    _picker.Rectangle = SpriteContent.Texture.ToPixel(SpriteContent.TextureCoordinates).ToRectangleF();
-                    TextureArrayIndex = SpriteContent.ArrayIndex;
+                    if ((SpriteContent.ManualRectangleEditor.CancelCommand != null) && (SpriteContent.ManualRectangleEditor.CancelCommand.CanExecute(null)))
+                    {
+                        SpriteContent.ManualRectangleEditor.CancelCommand.Execute(null);
+                    }
                     SpriteContent.CurrentTool = SpriteEditTool.None;
                     e.IsInputKey = true;
                     break;
@@ -112,7 +115,50 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
         /// <exception cref="System.NotImplementedException"></exception>
-        private void Window_MouseUp(object sender, MouseEventArgs e) => _picker.MouseUp(new DX.Vector2(e.X, e.Y), e.Button, Control.ModifierKeys);
+        private void Window_MouseUp(object sender, MouseEventArgs e)
+        {
+            _picker.MouseUp(new DX.Vector2(e.X, e.Y), e.Button, Control.ModifierKeys);
+            SpriteContent.ManualRectangleEditor.Rectangle = _picker.Rectangle;
+        }
+
+        /// <summary>Handles the PropertyChanged event of the Settings control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+        private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(ISettings.ClipMaskType):
+                    _picker.ClipMask = SpriteContent.Settings.ClipMaskType;
+                    break;
+                case nameof(ISettings.ClipMaskValue):
+                    _picker.ClipMaskValue = SpriteContent.Settings.ClipMaskValue;
+                    break;
+            }
+        }
+
+        /// <summary>Handles the PropertyChanged event of the ManualInput control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+        private void ManualInput_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(IManualRectangleEditor.TextureArrayIndex):
+                    TextureArrayIndex = SpriteContent.ManualRectangleEditor.TextureArrayIndex;
+                    _picker.ImageData = SpriteContent.ImageData.Buffers[0, SpriteContent.ManualRectangleEditor.TextureArrayIndex];
+                    break;
+                case nameof(IManualRectangleEditor.Rectangle):
+                    _picker.Rectangle = SpriteContent.ManualRectangleEditor.Rectangle;
+                    break;
+                case nameof(IManualRectangleEditor.Padding):
+                    _picker.Padding = SpriteContent.ManualRectangleEditor.Padding;
+                    break;
+            }
+        }
+
+        /// <summary>Function called when the texture array index value is updated.</summary>
+        protected override void OnTextureArrayIndexChanged() => SpriteContent.ManualRectangleEditor.TextureArrayIndex = TextureArrayIndex;
 
         /// <summary>Function called when the sprite is changing a property.</summary>
         /// <param name="e">The <see cref="PropertyChangingEventArgs"/> instance containing the event data.</param>
@@ -135,18 +181,28 @@ namespace Gorgon.Editor.SpriteEditor
         {
             switch (e.PropertyName)
             {
+                case nameof(ISpriteContent.ArrayIndex):
+                    if (SpriteContent.Texture != null)
+                    {
+                        TextureArrayIndex = SpriteContent.ManualRectangleEditor.TextureArrayIndex = SpriteContent.ArrayIndex;
+                    }
+                    else
+                    {
+                        TextureArrayIndex = 0;
+                    }
+                    break;
                 case nameof(ISpriteContent.ImageData):
-                    _picker.ImageData = SpriteContent.ImageData;
+                    _picker.ImageData = SpriteContent.ImageData.Buffers[0, SpriteContent.ManualRectangleEditor.TextureArrayIndex];
                     break;
                 case nameof(ISpriteContent.TextureCoordinates):
                 case nameof(ISpriteContent.Texture):
                     if (SpriteContent.Texture != null)
-                    {
-                        _picker.Rectangle = SpriteContent.Texture.ToPixel(SpriteContent.TextureCoordinates).ToRectangleF();
+                    {                        
+                        SpriteContent.ManualRectangleEditor.Rectangle = SpriteContent.Texture.ToPixel(SpriteContent.TextureCoordinates).ToRectangleF();
                     }
                     else
                     {
-                        _picker.Rectangle = DX.RectangleF.Empty;
+                        SpriteContent.ManualRectangleEditor.Rectangle = DX.RectangleF.Empty;
                     }
                     break;
             }
@@ -183,23 +239,37 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Function called to perform custom loading of resources.</summary>
         protected override void OnLoad()
         {
-            if (SpriteContent?.Texture == null)
+            if (SpriteContent.Texture != null)
             {
-                _picker.ImageData = null;
-                _picker.Rectangle = DX.RectangleF.Empty;
-                return;
+                SpriteContent.ManualRectangleEditor.Rectangle = SpriteContent.Texture.ToPixel(SpriteContent.TextureCoordinates).ToRectangleF();
+                _picker.Rectangle = SpriteContent.ManualRectangleEditor.Rectangle;
+                SpriteContent.ManualRectangleEditor.TextureArrayIndex = TextureArrayIndex;
+            }
+            else
+            {
+                SpriteContent.ManualRectangleEditor.TextureArrayIndex = 0;                
+                SpriteContent.ManualRectangleEditor.Rectangle = _picker.Rectangle = DX.RectangleF.Empty;
             }
 
+            SpriteContent.ManualRectangleEditor.PropertyChanged += ManualInput_PropertyChanged;
+            SpriteContent.Settings.PropertyChanged += Settings_PropertyChanged;
+            
             SwapChain.Window.MouseUp += Window_MouseUp;
             SwapChain.Window.PreviewKeyDown += Window_PreviewKeyDown;
 
-            _picker.ImageData = SpriteContent.ImageData;
+            _picker.Padding = SpriteContent.ManualRectangleEditor.Padding;
+            _picker.ImageData = SpriteContent.ImageData.Buffers[0, SpriteContent.ManualRectangleEditor.TextureArrayIndex];
             _picker.Rectangle = SpriteContent.Texture.ToPixel(SpriteContent.TextureCoordinates).ToRectangleF();
         }
 
         /// <summary>Function called to perform custom unloading of resources.</summary>
         protected override void OnUnload()
         {
+            SpriteContent.ManualRectangleEditor.Rectangle = DX.RectangleF.Empty;
+            SpriteContent.ManualRectangleEditor.TextureArrayIndex = 0;
+            SpriteContent.Settings.PropertyChanged -= Settings_PropertyChanged;
+            SpriteContent.ManualRectangleEditor.PropertyChanged -= ManualInput_PropertyChanged;
+
             SwapChain.Window.MouseUp -= Window_MouseUp;
             SwapChain.Window.PreviewKeyDown -= Window_PreviewKeyDown;
 

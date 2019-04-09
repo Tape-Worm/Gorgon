@@ -169,7 +169,8 @@ namespace Gorgon.Graphics.Fonts
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="texture"/> is not a 2D texture.
 		/// <para>-or-</para>
-		/// <para>Thrown if the <paramref name="texture"/> format is not <c>R8G8B8A8_UNorm</c>, <c>R8G8B8A8_UNorm_SRgb</c>, <c>BufferFormat.B8G8R8A8_UNorm</c> or <c>B8G8R8A8_UNorm_SRgb</c>.</para>
+		/// <para>Thrown if the <paramref name="texture"/> format is not <see cref="BufferFormat.R8G8B8A8_UNorm"/>, <see cref="BufferFormat.R8G8B8A8_UNorm_SRgb"/>, <see cref="BufferFormat.B8G8R8A8_UNorm"/> or 
+        /// <see cref="BufferFormat.B8G8R8A8_UNorm_SRgb"/>.</para>
 		/// </exception>
 		/// <remarks>
 		/// <para>
@@ -177,11 +178,10 @@ namespace Gorgon.Graphics.Fonts
 		/// allows applications to create custom characters in fonts that the font generation code cannot produce.
 		/// </para>
 		/// <para>
-		/// This should only be used when generating a font, or modifying a font and discarding it when done. When the font is persisted to a file or other stream, the font texture will be saved with 
-		/// that data. Thus, the best practice, if saving the font, is to create the font with the custom texture, then save it and only load it from a stream/disk file after. 
+		/// Currently any custom texture/coordinates are not persisted when the font is saved.  This may change in a future release of Gorgon.
 		/// </para>
 		/// <para>
-		/// If the <see cref="GorgonFont"/> for this glyph does not have an outline, then the <paramref name="outlineCoordinates"/> will be set to empty.
+		/// If the <see cref="GorgonFont"/> for this glyph does not have an outline, then the <paramref name="outlineCoordinates"/> should be set to empty.
 		/// </para>
 		/// </remarks>
 		public void UpdateTexture(GorgonTexture2D texture, DX.Rectangle glyphCoordinates, DX.Rectangle outlineCoordinates, int textureArrayIndex)

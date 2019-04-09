@@ -81,15 +81,6 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to set or return the active undo handler context.
-        /// </summary>
-        IUndoHandler UndoContext
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Property to set or return the current state of the project.
         /// </summary>
         ProjectState ProjectState
@@ -126,6 +117,14 @@ namespace Gorgon.Editor.ViewModels
         /// Property to return the content previewer.
         /// </summary>
         IContentPreviewVm ContentPreviewer
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the current command context.
+        /// </summary>
+        string CommandContext
         {
             get;
         }

@@ -63,6 +63,15 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>
+        /// Property to set or return the padding for the clipping rectangle.
+        /// </summary>
+        int Padding
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to set or return the flag to determine which data to use as a mask when determining clip boundaries.
         /// </summary>
         ClipMask ClipMask
