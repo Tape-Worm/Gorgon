@@ -74,6 +74,8 @@ namespace Gorgon.Editor
         private GorgonMefPluginCache _pluginCache;
         // The plugin service used to manage content plugins.
         private ContentPluginService _contentPlugins;
+		// The plugin service used to manage tool plugin.
+        private ToolPluginService _toolPlugins;
         // The plugin service used to manage content import plugins.
         private ContentImporterPluginService _contentImporterPlugins;
         #endregion
@@ -88,6 +90,7 @@ namespace Gorgon.Editor
         /// <see langword="true" /> to release both managed and unmanaged resources; <see langword="false" /> to release only unmanaged resources. </param>
         protected override void Dispose(bool disposing)
         {
+            ToolPluginService toolPlugins = Interlocked.Exchange(ref _toolPlugins, null);
             ContentPluginService contentPlugins = Interlocked.Exchange(ref _contentPlugins, null);
             ContentImporterPluginService contentImporterPlugins = Interlocked.Exchange(ref _contentImporterPlugins, null);
             GraphicsContext context = Interlocked.Exchange(ref _graphicsContext, null);
@@ -95,6 +98,7 @@ namespace Gorgon.Editor
             FormMain mainForm = Interlocked.Exchange(ref _mainForm, null);
             FormSplash splash = Interlocked.Exchange(ref _splash, null);
 
+            toolPlugins?.Dispose();
             contentImporterPlugins?.Dispose();
             contentPlugins?.Dispose();
             context?.Dispose();
@@ -297,6 +301,36 @@ namespace Gorgon.Editor
         }
 
         /// <summary>
+        /// Function to load any tool plugins.
+        /// </summary>
+        /// <returns>The tool plugin manager service used to manipulate the loaded tool plugins.</returns>
+        private ToolPluginService LoadToolPlugins()
+        {
+            var toolPluginsDir = new DirectoryInfo(Path.Combine(_settings.PluginPath, "Tools"));
+            var toolPlugins = new ToolPluginService(_graphicsContext);
+
+            try
+            {
+                _splash.InfoText = Resources.GOREDIT_TEXT_LOADING_TOOL_PLUGINS;
+
+                if (!toolPluginsDir.Exists)
+                {
+                    toolPluginsDir.Create();
+                    return toolPlugins;
+                }
+
+                toolPlugins.LoadToolPlugins(_pluginCache, toolPluginsDir);
+            }
+            catch (Exception ex)
+            {
+                Program.Log.LogException(ex);
+                GorgonDialogs.ErrorBox(_splash, Resources.GOREDIT_ERR_LOADING_PLUGINS, Resources.GOREDIT_ERR_ERROR, ex);
+            }
+
+            return toolPlugins;
+        }
+
+        /// <summary>
         /// Function to load any content plugins used to create/edit content.
         /// </summary>
         /// <returns>The content plugin manager service used to manipulate the loaded content plugins.</returns>
@@ -396,9 +430,12 @@ namespace Gorgon.Editor
                 // Load our file system import/export plugins.
                 FileSystemProviders fileSystemProviders = LoadFileSystemPlugins();
 
+				// Load our tool plug ins.
+                _toolPlugins = LoadToolPlugins();
+
                 // Load our content service plugins.
                 _contentPlugins = LoadContentPlugins();
-                _contentImporterPlugins = LoadImportContentPlugins();
+                _contentImporterPlugins = LoadImportContentPlugins();                
 
                 // Create the project manager for the application
                 _projectManager = new ProjectManager(fileSystemProviders);
@@ -417,6 +454,7 @@ namespace Gorgon.Editor
                 var factory = new ViewModelFactory(_settings,
                                                    fileSystemProviders,
                                                    _contentPlugins,
+												   _toolPlugins,
                                                    _contentImporterPlugins,
                                                    _projectManager,
                                                    new MessageBoxService(),

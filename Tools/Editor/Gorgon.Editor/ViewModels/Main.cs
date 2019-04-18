@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -60,8 +61,6 @@ namespace Gorgon.Editor.ViewModels
         private ViewModelFactory _viewModelFactory;
         // The message display service.
         private IMessageDisplayService _messageService;
-        // The application busy state service.
-        private IBusyStateService _busyService;
         // The currently active project.
         private IProjectVm _currentProject;
         // The project open dialog service.
@@ -70,9 +69,16 @@ namespace Gorgon.Editor.ViewModels
         private IEditorFileSaveAsDialogService _saveDialog;
         // The directory locator service.
         private IDirectoryLocateService _directoryLocator;
-		#endregion
+		// The tool plug in management service.
+        private IToolPluginService _toolPlugins;
+        #endregion
 
-		#region Properties.
+        #region Properties.
+        /// <summary>
+        /// Property to return the list of tool plug in ribbon buttons.
+        /// </summary>
+        public IReadOnlyDictionary<string, IReadOnlyList<IToolPluginRibbonButton>> ToolButtons => _toolPlugins.RibbonButtons;
+
 		/// <summary>
 		/// Property to return the settings for the application.
 		/// </summary>
@@ -260,12 +266,12 @@ namespace Gorgon.Editor.ViewModels
             _openDialog = injectionParameters.OpenDialog ?? throw new ArgumentMissingException(nameof(MainParameters.OpenDialog), nameof(injectionParameters));
             _saveDialog = injectionParameters.SaveDialog ?? throw new ArgumentMissingException(nameof(MainParameters.SaveDialog), nameof(injectionParameters));
             _messageService = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(MainParameters.MessageDisplay), nameof(injectionParameters));
-            _busyService = injectionParameters.BusyService ?? throw new ArgumentMissingException(nameof(MainParameters.BusyService), nameof(injectionParameters));
             NewProject = injectionParameters.NewProject ?? throw new ArgumentMissingException(nameof(MainParameters.NewProject), nameof(injectionParameters));
             RecentFiles = injectionParameters.RecentFiles ?? throw new ArgumentMissingException(nameof(MainParameters.RecentFiles), nameof(injectionParameters));
 
             _directoryLocator = injectionParameters.ViewModelFactory.DirectoryLocator;
 
+            _toolPlugins = _viewModelFactory.ToolPlugins;
             ContentCreators = new ObservableCollection<IContentPluginMetadata>(injectionParameters.ContentCreators ?? throw new ArgumentMissingException(nameof(MainParameters.ContentCreators), nameof(injectionParameters)));
             RecentFiles.OpenProjectCommand = new EditorCommand<RecentItem>(DoOpenRecentAsync, CanOpenRecent);
             NewProject.CreateProjectCommand = new EditorCommand<object>(DoCreateProjectAsync, CanCreateProject);

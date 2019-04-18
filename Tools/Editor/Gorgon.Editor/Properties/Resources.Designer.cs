@@ -19,7 +19,7 @@ namespace Gorgon.Editor.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -1178,6 +1178,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The tool plug in &apos;{0}&apos; is missing its ribbon button..
+        /// </summary>
+        internal static string GOREDIT_ERR_TOOL_NO_BUTTON {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_TOOL_NO_BUTTON", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unsuitable workspace location: The directory is the root of a disk file system..
         /// </summary>
         internal static string GOREDIT_ERR_WORKSPACE_DIRECTORY_IS_ROOT {
@@ -1437,6 +1446,15 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_TEXT_LOADING_IMPORT_CONTENT_PLUGINS {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_LOADING_IMPORT_CONTENT_PLUGINS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading tool plug ins....
+        /// </summary>
+        internal static string GOREDIT_TEXT_LOADING_TOOL_PLUGINS {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_LOADING_TOOL_PLUGINS", resourceCulture);
             }
         }
         

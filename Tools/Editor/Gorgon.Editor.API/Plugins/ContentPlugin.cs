@@ -82,7 +82,7 @@ namespace Gorgon.Editor.Plugins
         }
 
         /// <summary>Property to return the type of this plug in.</summary>
-        public override PluginType PluginType => PluginType.Content;
+        public sealed override PluginType PluginType => PluginType.Content;
 
         /// <summary>
         /// Property to return whether or not the plugin is capable of creating content.

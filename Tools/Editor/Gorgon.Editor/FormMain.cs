@@ -91,6 +91,17 @@ namespace Gorgon.Editor
         private readonly IRibbonMerger _ribbonMerger;
 		// The currently selected tab prior to showing a context tab.
         private KryptonRibbonTab _prevTabBeforeContext;
+		// The list of groups on the tools tab.
+        private readonly Dictionary<string, KryptonRibbonGroup> _toolGroups = new Dictionary<string, KryptonRibbonGroup>(StringComparer.OrdinalIgnoreCase);
+		// The list of line groups for the tools tab.
+        private readonly List<KryptonRibbonGroupLines> _toolLines = new List<KryptonRibbonGroupLines>();
+		// The list of triple groups for the tools tab.
+        private readonly List<KryptonRibbonGroupTriple> _toolTriples = new List<KryptonRibbonGroupTriple>();
+        // The list of buttons for the tools tab.
+        private readonly Dictionary<KryptonRibbonGroupButton, KryptonRibbonGroup> _toolGroupButtons = new Dictionary<KryptonRibbonGroupButton, KryptonRibbonGroup>();
+        private readonly Dictionary<string, KryptonRibbonGroupButton> _toolButtons = new Dictionary<string, KryptonRibbonGroupButton>(StringComparer.OrdinalIgnoreCase);
+        // The list of separators for the tools tab.
+        private readonly List<KryptonRibbonGroupSeparator> _toolSeparators = new List<KryptonRibbonGroupSeparator>();
         #endregion
 
         #region Properties.
@@ -116,6 +127,206 @@ namespace Gorgon.Editor
         #endregion
 
         #region Methods.
+		/// <summary>
+        /// Function to release all tool ribbon items.
+        /// </summary>
+        private void ReleaseToolRibbonItems()
+        {
+            foreach (KryptonRibbonGroupButton button in _toolButtons.Values)
+            {
+                button.Click -= ToolButton_Click;
+                button.Dispose();
+            }
+
+            foreach (KryptonRibbonGroupTriple triple in _toolTriples)
+            {
+                triple.Dispose();
+            }
+
+            foreach (KryptonRibbonGroupLines lines in _toolLines)
+            {
+                lines.Dispose();
+            }
+
+            foreach (KryptonRibbonGroupSeparator separators in _toolSeparators)
+            {
+                separators.Dispose();
+            }
+
+            foreach (KryptonRibbonGroup groups in _toolGroups.Values)
+            {
+                groups.Dispose();
+            }
+
+            _toolGroupButtons.Clear();
+            _toolGroups.Clear();
+            _toolSeparators.Clear();
+            _toolLines.Clear();
+            _toolTriples.Clear();
+            _toolButtons.Clear();
+        }
+
+		/// <summary>
+        /// Function to update the list of buttons, and groups on the tools tab.
+        /// </summary>
+        /// <param name="dataContext">The current data context.</param>
+        private void UpdateToolsTab(IMain dataContext)
+        {
+            if (dataContext == null)
+            {
+                ReleaseToolRibbonItems();
+                return;
+            }
+
+            foreach (KeyValuePair<string, IReadOnlyList<IToolPluginRibbonButton>> buttonItem in dataContext.ToolButtons)
+            {
+                if ((buttonItem.Value == null) || (buttonItem.Value.Count == 0))
+                {
+                    continue;
+                }
+
+                if (!_toolGroups.TryGetValue(buttonItem.Key, out KryptonRibbonGroup ribGroup))
+                {
+                    ribGroup = new KryptonRibbonGroup
+                    {
+                        TextLine1 = buttonItem.Key,
+                        AllowCollapsed = false,
+                        KeyTipGroup = buttonItem.Key.Substring(0),
+                        DialogBoxLauncher = false						
+                    };
+
+                    _toolGroups[buttonItem.Key] = ribGroup;
+                }
+				
+                KryptonRibbonGroupTriple triple = null;
+                KryptonRibbonGroupLines lines = null;
+
+                foreach (IToolPluginRibbonButton button in buttonItem.Value)
+                {
+                    if (_toolButtons.ContainsKey(button.Name))
+                    {
+                        continue;
+                    }
+
+                    // Add a separator if ask for one (as long as it's not the first item in the group).
+                    if ((button.IsSeparator) && (button != buttonItem.Value[0]))
+                    {
+                        var sep = new KryptonRibbonGroupSeparator();
+                        _toolSeparators.Add(sep);
+                        ribGroup.Items.Add(sep);
+                    }
+
+					// Figure out which subgroup type to create.
+                    if ((triple == null) && (lines == null))
+                    {
+                        if (button.IsSmall)
+                        {
+                            lines = new KryptonRibbonGroupLines();
+                            lines.Items.Clear();
+                            _toolLines.Add(lines);
+                            ribGroup.Items.Add(lines);
+                        }
+                        else
+                        {
+                            triple = new KryptonRibbonGroupTriple();
+                            triple.Items.Clear();
+                            _toolTriples.Add(triple);
+                            ribGroup.Items.Add(triple);
+                        }
+                    }
+                    else if ((triple != null) && (button.IsSmall))
+                    {
+                        lines = new KryptonRibbonGroupLines();
+                        lines.Items.Clear();
+                        _toolLines.Add(lines);
+                        ribGroup.Items.Add(lines);
+                        triple = null;
+                    }
+                    else if ((lines != null) && (!button.IsSmall))
+                    {
+                        triple = new KryptonRibbonGroupTriple();
+                        triple.Items.Clear();
+                        _toolTriples.Add(triple);
+                        ribGroup.Items.Add(triple);
+                        lines = null;
+                    }
+
+                    var newButton = new KryptonRibbonGroupButton
+                    {
+                        TextLine1 = button.DisplayText,
+                        ButtonType = GroupButtonType.Push,
+                        Enabled = false,
+                        Tag = button.Name,
+                        ImageLarge = button.LargeIcon,
+                        ImageSmall = button.SmallIcon,						
+                    };
+
+                    newButton.Click += ToolButton_Click;
+
+                    _toolGroupButtons[newButton] = ribGroup;
+                    _toolButtons[button.Name] = newButton;
+
+                    // Add the button.
+                    if (triple != null)
+                    {
+                        triple.Items.Add(newButton);
+                    }
+                    else if (lines != null)
+                    {
+                        lines.Items.Add(newButton);
+                    }                    
+                }
+            }
+
+            if (_toolGroups.Count == 0)
+            {
+                RibbonTabEditorTools.Visible = false;
+                return;
+            }
+
+            RibbonMain.SuspendLayout();
+            RibbonTabEditorTools.Groups.Clear();            
+
+            foreach (KryptonRibbonGroup ribbonGroup in _toolGroups.Values)
+            {
+                RibbonTabEditorTools.Groups.Add(ribbonGroup);
+            }
+
+            RibbonTabEditorTools.Visible = true;
+
+            RibbonMain.ResumeLayout();
+            RibbonMain.CheckPerformLayout();
+        }
+
+        /// <summary>Handles the Click event of the ToolButton control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ToolButton_Click(object sender, EventArgs e)
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            var button = (KryptonRibbonGroupButton)sender;
+
+            string name = button.Tag?.ToString() ?? string.Empty;
+
+            if (!_toolGroupButtons.TryGetValue(button, out KryptonRibbonGroup ribbonGroup))
+            {
+                return;
+            }
+
+            if (!DataContext.ToolButtons.TryGetValue(ribbonGroup.TextLine1, out IReadOnlyList<IToolPluginRibbonButton> buttons))
+            {
+                return;
+            }
+
+            IToolPluginRibbonButton toolButton = buttons.FirstOrDefault(item => string.Equals(item.Name, name, StringComparison.Ordinal));
+
+            toolButton?.ClickCallback();
+        }
+
         /// <summary>Handles the Click event of the ButtonOpenContent control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -351,7 +562,8 @@ namespace Gorgon.Editor
 
             if ((project == null) || (fileExplorer == null))
             {
-                TabFileSystem.Visible = false;                
+                TabFileSystem.Visible = false;
+                RibbonTabEditorTools.Visible = false;
                 return;
             }
 
@@ -383,6 +595,16 @@ namespace Gorgon.Editor
 
             GroupCreate.Visible = SepCreate.Visible = (DataContext.CreateContentCommand != null) 
                                                         && (DataContext.CreateContentCommand.CanExecute(null));
+
+            foreach (IToolPluginRibbonButton button in DataContext.ToolButtons.SelectMany(item => item.Value))
+            {
+                if (!_toolButtons.TryGetValue(button.Name, out KryptonRibbonGroupButton ribButton))
+                {
+                    continue;
+                }
+
+                ribButton.Enabled = button.CanExecute();
+            }
         }
 
         /// <summary>
@@ -572,6 +794,8 @@ namespace Gorgon.Editor
             switch (e.PropertyName)
             {
                 case nameof(IMain.CurrentProject):
+                    ReleaseToolRibbonItems();
+
                     RibbonMain.SelectedContext = string.Empty;
 
                     if (DataContext.CurrentProject != null)
@@ -703,6 +927,9 @@ namespace Gorgon.Editor
                         }
 
                         RibbonMain.SelectedContext = DataContext.CurrentProject.CommandContext;
+
+                        TabFileSystem.Visible = true;
+                        UpdateToolsTab(DataContext);
                     }
                     break;
             }
@@ -814,6 +1041,7 @@ namespace Gorgon.Editor
             {
                 _clipboardContext = null;
                 Text = Resources.GOREDIT_CAPTION_NO_FILE;
+                ReleaseToolRibbonItems();
                 return;
             }
 
@@ -830,7 +1058,7 @@ namespace Gorgon.Editor
                 RibbonMain.SelectedContext = dataContext.CurrentProject.CommandContext;
             }
 
-            AddNewIcons(dataContext.ContentCreators);            
+            AddNewIcons(dataContext.ContentCreators);
         }
 
         /// <summary>Handles the CollectionChanged event of the ContentCreators control.</summary>

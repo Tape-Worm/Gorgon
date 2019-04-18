@@ -133,7 +133,7 @@ namespace Gorgon.Editor.Plugins
         /// <summary>
         /// Property to return the type of plug-in.
         /// </summary>
-        public override PluginType PluginType => PluginType.Writer;
+        public sealed override PluginType PluginType => PluginType.Writer;
         #endregion
 
         #region Methods.

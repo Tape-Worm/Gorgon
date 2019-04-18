@@ -797,4 +797,10 @@ Please try again.</value>
   <data name="GOREDIT_ERR_PATH_NOT_FOUND" xml:space="preserve">
     <value>The path '{0}' was not found.</value>
   </data>
+  <data name="GOREDIT_ERR_TOOL_NO_BUTTON" xml:space="preserve">
+    <value>The tool plug in '{0}' is missing its ribbon button.</value>
+  </data>
+  <data name="GOREDIT_TEXT_LOADING_TOOL_PLUGINS" xml:space="preserve">
+    <value>Loading tool plug ins...</value>
+  </data>
 </root>

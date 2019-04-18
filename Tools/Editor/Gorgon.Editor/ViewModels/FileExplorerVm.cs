@@ -770,7 +770,7 @@ namespace Gorgon.Editor.ViewModels
                 return;
             }
 
-            _factory.EnumerateFileSystemObjects(parent.FullName, _project, _fileSystemService, nodeToRefresh);
+            _factory.EnumerateFileSystemObjects(_project, _fileSystemService, nodeToRefresh);
 
             // We don't need the metadata list now, all objects have their metadata assigned at this point.
             _project.ProjectItems.Clear();
@@ -886,32 +886,6 @@ namespace Gorgon.Editor.ViewModels
         private bool CanExportNode(IFileExplorerNodeVm node) => ((node == null) && (RootNode.Children.Count > 0) && (_searchResults == null))
                                                                 || (node.Children.Count > 0)
                                                                 || ((node != null) && (!node.AllowChildCreation));
-
-        /// <summary>
-        /// Function to allow a user to resolve a confict between files with the same name.
-        /// </summary>
-        /// <param name="sourceItem">The file being copied.</param>
-        /// <param name="destItem">The destination file.</param>
-        /// <param name="usePhysicalPath"><b>true</b> to display the physical path for the destination, or <b>false</b> to display the virtual path.</param>
-        /// <returns>A <see cref="FileSystemConflictResolution"/> value that indicates how to proceed.</returns>
-        private FileSystemConflictResolution ResolveImportConflict(FileSystemInfo sourceItem, FileSystemInfo destItem)
-        {
-            MessageResponse response = _messageService.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_FILE_EXISTS, sourceItem.Name, destItem.ToFileSystemPath(_project.FileSystemDirectory)), toAll: true, allowCancel: true);
-
-            switch (response)
-            {
-                case MessageResponse.Yes:
-                    return FileSystemConflictResolution.Overwrite;
-                case MessageResponse.YesToAll:
-                    return FileSystemConflictResolution.OverwriteAll;
-                case MessageResponse.No:
-                    return FileSystemConflictResolution.Rename;
-                case MessageResponse.NoToAll:
-                    return FileSystemConflictResolution.RenameAll;
-                default:
-                    return FileSystemConflictResolution.Cancel;
-            }
-        }
 
         /// <summary>
         /// Function to prepare the file import by retrieving all of the file system objects, and their children, in the paths list.

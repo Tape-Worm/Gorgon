@@ -95,6 +95,14 @@ namespace Gorgon.Editor.ViewModels
             get;
         }
 
+		/// <summary>
+        /// Property tor eturn the tool plug ins for the application.
+        /// </summary>
+		public IToolPluginManagerService ToolPlugins
+        {
+            get;
+        }
+
         /// <summary>
         /// Property to return the content importer plugins for the application.
         /// </summary>
@@ -143,11 +151,10 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to enumerate the physical file system to build the node hierarchy.
         /// </summary>
-        /// <param name="path">The path to enumerate.</param>
         /// <param name="project">The project being evaluated.</param>
         /// <param name="fileSystemService">The file system service used to retrieve file system data.</param>
         /// <param name="parent">The parent of the nodes.</param>
-        private void DoEnumerateFileSystemObjects(string path, IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parent)
+        private void DoEnumerateFileSystemObjects(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parent)
         {
             var directoryNodes = new Dictionary<string, IFileExplorerNodeVm>(StringComparer.OrdinalIgnoreCase);
             string parentPhysicalPath;
@@ -193,25 +200,14 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to enumerate the physical file system to build the node hierarchy.
         /// </summary>
-        /// <param name="path">The path to enumerate.</param>
         /// <param name="project">The project being evaluated.</param>
         /// <param name="fileSystemService">The file system service used to retrieve file system data.</param>
         /// <param name="parent">The parent of the nodes.</param>
         /// <returns>A hierarchy of nodes representing the physical file system.</returns>
         /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
-        public void EnumerateFileSystemObjects(string path, IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parent)
+        public void EnumerateFileSystemObjects(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parent)
         {
-            if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
-
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentEmptyException(nameof(path));
-            }
-
             if (project == null)
             {
                 throw new ArgumentNullException(nameof(project));
@@ -227,7 +223,7 @@ namespace Gorgon.Editor.ViewModels
                 throw new ArgumentNullException(nameof(parent));
             }
 
-            DoEnumerateFileSystemObjects(path, project, fileSystemService, parent);
+            DoEnumerateFileSystemObjects(project, fileSystemService, parent);
         }
 
         /// <summary>
@@ -305,8 +301,6 @@ namespace Gorgon.Editor.ViewModels
                 Parent = parent,
                 Metadata = metaData
             });
-            
-            string fullPath = result.FullPath;
 
             if (result.Metadata == null)
             {
@@ -414,7 +408,7 @@ namespace Gorgon.Editor.ViewModels
             // This is a special node, used internally.
             root.Initialize(new FileExplorerNodeParameters(project.FileSystemDirectory.FullName.FormatDirectory(Path.DirectorySeparatorChar), project, this, fileSystemService));
 
-            DoEnumerateFileSystemObjects(project.FileSystemDirectory.FullName, project, fileSystemService, root);
+            DoEnumerateFileSystemObjects(project, fileSystemService, root);
 
             var search = new FileSystemSearchSystem(root);
 
@@ -528,6 +522,7 @@ namespace Gorgon.Editor.ViewModels
         public ViewModelFactory(EditorSettings settings, 
                                 FileSystemProviders providers, 
                                 ContentPluginService contentPlugins,
+								ToolPluginService toolPlugins,
                                 ContentImporterPluginService contentImportPlugins,
                                 ProjectManager projectManager, 
                                 MessageBoxService messages, 
@@ -539,6 +534,7 @@ namespace Gorgon.Editor.ViewModels
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             FileSystemProviders = providers ?? throw new ArgumentNullException(nameof(providers));
             ContentPlugins = contentPlugins ?? throw new ArgumentNullException(nameof(contentPlugins));
+            ToolPlugins = toolPlugins ?? throw new ArgumentNullException(nameof(toolPlugins));
             ContentImporterPlugins = contentImportPlugins ?? throw new ArgumentNullException(nameof(contentImportPlugins));            
             _projectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
             _messageBoxService = messages ?? throw new ArgumentNullException(nameof(messages));

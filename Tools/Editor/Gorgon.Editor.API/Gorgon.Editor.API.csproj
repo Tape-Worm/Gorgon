@@ -61,12 +61,16 @@
     <Compile Include="Content\_Interfaces\IContentFileManager.cs" />
     <Compile Include="Converters\JsonSharpDxRectConverter.cs" />
     <Compile Include="Plugins\ContentImportPlugin.cs" />
+    <Compile Include="Plugins\_Interfaces\IToolPluginRibbonButton.cs" />
+    <Compile Include="Plugins\ToolPlugin.cs" />
+    <Compile Include="Plugins\ToolPluginRibbonButton.cs" />
     <Compile Include="ProjectData\RecentItem.cs" />
     <Compile Include="ProjectData\_Interfaces\IProjectMetadata.cs" />
     <Compile Include="PropertyMonitor.cs" />
     <Compile Include="Rendering\_Interfaces\IMarchingAnts.cs" />
     <Compile Include="Rendering\MarchingAnts.cs" />
     <Compile Include="Services\FileSaveDialogService.cs" />
+    <Compile Include="Services\_Interfaces\IToolPluginService.cs" />
     <Compile Include="Services\RectClipperService.cs" />
     <Compile Include="Services\RectHandle.cs" />
     <Compile Include="Services\_Interfaces\IContentImporterPluginService.cs" />

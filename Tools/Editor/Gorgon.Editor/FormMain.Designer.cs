@@ -75,6 +75,7 @@ namespace Gorgon.Editor
 			this.Stage = new Gorgon.Editor.Views.Stage();
 			this.PanelProject = new Gorgon.Editor.Views.EditorProject();
 			this.PanelWorkSpace = new System.Windows.Forms.Panel();
+			this.RibbonTabEditorTools = new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab();
 			((System.ComponentModel.ISupportInitialize)(this.RibbonMain)).BeginInit();
 			this.PanelWorkSpace.SuspendLayout();
 			this.SuspendLayout();
@@ -788,8 +789,8 @@ namespace Gorgon.Editor
 			this.RibbonMain.QATUserChange = false;
 			this.RibbonMain.RibbonAppButton.AppButtonShowRecentDocs = false;
 			this.RibbonMain.RibbonTabs.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab[] {
-            this.TabFileSystem});
-			this.RibbonMain.SelectedContext = null;
+            this.TabFileSystem,
+            this.RibbonTabEditorTools});
 			this.RibbonMain.SelectedTab = this.TabFileSystem;
 			this.RibbonMain.ShowMinimizeButton = false;
 			this.RibbonMain.Size = new System.Drawing.Size(1280, 115);
@@ -1080,6 +1081,11 @@ namespace Gorgon.Editor
 			this.PanelWorkSpace.Size = new System.Drawing.Size(1280, 800);
 			this.PanelWorkSpace.TabIndex = 0;
 			// 
+			// RibbonTabEditorTools
+			// 
+			this.RibbonTabEditorTools.Text = "Editor Tools";
+			this.RibbonTabEditorTools.Visible = false;
+			// 
 			// FormMain
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -1141,6 +1147,7 @@ namespace Gorgon.Editor
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonCreate;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator2;
         private System.Windows.Forms.ContextMenuStrip MenuCreate;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonTab RibbonTabEditorTools;
     }
 }
 

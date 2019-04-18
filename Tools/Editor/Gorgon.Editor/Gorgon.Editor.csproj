@@ -86,6 +86,7 @@
     <Compile Include="ProjectData\V2MetadataImporter.cs" />
     <Compile Include="RibbonMerger.cs" />
     <Compile Include="Services\ContentImporterPluginService.cs" />
+    <Compile Include="Services\ToolPluginService.cs" />
     <Compile Include="Services\ContentPluginService.cs" />
     <Compile Include="Services\EditorFileSaveDialogService.cs" />
     <Compile Include="Services\EditorFileOpenDialogService.cs" />
@@ -101,6 +102,7 @@
     <Compile Include="Rendering\GraphicsContext.cs" />
     <Compile Include="EditorSettings.cs" />
     <Compile Include="Services\_Interfaces\IContentImporterPluginManagerService.cs" />
+    <Compile Include="Services\_Interfaces\IToolPluginManagerService.cs" />
     <Compile Include="Services\_Interfaces\IFileScanService.cs" />
     <Compile Include="Services\UndoService.cs" />
     <Compile Include="Services\_Interfaces\IContentPluginManagerService.cs" />
