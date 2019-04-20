@@ -34,29 +34,62 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
+using Gorgon.IO;
 using Gorgon.Properties;
 
 namespace Gorgon.Plugins
 {
-	/// <summary>
-	/// A cache to hold MEF plugin assemblies.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This assembly cache is meant to load/hold a list of plugin assemblies that contain types that implement the <see cref="GorgonPlugin"/> type and is 
-	/// meant to be used in conjunction with the <see cref="IGorgonPluginService"/> type.
-	/// </para>
-	/// <para>
-	/// The cache attempts to ensure that the application only loads an assembly once during the lifetime of the application in order to cut down on 
-	/// overhead and potential errors that can come up when multiple assemblies with the same qualified name are loaded into the same context.
-	/// </para>
-	/// </remarks>
-	public sealed class GorgonMefPluginCache
+    /// <summary>
+    /// The type of platform that the code in the assembly is expected to run on.
+    /// </summary>
+    public enum AssemblyPlatformType
+    {
+        /// <summary>
+        /// Unknown platform.
+        /// </summary>
+        Unknown = 0,
+        /// <summary>
+        /// 32 bit code.
+        /// </summary>
+        x86 = 1,
+        /// <summary>
+        /// 64 bit code.
+        /// </summary>
+        x64 = 2,
+        /// <summary>
+        /// Either 32 or 64 bit.
+        /// </summary>
+        AnyCpu = 3
+    }
+
+    /// <summary>
+    /// A cache to hold MEF plugin assemblies.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This assembly cache is meant to load/hold a list of plugin assemblies that contain types that implement the <see cref="GorgonPlugin"/> type and is 
+    /// meant to be used in conjunction with the <see cref="IGorgonPluginService"/> type.
+    /// </para>
+    /// <para>
+    /// The cache attempts to ensure that the application only loads an assembly once during the lifetime of the application in order to cut down on 
+    /// overhead and potential errors that can come up when multiple assemblies with the same qualified name are loaded into the same context.
+    /// </para>
+    /// </remarks>
+    public sealed class GorgonMefPluginCache
 		: IDisposable
 	{
-		#region Variables.
+        #region Constants.
+        // The signature for a portable executable header.
+        private const uint PeHeaderSignature = 0x4550;
+        // 32 bit file.
+        private const ushort Pe32Bit = 0x10b;
+        // 64 bit file.
+        private const ushort Pe64bit = 0x20b;
+        #endregion
+
+        #region Variables.
         // The contract name for the plug in.
-	    private readonly string _contractName = typeof(GorgonPlugin).FullName;
+        private readonly string _contractName = typeof(GorgonPlugin).FullName;
 		// Application log file.
 		private readonly IGorgonLog _log;
         // The root catalog for the plugins.
@@ -104,54 +137,152 @@ namespace Gorgon.Plugins
             }
         }
 
-		/// <summary>
-		/// Function to determine if an assembly is signed with a strong name key pair.
-		/// </summary>
-		/// <param name="assemblyPath">Path to the assembly to check.</param>
-		/// <param name="publicKey">[Optional] The full public key to verify against.</param>
-		/// <returns>A value from the <see cref="AssemblySigningResult"/>.</returns>
-		/// <remarks>
-		/// <para>
-		/// This method can be used to determine if an assembly has a strong name key pair (i.e. signed with a strong name) before loading it. If the assembly is not found, then 
-		/// the result of this method is <see cref="AssemblySigningResult.NotSigned"/>.
-		/// </para>
-		/// <para>
-		/// The <paramref name="publicKey"/> parameter is used to compare a known full public key (note: NOT the token) against that of the assembly being queried. If the bytes in 
-		/// the public key do not match that of the public key in the assembly being queried, then the return result will have a <see cref="AssemblySigningResult.KeyMismatch"/> 
-		/// value OR'd with the result. To check for a mismatch do the following:
-		/// <code language="csharp">
-		/// // Compare the key for the current assembly to that of another assembly.
-		/// byte[] expected = this.GetType().Assembly.GetName().GetPublicKey();
-		/// 
-		/// AssemblySigningResult result = assemblyCache.VerifyAssemblyStrongName("Path to your assembly", expected);
-		/// 
-		/// if ((result &amp; AssemblySigningResult.KeyMismatch) == AssemblySigningResult.KeyMismatch)
-		/// {
-		///    Console.Writeline("Public token mismatch.");
-		/// }
-		/// </code>
-		/// </para>
-		/// <para>
-		/// <note type="important">
-		/// <h3>Disclaimer time!!!</h3>
-		/// <para>
-		/// If the security of your assemblies is not critical, then this method should serve the purpose of verification of an assembly. However:
-		/// </para>
-		/// <para>
-		/// <i>
-		/// This method is intended to verify that an assembly is signed, optionally contains the provide public key, and that, to the best of its knowledge, it has not been tampered 
-		/// with. This is not meant to protect a system against malicious code, or provide a means of checking an identify for an assembly. This method also makes no guarantees that 
-		/// the information is 100% accurate, so if security is of the utmost importance, do not rely on this method alone and use other functionality to secure your assemblies. 
-		/// </i>
-		/// </para>
-		/// <para>
-		/// For more information about signing an assembly, follow this link <a href="https://msdn.microsoft.com/en-us/library/xwb8f617(v=vs.110).aspx" target="_blank">Creating and 
-		/// Using Strong-Named Assemblies</a>.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public static AssemblySigningResult VerifyAssemblyStrongName(string assemblyPath, byte[] publicKey = null)
+
+        /// <summary>
+        /// Function to determine if the assembly defined in the assembly path is a .NET managed assembly or not.
+        /// </summary>
+        /// <param name="assemblyPath">The path to the assembly.</param>        
+        /// <returns>A tuple containing <b>true</b> if the file is a .NET managed assembly, <b>false</b> if not, and the type of expected platform that the assembly code is supposed to work under.</returns>
+        public static (bool isManaged, AssemblyPlatformType platform) IsManagedAssembly(string assemblyPath)
+        {
+            if (!File.Exists(assemblyPath))
+            {
+                return (false, AssemblyPlatformType.Unknown);
+            }
+
+            uint cor2HeaderPtr = 0;
+            AssemblyPlatformType platformType;
+
+            // For this, we'll go into the guts of the file and read the data required instead of loading the assembly data and using exceptions to determine 
+            // the assembly type.
+            //
+            // This code is adapted from this stack overflow answer: 
+            // https://stackoverflow.com/questions/367761/how-to-determine-whether-a-dll-is-a-managed-assembly-or-native-prevent-loading
+
+            using (FileStream stream = File.Open(assemblyPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (var reader = new GorgonBinaryReader(stream, false))
+            {
+                // File is less than 64 bytes, not a portable executable.
+                if (stream.Length < 64)
+                {
+                    return (false, AssemblyPlatformType.Unknown);
+                }
+
+                stream.Position = 0x3C;
+                uint headerPointer = reader.ReadUInt32();
+
+                if (headerPointer == 0)
+                {
+                    headerPointer = 0x80;
+                }
+
+                if (headerPointer > stream.Length - 256)
+                {
+                    return (false, AssemblyPlatformType.Unknown);
+                }
+
+                stream.Position = headerPointer;
+                uint signature = reader.ReadUInt32();
+
+                if (signature != PeHeaderSignature)
+                {
+                    return (false, AssemblyPlatformType.Unknown);
+                }
+				
+                stream.Position += 20;
+
+                ushort exePlatform = reader.ReadUInt16();
+
+                if ((exePlatform != Pe32Bit) && (exePlatform != Pe64bit))
+                {
+                    return (false, AssemblyPlatformType.Unknown);
+                }
+				                
+                uint rvaPointer = 0;
+
+                switch (exePlatform)
+                {
+                    case Pe32Bit:
+                        platformType = AssemblyPlatformType.x86;
+                        rvaPointer = headerPointer + 232;
+                        break;
+                    case Pe64bit:
+                        platformType = AssemblyPlatformType.x64;
+                        rvaPointer = headerPointer + 248;
+                        break;
+                    default:
+                        return (false, AssemblyPlatformType.Unknown);
+                }
+
+                stream.Position = rvaPointer;
+                cor2HeaderPtr = reader.ReadUInt32();
+            }
+
+            // AnyCPU assemblies are marked as x86.  We need to read the cor20 header, but I'm lazy and it's a lot of work.
+			// So, we'll use the old tried and true method of reading the assembly metadata.  We shouldn't exception here because 
+			// we've already determined that we're not using a native DLL.  GetAssemblyName doesn't care if our executing platform 
+			// environment is x64 or x86 and our DLL doesn't match, it just reads the metadata (tested and confirmed).
+            if ((cor2HeaderPtr != 0) && (platformType == AssemblyPlatformType.x86))
+            {
+                var name = AssemblyName.GetAssemblyName(assemblyPath);
+
+                if (name.ProcessorArchitecture == ProcessorArchitecture.MSIL)
+                {
+                    platformType = AssemblyPlatformType.AnyCpu;
+                }
+            }
+
+            return (cor2HeaderPtr != 0, platformType);
+        }
+
+        /// <summary>
+        /// Function to determine if an assembly is signed with a strong name key pair.
+        /// </summary>
+        /// <param name="assemblyPath">Path to the assembly to check.</param>
+        /// <param name="publicKey">[Optional] The full public key to verify against.</param>
+        /// <returns>A value from the <see cref="AssemblySigningResult"/>.</returns>
+        /// <remarks>
+        /// <para>
+        /// This method can be used to determine if an assembly has a strong name key pair (i.e. signed with a strong name) before loading it. If the assembly is not found, then 
+        /// the result of this method is <see cref="AssemblySigningResult.NotSigned"/>.
+        /// </para>
+        /// <para>
+        /// The <paramref name="publicKey"/> parameter is used to compare a known full public key (note: NOT the token) against that of the assembly being queried. If the bytes in 
+        /// the public key do not match that of the public key in the assembly being queried, then the return result will have a <see cref="AssemblySigningResult.KeyMismatch"/> 
+        /// value OR'd with the result. To check for a mismatch do the following:
+        /// <code language="csharp">
+        /// // Compare the key for the current assembly to that of another assembly.
+        /// byte[] expected = this.GetType().Assembly.GetName().GetPublicKey();
+        /// 
+        /// AssemblySigningResult result = assemblyCache.VerifyAssemblyStrongName("Path to your assembly", expected);
+        /// 
+        /// if ((result &amp; AssemblySigningResult.KeyMismatch) == AssemblySigningResult.KeyMismatch)
+        /// {
+        ///    Console.Writeline("Public token mismatch.");
+        /// }
+        /// </code>
+        /// </para>
+        /// <para>
+        /// <note type="important">
+        /// <h3>Disclaimer time!!!</h3>
+        /// <para>
+        /// If the security of your assemblies is not critical, then this method should serve the purpose of verification of an assembly. However:
+        /// </para>
+        /// <para>
+        /// <i>
+        /// This method is intended to verify that an assembly is signed, optionally contains the provide public key, and that, to the best of its knowledge, it has not been tampered 
+        /// with. This is not meant to protect a system against malicious code, or provide a means of checking an identify for an assembly. This method also makes no guarantees that 
+        /// the information is 100% accurate, so if security is of the utmost importance, do not rely on this method alone and use other functionality to secure your assemblies. 
+        /// </i>
+        /// </para>
+        /// <para>
+        /// For more information about signing an assembly, follow this link <a href="https://msdn.microsoft.com/en-us/library/xwb8f617(v=vs.110).aspx" target="_blank">Creating and 
+        /// Using Strong-Named Assemblies</a>.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public static AssemblySigningResult VerifyAssemblyStrongName(string assemblyPath, byte[] publicKey = null)
 		{
 			if ((string.IsNullOrWhiteSpace(assemblyPath)) || (!File.Exists(assemblyPath)))
 			{

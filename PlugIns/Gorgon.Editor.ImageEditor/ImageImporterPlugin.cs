@@ -53,7 +53,7 @@ namespace Gorgon.Editor.ImageEditor
         private readonly List<(GorgonFileExtension extension, IGorgonImageCodec codec)> _codecs = new List<(GorgonFileExtension extension, IGorgonImageCodec codec)>();
 
         // The image editor settings.
-        private ImageImporterSettings _settings = new ImageImporterSettings();
+        private ImageEditorSettings _settings = new ImageEditorSettings();
 
         // The plug in cache for image codecs.
         private GorgonMefPluginCache _pluginCache;
@@ -109,21 +109,7 @@ namespace Gorgon.Editor.ImageEditor
 
             log.Print("Loading image codecs...", LoggingLevel.Intermediate);
 
-            foreach (KeyValuePair<string, string> plugin in _settings.CodecPluginPaths)
-            {
-                log.Print($"Loading '{plugin.Key}' from '{plugin.Value}'...", LoggingLevel.Verbose);
-
-                var file = new FileInfo(plugin.Value);
-
-                if (!file.Exists)
-                {
-                    log.Print($"ERROR: Could not find the plug in assembly '{plugin.Value}' for plug in '{plugin.Key}'.", LoggingLevel.Simple);
-                    continue;
-                }
-
-                _pluginCache.LoadPluginAssemblies(file.DirectoryName, file.Name);
-            }
-
+            _pluginCache.ValidateAndLoadAssemblies(_settings.CodecPluginPaths.Select(item => new FileInfo(item.Value)), log);
             IGorgonPluginService plugins = new GorgonMefPluginService(_pluginCache, log);
 
             // Load all the codecs contained within the plug in (a plug in can have multiple codecs).
@@ -152,7 +138,7 @@ namespace Gorgon.Editor.ImageEditor
             _codecList.Add(new GorgonCodecBmp());
             _codecList.Add(new GorgonCodecGif());
 
-            ImageImporterSettings settings = pluginService.ReadContentSettings<ImageImporterSettings>(this);
+            ImageEditorSettings settings = pluginService.ReadContentSettings<ImageEditorSettings>(ImageEditorPlugin.SettingsName, this);
 
             if (settings != null)
             {
@@ -180,7 +166,7 @@ namespace Gorgon.Editor.ImageEditor
                 if (_settings != null)
                 {
                     // Persist any settings.
-                    _pluginService.WriteContentSettings(this, _settings);
+                    _pluginService.WriteContentSettings(ImageEditorPlugin.SettingsName, this, _settings);
                 }
             }
             catch (Exception ex)

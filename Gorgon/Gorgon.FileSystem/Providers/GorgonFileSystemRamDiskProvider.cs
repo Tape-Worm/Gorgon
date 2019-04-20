@@ -117,6 +117,9 @@ namespace Gorgon.IO.Providers
 		{
 			get;
 		}
+
+        /// <summary>Property to return the path to the provider assembly (if applicable).</summary>
+        public string ProviderPath => PlugInPath ?? string.Empty;
         #endregion
 
         #region Methods.

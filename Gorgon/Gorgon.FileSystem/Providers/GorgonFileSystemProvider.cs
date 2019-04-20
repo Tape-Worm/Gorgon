@@ -106,17 +106,20 @@ namespace Gorgon.IO.Providers
 			get;
 			protected set;
 		}
-		#endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to return the virtual file system path from a physical file system path.
-		/// </summary>
-		/// <param name="physicalPath">Physical path to the file/folder.</param>
-		/// <param name="physicalRoot">Location of the physical folder holding the root for the virtual file system.</param>
-		/// <param name="mountPoint">Path to the mount point.</param>
-		/// <returns>The virtual file system path.</returns>
-		private static string MapToVirtualPath(string physicalPath, string physicalRoot, string mountPoint)
+        /// <summary>Property to return the path to the provider assembly (if applicable).</summary>
+        public string ProviderPath => PlugInPath ?? string.Empty;
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to return the virtual file system path from a physical file system path.
+        /// </summary>
+        /// <param name="physicalPath">Physical path to the file/folder.</param>
+        /// <param name="physicalRoot">Location of the physical folder holding the root for the virtual file system.</param>
+        /// <param name="mountPoint">Path to the mount point.</param>
+        /// <returns>The virtual file system path.</returns>
+        private static string MapToVirtualPath(string physicalPath, string physicalRoot, string mountPoint)
 		{
 			if ((string.IsNullOrWhiteSpace(physicalPath))
 				|| (string.IsNullOrWhiteSpace(physicalRoot))

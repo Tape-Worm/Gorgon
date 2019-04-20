@@ -50,6 +50,7 @@ namespace Gorgon.Editor.Services
         /// Function to read the settings for a content importer plug in from a JSON file.
         /// </summary>
         /// <typeparam name="T">The type of settings to read. Must be a reference type.</typeparam>
+        /// <param name="name">The name of settings file.</param>
         /// <param name="plugin">The plug in that owns the settings being read.</param>
         /// <returns>The settings object for the plug in, or <b>null</b> if no settings file was found for the plug in.</returns>
         /// <remarks>
@@ -57,12 +58,13 @@ namespace Gorgon.Editor.Services
         /// This will read in the settings for a content plug from the same location where the editor stores its application settings file.
         /// </para>
         /// </remarks>
-        T ReadContentSettings<T>(ContentImportPlugin plugin) where T : class;
+        T ReadContentSettings<T>(string name, ContentImportPlugin plugin) where T : class;
 
         /// <summary>
         /// Function to write out the settings for a content importer plug in as a JSON file.
         /// </summary>
         /// <typeparam name="T">The type of settings to write. Must be a reference type.</typeparam>
+        /// <param name="name">The name of settings file.</param>
         /// <param name="plugin">The plug in that owns the settings being written.</param>
         /// <param name="contentSettings">The content settings to persist as JSON file.</param>
         /// <remarks>
@@ -70,7 +72,7 @@ namespace Gorgon.Editor.Services
         /// This will write out the settings for a content plug in to the same location where the editor stores its application settings file.
         /// </para>
         /// </remarks>
-        void WriteContentSettings<T>(ContentImportPlugin plugin, T contentSettings) where T : class;
+        void WriteContentSettings<T>(string name, ContentImportPlugin plugin, T contentSettings) where T : class;
         #endregion
     }
 }

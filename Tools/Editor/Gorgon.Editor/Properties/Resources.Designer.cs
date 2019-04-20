@@ -1169,6 +1169,17 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error selecting the plug in.
+        ///
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_SELECTING_PLUGIN {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_SELECTING_PLUGIN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot copy .
         /// </summary>
         internal static string GOREDIT_ERR_SOURCE_IS_ANCESTOR {
@@ -1270,11 +1281,38 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Loaded.
+        /// </summary>
+        internal static string GOREDIT_PLUGIN_STATE_LOADED {
+            get {
+                return ResourceManager.GetString("GOREDIT_PLUGIN_STATE_LOADED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not loaded.
+        /// </summary>
+        internal static string GOREDIT_PLUGIN_STATE_NOT_LOADED {
+            get {
+                return ResourceManager.GetString("GOREDIT_PLUGIN_STATE_NOT_LOADED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to content-type.
         /// </summary>
         internal static string GOREDIT_SEARCH_KEYWORD_CONTENT_TYPE {
             get {
                 return ResourceManager.GetString("GOREDIT_SEARCH_KEYWORD_CONTENT_TYPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plug ins.
+        /// </summary>
+        internal static string GOREDIT_SETTINGS_CATEGORY_PLUGINS {
+            get {
+                return ResourceManager.GetString("GOREDIT_SETTINGS_CATEGORY_PLUGINS", resourceCulture);
             }
         }
         
@@ -1901,6 +1939,16 @@ namespace Gorgon.Editor.Properties {
         internal static System.Drawing.Bitmap save_as_48x48 {
             get {
                 object obj = ResourceManager.GetObject("save_as_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap settings_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("settings_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -38,18 +38,26 @@ namespace Gorgon.Editor.Plugins
     /// </summary>
     public enum PluginType
     {
+		/// <summary>
+        /// Plug in type is not known.
+        /// </summary>
+		Unknown = 0,
         /// <summary>
         /// Plug in is used to write out editor files.
         /// </summary>
-        Writer = 0,
+        Writer = 1,
         /// <summary>
         /// Plug in is used to build content.
         /// </summary>
-        Content = 1,
+        Content = 2,
+		/// <summary>
+        /// Plug in is a pack file reader.
+        /// </summary>
+		Reader = 3,
         /// <summary>
         /// Plug in is used for a utility.
         /// </summary>
-        Tool = 2
+        Tool = 4
     }
 
     /// <summary>

@@ -53,6 +53,14 @@ namespace Gorgon.Editor.ViewModels
             get;
         }
 
+		/// <summary>
+        /// Property to return the settings view model.
+        /// </summary>
+		public IEditorSettingsVm SettingsVm
+        {
+            get;
+        }
+
         /// <summary>
         /// Property to return the dialog for opening projects.
         /// </summary>
@@ -93,13 +101,20 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="openDialog">A dialog service used for opening files.</param>
         /// <param name="saveDialog">A dialog service used for saving files.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public MainParameters(IStageNewVm newProject, IRecentVm recent, IReadOnlyList<IContentPluginMetadata> contentCreators, ViewModelFactory viewModelFactory, IEditorFileOpenDialogService openDialog, IEditorFileSaveAsDialogService saveDialog)
+        public MainParameters(IStageNewVm newProject, 
+			IRecentVm recent, 
+			IEditorSettingsVm editorSettings,
+			IReadOnlyList<IContentPluginMetadata> contentCreators, 
+			ViewModelFactory viewModelFactory, 
+			IEditorFileOpenDialogService openDialog, 
+			IEditorFileSaveAsDialogService saveDialog)
             : base(viewModelFactory)
-        {            
+        {            			
             OpenDialog = openDialog ?? throw new ArgumentNullException(nameof(openDialog));
             SaveDialog = saveDialog ?? throw new ArgumentNullException(nameof(saveDialog));
             NewProject = newProject ?? throw new ArgumentNullException(nameof(newProject));
             RecentFiles = recent ?? throw new ArgumentNullException(nameof(recent));
+            SettingsVm = editorSettings ?? throw new ArgumentNullException(nameof(editorSettings));
             ContentCreators = contentCreators ?? throw new ArgumentNullException(nameof(contentCreators));
         }
     }

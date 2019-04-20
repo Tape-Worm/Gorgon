@@ -115,6 +115,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             get;
         }
 
+		/// <summary>
+        /// Property to return the service used to manage plug ins.
+        /// </summary>
+        public IPlugInManagerService PlugInManager
+        {
+            get;
+        }
+
         /// <summary>
         /// Property to return the original format for the image.
         /// </summary>
@@ -186,6 +194,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             DimensionSettings = dimensionSettings ?? throw new ArgumentNullException(nameof(dimensionSettings));
             MipMapSettings = mipMapSettings ?? throw new ArgumentNullException(nameof(mipMapSettings));
             VideoAdapterInfo = videoAdapter ?? throw new ArgumentNullException(nameof(videoAdapter));
+            PlugInManager = services.PlugInManagerService ?? throw new ArgumentMissingException(nameof(services.PlugInManagerService), nameof(services));
             OriginalFormat = imageData.originalFormat;
         }
         #endregion

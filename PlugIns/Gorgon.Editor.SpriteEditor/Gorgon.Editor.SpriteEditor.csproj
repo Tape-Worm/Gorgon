@@ -94,7 +94,6 @@
     <Compile Include="_Internal\Services\SpriteTextureService.cs" />
     <Compile Include="_Internal\Renderers\_Interfaces\ISpriteContentRenderer.cs" />
     <Compile Include="_Internal\Services\_Interfaces\ISpriteTextureService.cs" />
-    <Compile Include="_Internal\SpriteImporterSettings.cs" />
     <Compile Include="_Internal\SpriteEditorCommonConstants.cs" />
     <Compile Include="_Internal\ViewModels\ManualInputParameters.cs" />
     <Compile Include="_Internal\ViewModels\ManualVertexEditor.cs" />
@@ -301,7 +300,7 @@
       <Version>5.472.901</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
-      <Version>2.9.1</Version>
+      <Version>2.9.2</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.1</Version>

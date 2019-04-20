@@ -269,7 +269,7 @@ namespace Gorgon.Editor
         private ContentImporterPluginService LoadImportContentPlugins()
         {
             var contentPluginsDir = new DirectoryInfo(Path.Combine(_settings.PluginPath, "ContentImporters"));
-            var contentPluginSettingsDir = new DirectoryInfo(Path.Combine(Program.ApplicationUserDirectory.FullName, "ContentImporterPlugins"));
+            var contentPluginSettingsDir = new DirectoryInfo(Path.Combine(Program.ApplicationUserDirectory.FullName, "ContentPlugins"));
 
             if (!contentPluginSettingsDir.Exists)
             {

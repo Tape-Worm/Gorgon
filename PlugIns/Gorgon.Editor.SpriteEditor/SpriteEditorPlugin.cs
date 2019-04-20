@@ -63,9 +63,6 @@ namespace Gorgon.Editor.SpriteEditor
         // The loaded image codecs.
         private readonly List<IGorgonSpriteCodec> _codecList = new List<IGorgonSpriteCodec>();
 
-        // The image editor settings.
-        //private ImageEditorSettings _settings = new ImageEditorSettings();
-
         // The plug in cache for image codecs.
         private GorgonMefPluginCache _pluginCache;
 
@@ -89,6 +86,11 @@ namespace Gorgon.Editor.SpriteEditor
 
         // The settings for the plug in.
         private SpriteEditorSettings _settings = new SpriteEditorSettings();
+
+		/// <summary>
+        /// The name of the settings file.
+        /// </summary>
+        public static readonly string SettingsName = typeof(SpriteEditorPlugin).FullName;
         #endregion
 
         #region Properties.
@@ -158,22 +160,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
 
             Log.Print("Loading sprite codecs...", LoggingLevel.Intermediate);
-
-            foreach (KeyValuePair<string, string> plugin in _settings.CodecPluginPaths)
-            {
-                Log.Print($"Loading '{plugin.Key}' from '{plugin.Value}'...", LoggingLevel.Verbose);
-
-                var file = new FileInfo(plugin.Value);
-
-                if (!file.Exists)
-                {
-                    Log.Print($"ERROR: Could not find the plug in assembly '{plugin.Value}' for plug in '{plugin.Key}'.", LoggingLevel.Simple);
-                    continue;
-                }
-
-                _pluginCache.LoadPluginAssemblies(file.DirectoryName, file.Name);
-            }
-
+            _pluginCache.ValidateAndLoadAssemblies(_settings.CodecPluginPaths.Select(item => new FileInfo(item.Value)), Log);
             IGorgonPluginService plugins = new GorgonMefPluginService(_pluginCache, Log);
 
             // Load all the codecs contained within the plug in (a plug in can have multiple codecs).
@@ -488,7 +475,7 @@ namespace Gorgon.Editor.SpriteEditor
                 if (_settings != null)
                 {
                     // Persist any settings.
-                    _pluginService.WriteContentSettings(this, _settings, new JsonSharpDxRectConverter());
+                    _pluginService.WriteContentSettings(SettingsName, this, _settings, new JsonSharpDxRectConverter());
                 }
             }
             catch (Exception ex)
@@ -524,7 +511,7 @@ namespace Gorgon.Editor.SpriteEditor
             _codecList.Add(new GorgonV2SpriteCodec(GraphicsContext.Renderer2D));
             _codecList.Add(new GorgonV1SpriteBinaryCodec(GraphicsContext.Renderer2D));
 
-            SpriteEditorSettings settings = pluginService.ReadContentSettings<SpriteEditorSettings>(this, new JsonSharpDxRectConverter());
+            SpriteEditorSettings settings = pluginService.ReadContentSettings<SpriteEditorSettings>(SettingsName, this, new JsonSharpDxRectConverter());
 
             if (settings != null)
             {

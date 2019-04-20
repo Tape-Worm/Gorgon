@@ -61,6 +61,7 @@
     <Compile Include="Content\_Interfaces\IContentFileManager.cs" />
     <Compile Include="Converters\JsonSharpDxRectConverter.cs" />
     <Compile Include="Plugins\ContentImportPlugin.cs" />
+    <Compile Include="Plugins\PluginRecord.cs" />
     <Compile Include="Plugins\_Interfaces\IToolPluginRibbonButton.cs" />
     <Compile Include="Plugins\ToolPlugin.cs" />
     <Compile Include="Plugins\ToolPluginRibbonButton.cs" />
@@ -70,6 +71,8 @@
     <Compile Include="Rendering\_Interfaces\IMarchingAnts.cs" />
     <Compile Include="Rendering\MarchingAnts.cs" />
     <Compile Include="Services\FileSaveDialogService.cs" />
+    <Compile Include="Services\PluginManagerService.cs" />
+    <Compile Include="Services\_Interfaces\IPlugInManagerService.cs" />
     <Compile Include="Services\_Interfaces\IToolPluginService.cs" />
     <Compile Include="Services\RectClipperService.cs" />
     <Compile Include="Services\RectHandle.cs" />
@@ -96,6 +99,18 @@
     </Compile>
     <Compile Include="UI\Forms\FormName.Designer.cs">
       <DependentUpon>FormName.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Forms\FormPlugInManager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\FormPlugInManager.Designer.cs">
+      <DependentUpon>FormPlugInManager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Views\SettingsBaseControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Views\SettingsBaseControl.Designer.cs">
+      <DependentUpon>SettingsBaseControl.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\ZoomEventArgs.cs" />
     <Compile Include="UI\RecentFilesControl.cs">
@@ -176,7 +191,8 @@
     <Compile Include="Services\_Interfaces\IEditorContentImporter.cs" />
     <Compile Include="UI\_Interfaces\IExplorerFilesDragData.cs" />
     <Compile Include="UI\_Interfaces\IRibbonMerger.cs" />
-    <Compile Include="UI\_Interfaces\IUndoCommand.cs" />
+    <Compile Include="UI\_Interfaces\ISettingsPanelViewModel.cs" />
+    <Compile Include="UI\ViewModels\_Interfaces\IUndoCommand.cs" />
     <Compile Include="UI\_Interfaces\IUndoHandler.cs" />
     <Compile Include="UI\_Internal\FormDirectoryLocator.cs">
       <SubType>Form</SubType>
@@ -196,6 +212,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\remove_plugins_22x22.png" />
+    <None Include="Resources\add_plugin_22x22.png" />
     <None Include="Resources\manual_input_24x24.dds" />
     <None Include="Resources\manual_vertex_edit_64x64.dds" />
     <None Include="..\..\..\Gorgon\NoLiteralBugFix.ruleset">
@@ -229,6 +247,9 @@
     <EmbeddedResource Include="UI\Forms\FormName.resx">
       <DependentUpon>FormName.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\Forms\FormPlugInManager.resx">
+      <DependentUpon>FormPlugInManager.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\RecentFilesControl.resx">
       <DependentUpon>RecentFilesControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -237,6 +258,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Views\EditorBaseControl.resx">
       <DependentUpon>EditorBaseControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Views\SettingsBaseControl.resx">
+      <DependentUpon>SettingsBaseControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\_Internal\FormDirectoryLocator.resx">
       <DependentUpon>FormDirectoryLocator.cs</DependentUpon>
@@ -250,7 +274,7 @@
       <Version>5.472.901</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
-      <Version>2.9.1</Version>
+      <Version>2.9.2</Version>
     </PackageReference>
     <PackageReference Include="SharpDX">
       <Version>4.2.0</Version>

@@ -61,6 +61,16 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap add_plugin_22x22 {
+            get {
+                object obj = ResourceManager.GetObject("add_plugin_22x22", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] Bg_Pattern_256x256 {
@@ -309,11 +319,60 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An exception was thrown while loading the &apos;{0}&apos; assembly.
+        ///
+        ///{1}.
+        /// </summary>
+        internal static string GOREDIT_PLUGIN_LOAD_FAIL_EXCEPTION {
+            get {
+                return ResourceManager.GetString("GOREDIT_PLUGIN_LOAD_FAIL_EXCEPTION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; is not a .NET assembly..
+        /// </summary>
+        internal static string GOREDIT_PLUGIN_LOAD_FAIL_NOT_DOT_NET {
+            get {
+                return ResourceManager.GetString("GOREDIT_PLUGIN_LOAD_FAIL_NOT_DOT_NET", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not found.
+        /// </summary>
+        internal static string GOREDIT_PLUGIN_LOAD_FAIL_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GOREDIT_PLUGIN_LOAD_FAIL_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The assembly &apos;{0}&apos; has a platform architecture of {1}, but the application is running as {2}.
+        ///
+        ///These platforms are incompatible and cannot be mixed..
+        /// </summary>
+        internal static string GOREDIT_PLUGIN_LOAD_FAIL_PLATFORM_MISMATCH {
+            get {
+                return ResourceManager.GetString("GOREDIT_PLUGIN_LOAD_FAIL_PLATFORM_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Editor content.
         /// </summary>
         internal static string GOREDIT_PLUGIN_TYPE_CONTENT {
             get {
                 return ResourceManager.GetString("GOREDIT_PLUGIN_TYPE_CONTENT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packed file reader.
+        /// </summary>
+        internal static string GOREDIT_PLUGIN_TYPE_READER {
+            get {
+                return ResourceManager.GetString("GOREDIT_PLUGIN_TYPE_READER", resourceCulture);
             }
         }
         
@@ -553,6 +612,16 @@ namespace Gorgon.Editor.Properties {
         internal static System.Drawing.Bitmap recent_item_badge_64x64 {
             get {
                 object obj = ResourceManager.GetObject("recent_item_badge_64x64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap remove_plugins_22x22 {
+            get {
+                object obj = ResourceManager.GetObject("remove_plugins_22x22", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

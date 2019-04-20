@@ -252,6 +252,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             get;
         }
+
+		/// <summary>
+        /// Property to return the command used to manage the image codec plug ins.
+        /// </summary>
+		IEditorCommand<object> ManageCodecsCommand
+        {
+            get;
+        }
         #endregion
     }
 }

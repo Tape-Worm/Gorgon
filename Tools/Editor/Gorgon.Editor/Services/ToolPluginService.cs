@@ -162,19 +162,13 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentNullException(nameof(pluginDir));
             }
 
-            FileInfo[] assemblies = pluginDir.GetFiles("*.dll");
+            IReadOnlyList<PluginRecord> assemblies = pluginCache.ValidateAndLoadAssemblies(pluginDir.GetFiles("*.dll"), Program.Log);
 
-            foreach (FileInfo file in assemblies)
+            if (assemblies.Count > 0)
             {
-                try
+                foreach (PluginRecord record in assemblies.Where(item => !item.IsAssemblyLoaded && item.IsManaged))
                 {
-                    Program.Log.Print($"Loading tool plug in assembly '{file.FullName}'...", LoggingLevel.Simple);
-                    pluginCache.LoadPluginAssemblies(pluginDir.FullName, file.Name);
-                }
-                catch (Exception ex)
-                {
-                    Program.Log.Print($"ERROR: Cannot load tool plug in assembly '{file.FullName}'.", LoggingLevel.Simple);
-                    Program.Log.LogException(ex);
+                    _disabled[Path.GetFileName(record.Path)] = new DisabledPlugin(DisabledReasonCode.Error, Path.GetFileName(record.Path), record.LoadFailureReason, record.Path);
                 }
             }
 
@@ -202,7 +196,7 @@ namespace Gorgon.Editor.Services
                             Program.Log.Print($"WARNING: {reason}", LoggingLevel.Verbose);
                         }
 
-                        _disabled[plugin.Name] = new DisabledPlugin(DisabledReasonCode.ValidationError, plugin.Name, string.Join("\n", validation));
+                        _disabled[plugin.Name] = new DisabledPlugin(DisabledReasonCode.ValidationError, plugin.Name, string.Join("\n", validation), plugin.PlugInPath);
 
                         // Remove this plug in.
                         plugins.Unload(plugin.Name);
@@ -217,7 +211,7 @@ namespace Gorgon.Editor.Services
                         Program.Log.Print($"WARNING: The tool plug in '{plugin.Name}' is disabled:", LoggingLevel.Simple);
                         Program.Log.Print($"WARNING: {Resources.GOREDIT_ERR_TOOL_NO_BUTTON}", LoggingLevel.Verbose);
 
-                        _disabled[plugin.Name] = new DisabledPlugin(DisabledReasonCode.ValidationError, plugin.Name, Resources.GOREDIT_ERR_TOOL_NO_BUTTON);
+                        _disabled[plugin.Name] = new DisabledPlugin(DisabledReasonCode.ValidationError, plugin.Name, Resources.GOREDIT_ERR_TOOL_NO_BUTTON, plugin.PlugInPath);
 
                         // Remove this plug in.
                         plugins.Unload(plugin.Name);
@@ -233,7 +227,7 @@ namespace Gorgon.Editor.Services
                     Program.Log.Print($"ERROR: Cannot create tool plug in '{plugin.Name}'.", LoggingLevel.Simple);
                     Program.Log.LogException(ex);
 
-                    _disabled[plugin.Name] = new DisabledPlugin(DisabledReasonCode.Error, plugin.Name, string.Format(Resources.GOREDIT_DISABLE_CONTENT_PLUGIN_EXCEPTION, ex.Message));
+                    _disabled[plugin.Name] = new DisabledPlugin(DisabledReasonCode.Error, plugin.Name, string.Format(Resources.GOREDIT_DISABLE_CONTENT_PLUGIN_EXCEPTION, ex.Message), plugin.PlugInPath);
                 }
             }
 

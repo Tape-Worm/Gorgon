@@ -74,7 +74,13 @@ namespace Gorgon.Editor.ImageEditor
 
         // The synchronization lock for threads.
         private readonly object _syncLock = new object();
+
+		/// <summary>
+        /// The name of the settings file.
+        /// </summary>
+		public static readonly string SettingsName = typeof(ImageEditorPlugin).FullName;
         #endregion
+
 
         #region Properties.
         /// <summary>Property to return the name of the plug in.</summary>
@@ -113,22 +119,7 @@ namespace Gorgon.Editor.ImageEditor
             }
 
             Log.Print("Loading image codecs...", LoggingLevel.Intermediate);
-
-            foreach (KeyValuePair<string, string> plugin in _settings.CodecPluginPaths)
-            {
-                Log.Print($"Loading '{plugin.Key}' from '{plugin.Value}'...", LoggingLevel.Verbose);
-
-                var file = new FileInfo(plugin.Value);
-
-                if (!file.Exists)
-                {
-                    Log.Print($"ERROR: Could not find the plug in assembly '{plugin.Value}' for plug in '{plugin.Key}'.", LoggingLevel.Simple);
-                    continue;
-                }
-
-                _pluginCache.LoadPluginAssemblies(file.DirectoryName, file.Name);
-            }
-
+            _pluginCache.ValidateAndLoadAssemblies(_settings.CodecPluginPaths.Select(item => new FileInfo(item.Value)), Log);
             IGorgonPluginService plugins = new GorgonMefPluginService(_pluginCache, Log);
 
             // Load all the codecs contained within the plug in (a plug in can have multiple codecs).
@@ -299,7 +290,8 @@ namespace Gorgon.Editor.ImageEditor
                 ImageIO = imageIO,
                 UndoService = undoService,
                 ImageUpdater = new ImageUpdaterService(),
-                ExternalEditorService = new ImageExternalEditService(injector.Log)
+                ExternalEditorService = new ImageExternalEditService(injector.Log),
+				PlugInManagerService = new PluginManagerService()
             };
 
             var cropResizeSettings = new CropResizeSettings();
@@ -337,7 +329,7 @@ namespace Gorgon.Editor.ImageEditor
                 if (_settings != null)
                 {
                     // Persist any settings.
-                    _pluginService.WriteContentSettings(this, _settings);
+                    _pluginService.WriteContentSettings(SettingsName, this, _settings);
                 }
             }
             catch (Exception ex)
@@ -371,7 +363,7 @@ namespace Gorgon.Editor.ImageEditor
             _codecList.Add(new GorgonCodecBmp());
             _codecList.Add(new GorgonCodecGif());
 
-            ImageEditorSettings settings = pluginService.ReadContentSettings<ImageEditorSettings>(this);
+            ImageEditorSettings settings = pluginService.ReadContentSettings<ImageEditorSettings>(SettingsName, this);
 
             if (settings != null)
             {
@@ -387,7 +379,6 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="fileManager">The content file manager.</param>
         /// <returns>
         ///   <b>true</b> if the plugin can open the file, or <b>false</b> if not.</returns>
-        /// <exception cref="System.ArgumentNullException">file</exception>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file" />, or the <paramref name="fileManager"/> parameter is <b>null</b>.</exception>
         public bool CanOpenContent(IContentFile file, IContentFileManager fileManager)
         {

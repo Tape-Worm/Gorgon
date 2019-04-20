@@ -60,13 +60,20 @@ namespace Gorgon.Editor.Plugins
             get;
         }
 
+        /// <summary>Property to return the assembly path.</summary>
+        public string Path
+        {
+            get;
+        }
+
         /// <summary>Initializes a new instance of the DisabledPlugin class.</summary>
         /// <param name="reasonCode">The code to indicate how the plug in was disabled.</param>
         /// <param name="pluginName">Name of the plugin that was disabled.</param>
         /// <param name="desc">The human readable description that explains why the plug in was disabled.</param>
+        /// <param name="path">The path to the plug in assembly.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginName" /> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="pluginName" /> parameter is empty.</exception>
-        public DisabledPlugin(DisabledReasonCode reasonCode, string pluginName, string desc)
+        public DisabledPlugin(DisabledReasonCode reasonCode, string pluginName, string desc, string path)
         {
             if (pluginName == null)
             {
@@ -81,6 +88,7 @@ namespace Gorgon.Editor.Plugins
             ReasonCode = reasonCode;
             PluginName = pluginName;
             Description = string.IsNullOrWhiteSpace(desc) ? Resources.GOREDIT_TEXT_DISABLED_PLUGIN_DEFAULT_TEXT : desc.Trim();
+            Path = path ?? string.Empty;
         }
     }
 }

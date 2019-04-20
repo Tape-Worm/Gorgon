@@ -465,6 +465,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error managing the custom image codec plug ins..
+        /// </summary>
+        internal static string GORIMG_ERR_MANAGE_CODECS {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_MANAGE_CODECS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There is no codec loaded that can read the file &apos;{0}&apos;..
         /// </summary>
         internal static string GORIMG_ERR_NO_CODEC {
@@ -931,6 +940,26 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static System.Drawing.Bitmap pixel_format_48x48 {
             get {
                 object obj = ResourceManager.GetObject("pixel_format_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap plugins_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("plugins_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap plugins_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("plugins_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

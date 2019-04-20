@@ -1360,6 +1360,7 @@ namespace Gorgon.Editor
                 // Assign the data context to the new view.
                 Stage.NewProject.SetDataContext(dataContext.NewProject);                
                 Stage.Recent.SetDataContext(dataContext.RecentFiles);
+                Stage.SettingsPanel.SetDataContext(dataContext.SettingsViewModel);
                 Stage.IsStartup = true;
 
                 InitializeFromDataContext(dataContext);

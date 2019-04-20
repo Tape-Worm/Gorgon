@@ -20,29 +20,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: March 2, 2019 11:21:44 AM
+// Created: April 18, 2019 9:14:29 PM
 // 
 #endregion
 
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Gorgon.Editor.SpriteEditor
+namespace Gorgon.Editor.Services
 {
-    /// <summary>
-    /// The settings for the sprite importer plug in.
+	/// <summary>
+    /// A service used to allow the management of plug ins.
     /// </summary>
-    internal class SpriteImporterSettings
+    public interface IPlugInManagerService
     {
-        /// <summary>
-        /// Property to return the list of additional image codec plug ins to load.
+		/// <summary>
+        /// Function to show the plug in manager interface.
         /// </summary>
-        [JsonProperty]
-        public Dictionary<string, string> CodecPluginPaths
-        {
-            get;
-            private set;
-        } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        /// <returns><b>true</b> if the changes were accepted, <b>false</b> if not.</returns>
+        bool Show();
     }
 }

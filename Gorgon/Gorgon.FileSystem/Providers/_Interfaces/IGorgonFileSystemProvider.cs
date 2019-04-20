@@ -63,6 +63,14 @@ namespace Gorgon.IO.Providers
         : IGorgonNamedObject
 	{
 		/// <summary>
+        /// Property to return the path to the provider assembly (if applicable).
+        /// </summary>
+		string ProviderPath
+        {
+            get;
+        }
+
+		/// <summary>
 		/// Property to return the provider specific prefix for a physical location.
 		/// </summary>
 		/// <remarks>

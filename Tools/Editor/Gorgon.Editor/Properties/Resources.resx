@@ -120,14 +120,9 @@
   <data name="GOREDIT_TEXT_CLEARING_FILESYSTEM" xml:space="preserve">
     <value>Clearing the file system...</value>
   </data>
-  <data name="GOREDIT_CONFIRM_UNSAVED_PROJ" xml:space="preserve">
-    <value>The project '{0}' has unsaved changes.
-
-Would you like to save this project now?</value>
-  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="newproject_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\newproject_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="copy_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\copy_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GOREDIT_ERR_DELETE_ALL" xml:space="preserve">
     <value>There was an error while deleting the entire file system.
@@ -136,22 +131,32 @@ Press F5 in the file system tree to refresh and try again.</value>
   <data name="GOREDIT_ERR_NOT_AUTHORIZED" xml:space="preserve">
     <value>The directory '{0}' is not accessible by this user.</value>
   </data>
-  <data name="GOREDIT_TEXT_FILESYSTEM" xml:space="preserve">
-    <value>File System</value>
+  <data name="GOREDIT_CONFIRM_DELETE_CHILDREN" xml:space="preserve">
+    <value>This will delete '{0}' and any subdirectories and/or files contained within.
+
+Are you sure you wish to continue?</value>
   </data>
   <data name="GOREDIT_CONFIRM_FILE_EXISTS" xml:space="preserve">
     <value>The file '{0}' already exists in '{1}'.
 
 Would you like to overrwrite it?</value>
   </data>
+  <data name="GOREDIT_TEXT_INITIALIZING" xml:space="preserve">
+    <value>Initializing...</value>
+  </data>
+  <data name="GOREDIT_CONFIRM_DELETE_NO_CHILDREN" xml:space="preserve">
+    <value>Are you sure you wish to delete '{0}'?
+</value>
+  </data>
   <data name="newproject_24x24" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\newproject_24x24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="GOREDIT_ERR_NEW_PROJECT" xml:space="preserve">
+    <value>There was an error while showing the New Project screen.
+Please try again.</value>
+  </data>
   <data name="drive_ram_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\drive_ram_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GOREDIT_CAPTION_FILE" xml:space="preserve">
-    <value>{0}</value>
   </data>
   <data name="drive_remove_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\drive_remove_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -178,9 +183,6 @@ Please try again.</value>
   <data name="GOREDIT_TEXT_OPENING" xml:space="preserve">
     <value>Opening '{0}'...</value>
   </data>
-  <data name="copy_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\copy_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="GOREDIT_ERR_INCLUDE_ALL" xml:space="preserve">
     <value>There was an error including/excluding the entire file system.
 Please try again.</value>
@@ -188,21 +190,11 @@ Please try again.</value>
   <data name="open_folder_22x22" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\open_folder_22x22.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="recent_24x24" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\recent_24x24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="GOREDIT_TEXT_LOADING_FILESYSTEM_PLUGINS" xml:space="preserve">
     <value>Loading file system plug ins...</value>
   </data>
-  <data name="open_pack_file_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\open_pack_file_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GOREDIT_TEXT_SAVE_EDITOR_FILE" xml:space="preserve">
-    <value>Save editor file as...</value>
-  </data>
-  <data name="GOREDIT_ERR_NO_SUITABLE_ADAPTER" xml:space="preserve">
-    <value>There is no video adapter on this machine that can be used by Gorgon.
-Gorgon requires a video adapter that is compatible with Direct 3D 11.4 or better.</value>
+  <data name="GOREDIT_ERR_NO_PROVIDER" xml:space="preserve">
+    <value>There is no provider loaded that can read the file '{0}'.</value>
   </data>
   <data name="folder_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\folder_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -215,6 +207,9 @@ Gorgon requires a video adapter that is compatible with Direct 3D 11.4 or better
   </data>
   <data name="GOREDIT_TEXT_ALL_FILES" xml:space="preserve">
     <value>All files (*.*)|*.*</value>
+  </data>
+  <data name="GOREDIT_ERR_NO_FILENAME" xml:space="preserve">
+    <value>The path '{0}' does not contain a file name.</value>
   </data>
   <data name="GOREDIT_ERR_NODE_EXISTS" xml:space="preserve">
     <value>There is already a file or directory with the name '{0}' in this directory.</value>
@@ -233,6 +228,9 @@ Please select another file and try again.</value>
   <data name="GOREDIT_CAPTION_CONFIRM" xml:space="preserve">
     <value>Confirmation</value>
   </data>
+  <data name="GOREDIT_ERR_FILE_LOCKED" xml:space="preserve">
+    <value>The file '{0}' is already open.</value>
+  </data>
   <data name="GOREDIT_TEXT_PLEASE_WAIT" xml:space="preserve">
     <value>Please wait</value>
   </data>
@@ -250,8 +248,11 @@ Please select another directory and try again.</value>
     <value>There was an error copying '{0}' to '{1}'.
 Please try again.</value>
   </data>
-  <data name="copy_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\copy_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="open_edit_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\open_edit_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GOREDIT_ERR_DIRECTORY_NOT_EMPTY" xml:space="preserve">
+    <value>The directory on the path '{0}' is not empty.</value>
   </data>
   <data name="back_icon_24x24" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\back_icon_24x24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -265,6 +266,12 @@ Please try again.</value>
   <data name="add_directory_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\add_directory_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="GOREDIT_CREATE_NEW" xml:space="preserve">
+    <value>Create New {0}...</value>
+  </data>
+  <data name="GOREDIT_TEXT_CREATING_CONTENT" xml:space="preserve">
+    <value>Creating {0} content...</value>
+  </data>
   <data name="GOREDIT_TEXT_EXPORTING" xml:space="preserve">
     <value>Exporting...</value>
   </data>
@@ -272,6 +279,9 @@ Please try again.</value>
     <value>The node contains illegal characters.
 
 '{0}' are not allowed in node names.</value>
+  </data>
+  <data name="GOREDIT_ERR_PATH_NOT_FOUND" xml:space="preserve">
+    <value>The path '{0}' was not found.</value>
   </data>
   <data name="paste_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\paste_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -289,17 +299,24 @@ Please try again.</value>
   <data name="GOREDIT_ERR_WORKSPACE_EXISTS" xml:space="preserve">
     <value>The project workspace path '{0}' already exists.</value>
   </data>
-  <data name="GOREDIT_ERR_NO_PROVIDER" xml:space="preserve">
-    <value>There is no provider loaded that can read the file '{0}'.</value>
+  <data name="new_content_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\new_content_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GOREDIT_TEXT_SAVING" xml:space="preserve">
-    <value>Saving '{0}'...</value>
+  <data name="GOREDIT_TEXT_SCANNING" xml:space="preserve">
+    <value>Scanning files...</value>
+  </data>
+  <data name="GOREDIT_TEXT_IMPORT_FROM" xml:space="preserve">
+    <value>Select a directory to import...</value>
   </data>
   <data name="export_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\export_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="show_external_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\show_external_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="GOREDIT_ERR_TOOL_NO_BUTTON" xml:space="preserve">
+    <value>The tool plug in '{0}' is missing its ribbon button.</value>
+  </data>
+  <data name="GOREDIT_DISABLE_CONTENT_IMPORT_PLUGIN_EXCEPTION" xml:space="preserve">
+    <value>An error occurred while loading the importer plug in.
+Exception: {0}</value>
   </data>
   <data name="undo_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\undo_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -307,6 +324,11 @@ Please try again.</value>
   <data name="GOREDIT_ERR_IMPORT" xml:space="preserve">
     <value>There was an error importing into '{0}'.
 Please try again.</value>
+  </data>
+  <data name="GOREDIT_ERR_INVALID_CONTENT_TYPE_ID" xml:space="preserve">
+    <value>The ID for the content is an invalid type.
+
+Content IDs should be GUID values.</value>
   </data>
   <data name="GOREDIT_ERR_DELETING_PROJECT_ITEM" xml:space="preserve">
     <value>There was an error deleting '{0}'.
@@ -327,6 +349,9 @@ Do you wish to continue?</value>
   <data name="rename_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\rename_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="collapse_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\collapse_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="include_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\include_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -341,16 +366,13 @@ Please try again.</value>
   <data name="GOREDIT_TEXT_CREATING_PROJECT" xml:space="preserve">
     <value>Creating project...</value>
   </data>
-  <data name="cut_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\cut_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="GOREDIT_CONFIRM_SAVE_CONTENT" xml:space="preserve">
+    <value>The file '{0}' is currently open in the editor and has unsaved changes.
+
+Would you like to save these changes now?</value>
   </data>
   <data name="rename_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\rename_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GOREDIT_CONFIRM_DELETE_CHILDREN" xml:space="preserve">
-    <value>This will delete '{0}' and any subdirectories and/or files contained within.
-
-Are you sure you wish to continue?</value>
   </data>
   <data name="GOREDIT_ERR_RENAMING_FILE" xml:space="preserve">
     <value>There was an error while renaming the file.
@@ -372,17 +394,13 @@ The application must close.</value>
   <data name="windo_deco_129x39" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\windo_deco_129x39.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GOREDIT_ERR_PATH_IS_NOT_IN_PROJECT_FILESYSTEM" xml:space="preserve">
-    <value>The path '{0}' is not contained within the project file system workspace '{1}'.</value>
-  </data>
   <data name="GOREDIT_CONFIRM_FILE_OPEN_DELETE" xml:space="preserve">
     <value>The file '{0}' is open in the editor and has unsaved changes. Deleting this file will result in the loss of these changes.
 
 Are you sure you wish to delete this file?</value>
   </data>
-  <data name="GOREDIT_ERR_CANNOT_MOVE" xml:space="preserve">
-    <value>There was an error moving '{0}' to '{1}'.
-Please try again.</value>
+  <data name="GOREDIT_TEXT_SAVE_EDITOR_FILE" xml:space="preserve">
+    <value>Save editor file as...</value>
   </data>
   <data name="GOREDIT_ERR_WORKSPACE_EXCEPTION" xml:space="preserve">
     <value>Unsuitable workspace location: There was an error accessing the directory: '{0}'</value>
@@ -390,22 +408,28 @@ Please try again.</value>
   <data name="GOREDIT_UNDO_DELETE" xml:space="preserve">
     <value>Delete</value>
   </data>
+  <data name="GOREDIT_TEXT_DISABLED_PLUGIN_DEFAULT_TEXT" xml:space="preserve">
+    <value>No reason was given by the plug in author.</value>
+  </data>
   <data name="import_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\import_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GOREDIT_ERR_WORKSPACE_NOT_EMPTY" xml:space="preserve">
     <value>Unsuitable workspace location: There are files or subdirectories in this directory.</value>
   </data>
-  <data name="GOREDIT_NEW_PROJECT" xml:space="preserve">
-    <value>Untitled</value>
-  </data>
   <data name="GOREDIT_CONFIRM_DELETE_ALL" xml:space="preserve">
     <value>This will delete all directories and files in the file system. 
 
 Are you absolutely sure you want to do this?</value>
   </data>
-  <data name="GOREDIT_TEXT_INITIALIZING" xml:space="preserve">
-    <value>Initializing...</value>
+  <data name="newproject_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\newproject_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GOREDIT_TEXT_FILESYSTEM" xml:space="preserve">
+    <value>File System</value>
+  </data>
+  <data name="GOREDIT_TEXT_UNKNOWN" xml:space="preserve">
+    <value>(Unknown)</value>
   </data>
   <data name="GOREDIT_UNDO_CREATE_DIR" xml:space="preserve">
     <value>Directory creation.</value>
@@ -426,12 +450,20 @@ The path must not contain the following characters:
   <data name="GOREDIT_ERR_NO_PLUGIN_FOR_CONTENT" xml:space="preserve">
     <value>There is no plugin loaded that can handle opening the file '{0}'.</value>
   </data>
+  <data name="GOREDIT_ERR_CONTENT_CREATION" xml:space="preserve">
+    <value>There was an error creating the content.
+
+Please try again.</value>
+  </data>
   <data name="GOREDIT_TEXT_EXPORT_TO" xml:space="preserve">
     <value>Select a directory to export to...</value>
   </data>
   <data name="GOREDIT_ERR_PASTE_FILE_OR_DIR" xml:space="preserve">
     <value>There was an error pasting the data from the clipboard into the file system.
 Please try again.</value>
+  </data>
+  <data name="GOREDIT_ERR_WORKSPACE_NO_DIRECTORY" xml:space="preserve">
+    <value>Unsuitable workspace location: No directory was specified.</value>
   </data>
   <data name="GOREDIT_ERR_CANNOT_OPEN_CONTENT" xml:space="preserve">
     <value>There was an error opening the content file '{0}'.
@@ -451,6 +483,9 @@ Would you like to overwrite it?</value>
   </data>
   <data name="show_external_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\show_external_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GOREDIT_TEXT_LOADING_TOOL_PLUGINS" xml:space="preserve">
+    <value>Loading tool plug ins...</value>
   </data>
   <data name="GOREDIT_ERR_CANNOT_COPY_DUPE" xml:space="preserve">
     <value>There was an error copying '{0}'. 
@@ -478,18 +513,11 @@ Exception: {0}</value>
   <data name="drive_cdrom_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\drive_cdrom_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GOREDIT_CONFIRM_WORKSPACE_PATH_EXISTS" xml:space="preserve">
-    <value>The path '{0}' already exists.
-
-Would you like to use it anyway?  
-
-Note that selecting 'Yes' will delete the contents of the directory.</value>
-  </data>
   <data name="export_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\export_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GOREDIT_TEXT_IMPORTING" xml:space="preserve">
-    <value>Importing...</value>
+  <data name="GOREDIT_ERR_PATH_IS_DIRECTORY" xml:space="preserve">
+    <value>There is a directory with the name '{0}' already on this path.</value>
   </data>
   <data name="GOREDIT_ERR_NOT_A_PROJECT_FILE" xml:space="preserve">
     <value>The file '{0}' is not a Gorgon Editor project file.</value>
@@ -519,20 +547,34 @@ Please try again.</value>
   <data name="GOREDIT_TEXT_CONFIGURE_WORKSPACE" xml:space="preserve">
     <value>Configuring workspace...</value>
   </data>
+  <data name="GOREDIT_TEXT_LOADING_CONTENT_PLUGINS" xml:space="preserve">
+    <value>Loading content plug ins...</value>
+  </data>
   <data name="stage_save_as_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\stage_save_as_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GOREDIT_SEARCH_KEYWORD_CONTENT_TYPE" xml:space="preserve">
     <value>content-type</value>
   </data>
+  <data name="GOREDIT_ERR_SAVING_METADATA" xml:space="preserve">
+    <value>There was an error while saving the content metadata for '{0}'.
+
+Please try again.</value>
+  </data>
   <data name="expand_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\expand_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GOREDIT_TEXT_UNKNOWN" xml:space="preserve">
-    <value>(Unknown)</value>
+  <data name="GOREDIT_TEXT_IMPORTING" xml:space="preserve">
+    <value>Importing...</value>
   </data>
   <data name="GOREDIT_ERR_ERROR" xml:space="preserve">
     <value>Error</value>
+  </data>
+  <data name="collapse_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\collapse_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cut_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cut_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GOREDIT_TEXT_LOADING_CONTENT" xml:space="preserve">
     <value>Loading {0}...</value>
@@ -542,6 +584,9 @@ Please try again.</value>
   </data>
   <data name="GOREDIT_CAPTION_SELECT_PROJECT_DIR" xml:space="preserve">
     <value>Select a directory for the project...</value>
+  </data>
+  <data name="new_content_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\new_content_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Krypton_DarkO2k10Theme" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Krypton_DarkO2k10Theme.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
@@ -583,8 +628,9 @@ Note: Any existing files or directories will be deleted if a new project is crea
   <data name="GOREDIT_CAPTION_OPEN_PROJECT" xml:space="preserve">
     <value>Select the directory containing the Gorgon Editor project to open.</value>
   </data>
-  <data name="GOREDIT_TEXT_SCANNING" xml:space="preserve">
-    <value>Scanning files...</value>
+  <data name="GOREDIT_ERR_CANNOT_MOVE" xml:space="preserve">
+    <value>There was an error moving '{0}' to '{1}'.
+Please try again.</value>
   </data>
   <data name="Gorgon_Logo_Full_Site" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Gorgon_2.x_Logo_Full_Site.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -610,14 +656,14 @@ Please try again.</value>
     <value>There was an error creating the directory.
 Please try again.</value>
   </data>
-  <data name="GOREDIT_TEXT_IMPORT_FROM" xml:space="preserve">
-    <value>Select a directory to import...</value>
+  <data name="open_pack_file_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\open_pack_file_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GOREDIT_NEW_DIR_NAME" xml:space="preserve">
     <value>New Folder</value>
   </data>
-  <data name="GOREDIT_TEXT_LOADING_CONTENT_PLUGINS" xml:space="preserve">
-    <value>Loading content plug ins...</value>
+  <data name="recent_24x24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\recent_24x24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="clear_fs_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\clear_fs_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -627,22 +673,25 @@ Please try again.</value>
 
 The application will continue, but some functionality will be unavailable.</value>
   </data>
-  <data name="GOREDIT_ERR_WORKSPACE_NO_DIRECTORY" xml:space="preserve">
-    <value>Unsuitable workspace location: No directory was specified.</value>
+  <data name="copy_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\copy_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="collapse_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\collapse_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="GOREDIT_CONFIRM_UNSAVED_PROJ" xml:space="preserve">
+    <value>The project '{0}' has unsaved changes.
+
+Would you like to save this project now?</value>
+  </data>
+  <data name="GOREDIT_ERR_PATH_IS_NOT_IN_PROJECT_FILESYSTEM" xml:space="preserve">
+    <value>The path '{0}' is not contained within the project file system workspace '{1}'.</value>
+  </data>
+  <data name="show_external_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\show_external_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GOREDIT_ERR_CANNOT_USE_WORKSPACE" xml:space="preserve">
     <value>Could not use '{0}' as the work space directory:
 {1}
 
 You will be prompted to select a new work space directory. If no directory is selected, then the application will close.</value>
-  </data>
-  <data name="GOREDIT_CONFIRM_SAVE_CONTENT" xml:space="preserve">
-    <value>The file '{0}' is currently open in the editor and has unsaved changes.
-
-Would you like to save these changes now?</value>
   </data>
   <data name="import_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\import_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -661,9 +710,9 @@ Please try again.</value>
   <data name="GOREDIT_ERR_CLOSING_CONTENT" xml:space="preserve">
     <value>There was an error closing the content.</value>
   </data>
-  <data name="GOREDIT_DISABLE_CONTENT_IMPORT_PLUGIN_EXCEPTION" xml:space="preserve">
-    <value>An error occurred while loading the importer plug in.
-Exception: {0}</value>
+  <data name="GOREDIT_ERR_NO_SUITABLE_ADAPTER" xml:space="preserve">
+    <value>There is no video adapter on this machine that can be used by Gorgon.
+Gorgon requires a video adapter that is compatible with Direct 3D 11.4 or better.</value>
   </data>
   <data name="GOREDIT_UNDO_RENAME" xml:space="preserve">
     <value>Rename</value>
@@ -674,18 +723,14 @@ Exception: {0}</value>
 This action will delete all files and folders from the directory.
 Are you sure you want to do this?</value>
   </data>
-  <data name="GOREDIT_ERR_NEW_PROJECT" xml:space="preserve">
-    <value>There was an error while showing the New Project screen.
-Please try again.</value>
+  <data name="GOREDIT_NEW_PROJECT" xml:space="preserve">
+    <value>Untitled</value>
   </data>
-  <data name="collapse_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\collapse_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="GOREDIT_CAPTION_FILE" xml:space="preserve">
+    <value>{0}</value>
   </data>
   <data name="expand_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\expand_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="open_edit_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\open_edit_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GOREDIT_DISABLE_FILE_PROVIDER_EXCEPTION" xml:space="preserve">
     <value>An error occurred while loading the plug in.
@@ -702,8 +747,20 @@ Note: Workspaces must be accessible by the current user, and inside of an existi
 
 </value>
   </data>
-  <data name="GOREDIT_TEXT_DISABLED_PLUGIN_DEFAULT_TEXT" xml:space="preserve">
-    <value>No reason was given by the plug in author.</value>
+  <data name="GOREDIT_ERR_PATH_IS_FILE" xml:space="preserve">
+    <value>There is a file with the name '{0}' already on this path.</value>
+  </data>
+  <data name="GOREDIT_ERR_CREATING_CONTENT_FILE" xml:space="preserve">
+    <value>Error creating the file '{0}'.
+
+Please try again.</value>
+  </data>
+  <data name="GOREDIT_CONFIRM_WORKSPACE_PATH_EXISTS" xml:space="preserve">
+    <value>The path '{0}' already exists.
+
+Would you like to use it anyway?  
+
+Note that selecting 'Yes' will delete the contents of the directory.</value>
   </data>
   <data name="GOREDIT_CAPTION_NO_FILE" xml:space="preserve">
     <value>Gorgon Editor</value>
@@ -721,9 +778,11 @@ Would you like to create a new project there?</value>
 
 Do you wish to continue?</value>
   </data>
-  <data name="GOREDIT_CONFIRM_DELETE_NO_CHILDREN" xml:space="preserve">
-    <value>Are you sure you wish to delete '{0}'?
-</value>
+  <data name="GOREDIT_ERR_DIRECTORY_LOCKED" xml:space="preserve">
+    <value>A file in the directory '{0}' is open.</value>
+  </data>
+  <data name="GOREDIT_TEXT_SAVING" xml:space="preserve">
+    <value>Saving '{0}'...</value>
   </data>
   <data name="drive_network_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\drive_network_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -744,63 +803,21 @@ Please try again.</value>
   <data name="no_thumbnail_256x256" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\no_thumbnail_256x256.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="new_content_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\new_content_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="settings_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\settings_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="new_content_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\new_content_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="GOREDIT_PLUGIN_STATE_LOADED" xml:space="preserve">
+    <value>Loaded</value>
   </data>
-  <data name="GOREDIT_CREATE_NEW" xml:space="preserve">
-    <value>Create New {0}...</value>
+  <data name="GOREDIT_PLUGIN_STATE_NOT_LOADED" xml:space="preserve">
+    <value>Not loaded</value>
   </data>
-  <data name="GOREDIT_ERR_CONTENT_CREATION" xml:space="preserve">
-    <value>There was an error creating the content.
+  <data name="GOREDIT_ERR_SELECTING_PLUGIN" xml:space="preserve">
+    <value>There was an error selecting the plug in.
 
 Please try again.</value>
   </data>
-  <data name="GOREDIT_ERR_CREATING_CONTENT_FILE" xml:space="preserve">
-    <value>Error creating the file '{0}'.
-
-Please try again.</value>
-  </data>
-  <data name="GOREDIT_ERR_INVALID_CONTENT_TYPE_ID" xml:space="preserve">
-    <value>The ID for the content is an invalid type.
-
-Content IDs should be GUID values.</value>
-  </data>
-  <data name="GOREDIT_TEXT_CREATING_CONTENT" xml:space="preserve">
-    <value>Creating {0} content...</value>
-  </data>
-  <data name="GOREDIT_ERR_SAVING_METADATA" xml:space="preserve">
-    <value>There was an error while saving the content metadata for '{0}'.
-
-Please try again.</value>
-  </data>
-  <data name="GOREDIT_ERR_DIRECTORY_LOCKED" xml:space="preserve">
-    <value>A file in the directory '{0}' is open.</value>
-  </data>
-  <data name="GOREDIT_ERR_DIRECTORY_NOT_EMPTY" xml:space="preserve">
-    <value>The directory on the path '{0}' is not empty.</value>
-  </data>
-  <data name="GOREDIT_ERR_FILE_LOCKED" xml:space="preserve">
-    <value>The file '{0}' is already open.</value>
-  </data>
-  <data name="GOREDIT_ERR_NO_FILENAME" xml:space="preserve">
-    <value>The path '{0}' does not contain a file name.</value>
-  </data>
-  <data name="GOREDIT_ERR_PATH_IS_DIRECTORY" xml:space="preserve">
-    <value>There is a directory with the name '{0}' already on this path.</value>
-  </data>
-  <data name="GOREDIT_ERR_PATH_IS_FILE" xml:space="preserve">
-    <value>There is a file with the name '{0}' already on this path.</value>
-  </data>
-  <data name="GOREDIT_ERR_PATH_NOT_FOUND" xml:space="preserve">
-    <value>The path '{0}' was not found.</value>
-  </data>
-  <data name="GOREDIT_ERR_TOOL_NO_BUTTON" xml:space="preserve">
-    <value>The tool plug in '{0}' is missing its ribbon button.</value>
-  </data>
-  <data name="GOREDIT_TEXT_LOADING_TOOL_PLUGINS" xml:space="preserve">
-    <value>Loading tool plug ins...</value>
+  <data name="GOREDIT_SETTINGS_CATEGORY_PLUGINS" xml:space="preserve">
+    <value>Plug ins</value>
   </data>
 </root>

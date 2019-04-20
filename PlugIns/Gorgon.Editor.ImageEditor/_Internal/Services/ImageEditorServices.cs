@@ -86,5 +86,14 @@ namespace Gorgon.Editor.ImageEditor
             get;
             set;
         }
+
+		/// <summary>
+        /// Property to set or return the plug in manager service.
+        /// </summary>
+		public IPlugInManagerService PlugInManagerService
+        {
+            get;
+            set;
+        }
     }
 }

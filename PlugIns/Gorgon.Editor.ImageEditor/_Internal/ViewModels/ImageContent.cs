@@ -152,6 +152,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         private IHostedPanelViewModel _currentPanel;
         // The service used to edit the image with an external editor.
         private IImageExternalEditService _externalEditor;
+		// The codec plug in manager.
+        private IPlugInManagerService _codecManager;
         #endregion
 
         #region Properties.
@@ -490,6 +492,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the command used to manage the image codec plug ins.
+        /// </summary>
+        public IEditorCommand<object> ManageCodecsCommand
+        {
+            get;
+        }
         #endregion
 
         #region Methods.        
@@ -815,6 +825,24 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 }
                 importImage?.Dispose();
                 BusyState.SetIdle();
+            }
+        }
+
+		/// <summary>
+        /// Function to determine if the codec plug ins can be managed.
+        /// </summary>
+        /// <returns><b>true</b> if the codec plug ins can be managed, <b>false</b> if not.</returns>
+        private bool CanManageCodecs() => true;
+
+        private void DoManageCodecs()
+        {
+            try
+            {
+                _codecManager.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_MANAGE_CODECS);
             }
         }
 
@@ -2089,6 +2117,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             _imageUpdater = injectionParameters.ImageUpdater ?? throw new ArgumentMissingException(nameof(injectionParameters.ImageUpdater), nameof(injectionParameters));
             _videoAdapter = injectionParameters.VideoAdapterInfo ?? throw new ArgumentMissingException(nameof(injectionParameters.VideoAdapterInfo), nameof(injectionParameters));
             _externalEditor = injectionParameters.ExternalEditorService ?? throw new ArgumentMissingException(nameof(injectionParameters.ExternalEditorService), nameof(injectionParameters));
+            _codecManager = injectionParameters.PlugInManager ?? throw new ArgumentMissingException(nameof(injectionParameters.PlugInManager), nameof(injectionParameters));
             _format = injectionParameters.OriginalFormat;
 
             _cropResizeSettings.OkCommand = new EditorCommand<object>(DoCropResize, CanCropResize);
@@ -2335,6 +2364,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             ShowImageDimensionsCommand = new EditorCommand<object>(DoShowImageDimensions, CanShowImageDimensions);
             ShowMipGenerationCommand = new EditorCommand<object>(DoShowMipGeneration, CanShowMipGeneration);
             EditInAppCommand = new EditorCommand<object>(DoEditInApp, () => ImageData != null);
+            ManageCodecsCommand = new EditorCommand<object>(DoManageCodecs, CanManageCodecs);
         }
         #endregion
     }

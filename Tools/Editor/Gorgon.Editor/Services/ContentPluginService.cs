@@ -36,6 +36,7 @@ using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
+using Gorgon.IO;
 using Gorgon.Plugins;
 using Newtonsoft.Json;
 
@@ -119,32 +120,44 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Function to return the file for the content plug in settings.
         /// </summary>
-        /// <param name="plugin">The content plug in that owns the settings file.</param>
+        /// <param name="name">The name of the file.</param>
         /// <returns>The file containing the plug in settings.</returns>
-        private FileInfo GetContentPluginSettingsPath(ContentPlugin plugin) =>
+        private FileInfo GetContentPluginSettingsPath(string name) =>
 #if DEBUG
-            new FileInfo(Path.Combine(_settingsDir.FullName, plugin.Name) + ".DEBUG.json");
+            new FileInfo(Path.Combine(_settingsDir.FullName, name.FormatFileName()) + ".DEBUG.json");
 #else
-            new FileInfo(Path.Combine(_settingsDir.FullName, Path.ChangeExtension(plugin.Name, "json")));
+            new FileInfo(Path.Combine(_settingsDir.FullName, Path.ChangeExtension(name.FormatFileName(), "json")));
 #endif
 
 
         /// <summary>Funcion to read the settings for a content plug in from a JSON file.</summary>
         /// <typeparam name="T">The type of settings to read. Must be a reference type.</typeparam>
+        /// <param name="name">The name of the file.</param>
         /// <param name="plugin">The plug in that owns the settings being read.</param>
         /// <param name="converters">A list of JSON data converters.</param>
         /// <returns>The settings object for the plug in, or <b>null</b> if no settings file was found for the plug in.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin" /> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, or the <paramref name="plugin" /> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
         /// <remarks>This will read in the settings for a content plug from the same location where the editor stores its application settings file.</remarks>
-        public T ReadContentSettings<T>(ContentPlugin plugin, params JsonConverter[] converters)
+        public T ReadContentSettings<T>(string name, ContentPlugin plugin, params JsonConverter[] converters)
             where T : class
         {
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentEmptyException(nameof(name));
+            }
+
             if (plugin == null)
             {
                 throw new ArgumentNullException(nameof(plugin));
             }
 
-            FileInfo settingsFile = GetContentPluginSettingsPath(plugin);
+            FileInfo settingsFile = GetContentPluginSettingsPath(name);
 
             if (!settingsFile.Exists)
             {
@@ -162,14 +175,26 @@ namespace Gorgon.Editor.Services
 
         /// <summary>Function to write out the settings for a content plug in as a JSON file.</summary>
         /// <typeparam name="T">The type of settings to write. Must be a reference type.</typeparam>
+        /// <param name="name">The name of the file.</param>
         /// <param name="plugin">The plug in that owns the settings being written.</param>
         /// <param name="contentSettings">The content settings to persist as JSON file.</param>
         /// <param name="converters">A list of JSON converters.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin" />, or the <paramref name="contentSettings" /> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="plugin" />, or the <paramref name="contentSettings" /> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
         /// <remarks>This will write out the settings for a content plug in to the same location where the editor stores its application settings file.</remarks>
-        public void WriteContentSettings<T>(ContentPlugin plugin, T contentSettings, params JsonConverter[] converters)
+        public void WriteContentSettings<T>(string name, ContentPlugin plugin, T contentSettings, params JsonConverter[] converters)
             where T : class
         {
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentEmptyException(nameof(name));
+            }
+
             if (plugin == null)
             {
                 throw new ArgumentNullException(nameof(plugin));
@@ -180,7 +205,7 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentNullException(nameof(contentSettings));
             }
 
-            FileInfo settingsFile = GetContentPluginSettingsPath(plugin);
+            FileInfo settingsFile = GetContentPluginSettingsPath(name);
             using (Stream stream = settingsFile.Open(FileMode.Create, FileAccess.Write, FileShare.None))
             {
                 using (var writer = new StreamWriter(stream, Encoding.UTF8, 80000, false))
@@ -329,19 +354,13 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentNullException(nameof(pluginDir));
             }
 
-            FileInfo[] assemblies = pluginDir.GetFiles("*.dll");
+            IReadOnlyList<PluginRecord> assemblies = pluginCache.ValidateAndLoadAssemblies(pluginDir.GetFiles("*.dll"), Program.Log);
 
-            foreach (FileInfo file in assemblies)
+            if (assemblies.Count > 0)
             {
-                try
+                foreach (PluginRecord record in assemblies.Where(item => !item.IsAssemblyLoaded && item.IsManaged))
                 {
-                    Program.Log.Print($"Loading content plug in assembly '{file.FullName}'...", LoggingLevel.Simple);
-                    pluginCache.LoadPluginAssemblies(pluginDir.FullName, file.Name);
-                }
-                catch (Exception ex)
-                {
-                    Program.Log.Print($"ERROR: Cannot load content plug in assembly '{file.FullName}'.", LoggingLevel.Simple);
-                    Program.Log.LogException(ex);
+                    _disabled[Path.GetFileName(record.Path)] = new DisabledPlugin(DisabledReasonCode.Error, Path.GetFileName(record.Path), record.LoadFailureReason, record.Path);
                 }
             }
 
@@ -369,7 +388,7 @@ namespace Gorgon.Editor.Services
                             Program.Log.Print($"WARNING: {reason}", LoggingLevel.Verbose);
                         }
 
-                        _disabled[plugin.Name] = new DisabledPlugin(DisabledReasonCode.ValidationError, plugin.Name, string.Join("\n", validation));
+                        _disabled[plugin.Name] = new DisabledPlugin(DisabledReasonCode.ValidationError, plugin.Name, string.Join("\n", validation), plugin.PlugInPath);
 
                         // Remove this plug in.
                         plugins.Unload(plugin.Name);
@@ -386,7 +405,7 @@ namespace Gorgon.Editor.Services
                     Program.Log.Print($"ERROR: Cannot create content plug in '{plugin.Name}'.", LoggingLevel.Simple);
                     Program.Log.LogException(ex);
 
-                    _disabled[plugin.Name] = new DisabledPlugin(DisabledReasonCode.Error, plugin.Name, string.Format(Resources.GOREDIT_DISABLE_CONTENT_PLUGIN_EXCEPTION, ex.Message));
+                    _disabled[plugin.Name] = new DisabledPlugin(DisabledReasonCode.Error, plugin.Name, string.Format(Resources.GOREDIT_DISABLE_CONTENT_PLUGIN_EXCEPTION, ex.Message), plugin.PlugInPath);
                 }
             }
         }

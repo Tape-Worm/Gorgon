@@ -113,6 +113,7 @@ namespace Gorgon.Editor.Views
         {
             NewProject.Visible = CheckNew.Checked;
             Recent.Visible = CheckRecent.Checked;
+            SettingsPanel.Visible = CheckSettings.Checked;
         }
 
         /// <summary>Handles the Click event of the CheckNew control.</summary>
@@ -124,6 +125,11 @@ namespace Gorgon.Editor.Views
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void CheckRecent_Click(object sender, EventArgs e) => SetViewState();
+
+        /// <summary>Handles the Click event of the ButtonSettings control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void CheckSettings_Click(object sender, EventArgs e) => SetViewState();
 
         /// <summary>Handles the Click event of the ButtonOpenPackFile control.</summary>
         /// <param name="sender">The source of the event.</param>

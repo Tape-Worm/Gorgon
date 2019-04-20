@@ -117,173 +117,198 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="GOREDIT_ERR_PROPERTY_DOES_NOT_EXIST" xml:space="preserve">
-    <value>The property '{0}' is not a member of this object.</value>
-  </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="recent_item_badge_64x64" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\recent_item_badge_64x64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GOREDIT_ERR_DIR_NOT_FOUND" xml:space="preserve">
-    <value>The directory '{0}' was not found.</value>
-  </data>
-  <data name="GOREDIT_PLUGIN_TYPE_TOOL" xml:space="preserve">
-    <value>Editor utility</value>
-  </data>
-  <data name="drive_remove_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\drive_remove_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GOREDIT_TITLE_OPEN_FILE" xml:space="preserve">
-    <value>Open a file...</value>
-  </data>
-  <data name="GOREDIT_ERR_NO_CONTENT_VIEW" xml:space="preserve">
-    <value>Content objects must have a view associated with them.</value>
-  </data>
-  <data name="GOREDIT_TITLE_SAVE_FILE" xml:space="preserve">
-    <value>Save the file as...</value>
-  </data>
-  <data name="drive_cdrom_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\drive_cdrom_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GOREDIT_ERR_NO_CONTENT_IMPORTER_FROM_PLUGIN" xml:space="preserve">
-    <value>The plug in '{0}' did not produce any importers.</value>
-  </data>
-  <data name="file_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\file_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="folder_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\folder_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="drive_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\drive_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Bg_Pattern_256x256" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Pattern.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="GOREDIT_ERR_CLOSE_CONTENT" xml:space="preserve">
-    <value>There was an error closing the content.
-
-Some changes may not have been saved.</value>
-  </data>
-  <data name="GOREDIT_ERR_CANNOT_FIND_VIEW_FACTORY" xml:space="preserve">
-    <value>Could not find a view factory registered to the type '{0}'.</value>
-  </data>
-  <data name="drive_ram_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\drive_ram_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GOREDIT_ERR_AFTER_MOVE_UPDATE" xml:space="preserve">
-    <value>There was an error updating the associated file information after it was moved.
-
-This content will now close in order to avoid corrupting the file.</value>
-  </data>
-  <data name="GOREDIT_PLUGIN_TYPE_UNKNOWN" xml:space="preserve">
-    <value>Unknown plug in type.</value>
+  <data name="GOREDIT_ERR_NO_CONTENT_FROM_PLUGIN" xml:space="preserve">
+    <value>The plug in '{0}' did not produce any content.</value>
   </data>
   <data name="GOREDIT_ERR_STREAM_READ_ONLY" xml:space="preserve">
     <value>The stream is read only.</value>
   </data>
-  <data name="drive_network_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\drive_network_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="GOREDIT_TITLE_OPEN_FILE" xml:space="preserve">
+    <value>Open a file...</value>
   </data>
-  <data name="GOREDIT_ERR_CLIPBOARD_NO_DATA_OF_TYPE" xml:space="preserve">
-    <value>There is no data of the type '{0}' on the clipboard.</value>
-  </data>
-  <data name="GOREDIT_PLUGIN_TYPE_CONTENT" xml:space="preserve">
-    <value>Editor content</value>
-  </data>
-  <data name="GOREDIT_ERR_NO_CONTENT_FROM_PLUGIN" xml:space="preserve">
-    <value>The plug in '{0}' did not produce any content.</value>
-  </data>
-  <data name="GOREDIT_PLUGIN_TYPE_WRITER" xml:space="preserve">
-    <value>Editor file writer</value>
-  </data>
-  <data name="GOREDIT_TITLE_DEFAULT_DIR_LOCATOR" xml:space="preserve">
-    <value>Select a directory...</value>
-  </data>
-  <data name="recent_item_badge_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\recent_item_badge_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="selection_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\selection_16x16.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="march_ants_diag_32x32" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\march_ants_diag_32x32.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="keyboard_20x20" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\keyboard_20x20.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="GOREDIT_ZOOM_100" xml:space="preserve">
-    <value>100%</value>
-  </data>
-  <data name="GOREDIT_ZOOM_12" xml:space="preserve">
-    <value>12.5%</value>
-  </data>
-  <data name="GOREDIT_ZOOM_1600" xml:space="preserve">
-    <value>1600%</value>
-  </data>
-  <data name="GOREDIT_ZOOM_200" xml:space="preserve">
-    <value>200%</value>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Bg_Pattern_256x256" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="GOREDIT_ZOOM_25" xml:space="preserve">
     <value>25%</value>
   </data>
-  <data name="GOREDIT_ZOOM_3200" xml:space="preserve">
-    <value>3200%</value>
+  <data name="manual_vertex_edit_64x64" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\manual_vertex_edit_64x64.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="GOREDIT_ZOOM_400" xml:space="preserve">
-    <value>400%</value>
+  <data name="GOREDIT_ERR_PANEL_NOT_REGISTERED" xml:space="preserve">
+    <value>The panel '{0}' is not registered on this view.</value>
   </data>
-  <data name="GOREDIT_ZOOM_50" xml:space="preserve">
-    <value>50%</value>
+  <data name="recent_item_badge_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\recent_item_badge_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GOREDIT_ZOOM_6400" xml:space="preserve">
-    <value>6400%</value>
+  <data name="GOREDIT_PLUGIN_TYPE_CONTENT" xml:space="preserve">
+    <value>Editor content</value>
   </data>
-  <data name="GOREDIT_ZOOM_800" xml:space="preserve">
-    <value>800%</value>
+  <data name="GOREDIT_ERR_FILE_NOT_FOUND" xml:space="preserve">
+    <value>The file '{0}' was not found on the file system.</value>
   </data>
-  <data name="GOREDIT_ZOOM_TO_WINDOW" xml:space="preserve">
-    <value>To Window</value>
+  <data name="GOREDIT_TITLE_SAVE_FILE" xml:space="preserve">
+    <value>Save the file as...</value>
   </data>
-  <data name="GOREDIT_TOSTR_DEPENDENCY" xml:space="preserve">
-    <value>{0} dependency at '{1}'.</value>
-  </data>
-  <data name="GOREDIT_TEXT_NAME_CUE" xml:space="preserve">
-    <value>Enter a name for the {0}...</value>
+  <data name="drive_remove_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\drive_remove_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GOREDIT_ERR_CONTENT_ALREADY_EXISTS" xml:space="preserve">
     <value>There is already a content file or a directory with the name '{0}'.
 
 Please try again.</value>
   </data>
-  <data name="GOREDIT_ERR_FILE_NOT_FOUND" xml:space="preserve">
-    <value>The file '{0}' was not found on the file system.</value>
+  <data name="GOREDIT_ERR_AFTER_MOVE_UPDATE" xml:space="preserve">
+    <value>There was an error updating the associated file information after it was moved.
+
+This content will now close in order to avoid corrupting the file.</value>
   </data>
-  <data name="GOREDIT_ERR_NOT_EDITOR_PROJECT" xml:space="preserve">
-    <value>This file system does not contain a Gorgon Editor project.</value>
+  <data name="GOREDIT_ZOOM_200" xml:space="preserve">
+    <value>200%</value>
   </data>
-  <data name="GOREDIT_ERR_NOT_SPRITE" xml:space="preserve">
-    <value>The file '{0}' is not a sprite.</value>
+  <data name="GOREDIT_ERR_NO_CONTENT_IMPORTER_FROM_PLUGIN" xml:space="preserve">
+    <value>The plug in '{0}' did not produce any importers.</value>
   </data>
-  <data name="GOREDIT_ERR_UNSUPPORTED_CODEC" xml:space="preserve">
-    <value>The codec '{0}' is not supported at this time.</value>
+  <data name="keyboard_20x20" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\keyboard_20x20.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="GOREDIT_PLUGIN_TYPE_TOOL" xml:space="preserve">
+    <value>Editor utility</value>
+  </data>
+  <data name="selection_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\selection_16x16.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="drive_network_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\drive_network_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="drive_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\drive_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="drive_ram_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\drive_ram_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GOREDIT_ZOOM_TO_WINDOW" xml:space="preserve">
+    <value>To Window</value>
+  </data>
+  <data name="GOREDIT_ZOOM_800" xml:space="preserve">
+    <value>800%</value>
+  </data>
+  <data name="GOREDIT_TITLE_DEFAULT_DIR_LOCATOR" xml:space="preserve">
+    <value>Select a directory...</value>
+  </data>
+  <data name="GOREDIT_ERR_NO_CONTENT_VIEW" xml:space="preserve">
+    <value>Content objects must have a view associated with them.</value>
+  </data>
+  <data name="GOREDIT_ZOOM_6400" xml:space="preserve">
+    <value>6400%</value>
+  </data>
+  <data name="GOREDIT_TEXT_NAME_CUE" xml:space="preserve">
+    <value>Enter a name for the {0}...</value>
+  </data>
+  <data name="GOREDIT_ZOOM_50" xml:space="preserve">
+    <value>50%</value>
+  </data>
+  <data name="GOREDIT_ERR_CLIPBOARD_NO_DATA_OF_TYPE" xml:space="preserve">
+    <value>There is no data of the type '{0}' on the clipboard.</value>
+  </data>
+  <data name="GOREDIT_TOSTR_DEPENDENCY" xml:space="preserve">
+    <value>{0} dependency at '{1}'.</value>
+  </data>
+  <data name="recent_item_badge_64x64" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\recent_item_badge_64x64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="drive_cdrom_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\drive_cdrom_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GOREDIT_ERR_PROPERTY_DOES_NOT_EXIST" xml:space="preserve">
+    <value>The property '{0}' is not a member of this object.</value>
   </data>
   <data name="GOREDIT_ERR_VERSION_MISMATCH" xml:space="preserve">
     <value>The editor project data requires version {0}, but this API only supports up to version {1}.</value>
   </data>
-  <data name="GOREDIT_ZOOM_CUSTOM" xml:space="preserve">
-    <value>Custom Zoom</value>
+  <data name="GOREDIT_ZOOM_12" xml:space="preserve">
+    <value>12.5%</value>
+  </data>
+  <data name="manual_input_24x24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\manual_input_24x24.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="GOREDIT_ERR_CANNOT_FIND_VIEW_FACTORY" xml:space="preserve">
+    <value>Could not find a view factory registered to the type '{0}'.</value>
+  </data>
+  <data name="GOREDIT_ERR_CLOSE_CONTENT" xml:space="preserve">
+    <value>There was an error closing the content.
+
+Some changes may not have been saved.</value>
+  </data>
+  <data name="GOREDIT_PLUGIN_TYPE_WRITER" xml:space="preserve">
+    <value>Editor file writer</value>
   </data>
   <data name="GOREDIT_ERR_PANEL_ALREADY_REGISTERED" xml:space="preserve">
     <value>The panel '{0}' is already registered on this view.</value>
   </data>
-  <data name="GOREDIT_ERR_PANEL_NOT_REGISTERED" xml:space="preserve">
-    <value>The panel '{0}' is not registered on this view.</value>
+  <data name="GOREDIT_ERR_NOT_EDITOR_PROJECT" xml:space="preserve">
+    <value>This file system does not contain a Gorgon Editor project.</value>
   </data>
-  <data name="manual_vertex_edit_64x64" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\manual_vertex_edit_64x64.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="march_ants_diag_32x32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\march_ants_diag_32x32.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="manual_input_24x24" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\manual_input_24x24.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="GOREDIT_ZOOM_100" xml:space="preserve">
+    <value>100%</value>
+  </data>
+  <data name="GOREDIT_ERR_NOT_SPRITE" xml:space="preserve">
+    <value>The file '{0}' is not a sprite.</value>
+  </data>
+  <data name="folder_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\folder_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GOREDIT_ERR_UNSUPPORTED_CODEC" xml:space="preserve">
+    <value>The codec '{0}' is not supported at this time.</value>
+  </data>
+  <data name="GOREDIT_PLUGIN_TYPE_UNKNOWN" xml:space="preserve">
+    <value>Unknown plug in type.</value>
+  </data>
+  <data name="GOREDIT_ZOOM_1600" xml:space="preserve">
+    <value>1600%</value>
+  </data>
+  <data name="GOREDIT_ZOOM_400" xml:space="preserve">
+    <value>400%</value>
+  </data>
+  <data name="file_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\file_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GOREDIT_ZOOM_3200" xml:space="preserve">
+    <value>3200%</value>
+  </data>
+  <data name="GOREDIT_ZOOM_CUSTOM" xml:space="preserve">
+    <value>Custom Zoom</value>
+  </data>
+  <data name="GOREDIT_ERR_DIR_NOT_FOUND" xml:space="preserve">
+    <value>The directory '{0}' was not found.</value>
+  </data>
+  <data name="add_plugin_22x22" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\add_plugin_22x22.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="remove_plugins_22x22" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\remove_plugins_22x22.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GOREDIT_PLUGIN_LOAD_FAIL_EXCEPTION" xml:space="preserve">
+    <value>An exception was thrown while loading the '{0}' assembly.
+
+{1}</value>
+  </data>
+  <data name="GOREDIT_PLUGIN_LOAD_FAIL_NOT_DOT_NET" xml:space="preserve">
+    <value>The file '{0}' is not a .NET assembly.</value>
+  </data>
+  <data name="GOREDIT_PLUGIN_LOAD_FAIL_NOT_FOUND" xml:space="preserve">
+    <value>Not found</value>
+  </data>
+  <data name="GOREDIT_PLUGIN_LOAD_FAIL_PLATFORM_MISMATCH" xml:space="preserve">
+    <value>The assembly '{0}' has a platform architecture of {1}, but the application is running as {2}.
+
+These platforms are incompatible and cannot be mixed.</value>
+  </data>
+  <data name="GOREDIT_PLUGIN_TYPE_READER" xml:space="preserve">
+    <value>Packed file reader</value>
   </data>
 </root>

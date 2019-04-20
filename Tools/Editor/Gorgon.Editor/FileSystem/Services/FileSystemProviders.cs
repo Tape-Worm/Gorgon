@@ -240,19 +240,13 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentNullException(nameof(pluginDir));
             }
 
-            FileInfo[] assemblies = pluginDir.GetFiles("*.dll");
+            IReadOnlyList<PluginRecord> assemblies = pluginCache.ValidateAndLoadAssemblies(pluginDir.GetFiles("*.dll"), Program.Log);
 
-            foreach (FileInfo file in assemblies)
+            if (assemblies.Count > 0)
             {
-                try
+                foreach (PluginRecord record in assemblies.Where(item => !item.IsAssemblyLoaded && item.IsManaged))
                 {
-                    Program.Log.Print($"Loading file system provider plug in assembly '{file.FullName}'...", LoggingLevel.Simple);
-                    pluginCache.LoadPluginAssemblies(file.DirectoryName, file.Name);
-                }
-                catch (Exception ex)
-                {
-                    Program.Log.Print($"ERROR: Cannot load provider plug in assembly '{file.FullName}'.", LoggingLevel.Simple);
-                    Program.Log.LogException(ex);
+                    _disabled[Path.GetFileName(record.Path)] = new DisabledPlugin(DisabledReasonCode.Error, Path.GetFileName(record.Path), record.LoadFailureReason, record.Path);
                 }
             }
 
@@ -273,7 +267,7 @@ namespace Gorgon.Editor.Services
                     Program.Log.Print($"ERROR: Cannot create file system reader plug in '{reader.Name}'.", LoggingLevel.Simple);
                     Program.Log.LogException(ex);
 
-                    _disabled[reader.Name] = new DisabledPlugin(DisabledReasonCode.Error, reader.Name, string.Format(Resources.GOREDIT_DISABLE_FILE_PROVIDER_EXCEPTION, ex.Message));
+                    _disabled[reader.Name] = new DisabledPlugin(DisabledReasonCode.Error, reader.Name, string.Format(Resources.GOREDIT_DISABLE_FILE_PROVIDER_EXCEPTION, ex.Message), reader.ProviderPath);
                 }
             }
 
@@ -294,7 +288,7 @@ namespace Gorgon.Editor.Services
                             Program.Log.Print($"WARNING: {reason}", LoggingLevel.Verbose);
                         }                        
 
-                        _disabled[writer.Name] = new DisabledPlugin(DisabledReasonCode.ValidationError, writer.Name, string.Join("\n", disabled));
+                        _disabled[writer.Name] = new DisabledPlugin(DisabledReasonCode.ValidationError, writer.Name, string.Join("\n", disabled), writer.PlugInPath);
                         continue;
                     }
 
@@ -305,7 +299,7 @@ namespace Gorgon.Editor.Services
                     Program.Log.Print($"ERROR: Cannot create file system writer plug in '{writer.Name}'.", LoggingLevel.Simple);
                     Program.Log.LogException(ex);
 
-                    _disabled[writer.Name] = new DisabledPlugin(DisabledReasonCode.Error, writer.Name, string.Format(Resources.GOREDIT_DISABLE_FILE_PROVIDER_EXCEPTION, ex.Message));
+                    _disabled[writer.Name] = new DisabledPlugin(DisabledReasonCode.Error, writer.Name, string.Format(Resources.GOREDIT_DISABLE_FILE_PROVIDER_EXCEPTION, ex.Message), writer.PlugInPath);
                 }
             }
         }

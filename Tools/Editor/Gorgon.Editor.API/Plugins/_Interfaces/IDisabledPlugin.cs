@@ -73,5 +73,13 @@ namespace Gorgon.Editor.Plugins
         {
             get;
         }
+
+		/// <summary>
+        /// Property to return the assembly path.
+        /// </summary>
+		string Path
+        {
+            get;
+        }
     }
 }

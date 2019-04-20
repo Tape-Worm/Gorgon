@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,29 +20,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: November 7, 2018 1:33:38 PM
+// Created: April 18, 2019 8:50:50 PM
 // 
 #endregion
 
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using ComponentFactory.Krypton.Toolkit;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.UI.Forms
 {
-    /// <summary>
-    /// The settings for the image importer plug in.
+	/// <summary>
+    /// The UI for the plug in manager
     /// </summary>
-    internal class ImageImporterSettings
+    public partial class FormPlugInManager 
+		: KryptonForm
     {
-        /// <summary>
-        /// Property to return the list of additional image codec plug ins to load.
-        /// </summary>
-        [JsonProperty]
-        public Dictionary<string, string> CodecPluginPaths
-        {
-            get;
-            private set;
-        } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        #region Variables.
+
+        #endregion
+
+        #region Properties.
+
+        #endregion
+
+        #region Methods.
+
+        #endregion
+
+        #region Constructor/Finalizer.
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.UI.Forms.FormPluginManager"/> class.</summary>
+        public FormPlugInManager() => InitializeComponent();
+        #endregion
     }
 }

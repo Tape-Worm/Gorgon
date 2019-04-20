@@ -87,6 +87,14 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Property to return the view model for the settings view.
+        /// </summary>
+        IEditorSettingsVm SettingsViewModel
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the view model for the current project.
         /// </summary>
         IProjectVm CurrentProject

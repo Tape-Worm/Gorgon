@@ -40,6 +40,7 @@ using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.IO;
+using Gorgon.IO.Providers;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -238,6 +239,64 @@ namespace Gorgon.Editor.ViewModels
             return new List<IContentPluginMetadata>(filteredPlugins);
         }
 
+		/// <summary>
+        /// Function to retrieve a plug in list item view model based on the plug in passed in.
+        /// </summary>
+        /// <param name="plugin">The plug in to retrieve data from.</param>
+        /// <returns>The view model.</returns>
+        private ISettingsPluginListItem GetPluginListItem(EditorPlugin plugin)
+        {
+            var result = new SettingsPluginListItem();
+            result.Initialize(new SettingsPluginListItemParameters(plugin));
+            return result;
+        }
+
+        /// <summary>
+        /// Function to retrieve a plug in list item view model based on the plug in passed in.
+        /// </summary>
+        /// <param name="plugin">The plug in to retrieve data from.</param>
+        /// <returns>The view model.</returns>
+        private ISettingsPluginListItem GetPluginListItem(IGorgonFileSystemProvider plugin)
+        {
+            var result = new SettingsPluginListItem();
+            result.Initialize(new SettingsPluginListItemParameters(plugin));
+            return result;
+        }
+
+        /// <summary>
+        /// Function to retrieve a plug in list item view model based on the plug in passed in.
+        /// </summary>
+        /// <param name="plugin">The plug in to retrieve data from.</param>
+        /// <returns>The view model.</returns>
+        private ISettingsPluginListItem GetPluginListItem(IDisabledPlugin plugin)
+        {
+            var result = new SettingsPluginListItem();
+            result.Initialize(new SettingsPluginListItemParameters(plugin));
+            return result;
+        }
+
+		/// <summary>
+        /// Function to retrieve the list of plug ins view model.
+        /// </summary>
+        /// <returns>The plug ins list view model.</returns>
+        private ISettingsPluginsList GetPluginListViewModel()
+        {
+            IEnumerable<ISettingsPluginListItem> plugins = FileSystemProviders.Readers
+                .Select(item => GetPluginListItem(item.Value))
+                .Concat(FileSystemProviders.Writers.Select(item => GetPluginListItem(item.Value)))
+                .Concat(ContentPlugins.Plugins.Select(item => GetPluginListItem(item.Value)))
+                .Concat(ContentImporterPlugins.Plugins.Select(item => GetPluginListItem(item.Value)))
+                .Concat(ToolPlugins.Plugins.Select(item => GetPluginListItem(item.Value)))
+                .Concat(FileSystemProviders.DisabledPlugins.Select(item => GetPluginListItem(item.Value)))
+                .Concat(ContentPlugins.DisabledPlugins.Select(item => GetPluginListItem(item.Value)))
+                .Concat(ContentImporterPlugins.DisabledPlugins.Select(item => GetPluginListItem(item.Value)))
+                .Concat(ToolPlugins.DisabledPlugins.Select(item => GetPluginListItem(item.Value)));
+
+            var result = new SettingsPluginsList();
+            result.Initialize(new SettingsPluginsListParameters(plugins, MessageDisplay));
+            return result;
+        }
+
         /// <summary>
         /// Function to create the main view model and any child view models.
         /// </summary>
@@ -246,6 +305,10 @@ namespace Gorgon.Editor.ViewModels
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="workspace"/> parameter is <b>null</b>.</exception>
         public IMain CreateMainViewModel(string gpuName)
         {
+            ISettingsPluginsList pluginList = GetPluginListViewModel();
+            var settingsVm = new EditorSettingsVm();
+            settingsVm.Initialize(new EditorSettingsParameters(new[] { pluginList }, pluginList, MessageDisplay));
+
             var newProjectVm = new StageNewVm
             {
                 GPUName = gpuName
@@ -259,6 +322,7 @@ namespace Gorgon.Editor.ViewModels
 
             mainVm.Initialize(new MainParameters(newProjectVm,
                                                 recentFilesVm,
+												settingsVm,
                                                 EnumerateContentCreators(),
                                                 this,
                                                 new EditorFileOpenDialogService(Settings, FileSystemProviders),

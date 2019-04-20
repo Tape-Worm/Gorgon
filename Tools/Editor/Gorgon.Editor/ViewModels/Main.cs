@@ -97,6 +97,15 @@ namespace Gorgon.Editor.ViewModels
             private set;
         }
 
+		/// <summary>
+        /// Property to return the view model for the settings view.
+        /// </summary>
+		public IEditorSettingsVm SettingsViewModel
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// Property to return the view model for the new project child view.
         /// </summary>
@@ -268,6 +277,7 @@ namespace Gorgon.Editor.ViewModels
             _messageService = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(MainParameters.MessageDisplay), nameof(injectionParameters));
             NewProject = injectionParameters.NewProject ?? throw new ArgumentMissingException(nameof(MainParameters.NewProject), nameof(injectionParameters));
             RecentFiles = injectionParameters.RecentFiles ?? throw new ArgumentMissingException(nameof(MainParameters.RecentFiles), nameof(injectionParameters));
+            SettingsViewModel = injectionParameters.SettingsVm ?? throw new ArgumentMissingException(nameof(MainParameters.SettingsVm), nameof(injectionParameters));
 
             _directoryLocator = injectionParameters.ViewModelFactory.DirectoryLocator;
 
