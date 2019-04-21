@@ -25,15 +25,11 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Core;
 
 namespace Gorgon.Editor.UI
 {
-	/// <summary>
+    /// <summary>
     /// A view model for a settings category.
     /// </summary>
     public interface ISettingsCategoryViewModel

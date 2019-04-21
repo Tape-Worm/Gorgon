@@ -110,7 +110,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <summary>
         /// Property to return the settings for the image editor plugin.
         /// </summary>
-        public ImageEditorSettings Settings
+        public ISettings Settings
         {
             get;
         }
@@ -170,7 +170,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
         /// <exception cref="ArgumentMissingException">Thrown when any required child parameters are <b>null</b>.</exception>
         public ImageContentParameters(IContentFile file,
-            ImageEditorSettings settings,
+            ISettings settings,
             ICropResizeSettings cropResizeSettings,
             IDimensionSettings dimensionSettings,
             IMipMapSettings mipMapSettings,
@@ -178,9 +178,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             IGorgonVideoAdapterInfo videoAdapter,
             IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> formatSupport,
             ImageEditorServices services)
-            : base(file, 
-                  services?.MessageDisplay ?? throw new ArgumentNullException(nameof(services)), 
-                  services?.BusyState ?? throw new ArgumentNullException(nameof(services)))
+            : base(file, services.CommonServices ?? throw new ArgumentNullException(nameof(services)))
         {
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             WorkingFile = imageData.workingFile ?? throw new ArgumentNullException(nameof(imageData.workingFile));

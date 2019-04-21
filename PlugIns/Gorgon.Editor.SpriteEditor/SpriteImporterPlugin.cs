@@ -58,7 +58,7 @@ namespace Gorgon.Editor.SpriteEditor
         private GorgonMefPluginCache _pluginCache;
 
         // The content plug in service that loaded this plug in.
-        private IContentImporterPluginService _pluginService;
+        private IContentPluginService _pluginService;
         #endregion
 
         #region Properties.
@@ -107,17 +107,16 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Function to load external image codec plug ins.
         /// </summary>
-        /// <param name="log">The logging interface used to log debug messages.</param>
-        private void LoadCodecPlugins(IGorgonLog log)
+        private void LoadCodecPlugins()
         {
             if (_settings.CodecPluginPaths.Count == 0)
             {
                 return;
             }
 
-            log.Print("Loading sprite codecs...", LoggingLevel.Intermediate);
-            _pluginCache.ValidateAndLoadAssemblies(_settings.CodecPluginPaths.Select(item => new FileInfo(item.Value)), log);
-            IGorgonPluginService plugins = new GorgonMefPluginService(_pluginCache, log);
+            CommonServices.Log.Print("Loading sprite codecs...", LoggingLevel.Intermediate);
+            _pluginCache.ValidateAndLoadAssemblies(_settings.CodecPluginPaths.Select(item => new FileInfo(item.Value)), CommonServices.Log);
+            IGorgonPluginService plugins = new GorgonMefPluginService(_pluginCache, CommonServices.Log);
 
             // Load all the codecs contained within the plug in (a plug in can have multiple codecs).
             foreach (GorgonSpriteCodecPlugin plugin in plugins.GetPlugins<GorgonSpriteCodecPlugin>())
@@ -131,12 +130,11 @@ namespace Gorgon.Editor.SpriteEditor
 
         /// <summary>Function to provide initialization for the plugin.</summary>
         /// <param name="pluginService">The plugin service used to access other plugins.</param>
-        /// <param name="log">The logging interface for debug messages.</param>
         /// <remarks>This method is only called when the plugin is loaded at startup.</remarks>
-        protected override void OnInitialize(IContentImporterPluginService pluginService, IGorgonLog log)
+        protected override void OnInitialize(IContentPluginService pluginService)
         {
             _pluginService = pluginService;
-            _pluginCache = new GorgonMefPluginCache(log);
+            _pluginCache = new GorgonMefPluginCache(CommonServices.Log);
 
             // Get built-in codec list.
             _codecList.Add(new GorgonV3SpriteBinaryCodec(GraphicsContext.Renderer2D));
@@ -144,7 +142,7 @@ namespace Gorgon.Editor.SpriteEditor
             _codecList.Add(new GorgonV2SpriteCodec(GraphicsContext.Renderer2D));
             _codecList.Add(new GorgonV1SpriteBinaryCodec(GraphicsContext.Renderer2D));
 
-            SpriteEditorSettings settings = pluginService.ReadContentSettings<SpriteEditorSettings>(SpriteEditorPlugin.SettingsName, this);
+            SpriteEditorSettings settings = pluginService.ReadContentSettings<SpriteEditorSettings>(SpriteEditorPlugin.SettingsName);
 
             if (settings != null)
             {
@@ -152,7 +150,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
 
             // Load the additional plug ins.
-            LoadCodecPlugins(log);
+            LoadCodecPlugins();
 
             foreach (IGorgonSpriteCodec codec in _codecList)
             {
@@ -164,31 +162,29 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>Function to provide clean up for the plugin.</summary>
-        /// <param name="log">The logging interface for debug messages.</param>
-        protected override void OnShutdown(IGorgonLog log)
+        protected override void OnShutdown()
         {
             try
             {
                 if (_settings != null)
                 {
                     // Persist any settings.
-                    _pluginService.WriteContentSettings(SpriteEditorPlugin.SettingsName, this, _settings);
+                    _pluginService.WriteContentSettings(SpriteEditorPlugin.SettingsName, _settings);
                 }
             }
             catch (Exception ex)
             {
                 // We don't care if it crashes. The worst thing that'll happen is your settings won't persist.
-                log.LogException(ex);
+                CommonServices.Log.LogException(ex);
             }
         }
 
         /// <summary>Function to open a content object from this plugin.</summary>
         /// <param name="sourceFile">The file being imported.</param>
         /// <param name="fileSystem">The file system containing the file being imported.</param>
-        /// <param name="log">The logging interface to use.</param>
         /// <returns>A new <see cref="T:Gorgon.Editor.Services.IEditorContentImporter"/> object.</returns>
-        protected override IEditorContentImporter OnCreateImporter(FileInfo sourceFile, IGorgonFileSystem fileSystem, IGorgonLog log) => 
-            new GorgonSpriteImporter(sourceFile, GetCodec(sourceFile), GraphicsContext.Renderer2D, fileSystem, log);
+        protected override IEditorContentImporter OnCreateImporter(FileInfo sourceFile, IGorgonFileSystem fileSystem) => 
+            new GorgonSpriteImporter(sourceFile, GetCodec(sourceFile), GraphicsContext.Renderer2D, fileSystem, CommonServices.Log);
 
         /// <summary>Function to determine if the content plugin can open the specified file.</summary>
         /// <param name="file">The content file to evaluate.</param>

@@ -25,12 +25,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Properties;
@@ -70,7 +66,7 @@ namespace Gorgon.Editor.Plugins
         }
 
         /// <summary>Property to return the type of this plug in.</summary>
-        public override PluginType PluginType => PluginType.Tool;
+        public override PluginType PluginType => PluginType.ContentImporter;
         #endregion
 
         #region Methods.
@@ -78,21 +74,19 @@ namespace Gorgon.Editor.Plugins
         /// Function to provide initialization for the plugin.
         /// </summary>
         /// <param name="pluginService">The plugin service used to access other plugins.</param>
-        /// <param name="log">The logging interface for debug messages.</param>
         /// <remarks>
         /// <para>
         /// This method is only called when the plugin is loaded at startup.
         /// </para>
         /// </remarks>
-        protected virtual void OnInitialize(IContentImporterPluginService pluginService, IGorgonLog log)
+        protected virtual void OnInitialize(IContentPluginService pluginService)
         {
         }
 
         /// <summary>
         /// Function to provide clean up for the plugin.
         /// </summary>
-        /// <param name="log">The logging interface for debug messages.</param>
-        protected virtual void OnShutdown(IGorgonLog log)
+        protected virtual void OnShutdown()
         {
 
         }
@@ -102,9 +96,8 @@ namespace Gorgon.Editor.Plugins
         /// </summary>
         /// <param name="sourceFile">The file being imported.</param>
         /// <param name="fileSystem">The file system containing the file being imported.</param>
-        /// <param name="log">The logging interface to use.</param>
         /// <returns>A new <see cref="IEditorContentImporter"/> object.</returns>
-        protected abstract IEditorContentImporter OnCreateImporter(FileInfo sourceFile, IGorgonFileSystem fileSystem, IGorgonLog log);
+        protected abstract IEditorContentImporter OnCreateImporter(FileInfo sourceFile, IGorgonFileSystem fileSystem);
 
         /// <summary>
         /// Function to determine if the content plugin can open the specified file.
@@ -135,18 +128,17 @@ namespace Gorgon.Editor.Plugins
         /// </summary>        
         /// <param name="sourceFile">The file being imported.</param>
         /// <param name="fileSystem">The file system that contains the file being imported.</param>
-        /// <param name="log">The logging interface to use.</param>
         /// <returns>A new <see cref="IEditorContent"/> object.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceFile"/> parameter is <b>null</b>.</exception>
         /// <exception cref="GorgonException">Thrown if the <see cref="OnCreateImporter"/> method returns <b>null</b>.</exception>
-        public IEditorContentImporter CreateImporter(FileInfo sourceFile, IGorgonFileSystem fileSystem, IGorgonLog log)
+        public IEditorContentImporter CreateImporter(FileInfo sourceFile, IGorgonFileSystem fileSystem)
         {
             if (sourceFile == null)
             {
                 throw new ArgumentNullException(nameof(sourceFile));
             }
 
-            IEditorContentImporter importer = OnCreateImporter(sourceFile, fileSystem, log ?? GorgonLog.NullLog);
+            IEditorContentImporter importer = OnCreateImporter(sourceFile, fileSystem);
 
             if (importer == null)
             {
@@ -160,9 +152,9 @@ namespace Gorgon.Editor.Plugins
         /// <summary>
         /// Function to perform any required clean up for the plugin.
         /// </summary>
-        /// <param name="log">The logging interface for debug messages.</param>
-        public void Shutdown(IGorgonLog log)
+        public void Shutdown()
         {
+            CommonServices = null;
             int initalizedFlag = Interlocked.Exchange(ref _initialized, 0);
 
             if (initalizedFlag == 0)
@@ -170,7 +162,7 @@ namespace Gorgon.Editor.Plugins
                 return;
             }
 
-            OnShutdown(log ?? GorgonLog.NullLog);
+            OnShutdown();
         }
 
         /// <summary>
@@ -178,14 +170,13 @@ namespace Gorgon.Editor.Plugins
         /// </summary>
         /// <param name="pluginService">The plugin service used to access other plugins.</param>                
         /// <param name="graphicsContext">The graphics context for the application.</param>
-        /// <param name="log">The logging interface for debug messages.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginService"/>, or the <paramref name="graphicsContext"/> parameter is <b>null</b>.</exception> 
         /// <remarks>
         /// <para>
         /// This method is only called when the plugin is loaded at startup.
         /// </para>
         /// </remarks>
-        public void Initialize(IContentImporterPluginService pluginService, IGraphicsContext graphicsContext, IGorgonLog log)
+        public void Initialize(IContentPluginService pluginService, IGraphicsContext graphicsContext)
         {
             if (pluginService == null)
             {
@@ -197,16 +188,11 @@ namespace Gorgon.Editor.Plugins
                 return;
             }
 
-            if (log == null)
-            {
-                log = GorgonLog.NullLog;
-            }
-
-            log.Print($"Initializing {Name}...", LoggingLevel.Simple);
-
+            CommonServices.Log.Print($"Initializing {Name}...", LoggingLevel.Simple);
+			            
             GraphicsContext = graphicsContext ?? throw new ArgumentNullException(nameof(graphicsContext));
 
-            OnInitialize(pluginService, log);
+            OnInitialize(pluginService);
         }
         #endregion
 

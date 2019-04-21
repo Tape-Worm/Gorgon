@@ -368,6 +368,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Content importer.
+        /// </summary>
+        internal static string GOREDIT_PLUGIN_TYPE_IMPORTER {
+            get {
+                return ResourceManager.GetString("GOREDIT_PLUGIN_TYPE_IMPORTER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Packed file reader.
         /// </summary>
         internal static string GOREDIT_PLUGIN_TYPE_READER {

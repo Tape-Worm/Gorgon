@@ -159,9 +159,9 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-            Log.Print("Loading sprite codecs...", LoggingLevel.Intermediate);
-            _pluginCache.ValidateAndLoadAssemblies(_settings.CodecPluginPaths.Select(item => new FileInfo(item.Value)), Log);
-            IGorgonPluginService plugins = new GorgonMefPluginService(_pluginCache, Log);
+            CommonServices.Log.Print("Loading sprite codecs...", LoggingLevel.Intermediate);
+            _pluginCache.ValidateAndLoadAssemblies(_settings.CodecPluginPaths.Select(item => new FileInfo(item.Value)), CommonServices.Log);
+            IGorgonPluginService plugins = new GorgonMefPluginService(_pluginCache, CommonServices.Log);
 
             // Load all the codecs contained within the plug in (a plug in can have multiple codecs).
             foreach (GorgonSpriteCodecPlugin plugin in plugins.GetPlugins<GorgonSpriteCodecPlugin>())
@@ -191,7 +191,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             if (textureFile == null)
             {
-                Log.Print($"[ERROR] Sprite '{spriteFile.Path}' has texture '{texturePath}', but the file was not found on the file system.", LoggingLevel.Verbose);
+                CommonServices.Log.Print($"[ERROR] Sprite '{spriteFile.Path}' has texture '{texturePath}', but the file was not found on the file system.", LoggingLevel.Verbose);
                 return null;
             }
 
@@ -199,14 +199,14 @@ namespace Gorgon.Editor.SpriteEditor
 
             if (string.IsNullOrWhiteSpace(textureFileContentType))
             {
-                Log.Print($"[ERROR] Sprite texture '{texturePath}' was found but has no content type ID.", LoggingLevel.Verbose);
+                CommonServices.Log.Print($"[ERROR] Sprite texture '{texturePath}' was found but has no content type ID.", LoggingLevel.Verbose);
                 return null;
             }
 
             if ((!textureFile.Metadata.Attributes.TryGetValue(SpriteContent.ContentTypeAttr, out string imageType))
                 || (!string.Equals(imageType, textureFileContentType, StringComparison.OrdinalIgnoreCase)))
             {
-                Log.Print($"[ERROR] Sprite '{spriteFile.Path}' has texture '{texturePath}', but the texture has a content type ID of '{textureFileContentType}', and the sprite requires a content type ID of '{imageType}'.", LoggingLevel.Verbose);
+                CommonServices.Log.Print($"[ERROR] Sprite '{spriteFile.Path}' has texture '{texturePath}', but the texture has a content type ID of '{textureFileContentType}', and the sprite requires a content type ID of '{imageType}'.", LoggingLevel.Verbose);
                 return null;
             }
 
@@ -311,8 +311,8 @@ namespace Gorgon.Editor.SpriteEditor
             }
             catch (Exception ex)
             {
-                Log.Print($"[ERROR] Cannot create thumbnail for '{content.Path}'", LoggingLevel.Intermediate);
-                Log.LogException(ex);
+                CommonServices.Log.Print($"[ERROR] Cannot create thumbnail for '{content.Path}'", LoggingLevel.Intermediate);
+                CommonServices.Log.LogException(ex);
                 return (null, null, null);
             }
             finally
@@ -374,7 +374,6 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Function to open a content object from this plugin.</summary>
         /// <param name="file">The file that contains the content.</param>
         /// <param name = "fileManager" > The file manager used to access other content files.</param>
-        /// <param name="injector">Parameters for injecting dependency objects.</param>
         /// <param name="scratchArea">The file system for the scratch area used to write transitory information.</param>
         /// <param name="undoService">The undo service for the plug in.</param>
         /// <returns>A new IEditorContent object.</returns>
@@ -382,7 +381,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// The <paramref name="scratchArea" /> parameter is the file system where temporary files to store transitory information for the plug in is stored. This file system is destroyed when the
         /// application or plug in is shut down, and is not stored with the project.
         /// </remarks>
-        protected async override Task<IEditorContent> OnOpenContentAsync(IContentFile file, IContentFileManager fileManager, IViewModelInjection injector, IGorgonFileSystemWriter<Stream> scratchArea, IUndoService undoService)
+        protected async override Task<IEditorContent> OnOpenContentAsync(IContentFile file, IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> scratchArea, IUndoService undoService)
         {
             var content = new SpriteContent();
             GorgonTexture2DView spriteImage = null;
@@ -404,44 +403,43 @@ namespace Gorgon.Editor.SpriteEditor
 
                 var settings = new Settings();
                 ISpritePickMaskEditor spritePickMaskEditor = settings;
-                settings.Initialize(new SettingsParameters(_settings));
+                settings.Initialize(new SettingsParameters(_settings, CommonServices));
 
                 var manualRectEdit = new ManualRectangleEditor();
-                manualRectEdit.Initialize(new ManualInputParameters(settings, injector.MessageDisplay));
+                manualRectEdit.Initialize(new ManualInputParameters(settings, CommonServices));
 
                 var manualVertexEdit = new ManualVertexEditor();
-                manualVertexEdit.Initialize(new ManualInputParameters(settings, injector.MessageDisplay));
+                manualVertexEdit.Initialize(new ManualInputParameters(settings, CommonServices));
 
                 var colorEditor = new SpriteColorEdit();
-                colorEditor.Initialize(injector);
+                colorEditor.Initialize(CommonServices);
 
                 var anchorEditor = new SpriteAnchorEdit();
-                anchorEditor.Initialize(injector);
+                anchorEditor.Initialize(CommonServices);
 
                 var samplerBuilder = new SamplerBuildService(new GorgonSamplerStateBuilder(GraphicsContext.Graphics));
 
                 var wrapEditor = new SpriteWrappingEditor();
-                wrapEditor.Initialize(new SpriteWrappingEditorParameters(samplerBuilder, injector.MessageDisplay));
+                wrapEditor.Initialize(new SpriteWrappingEditorParameters(samplerBuilder, CommonServices));
 
                 content.Initialize(new SpriteContentParameters(this,
-                    file, 
-                    imageFile, 
-                    fileManager, 
+                    file,
+                    imageFile,
+                    fileManager,
                     textureService,
                     sprite,
                     _defaultCodec,
-                    manualRectEdit,             
+                    manualRectEdit,
                     manualVertexEdit,
                     spritePickMaskEditor,
                     colorEditor,
                     anchorEditor,
-					wrapEditor,
-					samplerBuilder,
+                    wrapEditor,
+                    samplerBuilder,
                     settings,
-                    undoService, 
-                    scratchArea, 
-                    injector.MessageDisplay, 
-                    injector.BusyService));
+                    undoService,
+                    scratchArea,
+                    CommonServices));
 
                 // If we have a texture, then read its data into RAM.
                 if (sprite.Texture != null)
@@ -475,13 +473,13 @@ namespace Gorgon.Editor.SpriteEditor
                 if (_settings != null)
                 {
                     // Persist any settings.
-                    _pluginService.WriteContentSettings(SettingsName, this, _settings, new JsonSharpDxRectConverter());
+                    _pluginService.WriteContentSettings(SettingsName, _settings, new JsonSharpDxRectConverter());
                 }
             }
             catch (Exception ex)
             {
                 // We don't care if it crashes. The worst thing that'll happen is your settings won't persist.
-                Log.LogException(ex);
+                CommonServices.Log.LogException(ex);
             }
 
             _rtv?.Dispose();
@@ -502,7 +500,7 @@ namespace Gorgon.Editor.SpriteEditor
             ViewFactory.Register<ISpriteContent>(() => new SpriteEditorView());
 
             _pluginService = pluginService;            
-            _pluginCache = new GorgonMefPluginCache(Log);
+            _pluginCache = new GorgonMefPluginCache(CommonServices.Log);
 
             // Get built-in codec list.
             _defaultCodec = new GorgonV3SpriteBinaryCodec(GraphicsContext.Renderer2D);
@@ -511,7 +509,7 @@ namespace Gorgon.Editor.SpriteEditor
             _codecList.Add(new GorgonV2SpriteCodec(GraphicsContext.Renderer2D));
             _codecList.Add(new GorgonV1SpriteBinaryCodec(GraphicsContext.Renderer2D));
 
-            SpriteEditorSettings settings = pluginService.ReadContentSettings<SpriteEditorSettings>(SettingsName, this, new JsonSharpDxRectConverter());
+            SpriteEditorSettings settings = pluginService.ReadContentSettings<SpriteEditorSettings>(SettingsName, new JsonSharpDxRectConverter());
 
             if (settings != null)
             {
@@ -703,8 +701,8 @@ namespace Gorgon.Editor.SpriteEditor
             }
             catch (Exception ex)
             {
-                Log.Print($"[ERROR] Cannot create thumbnail for '{contentFile.Path}'", LoggingLevel.Intermediate);
-                Log.LogException(ex);
+                CommonServices.Log.Print($"[ERROR] Cannot create thumbnail for '{contentFile.Path}'", LoggingLevel.Intermediate);
+                CommonServices.Log.LogException(ex);
                 return null;
             }
             finally

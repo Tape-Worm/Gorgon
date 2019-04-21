@@ -25,9 +25,9 @@
 #endregion
 
 using System.IO;
-using Gorgon.Core;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Plugins;
+using Gorgon.IO;
 using Gorgon.Plugins;
 
 namespace Gorgon.Editor.Services
@@ -42,7 +42,7 @@ namespace Gorgon.Editor.Services
         /// Function to load all of the content plug ins into the service.
         /// </summary>
         /// <param name="pluginCache">The plug in assembly cache.</param>
-        /// <param name="pluginDir">The directory that contains the plug ins.</param>
+        /// <param name="pluginDir">The directory that contains the plug ins.</param>        
         void LoadContentPlugins(GorgonMefPluginCache pluginCache, DirectoryInfo pluginDir);
 
         /// <summary>
@@ -51,11 +51,23 @@ namespace Gorgon.Editor.Services
         /// <param name="plugin">The plugin to add.</param>
         void AddContentPlugin(ContentPlugin plugin);
 
+
+        /// <summary>Function to add a content import plugin to the service.</summary>
+        /// <param name="plugin">The plugin to add.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> parameter is <b>null</b>.</exception>
+        void AddContentImportPlugin(ContentImportPlugin plugin);
+
         /// <summary>
         /// Function to remove a content plugin from the service.
         /// </summary>
         /// <param name="plugin">The plugin to remove.</param>
         void RemoveContentPlugin(ContentPlugin plugin);
+
+        /// <summary>
+        /// Function to remove a content import plugin from the service.
+        /// </summary>
+        /// <param name="plugin">The plugin to remove.</param>
+        void RemoveContentImportPlugin(ContentImportPlugin plugin);
 
         /// <summary>
         /// Function to set up the content plug in association for a content file.
@@ -77,6 +89,16 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Function to clear all of the content plugins.
         /// </summary>
-        void Clear();        
+        void Clear();
+
+        /// <summary>
+        /// Function to retrieve the appropriate content importer for the file specified.
+        /// </summary>
+        /// <param name="file">The content file to evaluate.</param>
+        /// <param name="fileSystem">The file system containing the file to evaluate.</param>
+        /// <param name="metadataOnly"><b>true</b> to indicate that only metadata should be used to scan the content file, <b>false</b> to scan, in depth, per plugin (slow).</param>
+        /// <returns>A <see cref="IEditorContentImporter"/>, or <b>null</b> if none was found.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="contentFile"/> parameter is <b>null</b>.</exception>
+        IEditorContentImporter GetContentImporter(FileInfo file, IGorgonFileSystem fileSystem);
     }
 }

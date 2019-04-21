@@ -25,14 +25,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.ImageEditor.Native;
 using Gorgon.Editor.ImageEditor.Properties;

@@ -32,7 +32,6 @@ using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Editor.ViewModels;
-using System.IO;
 using System.Drawing;
 using System.Windows.Forms;
 

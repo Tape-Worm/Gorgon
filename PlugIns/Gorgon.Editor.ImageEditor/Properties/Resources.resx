@@ -460,4 +460,7 @@ Please try again.</value>
   <data name="GORIMG_ERR_MANAGE_CODECS" xml:space="preserve">
     <value>There was an error managing the custom image codec plug ins.</value>
   </data>
+  <data name="GORIMG_TEXT_SETTINGS_IMAGE_EDITOR" xml:space="preserve">
+    <value>Image Editor</value>
+  </data>
 </root>

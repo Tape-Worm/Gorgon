@@ -39,7 +39,6 @@ using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
-using Gorgon.IO;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -575,7 +574,7 @@ namespace Gorgon.Editor.ViewModels
                 ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_OPENING, file.Name));
 
                 // Create a content object.                
-                IEditorContent content = await file.ContentPlugin.OpenContentAsync(file, _contentFileManager, _viewModelFactory, _projectData, new UndoService(Log)); 
+                IEditorContent content = await file.ContentPlugin.OpenContentAsync(file, _contentFileManager, _projectData, new UndoService(Log)); 
 
                 if (content == null)
                 {

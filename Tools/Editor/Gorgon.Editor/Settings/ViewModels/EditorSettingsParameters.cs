@@ -26,19 +26,18 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Gorgon.Diagnostics;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
+using Gorgon.Editor.UI.ViewModels;
 
 namespace Gorgon.Editor.ViewModels
 {
-	/// <summary>
+    /// <summary>
     /// The parameters for the <see cref="IEditorSettingsVm"/> view model.
     /// </summary>
     internal class EditorSettingsParameters
-		: ViewModelInjectionCommon
+		: IViewModelInjection
     {
 		/// <summary>
         /// Property to return the categories for the settings.
@@ -56,17 +55,36 @@ namespace Gorgon.Editor.ViewModels
             get;
         }
 
+        /// <summary>Property to return the logging interface for debug logging.</summary>
+        public IGorgonLog Log => Program.Log;
+
+        /// <summary>Property to return the serivce used to show busy states.</summary>
+        public IBusyStateService BusyService
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>Property to return the service used to show message dialogs.</summary>
+        public IMessageDisplayService MessageDisplay
+        {
+            get;
+            private set;
+        }
+
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ViewModels.EditorSettingsParameters"/> class.</summary>
         /// <param name="factory">The view model factory.</param>
         /// <param name="categories">The list of settings categories.</param>
         /// <param name="pluginsList">The list of plug ins for the fixed plugin list category.</param>
         /// <param name="messageDisplay">The message display service.</param>
+        /// <param name="busyService">The busy state service.</param>
         /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
-        public EditorSettingsParameters(IEnumerable<ISettingsCategoryViewModel> categories, ISettingsPluginsList pluginsList, IMessageDisplayService messageDisplay)
+        public EditorSettingsParameters(IEnumerable<ISettingsCategoryViewModel> categories, ISettingsPluginsList pluginsList, IMessageDisplayService messageDisplay, IBusyStateService busyService)
         {
             MessageDisplay = messageDisplay ?? throw new ArgumentNullException(nameof(messageDisplay));
             Categories = categories ?? throw new ArgumentNullException(nameof(categories));
             PluginsList = pluginsList ?? throw new ArgumentNullException(nameof(pluginsList));
+            BusyService = busyService ?? throw new ArgumentNullException(nameof(busyService));
         }
     }
 }

@@ -25,6 +25,7 @@
 #endregion
 
 using Gorgon.Editor.Services;
+using Gorgon.Editor.UI.ViewModels;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -33,19 +34,10 @@ namespace Gorgon.Editor.ImageEditor
     /// </summary>
     internal class ImageEditorServices
     {
-        /// <summary>
-        /// Property to set or return the busy state service.
+		/// <summary>
+        /// Property to return the application common services.
         /// </summary>
-        public IBusyStateService BusyState
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the message display service.
-        /// </summary>
-        public IMessageDisplayService MessageDisplay
+		public IViewModelInjection CommonServices
         {
             get;
             set;

@@ -1,1 +1,0 @@
-﻿This folder will contain content importing specific plugins.

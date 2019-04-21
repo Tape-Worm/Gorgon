@@ -26,15 +26,12 @@
 
 using System;
 using System.Linq;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Collections;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Properties;
-using Gorgon.Editor.Services;
-using Gorgon.Editor.UI;
 using Gorgon.IO;
 
 namespace Gorgon.Editor.ViewModels

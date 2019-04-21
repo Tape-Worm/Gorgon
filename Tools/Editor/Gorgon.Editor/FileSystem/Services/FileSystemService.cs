@@ -26,15 +26,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Editor.Native;
 using Gorgon.Editor.Properties;
-using Gorgon.Editor.ViewModels;
 using Gorgon.IO;
 using Gorgon.Math;
 

@@ -117,10 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="GORPKW_DESC" xml:space="preserve">
-    <value>Gorgon BZip packed file writer</value>
-  </data>
-  <data name="GORPKW_GORPACK_FILE_EXT_DESC" xml:space="preserve">
-    <value>Gorgon BZip Packed File</value>
-  </data>
 </root>

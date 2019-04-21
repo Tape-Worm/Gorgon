@@ -28,6 +28,7 @@ using System;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
+using Gorgon.Editor.UI.ViewModels;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 
@@ -37,7 +38,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
     /// The view model for the image dimensions editor.
     /// </summary>
     internal class MipMapSettings
-        : ViewModelBase<MipMapSettingsParameters>, IMipMapSettings
+        : ViewModelBase<IViewModelInjection>, IMipMapSettings
     {
         #region Variables.
         // The maximum number of mip map levels.
@@ -214,8 +215,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <remarks>
         /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
         /// </remarks>
-        protected override void OnInitialize(MipMapSettingsParameters injectionParameters) => 
-            _messageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(MipMapSettingsParameters.MessageDisplay), nameof(injectionParameters));
+        protected override void OnInitialize(IViewModelInjection injectionParameters) => 
+            _messageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(injectionParameters.MessageDisplay), nameof(injectionParameters));
         #endregion
 
         #region Constructor.

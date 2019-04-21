@@ -25,20 +25,10 @@
 #endregion
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Drawing;
-using System.Globalization;
-using System.Linq;
-using System.Windows.Forms;
-using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Editor.ViewModels;
-using Gorgon.Math;
-using Gorgon.UI;
 
 namespace Gorgon.Editor.Views
 {

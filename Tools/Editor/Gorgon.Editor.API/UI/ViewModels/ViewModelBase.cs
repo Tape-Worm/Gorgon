@@ -25,12 +25,8 @@
 #endregion
 
 using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Editor.Properties;
+using Gorgon.Editor.UI.ViewModels;
 using Gorgon.Math;
 
 namespace Gorgon.Editor.UI

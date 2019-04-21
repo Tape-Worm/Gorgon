@@ -32,6 +32,7 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Properties;
+using Gorgon.Editor.UI.ViewModels;
 using Gorgon.IO;
 using Gorgon.IO.Providers;
 using Gorgon.Plugins;
@@ -51,6 +52,8 @@ namespace Gorgon.Editor.Services
         private readonly Dictionary<string, FileWriterPlugin> _writers = new Dictionary<string, FileWriterPlugin>(StringComparer.OrdinalIgnoreCase);
         // A list of disabled plug ins.
         private readonly Dictionary<string, IDisabledPlugin> _disabled = new Dictionary<string, IDisabledPlugin>(StringComparer.OrdinalIgnoreCase);
+		// Common application services.
+        private readonly IViewModelInjection _commonServices;
         #endregion
 
         #region Properties.                
@@ -292,6 +295,7 @@ namespace Gorgon.Editor.Services
                         continue;
                     }
 
+                    writer.AssignCommonServices(_commonServices);
                     _writers[writer.GetType().FullName] = writer;
                 }
                 catch (Exception ex)
@@ -303,6 +307,13 @@ namespace Gorgon.Editor.Services
                 }
             }
         }
+        #endregion
+
+        #region Constructor.
+        /// <summary>Initializes a new instance of the <see cref="FileSystemProviders"/> class.</summary>
+        /// <param name="commonServices">The common services for the application.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="commonServices"/> parameter is <b>null</b>.</exception>
+        public FileSystemProviders(IViewModelInjection commonServices) => _commonServices = commonServices ?? throw new ArgumentNullException(nameof(commonServices));
         #endregion
     }
 }

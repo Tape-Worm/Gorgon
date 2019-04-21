@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.Services
 {

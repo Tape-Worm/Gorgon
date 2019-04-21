@@ -25,15 +25,11 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Core;
 
 namespace Gorgon.Editor.Plugins
 {
-	/// <summary>
+    /// <summary>
     /// A record providing plug in state information.
     /// </summary>
     public class PluginRecord

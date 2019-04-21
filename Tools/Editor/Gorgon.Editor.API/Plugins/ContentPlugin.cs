@@ -72,15 +72,6 @@ namespace Gorgon.Editor.Plugins
             private set;
         }
 
-        /// <summary>
-        /// Property to return the logging interface for the application.
-        /// </summary>
-        protected IGorgonLog Log
-        {
-            get;
-            private set;
-        }
-
         /// <summary>Property to return the type of this plug in.</summary>
         public sealed override PluginType PluginType => PluginType.Content;
 
@@ -119,7 +110,7 @@ namespace Gorgon.Editor.Plugins
                 Directory.CreateDirectory(scratchPath);
             }
 
-            var scratchArea = new GorgonFileSystem(Log);
+            var scratchArea = new GorgonFileSystem(CommonServices.Log);
             scratchArea.Mount(scratchPath);
             return new GorgonFileSystemWriter(scratchArea, scratchPath);
         }
@@ -150,7 +141,6 @@ namespace Gorgon.Editor.Plugins
         /// </summary>
         /// <param name="file">The file that contains the content.</param>
         /// <param name="fileManager">The file manager used to access other content files.</param>
-        /// <param name="injector">Parameters for injecting dependency objects.</param>
         /// <param name="scratchArea">The file system for the scratch area used to write transitory information.</param>
         /// <param name="undoService">The undo service for the plug in.</param>
         /// <returns>A new <see cref="IEditorContent"/> object.</returns>
@@ -160,7 +150,7 @@ namespace Gorgon.Editor.Plugins
         /// application or plug in is shut down, and is not stored with the project.
         /// </para>
         /// </remarks>
-        protected abstract Task<IEditorContent> OnOpenContentAsync(IContentFile file, IContentFileManager fileManager, IViewModelInjection injector, IGorgonFileSystemWriter<Stream> scratchArea, IUndoService undoService);
+        protected abstract Task<IEditorContent> OnOpenContentAsync(IContentFile file, IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> scratchArea, IUndoService undoService);
 
         /// <summary>
         /// Function to register plug in specific search keywords with the system search.
@@ -259,13 +249,12 @@ namespace Gorgon.Editor.Plugins
         /// </summary>        
         /// <param name="file">The file that contains the content.</param>
         /// <param name="fileManager">The file manager used to access other content files.</param>
-        /// <param name="injector">Parameters for injecting dependency objects.</param>
         /// <param name="project">The project information.</param>
         /// <param name="undoService">The undo service for the plugin.</param>
         /// <returns>A new <see cref="IEditorContent"/> object.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/>, <paramref name="fileManager"/>, <paramref name="injector"/>, or the <paramref name="project"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/>, <paramref name="fileManager"/>, or the <paramref name="project"/> parameter is <b>null</b>.</exception>
         /// <exception cref="GorgonException">Thrown if the <see cref="OnOpenContentAsync"/> method returns <b>null</b>.</exception>
-        public async Task<IEditorContent> OpenContentAsync(IContentFile file, IContentFileManager fileManager, IViewModelInjection injector, IProject project, IUndoService undoService)
+        public async Task<IEditorContent> OpenContentAsync(IContentFile file, IContentFileManager fileManager, IProject project, IUndoService undoService)
         {
             if (file == null)
             {
@@ -277,11 +266,6 @@ namespace Gorgon.Editor.Plugins
                 throw new ArgumentNullException(nameof(fileManager));
             }
 
-            if (injector == null)
-            {
-                throw new ArgumentNullException(nameof(injector));
-            }
-
             if (project == null)
             {
                 throw new ArgumentNullException(nameof(project));
@@ -289,7 +273,7 @@ namespace Gorgon.Editor.Plugins
 
             IGorgonFileSystemWriter<Stream> scratchWriter = GetScratchArea(project.TempDirectory);            
 
-            IEditorContent content = await OnOpenContentAsync(file, fileManager, injector, scratchWriter, undoService);
+            IEditorContent content = await OnOpenContentAsync(file, fileManager, scratchWriter, undoService);
 
             if (content == null)
             {
@@ -307,6 +291,7 @@ namespace Gorgon.Editor.Plugins
         /// </summary>
         public void Shutdown()
         {
+            CommonServices = null;
             int initalizedFlag = Interlocked.Exchange(ref _initialized, 0);
 
             if (initalizedFlag == 0)
@@ -322,14 +307,13 @@ namespace Gorgon.Editor.Plugins
         /// </summary>
         /// <param name="pluginService">The plugin service used to access other plugins.</param>                
         /// <param name="graphicsContext">The graphics context for the application.</param>
-        /// <param name="log">The debug log used by the application.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginService"/>, or the <paramref name="graphicsContext"/> parameter is <b>null</b>.</exception>
         /// <remarks>
         /// <para>
         /// This method is only called when the plugin is loaded at startup.
         /// </para>
         /// </remarks>
-        public void Initialize(IContentPluginService pluginService, IGraphicsContext graphicsContext, IGorgonLog log)
+        public void Initialize(IContentPluginService pluginService, IGraphicsContext graphicsContext)
         {
             if (pluginService == null)
             {
@@ -341,14 +325,7 @@ namespace Gorgon.Editor.Plugins
                 return;
             }
 
-            if (log == null)
-            {
-                log = GorgonLog.NullLog;
-            }
-
-            log.Print($"Initializing {Name}...", LoggingLevel.Simple);
-
-            Log = log;
+            CommonServices.Log.Print($"Initializing {Name}...", LoggingLevel.Simple);
 
             GraphicsContext = graphicsContext ?? throw new ArgumentNullException(nameof(graphicsContext));
 

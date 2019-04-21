@@ -27,7 +27,6 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.IO;
 using System.Threading;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
@@ -35,15 +34,14 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.IO;
-using Gorgon.Native;
 using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts
 {
-	/// <summary>
-	/// Defines how to draw the <see cref="GorgonGlyphTextureBrush"/>, or <see cref="GorgonGlyphPathGradientBrush"/> if the paint area is larger than the texture region.
-	/// </summary>
-	public enum GlyphBrushWrapMode
+    /// <summary>
+    /// Defines how to draw the <see cref="GorgonGlyphTextureBrush"/>, or <see cref="GorgonGlyphPathGradientBrush"/> if the paint area is larger than the texture region.
+    /// </summary>
+    public enum GlyphBrushWrapMode
 	{
 		/// <summary>
 		/// Tiles the texture if the painted area is larger than the texture size.

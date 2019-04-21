@@ -27,15 +27,14 @@
 using System;
 using System.Drawing;
 using Gorgon.Core;
-using Gorgon.Graphics.Core;
 using Gorgon.IO;
 
 namespace Gorgon.Graphics.Fonts
 {
-	/// <summary>
-	/// The type of glyph brush to use when painting the glyphs for the font.
-	/// </summary>
-	public enum GlyphBrushType
+    /// <summary>
+    /// The type of glyph brush to use when painting the glyphs for the font.
+    /// </summary>
+    public enum GlyphBrushType
 	{
 		/// <summary>
 		/// A solid color.

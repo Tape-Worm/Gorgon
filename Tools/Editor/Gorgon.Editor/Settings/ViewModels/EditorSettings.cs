@@ -25,11 +25,9 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 
@@ -81,9 +79,45 @@ namespace Gorgon.Editor.ViewModels
             get;
             private set;
         }
+
+        /// <summary>
+        /// Property to return the command to execute to select a category.
+        /// </summary>
+        public IEditorCommand<string> SetCategoryCommand
+        {
+            get;
+            private set;
+        }
         #endregion
 
         #region Methods.
+		/// <summary>
+        /// Function to change the current category.
+        /// </summary>
+        /// <param name="id">The ID of the current category.</param>
+        private void DoSetCategory(string id)
+        {
+            try
+            {
+                if (Categories.Count == 0)
+                {
+                    return;
+                }
+
+                if (!Guid.TryParse(id, out Guid guid))
+                {
+                    CurrentCategory = Categories[0];
+                    return;
+                }
+
+                CurrentCategory = Categories.FirstOrDefault(item => guid == item.ID) ?? Categories[0];
+            }
+            catch (Exception ex)
+            {
+                _messageDisplay.ShowError(ex, Resources.GOREDIT_ERR_SELECT_SETTING_CATEGORY);
+            }
+        }
+
         /// <summary>Function to inject dependencies for the view model.</summary>
         /// <param name="injectionParameters">The parameters to inject.</param>
         /// <exception cref="ArgumentMissingException">MessageDisplay - injectionParameters
@@ -102,7 +136,8 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Constructor/Finalizer.
-
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ViewModels.EditorSettingsVm"/> class.</summary>
+        public EditorSettingsVm() => SetCategoryCommand = new EditorCommand<string>(DoSetCategory);
         #endregion
     }
 }

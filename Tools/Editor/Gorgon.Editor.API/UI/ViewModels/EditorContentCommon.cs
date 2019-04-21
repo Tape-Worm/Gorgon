@@ -26,7 +26,6 @@
 
 using System;
 using System.Threading.Tasks;
-using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
@@ -299,9 +298,9 @@ namespace Gorgon.Editor.UI
                 throw new ArgumentNullException(nameof(injectionParameters));
             }
 
-            _file = injectionParameters.File ?? throw new ArgumentMissingException(nameof(IContentViewModelInjection.File), nameof(injectionParameters));
-            MessageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(IViewModelInjection.MessageDisplay), nameof(injectionParameters));
-            BusyState = injectionParameters.BusyService ?? throw new ArgumentMissingException(nameof(IViewModelInjection.BusyService), nameof(injectionParameters));
+            _file = injectionParameters.File ?? throw new ArgumentMissingException(nameof(injectionParameters.File), nameof(injectionParameters));
+            MessageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(injectionParameters.MessageDisplay), nameof(injectionParameters));
+            BusyState = injectionParameters.BusyService ?? throw new ArgumentMissingException(nameof(injectionParameters.BusyService), nameof(injectionParameters));
 
             if (!string.IsNullOrWhiteSpace(ContentType))
             {

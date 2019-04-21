@@ -25,9 +25,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xa = SharpDX.XAudio2;
 using Mm = SharpDX.Multimedia;

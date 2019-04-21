@@ -26,63 +26,62 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using Gorgon.Diagnostics;
 using DX = SharpDX;
 
 namespace Gorgon.Math
 {
-	/// <summary>
-	/// Returns spline interpolated values across a set of points.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This allows spline interpolation when iterating between points over time. This allows for a nice smoothing effect as a value approaches a node point on the spline. 
-	/// </para>
-	/// <para>
-	/// Because this class provides smoothing between the nodes on the a spline, the result is very different than that of a linear interpolation. A linear interpolation will go in a straight line until 
-	/// the end point is reached. This can give a jagged looking effect when a point moves between several points that are in vastly different places. But the spline will smooth the transition for the 
-	/// value travelling to the destination points, thus giving a curved appearance when a point traverses the spline.
-	/// </para>
-	/// <para>
-	/// When adding or removing <see cref="Points"/> from the spline, remember to call <see cref="UpdateTangents"/> to recalculate the tangents.
-	/// </para>
-	/// <para>
-	/// This spline object uses the <a href="https://en.wikipedia.org/wiki/Centripetal_Catmull%E2%80%93Rom_spline">Catmull-Rom algorithm</a> to perform its work.
-	/// </para>
-	/// </remarks>
-	/// <example>
-	/// An example on how to use the spline object:
-	/// <code language="csharp">
-	/// <![CDATA[
-	/// IGorgonSpline spline = new GorgonCatmullRomSpline();
-	/// 
-	/// spline.Points.Add(new Vector2(0, 0));
-	/// spline.Points.Add(new Vector2(1, 4.5f));
-	/// spline.Points.Add(new Vector2(7, -2.3f));
-	/// spline.Points.Add(new Vector2(10.2f, 0));
-	/// 
-	/// spline.UpdateTangents();
-	/// 
-	/// 
-	/// float startTime = GorgonTiming.SecondsSinceStart;
-	/// float endTime = GorgonTiming.SecondsSinceStart + 5;
-	/// float currentTime = 0;
-	/// 
-	/// while (currentTime < 1.0f)
-	/// {
-	///		Vector4 result = spline.GetInterpolatedValue(currentTime);
-	/// 
-	///		// Do something with the result... like plot a pixel:
-	///		// e.g PutPixel(result.X, result.Y, Color.Blue); or something.
-	///		// and over 5 seconds, a curved series of points should be plotted.
-	/// 
-	///		currentTime = GorgonTiming.SecondsSinceStart / (endTime - startTime);
-	/// } 
-	/// ]]>
-	/// </code>
-	/// </example>
-	public class GorgonCatmullRomSpline 
+    /// <summary>
+    /// Returns spline interpolated values across a set of points.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This allows spline interpolation when iterating between points over time. This allows for a nice smoothing effect as a value approaches a node point on the spline. 
+    /// </para>
+    /// <para>
+    /// Because this class provides smoothing between the nodes on the a spline, the result is very different than that of a linear interpolation. A linear interpolation will go in a straight line until 
+    /// the end point is reached. This can give a jagged looking effect when a point moves between several points that are in vastly different places. But the spline will smooth the transition for the 
+    /// value travelling to the destination points, thus giving a curved appearance when a point traverses the spline.
+    /// </para>
+    /// <para>
+    /// When adding or removing <see cref="Points"/> from the spline, remember to call <see cref="UpdateTangents"/> to recalculate the tangents.
+    /// </para>
+    /// <para>
+    /// This spline object uses the <a href="https://en.wikipedia.org/wiki/Centripetal_Catmull%E2%80%93Rom_spline">Catmull-Rom algorithm</a> to perform its work.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// An example on how to use the spline object:
+    /// <code language="csharp">
+    /// <![CDATA[
+    /// IGorgonSpline spline = new GorgonCatmullRomSpline();
+    /// 
+    /// spline.Points.Add(new Vector2(0, 0));
+    /// spline.Points.Add(new Vector2(1, 4.5f));
+    /// spline.Points.Add(new Vector2(7, -2.3f));
+    /// spline.Points.Add(new Vector2(10.2f, 0));
+    /// 
+    /// spline.UpdateTangents();
+    /// 
+    /// 
+    /// float startTime = GorgonTiming.SecondsSinceStart;
+    /// float endTime = GorgonTiming.SecondsSinceStart + 5;
+    /// float currentTime = 0;
+    /// 
+    /// while (currentTime < 1.0f)
+    /// {
+    ///		Vector4 result = spline.GetInterpolatedValue(currentTime);
+    /// 
+    ///		// Do something with the result... like plot a pixel:
+    ///		// e.g PutPixel(result.X, result.Y, Color.Blue); or something.
+    ///		// and over 5 seconds, a curved series of points should be plotted.
+    /// 
+    ///		currentTime = GorgonTiming.SecondsSinceStart / (endTime - startTime);
+    /// } 
+    /// ]]>
+    /// </code>
+    /// </example>
+    public class GorgonCatmullRomSpline 
 		: IGorgonSpline
     {
         #region Variables.

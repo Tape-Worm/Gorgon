@@ -55,6 +55,8 @@ namespace Gorgon.Editor.Plugins
                     return Resources.GOREDIT_PLUGIN_TYPE_TOOL;
                 case PluginType.Reader:
                     return Resources.GOREDIT_PLUGIN_TYPE_READER;
+                case PluginType.ContentImporter:
+                    return Resources.GOREDIT_PLUGIN_TYPE_IMPORTER;
                 default:
                     return Resources.GOREDIT_PLUGIN_TYPE_UNKNOWN;
             }

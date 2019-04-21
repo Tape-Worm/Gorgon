@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System.Collections.Generic;
 using System.IO;
 using Gorgon.Editor.Content;
 using Gorgon.Graphics;
@@ -51,7 +50,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>
         /// Property to return the list of installed image codecs.
         /// </summary>
-        IReadOnlyList<IGorgonImageCodec> InstalledCodecs
+        CodecRegistry InstalledCodecs
         {
             get;
         }

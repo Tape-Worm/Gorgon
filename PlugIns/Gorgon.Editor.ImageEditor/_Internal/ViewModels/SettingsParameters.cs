@@ -20,34 +20,52 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: April 10, 2019 11:36:49 AM
+// Created: April 20, 2019 5:20:34 PM
 // 
 #endregion
 
 using System;
+using Gorgon.Editor.Services;
 using Gorgon.Editor.UI.ViewModels;
 
-namespace Gorgon.Editor.SpriteEditor
+namespace Gorgon.Editor.ImageEditor
 {
     /// <summary>
-    /// Parameters for the manual input view models.
+    /// Parameters to pass to the <see cref="ISettings"/> view model.
     /// </summary>
-    internal class ManualInputParameters
+    internal class SettingsParameters
         : ViewModelInjection
     {
+        #region Properties.
         /// <summary>
-        /// Property to return the settings for the sprite editor.
+        /// Property to return the settings for the image editor plugin.
         /// </summary>
-        public ISettings Settings
+        public ImageEditorSettings Settings
         {
             get;
         }
 
-        /// <summary>Initializes a new instance of the <see cref="ManualInputParameters"/> class.</summary>
-        /// <param name="settings">The settings for the sprite editor.</param>
+		/// <summary>
+        /// Property to return the content plug in service.
+        /// </summary>
+		public IContentPluginService PluginService
+        {
+            get;
+        }
+        #endregion
+
+        #region Constructor/Finalizer.
+        /// <summary>Initializes a new instance of the ImageContentVmParameters class.</summary>
+        /// <param name="settings">The settings for the image editor.</param>
+        /// <param name="pluginService">The service used to manage content and importer plug ins.</param>
         /// <param name="commonServices">Common application services.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
-        public ManualInputParameters(ISettings settings, IViewModelInjection commonServices)
-			: base(commonServices) => Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+        public SettingsParameters(ImageEditorSettings settings, IContentPluginService pluginService, IViewModelInjection commonServices)
+			: base(commonServices)
+        {
+            Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            PluginService = pluginService ?? throw new ArgumentNullException(nameof(pluginService));
+        }
+        #endregion
     }
 }

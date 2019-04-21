@@ -86,6 +86,33 @@ namespace Gorgon.Editor.UI
             method?.Invoke(control, new[] { viewModel });
         }
 
+		/// <summary>
+        /// Function to determine if the view model type has a view registration.
+        /// </summary>
+        /// <param name="viewModel">The view model type to evaluate.</param>
+        /// <returns><b>true</b> if registered, <b>false</b> if not.</returns>
+        public static bool IsRegistered(IViewModel viewModel)
+        {
+            if (viewModel == null)
+            {
+                return false;
+            }
+
+            Type viewModelType = viewModel.GetType();
+            string typeName = viewModel.GetType().AssemblyQualifiedName;
+
+            if (_viewBuilders.ContainsKey(typeName))
+            {
+                return true;
+            }
+
+            Type[] interfaces = viewModelType.GetInterfaces();
+
+            Type interfaceType = interfaces.FirstOrDefault(item => _viewBuilders.ContainsKey(item.AssemblyQualifiedName));
+
+            return interfaceType != null;
+        }
+
         /// <summary>
         /// Function to create a new view based on the view model type passed in.
         /// </summary>

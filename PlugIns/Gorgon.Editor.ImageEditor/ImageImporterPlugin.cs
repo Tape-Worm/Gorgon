@@ -25,14 +25,14 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Gorgon.Diagnostics;
+using System.Threading;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.Services;
 using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Services;
+using Gorgon.Editor.UI;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Plugins;
@@ -46,23 +46,37 @@ namespace Gorgon.Editor.ImageEditor
         : ContentImportPlugin
     {
         #region Variables.
-        // The loaded image codecs.
-        private readonly List<IGorgonImageCodec> _codecList = new List<IGorgonImageCodec>();
-
-        // The list of available codecs matched by extension.
-        private readonly List<(GorgonFileExtension extension, IGorgonImageCodec codec)> _codecs = new List<(GorgonFileExtension extension, IGorgonImageCodec codec)>();
-
         // The image editor settings.
-        private ImageEditorSettings _settings = new ImageEditorSettings();
+        private ISettings _settings;
 
         // The plug in cache for image codecs.
         private GorgonMefPluginCache _pluginCache;
 
-        // The content plug in service that loaded this plug in.
-        private IContentImporterPluginService _pluginService;
+		// The codec registry.
+        private CodecRegistry _codecs;
         #endregion
 
         #region Properties.
+		/// <summary>
+        /// Property to return the common codec registry factory for all image plug ins in this assembly.
+        /// </summary>
+		public static Lazy<CodecRegistry> CodecRegistryFactory
+        {
+            get;
+            private set;
+        }
+
+		/// <summary>
+        /// Property to return the factory used to create the shared settings.
+        /// </summary>
+		public static Lazy<ISettings> SettingsFactory
+        {
+            get;
+            private set;
+        }
+        #endregion
+
+        #region Methods.
         /// <summary>
         /// Function to retrieve the codec used by the image.
         /// </summary>
@@ -80,7 +94,7 @@ namespace Gorgon.Editor.ImageEditor
                 {
                     var extension = new GorgonFileExtension(file.Extension);
 
-                    result = _codecs.FirstOrDefault(item => item.extension == extension).codec;
+                    result = _codecs.CodecFileTypes.FirstOrDefault(item => item.extension == extension).codec;
 
                     if (result != null)
                     {
@@ -96,83 +110,84 @@ namespace Gorgon.Editor.ImageEditor
             return null;
         }
 
-        /// <summary>
-        /// Function to load external image codec plug ins.
-        /// </summary>
-        /// <param name="log">The logging interface used to log debug messages.</param>
-        private void LoadCodecPlugins(IGorgonLog log)
-        {
-            if (_settings.CodecPluginPaths.Count == 0)
-            {
-                return;
-            }
 
-            log.Print("Loading image codecs...", LoggingLevel.Intermediate);
-
-            _pluginCache.ValidateAndLoadAssemblies(_settings.CodecPluginPaths.Select(item => new FileInfo(item.Value)), log);
-            IGorgonPluginService plugins = new GorgonMefPluginService(_pluginCache, log);
-
-            // Load all the codecs contained within the plug in (a plug in can have multiple codecs).
-            foreach (GorgonImageCodecPlugin plugin in plugins.GetPlugins<GorgonImageCodecPlugin>())
-            {
-                foreach (GorgonImageCodecDescription desc in plugin.Codecs)
-                {
-                    _codecList.Add(plugin.CreateCodec(desc.Name));
-                }
-            }
-        }
+        /// <summary>Function to retrieve the settings interface for this plug in.</summary>
+        /// <param name="injector">Objects to inject into the view model.</param>
+        /// <returns>The settings interface view model.</returns>
+        /// <remarks>
+        ///   <para>
+        /// Implementors who wish to supply customizable settings for their plug ins from the main "Settings" area in the application can override this method and return a new view model based on
+        /// the base <see cref="ISettingsCategoryViewModel"/> type.
+        /// </para>
+        ///   <para>
+        /// Plug ins must register the view associated with their settings panel via the <see cref="ViewFactory.Register``1(System.Func{System.Windows.Forms.Control})"/> method in the
+        /// <see cref="OnInitialize(IContentPluginService)"/> method or the settings will not display.
+        /// </para>
+        /// </remarks>
+        protected override ISettingsCategoryViewModel OnGetSettings() => SettingsFactory.Value;
 
         /// <summary>Function to provide initialization for the plugin.</summary>
         /// <param name="pluginService">The plugin service used to access other plugins.</param>
-        /// <param name="log">The logging interface for debug messages.</param>
         /// <remarks>This method is only called when the plugin is loaded at startup.</remarks>
-        protected override void OnInitialize(IContentImporterPluginService pluginService, IGorgonLog log)
+        protected override void OnInitialize(IContentPluginService pluginService)
         {
-            _pluginService = pluginService;
-            _pluginCache = new GorgonMefPluginCache(log);
+            ViewFactory.Register<ISettings>(() => new ImageCodecSettingsPanel());
+			            
+            _pluginCache = new GorgonMefPluginCache(CommonServices.Log);
 
-            // Get built-in codec list.
-            _codecList.Add(new GorgonCodecPng());
-            _codecList.Add(new GorgonCodecJpeg());
-            _codecList.Add(new GorgonCodecTga());
-            _codecList.Add(new GorgonCodecBmp());
-            _codecList.Add(new GorgonCodecGif());
-
-            ImageEditorSettings settings = pluginService.ReadContentSettings<ImageEditorSettings>(ImageEditorPlugin.SettingsName, this);
-
-            if (settings != null)
+            if (SettingsFactory == null)
             {
-                _settings = settings;
-            }
-
-            // Load the additional plug ins.
-            LoadCodecPlugins(log);
-
-            foreach (IGorgonImageCodec codec in _codecList)
-            {
-                foreach (string extension in codec.CodecCommonExtensions)
+                SettingsFactory = new Lazy<ISettings>(() =>
                 {
-                    _codecs.Add((new GorgonFileExtension(extension), codec));
-                }
+                    ImageEditorSettings settings = pluginService.ReadContentSettings<ImageEditorSettings>(ImageEditorPlugin.SettingsName);
+
+                    if (settings == null)
+                    {
+                        settings = new ImageEditorSettings();
+                    }
+
+                    var settingsVm = new Settings();
+                    settingsVm.Initialize(new SettingsParameters(settings, pluginService, CommonServices));
+					
+                    return settingsVm;
+                }, LazyThreadSafetyMode.ExecutionAndPublication);
             }
+
+            _settings = SettingsFactory.Value;
+
+            if (CodecRegistryFactory == null)
+            {
+                CodecRegistryFactory = new Lazy<CodecRegistry>(() => new CodecRegistry(_settings, _pluginCache, CommonServices.Log), LazyThreadSafetyMode.ExecutionAndPublication);
+            }
+
+            _codecs = CodecRegistryFactory.Value;
+            _codecs.LoadFromSettings();
         }
 
         /// <summary>Function to provide clean up for the plugin.</summary>
-        /// <param name="log">The logging interface for debug messages.</param>
-        protected override void OnShutdown(IGorgonLog log)
+        protected override void OnShutdown()
         {
             try
             {
-                if (_settings != null)
+                if ((_settings?.WriteSettingsCommand != null) && (_settings.WriteSettingsCommand.CanExecute(null)))
                 {
                     // Persist any settings.
-                    _pluginService.WriteContentSettings(ImageEditorPlugin.SettingsName, this, _settings);
+                    _settings.WriteSettingsCommand.Execute(null);
                 }
+
+                ViewFactory.Unregister<ISettings>();
+
+                foreach (IDisposable codec in _codecs.Codecs.OfType<IDisposable>())
+                {
+                    codec.Dispose();
+                }
+
+                _pluginCache.Dispose();
             }
             catch (Exception ex)
             {
                 // We don't care if it crashes. The worst thing that'll happen is your settings won't persist.
-                log.LogException(ex);
+                CommonServices.Log.LogException(ex);
             }
         }
 
@@ -180,8 +195,8 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="sourceFile">The file being imported.</param>
         /// <param name="fileSystem">The file system containing the file being imported.</param>
         /// <param name="log">The logging interface to use.</param>
-        /// <returns>A new <see cref="T:Gorgon.Editor.Services.IEditorContentImporter"/> object.</returns>
-        protected override IEditorContentImporter OnCreateImporter(FileInfo sourceFile, IGorgonFileSystem fileSystem, IGorgonLog log) => new DdsImageImporter(sourceFile, GetCodec(sourceFile), log);
+        /// <returns>A new <see cref="IEditorContentImporter"/> object.</returns>
+        protected override IEditorContentImporter OnCreateImporter(FileInfo sourceFile, IGorgonFileSystem fileSystem) => new DdsImageImporter(sourceFile, GetCodec(sourceFile), CommonServices.Log);
 
         /// <summary>Function to determine if the content plugin can open the specified file.</summary>
         /// <param name="file">The content file to evaluate.</param>
@@ -190,17 +205,13 @@ namespace Gorgon.Editor.ImageEditor
         protected override bool OnCanOpenContent(FileInfo file) => GetCodec(file) != null;
         #endregion
 
-        #region Methods.
-
-        #endregion
-
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ImageEditor.ImageImporterPlugin"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="ImageImporterPlugin"/> class.</summary>
         public ImageImporterPlugin()
             : base(Resources.GORIMG_IMPORT_DESC)
         {
 
-        }
+        }	
         #endregion
     }
 }

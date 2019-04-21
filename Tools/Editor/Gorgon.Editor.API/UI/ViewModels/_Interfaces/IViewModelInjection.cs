@@ -27,7 +27,7 @@
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Services;
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.Editor.UI.ViewModels
 {
     /// <summary>
     /// Defines values to inject into a view model.
@@ -35,12 +35,11 @@ namespace Gorgon.Editor.UI
     public interface IViewModelInjection
     {
         /// <summary>
-        /// Property to set or return the logging interface for debug logging.
+        /// Property to return the logging interface for debug logging.
         /// </summary>
         IGorgonLog Log
         {
             get;
-            set;
         }
 
         /// <summary>

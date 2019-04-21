@@ -33,10 +33,6 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.Renderers;
 using Gorgon.Graphics;
 using Gorgon.Editor.ImageEditor.Properties;
-using Gorgon.Math;
-using Gorgon.Timing;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
 
 namespace Gorgon.Editor.ImageEditor
 {

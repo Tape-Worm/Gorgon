@@ -25,11 +25,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Rendering;
@@ -37,7 +33,7 @@ using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.Plugins
 {
-	/// <summary>
+    /// <summary>
     /// Base class for a plug in that provides basic utility functionality.
     /// </summary>
     /// <remarks>
@@ -127,6 +123,7 @@ namespace Gorgon.Editor.Plugins
         /// </summary>
         public void Shutdown()
         {
+            CommonServices = null;
             int initalizedFlag = Interlocked.Exchange(ref _initialized, 0);
 
             if (initalizedFlag == 0)

@@ -27,7 +27,6 @@
 using System;
 using System.Collections.ObjectModel;
 using Gorgon.Core;
-using Gorgon.Editor.Content;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Services;

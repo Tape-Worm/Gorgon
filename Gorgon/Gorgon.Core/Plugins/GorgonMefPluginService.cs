@@ -387,7 +387,7 @@ namespace Gorgon.Plugins
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentEmptyException(nameof(name));
-            }
+            }			
 
             if (!_loadedPlugins.TryRemove(name, out Lazy<GorgonPlugin, IDictionary<string, object>> plugin))
             {

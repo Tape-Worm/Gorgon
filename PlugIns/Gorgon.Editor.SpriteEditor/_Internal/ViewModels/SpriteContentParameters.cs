@@ -29,6 +29,7 @@ using System.IO;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
+using Gorgon.Editor.UI.ViewModels;
 using Gorgon.IO;
 using Gorgon.Renderers;
 
@@ -186,8 +187,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="settings">The plug in settings view model.</param>
         /// <param name="undoService">The undo service.</param>
         /// <param name="scratchArea">The file system used to write out temporary working data.</param>
-        /// <param name="messageService">The message service.</param>
-        /// <param name="busyService">The busy service.</param>
+        /// <param name="commonServices">Common application services.</param>
         public SpriteContentParameters(
             ISpriteContentFactory factory,
             IContentFile spriteFile, 
@@ -206,9 +206,8 @@ namespace Gorgon.Editor.SpriteEditor
             ISettings settings,
             IUndoService undoService, 
             IGorgonFileSystemWriter<Stream> scratchArea, 
-            IMessageDisplayService messageService, 
-            IBusyStateService busyService)
-            : base(spriteFile, messageService, busyService)
+			IViewModelInjection commonServices)
+            : base(spriteFile, commonServices)
         {
             Factory = factory ?? throw new ArgumentNullException(nameof(factory));
             Sprite = sprite ?? throw new ArgumentNullException(nameof(sprite));

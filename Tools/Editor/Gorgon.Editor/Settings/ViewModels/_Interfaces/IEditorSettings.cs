@@ -58,5 +58,13 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
         }
+
+		/// <summary>
+        /// Property to return the command to execute to select a category.
+        /// </summary>
+        IEditorCommand<string> SetCategoryCommand
+        {
+            get;
+        }
     }
 }

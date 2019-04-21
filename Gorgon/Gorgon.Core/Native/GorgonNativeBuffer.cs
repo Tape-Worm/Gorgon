@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Gorgon.Core;
 using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Properties;

@@ -76,7 +76,6 @@
     <Compile Include="Services\_Interfaces\IToolPluginService.cs" />
     <Compile Include="Services\RectClipperService.cs" />
     <Compile Include="Services\RectHandle.cs" />
-    <Compile Include="Services\_Interfaces\IContentImporterPluginService.cs" />
     <Compile Include="Services\_Interfaces\IRectClipperService.cs" />
     <Compile Include="Services\_Interfaces\ISearchService.cs" />
     <Compile Include="Services\_Interfaces\IUndoService.cs" />
@@ -106,6 +105,7 @@
     <Compile Include="UI\Forms\FormPlugInManager.Designer.cs">
       <DependentUpon>FormPlugInManager.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\ViewModels\ViewModelInjection.cs" />
     <Compile Include="UI\Views\SettingsBaseControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -167,7 +167,6 @@
     <Compile Include="UI\EditorAsyncCommand.cs" />
     <Compile Include="UI\EditorCommand.cs" />
     <Compile Include="UI\ViewModels\ProgressPanelUpdateArgs.cs" />
-    <Compile Include="UI\ViewModels\ViewModelInjectionCommon.cs" />
     <Compile Include="UI\ViewModels\WaitPanelActivateArgs.cs" />
     <Compile Include="UI\ViewModels\_Interfaces\IViewModelInjection.cs" />
     <Compile Include="UI\Views\ContentBaseControl.cs">

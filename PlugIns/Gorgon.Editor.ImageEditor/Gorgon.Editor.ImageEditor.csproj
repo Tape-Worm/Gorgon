@@ -55,6 +55,7 @@
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="_Internal\CodecRegistry.cs" />
     <Compile Include="_Internal\Forms\FormRibbon.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -85,8 +86,9 @@
     <Compile Include="_Internal\Services\DdsImageImporter.cs" />
     <Compile Include="_Internal\Services\TexConvCompressor.cs" />
     <Compile Include="_Internal\ViewModels\CropResizeSettings.cs" />
-    <Compile Include="_Internal\ViewModels\MipMapSettingsParameters.cs" />
-    <Compile Include="_Internal\ViewModels\CropResizeSettingsParameters.cs" />
+    <Compile Include="_Internal\ViewModels\Settings.cs" />
+    <Compile Include="_Internal\ViewModels\SettingsParameters.cs" />
+    <Compile Include="_Internal\ViewModels\_Interfaces\ISettings.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\IMipMapSettings.cs" />
     <Compile Include="_Internal\ViewModels\MipMapSettings.cs" />
     <Compile Include="_Internal\ViewModels\DimensionSettings.cs" />
@@ -109,6 +111,12 @@
     </Compile>
     <Compile Include="_Internal\Views\GenMipMapSettings.Designer.cs">
       <DependentUpon>GenMipMapSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="_Internal\Views\ImageCodecSettingsPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="_Internal\Views\ImageCodecSettingsPanel.Designer.cs">
+      <DependentUpon>ImageCodecSettingsPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="_Internal\Views\ImageEditorView.cs">
       <SubType>UserControl</SubType>
@@ -192,6 +200,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="_Internal\Views\GenMipMapSettings.resx">
       <DependentUpon>GenMipMapSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="_Internal\Views\ImageCodecSettingsPanel.resx">
+      <DependentUpon>ImageCodecSettingsPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="_Internal\Views\ImageEditorView.resx">
       <DependentUpon>ImageEditorView.cs</DependentUpon>

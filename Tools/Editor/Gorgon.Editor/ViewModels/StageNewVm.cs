@@ -53,8 +53,6 @@ namespace Gorgon.Editor.ViewModels
         private string _title = Resources.GOREDIT_NEW_PROJECT;
         // The message display service.
         private IMessageDisplayService _messageService;
-        // The busy state service.
-        private IBusyStateService _busyService;
         // The project manager used to build up project info.
         private IProjectManager _projectManager;
         // The computer information object.
@@ -469,7 +467,6 @@ namespace Gorgon.Editor.ViewModels
             _settings = injectionParameters.Settings ?? throw new ArgumentMissingException(nameof(StageNewVmParameters.Settings), nameof(injectionParameters));            
             _projectManager = injectionParameters.ProjectManager ?? throw new ArgumentMissingException(nameof(StageNewVmParameters.ProjectManager), nameof(injectionParameters));            
             _messageService = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(StageNewVmParameters.MessageDisplay), nameof(injectionParameters));
-            _busyService = injectionParameters.BusyService ?? throw new ArgumentMissingException(nameof(StageNewVmParameters.BusyService), nameof(injectionParameters));
             _directoryLocator = injectionParameters.DirectoryLocator ?? throw new ArgumentMissingException(nameof(StageNewVmParameters.DirectoryLocator), nameof(injectionParameters));
 
             var lastWorkspace = new DirectoryInfo(string.IsNullOrWhiteSpace(_settings.LastProjectWorkingDirectory) ? 

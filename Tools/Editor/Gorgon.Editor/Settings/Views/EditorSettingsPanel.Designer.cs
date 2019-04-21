@@ -122,6 +122,7 @@
 			this.ListCategories.Name = "ListCategories";
 			this.ListCategories.Size = new System.Drawing.Size(250, 583);
 			this.ListCategories.TabIndex = 0;
+			this.ListCategories.SelectedIndexChanged += new System.EventHandler(this.ListCategories_SelectedIndexChanged);
 			// 
 			// PluginsPanel_00000000000000000000000000000000
 			// 

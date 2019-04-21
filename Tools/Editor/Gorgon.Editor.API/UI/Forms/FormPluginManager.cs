@@ -24,20 +24,11 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using ComponentFactory.Krypton.Toolkit;
 
 namespace Gorgon.Editor.UI.Forms
 {
-	/// <summary>
+    /// <summary>
     /// The UI for the plug in manager
     /// </summary>
     public partial class FormPlugInManager 

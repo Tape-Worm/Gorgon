@@ -24,11 +24,7 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DX = SharpDX;
 using Gorgon.Math;
 using Gorgon.Graphics;
@@ -38,7 +34,7 @@ using System.ComponentModel;
 
 namespace Gorgon.Editor.SpriteEditor
 {
-	/// <summary>
+    /// <summary>
     /// A renderer for editing sprite wrapping sampler states.
     /// </summary>
     internal class SpriteWrappingRenderer

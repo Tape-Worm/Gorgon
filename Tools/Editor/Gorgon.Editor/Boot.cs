@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -45,11 +44,9 @@ using Gorgon.UI;
 using Newtonsoft.Json;
 using DX = SharpDX;
 using Exception = System.Exception;
-using Gorgon.IO.Providers;
-using System.Collections.Generic;
-using Gorgon.Editor.Plugins;
 using System.Linq;
 using Gorgon.Editor.Converters;
+using Gorgon.Editor.UI.ViewModels;
 
 namespace Gorgon.Editor
 {
@@ -76,8 +73,8 @@ namespace Gorgon.Editor
         private ContentPluginService _contentPlugins;
 		// The plugin service used to manage tool plugin.
         private ToolPluginService _toolPlugins;
-        // The plugin service used to manage content import plugins.
-        private ContentImporterPluginService _contentImporterPlugins;
+		// The services that are common to the entire application.
+        private IViewModelInjection _commonServices;
         #endregion
 
         #region Properties.
@@ -92,14 +89,12 @@ namespace Gorgon.Editor
         {
             ToolPluginService toolPlugins = Interlocked.Exchange(ref _toolPlugins, null);
             ContentPluginService contentPlugins = Interlocked.Exchange(ref _contentPlugins, null);
-            ContentImporterPluginService contentImporterPlugins = Interlocked.Exchange(ref _contentImporterPlugins, null);
             GraphicsContext context = Interlocked.Exchange(ref _graphicsContext, null);
             GorgonMefPluginCache pluginCache = Interlocked.Exchange(ref _pluginCache, null);
             FormMain mainForm = Interlocked.Exchange(ref _mainForm, null);
             FormSplash splash = Interlocked.Exchange(ref _splash, null);
 
             toolPlugins?.Dispose();
-            contentImporterPlugins?.Dispose();
             contentPlugins?.Dispose();
             context?.Dispose();
             pluginCache?.Dispose();
@@ -263,51 +258,13 @@ namespace Gorgon.Editor
         }
 
         /// <summary>
-        /// Function to load any import content plugins used to create/edit content.
-        /// </summary>
-        /// <returns>The content plugin manager service used to manipulate the loaded content plugins.</returns>
-        private ContentImporterPluginService LoadImportContentPlugins()
-        {
-            var contentPluginsDir = new DirectoryInfo(Path.Combine(_settings.PluginPath, "ContentImporters"));
-            var contentPluginSettingsDir = new DirectoryInfo(Path.Combine(Program.ApplicationUserDirectory.FullName, "ContentPlugins"));
-
-            if (!contentPluginSettingsDir.Exists)
-            {
-                contentPluginSettingsDir.Create();
-                contentPluginSettingsDir.Refresh();
-            }
-
-            var contentPlugins = new ContentImporterPluginService(contentPluginSettingsDir, _graphicsContext);
-
-            try
-            {
-                _splash.InfoText = Resources.GOREDIT_TEXT_LOADING_IMPORT_CONTENT_PLUGINS;
-
-                if (!contentPluginsDir.Exists)
-                {
-                    contentPluginsDir.Create();
-                    contentPluginsDir.Refresh();
-                }
-
-                contentPlugins.LoadContentImporterPlugins(_pluginCache, contentPluginsDir);
-            }
-            catch (Exception ex)
-            {
-                Program.Log.LogException(ex);
-                GorgonDialogs.ErrorBox(_splash, Resources.GOREDIT_ERR_LOADING_PLUGINS, Resources.GOREDIT_ERR_ERROR, ex);
-            }
-
-            return contentPlugins;
-        }
-
-        /// <summary>
         /// Function to load any tool plugins.
         /// </summary>
         /// <returns>The tool plugin manager service used to manipulate the loaded tool plugins.</returns>
         private ToolPluginService LoadToolPlugins()
         {
             var toolPluginsDir = new DirectoryInfo(Path.Combine(_settings.PluginPath, "Tools"));
-            var toolPlugins = new ToolPluginService(_graphicsContext);
+            var toolPlugins = new ToolPluginService(_graphicsContext, _commonServices);
 
             try
             {
@@ -345,7 +302,7 @@ namespace Gorgon.Editor
                 contentPluginSettingsDir.Refresh();
             }
 
-            var contentPlugins = new ContentPluginService(contentPluginSettingsDir, _graphicsContext);
+            var contentPlugins = new ContentPluginService(contentPluginSettingsDir, _graphicsContext, _commonServices);
 
             try
             {
@@ -375,7 +332,7 @@ namespace Gorgon.Editor
         private FileSystemProviders LoadFileSystemPlugins()
         {
             var fileSystemPlugInsDir = new DirectoryInfo(Path.Combine(_settings.PluginPath, "Filesystem"));
-            var result = new FileSystemProviders();
+            var result = new FileSystemProviders(_commonServices);
 
             try
             {
@@ -421,6 +378,7 @@ namespace Gorgon.Editor
                 // Initalize the common resources.
                 EditorCommonResources.LoadResources();
 
+                _commonServices = new ViewModelInjection(Program.Log, new WaitCursorBusyState(), new MessageBoxService());                
                 _pluginCache = new GorgonMefPluginCache(Program.Log);
                 _graphicsContext = GraphicsContext.Create(Program.Log);
 
@@ -434,8 +392,7 @@ namespace Gorgon.Editor
                 _toolPlugins = LoadToolPlugins();
 
                 // Load our content service plugins.
-                _contentPlugins = LoadContentPlugins();
-                _contentImporterPlugins = LoadImportContentPlugins();                
+                _contentPlugins = LoadContentPlugins();                
 
                 // Create the project manager for the application
                 _projectManager = new ProjectManager(fileSystemProviders);
@@ -455,10 +412,8 @@ namespace Gorgon.Editor
                                                    fileSystemProviders,
                                                    _contentPlugins,
 												   _toolPlugins,
-                                                   _contentImporterPlugins,
                                                    _projectManager,
-                                                   new MessageBoxService(),
-                                                   new WaitCursorBusyState(),
+												   _commonServices,
                                                    new ClipboardService(),
                                                    new DirectoryLocateService(),
                                                    new FileScanService(_contentPlugins));

@@ -19,7 +19,7 @@ namespace Gorgon.Editor.GorPackWriter.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -61,7 +61,7 @@ namespace Gorgon.Editor.GorPackWriter.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Gorgon packed file writer.
+        ///   Looks up a localized string similar to Gorgon BZip packed file writer.
         /// </summary>
         internal static string GORPKW_DESC {
             get {
@@ -70,7 +70,7 @@ namespace Gorgon.Editor.GorPackWriter.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Gorgon Packed File.
+        ///   Looks up a localized string similar to Gorgon BZip Packed File.
         /// </summary>
         internal static string GORPKW_GORPACK_FILE_EXT_DESC {
             get {

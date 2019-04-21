@@ -27,7 +27,6 @@
 
 using System;
 using System.Collections.Generic;
-using Gorgon.Core;
 using Gorgon.Editor.Plugins;
 using Newtonsoft.Json;
 

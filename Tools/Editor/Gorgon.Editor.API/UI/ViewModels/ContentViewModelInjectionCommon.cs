@@ -25,11 +25,8 @@
 #endregion
 
 using System;
-using System.IO;
-using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
-using Gorgon.Editor.Services;
-using Gorgon.IO;
+using Gorgon.Editor.UI.ViewModels;
 
 namespace Gorgon.Editor.UI
 {
@@ -37,7 +34,7 @@ namespace Gorgon.Editor.UI
     /// Common content view model parameters.
     /// </summary>
     public class ContentViewModelInjectionCommon
-        : ViewModelInjectionCommon, IContentViewModelInjection
+        : ViewModelInjection, IContentViewModelInjection
     {
         /// <summary>Property to return the content file.</summary>
         public IContentFile File
@@ -47,14 +44,9 @@ namespace Gorgon.Editor.UI
 
         /// <summary>Initializes a new instance of the ContentViewModelInjectionCommon class.</summary>
         /// <param name="file">The file that contains the content.</param>        
-        /// <param name="messageService">The message display service.</param>
-        /// <param name="busyService">The busy state service.</param>
+        /// <param name="commonServices">The common services for the application.</param>
         /// <exception cref="ArgumentNullException">Thrown any of the parameters are <b>null</b></exception>
-        public ContentViewModelInjectionCommon(IContentFile file, IMessageDisplayService messageService, IBusyStateService busyService)
-        {
-            File = file ?? throw new ArgumentNullException(nameof(file));
-            MessageDisplay = messageService ?? throw new ArgumentNullException(nameof(messageService));
-            BusyService = busyService ?? throw new ArgumentNullException(nameof(busyService));
-        }
+        public ContentViewModelInjectionCommon(IContentFile file, IViewModelInjection commonServices)
+			: base(commonServices) => File = file ?? throw new ArgumentNullException(nameof(file));
     }
 }

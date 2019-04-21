@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Services;
 

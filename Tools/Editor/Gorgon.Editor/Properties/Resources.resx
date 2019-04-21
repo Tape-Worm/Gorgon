@@ -820,4 +820,9 @@ Please try again.</value>
   <data name="GOREDIT_SETTINGS_CATEGORY_PLUGINS" xml:space="preserve">
     <value>Plug ins</value>
   </data>
+  <data name="GOREDIT_ERR_SELECT_SETTING_CATEGORY" xml:space="preserve">
+    <value>Could to change the setting category.
+
+Please try again.</value>
+  </data>
 </root>

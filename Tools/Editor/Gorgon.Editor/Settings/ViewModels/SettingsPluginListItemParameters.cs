@@ -27,7 +27,7 @@
 using System;
 using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Properties;
-using Gorgon.Editor.UI;
+using Gorgon.Editor.UI.ViewModels;
 using Gorgon.IO.Providers;
 
 namespace Gorgon.Editor.ViewModels
@@ -36,7 +36,7 @@ namespace Gorgon.Editor.ViewModels
     /// The parameters for the <see cref="ISettingsPluginListItem"/> view model.
     /// </summary>
     internal class SettingsPluginListItemParameters
-        : ViewModelInjectionCommon
+        : ViewModelInjection
     {
         #region Properties.
         /// <summary>
@@ -88,8 +88,10 @@ namespace Gorgon.Editor.ViewModels
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the <see cref="SettingsPluginListItemParameters"/> class.</summary>
         /// <param name="plugin">The plugin to evaluate.</param>
+        /// <param name="commonServices">Common application services.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> is parameter <b>null</b>.</exception>
-        public SettingsPluginListItemParameters(EditorPlugin plugin)
+        public SettingsPluginListItemParameters(EditorPlugin plugin, IViewModelInjection commonServices)
+			: base(commonServices)
         {
             if (plugin == null)
             {
@@ -105,8 +107,10 @@ namespace Gorgon.Editor.ViewModels
 
         /// <summary>Initializes a new instance of the <see cref="SettingsPluginListItemParameters"/> class.</summary>
         /// <param name="plugin">The plugin to evaluate.</param>
+        /// <param name="commonServices">Common application services.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> is parameter <b>null</b>.</exception>
-        public SettingsPluginListItemParameters(IDisabledPlugin plugin)
+        public SettingsPluginListItemParameters(IDisabledPlugin plugin, IViewModelInjection commonServices)
+            : base(commonServices)
         {
             if (plugin == null)
             {
@@ -122,8 +126,10 @@ namespace Gorgon.Editor.ViewModels
 
         /// <summary>Initializes a new instance of the <see cref="SettingsPluginListItemParameters"/> class.</summary>
         /// <param name="plugin">The plugin to evaluate.</param>
+        /// <param name="commonServices">Common application services.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> is parameter <b>null</b>.</exception>
-        public SettingsPluginListItemParameters(IGorgonFileSystemProvider plugin)
+        public SettingsPluginListItemParameters(IGorgonFileSystemProvider plugin, IViewModelInjection commonServices)
+            : base(commonServices)
         {
             if (plugin == null)
             {

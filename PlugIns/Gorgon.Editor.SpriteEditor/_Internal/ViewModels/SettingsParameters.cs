@@ -25,7 +25,7 @@
 #endregion
 
 using System;
-using Gorgon.Editor.UI;
+using Gorgon.Editor.UI.ViewModels;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -33,7 +33,7 @@ namespace Gorgon.Editor.SpriteEditor
     /// The parameters to pass to the <see cref="ISettings"/> view model.
     /// </summary>
     internal class SettingsParameters
-        : ViewModelInjectionCommon
+        : ViewModelInjection
     {
         #region Properties.
         /// <summary>
@@ -48,9 +48,10 @@ namespace Gorgon.Editor.SpriteEditor
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.SpriteEditor.SettingsParameters"/> class.</summary>
         /// <param name="settings">The plug in settings.</param>
+        /// <param name="commonServices">Common application services.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settings" /> parameter is <strong>null</strong>.</exception>
-        public SettingsParameters(SpriteEditorSettings settings) =>  Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        public SettingsParameters(SpriteEditorSettings settings, IViewModelInjection commonServices) 
+			: base(commonServices) =>  Settings = settings ?? throw new ArgumentNullException(nameof(settings));
         #endregion
-
     }
 }

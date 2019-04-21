@@ -25,9 +25,10 @@
 #endregion
 
 using System;
+using Gorgon.Diagnostics;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Services;
-using Gorgon.Editor.UI;
+using Gorgon.Editor.UI.ViewModels;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -35,7 +36,7 @@ namespace Gorgon.Editor.ViewModels
     /// Common injection parameters for all view models.
     /// </summary>
     internal abstract class ViewModelCommonParameters
-        : ViewModelInjectionCommon
+        : IViewModelInjection
     {
         /// <summary>
         /// Property to set or return the current project.
@@ -67,7 +68,22 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the application clipboard service to use.
         /// </summary>
-        public IClipboardService ClipboardService => ViewModelFactory.Clipboard;                
+        public IClipboardService ClipboardService => ViewModelFactory.Clipboard;
+		
+        /// <summary>Property to return the logging interface for debug logging.</summary>
+        public IGorgonLog Log => Program.Log;
+
+        /// <summary>Property to return the serivce used to show busy states.</summary>
+        public IBusyStateService BusyService 
+        {
+            get;
+        }
+
+        /// <summary>Property to return the service used to show message dialogs.</summary>
+        public IMessageDisplayService MessageDisplay
+        {
+            get;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewModelCommonParameters"/> class.

@@ -123,7 +123,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         // The available pixel formats, based on codec.
         private ObservableCollection<BufferFormat> _pixelFormats = new ObservableCollection<BufferFormat>();
         // The settings for the image editor plugin.
-        private ImageEditorSettings _settings;
+        private ISettings _settings;
         // The file used for working changes.
         private IGorgonVirtualFile _workingFile;
         // The service used to read/write image data.
@@ -1966,7 +1966,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                 // Get the PNG codec, this is a pretty common format and should be supported by all image editors.
                 // The only issue we may run into is if the format of the image is not supported by the codec, in that case we can try to convert it.
-                IGorgonImageCodec codec = _imageIO.InstalledCodecs.First(item => item is GorgonCodecPng);
+                IGorgonImageCodec codec = _imageIO.InstalledCodecs.Codecs.First(item => item is GorgonCodecPng);
 
                 // Doesn't support our format, so convert it.
                 if (!codec.SupportedPixelFormats.Contains(workImage.Format))
@@ -2053,6 +2053,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             Log.Print("Building codec list for the current image.", LoggingLevel.Verbose);
 
+            _codecs.Clear();
             Codecs.Clear();
 
             if (image == null)
@@ -2061,16 +2062,20 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 return;
             }
 
-            if (_imageIO.InstalledCodecs.Count == 0)
+            if (_imageIO.InstalledCodecs.Codecs.Count == 0)
             {
                 Log.Print("[WARNING] No image codecs were found.  This should not happen.", LoggingLevel.Simple);
                 return;
             }
 
-            foreach (IGorgonImageCodec codec in _imageIO.InstalledCodecs.Where(item => item.CanEncode).OrderBy(item => item.Codec))
+            foreach (IGorgonImageCodec codec in _imageIO.InstalledCodecs.Codecs.Where(item => item.CanEncode).OrderBy(item => item.Codec))
             {
                 Log.Print($"Adding codec '{codec.CodecDescription} ({codec.Codec})'", LoggingLevel.Verbose);
                 Codecs.Add(codec);
+                foreach (string extension in codec.CodecCommonExtensions)
+                {
+                    _codecs.Add((new GorgonFileExtension(extension), codec));
+                }
             }
         }
 
@@ -2127,14 +2132,6 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             BuildCodecList(ImageData);
 
             _pixelFormats = GetFilteredFormats();
-
-            foreach (IGorgonImageCodec codec in _imageIO.InstalledCodecs)
-            {
-                foreach (string extension in codec.CodecCommonExtensions)
-                {
-                    _codecs.Add((new GorgonFileExtension(extension), codec));
-                }
-            }
 
             _undoCacheDir = _imageIO.ScratchArea.CreateDirectory("/undocache");
 

@@ -30,7 +30,6 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Editor.Content;
-using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Plugins;
 using Gorgon.Editor.UI;
 

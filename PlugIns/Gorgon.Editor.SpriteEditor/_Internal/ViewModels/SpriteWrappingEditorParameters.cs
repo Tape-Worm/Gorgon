@@ -25,17 +25,15 @@
 #endregion
 
 using System;
-using Gorgon.Editor.Services;
-using Gorgon.Editor.UI;
-using Gorgon.Graphics.Core;
+using Gorgon.Editor.UI.ViewModels;
 
 namespace Gorgon.Editor.SpriteEditor
 {
-	/// <summary>
+    /// <summary>
     /// Parameters for the <see cref="ISpriteWrappingEditor"/> view model.
     /// </summary>
     internal class SpriteWrappingEditorParameters
-		: ViewModelInjectionCommon
+		: ViewModelInjection
     {
 		/// <summary>
         /// Property to return the builder used to create samplers.
@@ -47,12 +45,9 @@ namespace Gorgon.Editor.SpriteEditor
 
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.SpriteEditor.SpriteWrappingEditorParameters"/> class.</summary>
         /// <param name="builder">The builder used to create samplers.</param>
-        /// <param name="messageDisplay">The message display service.</param>
+        /// <param name="commonServices">Common application services.</param>
         /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
-        public SpriteWrappingEditorParameters(ISamplerBuildService builder, IMessageDisplayService messageDisplay)			
-        {
-            MessageDisplay = messageDisplay ?? throw new ArgumentNullException(nameof(messageDisplay));
-            SamplerStateBuilder = builder ?? throw new ArgumentNullException(nameof(builder));
-        }
+        public SpriteWrappingEditorParameters(ISamplerBuildService builder, IViewModelInjection commonServices)
+			: base(commonServices) => SamplerStateBuilder = builder ?? throw new ArgumentNullException(nameof(builder));
     }
 }

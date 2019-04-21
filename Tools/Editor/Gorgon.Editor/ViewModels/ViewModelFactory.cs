@@ -39,6 +39,7 @@ using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
+using Gorgon.Editor.UI.ViewModels;
 using Gorgon.IO;
 using Gorgon.IO.Providers;
 
@@ -48,14 +49,11 @@ namespace Gorgon.Editor.ViewModels
     /// A factory for generating view models and their dependencies.
     /// </summary>
     internal class ViewModelFactory
-        : IViewModelInjection
     {
 
         #region Variables.
-        // The service for displaying message boxes.
-        private readonly MessageBoxService _messageBoxService;
-        // The service for setting busy state by setting a wait cursor.
-        private readonly WaitCursorBusyState _waitCursorService;
+		// The common services for the application and plug ins.
+        private readonly IViewModelInjection _viewModelInjection;
         // The project manager for the application.
         private readonly ProjectManager _projectManager;
         // The clip board service to use.
@@ -105,22 +103,14 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the content importer plugins for the application.
-        /// </summary>
-        public IContentImporterPluginManagerService ContentImporterPlugins
-        {
-            get;
-        }
-
-        /// <summary>
         /// Property to return the service that displays messages on the UI.
         /// </summary>
-        public IMessageDisplayService MessageDisplay => _messageBoxService;
+        public IMessageDisplayService MessageDisplay => _viewModelInjection.MessageDisplay;
 
         /// <summary>
         /// Property to return the busy service used to indicate that the UI is locked down.
         /// </summary>
-        public IBusyStateService BusyService => _waitCursorService;
+        public IBusyStateService BusyService => _viewModelInjection.BusyService;
 
         /// <summary>
         /// Property to return the project manager interface.
@@ -136,16 +126,6 @@ namespace Gorgon.Editor.ViewModels
         /// Property to return the directory locator service used to select directories on the physical file system.
         /// </summary>
         public IDirectoryLocateService DirectoryLocator => _dirLocator;
-
-        /// <summary>Property to set or return the logging interface for debug logging.</summary>
-        IGorgonLog IViewModelInjection.Log
-        {
-            get => Program.Log;
-            set
-            {
-                // Intentionally left empty.
-            }
-        }
         #endregion
 
         #region Methods.
@@ -247,7 +227,7 @@ namespace Gorgon.Editor.ViewModels
         private ISettingsPluginListItem GetPluginListItem(EditorPlugin plugin)
         {
             var result = new SettingsPluginListItem();
-            result.Initialize(new SettingsPluginListItemParameters(plugin));
+            result.Initialize(new SettingsPluginListItemParameters(plugin, _viewModelInjection));
             return result;
         }
 
@@ -259,7 +239,7 @@ namespace Gorgon.Editor.ViewModels
         private ISettingsPluginListItem GetPluginListItem(IGorgonFileSystemProvider plugin)
         {
             var result = new SettingsPluginListItem();
-            result.Initialize(new SettingsPluginListItemParameters(plugin));
+            result.Initialize(new SettingsPluginListItemParameters(plugin, _viewModelInjection));
             return result;
         }
 
@@ -271,7 +251,7 @@ namespace Gorgon.Editor.ViewModels
         private ISettingsPluginListItem GetPluginListItem(IDisabledPlugin plugin)
         {
             var result = new SettingsPluginListItem();
-            result.Initialize(new SettingsPluginListItemParameters(plugin));
+            result.Initialize(new SettingsPluginListItemParameters(plugin, _viewModelInjection));
             return result;
         }
 
@@ -285,15 +265,42 @@ namespace Gorgon.Editor.ViewModels
                 .Select(item => GetPluginListItem(item.Value))
                 .Concat(FileSystemProviders.Writers.Select(item => GetPluginListItem(item.Value)))
                 .Concat(ContentPlugins.Plugins.Select(item => GetPluginListItem(item.Value)))
-                .Concat(ContentImporterPlugins.Plugins.Select(item => GetPluginListItem(item.Value)))
+                .Concat(ContentPlugins.Importers.Select(item => GetPluginListItem(item.Value)))
                 .Concat(ToolPlugins.Plugins.Select(item => GetPluginListItem(item.Value)))
                 .Concat(FileSystemProviders.DisabledPlugins.Select(item => GetPluginListItem(item.Value)))
-                .Concat(ContentPlugins.DisabledPlugins.Select(item => GetPluginListItem(item.Value)))
-                .Concat(ContentImporterPlugins.DisabledPlugins.Select(item => GetPluginListItem(item.Value)))
+                .Concat(ContentPlugins.DisabledPlugins.Select(item => GetPluginListItem(item.Value)))                
                 .Concat(ToolPlugins.DisabledPlugins.Select(item => GetPluginListItem(item.Value)));
 
             var result = new SettingsPluginsList();
-            result.Initialize(new SettingsPluginsListParameters(plugins, MessageDisplay));
+            result.Initialize(new SettingsPluginsListParameters(plugins, _viewModelInjection));
+            return result;
+        }
+
+		/// <summary>
+        /// Function to retrieve the list of settings categories from loaded plug ins.
+        /// </summary>
+        /// <returns>The list of categories.</returns>
+        private IEnumerable<ISettingsCategoryViewModel> GetPluginSettingsCategories()
+        {
+            var result = new List<ISettingsCategoryViewModel>();
+
+            IEnumerable<EditorPlugin> plugins = FileSystemProviders.Writers.Select(item => (EditorPlugin)item.Value)
+                .Concat(ContentPlugins.Plugins.Select(item => item.Value))
+                .Concat(ContentPlugins.Importers.Select(item => item.Value))
+                .Concat(ToolPlugins.Plugins.Select(item => item.Value));
+			
+            foreach (EditorPlugin plugin in plugins)
+            {
+                ISettingsCategoryViewModel settings = plugin.GetPluginSettings();
+
+                if (settings == null)
+                {
+                    continue;
+                }
+
+                result.Add(settings);
+            }
+
             return result;
         }
 
@@ -307,7 +314,8 @@ namespace Gorgon.Editor.ViewModels
         {
             ISettingsPluginsList pluginList = GetPluginListViewModel();
             var settingsVm = new EditorSettingsVm();
-            settingsVm.Initialize(new EditorSettingsParameters(new[] { pluginList }, pluginList, MessageDisplay));
+            IEnumerable<ISettingsCategoryViewModel> categories = GetPluginSettingsCategories();
+            settingsVm.Initialize(new EditorSettingsParameters(new[] { pluginList }.Concat(categories), pluginList, MessageDisplay, BusyService));
 
             var newProjectVm = new StageNewVm
             {
@@ -574,10 +582,9 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="settings">The settings for the application.</param>
         /// <param name="providers">The providers used to open/save files.</param>
         /// <param name="contentPlugins">The plugins used for content.</param>
-        /// <param name="contentImportPlugins">The plugins used to import content.</param>
+        /// <param name="toolPlugins">The plugins used for application tools.</param>
         /// <param name="projectManager">The application project manager.</param>
-        /// <param name="undoService">The service used for undo/redo functionality.</param>
-        /// <param name="messages">The message dialog service.</param>
+        /// <param name="viewModelInjection"></param>
         /// <param name="waitState">The wait state service.</param>
         /// <param name="clipboardService">The application clipboard service.</param>
         /// <param name="dirLocatorService">The directory locator service.</param>
@@ -587,10 +594,8 @@ namespace Gorgon.Editor.ViewModels
                                 FileSystemProviders providers, 
                                 ContentPluginService contentPlugins,
 								ToolPluginService toolPlugins,
-                                ContentImporterPluginService contentImportPlugins,
                                 ProjectManager projectManager, 
-                                MessageBoxService messages, 
-                                WaitCursorBusyState waitState, 
+                                IViewModelInjection viewModelInjection,                                
                                 ClipboardService clipboardService, 
                                 DirectoryLocateService dirLocatorService,
                                 FileScanService fileScanService)
@@ -599,10 +604,8 @@ namespace Gorgon.Editor.ViewModels
             FileSystemProviders = providers ?? throw new ArgumentNullException(nameof(providers));
             ContentPlugins = contentPlugins ?? throw new ArgumentNullException(nameof(contentPlugins));
             ToolPlugins = toolPlugins ?? throw new ArgumentNullException(nameof(toolPlugins));
-            ContentImporterPlugins = contentImportPlugins ?? throw new ArgumentNullException(nameof(contentImportPlugins));            
             _projectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
-            _messageBoxService = messages ?? throw new ArgumentNullException(nameof(messages));
-            _waitCursorService = waitState ?? throw new ArgumentNullException(nameof(waitState));
+            _viewModelInjection = viewModelInjection ?? throw new ArgumentNullException(nameof(viewModelInjection));
             _clipboard = clipboardService ?? throw new ArgumentNullException(nameof(clipboardService));
             _dirLocator = dirLocatorService ?? throw new ArgumentNullException(nameof(dirLocatorService));
             _fileScanService = fileScanService ?? throw new ArgumentNullException(nameof(fileScanService));

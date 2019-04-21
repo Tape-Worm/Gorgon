@@ -30,6 +30,7 @@ using System.Linq;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Editor.UI;
+using Gorgon.Editor.UI.ViewModels;
 using Gorgon.Graphics;
 
 namespace Gorgon.Editor.SpriteEditor

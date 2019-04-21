@@ -32,9 +32,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Renderers;
 using Gorgon.Graphics;
-using Gorgon.Timing;
-using Gorgon.Math;
-using System.Diagnostics;
 
 namespace Gorgon.Editor.ImageEditor
 {

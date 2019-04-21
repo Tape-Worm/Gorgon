@@ -24,15 +24,10 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Gorgon.Editor.Services
 {
-	/// <summary>
+    /// <summary>
     /// A service used to allow the management of plug ins.
     /// </summary>
     public interface IPlugInManagerService

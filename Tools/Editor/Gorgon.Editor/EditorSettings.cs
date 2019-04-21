@@ -24,15 +24,9 @@
 // 
 #endregion
 
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Text;
 using System.Windows.Forms;
-using System.Xml.Linq;
 using Gorgon.Editor.ProjectData;
-using Newtonsoft.Json;
 using DX = SharpDX;
 
 namespace Gorgon.Editor

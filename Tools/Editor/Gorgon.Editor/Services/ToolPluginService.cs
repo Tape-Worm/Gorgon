@@ -28,15 +28,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
+using Gorgon.Editor.UI.ViewModels;
 using Gorgon.Plugins;
-using Newtonsoft.Json;
 
 namespace Gorgon.Editor.Services
 {
@@ -55,6 +52,8 @@ namespace Gorgon.Editor.Services
         private Dictionary<string, IReadOnlyList<IToolPluginRibbonButton>> _ribbonButtons = new Dictionary<string, IReadOnlyList<IToolPluginRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
         // The application graphics context for passing to tool plug ins.
         private readonly IGraphicsContext _graphicsContext;
+		// Common application services.
+        private readonly IViewModelInjection _commonServices;
         #endregion
 
         #region Properties.
@@ -180,6 +179,7 @@ namespace Gorgon.Editor.Services
                 try
                 {
                     Program.Log.Print($"Creating tool plug in '{plugin.Name}'...", LoggingLevel.Simple);
+                    plugin.AssignCommonServices(_commonServices);
                     plugin.Initialize(this, _graphicsContext, Program.Log);
 
                     // Check to see if this plug in can continue.
@@ -258,8 +258,13 @@ namespace Gorgon.Editor.Services
         #region Constructor.
         /// <summary>Initializes a new instance of the ToolPluginService class.</summary>
         /// <param name="graphicsContext">The graphics context used to pass the application graphics context to plug ins.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphicsContext"/> parameter is <b>null</b>.</exception>
-        public ToolPluginService(IGraphicsContext graphicsContext) => _graphicsContext = graphicsContext ?? throw new ArgumentNullException(nameof(graphicsContext));        
+        /// <param name="commonServices">Common application services.</param>
+        /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
+        public ToolPluginService(IGraphicsContext graphicsContext, IViewModelInjection commonServices)
+        {
+            _graphicsContext = graphicsContext ?? throw new ArgumentNullException(nameof(graphicsContext));
+            _commonServices = commonServices ?? throw new ArgumentNullException(nameof(commonServices));
+        }
         #endregion
     }
 }

@@ -44,7 +44,7 @@ namespace Gorgon.Editor.ImageEditor
     {
         #region Variables.
         // The settings for the image editor.
-        private readonly ImageEditorSettings _settings;
+        private readonly ISettings _settings;
         #endregion
 
         #region Properties.
@@ -139,7 +139,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ImageEditor.ExportImageDialogService"/> class.</summary>
         /// <param name="settings">The settings.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settings" /> parameter is <strong>null</strong>.</exception>
-        public ExportImageDialogService(ImageEditorSettings settings) => _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        public ExportImageDialogService(ISettings settings) => _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         #endregion
     }
 }

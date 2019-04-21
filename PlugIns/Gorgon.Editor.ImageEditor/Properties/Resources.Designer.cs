@@ -745,6 +745,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Image Editor.
+        /// </summary>
+        internal static string GORIMG_TEXT_SETTINGS_IMAGE_EDITOR {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_SETTINGS_IMAGE_EDITOR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Undoing previous action....
         /// </summary>
         internal static string GORIMG_TEXT_UNDO {

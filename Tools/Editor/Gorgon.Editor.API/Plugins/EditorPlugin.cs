@@ -26,9 +26,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Gorgon.Editor.UI;
+using Gorgon.Editor.UI.ViewModels;
 using Gorgon.Plugins;
 
 namespace Gorgon.Editor.Plugins
@@ -57,7 +56,11 @@ namespace Gorgon.Editor.Plugins
         /// <summary>
         /// Plug in is used for a utility.
         /// </summary>
-        Tool = 4
+        Tool = 4,
+		/// <summary>
+        /// Plug in is used to import content.
+        /// </summary>
+		ContentImporter = 5
     }
 
     /// <summary>
@@ -72,6 +75,15 @@ namespace Gorgon.Editor.Plugins
         #endregion
 
         #region Properties.
+		/// <summary>
+        /// Property to return the common services for the application.
+        /// </summary>
+		protected IViewModelInjection CommonServices
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Property to return the type of this plug in.
         /// </summary>
@@ -82,6 +94,22 @@ namespace Gorgon.Editor.Plugins
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to retrieve the settings interface for this plug in.
+        /// </summary>
+        /// <returns>The settings interface view model.</returns>
+        /// <remarks>
+        /// <para>
+        /// Implementors who wish to supply customizable settings for their plug ins from the main "Settings" area in the application can override this method and return a new view model based on 
+        /// the base <see cref="ISettingsCategoryViewModel"/> type. Returning <b>null</b> will mean that the plug in does not have settings that can be managed externally.
+        /// </para>
+        /// <para>
+        /// Plug ins must register the view associated with their settings panel via the <see cref="ViewFactory.Register{T}(Func{System.Windows.Forms.Control})"/> method when the plug in first loaded, 
+        /// or else the panel will not show in the main settings area.
+        /// </para>
+        /// </remarks>
+        protected virtual ISettingsCategoryViewModel OnGetSettings() => null;
+
         /// <summary>
         /// Function to determine if this plug in is usable or not.
         /// </summary>
@@ -97,6 +125,19 @@ namespace Gorgon.Editor.Plugins
         /// </remarks>
         protected virtual IReadOnlyList<string> OnGetPluginAvailability() => _defaultPluginAvailablity;
 
+
+        /// <summary>
+        /// Function to retrieve the settings interface for the plug in.
+        /// </summary>
+        /// <returns>The base settings view model.</returns>
+        /// <remarks>
+        /// <para>
+        /// This will return a view model that can be used to modify plug in settings on the main settings area in the application. If this method returns <b>null</b>, then the settings will not show in 
+        /// the main settings area of the application.
+        /// </para>
+        /// </remarks>
+        public ISettingsCategoryViewModel GetPluginSettings() => OnGetSettings();
+
         /// <summary>
         /// Function to determine if this plug in is usable or not.
         /// </summary>
@@ -108,6 +149,12 @@ namespace Gorgon.Editor.Plugins
         /// </para>
         /// </remarks>
         public IReadOnlyList<string> IsPluginAvailable() => OnGetPluginAvailability();
+
+		/// <summary>
+        /// Function to assign the application common services to the plug in.
+        /// </summary>
+        /// <param name="commonServices">The common services to pass to the plug in.</param>
+        public void AssignCommonServices(IViewModelInjection commonServices) => CommonServices = commonServices;
         #endregion
 
         #region Constructor/Finalizer.

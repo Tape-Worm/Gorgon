@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.IO;
 using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.ViewModels

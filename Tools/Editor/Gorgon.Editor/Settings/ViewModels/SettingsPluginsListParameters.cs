@@ -26,16 +26,15 @@
 
 using System;
 using System.Collections.Generic;
-using Gorgon.Editor.Services;
-using Gorgon.Editor.UI;
+using Gorgon.Editor.UI.ViewModels;
 
 namespace Gorgon.Editor.ViewModels
 {
-	/// <summary>
+    /// <summary>
     /// The parameters for the <see cref="ISettingsPluginsList"/> view model.
     /// </summary>
     internal class SettingsPluginsListParameters
-        : ViewModelInjectionCommon
+        : ViewModelInjection
     {
 		/// <summary>
         /// Property to return the list of plugins.
@@ -47,12 +46,9 @@ namespace Gorgon.Editor.ViewModels
 
         /// <summary>Initializes a new instance of the <see cref="SettingsPluginsListParameters"/> class.</summary>
         /// <param name="plugins">The plugins to display.</param>
-        /// <param name="messageDisplay">The message display service.</param>
+        /// <param name="commonServices">Common application services.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public SettingsPluginsListParameters(IEnumerable<ISettingsPluginListItem> plugins, IMessageDisplayService messageDisplay)
-        {
-            Plugins = plugins ?? throw new ArgumentNullException(nameof(plugins));
-            MessageDisplay = messageDisplay ?? throw new ArgumentNullException(nameof(messageDisplay));
-        }
+        public SettingsPluginsListParameters(IEnumerable<ISettingsPluginListItem> plugins, IViewModelInjection commonServices)
+			: base(commonServices) => Plugins = plugins ?? throw new ArgumentNullException(nameof(plugins));
     }
 }

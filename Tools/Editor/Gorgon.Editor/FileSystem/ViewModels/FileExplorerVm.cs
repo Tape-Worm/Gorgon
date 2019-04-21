@@ -26,7 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -39,15 +38,12 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Data;
-using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Plugins;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.IO;
-using Gorgon.Math;
-using Gorgon.Timing;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -961,7 +957,7 @@ namespace Gorgon.Editor.ViewModels
         private async Task<(IEditorContentImporter importer, FileInfo importedFile)> CustomImportFileAsync(FileInfo file, IGorgonFileSystem fileSystem, CancellationToken cancelToken)
         {
             FileInfo result;
-            IEditorContentImporter importer = _factory.ContentImporterPlugins.GetContentImporter(file, fileSystem);
+            IEditorContentImporter importer = _factory.ContentPlugins.GetContentImporter(file, fileSystem);
 
             if (importer == null)
             {

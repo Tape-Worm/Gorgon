@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Gorgon.Core;
@@ -70,7 +69,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>
         /// Property to return the list of installed image codecs.
         /// </summary>
-        public IReadOnlyList<IGorgonImageCodec> InstalledCodecs
+        public CodecRegistry InstalledCodecs
         {
             get;
         }
@@ -112,7 +111,7 @@ namespace Gorgon.Editor.ImageEditor
                 {
                     importCodec = null;
 
-                    foreach (IGorgonImageCodec newCodec in InstalledCodecs.Where(item => (item.CodecCommonExtensions.Count > 0) && (item.CanDecode)))
+                    foreach (IGorgonImageCodec newCodec in InstalledCodecs.Codecs.Where(item => (item.CodecCommonExtensions.Count > 0) && (item.CanDecode)))
                     {
                         if (newCodec.IsReadable(stream))
                         {
@@ -431,7 +430,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="bcCompressor">The block compressor used to block (de)compress image data.</param>
         /// <param name="log">The logging interface to use.</param>
         public ImageIOService(IGorgonImageCodec defaultCodec, 
-            IReadOnlyList<IGorgonImageCodec> installedCodecs,
+            CodecRegistry installedCodecs,
             IExportImageDialogService exportDialog,
             IImportImageDialogService importDialog,
             IBusyStateService busyService,

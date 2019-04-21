@@ -20,27 +20,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: February 5, 2019 7:57:48 PM
+// Created: April 20, 2019 2:21:44 PM
 // 
 #endregion
 
-using System;
+using System.Collections.ObjectModel;
 using Gorgon.Editor.UI;
-using Gorgon.Editor.Services;
 
-namespace Gorgon.Editor.ImageEditor.ViewModels
+namespace Gorgon.Editor.ImageEditor
 {
-    /// <summary>
-    /// Parameters for the <see cref="MipMapSettings"/> view model.
+	/// <summary>
+    /// Settings view model for image codecs.
     /// </summary>
-    internal class MipMapSettingsParameters
-        : ViewModelInjectionCommon
+    internal interface ISettings
+		: ISettingsCategoryViewModel
     {
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ImageEditor.ViewModels.MipMapSettingsParameters"/> class.</summary>
-        /// <param name="messageDisplay">The message display.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
-        public MipMapSettingsParameters(IMessageDisplayService messageDisplay) => MessageDisplay = messageDisplay ?? throw new ArgumentNullException(nameof(messageDisplay));
-        #endregion
+        /// <summary>
+        /// Property to set or return the to the directory that was last used for importing/exporting.
+        /// </summary>
+        string LastImportExportPath
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Propery to return the paths to the codec plug ins.
+        /// </summary>
+        ObservableCollection<(string name, string path)> CodecPluginPaths
+        {
+            get;            
+        }
+
+		/// <summary>
+        /// Property to return the command for writing setting data.
+        /// </summary>
+		IEditorCommand<object> WriteSettingsCommand
+        {
+            get;
+        }
     }
 }

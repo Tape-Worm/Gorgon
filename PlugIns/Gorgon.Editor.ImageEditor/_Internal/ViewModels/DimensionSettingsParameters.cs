@@ -26,8 +26,7 @@
 
 using System;
 using Gorgon.Graphics.Core;
-using Gorgon.Editor.UI;
-using Gorgon.Editor.Services;
+using Gorgon.Editor.UI.ViewModels;
 
 namespace Gorgon.Editor.ImageEditor.ViewModels
 {
@@ -35,7 +34,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
     /// Parameters for the <see cref="IDimensionSettings"/> view model.
     /// </summary>
     internal class DimensionSettingsParameters
-        : ViewModelInjectionCommon
+        : ViewModelInjection
     {
         #region Properties.
         /// <summary>
@@ -50,13 +49,10 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ImageEditor.ViewModels.DimensionSettingsParameters"/> class.</summary>
         /// <param name="videoAdapter">The video adapter.</param>
-        /// <param name="messageDisplay">The message display.</param>
+        /// <param name="commonServices">Common application services.</param>
         /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
-        public DimensionSettingsParameters(IGorgonVideoAdapterInfo videoAdapter, IMessageDisplayService messageDisplay)
-        {
-            VideoAdapter = videoAdapter ?? throw new ArgumentNullException(nameof(videoAdapter));
-            MessageDisplay = messageDisplay ?? throw new ArgumentNullException(nameof(messageDisplay));
-        }
+        public DimensionSettingsParameters(IGorgonVideoAdapterInfo videoAdapter, IViewModelInjection commonServices)
+			: base(commonServices) => VideoAdapter = videoAdapter ?? throw new ArgumentNullException(nameof(videoAdapter));        
         #endregion
 
     }

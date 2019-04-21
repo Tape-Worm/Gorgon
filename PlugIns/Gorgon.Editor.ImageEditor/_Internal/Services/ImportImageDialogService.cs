@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Gorgon.Core;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Graphics.Imaging.Codecs;
@@ -45,9 +44,9 @@ namespace Gorgon.Editor.ImageEditor
     {
         #region Variables.
         // The settings for the image editor.
-        private readonly ImageEditorSettings _settings;
+        private readonly ISettings _settings;
         // The codecs available to the importer.
-        private readonly IReadOnlyList<IGorgonImageCodec> _codecs;
+        private readonly CodecRegistry _codecs;
         #endregion
 
         #region Properties.
@@ -98,7 +97,7 @@ namespace Gorgon.Editor.ImageEditor
         private void ConfigureDialog()
         {
             var fileFilter = new StringBuilder();
-            foreach (IGorgonImageCodec codec in _codecs)
+            foreach (IGorgonImageCodec codec in _codecs.Codecs)
             {
                 IEnumerable<string> extensions = codec.CodecCommonExtensions.Distinct(StringComparer.CurrentCultureIgnoreCase).Select(item => $"*.{item}");
 
@@ -139,7 +138,7 @@ namespace Gorgon.Editor.ImageEditor
             SelectedCodec = null;
 
             // Check for an extension match on the codec list.
-            foreach (IGorgonImageCodec codec in _codecs.Where(item => (item.CodecCommonExtensions.Count > 0) && (item.CanDecode)))
+            foreach (IGorgonImageCodec codec in _codecs.Codecs.Where(item => (item.CodecCommonExtensions.Count > 0) && (item.CanDecode)))
             {
                 if (codec.CodecCommonExtensions.Any(item => extension == new GorgonFileExtension(item)))
                 {
@@ -156,7 +155,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ImageEditor.ImportImageDialogService"/> class.</summary>
         /// <param name="settings">The settings.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settings" />, or the <paramref name="codecs"/> parameter is <strong>null</strong>.</exception>
-        public ImportImageDialogService(ImageEditorSettings settings, IReadOnlyList<IGorgonImageCodec> codecs)
+        public ImportImageDialogService(ISettings settings, CodecRegistry codecs)
         {
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _codecs = codecs ?? throw new ArgumentNullException(nameof(codecs));

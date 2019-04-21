@@ -311,4 +311,7 @@ These platforms are incompatible and cannot be mixed.</value>
   <data name="GOREDIT_PLUGIN_TYPE_READER" xml:space="preserve">
     <value>Packed file reader</value>
   </data>
+  <data name="GOREDIT_PLUGIN_TYPE_IMPORTER" xml:space="preserve">
+    <value>Content importer</value>
+  </data>
 </root>

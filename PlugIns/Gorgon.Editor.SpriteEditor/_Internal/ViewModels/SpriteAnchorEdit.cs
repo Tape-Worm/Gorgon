@@ -28,6 +28,7 @@ using System;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Editor.UI;
+using Gorgon.Editor.UI.ViewModels;
 using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
