@@ -88,9 +88,10 @@ namespace Gorgon.UI
 				buttonOK.Left = buttonNo.Left - buttonOK.Width - 8;
 			}
 
-			buttonNo.Top = buttonCancel.Top = buttonOK.Top = checkToAll.Top - buttonOK.Height - 4;
+			buttonNo.Top = buttonCancel.Top = buttonOK.Top = ClientSize.Height - buttonOK.Height - 4;
+            checkToAll.Top = buttonOK.Top + ((buttonOK.Height / 2) - (checkToAll.Height / 2));
 
-			DrawMessage(g, maxTextHeight);			
+            DrawMessage(g, maxTextHeight);			
 		}
         #endregion
 

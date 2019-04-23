@@ -140,8 +140,10 @@ namespace Gorgon.Examples
 						// Redraw the menu.
 						WriteOptions();
 
-						if (!string.IsNullOrEmpty(infoText))
-							MenuOptions.DisplayInfo(infoText);
+                        if (!string.IsNullOrEmpty(infoText))
+                        {
+                            MenuOptions.DisplayInfo(infoText);
+                        }
 
 						break;
 					case ConsoleKey.D4:
