@@ -292,8 +292,7 @@ namespace Gorgon.Editor.ImageEditor
                 ImageIO = imageIO,
                 UndoService = undoService,
                 ImageUpdater = new ImageUpdaterService(),
-                ExternalEditorService = new ImageExternalEditService(CommonServices.Log),
-                PlugInManagerService = new PlugInManagerService()
+                ExternalEditorService = new ImageExternalEditService(CommonServices.Log)
             };
 
             var cropResizeSettings = new CropResizeSettings();

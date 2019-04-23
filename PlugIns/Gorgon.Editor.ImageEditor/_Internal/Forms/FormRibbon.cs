@@ -190,7 +190,7 @@ namespace Gorgon.Editor.ImageEditor
                             continue;
                         }
 
-                        AddCodecItem(DataContext, codec);
+                        AddCodecItem(codec);
                     }
                     break;
                 case NotifyCollectionChangedAction.Remove:
@@ -273,20 +273,6 @@ namespace Gorgon.Editor.ImageEditor
             ValidateButtons();
         }
 
-        /// <summary>Handles the Click event of the ButtonImageCodecManager control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonImageCodecManager_Click(object sender, EventArgs e)
-        {
-            if ((DataContext?.ManageCodecsCommand == null) || (!DataContext.ManageCodecsCommand.CanExecute(null)))
-            {
-                return;
-            }
-
-            DataContext.ManageCodecsCommand.Execute(null);
-            ValidateButtons();
-        }
-
         /// <summary>Handles the Click event of the ButtonSaveImage control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -349,7 +335,6 @@ namespace Gorgon.Editor.ImageEditor
             ButtonImageRedo.Enabled = DataContext.RedoCommand?.CanExecute(null) ?? false;
             ButtonExport.Enabled = MenuCodecs.Items.Count > 0;            
             ButtonSaveImage.Enabled = DataContext.SaveContentCommand?.CanExecute(SaveReason.UserSave) ?? false;
-            ButtonImageCodecManager.Enabled = DataContext.ManageCodecsCommand?.CanExecute(null) ?? false;
 
             if (DataContext.ChangeImageTypeCommand == null)
             {
@@ -434,9 +419,8 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>
         /// Function to add an image codec to the list.
         /// </summary>
-        /// <param name="dataContext">The data context to use.</param>
         /// <param name="codec">The codec to add.</param>
-        private void AddCodecItem(IImageContent dataContext, IGorgonImageCodec codec)
+        private void AddCodecItem(IGorgonImageCodec codec)
         {
             var item = new ToolStripMenuItem($"{codec.CodecDescription} ({codec.Codec})")
             {
@@ -566,7 +550,7 @@ namespace Gorgon.Editor.ImageEditor
             ClearCodecs();
             foreach (IGorgonImageCodec codec in dataContext.Codecs)
             {
-                AddCodecItem(dataContext, codec);
+                AddCodecItem(codec);
             }
 
             RefreshPixelFormats(dataContext);

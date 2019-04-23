@@ -488,6 +488,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The codec plug in &apos;{0}&apos; was already loaded..
+        /// </summary>
+        internal static string GORIMG_ERR_CODEC_PLUGIN_ALREADY_LOADED {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_CODEC_PLUGIN_ALREADY_LOADED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The file is compressed using [{0}], and currently there is no support for decompressing it..
         /// </summary>
         internal static string GORIMG_ERR_COMPRESSED_FILE {
@@ -560,6 +569,17 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static string GORIMG_ERR_NO_CODEC {
             get {
                 return ResourceManager.GetString("GORIMG_ERR_NO_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The DLL &apos;{0}&apos; does not contain any image codecs.
+        ///
+        ///Choose another DLL and try again..
+        /// </summary>
+        internal static string GORIMG_ERR_NO_CODECS {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_NO_CODECS", resourceCulture);
             }
         }
         

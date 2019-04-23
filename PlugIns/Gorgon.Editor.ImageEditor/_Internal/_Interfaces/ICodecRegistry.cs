@@ -68,19 +68,13 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="path">The path to the codec assembly.</param>
         /// <param name="errors">A list of errors if the plug in fails to load.</param>
         /// <returns>A list of codec plugs ins that were loaded.</returns>
-        IReadOnlyList<GorgonImageCodecPlugIn> AddCodec(string path, out IReadOnlyList<string> errors);
+        IReadOnlyList<GorgonImageCodecPlugIn> AddCodecPlugIn(string path, out IReadOnlyList<string> errors);
 
         /// <summary>
         /// Function to load the codecs from our settings data.
         /// </summary>
         /// <param name="settings">The settings containing the plug in paths.</param>
         void LoadFromSettings(ImageEditorSettings settings);
-
-        /// <summary>
-        /// Function to remove an image codec from the registry.
-        /// </summary>
-        /// <param name="plugin">The codec to remove.</param>
-        void RemoveCodec(IGorgonImageCodec codec);
 
         /// <summary>
         /// Function to remove an image codec plug in from the registry.

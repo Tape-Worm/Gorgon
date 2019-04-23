@@ -188,7 +188,17 @@ namespace Gorgon.Editor.ImageEditor
                         }
                         break;
                     case NotifyCollectionChangedAction.Remove:
-#warning TODO
+                        foreach (CodecSetting setting in e.OldItems.OfType<CodecSetting>())
+                        {
+                            ListViewItem listItem = ListCodecs.Items.OfType<ListViewItem>().FirstOrDefault(item => item.Tag == setting);
+
+                            if (listItem == null)
+                            {
+                                continue;
+                            }
+
+                            ListCodecs.Items.Remove(listItem);
+                        }
                         break;
                 }
             }
@@ -242,14 +252,6 @@ namespace Gorgon.Editor.ImageEditor
             ValidateButtons();
         }
 
-        /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
-        private void DataContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-#warning May not need this. Remove when done.
-        }
-
         /// <summary>
         /// Function to unassign events from the data context.
         /// </summary>
@@ -260,20 +262,16 @@ namespace Gorgon.Editor.ImageEditor
                 return;
             }
 
-            DataContext.PropertyChanged -= DataContext_PropertyChanged;
             DataContext.SelectedCodecs.CollectionChanged -= SelectedCodecs_CollectionChanged;
             DataContext.CodecPlugInPaths.CollectionChanged -= CodecPlugInPaths_CollectionChanged;
-        }        
-
-		/// <summary>
-        /// Function to restore the control to its default state.
-        /// </summary>
-        private void ResetDataContext()
-        {
-            FillList(null);
         }
 
-		/// <summary>
+        /// <summary>
+        /// Function to restore the control to its default state.
+        /// </summary>
+        private void ResetDataContext() => FillList(null);
+
+        /// <summary>
         /// Function to initialize the control from the specified data context.
         /// </summary>
         /// <param name="dataContext">The data context to apply.</param>
@@ -312,7 +310,6 @@ namespace Gorgon.Editor.ImageEditor
                 return;
             }
 						
-            DataContext.PropertyChanged += DataContext_PropertyChanged;
             DataContext.CodecPlugInPaths.CollectionChanged += CodecPlugInPaths_CollectionChanged;
             DataContext.SelectedCodecs.CollectionChanged += SelectedCodecs_CollectionChanged;
         }        

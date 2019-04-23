@@ -1921,7 +1921,15 @@ namespace Gorgon.Graphics.Core
                 D3D11.FormatSupport formatSupport = device.CheckFormatSupport(dxgiFormat);
                 D3D11.ComputeShaderFormatSupport computeSupport = device.CheckComputeShaderFormatSupport(dxgiFormat);
 
-                result[format] = new FormatSupportInfo(format, formatSupport, computeSupport, GetMultisampleSupport(device, dxgiFormat));
+                GorgonMultisampleInfo msInfo = GorgonMultisampleInfo.NoMultiSampling;
+
+                if (((formatSupport & D3D11.FormatSupport.MultisampleRenderTarget) == D3D11.FormatSupport.MultisampleRenderTarget)
+                    || ((formatSupport & D3D11.FormatSupport.MultisampleLoad) == D3D11.FormatSupport.MultisampleLoad))
+                {
+                    msInfo = GetMultisampleSupport(device, dxgiFormat);
+                }
+
+                result[format] = new FormatSupportInfo(format, formatSupport, computeSupport, msInfo);
             }
 
             return result;

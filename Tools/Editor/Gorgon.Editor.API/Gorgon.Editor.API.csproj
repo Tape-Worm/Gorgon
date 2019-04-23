@@ -71,8 +71,6 @@
     <Compile Include="Rendering\_Interfaces\IMarchingAnts.cs" />
     <Compile Include="Rendering\MarchingAnts.cs" />
     <Compile Include="Services\FileSaveDialogService.cs" />
-    <Compile Include="Services\PluginManagerService.cs" />
-    <Compile Include="Services\_Interfaces\IPlugInManagerService.cs" />
     <Compile Include="Services\_Interfaces\IToolPluginService.cs" />
     <Compile Include="Services\RectClipperService.cs" />
     <Compile Include="Services\RectHandle.cs" />
@@ -98,12 +96,6 @@
     </Compile>
     <Compile Include="UI\Forms\FormName.Designer.cs">
       <DependentUpon>FormName.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Forms\FormPlugInManager.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Forms\FormPlugInManager.Designer.cs">
-      <DependentUpon>FormPlugInManager.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\ViewModels\ViewModelInjection.cs" />
     <Compile Include="UI\Views\SettingsBaseControl.cs">
@@ -245,9 +237,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Forms\FormName.resx">
       <DependentUpon>FormName.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Forms\FormPlugInManager.resx">
-      <DependentUpon>FormPlugInManager.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\RecentFilesControl.resx">
       <DependentUpon>RecentFilesControl.cs</DependentUpon>

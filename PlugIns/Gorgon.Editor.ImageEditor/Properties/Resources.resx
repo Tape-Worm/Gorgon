@@ -501,4 +501,12 @@ Are you sure you want to do this?</value>
 
 Please try again.</value>
   </data>
+  <data name="GORIMG_ERR_NO_CODECS" xml:space="preserve">
+    <value>The DLL '{0}' does not contain any image codecs.
+
+Choose another DLL and try again.</value>
+  </data>
+  <data name="GORIMG_ERR_CODEC_PLUGIN_ALREADY_LOADED" xml:space="preserve">
+    <value>The codec plug in '{0}' was already loaded.</value>
+  </data>
 </root>

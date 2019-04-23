@@ -317,8 +317,9 @@ namespace Gorgon.PlugIns
                         wait.SpinOnce();
                         continue;
                     }
-
+					                    
                     UnloadAll();
+                    _log.Print("Scanning cached assemblies for available plug ins...", LoggingLevel.Intermediate);
 
                     _cache.Refresh();
                     IEnumerable<Lazy<GorgonPlugIn, IDictionary<string, object>>> plugins = _cache.EnumeratePlugIns();
@@ -409,7 +410,7 @@ namespace Gorgon.PlugIns
         /// </summary>
         public void UnloadAll()
         {
-            _log.Print("Unloading all plugins.", LoggingLevel.Simple);
+            _log.Print("Unloading all plug ins.", LoggingLevel.Simple);
 
             GorgonPlugIn[] plugins = _loadedPlugIns.Where(item => item.Value.IsValueCreated).Select(item => item.Value.Value).ToArray();
             _loadedPlugIns.Clear();

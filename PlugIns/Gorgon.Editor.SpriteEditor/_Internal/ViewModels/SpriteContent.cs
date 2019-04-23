@@ -736,8 +736,6 @@ namespace Gorgon.Editor.SpriteEditor
 
 				// Set all vertices as selected on the color editor.
                 ColorEditor.SelectedVertices = new bool[] { true, true, true, true };				
-
-#warning Do not forget to add all properties here.
                 
                 NotifyPropertyChanged(nameof(ArrayIndex));
                 NotifyPropertyChanged(nameof(TextureCoordinates));

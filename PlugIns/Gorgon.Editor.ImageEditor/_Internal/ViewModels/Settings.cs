@@ -194,11 +194,16 @@ namespace Gorgon.Editor.ImageEditor
                 IReadOnlyList<GorgonImageCodecPlugIn> plugIns = selected.Select(item => item.PlugIn).ToArray();
                 MessageResponse response = MessageResponse.None;
 
+                if (plugIns.Count == 0)
+                {
+                    return;
+                }
+
                 foreach (GorgonImageCodecPlugIn plugIn in plugIns)
                 {
                     if ((response != MessageResponse.YesToAll) && (response != MessageResponse.NoToAll))
                     {
-                        response = _messageDisplay.ShowConfirmation(string.Format(Resources.GORIMG_CONFIRM_REMOVE_CODECS, Path.GetFileName(plugIn.PlugInPath)), toAll: true);
+                        response = _messageDisplay.ShowConfirmation(string.Format(Resources.GORIMG_CONFIRM_REMOVE_CODECS, Path.GetFileName(plugIn.PlugInPath)), toAll: plugIns.Count > 1);
                     }
 
                     if (response == MessageResponse.NoToAll)
@@ -223,6 +228,9 @@ namespace Gorgon.Editor.ImageEditor
 
                     _busyService.SetIdle();
                 }
+
+                // Store the settings now.
+                DoWriteSettings();
             }
             catch (Exception ex)
             {
@@ -241,9 +249,16 @@ namespace Gorgon.Editor.ImageEditor
         {
             try
             {
+                string lastCodecPath = _settings.LastCodecPlugInPath.FormatDirectory(Path.DirectorySeparatorChar);
+
+                if ((string.IsNullOrWhiteSpace(lastCodecPath)) || (!Directory.Exists(lastCodecPath)))
+                {
+                    lastCodecPath = AppDomain.CurrentDomain.BaseDirectory;
+                }
+
                 _openCodecDialog.DialogTitle = Resources.GORIMG_CAPTION_SELECT_CODEC_DLL;
                 _openCodecDialog.FileFilter = Resources.GORIMG_FILTER_SELECT_CODEC;
-                _openCodecDialog.InitialDirectory = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
+                _openCodecDialog.InitialDirectory = new DirectoryInfo(lastCodecPath);
 
                 string path = _openCodecDialog.GetFilename();
 
@@ -253,11 +268,11 @@ namespace Gorgon.Editor.ImageEditor
                 }
 
                 _busyService.SetBusy();
-                IReadOnlyList<GorgonImageCodecPlugIn> codecs = _codecs.AddCodec(path, out IReadOnlyList<string> errors);
+                IReadOnlyList<GorgonImageCodecPlugIn> codecs = _codecs.AddCodecPlugIn(path, out IReadOnlyList<string> errors);
 
                 if (errors.Count > 0)
                 {
-                    _messageDisplay.ShowError(Resources.GORIMG_ERR_CANNOT_LOAD_CODEC, details: string.Join("\n", errors));
+                    _messageDisplay.ShowError(Resources.GORIMG_ERR_CODEC_LOAD_ERRORS_PRESENT, details: string.Join("\n\n", errors.Select((item, index) => $"Error #{index + 1}\n--------------\n{item}")));
 
                     if (codecs.Count == 0)
                     {
@@ -279,6 +294,11 @@ namespace Gorgon.Editor.ImageEditor
                         CodecPlugInPaths.Add(new CodecSetting(codec.CodecDescription, plugin, desc));
                     }
                 }
+
+                _settings.LastCodecPlugInPath = Path.GetDirectoryName(path).FormatDirectory(Path.DirectorySeparatorChar);
+
+				// Store the settings now.
+                DoWriteSettings();
             }
             catch (Exception ex)
             {

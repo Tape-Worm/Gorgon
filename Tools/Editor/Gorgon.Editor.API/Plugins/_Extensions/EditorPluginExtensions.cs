@@ -122,14 +122,14 @@ namespace Gorgon.Editor.PlugIns
 
                 try
                 {
-                    log.Print($"Loading content plug in assembly '{file.FullName}'...", LoggingLevel.Simple);
+                    log.Print($"Loading plug in assembly '{file.FullName}'...", LoggingLevel.Simple);
                     pluginCache.LoadPlugInAssemblies(file.DirectoryName, file.Name);
 
                     records.Add(new PlugInRecord(file.FullName, string.Empty, true));
                 }
                 catch (Exception ex)
                 {
-                    log.Print($"ERROR: Cannot load content plug in assembly '{file.FullName}'.", LoggingLevel.Simple);
+                    log.Print($"ERROR: Cannot load plug in assembly '{file.FullName}'.", LoggingLevel.Simple);
                     log.LogException(ex);
                     records.Add(new PlugInRecord(file.FullName, string.Format(Resources.GOREDIT_PLUGIN_LOAD_FAIL_EXCEPTION, file.Name, ex.Message), true));
                 }

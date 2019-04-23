@@ -42,9 +42,6 @@
 			this.GroupImageFile = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
 			this.kryptonRibbonGroupTriple1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
 			this.ButtonSaveImage = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-			this.kryptonRibbonGroupSeparator1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
-			this.kryptonRibbonGroupTriple4 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
-			this.ButtonImageCodecManager = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
 			this.GroupCodec = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
 			this.ButtonImport = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
 			this.ButtonExport = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
@@ -84,6 +81,7 @@
 			this.Item1600Percent = new System.Windows.Forms.ToolStripMenuItem();
 			this.Item3200Percent = new System.Windows.Forms.ToolStripMenuItem();
 			this.Item6400Percent = new System.Windows.Forms.ToolStripMenuItem();
+			this.kryptonRibbonGroupSeparator1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
 			((System.ComponentModel.ISupportInitialize)(this.RibbonImageContent)).BeginInit();
 			this.MenuImageType.SuspendLayout();
 			this.MenuZoom.SuspendLayout();
@@ -96,7 +94,6 @@
 			this.RibbonImageContent.Name = "RibbonImageContent";
 			this.RibbonImageContent.RibbonTabs.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab[] {
             this.TabImage});
-			this.RibbonImageContent.SelectedContext = null;
 			this.RibbonImageContent.SelectedTab = this.TabImage;
 			this.RibbonImageContent.Size = new System.Drawing.Size(1293, 115);
 			this.RibbonImageContent.TabIndex = 0;
@@ -119,7 +116,6 @@
 			this.GroupImageFile.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupContainer[] {
             this.kryptonRibbonGroupTriple1,
             this.kryptonRibbonGroupSeparator1,
-            this.kryptonRibbonGroupTriple4,
             this.GroupCodec});
 			this.GroupImageFile.KeyTipGroup = "F";
 			this.GroupImageFile.TextLine1 = "File";
@@ -142,22 +138,6 @@
 			this.ButtonSaveImage.ToolTipBody = "Updates the image file in the file system with the current changes.";
 			this.ButtonSaveImage.ToolTipTitle = "Save Image";
 			this.ButtonSaveImage.Click += new System.EventHandler(this.ButtonSaveImage_Click);
-			// 
-			// kryptonRibbonGroupTriple4
-			// 
-			this.kryptonRibbonGroupTriple4.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
-            this.ButtonImageCodecManager});
-			// 
-			// ButtonImageCodecManager
-			// 
-			this.ButtonImageCodecManager.ImageLarge = global::Gorgon.Editor.ImageEditor.Properties.Resources.plugins_48x48;
-			this.ButtonImageCodecManager.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.plugins_16x16;
-			this.ButtonImageCodecManager.KeyTip = "P";
-			this.ButtonImageCodecManager.TextLine1 = "Image Codec";
-			this.ButtonImageCodecManager.TextLine2 = "Plug ins";
-			this.ButtonImageCodecManager.ToolTipBody = "Manages custom image plug in codecs.";
-			this.ButtonImageCodecManager.ToolTipTitle = "Image codec plug ins.";
-			this.ButtonImageCodecManager.Click += new System.EventHandler(this.ButtonImageCodecManager_Click);
 			// 
 			// GroupCodec
 			// 
@@ -533,7 +513,6 @@
         internal ComponentFactory.Krypton.Ribbon.KryptonRibbon RibbonImageContent;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup GroupEdit;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines GroupCodec;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator1;
         private System.Windows.Forms.ContextMenuStrip MenuCodecs;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines GroupImageFormat;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonImageFormat;
@@ -571,7 +550,6 @@
         private System.Windows.Forms.ToolStripMenuItem Item1600Percent;
         private System.Windows.Forms.ToolStripMenuItem Item3200Percent;
         private System.Windows.Forms.ToolStripMenuItem Item6400Percent;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple4;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonImageCodecManager;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator1;
     }
 }
