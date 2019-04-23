@@ -113,7 +113,7 @@ namespace Gorgon.Editor.Views
         /// Function to register the settings panels from plug ins.
         /// </summary>
         /// <param name="dataContext">The current data context.</param>
-        private void RegisterPluginSettingsPanels(IEditorSettingsVm dataContext)
+        private void RegisterPlugInSettingsPanels(IEditorSettingsVm dataContext)
         {
             SplitSettingsNav.SuspendLayout();
 
@@ -165,7 +165,7 @@ namespace Gorgon.Editor.Views
         /// <param name="clearPanelLookup"><b>true</b> to clear the panel look up, <b>false</b> to leave it alone.</param>
         private void ClearExtraPanels(bool clearPanelLookup)
         {
-            var controls = new List<SettingsBaseControl>(SplitSettingsNav.Panel2.Controls.OfType<SettingsBaseControl>().Where(item => item != PluginsPanel_00000000000000000000000000000000));
+            var controls = new List<SettingsBaseControl>(SplitSettingsNav.Panel2.Controls.OfType<SettingsBaseControl>().Where(item => item != PlugInsPanel_00000000000000000000000000000000));
 
             ListCategories.SelectedIndex = 0;
 
@@ -228,7 +228,7 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            RegisterPluginSettingsPanels(dataContext);
+            RegisterPlugInSettingsPanels(dataContext);
 
             int selectedIndex = 0;
 
@@ -265,7 +265,7 @@ namespace Gorgon.Editor.Views
         /// </remarks>
         public void SetDataContext(IEditorSettingsVm dataContext)
         {
-            PluginsPanel_00000000000000000000000000000000.SetDataContext(dataContext?.PluginsList);
+            PlugInsPanel_00000000000000000000000000000000.SetDataContext(dataContext?.PlugInsList);
 
             InitializeFromDataContext(dataContext);
             DataContext = dataContext;            
@@ -286,8 +286,8 @@ namespace Gorgon.Editor.Views
             InitializeComponent();
 
 			// Register our fixed panel(s).
-            _panelLookup[PluginsPanel_00000000000000000000000000000000.PanelID] = PluginsPanel_00000000000000000000000000000000;
-            _categoryLookup[ListCategories.Items[0].ToString()] = PluginsPanel_00000000000000000000000000000000.PanelID;
+            _panelLookup[PlugInsPanel_00000000000000000000000000000000.PanelID] = PlugInsPanel_00000000000000000000000000000000;
+            _categoryLookup[ListCategories.Items[0].ToString()] = PlugInsPanel_00000000000000000000000000000000.PanelID;
         }
         #endregion
     }

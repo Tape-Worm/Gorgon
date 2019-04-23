@@ -27,12 +27,12 @@
 using System;
 using Gorgon.Core;
 
-namespace Gorgon.Editor.Plugins
+namespace Gorgon.Editor.PlugIns
 {
     /// <summary>
     /// A record providing plug in state information.
     /// </summary>
-    public class PluginRecord
+    public class PlugInRecord
     {
 		/// <summary>
         /// Property to returnt he path to the plug in.
@@ -66,13 +66,13 @@ namespace Gorgon.Editor.Plugins
             get;
         }
 
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.Plugins.PluginRecord"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.PlugIns.PlugInRecord"/> class.</summary>
         /// <param name="pluginAssemblyPath">The plugin assembly path.</param>
         /// <param name="loadFailure">The reason why the assembly was not loaded.</param>
         /// <param name="isManaged"><b>true</b> if the assembly DLL is managed, <b>false</b> if not.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginAssemblyPath"/> is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrownw hen the <paramref name="pluginAssemblyPath"/> is empty.</exception>
-        public PluginRecord(string pluginAssemblyPath, string loadFailure, bool isManaged)
+        public PlugInRecord(string pluginAssemblyPath, string loadFailure, bool isManaged)
         {
             if (pluginAssemblyPath == null)
             {

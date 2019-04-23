@@ -288,8 +288,13 @@ namespace Gorgon.Editor.Views
 
             if (parent != DataContext.RootNode)
             {
-                _revNodeLinks.TryGetValue(parent, out parentTreeNode);
+				// The node does not exist yet, so do nothing.
+                if (!_revNodeLinks.TryGetValue(parent, out parentTreeNode))
+                {
+                    return;
+                }
             }
+
             TreeNodeCollection nodes = parentTreeNode?.Nodes ?? TreeFileSystem.Nodes;
 
             KryptonTreeNode newTreeNode = null;
@@ -1544,7 +1549,7 @@ namespace Gorgon.Editor.Views
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
-        private void TreeFileSystem_KeyUp(object sender, KeyEventArgs e)
+        private async void TreeFileSystem_KeyUp(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
             {
@@ -1561,7 +1566,7 @@ namespace Gorgon.Editor.Views
                     }
                     break;
                 case Keys.F5:
-                    RefreshTreeBranch(true);
+                    await RefreshTreeBranchAsync(true);
                     break;
             }
         }
@@ -2065,7 +2070,7 @@ namespace Gorgon.Editor.Views
         /// Function to refresh the tree, or a branch on the tree.
         /// </summary>
         /// <param name="rebuildFileSystemNodes"><b>true</b> to rebuild the underlying file system hierarchy before populating the branch, or <b>false</b> to just repopulate the branch.</param>
-        private void RefreshTreeBranch(bool rebuildFileSystemNodes)
+        private async Task RefreshTreeBranchAsync(bool rebuildFileSystemNodes)
         {
             if (DataContext == null)
             {
@@ -2081,7 +2086,7 @@ namespace Gorgon.Editor.Views
 
                 if ((rebuildFileSystemNodes) && (DataContext.RefreshNodeCommand != null) && (DataContext.RefreshNodeCommand.CanExecute(DataContext.RootNode)))
                 {
-                    DataContext.RefreshNodeCommand.Execute(DataContext.RootNode);
+                    await DataContext.RefreshNodeCommand.ExecuteAsync(DataContext.RootNode);
                 }
 
                 FillTree(TreeFileSystem.Nodes, DataContext.RootNode.Children, true);
@@ -2112,7 +2117,7 @@ namespace Gorgon.Editor.Views
             {                
                 if ((rebuildFileSystemNodes) && (DataContext.RefreshNodeCommand != null) && (DataContext.RefreshNodeCommand.CanExecute(node)))
                 {
-                    DataContext.RefreshNodeCommand.Execute(node);
+                    await DataContext.RefreshNodeCommand.ExecuteAsync(node);
                 }
             }
             finally

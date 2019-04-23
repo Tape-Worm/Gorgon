@@ -130,7 +130,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the command used to refresh the specified node children.
         /// </summary>
-        IEditorCommand<IFileExplorerNodeVm> RefreshNodeCommand
+        IEditorAsyncCommand<IFileExplorerNodeVm> RefreshNodeCommand
         {
             get;
         }

@@ -7,7 +7,7 @@ namespace Gorgon.Editor.Services
     /// <summary>
     /// A service used to allow the management of plug ins.
     /// </summary>
-    public class PluginManagerService
+    public class PlugInManagerService
 		: IPlugInManagerService
     {
         #region Variables.

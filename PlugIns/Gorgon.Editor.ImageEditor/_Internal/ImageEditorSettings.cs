@@ -39,7 +39,7 @@ namespace Gorgon.Editor.ImageEditor
         /// Property to return the list of additional image codec plug ins to load.
         /// </summary>
         [JsonProperty]
-        public Dictionary<string, string> CodecPluginPaths
+        public Dictionary<string, string> CodecPlugInPaths
         {
             get;
             private set;

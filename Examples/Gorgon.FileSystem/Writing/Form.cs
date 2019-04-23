@@ -235,7 +235,7 @@ namespace Gorgon.Examples
 
 			try
 			{
-                GorgonExample.PluginLocationDirectory = new DirectoryInfo(Settings.Default.PlugInLocation);
+                GorgonExample.PlugInLocationDirectory = new DirectoryInfo(Settings.Default.PlugInLocation);
                 GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
 			    
 				// Create our virtual file system.

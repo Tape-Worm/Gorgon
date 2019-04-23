@@ -32,7 +32,7 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Examples.Properties;
 using Gorgon.IO.Providers;
-using Gorgon.Plugins;
+using Gorgon.PlugIns;
 
 namespace Gorgon.Examples
 {
@@ -67,9 +67,9 @@ namespace Gorgon.Examples
 		// The providers that were loaded.
 		private static IReadOnlyList<GorgonFileSystemProvider> _providers;
 		// The cache that will hold the assemblies where our plugins will live.
-		private static GorgonMefPluginCache _pluginAssemblies;
+		private static GorgonMefPlugInCache _pluginAssemblies;
 		// The plugin service.
-		private static IGorgonPluginService _pluginService;
+		private static IGorgonPlugInService _pluginService;
         // The log used for debug logging.
         private static IGorgonLog _log;
         #endregion
@@ -110,7 +110,7 @@ namespace Gorgon.Examples
         /// <returns>The number of file system provider plug-ins.</returns>
         private static int LoadFileSystemProviders()
         {
-            _pluginAssemblies.LoadPluginAssemblies(PlugInPath, "Gorgon.FileSystem.*");
+            _pluginAssemblies.LoadPlugInAssemblies(PlugInPath, "Gorgon.FileSystem.*");
 		
 			// Get the file system provider factory so we can retrieve our newly loaded providers.
 			IGorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_pluginService, _log);
@@ -132,9 +132,9 @@ namespace Gorgon.Examples
             _log.LogStart();
 		    
 			// Create a plugin assembly cache to hold our plugin assemblies.
-			_pluginAssemblies = new GorgonMefPluginCache(_log);
+			_pluginAssemblies = new GorgonMefPlugInCache(_log);
 			// Create the plugin service.
-			_pluginService = new GorgonMefPluginService(_pluginAssemblies, _log);
+			_pluginService = new GorgonMefPlugInService(_pluginAssemblies, _log);
 
 		    try
 		    {

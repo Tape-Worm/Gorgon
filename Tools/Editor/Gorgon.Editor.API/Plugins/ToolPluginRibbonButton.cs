@@ -28,13 +28,13 @@ using System;
 using System.Drawing;
 using Gorgon.Core;
 
-namespace Gorgon.Editor.Plugins
+namespace Gorgon.Editor.PlugIns
 {
     /// <summary>
     /// Defines a button to display on the ribbon bar, in the tools area.
     /// </summary>
-    public class ToolPluginRibbonButton
-        : GorgonNamedObject, IDisposable, IToolPluginRibbonButton
+    public class ToolPlugInRibbonButton
+        : GorgonNamedObject, IDisposable, IToolPlugInRibbonButton
     {
         #region Variables.
         // Flag to indicate that we own the large image and are repsonsible for its lifetime.
@@ -153,7 +153,7 @@ namespace Gorgon.Editor.Plugins
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.Plugins.ToolPluginRibbonButton"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.PlugIns.ToolPlugInRibbonButton"/> class.</summary>
         /// <param name="displayText">The display text.</param>
         /// <param name="largeIcon">The large icon.</param>
         /// <param name="smallIcon">The small icon.</param>
@@ -162,7 +162,7 @@ namespace Gorgon.Editor.Plugins
         /// <param name="canExecute">The callback used to determine if the button can be clicked.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="displayText"/>, or the <paramref name="groupName"/> parameter is empty.</exception>
-        public ToolPluginRibbonButton(string displayText, Image largeIcon, Image smallIcon, string groupName, Action clickCallback, Func<bool> canExecute)
+        public ToolPlugInRibbonButton(string displayText, Image largeIcon, Image smallIcon, string groupName, Action clickCallback, Func<bool> canExecute)
             : base(Guid.NewGuid().ToString("N"))
         {
             if (displayText == null)

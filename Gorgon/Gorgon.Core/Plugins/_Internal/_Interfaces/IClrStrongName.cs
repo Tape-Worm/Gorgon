@@ -29,7 +29,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace Gorgon.Plugins
+namespace Gorgon.PlugIns
 {
 	/// <summary>
 	/// An interface for interacting with the CLR.

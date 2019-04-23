@@ -50,7 +50,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the list of plug ins for the fixed plug in list category.
         /// </summary>
-        public ISettingsPluginsList PluginsList
+        public ISettingsPlugInsList PlugInsList
         {
             get;
         }
@@ -79,11 +79,11 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="messageDisplay">The message display service.</param>
         /// <param name="busyService">The busy state service.</param>
         /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
-        public EditorSettingsParameters(IEnumerable<ISettingsCategoryViewModel> categories, ISettingsPluginsList pluginsList, IMessageDisplayService messageDisplay, IBusyStateService busyService)
+        public EditorSettingsParameters(IEnumerable<ISettingsCategoryViewModel> categories, ISettingsPlugInsList pluginsList, IMessageDisplayService messageDisplay, IBusyStateService busyService)
         {
             MessageDisplay = messageDisplay ?? throw new ArgumentNullException(nameof(messageDisplay));
             Categories = categories ?? throw new ArgumentNullException(nameof(categories));
-            PluginsList = pluginsList ?? throw new ArgumentNullException(nameof(pluginsList));
+            PlugInsList = pluginsList ?? throw new ArgumentNullException(nameof(pluginsList));
             BusyService = busyService ?? throw new ArgumentNullException(nameof(busyService));
         }
     }

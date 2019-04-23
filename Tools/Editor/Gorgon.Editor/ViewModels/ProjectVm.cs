@@ -34,7 +34,7 @@ using System.Threading.Tasks;
 using Gorgon.Collections;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
@@ -71,7 +71,7 @@ namespace Gorgon.Editor.ViewModels
         // The application project manager.
         private IProjectManager _projectManager;
         // The content plugin service.
-        private IContentPluginManagerService _contentPlugins;        
+        private IContentPlugInManagerService _contentPlugIns;        
         // The currently active content.
         private IEditorContent _currentContent;
         // The window layout XML.
@@ -420,7 +420,7 @@ namespace Gorgon.Editor.ViewModels
             FileExplorer.WaitPanelDeactivated += FileExplorer_WaitPanelDeactivated;
             FileExplorer.ProgressUpdated += FileExplorer_ProgressUpdated;
             FileExplorer.ProgressDeactivated += FileExplorer_ProgressDeactivated;
-            FileExplorer.FileSystemChanged += FileExplorer_FileSystemChanged;
+            FileExplorer.FileSystemChanged += FileExplorer_FileSystemChanged;            
         }
 
         /// <summary>
@@ -445,7 +445,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 return;
             }
-
+            
             FileExplorer.ProgressUpdated -= FileExplorer_ProgressUpdated;
             FileExplorer.ProgressDeactivated -= FileExplorer_ProgressDeactivated;
             FileExplorer.WaitPanelActivated -= FileExplorer_WaitPanelActivated;
@@ -543,16 +543,16 @@ namespace Gorgon.Editor.ViewModels
 
                 ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_LOADING_CONTENT, file.Name));
 
-                if (file.ContentPlugin == null)
+                if (file.ContentPlugIn == null)
                 {
                     // Reset back to unassigned.                    
-                    file.Metadata.PluginName = null;
+                    file.Metadata.PlugInName = null;
 
                     // If we don't have a content plug in, then try to find one now.
                     // If that fails (i.e. the assignment won't change), then tell the user we can't open.
-                    _contentPlugins.AssignContentPlugin(file, ContentFileManager, false);
+                    _contentPlugIns.AssignContentPlugIn(file, ContentFileManager, false);
 
-                    if (file.ContentPlugin == null)
+                    if (file.ContentPlugIn == null)
                     {
                         _messageService.ShowError(string.Format(Resources.GOREDIT_ERR_NO_PLUGIN_FOR_CONTENT, file.Path));
                         return;
@@ -574,7 +574,7 @@ namespace Gorgon.Editor.ViewModels
                 ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_OPENING, file.Name));
 
                 // Create a content object.                
-                IEditorContent content = await file.ContentPlugin.OpenContentAsync(file, _contentFileManager, _projectData, new UndoService(Log)); 
+                IEditorContent content = await file.ContentPlugIn.OpenContentAsync(file, _contentFileManager, _projectData, new UndoService(Log)); 
 
                 if (content == null)
                 {
@@ -635,7 +635,7 @@ namespace Gorgon.Editor.ViewModels
             _projectData = injectionParameters.Project ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.Project), nameof(injectionParameters));
             _messageService = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.MessageDisplay), nameof(injectionParameters));
             _busyService = injectionParameters.BusyService ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.BusyService), nameof(injectionParameters));            
-            _contentPlugins = injectionParameters.ContentPlugins ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.ContentPlugins), nameof(injectionParameters));
+            _contentPlugIns = injectionParameters.ContentPlugIns ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.ContentPlugIns), nameof(injectionParameters));
 
             if (_projectData.ProjectWorkSpace == null)
             {
@@ -671,7 +671,7 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="plugin">The plug in used to create the content.</param>
         /// <returns>A new content file containing the content data, or <b>null</b> if the content creation was cancelled.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="metadata"/>, or the <paramref name="plugin"/> parameter is <b>null</b>.</exception>
-        public async Task<IContentFile> CreateNewContentItemAsync(IContentPluginMetadata metadata, ContentPlugin plugin)
+        public async Task<IContentFile> CreateNewContentItemAsync(IContentPlugInMetadata metadata, ContentPlugIn plugin)
         {
             if (metadata == null)
             {
@@ -745,7 +745,7 @@ namespace Gorgon.Editor.ViewModels
                 args.Node.Refresh();
 
                 // Since we already know our plug in, we can assign it here.
-                _viewModelFactory.ContentPlugins.AssignContentPlugin(args.ContentFile, _contentFileManager, metadata);
+                _viewModelFactory.ContentPlugIns.AssignContentPlugIn(args.ContentFile, _contentFileManager, metadata);
 
                 // Mark this item as new.
                 args.ContentFile.Metadata.Attributes[CommonEditorConstants.IsNewAttr] = "true";
@@ -831,7 +831,7 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="cancelToken">The token used for cancellation of the operation.</param>        
         /// <returns>A task for asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/>, or the <paramref name="writer"/> parameter is <b>null</b>.</exception>
-        public Task SaveToPackFileAsync(FileInfo path, FileWriterPlugin writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
+        public Task SaveToPackFileAsync(FileInfo path, FileWriterPlugIn writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
         {
             if (path == null)
             {

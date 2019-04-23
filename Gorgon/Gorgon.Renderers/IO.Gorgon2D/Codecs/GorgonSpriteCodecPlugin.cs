@@ -29,15 +29,15 @@ using System.Collections.Generic;
 using System.Linq;
 using Gorgon.Core;
 using Gorgon.IO.Properties;
-using Gorgon.Plugins;
+using Gorgon.PlugIns;
 
 namespace Gorgon.IO
 {
     /// <summary>
     /// A plug in for allowing users to supply their own 3rd party sprite codecs.
     /// </summary>
-    public abstract class GorgonSpriteCodecPlugin
-        : GorgonPlugin
+    public abstract class GorgonSpriteCodecPlugIn
+        : GorgonPlugIn
     {
         #region Properties.
         /// <summary>
@@ -110,7 +110,7 @@ namespace Gorgon.IO
 
         #region Constructor/Finalizer.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonSpriteCodecPlugin"/> class.
+        /// Initializes a new instance of the <see cref="GorgonSpriteCodecPlugIn"/> class.
         /// </summary>
         /// <param name="description">Optional description of the plugin.</param>
         /// <remarks>
@@ -118,7 +118,7 @@ namespace Gorgon.IO
         /// Objects that implement this base class should pass in a hard coded description on the base constructor.
         /// </para>
         /// </remarks>
-        protected GorgonSpriteCodecPlugin(string description)
+        protected GorgonSpriteCodecPlugIn(string description)
             : base(description)
         {
 

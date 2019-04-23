@@ -38,7 +38,7 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Data;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
@@ -99,7 +99,7 @@ namespace Gorgon.Editor.ViewModels
         // The application settings.
         private EditorSettings _settings;
         // The content plugin service.
-        private IContentPluginManagerService _contentPlugins;
+        private IContentPlugInManagerService _contentPlugIns;
         // The search results for a search query.
         private List<IFileExplorerNodeVm> _searchResults;
         // The system used to search through the file system.
@@ -190,7 +190,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the command used to refresh the specified node children.
         /// </summary>
-        public IEditorCommand<IFileExplorerNodeVm> RefreshNodeCommand
+        public IEditorAsyncCommand<IFileExplorerNodeVm> RefreshNodeCommand
         {
             get;
         }
@@ -716,11 +716,11 @@ namespace Gorgon.Editor.ViewModels
         {
             IFileExplorerNodeVm nodeToRefresh = node ?? RootNode;
 
-            // Check for open content.
-            string openContentPath = null;
+            // Check for open content.            
             var changedFilePaths = new HashSet<string>();
             var searchNodes = new List<string>();
             var depNodes = new List<IContentFile>();
+            var openFiles = new List<IFileExplorerNodeVm>();
 
             // Reset the metadata list.  The enumeration method requires that we have this list up to date.
             _project.ProjectItems.Clear();
@@ -748,7 +748,7 @@ namespace Gorgon.Editor.ViewModels
 
                 if (child.IsOpen)
                 {
-                    openContentPath = child.FullPath;
+                    openFiles.Add(child);
                 }
 
                 if ((child.IsChanged) && (!changedFilePaths.Contains(child.FullPath)))
@@ -766,12 +766,12 @@ namespace Gorgon.Editor.ViewModels
                 return;
             }
 
-            _factory.EnumerateFileSystemObjects(_project, _fileSystemService, nodeToRefresh);
+            _factory.EnumerateFileSystemObjects(_project, _fileSystemService, nodeToRefresh, openFiles);
 
             // We don't need the metadata list now, all objects have their metadata assigned at this point.
             _project.ProjectItems.Clear();
 
-            // Rebuild file associations.
+            // Rebuild search nodes.			
             foreach (IFileExplorerNodeVm child in nodeToRefresh.Children.Traverse(n => n.Children))
             {
                 if (searchNodes.Any(item => string.Equals(child.FullPath, item, StringComparison.OrdinalIgnoreCase)))
@@ -782,17 +782,6 @@ namespace Gorgon.Editor.ViewModels
                     }
 
                     _searchResults.Add(child);
-                }
-
-                // Restore the open flag.
-                if ((openContentPath != null) && (string.Equals(child.FullPath, openContentPath, StringComparison.OrdinalIgnoreCase)))
-                {
-                    child.IsOpen = true;
-                }
-
-                if (changedFilePaths.Contains(child.FullPath))
-                {
-                    child.IsChanged = true;
                 }
             }
 
@@ -807,7 +796,7 @@ namespace Gorgon.Editor.ViewModels
         /// Function to refresh the nodes under the specified node, or for the entire tree.
         /// </summary>
         /// <param name="node">The node to refresh.</param>
-        private async void DoRefreshSelectedNodeAsync(IFileExplorerNodeVm node)
+        private async Task DoRefreshSelectedNodeAsync(IFileExplorerNodeVm node)
         {
             _busyService.SetBusy();
 
@@ -957,7 +946,7 @@ namespace Gorgon.Editor.ViewModels
         private async Task<(IEditorContentImporter importer, FileInfo importedFile)> CustomImportFileAsync(FileInfo file, IGorgonFileSystem fileSystem, CancellationToken cancelToken)
         {
             FileInfo result;
-            IEditorContentImporter importer = _factory.ContentPlugins.GetContentImporter(file, fileSystem);
+            IEditorContentImporter importer = _factory.ContentPlugIns.GetContentImporter(file, fileSystem);
 
             if (importer == null)
             {
@@ -1181,7 +1170,7 @@ namespace Gorgon.Editor.ViewModels
                         continue;
                     }
 
-                    contentNode.Metadata.Attributes[ContentImportPlugin.ImportOriginalFileNameAttr] = sourcePath.Name;
+                    contentNode.Metadata.Attributes[ContentImportPlugIn.ImportOriginalFileNameAttr] = sourcePath.Name;
                 }
 
                 node.IsExpanded = true;
@@ -1922,7 +1911,7 @@ namespace Gorgon.Editor.ViewModels
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    IFileExplorerNodeVm added = e.NewItems.OfType<IFileExplorerNodeVm>().First();
+                    IFileExplorerNodeVm added = e.NewItems.OfType<IFileExplorerNodeVm>().First();					
                     EnumerateChildren(added);
                     break;
                 case NotifyCollectionChangedAction.Remove:
@@ -1953,7 +1942,7 @@ namespace Gorgon.Editor.ViewModels
             RootNode = injectionParameters.RootNode ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.RootNode), nameof(injectionParameters));
             _clipboard = injectionParameters.ClipboardService ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.ClipboardService), nameof(injectionParameters));
             _directoryLocator = injectionParameters.DirectoryLocator ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.DirectoryLocator), nameof(injectionParameters));
-            _contentPlugins = injectionParameters.ContentPlugins ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.ContentPlugins), nameof(injectionParameters));
+            _contentPlugIns = injectionParameters.ContentPlugIns ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.ContentPlugIns), nameof(injectionParameters));
             _searchSystem = injectionParameters.FileSearch ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.FileSearch), nameof(injectionParameters));
             _fileScanner = injectionParameters.ViewModelFactory.FileScanService;
 
@@ -2252,7 +2241,7 @@ namespace Gorgon.Editor.ViewModels
                     }
 
                     // This file is already imported, so there's no point in trying to import it again.
-                    if (node.Metadata.Attributes.ContainsKey(ContentImportPlugin.ImportOriginalFileNameAttr))
+                    if (node.Metadata.Attributes.ContainsKey(ContentImportPlugIn.ImportOriginalFileNameAttr))
                     {
                         continue;
                     }
@@ -2283,7 +2272,7 @@ namespace Gorgon.Editor.ViewModels
 
                     // Record the name of the source file.
                     var destFile = new FileInfo(srcPath);
-                    node.Metadata.Attributes[ContentImportPlugin.ImportOriginalFileNameAttr] = destFile.Name;
+                    node.Metadata.Attributes[ContentImportPlugIn.ImportOriginalFileNameAttr] = destFile.Name;
 
                     // Update the metadata information.
                     content?.RefreshMetadata();
@@ -2449,7 +2438,7 @@ namespace Gorgon.Editor.ViewModels
             IFileExplorerNodeVm fileNode = _factory.CreateFileExplorerFileNodeVm(_project, _fileSystemService, dirNode, physicalFile);
             
             var result = (IContentFile)fileNode;
-            _contentPlugins.AssignContentPlugin(result, this, false);
+            _contentPlugIns.AssignContentPlugIn(result, this, false);
             
             dirNode.IsExpanded = true;
             SelectedNode = selected;           
@@ -2722,7 +2711,7 @@ namespace Gorgon.Editor.ViewModels
             CreateNodeCommand = new EditorCommand<CreateNodeArgs>(DoCreateNode, CanCreateNode);
             RenameNodeCommand = new EditorCommand<FileExplorerNodeRenameArgs>(DoRenameNode, CanRenameNode);
             DeleteNodeCommand = new EditorCommand<DeleteNodeArgs>(DoDeleteNode, CanDeleteNode);
-            RefreshNodeCommand = new EditorCommand<IFileExplorerNodeVm>(DoRefreshSelectedNodeAsync);
+            RefreshNodeCommand = new EditorAsyncCommand<IFileExplorerNodeVm>(DoRefreshSelectedNodeAsync);
             CopyNodeCommand = new EditorCommand<CopyNodeArgs>(DoCopyNode, CanCopyNode);
             ExportNodeToCommand = new EditorCommand<IFileExplorerNodeVm>(DoExportNodeAsync, CanExportNode);
             MoveNodeCommand = new EditorCommand<CopyNodeArgs>(DoMoveNode, CanMoveNode);

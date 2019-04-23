@@ -35,7 +35,7 @@ using Gorgon.Graphics.Example.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
-using Gorgon.Plugins;
+using Gorgon.PlugIns;
 using Gorgon.UI;
 using DX = SharpDX;
 
@@ -48,7 +48,7 @@ namespace CodecPlugIn
     {
 		#region Variables.
         // The cache that holds plugin information.
-        private GorgonMefPluginCache _pluginCache;
+        private GorgonMefPlugInCache _pluginCache;
 		// The main graphics interface.
 		private GorgonGraphics _graphics;
 		// The swap chain to use.
@@ -109,16 +109,16 @@ namespace CodecPlugIn
 		{
 			const string pluginName = "Gorgon.Graphics.Example.TvImageCodecPlugIn";
 
-			_pluginCache = new GorgonMefPluginCache(GorgonApplication.Log);
+			_pluginCache = new GorgonMefPlugInCache(GorgonApplication.Log);
 			
 			// Load our plug-in.
-			_pluginCache.LoadPluginAssemblies(GorgonApplication.StartupPath.FullName, "TVImageCodec.dll");
+			_pluginCache.LoadPlugInAssemblies(GorgonApplication.StartupPath.FullName, "TVImageCodec.dll");
 
 			// Activate the plugin service.
-			IGorgonPluginService pluginService = new GorgonMefPluginService(_pluginCache);
+			IGorgonPlugInService pluginService = new GorgonMefPlugInService(_pluginCache);
 
 			// Find the plugin.
-		    GorgonImageCodecPlugin plugIn = pluginService.GetPlugin<GorgonImageCodecPlugin>(pluginName);
+		    GorgonImageCodecPlugIn plugIn = pluginService.GetPlugIn<GorgonImageCodecPlugIn>(pluginName);
 
 			if (plugIn == null)
 			{
@@ -229,7 +229,7 @@ namespace CodecPlugIn
 
 	            _swap = new GorgonSwapChain(_graphics,
 	                                        this,
-	                                        new GorgonSwapChainInfo("Codec Plugin SwapChain")
+	                                        new GorgonSwapChainInfo("Codec PlugIn SwapChain")
 	                                        {
 		                                        Width = ClientSize.Width,
 		                                        Height = ClientSize.Height,

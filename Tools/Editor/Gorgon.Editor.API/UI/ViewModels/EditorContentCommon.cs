@@ -280,7 +280,7 @@ namespace Gorgon.Editor.UI
         /// <returns><b>true</b> to continue with closing, <b>false</b> to cancel the close request.</returns>
         /// <remarks>
         /// <para>
-        /// Plugin authors should override this method to confirm whether save changed content, continue without saving, or cancel the operation entirely.
+        /// PlugIn authors should override this method to confirm whether save changed content, continue without saving, or cancel the operation entirely.
         /// </para>
         /// </remarks>
         protected virtual Task<bool> OnCloseContentTask() => Task.FromResult(true);

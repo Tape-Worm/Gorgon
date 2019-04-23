@@ -29,7 +29,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Gorgon.Core;
 using System.Threading;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.UI;
@@ -134,7 +134,7 @@ namespace Gorgon.Editor.ViewModels
         string IContentFile.Extension => Path.GetExtension(_content.Name);
 
         /// <summary>Property to return the plugin associated with the file.</summary>
-        ContentPlugin IContentFile.ContentPlugin => Metadata?.ContentMetadata as ContentPlugin;
+        ContentPlugIn IContentFile.ContentPlugIn => Metadata?.ContentMetadata as ContentPlugIn;
 
         /// <summary>Property to set or return the metadata for the node.</summary>
         public ProjectItemMetadata Metadata

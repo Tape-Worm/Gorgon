@@ -30,7 +30,7 @@ using System.IO;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Input;
-using Gorgon.Plugins;
+using Gorgon.PlugIns;
 using Gorgon.UI;
 
 namespace Gorgon.Examples
@@ -49,12 +49,12 @@ namespace Gorgon.Examples
     /// // Load the Xinput plugin DLL.
     /// GorgonGamingDeviceDriver xInputDriver;
     /// 
-    /// using (var assemblyCache = new GorgonPluginAssemblyCache())
+    /// using (var assemblyCache = new GorgonPlugInAssemblyCache())
     /// {
     ///		assemblyCache.Load("[directory for plugins]\Gorgon.Input.XInput.DLL"); 
     /// 
     ///		// Create the plugin service.
-    ///		var pluginService = new GorgonPluginService(assemblyCache);
+    ///		var pluginService = new GorgonPlugInService(assemblyCache);
     ///
     ///		// Create the factory for loading the drivers and load the driver.
     ///		var driverFactory = new GorgonGamingDeviceDriverFactory(inputServiceFactory);
@@ -70,7 +70,7 @@ namespace Gorgon.Examples
 	{
         #region Variables.
         // The cache that will hold our plugin instances.
-	    private static GorgonMefPluginCache _pluginCache;
+	    private static GorgonMefPlugInCache _pluginCache;
         #endregion
 
 		#region Properties.
@@ -111,22 +111,22 @@ namespace Gorgon.Examples
 		private static IReadOnlyList<IGorgonGamingDeviceDriver> GetGamingDeviceDrivers()
 		{
 			// Access our plugin cache.
-		    _pluginCache = new GorgonMefPluginCache(GorgonApplication.Log);
+		    _pluginCache = new GorgonMefPlugInCache(GorgonApplication.Log);
 
 			// Get the files from the plugin directory.
 			// The plugin directory can be changed in the configuration file
 			// to point at wherever you'd like.  If a {0} place holder is
 			// in the path, it will be replaced with whatever the build
 			// configuration is set to (i.e. DEBUG or RELEASE).
-			_pluginCache.LoadPluginAssemblies(PlugInPath, "Gorgon.Input.*.dll");
+			_pluginCache.LoadPlugInAssemblies(PlugInPath, "Gorgon.Input.*.dll");
 
-			if (_pluginCache.PluginAssemblies.Count == 0)
+			if (_pluginCache.PlugInAssemblies.Count == 0)
 			{
 				return Array.Empty<IGorgonGamingDeviceDriver>();
 			}
 			
 			// Create our plugin service.
-			IGorgonPluginService pluginService = new GorgonMefPluginService(_pluginCache, GorgonApplication.Log);
+			IGorgonPlugInService pluginService = new GorgonMefPlugInService(_pluginCache, GorgonApplication.Log);
 
 			// Create our input service factory.
 			var factory = new GorgonGamingDeviceDriverFactory(pluginService, GorgonApplication.Log);

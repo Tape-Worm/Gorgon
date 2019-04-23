@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Input.Properties;
-using Gorgon.Plugins;
+using Gorgon.PlugIns;
 
 namespace Gorgon.Input
 {
@@ -43,7 +43,7 @@ namespace Gorgon.Input
 		// The logger used for debugging.
 		private readonly IGorgonLog _log;
 		// The plug in service to use when loading drivers.
-		private readonly IGorgonPluginService _plugInService;
+		private readonly IGorgonPlugInService _plugInService;
         #endregion
 
         #region Methods.
@@ -51,7 +51,7 @@ namespace Gorgon.Input
         /// Function to load all drivers from the plug in assemblies that are currently loaded.
         /// </summary>
         /// <returns>A read only list containing an instance of each driver.</returns>
-        public IReadOnlyList<IGorgonGamingDeviceDriver> LoadAllDrivers() => _plugInService.GetPlugins<GorgonGamingDeviceDriver>();
+        public IReadOnlyList<IGorgonGamingDeviceDriver> LoadAllDrivers() => _plugInService.GetPlugIns<GorgonGamingDeviceDriver>();
 
         /// <summary>
         /// Function to load a gaming device driver from any loaded plug in assembly.
@@ -73,7 +73,7 @@ namespace Gorgon.Input
 				throw new ArgumentEmptyException(nameof(driverType));
 			}
 
-			GorgonGamingDeviceDriver result = _plugInService.GetPlugin<GorgonGamingDeviceDriver>(driverType);
+			GorgonGamingDeviceDriver result = _plugInService.GetPlugIn<GorgonGamingDeviceDriver>(driverType);
 
 			if (result == null)
 			{
@@ -93,7 +93,7 @@ namespace Gorgon.Input
 		/// <param name="plugInService">The plug in service to use when loading drivers.</param>
 		/// <param name="log">[Optional] The logger used for debugging.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugInService"/> is <b>null</b>.</exception>
-		public GorgonGamingDeviceDriverFactory(IGorgonPluginService plugInService, IGorgonLog log = null)
+		public GorgonGamingDeviceDriverFactory(IGorgonPlugInService plugInService, IGorgonLog log = null)
 		{
 			_log = log ?? GorgonLog.NullLog;
 			_plugInService = plugInService;

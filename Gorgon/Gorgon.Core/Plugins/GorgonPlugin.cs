@@ -27,18 +27,18 @@
 using System.Reflection;
 using Gorgon.Core;
 
-namespace Gorgon.Plugins
+namespace Gorgon.PlugIns
 {
 	/// <summary>
-	/// The base for all plug ins used by the <see cref="IGorgonPluginService"/>.
+	/// The base for all plug ins used by the <see cref="IGorgonPlugInService"/>.
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// Any plug ins used by the <see cref="IGorgonPluginService"/> must be derived from this type. The plug in service will scan any plug in assemblies loaded and will enumerate only types that inherit 
+	/// Any plug ins used by the <see cref="IGorgonPlugInService"/> must be derived from this type. The plug in service will scan any plug in assemblies loaded and will enumerate only types that inherit 
 	/// this type.
 	/// </para>
 	/// </remarks>
-	public abstract class GorgonPlugin
+	public abstract class GorgonPlugIn
 		: IGorgonNamedObject
 	{
 		#region Properties.
@@ -77,13 +77,13 @@ namespace Gorgon.Plugins
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonPlugin"/> class.
+		/// Initializes a new instance of the <see cref="GorgonPlugIn"/> class.
 		/// </summary>
 		/// <param name="description">Optional description of the plugin.</param>
 		/// <remarks>
 		/// Implementors of this base class should pass in a hard coded description to the base constructor.
 		/// </remarks>
-		protected GorgonPlugin(string description)
+		protected GorgonPlugIn(string description)
 		{
 			Description = description ?? string.Empty;
 

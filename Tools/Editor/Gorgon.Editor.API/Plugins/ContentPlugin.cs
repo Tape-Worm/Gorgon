@@ -40,13 +40,13 @@ using Gorgon.Editor.UI;
 using Gorgon.IO;
 using Gorgon.UI;
 
-namespace Gorgon.Editor.Plugins
+namespace Gorgon.Editor.PlugIns
 {
     /// <summary>
     /// Defines a plug in used to generate content in the editor.
     /// </summary>
-    public abstract class ContentPlugin
-        : EditorPlugin
+    public abstract class ContentPlugIn
+        : EditorPlugIn
     {
         #region Variables.
         // Flag to indicate that the plugin is initialized.
@@ -73,7 +73,7 @@ namespace Gorgon.Editor.Plugins
         }
 
         /// <summary>Property to return the type of this plug in.</summary>
-        public sealed override PluginType PluginType => PluginType.Content;
+        public sealed override PlugInType PlugInType => PlugInType.Content;
 
         /// <summary>
         /// Property to return whether or not the plugin is capable of creating content.
@@ -124,7 +124,7 @@ namespace Gorgon.Editor.Plugins
         /// This method is only called when the plugin is loaded at startup.
         /// </para>
         /// </remarks>
-        protected virtual void OnInitialize(IContentPluginService pluginService)
+        protected virtual void OnInitialize(IContentPlugInService pluginService)
         {
         }
 
@@ -313,7 +313,7 @@ namespace Gorgon.Editor.Plugins
         /// This method is only called when the plugin is loaded at startup.
         /// </para>
         /// </remarks>
-        public void Initialize(IContentPluginService pluginService, IGraphicsContext graphicsContext)
+        public void Initialize(IContentPlugInService pluginService, IGraphicsContext graphicsContext)
         {
             if (pluginService == null)
             {
@@ -334,9 +334,9 @@ namespace Gorgon.Editor.Plugins
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the ContentPlugin class.</summary>
+        /// <summary>Initializes a new instance of the ContentPlugIn class.</summary>
         /// <param name="description">Optional description of the plugin.</param>
-        protected ContentPlugin(string description)
+        protected ContentPlugIn(string description)
             : base(description)
         {            
         }

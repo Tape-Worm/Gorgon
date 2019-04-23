@@ -37,7 +37,7 @@ using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Input;
 using Gorgon.Math;
-using Gorgon.Plugins;
+using Gorgon.PlugIns;
 using Gorgon.Renderers;
 using Gorgon.UI;
 using DX = SharpDX;
@@ -121,7 +121,7 @@ namespace Gorgon.Examples
         // The builder used for building batch states for the blending modes.
 	    private readonly Gorgon2DBatchStateBuilder _blendBuilder = new Gorgon2DBatchStateBuilder();
         // Our assembly cache for our plugins.
-	    private GorgonMefPluginCache _assemblyCache;
+	    private GorgonMefPlugInCache _assemblyCache;
 		#endregion
 
 		#region Methods.
@@ -567,13 +567,13 @@ namespace Gorgon.Examples
 
 			try
 			{
-			    GorgonExample.PluginLocationDirectory = new DirectoryInfo(Settings.Default.PlugInLocation);
+			    GorgonExample.PlugInLocationDirectory = new DirectoryInfo(Settings.Default.PlugInLocation);
 
 				// Load the assembly.
-				_assemblyCache = new GorgonMefPluginCache(GorgonApplication.Log);
+				_assemblyCache = new GorgonMefPlugInCache(GorgonApplication.Log);
 
 				// Create the plugin service.
-                IGorgonPluginService plugInService = new GorgonMefPluginService(_assemblyCache, GorgonApplication.Log);
+                IGorgonPlugInService plugInService = new GorgonMefPlugInService(_assemblyCache, GorgonApplication.Log);
 
 				// Create the factory to retrieve gaming device drivers.
 				var factory = new GorgonGamingDeviceDriverFactory(plugInService);
@@ -582,8 +582,8 @@ namespace Gorgon.Examples
 				_input = new GorgonRawInput(this, GorgonApplication.Log);
 
 				// Get available gaming device driver plug ins.
-                _assemblyCache.LoadPluginAssemblies(GorgonExample.GetPlugInPath().FullName, "Gorgon.Input.DirectInput.dll");
-			    _assemblyCache.LoadPluginAssemblies(GorgonExample.GetPlugInPath().FullName, "Gorgon.Input.XInput.dll");
+                _assemblyCache.LoadPlugInAssemblies(GorgonExample.GetPlugInPath().FullName, "Gorgon.Input.DirectInput.dll");
+			    _assemblyCache.LoadPlugInAssemblies(GorgonExample.GetPlugInPath().FullName, "Gorgon.Input.XInput.dll");
 
 				_drivers = factory.LoadAllDrivers();
 

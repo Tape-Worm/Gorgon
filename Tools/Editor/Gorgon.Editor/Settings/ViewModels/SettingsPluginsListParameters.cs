@@ -31,24 +31,24 @@ using Gorgon.Editor.UI.ViewModels;
 namespace Gorgon.Editor.ViewModels
 {
     /// <summary>
-    /// The parameters for the <see cref="ISettingsPluginsList"/> view model.
+    /// The parameters for the <see cref="ISettingsPlugInsList"/> view model.
     /// </summary>
-    internal class SettingsPluginsListParameters
+    internal class SettingsPlugInsListParameters
         : ViewModelInjection
     {
 		/// <summary>
         /// Property to return the list of plugins.
         /// </summary>
-		public IEnumerable<ISettingsPluginListItem> Plugins
+		public IEnumerable<ISettingsPlugInListItem> PlugIns
         {
             get;
         }
 
-        /// <summary>Initializes a new instance of the <see cref="SettingsPluginsListParameters"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="SettingsPlugInsListParameters"/> class.</summary>
         /// <param name="plugins">The plugins to display.</param>
         /// <param name="commonServices">Common application services.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public SettingsPluginsListParameters(IEnumerable<ISettingsPluginListItem> plugins, IViewModelInjection commonServices)
-			: base(commonServices) => Plugins = plugins ?? throw new ArgumentNullException(nameof(plugins));
+        public SettingsPlugInsListParameters(IEnumerable<ISettingsPlugInListItem> plugins, IViewModelInjection commonServices)
+			: base(commonServices) => PlugIns = plugins ?? throw new ArgumentNullException(nameof(plugins));
     }
 }

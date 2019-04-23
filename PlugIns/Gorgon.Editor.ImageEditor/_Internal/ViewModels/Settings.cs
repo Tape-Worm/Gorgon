@@ -28,10 +28,14 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
 using Gorgon.Editor.ImageEditor.Properties;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
+using Gorgon.Graphics.Imaging.Codecs;
+using Gorgon.IO;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -42,12 +46,18 @@ namespace Gorgon.Editor.ImageEditor
         : ViewModelBase<SettingsParameters>, ISettings
     {
         #region Variables.
+		// The busy state service.
+        private IBusyStateService _busyService;
 		// The message display service.
         private IMessageDisplayService _messageDisplay;
 		// The underlying settings for the plug in.
         private ImageEditorSettings _settings;
 		// The plug in service used to manage content and content importer plug ins.
-        private IContentPluginService _pluginService;
+        private IContentPlugInService _pluginService;
+		// The registry for image codecs.
+        private ICodecRegistry _codecs;
+		// The dialog used to open a codec assembly.
+        private IFileDialogService _openCodecDialog;
         #endregion
 
         #region Properties.
@@ -81,14 +91,21 @@ namespace Gorgon.Editor.ImageEditor
             }
         }
 
-		/// <summary>
-        /// Propery to return the paths to the codec plug ins.
+        /// <summary>
+        /// Property to return the list of selected codecs.
         /// </summary>
-        public ObservableCollection<(string name, string path)> CodecPluginPaths
+        public ObservableCollection<CodecSetting> SelectedCodecs
         {
             get;
-            private set;
-        } = new ObservableCollection<(string name, string path)>();
+        } = new ObservableCollection<CodecSetting>();
+
+        /// <summary>
+        /// Propery to return the paths to the codec plug ins.
+        /// </summary>
+        public ObservableCollection<CodecSetting> CodecPlugInPaths
+        {
+            get;
+        } = new ObservableCollection<CodecSetting>();
 
         /// <summary>
         /// Property to return the command for writing setting data.
@@ -97,31 +114,48 @@ namespace Gorgon.Editor.ImageEditor
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the command for loading a plug in assembly.
+        /// </summary>
+        public IEditorCommand<object> LoadPlugInAssemblyCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command to unloading a plug in assembly.
+        /// </summary>
+        public IEditorCommand<object> UnloadPlugInAssembliesCommand
+        {
+            get;
+        }
+
         #endregion
 
         #region Methods.
-        /// <summary>Handles the CollectionChanged event of the CodecPluginPaths control.</summary>
+        /// <summary>Handles the CollectionChanged event of the CodecPlugInPaths control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
-        private void CodecPluginPaths_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void CodecPlugInPaths_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    foreach ((string key, string value) in e.NewItems.OfType<(string, string)>())
+                    foreach (CodecSetting codec in e.NewItems.OfType<CodecSetting>())
                     {
-                        _settings.CodecPluginPaths[key] = value;
+                        _settings.CodecPlugInPaths[codec.Name] = codec.PlugIn.PlugInPath;
                     }
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    foreach ((string key, string value) in e.OldItems.OfType<(string, string)>())
+                    foreach (CodecSetting codec in e.OldItems.OfType<CodecSetting>())
                     {
-                        if (!_settings.CodecPluginPaths.ContainsKey(key))
+                        if (!_settings.CodecPlugInPaths.ContainsKey(codec.Name))
                         {
                             continue;
                         }
 
-                        _settings.CodecPluginPaths.Remove(key);
+                        _settings.CodecPlugInPaths.Remove(codec.Name);
                     }
                     break;
             }
@@ -134,12 +168,125 @@ namespace Gorgon.Editor.ImageEditor
         {
             try
             {
-                _pluginService.WriteContentSettings(ImageEditorPlugin.SettingsName, _settings);
+                _pluginService.WriteContentSettings(ImageEditorPlugIn.SettingsName, _settings);
             }
             catch (Exception ex)
             {
                 // We don't care if it crashes. The worst thing that'll happen is your settings won't persist.
                 Log.LogException(ex);
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if the selected plug in assemblies can be unloaded.
+        /// </summary>
+        /// <returns><b>true</b> if the plug in assemblies can be removed, <b>false</b> if not.</returns>
+        private bool CanUnloadPlugInAssemblies() => SelectedCodecs.Count > 0;
+
+		/// <summary>
+        /// Function to unload the selected plug in assemblies.
+        /// </summary>
+        private void DoUnloadPlugInAssemblies()
+        {
+            try
+            {
+                IReadOnlyList<CodecSetting> selected = SelectedCodecs.ToArray();
+                IReadOnlyList<GorgonImageCodecPlugIn> plugIns = selected.Select(item => item.PlugIn).ToArray();
+                MessageResponse response = MessageResponse.None;
+
+                foreach (GorgonImageCodecPlugIn plugIn in plugIns)
+                {
+                    if ((response != MessageResponse.YesToAll) && (response != MessageResponse.NoToAll))
+                    {
+                        response = _messageDisplay.ShowConfirmation(string.Format(Resources.GORIMG_CONFIRM_REMOVE_CODECS, Path.GetFileName(plugIn.PlugInPath)), toAll: true);
+                    }
+
+                    if (response == MessageResponse.NoToAll)
+                    {
+                        return;
+                    }
+
+                    _busyService.SetBusy();
+
+                    if (response == MessageResponse.No)
+                    {
+                        continue;
+                    }
+
+                    _codecs.RemoveCodecPlugIn(plugIn);
+
+                    foreach (CodecSetting setting in selected)
+                    {
+                        SelectedCodecs.Remove(setting);
+                        CodecPlugInPaths.Remove(setting);
+                    }
+
+                    _busyService.SetIdle();
+                }
+            }
+            catch (Exception ex)
+            {
+                _messageDisplay.ShowError(ex, Resources.GORIMG_ERR_CANNOT_UNLOAD_CODECS);
+            }
+            finally
+            {
+                _busyService.SetIdle();
+            }
+        }
+
+		/// <summary>
+        /// Function to load in a plug in assembly.
+        /// </summary>
+        private void DoLoadPlugInAssembly()
+        {
+            try
+            {
+                _openCodecDialog.DialogTitle = Resources.GORIMG_CAPTION_SELECT_CODEC_DLL;
+                _openCodecDialog.FileFilter = Resources.GORIMG_FILTER_SELECT_CODEC;
+                _openCodecDialog.InitialDirectory = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
+
+                string path = _openCodecDialog.GetFilename();
+
+                if ((string.IsNullOrWhiteSpace(path)) || (!File.Exists(path)))
+                {					
+                    return;
+                }
+
+                _busyService.SetBusy();
+                IReadOnlyList<GorgonImageCodecPlugIn> codecs = _codecs.AddCodec(path, out IReadOnlyList<string> errors);
+
+                if (errors.Count > 0)
+                {
+                    _messageDisplay.ShowError(Resources.GORIMG_ERR_CANNOT_LOAD_CODEC, details: string.Join("\n", errors));
+
+                    if (codecs.Count == 0)
+                    {
+                        return;
+                    }
+                }
+
+                foreach (GorgonImageCodecPlugIn plugin in codecs)
+                {
+                    foreach (GorgonImageCodecDescription desc in plugin.Codecs)
+                    {
+                        IGorgonImageCodec codec = _codecs.Codecs.FirstOrDefault(item => string.Equals(item.GetType().FullName, desc.Name, StringComparison.OrdinalIgnoreCase));
+
+                        if (codec == null)
+                        {
+                            continue;
+                        }
+
+                        CodecPlugInPaths.Add(new CodecSetting(codec.CodecDescription, plugin, desc));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _messageDisplay.ShowError(ex, Resources.GORIMG_ERR_CANNOT_LOAD_CODEC);
+            }
+            finally
+            {
+                _busyService.SetIdle();
             }
         }
 
@@ -152,12 +299,25 @@ namespace Gorgon.Editor.ImageEditor
         {
             _messageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(injectionParameters.MessageDisplay), nameof(injectionParameters));
             _settings = injectionParameters.Settings ?? throw new ArgumentMissingException(nameof(injectionParameters.Settings), nameof(injectionParameters));
-            _pluginService = injectionParameters.PluginService ?? throw new ArgumentMissingException(nameof(injectionParameters.PluginService), nameof(injectionParameters));
+            _pluginService = injectionParameters.PlugInService ?? throw new ArgumentMissingException(nameof(injectionParameters.PlugInService), nameof(injectionParameters));
+            _codecs = injectionParameters.Codecs ?? throw new ArgumentMissingException(nameof(injectionParameters.Codecs), nameof(injectionParameters));
+            _openCodecDialog = injectionParameters.CodecFileDialog ?? throw new ArgumentMissingException(nameof(injectionParameters.CodecFileDialog), nameof(injectionParameters));
+            _busyService = injectionParameters.BusyService ?? throw new ArgumentMissingException(nameof(injectionParameters.BusyService), nameof(injectionParameters));
 
-            foreach (KeyValuePair<string, string> codecPath in _settings.CodecPluginPaths)
+            foreach (GorgonImageCodecPlugIn plugin in _codecs.CodecPlugIns)
             {
-                CodecPluginPaths.Add((codecPath.Key, codecPath.Value));
-            }            
+                foreach (GorgonImageCodecDescription desc in plugin.Codecs)
+                {
+                    IGorgonImageCodec codec = _codecs.Codecs.FirstOrDefault(item => string.Equals(item.GetType().FullName, desc.Name, StringComparison.OrdinalIgnoreCase));
+
+                    if (codec == null)
+                    {
+                        continue;
+                    }
+
+                    CodecPlugInPaths.Add(new CodecSetting(codec.CodecDescription, plugin, desc));
+                }
+            }
         }
 
         /// <summary>
@@ -166,7 +326,8 @@ namespace Gorgon.Editor.ImageEditor
         public override void OnLoad()
         {
             base.OnLoad();
-            CodecPluginPaths.CollectionChanged += CodecPluginPaths_CollectionChanged;
+			
+            CodecPlugInPaths.CollectionChanged += CodecPlugInPaths_CollectionChanged;
         }
 
         /// <summary>
@@ -174,7 +335,8 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         public override void OnUnload()
         {
-            CodecPluginPaths.CollectionChanged -= CodecPluginPaths_CollectionChanged;            
+            CodecPlugInPaths.CollectionChanged -= CodecPlugInPaths_CollectionChanged;            
+
             base.OnUnload();
         }
         #endregion
@@ -185,6 +347,8 @@ namespace Gorgon.Editor.ImageEditor
         {
             ID = Guid.NewGuid();
             WriteSettingsCommand = new EditorCommand<object>(DoWriteSettings);
+            LoadPlugInAssemblyCommand = new EditorCommand<object>(DoLoadPlugInAssembly);
+            UnloadPlugInAssembliesCommand = new EditorCommand<object>(DoUnloadPlugInAssemblies, CanUnloadPlugInAssemblies);
         }
         #endregion
     }

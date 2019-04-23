@@ -67,7 +67,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Property to set or return the path to the plug-in directory.
         /// </summary>
-        public static DirectoryInfo PluginLocationDirectory
+        public static DirectoryInfo PlugInLocationDirectory
         {
             get;
             set;
@@ -99,7 +99,7 @@ namespace Gorgon.Examples
         /// <returns>A directory information object for the plugin path.</returns>
         public static DirectoryInfo GetPlugInPath()
         {
-            string path = PluginLocationDirectory?.FullName;
+            string path = PlugInLocationDirectory?.FullName;
 
             if (string.IsNullOrWhiteSpace(path))
             {

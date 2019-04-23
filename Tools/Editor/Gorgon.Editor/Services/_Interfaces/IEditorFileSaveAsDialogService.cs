@@ -24,7 +24,7 @@
 // 
 #endregion
 
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 
 namespace Gorgon.Editor.Services
 {
@@ -53,7 +53,7 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Property to set or return the currently active file writer plugin.
         /// </summary>
-        FileWriterPlugin CurrentWriter
+        FileWriterPlugIn CurrentWriter
         {
             get;
             set;

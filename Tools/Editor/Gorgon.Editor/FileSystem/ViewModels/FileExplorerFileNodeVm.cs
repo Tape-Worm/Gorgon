@@ -31,7 +31,7 @@ using Gorgon.Core;
 using Gorgon.Editor.Services;
 using System.Threading;
 using Gorgon.Editor.Properties;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Metadata;
 using System.Linq;
@@ -111,7 +111,7 @@ namespace Gorgon.Editor.ViewModels
         string IContentFile.Extension => Path.GetExtension(Name);
 
         /// <summary>Property to return the plugin associated with the file.</summary>
-        ContentPlugin IContentFile.ContentPlugin => Metadata?.ContentMetadata as ContentPlugin;
+        ContentPlugIn IContentFile.ContentPlugIn => Metadata?.ContentMetadata as ContentPlugIn;
 
         /// <summary>Property to set or return the metadata for the node.</summary>
         public override ProjectItemMetadata Metadata
@@ -351,7 +351,7 @@ namespace Gorgon.Editor.ViewModels
 
                 // If we have a source file, remove it.
                 if ((Metadata != null) 
-                    && (Metadata.Attributes.TryGetValue(ContentImportPlugin.ImportOriginalFileNameAttr, out string sourcePath)))
+                    && (Metadata.Attributes.TryGetValue(ContentImportPlugIn.ImportOriginalFileNameAttr, out string sourcePath)))
                 {                    
                     var sourceFile = new FileInfo(Path.Combine(Project.SourceDirectory.FullName, sourcePath));
                     

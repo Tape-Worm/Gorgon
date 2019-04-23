@@ -25,7 +25,7 @@
 #endregion
 
 using System;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI.ViewModels;
 using Gorgon.IO.Providers;
@@ -33,9 +33,9 @@ using Gorgon.IO.Providers;
 namespace Gorgon.Editor.ViewModels
 {
     /// <summary>
-    /// The parameters for the <see cref="ISettingsPluginListItem"/> view model.
+    /// The parameters for the <see cref="ISettingsPlugInListItem"/> view model.
     /// </summary>
-    internal class SettingsPluginListItemParameters
+    internal class SettingsPlugInListItemParameters
         : ViewModelInjection
     {
         #region Properties.
@@ -51,7 +51,7 @@ namespace Gorgon.Editor.ViewModels
 		/// <summary>
         /// Property to return the type of plug in.
         /// </summary>
-		public PluginType Type
+		public PlugInType Type
         {
             get;
             private set;
@@ -86,11 +86,11 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="SettingsPluginListItemParameters"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="SettingsPlugInListItemParameters"/> class.</summary>
         /// <param name="plugin">The plugin to evaluate.</param>
         /// <param name="commonServices">Common application services.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> is parameter <b>null</b>.</exception>
-        public SettingsPluginListItemParameters(EditorPlugin plugin, IViewModelInjection commonServices)
+        public SettingsPlugInListItemParameters(EditorPlugIn plugin, IViewModelInjection commonServices)
 			: base(commonServices)
         {
             if (plugin == null)
@@ -99,17 +99,17 @@ namespace Gorgon.Editor.ViewModels
             }
 
             Name = string.IsNullOrWhiteSpace(plugin.Description) ? plugin.Name : plugin.Description;
-            Type = plugin.PluginType;
+            Type = plugin.PlugInType;
             State = Resources.GOREDIT_PLUGIN_STATE_LOADED;
             DisabledReason = string.Empty;
             Path = plugin.PlugInPath;
         }
 
-        /// <summary>Initializes a new instance of the <see cref="SettingsPluginListItemParameters"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="SettingsPlugInListItemParameters"/> class.</summary>
         /// <param name="plugin">The plugin to evaluate.</param>
         /// <param name="commonServices">Common application services.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> is parameter <b>null</b>.</exception>
-        public SettingsPluginListItemParameters(IDisabledPlugin plugin, IViewModelInjection commonServices)
+        public SettingsPlugInListItemParameters(IDisabledPlugIn plugin, IViewModelInjection commonServices)
             : base(commonServices)
         {
             if (plugin == null)
@@ -117,18 +117,18 @@ namespace Gorgon.Editor.ViewModels
                 throw new ArgumentNullException(nameof(plugin));
             }
 
-            Name = plugin.PluginName;
-            Type = PluginType.Unknown;
+            Name = plugin.PlugInName;
+            Type = PlugInType.Unknown;
             State = plugin.ReasonCode.ToString();
             DisabledReason = plugin.Description;
             Path = plugin.Path;
         }
 
-        /// <summary>Initializes a new instance of the <see cref="SettingsPluginListItemParameters"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="SettingsPlugInListItemParameters"/> class.</summary>
         /// <param name="plugin">The plugin to evaluate.</param>
         /// <param name="commonServices">Common application services.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> is parameter <b>null</b>.</exception>
-        public SettingsPluginListItemParameters(IGorgonFileSystemProvider plugin, IViewModelInjection commonServices)
+        public SettingsPlugInListItemParameters(IGorgonFileSystemProvider plugin, IViewModelInjection commonServices)
             : base(commonServices)
         {
             if (plugin == null)
@@ -137,7 +137,7 @@ namespace Gorgon.Editor.ViewModels
             }
 
             Name = string.IsNullOrWhiteSpace(plugin.Description) ? plugin.Name : plugin.Description;
-            Type = PluginType.Reader;
+            Type = PlugInType.Reader;
             State = Resources.GOREDIT_PLUGIN_STATE_LOADED;
             DisabledReason = string.Empty;
             Path = plugin.ProviderPath;

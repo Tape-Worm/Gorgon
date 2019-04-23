@@ -35,26 +35,26 @@ namespace Gorgon.Editor.ViewModels
     /// <summary>
     /// The plug in list category for the settings.
     /// </summary>
-    internal class SettingsPluginsList
-        : ViewModelBase<SettingsPluginsListParameters>, ISettingsPluginsList
+    internal class SettingsPlugInsList
+        : ViewModelBase<SettingsPlugInsListParameters>, ISettingsPlugInsList
     {
         #region Variables.
 		// The current plug in.
-        private ISettingsPluginListItem _current;
+        private ISettingsPlugInListItem _current;
 		// The message display service.
         private IMessageDisplayService _messageDisplay;
         #endregion
 
         #region Properties.
         /// <summary>Property to return the plug ins.</summary>
-        public ObservableCollection<ISettingsPluginListItem> Plugins
+        public ObservableCollection<ISettingsPlugInListItem> PlugIns
         {
             get;
             private set;
         }
 
         /// <summary>Property to return the currently selected plug in.</summary>
-        public ISettingsPluginListItem Current
+        public ISettingsPlugInListItem Current
         {
             get => _current;
             private set
@@ -70,7 +70,7 @@ namespace Gorgon.Editor.ViewModels
             }
         }
 
-        public IEditorCommand<int> SelectPluginCommand
+        public IEditorCommand<int> SelectPlugInCommand
         {
             get;
         }
@@ -89,17 +89,17 @@ namespace Gorgon.Editor.ViewModels
         /// Function to select a plug in from the list.
         /// </summary>
         /// <param name="index">The index of the plug in.</param>
-        private void DoSelectPlugin(int index)
+        private void DoSelectPlugIn(int index)
         {
             try
             {
-                if ((index < 0) || (index >= Plugins.Count))
+                if ((index < 0) || (index >= PlugIns.Count))
                 {
                     Current = null;
                     return;
                 }
 
-                Current = Plugins[index];
+                Current = PlugIns[index];
             }
             catch (Exception ex)
             {
@@ -112,16 +112,16 @@ namespace Gorgon.Editor.ViewModels
         /// <remarks>
         /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
         /// </remarks>
-        protected override void OnInitialize(SettingsPluginsListParameters injectionParameters)
+        protected override void OnInitialize(SettingsPlugInsListParameters injectionParameters)
         {
             _messageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(injectionParameters.MessageDisplay), nameof(injectionParameters));
-            Plugins = new ObservableCollection<ISettingsPluginListItem>(injectionParameters.Plugins ?? throw new ArgumentMissingException(nameof(injectionParameters.Plugins), nameof(injectionParameters)));
+            PlugIns = new ObservableCollection<ISettingsPlugInListItem>(injectionParameters.PlugIns ?? throw new ArgumentMissingException(nameof(injectionParameters.PlugIns), nameof(injectionParameters)));
         }
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ViewModels.SettingsPluginsList"/> class.</summary>
-        public SettingsPluginsList() => SelectPluginCommand = new EditorCommand<int>(DoSelectPlugin);
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ViewModels.SettingsPlugInsList"/> class.</summary>
+        public SettingsPlugInsList() => SelectPlugInCommand = new EditorCommand<int>(DoSelectPlugIn);
         #endregion
     }
 }

@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.IO;
 using Gorgon.Core;
 using Gorgon.Editor.Metadata;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 
 namespace Gorgon.Editor.Content
 {
@@ -98,7 +98,7 @@ namespace Gorgon.Editor.Content
         /// <summary>
         /// Property to return the plugin associated with the file.
         /// </summary>
-        ContentPlugin ContentPlugin
+        ContentPlugIn ContentPlugIn
         {
             get;
         }

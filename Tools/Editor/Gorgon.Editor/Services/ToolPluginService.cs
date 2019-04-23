@@ -29,27 +29,27 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Gorgon.Diagnostics;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI.ViewModels;
-using Gorgon.Plugins;
+using Gorgon.PlugIns;
 
 namespace Gorgon.Editor.Services
 {
     /// <summary>
     /// The service used for managing the tool plugins.
     /// </summary>
-    internal class ToolPluginService
-        : IToolPluginManagerService, IDisposable
+    internal class ToolPlugInService
+        : IToolPlugInManagerService, IDisposable
     {
         #region Variables.
         // The plugin list.
-        private readonly Dictionary<string, ToolPlugin> _plugins = new Dictionary<string, ToolPlugin>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, ToolPlugIn> _plugins = new Dictionary<string, ToolPlugIn>(StringComparer.OrdinalIgnoreCase);
         // The list of disabled tool plug ins.
-        private readonly Dictionary<string, IDisabledPlugin> _disabled = new Dictionary<string, IDisabledPlugin>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, IDisabledPlugIn> _disabled = new Dictionary<string, IDisabledPlugIn>(StringComparer.OrdinalIgnoreCase);
 		// The list of ribbon buttons for all tools.
-        private Dictionary<string, IReadOnlyList<IToolPluginRibbonButton>> _ribbonButtons = new Dictionary<string, IReadOnlyList<IToolPluginRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
+        private Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> _ribbonButtons = new Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
         // The application graphics context for passing to tool plug ins.
         private readonly IGraphicsContext _graphicsContext;
 		// Common application services.
@@ -59,13 +59,13 @@ namespace Gorgon.Editor.Services
         #region Properties.
         /// <summary>Property to return the list of tool plugins loaded in to the application.</summary>
         /// <value>The plugins.</value>
-        public IReadOnlyDictionary<string, ToolPlugin> Plugins => _plugins;
+        public IReadOnlyDictionary<string, ToolPlugIn> PlugIns => _plugins;
 
         /// <summary>Property to return the list of disabled plug ins.</summary>
-        public IReadOnlyDictionary<string, IDisabledPlugin> DisabledPlugins => _disabled;
+        public IReadOnlyDictionary<string, IDisabledPlugIn> DisabledPlugIns => _disabled;
 
         /// <summary>Property to return the list of ribbon buttons available</summary>
-        public IReadOnlyDictionary<string, IReadOnlyList<IToolPluginRibbonButton>> RibbonButtons => _ribbonButtons;
+        public IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> RibbonButtons => _ribbonButtons;
         #endregion
 
         #region Methods.
@@ -74,22 +74,22 @@ namespace Gorgon.Editor.Services
         /// </summary>
         private void RebuildRibbonButtons()
         {
-            var result = new Dictionary<string, IReadOnlyList<IToolPluginRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
+            var result = new Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
 
-            foreach (KeyValuePair<string, ToolPlugin> plugin in _plugins)
+            foreach (KeyValuePair<string, ToolPlugIn> plugin in _plugins)
             {
-                IToolPluginRibbonButton button = plugin.Value.Button;
+                IToolPlugInRibbonButton button = plugin.Value.Button;
                 button.ValidateButton();
 
-                List<IToolPluginRibbonButton> buttons;
-                if (result.TryGetValue(button.GroupName, out IReadOnlyList<IToolPluginRibbonButton> roButtons))
+                List<IToolPlugInRibbonButton> buttons;
+                if (result.TryGetValue(button.GroupName, out IReadOnlyList<IToolPlugInRibbonButton> roButtons))
                 {
                     // This is safe because this is the implementation.
-                    buttons = (List<IToolPluginRibbonButton>)roButtons;
+                    buttons = (List<IToolPlugInRibbonButton>)roButtons;
                 }
                 else
                 {
-                    result[button.GroupName] = buttons = new List<IToolPluginRibbonButton>();
+                    result[button.GroupName] = buttons = new List<IToolPlugInRibbonButton>();
                 }
 
                 buttons.Add(button);
@@ -103,7 +103,7 @@ namespace Gorgon.Editor.Services
         /// <summary>Function to add a tool plugin to the service.</summary>
         /// <param name="plugin">The plugin to add.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> parameter is <b>null</b>.</exception>
-        public void AddToolPlugin(ToolPlugin plugin)
+        public void AddToolPlugIn(ToolPlugIn plugin)
         {
             if (plugin == null)
             {
@@ -122,14 +122,14 @@ namespace Gorgon.Editor.Services
         /// <summary>Function to clear all of the tool plugins.</summary>
         public void Clear()
         {
-            foreach (KeyValuePair<string, ToolPlugin> plugin in _plugins)
+            foreach (KeyValuePair<string, ToolPlugIn> plugin in _plugins)
             {
                 plugin.Value.Shutdown();
             }
 
             _plugins.Clear();
 
-            foreach (KeyValuePair<string, IReadOnlyList<IToolPluginRibbonButton>> button in _ribbonButtons)
+            foreach (KeyValuePair<string, IReadOnlyList<IToolPlugInRibbonButton>> button in _ribbonButtons)
             {
                 foreach (IDisposable disposer in button.Value.OfType<IDisposable>())
                 {
@@ -149,7 +149,7 @@ namespace Gorgon.Editor.Services
         /// <param name="pluginCache">The plug in assembly cache.</param>
         /// <param name="pluginDir">The directory that contains the plug ins.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginCache"/>, or the <paramref name="pluginDir"/> parameter is <b>null</b>.</exception>
-        public void LoadToolPlugins(GorgonMefPluginCache pluginCache, DirectoryInfo pluginDir)
+        public void LoadToolPlugIns(GorgonMefPlugInCache pluginCache, DirectoryInfo pluginDir)
         {
             if (pluginCache == null)
             {
@@ -161,20 +161,20 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentNullException(nameof(pluginDir));
             }
 
-            IReadOnlyList<PluginRecord> assemblies = pluginCache.ValidateAndLoadAssemblies(pluginDir.GetFiles("*.dll"), Program.Log);
+            IReadOnlyList<PlugInRecord> assemblies = pluginCache.ValidateAndLoadAssemblies(pluginDir.GetFiles("*.dll"), Program.Log);
 
             if (assemblies.Count > 0)
             {
-                foreach (PluginRecord record in assemblies.Where(item => !item.IsAssemblyLoaded && item.IsManaged))
+                foreach (PlugInRecord record in assemblies.Where(item => !item.IsAssemblyLoaded && item.IsManaged))
                 {
-                    _disabled[Path.GetFileName(record.Path)] = new DisabledPlugin(DisabledReasonCode.Error, Path.GetFileName(record.Path), record.LoadFailureReason, record.Path);
+                    _disabled[Path.GetFileName(record.Path)] = new DisabledPlugIn(DisabledReasonCode.Error, Path.GetFileName(record.Path), record.LoadFailureReason, record.Path);
                 }
             }
 
-            IGorgonPluginService plugins = new GorgonMefPluginService(pluginCache, Program.Log);            
-            IReadOnlyList<ToolPlugin> pluginList = plugins.GetPlugins<ToolPlugin>();
+            IGorgonPlugInService plugins = new GorgonMefPlugInService(pluginCache, Program.Log);            
+            IReadOnlyList<ToolPlugIn> pluginList = plugins.GetPlugIns<ToolPlugIn>();
 
-            foreach (ToolPlugin plugin in pluginList)
+            foreach (ToolPlugIn plugin in pluginList)
             {
                 try
                 {
@@ -183,7 +183,7 @@ namespace Gorgon.Editor.Services
                     plugin.Initialize(this, _graphicsContext, Program.Log);
 
                     // Check to see if this plug in can continue.
-                    IReadOnlyList<string> validation = plugin.IsPluginAvailable();                    
+                    IReadOnlyList<string> validation = plugin.IsPlugInAvailable();                    
 
                     if (validation.Count > 0)
                     {
@@ -196,7 +196,7 @@ namespace Gorgon.Editor.Services
                             Program.Log.Print($"WARNING: {reason}", LoggingLevel.Verbose);
                         }
 
-                        _disabled[plugin.Name] = new DisabledPlugin(DisabledReasonCode.ValidationError, plugin.Name, string.Join("\n", validation), plugin.PlugInPath);
+                        _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.ValidationError, plugin.Name, string.Join("\n", validation), plugin.PlugInPath);
 
                         // Remove this plug in.
                         plugins.Unload(plugin.Name);
@@ -211,13 +211,13 @@ namespace Gorgon.Editor.Services
                         Program.Log.Print($"WARNING: The tool plug in '{plugin.Name}' is disabled:", LoggingLevel.Simple);
                         Program.Log.Print($"WARNING: {Resources.GOREDIT_ERR_TOOL_NO_BUTTON}", LoggingLevel.Verbose);
 
-                        _disabled[plugin.Name] = new DisabledPlugin(DisabledReasonCode.ValidationError, plugin.Name, Resources.GOREDIT_ERR_TOOL_NO_BUTTON, plugin.PlugInPath);
+                        _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.ValidationError, plugin.Name, Resources.GOREDIT_ERR_TOOL_NO_BUTTON, plugin.PlugInPath);
 
                         // Remove this plug in.
                         plugins.Unload(plugin.Name);
                     }
 
-                    AddToolPlugin(plugin);                    
+                    AddToolPlugIn(plugin);                    
                 }
                 catch (Exception ex)
                 {
@@ -227,7 +227,7 @@ namespace Gorgon.Editor.Services
                     Program.Log.Print($"ERROR: Cannot create tool plug in '{plugin.Name}'.", LoggingLevel.Simple);
                     Program.Log.LogException(ex);
 
-                    _disabled[plugin.Name] = new DisabledPlugin(DisabledReasonCode.Error, plugin.Name, string.Format(Resources.GOREDIT_DISABLE_CONTENT_PLUGIN_EXCEPTION, ex.Message), plugin.PlugInPath);
+                    _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.Error, plugin.Name, string.Format(Resources.GOREDIT_DISABLE_CONTENT_PLUGIN_EXCEPTION, ex.Message), plugin.PlugInPath);
                 }
             }
 
@@ -236,7 +236,7 @@ namespace Gorgon.Editor.Services
 
         /// <summary>Function to remove a tool plugin from the service.</summary>
         /// <param name="plugin">The plugin to remove.</param>
-        public void RemoveToolPlugin(ToolPlugin plugin)
+        public void RemoveToolPlugIn(ToolPlugIn plugin)
         {
             if (plugin == null)
             {
@@ -256,11 +256,11 @@ namespace Gorgon.Editor.Services
         #endregion
 
         #region Constructor.
-        /// <summary>Initializes a new instance of the ToolPluginService class.</summary>
+        /// <summary>Initializes a new instance of the ToolPlugInService class.</summary>
         /// <param name="graphicsContext">The graphics context used to pass the application graphics context to plug ins.</param>
         /// <param name="commonServices">Common application services.</param>
         /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
-        public ToolPluginService(IGraphicsContext graphicsContext, IViewModelInjection commonServices)
+        public ToolPlugInService(IGraphicsContext graphicsContext, IViewModelInjection commonServices)
         {
             _graphicsContext = graphicsContext ?? throw new ArgumentNullException(nameof(graphicsContext));
             _commonServices = commonServices ?? throw new ArgumentNullException(nameof(commonServices));

@@ -25,7 +25,7 @@
 #endregion
 
 using System.Collections.Generic;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Newtonsoft.Json;
 
 namespace Gorgon.Editor.Services
@@ -33,14 +33,14 @@ namespace Gorgon.Editor.Services
     /// <summary>
     /// Provides access to the various content specific plugins in the application.
     /// </summary>
-    public interface IContentPluginService        
-        : IDisabledPluginService
+    public interface IContentPlugInService        
+        : IDisabledPlugInService
     {
         #region Properties.
         /// <summary>
         /// Property to return the list of content plugins loaded in to the application.
         /// </summary>
-        IReadOnlyDictionary<string, ContentPlugin> Plugins
+        IReadOnlyDictionary<string, ContentPlugIn> PlugIns
         {
             get;
         }
@@ -48,7 +48,7 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Property to return the list of content importer plug ins loaded into the application.
         /// </summary>
-        IReadOnlyDictionary<string, ContentImportPlugin> Importers
+        IReadOnlyDictionary<string, ContentImportPlugIn> Importers
         {
             get;
         }

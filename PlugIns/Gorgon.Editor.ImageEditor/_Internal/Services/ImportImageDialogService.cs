@@ -46,7 +46,7 @@ namespace Gorgon.Editor.ImageEditor
         // The settings for the image editor.
         private readonly ISettings _settings;
         // The codecs available to the importer.
-        private readonly CodecRegistry _codecs;
+        private readonly ICodecRegistry _codecs;
         #endregion
 
         #region Properties.
@@ -155,7 +155,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ImageEditor.ImportImageDialogService"/> class.</summary>
         /// <param name="settings">The settings.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settings" />, or the <paramref name="codecs"/> parameter is <strong>null</strong>.</exception>
-        public ImportImageDialogService(ISettings settings, CodecRegistry codecs)
+        public ImportImageDialogService(ISettings settings, ICodecRegistry codecs)
         {
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _codecs = codecs ?? throw new ArgumentNullException(nameof(codecs));

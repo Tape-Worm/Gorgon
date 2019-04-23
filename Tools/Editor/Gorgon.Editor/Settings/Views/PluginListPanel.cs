@@ -31,7 +31,7 @@ using System.Windows.Forms;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.ViewModels;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 
 namespace Gorgon.Editor.Views
@@ -39,8 +39,8 @@ namespace Gorgon.Editor.Views
     /// <summary>
     /// General settings for the application.
     /// </summary>
-    internal partial class PluginListPanel 
-		: SettingsBaseControl, IDataContext<ISettingsPluginsList>
+    internal partial class PlugInListPanel 
+		: SettingsBaseControl, IDataContext<ISettingsPlugInsList>
     {
         #region Variables.
 
@@ -53,7 +53,7 @@ namespace Gorgon.Editor.Views
 
         /// <summary>Property to return the data context assigned to this view.</summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public ISettingsPluginsList DataContext
+        public ISettingsPlugInsList DataContext
         {
             get;
             private set;
@@ -68,40 +68,40 @@ namespace Gorgon.Editor.Views
         {
             switch (e.PropertyName)
             {
-                case nameof(ISettingsPluginsList.Current):
+                case nameof(ISettingsPlugInsList.Current):
                     TextStatus.Text = DataContext.Current?.DisabledReason ?? string.Empty;
                     break;
             }
         }
 
-        /// <summary>Handles the SelectedIndexChanged event of the ListPlugins control.</summary>
+        /// <summary>Handles the SelectedIndexChanged event of the ListPlugIns control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ListPlugins_SelectedIndexChanged(object sender, EventArgs e)
+        private void ListPlugIns_SelectedIndexChanged(object sender, EventArgs e)
         {
-            int selectedIndex = ListPlugins.SelectedIndices.Count > 0 ? ListPlugins.SelectedIndices[0] : -1;
-            if ((DataContext?.SelectPluginCommand == null) || (!DataContext.SelectPluginCommand.CanExecute(selectedIndex)))
+            int selectedIndex = ListPlugIns.SelectedIndices.Count > 0 ? ListPlugIns.SelectedIndices[0] : -1;
+            if ((DataContext?.SelectPlugInCommand == null) || (!DataContext.SelectPlugInCommand.CanExecute(selectedIndex)))
             {
                 return;
             }
 
-            DataContext.SelectPluginCommand.Execute(selectedIndex);
+            DataContext.SelectPlugInCommand.Execute(selectedIndex);
         }
 
         /// <summary>
         /// Function to fill the list with plug in information.
         /// </summary>
         /// <param name="dataContext">The data context containing the information.</param>
-        private void FillPluginList(ISettingsPluginsList dataContext)
+        private void FillPlugInList(ISettingsPlugInsList dataContext)
         {
-            ListPlugins.BeginUpdate();
+            ListPlugIns.BeginUpdate();
             
             try
             {
-                ListPlugins.Items.Clear();
+                ListPlugIns.Items.Clear();
                 ListViewItem selected = null;
 
-                foreach (ISettingsPluginListItem item in dataContext.Plugins)
+                foreach (ISettingsPlugInListItem item in dataContext.PlugIns)
                 {
                     var listItem = new ListViewItem()
                     {
@@ -123,28 +123,28 @@ namespace Gorgon.Editor.Views
                         selected = listItem;
                     }
 
-                    ListPlugins.Items.Add(listItem);
+                    ListPlugIns.Items.Add(listItem);
                 }
 
-                if (ListPlugins.Items.Count == 0)
+                if (ListPlugIns.Items.Count == 0)
                 {
                     return;
                 }
 
-                ListPlugins.Select();
+                ListPlugIns.Select();
 
                 if (selected == null)
                 {
-                    selected = ListPlugins.Items[0];
+                    selected = ListPlugIns.Items[0];
                 }
 
                 selected.Selected = true;
-                ListPlugins.SelectedIndices.Add(selected.Index);                
+                ListPlugIns.SelectedIndices.Add(selected.Index);                
             }
             finally
             {
-                ListPlugins.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
-                ListPlugins.EndUpdate();
+                ListPlugIns.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+                ListPlugIns.EndUpdate();
             }
         }
 
@@ -166,7 +166,7 @@ namespace Gorgon.Editor.Views
         /// </summary>
         private void ResetDataContext()
         {
-            ListPlugins.Items.Clear();
+            ListPlugIns.Items.Clear();
             TextStatus.Text = string.Empty;
         }
 
@@ -174,7 +174,7 @@ namespace Gorgon.Editor.Views
         /// Function to initialize the control from the data context.
         /// </summary>
         /// <param name="dataContext">The current data context.</param>
-        private void InitializeFromDataContext(ISettingsPluginsList dataContext)
+        private void InitializeFromDataContext(ISettingsPlugInsList dataContext)
         {
             if (dataContext == null)
             {
@@ -182,14 +182,14 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            FillPluginList(dataContext);
+            FillPlugInList(dataContext);
             TextStatus.Text = dataContext.Current?.DisabledReason ?? string.Empty;            
         }
 
         /// <summary>Function to assign a data context to the view as a view model.</summary>
         /// <param name="dataContext">The data context to assign.</param>
         /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
-        public void SetDataContext(ISettingsPluginsList dataContext)
+        public void SetDataContext(ISettingsPlugInsList dataContext)
         {
             UnassignEvents();
 
@@ -206,8 +206,8 @@ namespace Gorgon.Editor.Views
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="PluginListPanel"/> class.</summary>
-        public PluginListPanel() => InitializeComponent();
+        /// <summary>Initializes a new instance of the <see cref="PlugInListPanel"/> class.</summary>
+        public PlugInListPanel() => InitializeComponent();
         #endregion
     }
 }

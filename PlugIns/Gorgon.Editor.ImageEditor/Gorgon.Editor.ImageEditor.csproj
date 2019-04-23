@@ -55,6 +55,7 @@
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="_Internal\SharedDataFactory.cs" />
     <Compile Include="_Internal\CodecRegistry.cs" />
     <Compile Include="_Internal\Forms\FormRibbon.cs">
       <SubType>Form</SubType>
@@ -62,6 +63,7 @@
     <Compile Include="_Internal\Forms\FormRibbon.Designer.cs">
       <DependentUpon>FormRibbon.cs</DependentUpon>
     </Compile>
+    <Compile Include="_Internal\_Interfaces\ICodecRegistry.cs" />
     <Compile Include="_Internal\ImageAnimationController.cs" />
     <Compile Include="ImageImporterPlugin.cs" />
     <Compile Include="_Internal\Cube.cs" />
@@ -85,6 +87,7 @@
     <Compile Include="_Internal\Services\ImageIOService.cs" />
     <Compile Include="_Internal\Services\DdsImageImporter.cs" />
     <Compile Include="_Internal\Services\TexConvCompressor.cs" />
+    <Compile Include="_Internal\ViewModels\CodecSetting.cs" />
     <Compile Include="_Internal\ViewModels\CropResizeSettings.cs" />
     <Compile Include="_Internal\ViewModels\Settings.cs" />
     <Compile Include="_Internal\ViewModels\SettingsParameters.cs" />
@@ -141,6 +144,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\remove_plugins_22x22.png" />
+    <None Include="Resources\add_plugin_22x22.png" />
     <None Include="Resources\plugins_48x48.png" />
     <None Include="Resources\plugins_16x16.png" />
     <None Include="..\..\Gorgon\NoLiteralBugFix.ruleset">

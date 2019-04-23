@@ -31,7 +31,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Gorgon.Plugins;
+using Gorgon.PlugIns;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
@@ -68,11 +68,11 @@ namespace Gorgon.Editor
         // The project manager for the application.
         private ProjectManager _projectManager;
         // The cache for plugin assemblies.
-        private GorgonMefPluginCache _pluginCache;
+        private GorgonMefPlugInCache _pluginCache;
         // The plugin service used to manage content plugins.
-        private ContentPluginService _contentPlugins;
+        private ContentPlugInService _contentPlugIns;
 		// The plugin service used to manage tool plugin.
-        private ToolPluginService _toolPlugins;
+        private ToolPlugInService _toolPlugIns;
 		// The services that are common to the entire application.
         private IViewModelInjection _commonServices;
         #endregion
@@ -87,15 +87,15 @@ namespace Gorgon.Editor
         /// <see langword="true" /> to release both managed and unmanaged resources; <see langword="false" /> to release only unmanaged resources. </param>
         protected override void Dispose(bool disposing)
         {
-            ToolPluginService toolPlugins = Interlocked.Exchange(ref _toolPlugins, null);
-            ContentPluginService contentPlugins = Interlocked.Exchange(ref _contentPlugins, null);
+            ToolPlugInService toolPlugIns = Interlocked.Exchange(ref _toolPlugIns, null);
+            ContentPlugInService contentPlugIns = Interlocked.Exchange(ref _contentPlugIns, null);
             GraphicsContext context = Interlocked.Exchange(ref _graphicsContext, null);
-            GorgonMefPluginCache pluginCache = Interlocked.Exchange(ref _pluginCache, null);
+            GorgonMefPlugInCache pluginCache = Interlocked.Exchange(ref _pluginCache, null);
             FormMain mainForm = Interlocked.Exchange(ref _mainForm, null);
             FormSplash splash = Interlocked.Exchange(ref _splash, null);
 
-            toolPlugins?.Dispose();
-            contentPlugins?.Dispose();
+            toolPlugIns?.Dispose();
+            contentPlugIns?.Dispose();
             context?.Dispose();
             pluginCache?.Dispose();
             mainForm?.Dispose();
@@ -158,7 +158,7 @@ namespace Gorgon.Editor
                                                            defaultSize.Width,
                                                            defaultSize.Height),
                     WindowState = (int)FormWindowState.Maximized,
-                    PluginPath = Path.Combine(GorgonApplication.StartupPath.FullName, "Plugins").FormatDirectory(Path.DirectorySeparatorChar),
+                    PlugInPath = Path.Combine(GorgonApplication.StartupPath.FullName, "PlugIns").FormatDirectory(Path.DirectorySeparatorChar),
                     LastOpenSavePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).FormatDirectory(Path.DirectorySeparatorChar),
                     LastProjectWorkingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).FormatDirectory(Path.DirectorySeparatorChar)
                 };
@@ -196,12 +196,12 @@ namespace Gorgon.Editor
                 result = CreateEditorSettings();
             }
 
-            if (string.IsNullOrWhiteSpace(result.PluginPath))
+            if (string.IsNullOrWhiteSpace(result.PlugInPath))
             {
-                result.PluginPath = Path.Combine(GorgonApplication.StartupPath.FullName, "Plugins").FormatDirectory(Path.DirectorySeparatorChar);
+                result.PlugInPath = Path.Combine(GorgonApplication.StartupPath.FullName, "PlugIns").FormatDirectory(Path.DirectorySeparatorChar);
             }
 
-            var pluginPath = new DirectoryInfo(result.PluginPath);
+            var pluginPath = new DirectoryInfo(result.PlugInPath);
 
             if (!pluginPath.Exists)
             {
@@ -261,22 +261,22 @@ namespace Gorgon.Editor
         /// Function to load any tool plugins.
         /// </summary>
         /// <returns>The tool plugin manager service used to manipulate the loaded tool plugins.</returns>
-        private ToolPluginService LoadToolPlugins()
+        private ToolPlugInService LoadToolPlugIns()
         {
-            var toolPluginsDir = new DirectoryInfo(Path.Combine(_settings.PluginPath, "Tools"));
-            var toolPlugins = new ToolPluginService(_graphicsContext, _commonServices);
+            var toolPlugInsDir = new DirectoryInfo(Path.Combine(_settings.PlugInPath, "Tools"));
+            var toolPlugIns = new ToolPlugInService(_graphicsContext, _commonServices);
 
             try
             {
                 _splash.InfoText = Resources.GOREDIT_TEXT_LOADING_TOOL_PLUGINS;
 
-                if (!toolPluginsDir.Exists)
+                if (!toolPlugInsDir.Exists)
                 {
-                    toolPluginsDir.Create();
-                    return toolPlugins;
+                    toolPlugInsDir.Create();
+                    return toolPlugIns;
                 }
 
-                toolPlugins.LoadToolPlugins(_pluginCache, toolPluginsDir);
+                toolPlugIns.LoadToolPlugIns(_pluginCache, toolPlugInsDir);
             }
             catch (Exception ex)
             {
@@ -284,37 +284,37 @@ namespace Gorgon.Editor
                 GorgonDialogs.ErrorBox(_splash, Resources.GOREDIT_ERR_LOADING_PLUGINS, Resources.GOREDIT_ERR_ERROR, ex);
             }
 
-            return toolPlugins;
+            return toolPlugIns;
         }
 
         /// <summary>
         /// Function to load any content plugins used to create/edit content.
         /// </summary>
         /// <returns>The content plugin manager service used to manipulate the loaded content plugins.</returns>
-        private ContentPluginService LoadContentPlugins()
+        private ContentPlugInService LoadContentPlugIns()
         {
-            var contentPluginsDir = new DirectoryInfo(Path.Combine(_settings.PluginPath, "Content"));
-            var contentPluginSettingsDir = new DirectoryInfo(Path.Combine(Program.ApplicationUserDirectory.FullName, "ContentPlugins"));
+            var contentPlugInsDir = new DirectoryInfo(Path.Combine(_settings.PlugInPath, "Content"));
+            var contentPlugInSettingsDir = new DirectoryInfo(Path.Combine(Program.ApplicationUserDirectory.FullName, "ContentPlugIns"));
 
-            if (!contentPluginSettingsDir.Exists)
+            if (!contentPlugInSettingsDir.Exists)
             {
-                contentPluginSettingsDir.Create();
-                contentPluginSettingsDir.Refresh();
+                contentPlugInSettingsDir.Create();
+                contentPlugInSettingsDir.Refresh();
             }
 
-            var contentPlugins = new ContentPluginService(contentPluginSettingsDir, _graphicsContext, _commonServices);
+            var contentPlugIns = new ContentPlugInService(contentPlugInSettingsDir, _graphicsContext, _commonServices);
 
             try
             {
                 _splash.InfoText = Resources.GOREDIT_TEXT_LOADING_CONTENT_PLUGINS;
 
-                if (!contentPluginsDir.Exists)
+                if (!contentPlugInsDir.Exists)
                 {
-                    contentPluginsDir.Create();
-                    return contentPlugins;
+                    contentPlugInsDir.Create();
+                    return contentPlugIns;
                 }
 
-                contentPlugins.LoadContentPlugins(_pluginCache, contentPluginsDir);
+                contentPlugIns.LoadContentPlugIns(_pluginCache, contentPlugInsDir);
             }
             catch (Exception ex)
             {
@@ -322,16 +322,16 @@ namespace Gorgon.Editor
                 GorgonDialogs.ErrorBox(_splash, Resources.GOREDIT_ERR_LOADING_PLUGINS, Resources.GOREDIT_ERR_ERROR, ex);
             }
 
-            return contentPlugins;
+            return contentPlugIns;
         }
 
         /// <summary>
         /// Function to load any plugins used to import or export files.
         /// </summary>
         /// <returns>A file system provider management interface.</returns>
-        private FileSystemProviders LoadFileSystemPlugins()
+        private FileSystemProviders LoadFileSystemPlugIns()
         {
-            var fileSystemPlugInsDir = new DirectoryInfo(Path.Combine(_settings.PluginPath, "Filesystem"));
+            var fileSystemPlugInsDir = new DirectoryInfo(Path.Combine(_settings.PlugInPath, "Filesystem"));
             var result = new FileSystemProviders(_commonServices);
 
             try
@@ -379,20 +379,20 @@ namespace Gorgon.Editor
                 EditorCommonResources.LoadResources();
 
                 _commonServices = new ViewModelInjection(Program.Log, new WaitCursorBusyState(), new MessageBoxService());                
-                _pluginCache = new GorgonMefPluginCache(Program.Log);
+                _pluginCache = new GorgonMefPlugInCache(Program.Log);
                 _graphicsContext = GraphicsContext.Create(Program.Log);
 
                 // Get any application settings we might have.
                 _settings = LoadSettings();
 
                 // Load our file system import/export plugins.
-                FileSystemProviders fileSystemProviders = LoadFileSystemPlugins();
+                FileSystemProviders fileSystemProviders = LoadFileSystemPlugIns();
 
 				// Load our tool plug ins.
-                _toolPlugins = LoadToolPlugins();
+                _toolPlugIns = LoadToolPlugIns();
 
                 // Load our content service plugins.
-                _contentPlugins = LoadContentPlugins();                
+                _contentPlugIns = LoadContentPlugIns();                
 
                 // Create the project manager for the application
                 _projectManager = new ProjectManager(fileSystemProviders);
@@ -410,13 +410,13 @@ namespace Gorgon.Editor
 
                 var factory = new ViewModelFactory(_settings,
                                                    fileSystemProviders,
-                                                   _contentPlugins,
-												   _toolPlugins,
+                                                   _contentPlugIns,
+												   _toolPlugIns,
                                                    _projectManager,
 												   _commonServices,
                                                    new ClipboardService(),
                                                    new DirectoryLocateService(),
-                                                   new FileScanService(_contentPlugins));
+                                                   new FileScanService(_contentPlugIns));
 
                 FormWindowState windowState;
                 // Ensure the window state values fall into an acceptable range.

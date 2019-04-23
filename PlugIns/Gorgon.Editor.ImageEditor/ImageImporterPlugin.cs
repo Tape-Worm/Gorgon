@@ -30,50 +30,27 @@ using System.Linq;
 using System.Threading;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.Services;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
-using Gorgon.Plugins;
+using Gorgon.PlugIns;
 
 namespace Gorgon.Editor.ImageEditor
 {
     /// <summary>
     /// A plugin used to build an importer for image data.
     /// </summary>
-    internal class ImageImporterPlugin
-        : ContentImportPlugin
+    internal class ImageImporterPlugIn
+        : ContentImportPlugIn
     {
         #region Variables.
         // The image editor settings.
         private ISettings _settings;
 
-        // The plug in cache for image codecs.
-        private GorgonMefPluginCache _pluginCache;
-
 		// The codec registry.
-        private CodecRegistry _codecs;
-        #endregion
-
-        #region Properties.
-		/// <summary>
-        /// Property to return the common codec registry factory for all image plug ins in this assembly.
-        /// </summary>
-		public static Lazy<CodecRegistry> CodecRegistryFactory
-        {
-            get;
-            private set;
-        }
-
-		/// <summary>
-        /// Property to return the factory used to create the shared settings.
-        /// </summary>
-		public static Lazy<ISettings> SettingsFactory
-        {
-            get;
-            private set;
-        }
+        private ICodecRegistry _codecs;
         #endregion
 
         #region Methods.
@@ -121,47 +98,20 @@ namespace Gorgon.Editor.ImageEditor
         /// </para>
         ///   <para>
         /// Plug ins must register the view associated with their settings panel via the <see cref="ViewFactory.Register``1(System.Func{System.Windows.Forms.Control})"/> method in the
-        /// <see cref="OnInitialize(IContentPluginService)"/> method or the settings will not display.
+        /// <see cref="OnInitialize(IContentPlugInService)"/> method or the settings will not display.
         /// </para>
         /// </remarks>
-        protected override ISettingsCategoryViewModel OnGetSettings() => SettingsFactory.Value;
+        protected override ISettingsCategoryViewModel OnGetSettings() => _settings;
 
         /// <summary>Function to provide initialization for the plugin.</summary>
         /// <param name="pluginService">The plugin service used to access other plugins.</param>
         /// <remarks>This method is only called when the plugin is loaded at startup.</remarks>
-        protected override void OnInitialize(IContentPluginService pluginService)
+        protected override void OnInitialize(IContentPlugInService pluginService)
         {
             ViewFactory.Register<ISettings>(() => new ImageCodecSettingsPanel());
-			            
-            _pluginCache = new GorgonMefPluginCache(CommonServices.Log);
-
-            if (SettingsFactory == null)
-            {
-                SettingsFactory = new Lazy<ISettings>(() =>
-                {
-                    ImageEditorSettings settings = pluginService.ReadContentSettings<ImageEditorSettings>(ImageEditorPlugin.SettingsName);
-
-                    if (settings == null)
-                    {
-                        settings = new ImageEditorSettings();
-                    }
-
-                    var settingsVm = new Settings();
-                    settingsVm.Initialize(new SettingsParameters(settings, pluginService, CommonServices));
-					
-                    return settingsVm;
-                }, LazyThreadSafetyMode.ExecutionAndPublication);
-            }
-
-            _settings = SettingsFactory.Value;
-
-            if (CodecRegistryFactory == null)
-            {
-                CodecRegistryFactory = new Lazy<CodecRegistry>(() => new CodecRegistry(_settings, _pluginCache, CommonServices.Log), LazyThreadSafetyMode.ExecutionAndPublication);
-            }
-
-            _codecs = CodecRegistryFactory.Value;
-            _codecs.LoadFromSettings();
+			
+			// Retrieve the shared settings.
+            (_codecs, _settings) = SharedDataFactory.GetSharedData(pluginService, CommonServices);
         }
 
         /// <summary>Function to provide clean up for the plugin.</summary>
@@ -181,8 +131,6 @@ namespace Gorgon.Editor.ImageEditor
                 {
                     codec.Dispose();
                 }
-
-                _pluginCache.Dispose();
             }
             catch (Exception ex)
             {
@@ -206,8 +154,8 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="ImageImporterPlugin"/> class.</summary>
-        public ImageImporterPlugin()
+        /// <summary>Initializes a new instance of the <see cref="ImageImporterPlugIn"/> class.</summary>
+        public ImageImporterPlugIn()
             : base(Resources.GORIMG_IMPORT_DESC)
         {
 

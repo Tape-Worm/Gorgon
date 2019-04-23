@@ -30,7 +30,7 @@ using Gorgon.IO.Properties;
 namespace Gorgon.IO
 {
 	/// <summary>
-	/// A name and description for an image codec within a <see cref="GorgonSpriteCodecPlugin"/>.
+	/// A name and description for an image codec within a <see cref="GorgonSpriteCodecPlugIn"/>.
 	/// </summary>
 	public struct GorgonSpriteCodecDescription
 		: IEquatable<GorgonSpriteCodecDescription>

@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 using Gorgon.Core;
-using Gorgon.Plugins;
+using Gorgon.PlugIns;
 
 namespace Gorgon.Input
 {
@@ -56,15 +56,15 @@ namespace Gorgon.Input
 	/// </para>
 	/// </remarks>
 	/// <example>
-	/// <see cref="GorgonMefPluginCache.LoadPluginAssemblies"/>
+	/// <see cref="GorgonMefPlugInCache.LoadPlugInAssemblies"/>
 	/// The following shows how to load a <see cref="IGorgonGamingDeviceDriver"/> and enumerate the devices:
 	/// <code language="csharp">
 	/// <![CDATA[
 	/// IReadOnlyList<GorgonGamingDeviceInfo> joysticks = null;
 	/// TODO: This needs fixing.
-	/// using (var assemblies = new GorgonPluginAssemblyCache())
+	/// using (var assemblies = new GorgonPlugInAssemblyCache())
 	/// {
-	///		var plugInService = new GorgonPluginService(assemblies);
+	///		var plugInService = new GorgonPlugInService(assemblies);
 	///		var factory = new GorgonGamingDeviceDriverFactory(plugInService);
 	///
 	///		// Load the assembly for the XInput driver.

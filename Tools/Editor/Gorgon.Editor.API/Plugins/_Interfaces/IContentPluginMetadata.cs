@@ -32,18 +32,18 @@ using Gorgon.Graphics.Imaging;
 using System.IO;
 using System.Threading;
 
-namespace Gorgon.Editor.Plugins
+namespace Gorgon.Editor.PlugIns
 {
     /// <summary>
     /// Provides metadata for a plugin.
     /// </summary>
-    public interface IContentPluginMetadata
+    public interface IContentPlugInMetadata
     {
         #region Properties.
         /// <summary>
         /// Property to return the name of the plug in.
         /// </summary>
-        string PluginName
+        string PlugInName
         {
             get;
         }

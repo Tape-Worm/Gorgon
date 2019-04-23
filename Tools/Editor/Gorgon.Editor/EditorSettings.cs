@@ -66,7 +66,7 @@ namespace Gorgon.Editor
         /// <summary>
         /// Property to set or return the path used for the application plug ins.
         /// </summary>
-        public string PluginPath
+        public string PlugInPath
         {
             get;
             set;

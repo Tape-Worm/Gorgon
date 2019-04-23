@@ -47,7 +47,7 @@ namespace Gorgon.Editor.UI.Forms
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.UI.Forms.FormPluginManager"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.UI.Forms.FormPlugInManager"/> class.</summary>
         public FormPlugInManager() => InitializeComponent();
         #endregion
     }

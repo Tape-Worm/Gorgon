@@ -28,13 +28,13 @@ using System;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
 
-namespace Gorgon.Editor.Plugins
+namespace Gorgon.Editor.PlugIns
 {
     /// <summary>
     /// A plug in that was disabled for a reason.
     /// </summary>
-    internal class DisabledPlugin 
-        : IDisabledPlugin
+    internal class DisabledPlugIn 
+        : IDisabledPlugIn
     {
         /// <summary>
         /// Property to return the code to indicate how the plug in was disabled.
@@ -55,7 +55,7 @@ namespace Gorgon.Editor.Plugins
         /// <summary>
         /// Property to return the name of the disabled plug in.
         /// </summary>
-        public string PluginName
+        public string PlugInName
         {
             get;
         }
@@ -66,14 +66,14 @@ namespace Gorgon.Editor.Plugins
             get;
         }
 
-        /// <summary>Initializes a new instance of the DisabledPlugin class.</summary>
+        /// <summary>Initializes a new instance of the DisabledPlugIn class.</summary>
         /// <param name="reasonCode">The code to indicate how the plug in was disabled.</param>
         /// <param name="pluginName">Name of the plugin that was disabled.</param>
         /// <param name="desc">The human readable description that explains why the plug in was disabled.</param>
         /// <param name="path">The path to the plug in assembly.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginName" /> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="pluginName" /> parameter is empty.</exception>
-        public DisabledPlugin(DisabledReasonCode reasonCode, string pluginName, string desc, string path)
+        public DisabledPlugIn(DisabledReasonCode reasonCode, string pluginName, string desc, string path)
         {
             if (pluginName == null)
             {
@@ -86,7 +86,7 @@ namespace Gorgon.Editor.Plugins
             }
 
             ReasonCode = reasonCode;
-            PluginName = pluginName;
+            PlugInName = pluginName;
             Description = string.IsNullOrWhiteSpace(desc) ? Resources.GOREDIT_TEXT_DISABLED_PLUGIN_DEFAULT_TEXT : desc.Trim();
             Path = path ?? string.Empty;
         }

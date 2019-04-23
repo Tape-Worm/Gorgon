@@ -31,7 +31,7 @@ using System.Linq;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.IO;
-using Gorgon.Plugins;
+using Gorgon.PlugIns;
 
 namespace Gorgon.Examples
 {
@@ -42,7 +42,7 @@ namespace Gorgon.Examples
 	/// This example will show how to load a plugin and how to build a simple plugin.
 	/// 
 	/// The plugin in composed of 2 parts:
-	/// 1.  The plugin entry point object, which inherits from GorgonPlugin.
+	/// 1.  The plugin entry point object, which inherits from GorgonPlugIn.
 	/// 2.  The object that will be created by this entry point.
 	/// 
 	/// This is a factory pattern that allows the plugin to create instances of objects whose functionality we 
@@ -50,7 +50,7 @@ namespace Gorgon.Examples
 	/// application.
 	/// 
 	/// The entry point object will be responsible for creating the concrete classes based on an abstract class
-	/// in the host application (this abstract class must implement GorgonPlugin at minimum).  From there this 
+	/// in the host application (this abstract class must implement GorgonPlugIn at minimum).  From there this 
 	/// class should have a method that will create the object that we wish to use. An assembly (DLL, EXE, etc...) 
 	/// may contain multiple plugin entry points to allow for returning multiple interfaces or could have some 
 	/// form of input to allow the developer to determine which type of interface is returned. The entry point 
@@ -60,8 +60,8 @@ namespace Gorgon.Examples
 	/// The plugin interface is the actual interface for the functionality.  It should be an interface or class
 	/// that is inherited in the plugin assembly and will implement specific functionality for that plugin.
 	/// 
-	/// To load a plugin, the user should first load the assembly using the GorgonPluginAssemblyCache object. 
-	/// This will load the assembly with the plugins that we want. Then a GorgonPluginService object should be created 
+	/// To load a plugin, the user should first load the assembly using the GorgonPlugInAssemblyCache object. 
+	/// This will load the assembly with the plugins that we want. Then a GorgonPlugInService object should be created 
 	/// to create an instance of the plugin interface by using the fully qualified type name of the plugin type.
 	/// </remarks>
 	internal static class Program
@@ -83,15 +83,15 @@ namespace Gorgon.Examples
 
 			// Set up the assembly cache.
 			// We'll need the assemblies loaded into this object in order to load our plugin types.
-            var pluginCache = new GorgonMefPluginCache(_log);
+            var pluginCache = new GorgonMefPlugInCache(_log);
 
 			// Create our plugin service.
 			// This takes the cache of assemblies we just created.
-            IGorgonPluginService pluginService = new GorgonMefPluginService(pluginCache, _log);
+            IGorgonPlugInService pluginService = new GorgonMefPlugInService(pluginCache, _log);
 
 			try
 			{
-				Console.Title = "Gorgon Example #4 - Plugins.";
+				Console.Title = "Gorgon Example #4 - PlugIns.";
 				Console.ForegroundColor = ConsoleColor.White;
 
 				Console.WriteLine("This is an example to show how to create and use custom plugins.");
@@ -100,10 +100,10 @@ namespace Gorgon.Examples
 
 				Console.ResetColor();
 
-			    pluginCache.LoadPluginAssemblies(Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]).FormatDirectory(Path.DirectorySeparatorChar), "Example004.*Plugin.dll");
-				Console.WriteLine("{0} plugin assemblies found.", pluginCache.PluginAssemblies.Count);
+			    pluginCache.LoadPlugInAssemblies(Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]).FormatDirectory(Path.DirectorySeparatorChar), "Example004.*PlugIn.dll");
+				Console.WriteLine("{0} plugin assemblies found.", pluginCache.PlugInAssemblies.Count);
 				
-				if (pluginCache.PluginAssemblies.Count == 0)
+				if (pluginCache.PlugInAssemblies.Count == 0)
 				{
 					return;
 				}
@@ -112,8 +112,8 @@ namespace Gorgon.Examples
 				IList<TextColorWriter> writers = new List<TextColorWriter>();
 
 				// Create our plugin instances, we'll limit to 9 entries just for giggles.
-				TextColorPlugIn[] plugins = (from pluginName in pluginService.GetPluginNames()
-							   let plugin = pluginService.GetPlugin<TextColorPlugIn>(pluginName)
+				TextColorPlugIn[] plugins = (from pluginName in pluginService.GetPlugInNames()
+							   let plugin = pluginService.GetPlugIn<TextColorPlugIn>(pluginName)
 				               where plugin != null
 				               select plugin).ToArray();
 

@@ -69,7 +69,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>
         /// Property to return the list of installed image codecs.
         /// </summary>
-        public CodecRegistry InstalledCodecs
+        public ICodecRegistry InstalledCodecs
         {
             get;
         }
@@ -430,7 +430,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="bcCompressor">The block compressor used to block (de)compress image data.</param>
         /// <param name="log">The logging interface to use.</param>
         public ImageIOService(IGorgonImageCodec defaultCodec, 
-            CodecRegistry installedCodecs,
+            ICodecRegistry installedCodecs,
             IExportImageDialogService exportDialog,
             IImportImageDialogService importDialog,
             IBusyStateService busyService,

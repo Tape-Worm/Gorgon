@@ -31,7 +31,7 @@ using Gorgon.Diagnostics;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 
-namespace Gorgon.Editor.Plugins
+namespace Gorgon.Editor.PlugIns
 {
     /// <summary>
     /// Base class for a plug in that provides basic utility functionality.
@@ -49,8 +49,8 @@ namespace Gorgon.Editor.Plugins
     /// Because these plug ins are independent, there is no interaction with the editor UI beyond providing information to display a button on the ribbon.
     /// </para>
     /// </remarks>
-    public abstract class ToolPlugin
-		: EditorPlugin
+    public abstract class ToolPlugIn
+		: EditorPlugIn
     {
         #region Variables.
         // Flag to indicate that the plugin is initialized.
@@ -88,13 +88,13 @@ namespace Gorgon.Editor.Plugins
 		/// <summary>
         /// Property to return the button to display on the ribbon.
         /// </summary>
-		public abstract IToolPluginRibbonButton Button
+		public abstract IToolPlugInRibbonButton Button
         {
             get;
         }
 
         /// <summary>Property to return the type of this plug in.</summary>
-        public sealed override PluginType PluginType => PluginType.Tool;
+        public sealed override PlugInType PlugInType => PlugInType.Tool;
         #endregion
 
         #region Methods.
@@ -107,7 +107,7 @@ namespace Gorgon.Editor.Plugins
         /// This method is only called when the plugin is loaded at startup.
         /// </para>
         /// </remarks>
-        protected virtual void OnInitialize(IToolPluginService pluginService)
+        protected virtual void OnInitialize(IToolPlugInService pluginService)
         {
         }
 
@@ -147,7 +147,7 @@ namespace Gorgon.Editor.Plugins
         /// This method is only called when the plugin is loaded at startup.
         /// </para>
         /// </remarks>
-        public void Initialize(IToolPluginService pluginService, IGraphicsContext graphicsContext, IGorgonLog log)
+        public void Initialize(IToolPlugInService pluginService, IGraphicsContext graphicsContext, IGorgonLog log)
         {
             if (pluginService == null)
             {
@@ -175,9 +175,9 @@ namespace Gorgon.Editor.Plugins
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="ToolPlugin"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="ToolPlugIn"/> class.</summary>
         /// <param name="description">Optional description of the plugin.</param>
-        protected ToolPlugin(string description)
+        protected ToolPlugIn(string description)
 			: base(description)
         {
 

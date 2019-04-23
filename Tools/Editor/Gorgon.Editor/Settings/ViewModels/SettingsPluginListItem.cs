@@ -25,22 +25,22 @@
 #endregion
 
 using System;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ViewModels
 {
     /// <summary>
-    /// An item to display on the <see cref="ISettingsPluginsList"/> view model.
+    /// An item to display on the <see cref="ISettingsPlugInsList"/> view model.
     /// </summary>
-    internal class SettingsPluginListItem
-        : ViewModelBase<SettingsPluginListItemParameters>, ISettingsPluginListItem
+    internal class SettingsPlugInListItem
+        : ViewModelBase<SettingsPlugInListItemParameters>, ISettingsPlugInListItem
     {
         #region Variables.
 		// The name of the plug in.
         private string _name;
 		// The plug in type.
-        private PluginType _type;
+        private PlugInType _type;
 		// The current state.
         private string _state;
 		// The reason why a plug in is disabled.
@@ -88,7 +88,7 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>Property to return the type for the plug in.</summary>
-        public PluginType Type
+        public PlugInType Type
         {
             get => _type;
             set
@@ -146,7 +146,7 @@ namespace Gorgon.Editor.ViewModels
         /// <remarks>
         /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
         /// </remarks>
-        protected override void OnInitialize(SettingsPluginListItemParameters injectionParameters)
+        protected override void OnInitialize(SettingsPlugInListItemParameters injectionParameters)
         {
             Name = injectionParameters.Name ?? throw new ArgumentMissingException(nameof(injectionParameters.Name), nameof(injectionParameters));
             Type = injectionParameters.Type;

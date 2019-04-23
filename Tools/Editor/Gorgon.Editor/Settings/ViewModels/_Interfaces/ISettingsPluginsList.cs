@@ -32,13 +32,13 @@ namespace Gorgon.Editor.ViewModels
 	/// <summary>
     /// The plug in list category for the settings.
     /// </summary>
-    internal interface ISettingsPluginsList
+    internal interface ISettingsPlugInsList
 		: ISettingsCategoryViewModel
     {
 		/// <summary>
         /// Property to return the plug ins.
         /// </summary>
-		ObservableCollection<ISettingsPluginListItem> Plugins
+		ObservableCollection<ISettingsPlugInListItem> PlugIns
         {
             get;
         }
@@ -46,7 +46,7 @@ namespace Gorgon.Editor.ViewModels
 		/// <summary>
         /// Property to return the currently selected plug in.
         /// </summary>
-		ISettingsPluginListItem Current
+		ISettingsPlugInListItem Current
         {
             get;
         }
@@ -54,7 +54,7 @@ namespace Gorgon.Editor.ViewModels
 		/// <summary>
         /// Property to return the command to execute for selecting plug ins.
         /// </summary>
-		IEditorCommand<int> SelectPluginCommand
+		IEditorCommand<int> SelectPlugInCommand
         {
             get;
         }

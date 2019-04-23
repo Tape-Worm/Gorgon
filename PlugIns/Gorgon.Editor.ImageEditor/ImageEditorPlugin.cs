@@ -36,7 +36,7 @@ using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.ViewModels;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
@@ -52,8 +52,8 @@ namespace Gorgon.Editor.ImageEditor
     /// <summary>
     /// Gorgon image editor content plug-in interface.
     /// </summary>
-    internal class ImageEditorPlugin
-        : ContentPlugin, IContentPluginMetadata
+    internal class ImageEditorPlugIn
+        : ContentPlugIn, IContentPlugInMetadata
     {
         #region Variables.
         // This is the only codec supported by the image plug in.  Images will be converted when imported.
@@ -63,7 +63,7 @@ namespace Gorgon.Editor.ImageEditor
         private readonly object _syncLock = new object();
 
 		// The codec registry.
-        private CodecRegistry _codecs;
+        private ICodecRegistry _codecs;
 
 		// The plug in settings.
         private ISettings _settings;
@@ -71,15 +71,15 @@ namespace Gorgon.Editor.ImageEditor
 		/// <summary>
         /// The name of the settings file.
         /// </summary>
-		public static readonly string SettingsName = typeof(ImageEditorPlugin).FullName;
+		public static readonly string SettingsName = typeof(ImageEditorPlugIn).FullName;
         #endregion
 		
         #region Properties.
         /// <summary>Property to return the name of the plug in.</summary>
-        string IContentPluginMetadata.PluginName => Name;
+        string IContentPlugInMetadata.PlugInName => Name;
 
         /// <summary>Property to return the description of the plugin.</summary>
-        string IContentPluginMetadata.Description => Description;
+        string IContentPlugInMetadata.Description => Description;
 
         /// <summary>Property to return whether or not the plugin is capable of creating content.</summary>
         public override bool CanCreateContent => false;
@@ -270,8 +270,6 @@ namespace Gorgon.Editor.ImageEditor
                 compressor = new TexConvCompressor(texConvExe, scratchArea, _ddsCodec);
             }
 
-            _settings = ImageImporterPlugin.SettingsFactory.Value;
-
             var imageIO = new ImageIOService(_ddsCodec, 
                 _codecs,
                 new ExportImageDialogService(_settings), 
@@ -295,7 +293,7 @@ namespace Gorgon.Editor.ImageEditor
                 UndoService = undoService,
                 ImageUpdater = new ImageUpdaterService(),
                 ExternalEditorService = new ImageExternalEditService(CommonServices.Log),
-                PlugInManagerService = new PluginManagerService()
+                PlugInManagerService = new PlugInManagerService()
             };
 
             var cropResizeSettings = new CropResizeSettings();
@@ -337,12 +335,10 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Function to provide initialization for the plugin.</summary>
         /// <param name="pluginService">The plugin service used to access other plugins.</param>
         /// <remarks>This method is only called when the plugin is loaded at startup.</remarks>
-        protected override void OnInitialize(IContentPluginService pluginService)
+        protected override void OnInitialize(IContentPlugInService pluginService)
         {
-            ViewFactory.Register<IImageContent>(() => new ImageEditorView());            
-
-            _settings = ImageImporterPlugin.SettingsFactory.Value;
-            _codecs = ImageImporterPlugin.CodecRegistryFactory.Value;                
+            ViewFactory.Register<IImageContent>(() => new ImageEditorView());
+            (_codecs, _settings) = SharedDataFactory.GetSharedData(pluginService, CommonServices);
         }
 
         /// <summary>Function to determine if the content plugin can open the specified file.</summary>
@@ -486,8 +482,8 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the ImageEditorPlugin class.</summary>
-        public ImageEditorPlugin()
+        /// <summary>Initializes a new instance of the ImageEditorPlugIn class.</summary>
+        public ImageEditorPlugIn()
             : base(Resources.GORIMG_DESC) => SmallIconID = Guid.NewGuid();
         #endregion
     }

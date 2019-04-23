@@ -110,7 +110,7 @@ namespace Gorgon.Editor.ImageEditor
         private readonly FileInfo _texConv;
         // The file system writer to use.
         private readonly IGorgonFileSystemWriter<Stream> _writer;
-        // Plugin image file codec.
+        // PlugIn image file codec.
         private readonly IGorgonImageCodec _codec;
         #endregion
 

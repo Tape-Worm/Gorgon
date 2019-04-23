@@ -1,6 +1,6 @@
 ﻿namespace Gorgon.Editor.Views
 {
-    partial class PluginListPanel
+    partial class PlugInListPanel
     {
         /// <summary> 
         /// Required designer variable.
@@ -33,13 +33,13 @@
         /// </summary>
         private void InitializeComponent()
         {
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PluginListPanel));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PlugInListPanel));
 			this.TableBody = new System.Windows.Forms.TableLayoutPanel();
-			this.ListPlugins = new System.Windows.Forms.ListView();
-			this.ColumnPluginName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.ColumnPluginType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.ColumnPluginStatus = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.ColumnPluginPath = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.ListPlugIns = new System.Windows.Forms.ListView();
+			this.ColumnPlugInName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.ColumnPlugInType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.ColumnPlugInStatus = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.ColumnPlugInPath = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.label2 = new System.Windows.Forms.Label();
 			this.TextStatus = new System.Windows.Forms.TextBox();
 			this.PanelBody.SuspendLayout();
@@ -56,7 +56,7 @@
 			this.TableBody.AutoSize = true;
 			this.TableBody.ColumnCount = 1;
 			this.TableBody.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.TableBody.Controls.Add(this.ListPlugins, 0, 1);
+			this.TableBody.Controls.Add(this.ListPlugIns, 0, 1);
 			this.TableBody.Controls.Add(this.label2, 0, 0);
 			this.TableBody.Controls.Add(this.TextStatus, 0, 2);
 			this.TableBody.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -69,46 +69,46 @@
 			this.TableBody.Size = new System.Drawing.Size(600, 358);
 			this.TableBody.TabIndex = 0;
 			// 
-			// ListPlugins
+			// ListPlugIns
 			// 
-			this.ListPlugins.BackColor = System.Drawing.Color.White;
-			this.ListPlugins.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.ListPlugins.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.ColumnPluginName,
-            this.ColumnPluginType,
-            this.ColumnPluginStatus,
-            this.ColumnPluginPath});
-			this.ListPlugins.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.ListPlugins.ForeColor = System.Drawing.Color.Black;
-			this.ListPlugins.FullRowSelect = true;
-			this.ListPlugins.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-			this.ListPlugins.HideSelection = false;
-			this.ListPlugins.Location = new System.Drawing.Point(3, 69);
-			this.ListPlugins.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
-			this.ListPlugins.MultiSelect = false;
-			this.ListPlugins.Name = "ListPlugins";
-			this.ListPlugins.Size = new System.Drawing.Size(594, 216);
-			this.ListPlugins.Sorting = System.Windows.Forms.SortOrder.Ascending;
-			this.ListPlugins.TabIndex = 1;
-			this.ListPlugins.UseCompatibleStateImageBehavior = false;
-			this.ListPlugins.View = System.Windows.Forms.View.Details;
-			this.ListPlugins.SelectedIndexChanged += new System.EventHandler(this.ListPlugins_SelectedIndexChanged);
+			this.ListPlugIns.BackColor = System.Drawing.Color.White;
+			this.ListPlugIns.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.ListPlugIns.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.ColumnPlugInName,
+            this.ColumnPlugInType,
+            this.ColumnPlugInStatus,
+            this.ColumnPlugInPath});
+			this.ListPlugIns.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.ListPlugIns.ForeColor = System.Drawing.Color.Black;
+			this.ListPlugIns.FullRowSelect = true;
+			this.ListPlugIns.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+			this.ListPlugIns.HideSelection = false;
+			this.ListPlugIns.Location = new System.Drawing.Point(3, 69);
+			this.ListPlugIns.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+			this.ListPlugIns.MultiSelect = false;
+			this.ListPlugIns.Name = "ListPlugIns";
+			this.ListPlugIns.Size = new System.Drawing.Size(594, 216);
+			this.ListPlugIns.Sorting = System.Windows.Forms.SortOrder.Ascending;
+			this.ListPlugIns.TabIndex = 1;
+			this.ListPlugIns.UseCompatibleStateImageBehavior = false;
+			this.ListPlugIns.View = System.Windows.Forms.View.Details;
+			this.ListPlugIns.SelectedIndexChanged += new System.EventHandler(this.ListPlugIns_SelectedIndexChanged);
 			// 
-			// ColumnPluginName
+			// ColumnPlugInName
 			// 
-			this.ColumnPluginName.Text = "Name";
+			this.ColumnPlugInName.Text = "Name";
 			// 
-			// ColumnPluginType
+			// ColumnPlugInType
 			// 
-			this.ColumnPluginType.Text = "Type";
+			this.ColumnPlugInType.Text = "Type";
 			// 
-			// ColumnPluginStatus
+			// ColumnPlugInStatus
 			// 
-			this.ColumnPluginStatus.Text = "Status";
+			this.ColumnPlugInStatus.Text = "Status";
 			// 
-			// ColumnPluginPath
+			// ColumnPlugInPath
 			// 
-			this.ColumnPluginPath.Text = "Path";
+			this.ColumnPlugInPath.Text = "Path";
 			// 
 			// label2
 			// 
@@ -135,11 +135,11 @@
 			this.TextStatus.TabIndex = 3;
 			this.TextStatus.Text = "Plug in\r\nloaded \r\nsuccessfully";
 			// 
-			// PluginListPanel
+			// PlugInListPanel
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.Name = "PluginListPanel";
+			this.Name = "PlugInListPanel";
 			this.Size = new System.Drawing.Size(600, 381);
 			this.Text = "Plug ins";
 			this.PanelBody.ResumeLayout(false);
@@ -154,11 +154,11 @@
         #endregion
 
         private System.Windows.Forms.TableLayoutPanel TableBody;
-        private System.Windows.Forms.ListView ListPlugins;
-        private System.Windows.Forms.ColumnHeader ColumnPluginName;
-        private System.Windows.Forms.ColumnHeader ColumnPluginType;
-        private System.Windows.Forms.ColumnHeader ColumnPluginPath;
-        private System.Windows.Forms.ColumnHeader ColumnPluginStatus;
+        private System.Windows.Forms.ListView ListPlugIns;
+        private System.Windows.Forms.ColumnHeader ColumnPlugInName;
+        private System.Windows.Forms.ColumnHeader ColumnPlugInType;
+        private System.Windows.Forms.ColumnHeader ColumnPlugInPath;
+        private System.Windows.Forms.ColumnHeader ColumnPlugInStatus;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox TextStatus;
     }

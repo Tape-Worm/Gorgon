@@ -54,7 +54,7 @@ namespace Gorgon.Editor.ViewModels
 		/// <summary>
         /// Property to return the list of plug ins for the fixed plug in list category.
         /// </summary>
-		ISettingsPluginsList PluginsList
+		ISettingsPlugInsList PlugInsList
         {
             get;
         }

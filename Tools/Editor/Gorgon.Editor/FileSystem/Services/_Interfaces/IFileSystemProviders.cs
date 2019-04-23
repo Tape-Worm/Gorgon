@@ -26,10 +26,10 @@
 
 using System.Collections.Generic;
 using System.IO;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.IO;
 using Gorgon.IO.Providers;
-using Gorgon.Plugins;
+using Gorgon.PlugIns;
 
 namespace Gorgon.Editor.Services
 {
@@ -37,7 +37,7 @@ namespace Gorgon.Editor.Services
     /// Functionality to capture and load file system providers from plugins.
     /// </summary>
     internal interface IFileSystemProviders
-        : IDisabledPluginService
+        : IDisabledPlugInService
     {
         #region Properties.
         /// <summary>
@@ -51,7 +51,7 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Property to return all loaded file system writer plug ins.
         /// </summary>
-        IReadOnlyDictionary<string, FileWriterPlugin> Writers
+        IReadOnlyDictionary<string, FileWriterPlugIn> Writers
         {
             get;
         }
@@ -68,14 +68,14 @@ namespace Gorgon.Editor.Services
         /// Function to retrieve the available file extensions for all writers.
         /// </summary>
         /// <returns>A list of all file extensions available for all writers.</returns>
-        IReadOnlyList<(string desc, FileWriterPlugin plugin, IReadOnlyList<GorgonFileExtension> extensions)> GetWriterFileExtensions();
+        IReadOnlyList<(string desc, FileWriterPlugIn plugin, IReadOnlyList<GorgonFileExtension> extensions)> GetWriterFileExtensions();
 
         /// <summary>
         /// Function to load the file system provider plug ins.
         /// </summary>
         /// <param name="pluginCache">The MEF plug in cache used to load the file system plug ins.</param>
         /// <param name="pluginDir">The plug in directory.</param>
-        void LoadProviders(GorgonMefPluginCache pluginCache, DirectoryInfo pluginDir);
+        void LoadProviders(GorgonMefPlugInCache pluginCache, DirectoryInfo pluginDir);
 
         /// <summary>
         /// Function to find the most suitable provider for the file specified in the path.
@@ -85,12 +85,12 @@ namespace Gorgon.Editor.Services
         IGorgonFileSystemProvider GetBestReader(FileInfo file);
 
         /// <summary>
-        /// Function to return the <see cref="FileWriterPlugin"/> by its plugin name.
+        /// Function to return the <see cref="FileWriterPlugIn"/> by its plugin name.
         /// </summary>
         /// <param name="writerName">The name of the writer plug in to locate.</param>
-        /// <param name="useV2PluginName">[Optional] Use the v2 compatible plugin name.</param>
-        /// <returns>The <see cref="FileWriterPlugin"/>, or <b>null</b> if no writer could be found.</returns>
-        FileWriterPlugin GetWriterByName(string writerName, bool useV2PluginName = false);
+        /// <param name="useV2PlugInName">[Optional] Use the v2 compatible plugin name.</param>
+        /// <returns>The <see cref="FileWriterPlugIn"/>, or <b>null</b> if no writer could be found.</returns>
+        FileWriterPlugIn GetWriterByName(string writerName, bool useV2PlugInName = false);
         #endregion
     }
 }

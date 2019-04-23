@@ -31,7 +31,7 @@ using System.Linq;
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.IO.Properties;
-using Gorgon.Plugins;
+using Gorgon.PlugIns;
 
 namespace Gorgon.IO.Providers
 {
@@ -56,7 +56,7 @@ namespace Gorgon.IO.Providers
 	/// </note>
 	/// </para>
 	/// <para>
-	/// When this type is implemented, it can be made to read any type of file system, including those that store their contents in a packed file format (e.g. Zip). And since this type inherits from <see cref="GorgonPlugin"/>, 
+	/// When this type is implemented, it can be made to read any type of file system, including those that store their contents in a packed file format (e.g. Zip). And since this type inherits from <see cref="GorgonPlugIn"/>, 
 	/// the file system provider can be loaded dynamically through Gorgon's plug in system.
 	/// </para>
 	/// <para>
@@ -69,7 +69,7 @@ namespace Gorgon.IO.Providers
 	/// </para>
 	/// </remarks>
 	public class GorgonFileSystemProvider
-		: GorgonPlugin, IGorgonFileSystemProvider
+		: GorgonPlugIn, IGorgonFileSystemProvider
 	{
 		#region Properties.
 		/// <summary>

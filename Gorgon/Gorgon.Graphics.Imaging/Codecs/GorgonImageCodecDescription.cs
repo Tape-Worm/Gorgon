@@ -30,16 +30,16 @@ using Gorgon.Graphics.Imaging.Properties;
 namespace Gorgon.Graphics.Imaging.Codecs
 {
 	/// <summary>
-	/// A name and description for an image codec within a <see cref="GorgonImageCodecPlugin"/>.
+	/// A name and description for an image codec within a <see cref="GorgonImageCodecPlugIn"/>.
 	/// </summary>
 	public struct GorgonImageCodecDescription
 		: IEquatable<GorgonImageCodecDescription>
 	{
-		#region Variables.
-		/// <summary>
-		/// The name of the plug in.  This will be the same as its fully qualified type name.
-		/// </summary>
-		public readonly string Name;
+        #region Variables.
+        /// <summary>
+        /// The name of the codec.  This will be the same as its fully qualified type name of the codec (e.g. <c>Gorgon.Graphics.Imaging.Codecs.</c><see cref="GorgonCodecPng"/>).
+        /// </summary>
+        public readonly string Name;
 
 		/// <summary>
 		/// A friendly description used for display.

@@ -27,6 +27,7 @@
 using System;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI.ViewModels;
+using Gorgon.PlugIns;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -48,7 +49,31 @@ namespace Gorgon.Editor.ImageEditor
 		/// <summary>
         /// Property to return the content plug in service.
         /// </summary>
-		public IContentPluginService PluginService
+		public IContentPlugInService PlugInService
+        {
+            get;
+        }
+
+		/// <summary>
+        /// Property to return the codecs loaded into the system.
+        /// </summary>
+		public ICodecRegistry Codecs
+        {
+            get;
+        }
+
+		/// <summary>
+        /// Property to return the plug in cache.
+        /// </summary>
+		public GorgonMefPlugInCache PlugInCache
+        {
+            get;
+        }
+
+		/// <summary>
+        /// Property to return the file dialog service used to locate codec assemblies.
+        /// </summary>
+		public IFileDialogService CodecFileDialog
         {
             get;
         }
@@ -57,14 +82,20 @@ namespace Gorgon.Editor.ImageEditor
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the ImageContentVmParameters class.</summary>
         /// <param name="settings">The settings for the image editor.</param>
+        /// <param name="codecs">The codecs loaded into the system.</param>
+        /// <param name="codecDialog">The file dialog used to locate codec assemblies.</param>
         /// <param name="pluginService">The service used to manage content and importer plug ins.</param>
+        /// <param name="plugInCache">The cache for plug in assemblies.</param>
         /// <param name="commonServices">Common application services.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public SettingsParameters(ImageEditorSettings settings, IContentPluginService pluginService, IViewModelInjection commonServices)
+        public SettingsParameters(ImageEditorSettings settings, ICodecRegistry codecs, IFileDialogService codecDialog, IContentPlugInService pluginService, GorgonMefPlugInCache plugInCache, IViewModelInjection commonServices)
 			: base(commonServices)
         {
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
-            PluginService = pluginService ?? throw new ArgumentNullException(nameof(pluginService));
+            Codecs = codecs ?? throw new ArgumentNullException(nameof(codecs));
+            CodecFileDialog = codecDialog ?? throw new ArgumentNullException(nameof(codecDialog));
+            PlugInService = pluginService ?? throw new ArgumentNullException(nameof(pluginService));
+            PlugInCache = plugInCache ?? throw new ArgumentNullException(nameof(plugInCache));
         }
         #endregion
     }

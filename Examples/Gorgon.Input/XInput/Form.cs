@@ -34,7 +34,7 @@ using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Input;
-using Gorgon.Plugins;
+using Gorgon.PlugIns;
 using Gorgon.Timing;
 using Gorgon.UI;
 
@@ -75,7 +75,7 @@ namespace Gorgon.Examples
 		// Surface to draw on.
 		private DrawingSurface _surface;           
         // The assembly cache for the plug ins
-	    private GorgonMefPluginCache _assemblies = null;        
+	    private GorgonMefPlugInCache _assemblies = null;        
 		#endregion
 
 		#region Methods.
@@ -356,14 +356,14 @@ namespace Gorgon.Examples
 
 			try
 			{
-                GorgonExample.PluginLocationDirectory = new DirectoryInfo(Settings.Default.PlugInLocation);
+                GorgonExample.PlugInLocationDirectory = new DirectoryInfo(Settings.Default.PlugInLocation);
 
 				// Create the assembly cache.
-				_assemblies = new GorgonMefPluginCache(GorgonApplication.Log);
-				_assemblies.LoadPluginAssemblies(GorgonExample.GetPlugInPath().FullName, "Gorgon.Input.XInput.dll");
+				_assemblies = new GorgonMefPlugInCache(GorgonApplication.Log);
+				_assemblies.LoadPlugInAssemblies(GorgonExample.GetPlugInPath().FullName, "Gorgon.Input.XInput.dll");
 
 				// Create the plug services.
-				IGorgonPluginService pluginService = new GorgonMefPluginService(_assemblies, GorgonApplication.Log);
+				IGorgonPlugInService pluginService = new GorgonMefPlugInService(_assemblies, GorgonApplication.Log);
 
 				// Create the gaming device driver factory.
 				var factory = new GorgonGamingDeviceDriverFactory(pluginService, GorgonApplication.Log);

@@ -26,48 +26,48 @@
 
 using System.IO;
 using Gorgon.Editor.Content;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.IO;
-using Gorgon.Plugins;
+using Gorgon.PlugIns;
 
 namespace Gorgon.Editor.Services
 {
     /// <summary>
     /// A service used to manage content plug ins for the application.
     /// </summary>
-    internal interface IContentPluginManagerService
-        : IContentPluginService
+    internal interface IContentPlugInManagerService
+        : IContentPlugInService
     {
         /// <summary>
         /// Function to load all of the content plug ins into the service.
         /// </summary>
         /// <param name="pluginCache">The plug in assembly cache.</param>
         /// <param name="pluginDir">The directory that contains the plug ins.</param>        
-        void LoadContentPlugins(GorgonMefPluginCache pluginCache, DirectoryInfo pluginDir);
+        void LoadContentPlugIns(GorgonMefPlugInCache pluginCache, DirectoryInfo pluginDir);
 
         /// <summary>
         /// Function to add a content plugin to the service.
         /// </summary>
         /// <param name="plugin">The plugin to add.</param>
-        void AddContentPlugin(ContentPlugin plugin);
+        void AddContentPlugIn(ContentPlugIn plugin);
 
 
         /// <summary>Function to add a content import plugin to the service.</summary>
         /// <param name="plugin">The plugin to add.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> parameter is <b>null</b>.</exception>
-        void AddContentImportPlugin(ContentImportPlugin plugin);
+        void AddContentImportPlugIn(ContentImportPlugIn plugin);
 
         /// <summary>
         /// Function to remove a content plugin from the service.
         /// </summary>
         /// <param name="plugin">The plugin to remove.</param>
-        void RemoveContentPlugin(ContentPlugin plugin);
+        void RemoveContentPlugIn(ContentPlugIn plugin);
 
         /// <summary>
         /// Function to remove a content import plugin from the service.
         /// </summary>
         /// <param name="plugin">The plugin to remove.</param>
-        void RemoveContentImportPlugin(ContentImportPlugin plugin);
+        void RemoveContentImportPlugIn(ContentImportPlugIn plugin);
 
         /// <summary>
         /// Function to set up the content plug in association for a content file.
@@ -76,7 +76,7 @@ namespace Gorgon.Editor.Services
         /// <param name="fileManager">The file manager used to manage content files.</param>
         /// <param name="metadataOnly"><b>true</b> to indicate that only metadata should be used to scan the content file, <b>false</b> to scan, in depth, per plugin (slow).</param>
         /// <returns><b>true</b> if a content plug in was associated, <b>false</b> if not.</returns>
-        bool AssignContentPlugin(IContentFile contentFile, IContentFileManager fileManager, bool metadataOnly);
+        bool AssignContentPlugIn(IContentFile contentFile, IContentFileManager fileManager, bool metadataOnly);
 
         /// <summary>
         /// Function to assign a plugin to a content file.
@@ -84,7 +84,7 @@ namespace Gorgon.Editor.Services
         /// <param name="contentFile">The content file to update.</param>
         /// <param name="fileManager">The file manager used to manage content files.</param>
         /// <param name="plugin">The plugin to assign.</param>
-        void AssignContentPlugin(IContentFile contentFile, IContentFileManager fileManager, IContentPluginMetadata plugin);
+        void AssignContentPlugIn(IContentFile contentFile, IContentFileManager fileManager, IContentPlugInMetadata plugin);
 
         /// <summary>
         /// Function to clear all of the content plugins.

@@ -28,14 +28,14 @@ using System;
 using System.Collections.Generic;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.ViewModels;
-using Gorgon.Plugins;
+using Gorgon.PlugIns;
 
-namespace Gorgon.Editor.Plugins
+namespace Gorgon.Editor.PlugIns
 {
     /// <summary>
     /// The type of plug in.
     /// </summary>
-    public enum PluginType
+    public enum PlugInType
     {
 		/// <summary>
         /// Plug in type is not known.
@@ -66,12 +66,12 @@ namespace Gorgon.Editor.Plugins
     /// <summary>
     /// The base class for an editor plug in.
     /// </summary>
-    public abstract class EditorPlugin
-        : GorgonPlugin
+    public abstract class EditorPlugIn
+        : GorgonPlugIn
     {
         #region Variables.
-        // Empty string array for IsPluginAvailable.
-        private readonly IReadOnlyList<string> _defaultPluginAvailablity = Array.Empty<string>();
+        // Empty string array for IsPlugInAvailable.
+        private readonly IReadOnlyList<string> _defaultPlugInAvailablity = Array.Empty<string>();
         #endregion
 
         #region Properties.
@@ -87,7 +87,7 @@ namespace Gorgon.Editor.Plugins
         /// <summary>
         /// Property to return the type of this plug in.
         /// </summary>
-        public abstract PluginType PluginType
+        public abstract PlugInType PlugInType
         {
             get;
         }
@@ -123,7 +123,7 @@ namespace Gorgon.Editor.Plugins
         /// This method should never return <b>null</b>, only an empty array if no problems are present.
         /// </para>
         /// </remarks>
-        protected virtual IReadOnlyList<string> OnGetPluginAvailability() => _defaultPluginAvailablity;
+        protected virtual IReadOnlyList<string> OnGetPlugInAvailability() => _defaultPlugInAvailablity;
 
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace Gorgon.Editor.Plugins
         /// the main settings area of the application.
         /// </para>
         /// </remarks>
-        public ISettingsCategoryViewModel GetPluginSettings() => OnGetSettings();
+        public ISettingsCategoryViewModel GetPlugInSettings() => OnGetSettings();
 
         /// <summary>
         /// Function to determine if this plug in is usable or not.
@@ -148,7 +148,7 @@ namespace Gorgon.Editor.Plugins
         /// working correctly.
         /// </para>
         /// </remarks>
-        public IReadOnlyList<string> IsPluginAvailable() => OnGetPluginAvailability();
+        public IReadOnlyList<string> IsPlugInAvailable() => OnGetPlugInAvailability();
 
 		/// <summary>
         /// Function to assign the application common services to the plug in.
@@ -159,10 +159,10 @@ namespace Gorgon.Editor.Plugins
 
         #region Constructor/Finalizer.
         /// <summary>
-        /// Initializes a new instance of the <see cref="EditorPlugin"/> class.
+        /// Initializes a new instance of the <see cref="EditorPlugIn"/> class.
         /// </summary>
         /// <param name="description">Optional description of the plugin.</param>
-        protected EditorPlugin(string description)
+        protected EditorPlugIn(string description)
             : base(description)
         {
         }

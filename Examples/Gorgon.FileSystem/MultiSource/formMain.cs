@@ -34,7 +34,7 @@ using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.IO;
 using Gorgon.IO.Providers;
-using Gorgon.Plugins;
+using Gorgon.PlugIns;
 using Gorgon.UI;
 
 namespace Gorgon.Examples
@@ -210,20 +210,20 @@ namespace Gorgon.Examples
 		private void LoadZipFileSystemProvider()
 		{
 			// Name of our zip provider plugin.
-			const string zipProviderPluginName = "Gorgon.IO.Zip.ZipProvider";
+			const string zipProviderPlugInName = "Gorgon.IO.Zip.ZipProvider";
 
 			// We can load the objects we need and discard the plugin system after.
 			// This works because we keep the references to the objects that our 
 			// plugin creates, even after the plugin is gone.
-			using (var pluginAssemblies = new GorgonMefPluginCache(Program.Log))
+			using (var pluginAssemblies = new GorgonMefPlugInCache(Program.Log))
 			{
-				pluginAssemblies.LoadPluginAssemblies(Program.PlugInPath, "Gorgon.FileSystem.Zip.DLL");
+				pluginAssemblies.LoadPlugInAssemblies(Program.PlugInPath, "Gorgon.FileSystem.Zip.DLL");
 
 				var providerFactory = new GorgonFileSystemProviderFactory(
-					new GorgonMefPluginService(pluginAssemblies, Program.Log),
+					new GorgonMefPlugInService(pluginAssemblies, Program.Log),
 					Program.Log);
 
-				_fileSystem = new GorgonFileSystem(providerFactory.CreateProvider(zipProviderPluginName), Program.Log);
+				_fileSystem = new GorgonFileSystem(providerFactory.CreateProvider(zipProviderPlugInName), Program.Log);
 			}
 		}
 

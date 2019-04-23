@@ -192,7 +192,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// </para>
 	/// </para>
 	/// <para>
-	///	While many of the image formats supplied will be useful out of the box, the system can read/write images via a <see cref="GorgonImageCodecPlugin"/> if the supplied formats are too limited or do not 
+	///	While many of the image formats supplied will be useful out of the box, the system can read/write images via a <see cref="GorgonImageCodecPlugIn"/> if the supplied formats are too limited or do not 
 	/// support a necessary feature.
 	/// </para>
 	/// </remarks>

@@ -29,15 +29,15 @@ using System.Collections.Generic;
 using System.Linq;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
-using Gorgon.Plugins;
+using Gorgon.PlugIns;
 
 namespace Gorgon.Graphics.Imaging.Codecs
 {
     /// <summary>
     /// A plug-in to allow for loading of custom image codecs.
     /// </summary>
-    public abstract class GorgonImageCodecPlugin
-        : GorgonPlugin
+    public abstract class GorgonImageCodecPlugIn
+        : GorgonPlugIn
     {
 		#region Properties.
 		/// <summary>
@@ -201,7 +201,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonImageCodecPlugin"/> class.
+		/// Initializes a new instance of the <see cref="GorgonImageCodecPlugIn"/> class.
 		/// </summary>
 		/// <param name="description">Optional description of the plug-in.</param>
 		/// <remarks>
@@ -209,7 +209,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// Objects that implement this base class should pass in a hard coded description on the base constructor.
 		/// </para>
 		/// </remarks>
-		protected GorgonImageCodecPlugin(string description)
+		protected GorgonImageCodecPlugIn(string description)
             : base(description)
         {
         }

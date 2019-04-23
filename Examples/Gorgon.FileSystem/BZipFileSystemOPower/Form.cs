@@ -45,7 +45,7 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO.Extensions;
 using Gorgon.IO.Providers;
 using Gorgon.Math;
-using Gorgon.Plugins;
+using Gorgon.PlugIns;
 using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
 
 namespace Gorgon.Examples
@@ -69,7 +69,7 @@ namespace Gorgon.Examples
 	{
 		#region Variables.
         // The plug-in assembly cache.
-	    private GorgonMefPluginCache _assemblyCache;
+	    private GorgonMefPlugInCache _assemblyCache;
 	    // The file system.
 		private GorgonFileSystem _fileSystem;		        
 	    // The graphics interface.		
@@ -118,15 +118,15 @@ namespace Gorgon.Examples
 	        // The Gorgon packed file provider plug in dll.
 	        const string gorPackDll = "Gorgon.FileSystem.GorPack.dll";
 	        // The name of the Gorgon packed file plugin.
-	        const string gorPackPluginName = "Gorgon.IO.GorPack.GorPackProvider";
+	        const string gorPackPlugInName = "Gorgon.IO.GorPack.GorPackProvider";
 
 	        // Like the zip file example, we'll just create the plugin infrastructure, grab the provider object 
 	        // and get rid of the plugin stuff since we won't need it again.
-            _assemblyCache = new GorgonMefPluginCache(GorgonApplication.Log);
-	        _assemblyCache.LoadPluginAssemblies(GorgonExample.GetPlugInPath().FullName, gorPackDll);
+            _assemblyCache = new GorgonMefPlugInCache(GorgonApplication.Log);
+	        _assemblyCache.LoadPlugInAssemblies(GorgonExample.GetPlugInPath().FullName, gorPackDll);
 
-            var plugIns = new GorgonMefPluginService(_assemblyCache, GorgonApplication.Log);
-	        return plugIns.GetPlugin<GorgonFileSystemProvider>(gorPackPluginName);
+            var plugIns = new GorgonMefPlugInService(_assemblyCache, GorgonApplication.Log);
+	        return plugIns.GetPlugIn<GorgonFileSystemProvider>(gorPackPlugInName);
 	    }
 
         /// <summary>
@@ -281,7 +281,7 @@ namespace Gorgon.Examples
 		/// </summary>
 		private void Initialize()
 		{
-            GorgonExample.PluginLocationDirectory = new DirectoryInfo(Settings.Default.PlugInLocation);
+            GorgonExample.PlugInLocationDirectory = new DirectoryInfo(Settings.Default.PlugInLocation);
             GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
 
 		    // Resize and center the screen.

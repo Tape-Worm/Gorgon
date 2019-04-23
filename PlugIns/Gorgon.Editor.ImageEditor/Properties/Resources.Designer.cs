@@ -63,6 +63,16 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap add_plugin_22x22 {
+            get {
+                object obj = ResourceManager.GetObject("add_plugin_22x22", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap arrow_e_24x24 {
             get {
                 object obj = ResourceManager.GetObject("arrow_e_24x24", resourceCulture);
@@ -259,6 +269,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Select a codec plug in DLL.
+        /// </summary>
+        internal static string GORIMG_CAPTION_SELECT_CODEC_DLL {
+            get {
+                return ResourceManager.GetString("GORIMG_CAPTION_SELECT_CODEC_DLL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This image has more than 1 depth slice. Converting this image to a 2D/Cube image will discard all depth slices after the 1st one.  
         ///
         ///Are you sure you wish to continue?.
@@ -339,6 +358,17 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This will remove all codecs associated with the &apos;{0}&apos; plug in.
+        ///
+        ///Are you sure you want to do this?.
+        /// </summary>
+        internal static string GORIMG_CONFIRM_REMOVE_CODECS {
+            get {
+                return ResourceManager.GetString("GORIMG_CONFIRM_REMOVE_CODECS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to At least one image dimension is smaller than the current image dimensions.  This will result in a loss of data in the image.
         ///
         ///Do you wish to continue?.
@@ -388,11 +418,42 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error loading the codec plug in.
+        ///
+        ///Please try again..
+        /// </summary>
+        internal static string GORIMG_ERR_CANNOT_LOAD_CODEC {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_CANNOT_LOAD_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error while trying to remove the selected codec(s).
+        ///
+        ///Please try again..
+        /// </summary>
+        internal static string GORIMG_ERR_CANNOT_UNLOAD_CODECS {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_CANNOT_UNLOAD_CODECS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error while converting the image type..
         /// </summary>
         internal static string GORIMG_ERR_CHANGE_TYPE {
             get {
                 return ResourceManager.GetString("GORIMG_ERR_CHANGE_TYPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The codec &apos;{0}&apos; was already loaded..
+        /// </summary>
+        internal static string GORIMG_ERR_CODEC_ALREADY_LOADED {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_CODEC_ALREADY_LOADED", resourceCulture);
             }
         }
         
@@ -403,6 +464,26 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static string GORIMG_ERR_CODEC_ASSIGN {
             get {
                 return ResourceManager.GetString("GORIMG_ERR_CODEC_ASSIGN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There were errors while trying to load the codec plug in.
+        ///
+        ///Please check the Details pane for more information..
+        /// </summary>
+        internal static string GORIMG_ERR_CODEC_LOAD_ERRORS_PRESENT {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_CODEC_LOAD_ERRORS_PRESENT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error loading the &apos;{0}&apos; codec..
+        /// </summary>
+        internal static string GORIMG_ERR_CODEC_LOAD_FAIL {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_CODEC_LOAD_FAIL", resourceCulture);
             }
         }
         
@@ -541,6 +622,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static string GORIMG_FILEMASK_ALL_FILES {
             get {
                 return ResourceManager.GetString("GORIMG_FILEMASK_ALL_FILES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Codec plug in file (*.dll)|*.dll.
+        /// </summary>
+        internal static string GORIMG_FILTER_SELECT_CODEC {
+            get {
+                return ResourceManager.GetString("GORIMG_FILTER_SELECT_CODEC", resourceCulture);
             }
         }
         
@@ -989,6 +1079,16 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static System.Drawing.Bitmap redo_48x48 {
             get {
                 object obj = ResourceManager.GetObject("redo_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap remove_plugins_22x22 {
+            get {
+                object obj = ResourceManager.GetObject("remove_plugins_22x22", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

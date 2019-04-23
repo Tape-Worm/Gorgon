@@ -37,7 +37,7 @@ using Gorgon.Diagnostics;
 using Gorgon.IO;
 using Gorgon.Properties;
 
-namespace Gorgon.Plugins
+namespace Gorgon.PlugIns
 {
     /// <summary>
     /// The type of platform that the code in the assembly is expected to run on.
@@ -67,15 +67,15 @@ namespace Gorgon.Plugins
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This assembly cache is meant to load/hold a list of plugin assemblies that contain types that implement the <see cref="GorgonPlugin"/> type and is 
-    /// meant to be used in conjunction with the <see cref="IGorgonPluginService"/> type.
+    /// This assembly cache is meant to load/hold a list of plugin assemblies that contain types that implement the <see cref="GorgonPlugIn"/> type and is 
+    /// meant to be used in conjunction with the <see cref="IGorgonPlugInService"/> type.
     /// </para>
     /// <para>
     /// The cache attempts to ensure that the application only loads an assembly once during the lifetime of the application in order to cut down on 
     /// overhead and potential errors that can come up when multiple assemblies with the same qualified name are loaded into the same context.
     /// </para>
     /// </remarks>
-    public sealed class GorgonMefPluginCache
+    public sealed class GorgonMefPlugInCache
 		: IDisposable
 	{
         #region Constants.
@@ -89,7 +89,7 @@ namespace Gorgon.Plugins
 
         #region Variables.
         // The contract name for the plug in.
-        private readonly string _contractName = typeof(GorgonPlugin).FullName;
+        private readonly string _contractName = typeof(GorgonPlugIn).FullName;
 		// Application log file.
 		private readonly IGorgonLog _log;
         // The root catalog for the plugins.
@@ -106,7 +106,7 @@ namespace Gorgon.Plugins
 	    /// <summary>
 	    /// Property to return the list of cached plugin assemblies.
 	    /// </summary>
-	    public IReadOnlyList<string> PluginAssemblies
+	    public IReadOnlyList<string> PlugInAssemblies
 	    {
             get;
 	        private set;
@@ -318,13 +318,13 @@ namespace Gorgon.Plugins
         /// Function to enumerate all the plugin names from the assemblies loaded into the cache.
         /// </summary>
         /// <returns>A composition container containing the plugins from the assemblies.</returns>
-        public IEnumerable<Lazy<GorgonPlugin, IDictionary<string, object>>> EnumeratePlugins()
+        public IEnumerable<Lazy<GorgonPlugIn, IDictionary<string, object>>> EnumeratePlugIns()
 		{
 		    lock (_syncLock)
 		    {
                 return _container == null
-                    ? (Array.Empty<Lazy<GorgonPlugin, IDictionary<string, object>>>())
-                    : _container.GetExports<GorgonPlugin, IDictionary<string, object>>(_contractName);
+                    ? (Array.Empty<Lazy<GorgonPlugIn, IDictionary<string, object>>>())
+                    : _container.GetExports<GorgonPlugIn, IDictionary<string, object>>(_contractName);
             }
         }
 
@@ -367,7 +367,7 @@ namespace Gorgon.Plugins
         /// If the <paramref name="filePattern"/> is specified, then a standard file search wildcard can be used to located specific files to load (e.g. MyPlugIn-*.dll, OtherTypes*.so, etc...).
         /// </para>
         /// </remarks>
-	    public void LoadPluginAssemblies(string directoryPath, string filePattern = "*.dll")
+	    public void LoadPlugInAssemblies(string directoryPath, string filePattern = "*.dll")
 	    {
 	        if (directoryPath == null)
 	        {
@@ -436,21 +436,21 @@ namespace Gorgon.Plugins
 	                UpdateAssemblyList(catalog, assemblyList);
 	            }
 
-	            PluginAssemblies = assemblyList.ToArray();
+	            PlugInAssemblies = assemblyList.ToArray();
 
-	            _log.Print($"{PluginAssemblies.Count} cached with valid plug in types.", LoggingLevel.Simple);
+	            _log.Print($"{PlugInAssemblies.Count} cached with valid plug in types.", LoggingLevel.Simple);
 	        }
 	    }
 		#endregion
 
 		#region Constructor/Finalizer.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonMefPluginCache"/> class.
+		/// Initializes a new instance of the <see cref="GorgonMefPlugInCache"/> class.
 		/// </summary>
 		/// <param name="log">[Optional] The application log file to use.</param>
-		public GorgonMefPluginCache(IGorgonLog log = null)
+		public GorgonMefPlugInCache(IGorgonLog log = null)
 		{
-		    _builder.ForTypesDerivedFrom<GorgonPlugin>().Export<GorgonPlugin>(b =>
+		    _builder.ForTypesDerivedFrom<GorgonPlugIn>().Export<GorgonPlugIn>(b =>
 		                                                                      {
 		                                                                          b.AddMetadata("Name", t => t.FullName);
 		                                                                          b.AddMetadata("Assembly", t => t.Assembly.GetName());

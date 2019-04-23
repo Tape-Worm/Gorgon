@@ -34,13 +34,13 @@
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-			this.ListPlugins = new System.Windows.Forms.ListView();
-			this.ColumnPluginName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.ListPlugIns = new System.Windows.Forms.ListView();
+			this.ColumnPlugInName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.ColumnStatus = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.ColumnPath = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.ToolStripButtons = new System.Windows.Forms.ToolStrip();
-			this.ButtonAddPlugins = new System.Windows.Forms.ToolStripButton();
-			this.ButtonRemovePlugins = new System.Windows.Forms.ToolStripButton();
+			this.ButtonAddPlugIns = new System.Windows.Forms.ToolStripButton();
+			this.ButtonRemovePlugIns = new System.Windows.Forms.ToolStripButton();
 			this.panel1.SuspendLayout();
 			this.panel2.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
@@ -114,7 +114,7 @@
 			// 
 			this.tableLayoutPanel1.ColumnCount = 1;
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-			this.tableLayoutPanel1.Controls.Add(this.ListPlugins, 0, 1);
+			this.tableLayoutPanel1.Controls.Add(this.ListPlugIns, 0, 1);
 			this.tableLayoutPanel1.Controls.Add(this.ToolStripButtons, 0, 0);
 			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
@@ -125,28 +125,28 @@
 			this.tableLayoutPanel1.Size = new System.Drawing.Size(753, 504);
 			this.tableLayoutPanel1.TabIndex = 5;
 			// 
-			// ListPlugins
+			// ListPlugIns
 			// 
-			this.ListPlugins.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.ListPlugins.CheckBoxes = true;
-			this.ListPlugins.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.ColumnPluginName,
+			this.ListPlugIns.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.ListPlugIns.CheckBoxes = true;
+			this.ListPlugIns.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.ColumnPlugInName,
             this.ColumnStatus,
             this.ColumnPath});
-			this.ListPlugins.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.ListPlugins.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-			this.ListPlugins.Location = new System.Drawing.Point(3, 32);
-			this.ListPlugins.MultiSelect = false;
-			this.ListPlugins.Name = "ListPlugins";
-			this.ListPlugins.Size = new System.Drawing.Size(747, 473);
-			this.ListPlugins.Sorting = System.Windows.Forms.SortOrder.Ascending;
-			this.ListPlugins.TabIndex = 0;
-			this.ListPlugins.UseCompatibleStateImageBehavior = false;
-			this.ListPlugins.View = System.Windows.Forms.View.Details;
+			this.ListPlugIns.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.ListPlugIns.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+			this.ListPlugIns.Location = new System.Drawing.Point(3, 32);
+			this.ListPlugIns.MultiSelect = false;
+			this.ListPlugIns.Name = "ListPlugIns";
+			this.ListPlugIns.Size = new System.Drawing.Size(747, 473);
+			this.ListPlugIns.Sorting = System.Windows.Forms.SortOrder.Ascending;
+			this.ListPlugIns.TabIndex = 0;
+			this.ListPlugIns.UseCompatibleStateImageBehavior = false;
+			this.ListPlugIns.View = System.Windows.Forms.View.Details;
 			// 
-			// ColumnPluginName
+			// ColumnPlugInName
 			// 
-			this.ColumnPluginName.Text = "Plug in name";
+			this.ColumnPlugInName.Text = "Plug in name";
 			// 
 			// ColumnStatus
 			// 
@@ -161,8 +161,8 @@
 			this.ToolStripButtons.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this.ToolStripButtons.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.ToolStripButtons.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ButtonAddPlugins,
-            this.ButtonRemovePlugins});
+            this.ButtonAddPlugIns,
+            this.ButtonRemovePlugIns});
 			this.ToolStripButtons.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
 			this.ToolStripButtons.Location = new System.Drawing.Point(0, 0);
 			this.ToolStripButtons.Name = "ToolStripButtons";
@@ -171,25 +171,25 @@
 			this.ToolStripButtons.TabIndex = 1;
 			this.ToolStripButtons.Text = "toolStrip1";
 			// 
-			// ButtonAddPlugins
+			// ButtonAddPlugIns
 			// 
-			this.ButtonAddPlugins.Image = global::Gorgon.Editor.Properties.Resources.add_plugin_22x22;
-			this.ButtonAddPlugins.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-			this.ButtonAddPlugins.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.ButtonAddPlugins.Name = "ButtonAddPlugins";
-			this.ButtonAddPlugins.Size = new System.Drawing.Size(95, 26);
-			this.ButtonAddPlugins.Text = "Add Plug in";
-			this.ButtonAddPlugins.ToolTipText = "Adds new plug ins.";
+			this.ButtonAddPlugIns.Image = global::Gorgon.Editor.Properties.Resources.add_plugin_22x22;
+			this.ButtonAddPlugIns.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+			this.ButtonAddPlugIns.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.ButtonAddPlugIns.Name = "ButtonAddPlugIns";
+			this.ButtonAddPlugIns.Size = new System.Drawing.Size(95, 26);
+			this.ButtonAddPlugIns.Text = "Add Plug in";
+			this.ButtonAddPlugIns.ToolTipText = "Adds new plug ins.";
 			// 
-			// ButtonRemovePlugins
+			// ButtonRemovePlugIns
 			// 
-			this.ButtonRemovePlugins.Image = global::Gorgon.Editor.Properties.Resources.remove_plugins_22x22;
-			this.ButtonRemovePlugins.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-			this.ButtonRemovePlugins.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.ButtonRemovePlugins.Name = "ButtonRemovePlugins";
-			this.ButtonRemovePlugins.Size = new System.Drawing.Size(129, 26);
-			this.ButtonRemovePlugins.Text = "Remove plug in(s)";
-			this.ButtonRemovePlugins.ToolTipText = "Removes the selected plug ins.  \r\n\r\nNote that this will not take effect until the" +
+			this.ButtonRemovePlugIns.Image = global::Gorgon.Editor.Properties.Resources.remove_plugins_22x22;
+			this.ButtonRemovePlugIns.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+			this.ButtonRemovePlugIns.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.ButtonRemovePlugIns.Name = "ButtonRemovePlugIns";
+			this.ButtonRemovePlugIns.Size = new System.Drawing.Size(129, 26);
+			this.ButtonRemovePlugIns.Text = "Remove plug in(s)";
+			this.ButtonRemovePlugIns.ToolTipText = "Removes the selected plug ins.  \r\n\r\nNote that this will not take effect until the" +
     " application is restarted.";
 			// 
 			// FormPlugInManager
@@ -226,12 +226,12 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.ListView ListPlugins;
-        private System.Windows.Forms.ColumnHeader ColumnPluginName;
+        private System.Windows.Forms.ListView ListPlugIns;
+        private System.Windows.Forms.ColumnHeader ColumnPlugInName;
         private System.Windows.Forms.ColumnHeader ColumnStatus;
         private System.Windows.Forms.ColumnHeader ColumnPath;
         private System.Windows.Forms.ToolStrip ToolStripButtons;
-        private System.Windows.Forms.ToolStripButton ButtonAddPlugins;
-        private System.Windows.Forms.ToolStripButton ButtonRemovePlugins;
+        private System.Windows.Forms.ToolStripButton ButtonAddPlugIns;
+        private System.Windows.Forms.ToolStripButton ButtonRemovePlugIns;
     }
 }

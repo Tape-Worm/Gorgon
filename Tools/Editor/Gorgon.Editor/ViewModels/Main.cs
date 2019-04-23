@@ -38,7 +38,7 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Converters;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
@@ -70,14 +70,14 @@ namespace Gorgon.Editor.ViewModels
         // The directory locator service.
         private IDirectoryLocateService _directoryLocator;
 		// The tool plug in management service.
-        private IToolPluginService _toolPlugins;
+        private IToolPlugInService _toolPlugIns;
         #endregion
 
         #region Properties.
         /// <summary>
         /// Property to return the list of tool plug in ribbon buttons.
         /// </summary>
-        public IReadOnlyDictionary<string, IReadOnlyList<IToolPluginRibbonButton>> ToolButtons => _toolPlugins.RibbonButtons;
+        public IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> ToolButtons => _toolPlugIns.RibbonButtons;
 
 		/// <summary>
 		/// Property to return the settings for the application.
@@ -91,7 +91,7 @@ namespace Gorgon.Editor.ViewModels
 		/// <summary>
 		/// Property to return a list of content plugins that can create their own content.
 		/// </summary>
-		public ObservableCollection<IContentPluginMetadata> ContentCreators
+		public ObservableCollection<IContentPlugInMetadata> ContentCreators
         {
             get;
             private set;
@@ -281,8 +281,8 @@ namespace Gorgon.Editor.ViewModels
 
             _directoryLocator = injectionParameters.ViewModelFactory.DirectoryLocator;
 
-            _toolPlugins = _viewModelFactory.ToolPlugins;
-            ContentCreators = new ObservableCollection<IContentPluginMetadata>(injectionParameters.ContentCreators ?? throw new ArgumentMissingException(nameof(MainParameters.ContentCreators), nameof(injectionParameters)));
+            _toolPlugIns = _viewModelFactory.ToolPlugIns;
+            ContentCreators = new ObservableCollection<IContentPlugInMetadata>(injectionParameters.ContentCreators ?? throw new ArgumentMissingException(nameof(MainParameters.ContentCreators), nameof(injectionParameters)));
             RecentFiles.OpenProjectCommand = new EditorCommand<RecentItem>(DoOpenRecentAsync, CanOpenRecent);
             NewProject.CreateProjectCommand = new EditorCommand<object>(DoCreateProjectAsync, CanCreateProject);
         }
@@ -650,7 +650,7 @@ namespace Gorgon.Editor.ViewModels
         {
             var cancelSource = new CancellationTokenSource();
             FileInfo projectFile = null;
-            FileWriterPlugin writer = null;
+            FileWriterPlugIn writer = null;
 
             try
             {
@@ -853,13 +853,13 @@ namespace Gorgon.Editor.ViewModels
                     throw new GorgonException(GorgonResult.CannotCreate, Resources.GOREDIT_ERR_INVALID_CONTENT_TYPE_ID);
                 }
 
-                IContentPluginMetadata metaData = ContentCreators.FirstOrDefault(item => guid == item.NewIconID);
+                IContentPlugInMetadata metaData = ContentCreators.FirstOrDefault(item => guid == item.NewIconID);
 
                 Debug.Assert(metaData != null, $"Could not locate the content plugin metadata for {contentID}.");
 
                 ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_CREATING_CONTENT, metaData.ContentType));
 
-                ContentPlugin plugin = _viewModelFactory.ContentPlugins.Plugins.FirstOrDefault(item => item.Value == metaData).Value;
+                ContentPlugIn plugin = _viewModelFactory.ContentPlugIns.PlugIns.FirstOrDefault(item => item.Value == metaData).Value;
 
                 Debug.Assert(plugin != null, $"Could not locate the content plug in for {contentID}.");
 

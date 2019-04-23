@@ -24,7 +24,7 @@
 // 
 #endregion
 
-using Gorgon.Plugins;
+using Gorgon.PlugIns;
 
 namespace Gorgon.Examples
 {
@@ -40,7 +40,7 @@ namespace Gorgon.Examples
 	/// plug-in assemblies.
 	/// </summary>	
 	public abstract class TextColorPlugIn
-		: GorgonPlugin
+		: GorgonPlugIn
 	{
 		#region Methods.
 		/// <summary>

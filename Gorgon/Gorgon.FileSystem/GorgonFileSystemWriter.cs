@@ -34,7 +34,7 @@ using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.IO.Properties;
 using Gorgon.IO.Providers;
-using Gorgon.Plugins;
+using Gorgon.PlugIns;
 
 namespace Gorgon.IO
 {
@@ -105,7 +105,7 @@ namespace Gorgon.IO
 	/// </code>
 	/// </example>
 	public class GorgonFileSystemWriter
-		: GorgonPlugin, IGorgonFileSystemWriter<FileStream>
+		: GorgonPlugIn, IGorgonFileSystemWriter<FileStream>
 	{
 		#region Variables.
 		// Locking synchronization for multiple threads.

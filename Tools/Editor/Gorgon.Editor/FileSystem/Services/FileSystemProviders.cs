@@ -30,12 +30,12 @@ using System.IO;
 using System.Linq;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI.ViewModels;
 using Gorgon.IO;
 using Gorgon.IO.Providers;
-using Gorgon.Plugins;
+using Gorgon.PlugIns;
 
 namespace Gorgon.Editor.Services
 {
@@ -49,9 +49,9 @@ namespace Gorgon.Editor.Services
         // A list of available file system reader providers.
         private readonly Dictionary<string, IGorgonFileSystemProvider> _readers = new Dictionary<string, IGorgonFileSystemProvider>(StringComparer.OrdinalIgnoreCase);
         // A list of available file system writer providers.
-        private readonly Dictionary<string, FileWriterPlugin> _writers = new Dictionary<string, FileWriterPlugin>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, FileWriterPlugIn> _writers = new Dictionary<string, FileWriterPlugIn>(StringComparer.OrdinalIgnoreCase);
         // A list of disabled plug ins.
-        private readonly Dictionary<string, IDisabledPlugin> _disabled = new Dictionary<string, IDisabledPlugin>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, IDisabledPlugIn> _disabled = new Dictionary<string, IDisabledPlugIn>(StringComparer.OrdinalIgnoreCase);
 		// Common application services.
         private readonly IViewModelInjection _commonServices;
         #endregion
@@ -60,7 +60,7 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Property to return the list of disabled provider plug ins.
         /// </summary>
-        public IReadOnlyDictionary<string, IDisabledPlugin> DisabledPlugins => _disabled;
+        public IReadOnlyDictionary<string, IDisabledPlugIn> DisabledPlugIns => _disabled;
 
         /// <summary>
         /// Property to return all loaded file system reader providers.
@@ -70,7 +70,7 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Property to return all loaded file system writer plug ins.
         /// </summary>
-        public IReadOnlyDictionary<string, FileWriterPlugin> Writers => _writers;
+        public IReadOnlyDictionary<string, FileWriterPlugIn> Writers => _writers;
         #endregion
 
         #region Methods.
@@ -92,13 +92,13 @@ namespace Gorgon.Editor.Services
             return null;
         }
 
-        /// <summary>Function to return the [FileWriterPlugin] by its plugin name.</summary>
+        /// <summary>Function to return the [FileWriterPlugIn] by its plugin name.</summary>
         /// <param name="writerName">The name of the writer plug in to locate.</param>
-        /// <param name="useV2PluginName">[Optional] Use the v2 compatible plugin name.</param>
-        /// <returns>The [FileWriterPlugin], or <b>null</b> if no writer could be found.</returns>
+        /// <param name="useV2PlugInName">[Optional] Use the v2 compatible plugin name.</param>
+        /// <returns>The [FileWriterPlugIn], or <b>null</b> if no writer could be found.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="writerName" /> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="writerName" /> parameter is empty.</exception>
-        public FileWriterPlugin GetWriterByName(string writerName, bool useV2PluginName = false)
+        public FileWriterPlugIn GetWriterByName(string writerName, bool useV2PlugInName = false)
         {
             if (writerName == null)
             {
@@ -110,17 +110,17 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentEmptyException(nameof(writerName));
             }
 
-            if (useV2PluginName)
+            if (useV2PlugInName)
             {
-                FileWriterPlugin v2Plugin = _writers.FirstOrDefault(item => string.Equals(item.Value.V2PluginName, writerName, StringComparison.OrdinalIgnoreCase)).Value;
+                FileWriterPlugIn v2PlugIn = _writers.FirstOrDefault(item => string.Equals(item.Value.V2PlugInName, writerName, StringComparison.OrdinalIgnoreCase)).Value;
 
-                if (v2Plugin != null)
+                if (v2PlugIn != null)
                 {
-                    return v2Plugin;
+                    return v2PlugIn;
                 }
             }
 
-            _writers.TryGetValue(writerName, out FileWriterPlugin result);
+            _writers.TryGetValue(writerName, out FileWriterPlugIn result);
 
             return result;
         }
@@ -162,11 +162,11 @@ namespace Gorgon.Editor.Services
         /// Function to retrieve the available file extensions for all writers.
         /// </summary>
         /// <returns>A list of all file extensions available for all writers.</returns>
-        public IReadOnlyList<(string desc, FileWriterPlugin plugin, IReadOnlyList<GorgonFileExtension> extensions)> GetWriterFileExtensions()
+        public IReadOnlyList<(string desc, FileWriterPlugIn plugin, IReadOnlyList<GorgonFileExtension> extensions)> GetWriterFileExtensions()
         {
-            var result = new Dictionary<string, (FileWriterPlugin, List<GorgonFileExtension>)>(StringComparer.CurrentCultureIgnoreCase);
+            var result = new Dictionary<string, (FileWriterPlugIn, List<GorgonFileExtension>)>(StringComparer.CurrentCultureIgnoreCase);
 
-            foreach (KeyValuePair<string, FileWriterPlugin> provider in _writers.OrderBy(item => item.Value.Description))
+            foreach (KeyValuePair<string, FileWriterPlugIn> provider in _writers.OrderBy(item => item.Value.Description))
             {
                 if (provider.Value.FileExtensions.Count == 0)
                 {
@@ -181,7 +181,7 @@ namespace Gorgon.Editor.Services
                 }
 
 
-                if (!result.TryGetValue(description, out (FileWriterPlugin plugin, List<GorgonFileExtension> extensions) extensions))
+                if (!result.TryGetValue(description, out (FileWriterPlugIn plugin, List<GorgonFileExtension> extensions) extensions))
                 {
                     result[description] = extensions = (provider.Value, new List<GorgonFileExtension>());
                 }
@@ -231,7 +231,7 @@ namespace Gorgon.Editor.Services
         /// <param name="pluginCache">The MEF plug in cache used to load the file system plug ins.</param>
         /// <param name="pluginDir">The plug in directory.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginCache"/>, or the <paramref name="pluginDir"/> parameter is <b>null</b>.</exception>
-        public void LoadProviders(GorgonMefPluginCache pluginCache, DirectoryInfo pluginDir)
+        public void LoadProviders(GorgonMefPlugInCache pluginCache, DirectoryInfo pluginDir)
         {
             if (pluginCache == null)
             {
@@ -243,19 +243,19 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentNullException(nameof(pluginDir));
             }
 
-            IReadOnlyList<PluginRecord> assemblies = pluginCache.ValidateAndLoadAssemblies(pluginDir.GetFiles("*.dll"), Program.Log);
+            IReadOnlyList<PlugInRecord> assemblies = pluginCache.ValidateAndLoadAssemblies(pluginDir.GetFiles("*.dll"), Program.Log);
 
             if (assemblies.Count > 0)
             {
-                foreach (PluginRecord record in assemblies.Where(item => !item.IsAssemblyLoaded && item.IsManaged))
+                foreach (PlugInRecord record in assemblies.Where(item => !item.IsAssemblyLoaded && item.IsManaged))
                 {
-                    _disabled[Path.GetFileName(record.Path)] = new DisabledPlugin(DisabledReasonCode.Error, Path.GetFileName(record.Path), record.LoadFailureReason, record.Path);
+                    _disabled[Path.GetFileName(record.Path)] = new DisabledPlugIn(DisabledReasonCode.Error, Path.GetFileName(record.Path), record.LoadFailureReason, record.Path);
                 }
             }
 
-            IGorgonPluginService plugins = new GorgonMefPluginService(pluginCache, Program.Log);
-            IReadOnlyList<GorgonFileSystemProvider> readers = plugins.GetPlugins<GorgonFileSystemProvider>();
-            IReadOnlyList<FileWriterPlugin> writers = plugins.GetPlugins<FileWriterPlugin>();
+            IGorgonPlugInService plugins = new GorgonMefPlugInService(pluginCache, Program.Log);
+            IReadOnlyList<GorgonFileSystemProvider> readers = plugins.GetPlugIns<GorgonFileSystemProvider>();
+            IReadOnlyList<FileWriterPlugIn> writers = plugins.GetPlugIns<FileWriterPlugIn>();
 
             // Get readers.
             foreach (IGorgonFileSystemProvider reader in readers)
@@ -270,14 +270,14 @@ namespace Gorgon.Editor.Services
                     Program.Log.Print($"ERROR: Cannot create file system reader plug in '{reader.Name}'.", LoggingLevel.Simple);
                     Program.Log.LogException(ex);
 
-                    _disabled[reader.Name] = new DisabledPlugin(DisabledReasonCode.Error, reader.Name, string.Format(Resources.GOREDIT_DISABLE_FILE_PROVIDER_EXCEPTION, ex.Message), reader.ProviderPath);
+                    _disabled[reader.Name] = new DisabledPlugIn(DisabledReasonCode.Error, reader.Name, string.Format(Resources.GOREDIT_DISABLE_FILE_PROVIDER_EXCEPTION, ex.Message), reader.ProviderPath);
                 }
             }
 
             // Get writers
-            foreach (FileWriterPlugin writer in writers)
+            foreach (FileWriterPlugIn writer in writers)
             {
-                IReadOnlyList<string> disabled = writer.IsPluginAvailable();
+                IReadOnlyList<string> disabled = writer.IsPlugInAvailable();
 
                 try
                 {
@@ -291,7 +291,7 @@ namespace Gorgon.Editor.Services
                             Program.Log.Print($"WARNING: {reason}", LoggingLevel.Verbose);
                         }                        
 
-                        _disabled[writer.Name] = new DisabledPlugin(DisabledReasonCode.ValidationError, writer.Name, string.Join("\n", disabled), writer.PlugInPath);
+                        _disabled[writer.Name] = new DisabledPlugIn(DisabledReasonCode.ValidationError, writer.Name, string.Join("\n", disabled), writer.PlugInPath);
                         continue;
                     }
 
@@ -303,7 +303,7 @@ namespace Gorgon.Editor.Services
                     Program.Log.Print($"ERROR: Cannot create file system writer plug in '{writer.Name}'.", LoggingLevel.Simple);
                     Program.Log.LogException(ex);
 
-                    _disabled[writer.Name] = new DisabledPlugin(DisabledReasonCode.Error, writer.Name, string.Format(Resources.GOREDIT_DISABLE_FILE_PROVIDER_EXCEPTION, ex.Message), writer.PlugInPath);
+                    _disabled[writer.Name] = new DisabledPlugIn(DisabledReasonCode.Error, writer.Name, string.Format(Resources.GOREDIT_DISABLE_FILE_PROVIDER_EXCEPTION, ex.Message), writer.PlugInPath);
                 }
             }
         }

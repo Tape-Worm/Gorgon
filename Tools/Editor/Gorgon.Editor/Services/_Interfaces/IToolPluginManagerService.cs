@@ -25,35 +25,35 @@
 #endregion
 
 using System.IO;
-using Gorgon.Editor.Plugins;
-using Gorgon.Plugins;
+using Gorgon.Editor.PlugIns;
+using Gorgon.PlugIns;
 
 namespace Gorgon.Editor.Services
 {
     /// <summary>
     /// A service used to manage tool plug ins for the application.
     /// </summary>
-    internal interface IToolPluginManagerService
-        : IToolPluginService
+    internal interface IToolPlugInManagerService
+        : IToolPlugInService
     {
         /// <summary>
         /// Function to load all of the tool plug ins into the service.
         /// </summary>
         /// <param name="pluginCache">The plug in assembly cache.</param>
         /// <param name="pluginDir">The directory that contains the plug ins.</param>
-        void LoadToolPlugins(GorgonMefPluginCache pluginCache, DirectoryInfo pluginDir);
+        void LoadToolPlugIns(GorgonMefPlugInCache pluginCache, DirectoryInfo pluginDir);
 
         /// <summary>
         /// Function to add a tool plugin to the service.
         /// </summary>
         /// <param name="plugin">The plugin to add.</param>
-        void AddToolPlugin(ToolPlugin plugin);
+        void AddToolPlugIn(ToolPlugIn plugin);
 
         /// <summary>
         /// Function to remove a tool plugin from the service.
         /// </summary>
         /// <param name="plugin">The plugin to remove.</param>
-        void RemoveToolPlugin(ToolPlugin plugin);
+        void RemoveToolPlugIn(ToolPlugIn plugin);
 
         /// <summary>
         /// Function to clear all of the tool plugins.

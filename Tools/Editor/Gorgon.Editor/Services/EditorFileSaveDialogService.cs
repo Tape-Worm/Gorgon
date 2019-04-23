@@ -33,7 +33,7 @@ using System.Windows.Forms;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
 using Gorgon.UI;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 
 namespace Gorgon.Editor.Services
 {
@@ -106,7 +106,7 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Property to set or return the currently active file writer plugin.
         /// </summary>        
-        public FileWriterPlugin CurrentWriter
+        public FileWriterPlugIn CurrentWriter
         {
             get;
             set;
@@ -119,12 +119,12 @@ namespace Gorgon.Editor.Services
         /// </summary>
         /// <param name="extensions">The extensions used by the available file writers.</param>
         /// <returns>The string containing the file dialog filter.</returns>
-        private string GetWriterDialogFilterString(IReadOnlyList<(string desc, FileWriterPlugin writer, IReadOnlyList<GorgonFileExtension> extensions)> extensions)
+        private string GetWriterDialogFilterString(IReadOnlyList<(string desc, FileWriterPlugIn writer, IReadOnlyList<GorgonFileExtension> extensions)> extensions)
         {
             var result = new StringBuilder();
             var filter = new StringBuilder();            
 
-            foreach ((string desc, FileWriterPlugin _, IReadOnlyList<GorgonFileExtension> extensions) item in extensions)
+            foreach ((string desc, FileWriterPlugIn _, IReadOnlyList<GorgonFileExtension> extensions) item in extensions)
             {
                 filter.Length = 0;
 
@@ -178,7 +178,7 @@ namespace Gorgon.Editor.Services
         /// Function to find the extension filter index for the currently selected file writer.
         /// </summary>
         /// <param name="extensions">The extensions to evaluate.</param>
-        private void FindCurrentWriterExtensionIndex(IReadOnlyList<(string desc, FileWriterPlugin writer, IReadOnlyList<GorgonFileExtension> extensions)> extensions)
+        private void FindCurrentWriterExtensionIndex(IReadOnlyList<(string desc, FileWriterPlugIn writer, IReadOnlyList<GorgonFileExtension> extensions)> extensions)
         {
             _lastSelectedExtensionIndex = -1;
 
@@ -198,7 +198,7 @@ namespace Gorgon.Editor.Services
         /// Function to locate the nearest matching extension index based on previous file name.
         /// </summary>
         /// <param name="extensions">The extensions to evaluate.</param>
-        private void FindNearestExtensionIndex(IReadOnlyList<(string desc, FileWriterPlugin writer, IReadOnlyList<GorgonFileExtension> extensions)> extensions)
+        private void FindNearestExtensionIndex(IReadOnlyList<(string desc, FileWriterPlugIn writer, IReadOnlyList<GorgonFileExtension> extensions)> extensions)
         {
             if ((_lastSelectedExtensionIndex < 0) || (_lastSelectedExtensionIndex >= extensions.Count))
             {
@@ -228,7 +228,7 @@ namespace Gorgon.Editor.Services
         /// </summary>
         /// <param name="extensions">The file extensions to evaluate.</param>
         /// <returns>The open file dialog.</returns>
-        private SaveFileDialog GetDialog(IReadOnlyList<(string desc, FileWriterPlugin writer, IReadOnlyList<GorgonFileExtension> extensions)> extensions)
+        private SaveFileDialog GetDialog(IReadOnlyList<(string desc, FileWriterPlugIn writer, IReadOnlyList<GorgonFileExtension> extensions)> extensions)
         {
             DirectoryInfo initialDirectory = InitialDirectory;
 
@@ -281,7 +281,7 @@ namespace Gorgon.Editor.Services
 
             try
             {
-                IReadOnlyList<(string desc, FileWriterPlugin writer, IReadOnlyList<GorgonFileExtension> extensions)> extensions = Providers.GetWriterFileExtensions();
+                IReadOnlyList<(string desc, FileWriterPlugIn writer, IReadOnlyList<GorgonFileExtension> extensions)> extensions = Providers.GetWriterFileExtensions();
 
                 dialog = GetDialog(extensions);
 

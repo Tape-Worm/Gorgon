@@ -74,7 +74,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the list of plug ins for the fixed plug in list category.
         /// </summary>
-        public ISettingsPluginsList PluginsList
+        public ISettingsPlugInsList PlugInsList
         {
             get;
             private set;
@@ -131,7 +131,7 @@ namespace Gorgon.Editor.ViewModels
             _messageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(injectionParameters.MessageDisplay), nameof(injectionParameters));
             Categories = new ObservableCollection<ISettingsCategoryViewModel>(injectionParameters.Categories 
 				?? throw new ArgumentMissingException(nameof(injectionParameters.Categories), nameof(injectionParameters)));
-            PluginsList = injectionParameters.PluginsList ?? throw new ArgumentMissingException(nameof(injectionParameters.PluginsList), nameof(injectionParameters));
+            PlugInsList = injectionParameters.PlugInsList ?? throw new ArgumentMissingException(nameof(injectionParameters.PlugInsList), nameof(injectionParameters));
         }
         #endregion
 

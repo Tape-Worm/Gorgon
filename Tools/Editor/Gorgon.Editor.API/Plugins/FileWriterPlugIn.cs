@@ -34,7 +34,7 @@ using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
 
-namespace Gorgon.Editor.Plugins
+namespace Gorgon.Editor.PlugIns
 {
     /// <summary>
     /// Flags to indicate the capabilities of the writer.
@@ -59,8 +59,8 @@ namespace Gorgon.Editor.Plugins
 	/// <summary>
 	/// An interface for file output plug ins.
 	/// </summary>
-	public abstract class FileWriterPlugin
-		: EditorPlugin
+	public abstract class FileWriterPlugIn
+		: EditorPlugIn
 	{
         #region Variables.
         // Default compression amount.
@@ -76,7 +76,7 @@ namespace Gorgon.Editor.Plugins
         /// This is here to facilitate importing of file metadata from v2 of the gorgon editor files. Only specify a compatible type here, otherwise things will go wrong.
         /// </para>
         /// </remarks>
-        public virtual string V2PluginName => string.Empty;
+        public virtual string V2PlugInName => string.Empty;
 
         /// <summary>
         /// Property to return the capabilities of the writer.
@@ -133,7 +133,7 @@ namespace Gorgon.Editor.Plugins
         /// <summary>
         /// Property to return the type of plug-in.
         /// </summary>
-        public sealed override PluginType PluginType => PluginType.Writer;
+        public sealed override PlugInType PlugInType => PlugInType.Writer;
         #endregion
 
         #region Methods.
@@ -251,12 +251,12 @@ namespace Gorgon.Editor.Plugins
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="FileWriterPlugin"/> class.
+		/// Initializes a new instance of the <see cref="FileWriterPlugIn"/> class.
 		/// </summary>
 		/// <param name="description">Friendly description of the plug-in.</param>
         /// <param name="fileExtensions">The file of common file name extensions supported by this writer.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileExtensions"/> parameter is <b>null</b>.</exception>
-		protected FileWriterPlugin(string description, IEnumerable<GorgonFileExtension> fileExtensions)
+		protected FileWriterPlugIn(string description, IEnumerable<GorgonFileExtension> fileExtensions)
 			: base(description)
 		{
             if (fileExtensions == null)

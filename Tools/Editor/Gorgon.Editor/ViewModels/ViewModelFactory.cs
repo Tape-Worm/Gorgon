@@ -29,12 +29,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Metadata;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
@@ -50,7 +51,6 @@ namespace Gorgon.Editor.ViewModels
     /// </summary>
     internal class ViewModelFactory
     {
-
         #region Variables.
 		// The common services for the application and plug ins.
         private readonly IViewModelInjection _viewModelInjection;
@@ -62,6 +62,8 @@ namespace Gorgon.Editor.ViewModels
         private readonly DirectoryLocateService _dirLocator;
         // The service used to scan content files for content plug in associations.
         private readonly FileScanService _fileScanService;
+		// A string builder used to construct path names.
+        private readonly StringBuilder _pathBuilder = new StringBuilder(512);
         #endregion
 
         #region Properties.
@@ -89,7 +91,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the content plugins for the application.
         /// </summary>
-        public IContentPluginManagerService ContentPlugins
+        public IContentPlugInManagerService ContentPlugIns
         {
             get;
         }
@@ -97,7 +99,7 @@ namespace Gorgon.Editor.ViewModels
 		/// <summary>
         /// Property tor eturn the tool plug ins for the application.
         /// </summary>
-		public IToolPluginManagerService ToolPlugins
+		public IToolPlugInManagerService ToolPlugIns
         {
             get;
         }
@@ -130,12 +132,68 @@ namespace Gorgon.Editor.ViewModels
 
         #region Methods.
         /// <summary>
+        /// Function to create a file explorer node view model for a file.
+        /// </summary>
+        /// <param name="project">The project data.</param>
+        /// <param name="fileSystemService">The file system service used to manipulate the underlying physical file system.</param>
+        /// <param name="parent">The parent for the node.</param>
+        /// <param name="file">The file system file to wrap in the view model.</param>
+        /// <param name="metaData">[Optional] The metadata for the file.</param>
+        /// <returns>The new file explorer node view model.</returns>
+        private IFileExplorerNodeVm DoCreateFileExplorerFileNode(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parent, FileInfo file, ProjectItemMetadata metaData, IReadOnlyList<IFileExplorerNodeVm> openFiles)
+        {
+            var result = new FileExplorerFileNodeVm();
+
+            // If this node already exists, then don't recreate it and just send it back.
+            // This way, we don't need to worry about running around trying to update changed nodes.
+            _pathBuilder.Length = 0;
+            _pathBuilder.Append(parent.FullPath);            
+            _pathBuilder.Append(file.Name);
+            string newPath = _pathBuilder.ToString();
+
+            IFileExplorerNodeVm openFile = openFiles?.FirstOrDefault(item => string.Equals(item.FullPath, newPath, StringComparison.OrdinalIgnoreCase));
+            if (openFile != null)
+            {
+                if (parent.Children.All(item => !string.Equals(item.FullPath, newPath, StringComparison.OrdinalIgnoreCase)))
+                {   
+                    parent.Children.Add(openFile);
+                    openFile.Refresh();
+                    (openFile as IContentFile)?.RefreshMetadata();
+                }
+                return openFile;
+            }
+
+            result.Initialize(new FileExplorerNodeParameters(file.FullName, project, this, fileSystemService)
+            {
+                Parent = parent,
+                Metadata = metaData
+            });
+
+            if (result.Metadata == null)
+            {
+                if (project.ProjectItems.TryGetValue(result.FullPath, out ProjectItemMetadata existingMetaData))
+                {
+                    result.Metadata = existingMetaData;
+                }
+                else
+                {
+                    result.Metadata = new ProjectItemMetadata();
+                }
+            }
+
+            parent.Children.Add(result);
+
+            return result;
+        }
+
+        /// <summary>
         /// Function to enumerate the physical file system to build the node hierarchy.
         /// </summary>
         /// <param name="project">The project being evaluated.</param>
         /// <param name="fileSystemService">The file system service used to retrieve file system data.</param>
         /// <param name="parent">The parent of the nodes.</param>
-        private void DoEnumerateFileSystemObjects(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parent)
+        /// <param name="openFiles">A list of files that are open in the editor.</param>
+        private void DoEnumerateFileSystemObjects(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parent, IReadOnlyList<IFileExplorerNodeVm> openFiles = null)
         {
             var directoryNodes = new Dictionary<string, IFileExplorerNodeVm>(StringComparer.OrdinalIgnoreCase);
             string parentPhysicalPath;
@@ -167,14 +225,14 @@ namespace Gorgon.Editor.ViewModels
                 // Get files for this directory.
                 foreach (FileInfo file in fileSystemService.GetFiles(directory.FullName, false))
                 {
-                    CreateFileExplorerFileNodeVm(project, fileSystemService, node, file);
+                    DoCreateFileExplorerFileNode(project, fileSystemService, node, file, null, openFiles);
                 }
             }
 
             // Get files for this directory.
             foreach (FileInfo file in fileSystemService.GetFiles(parentPhysicalPath, false))
             {
-                CreateFileExplorerFileNodeVm(project, fileSystemService, parent, file);
+                DoCreateFileExplorerFileNode(project, fileSystemService, parent, file, null, openFiles);
             }
         }
 
@@ -184,10 +242,11 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="project">The project being evaluated.</param>
         /// <param name="fileSystemService">The file system service used to retrieve file system data.</param>
         /// <param name="parent">The parent of the nodes.</param>
+        /// <param name="openFiles">A list of files that are open in the editor.</param>
         /// <returns>A hierarchy of nodes representing the physical file system.</returns>
         /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
-        public void EnumerateFileSystemObjects(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parent)
+        public void EnumerateFileSystemObjects(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parent, IReadOnlyList<IFileExplorerNodeVm> openFiles)
         {
             if (project == null)
             {
@@ -204,19 +263,19 @@ namespace Gorgon.Editor.ViewModels
                 throw new ArgumentNullException(nameof(parent));
             }
 
-            DoEnumerateFileSystemObjects(project, fileSystemService, parent);
+            DoEnumerateFileSystemObjects(project, fileSystemService, parent, openFiles);
         }
 
         /// <summary>
         /// Function to enumerate the content plug ins that can create their own content.
         /// </summary>
         /// <returns>A list of plugins that can create their own content.</returns>
-        private IReadOnlyList<IContentPluginMetadata> EnumerateContentCreators()
+        private IReadOnlyList<IContentPlugInMetadata> EnumerateContentCreators()
         {
-            IEnumerable<IContentPluginMetadata> filteredPlugins = ContentPlugins.Plugins.Where(item => item.Value.CanCreateContent)
+            IEnumerable<IContentPlugInMetadata> filteredPlugIns = ContentPlugIns.PlugIns.Where(item => item.Value.CanCreateContent)
                                                                                         .Select(item => item.Value)
-                                                                                        .OfType<IContentPluginMetadata>();
-            return new List<IContentPluginMetadata>(filteredPlugins);
+                                                                                        .OfType<IContentPlugInMetadata>();
+            return new List<IContentPlugInMetadata>(filteredPlugIns);
         }
 
 		/// <summary>
@@ -224,10 +283,10 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="plugin">The plug in to retrieve data from.</param>
         /// <returns>The view model.</returns>
-        private ISettingsPluginListItem GetPluginListItem(EditorPlugin plugin)
+        private ISettingsPlugInListItem GetPlugInListItem(EditorPlugIn plugin)
         {
-            var result = new SettingsPluginListItem();
-            result.Initialize(new SettingsPluginListItemParameters(plugin, _viewModelInjection));
+            var result = new SettingsPlugInListItem();
+            result.Initialize(new SettingsPlugInListItemParameters(plugin, _viewModelInjection));
             return result;
         }
 
@@ -236,10 +295,10 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="plugin">The plug in to retrieve data from.</param>
         /// <returns>The view model.</returns>
-        private ISettingsPluginListItem GetPluginListItem(IGorgonFileSystemProvider plugin)
+        private ISettingsPlugInListItem GetPlugInListItem(IGorgonFileSystemProvider plugin)
         {
-            var result = new SettingsPluginListItem();
-            result.Initialize(new SettingsPluginListItemParameters(plugin, _viewModelInjection));
+            var result = new SettingsPlugInListItem();
+            result.Initialize(new SettingsPlugInListItemParameters(plugin, _viewModelInjection));
             return result;
         }
 
@@ -248,10 +307,10 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="plugin">The plug in to retrieve data from.</param>
         /// <returns>The view model.</returns>
-        private ISettingsPluginListItem GetPluginListItem(IDisabledPlugin plugin)
+        private ISettingsPlugInListItem GetPlugInListItem(IDisabledPlugIn plugin)
         {
-            var result = new SettingsPluginListItem();
-            result.Initialize(new SettingsPluginListItemParameters(plugin, _viewModelInjection));
+            var result = new SettingsPlugInListItem();
+            result.Initialize(new SettingsPlugInListItemParameters(plugin, _viewModelInjection));
             return result;
         }
 
@@ -259,20 +318,20 @@ namespace Gorgon.Editor.ViewModels
         /// Function to retrieve the list of plug ins view model.
         /// </summary>
         /// <returns>The plug ins list view model.</returns>
-        private ISettingsPluginsList GetPluginListViewModel()
+        private ISettingsPlugInsList GetPlugInListViewModel()
         {
-            IEnumerable<ISettingsPluginListItem> plugins = FileSystemProviders.Readers
-                .Select(item => GetPluginListItem(item.Value))
-                .Concat(FileSystemProviders.Writers.Select(item => GetPluginListItem(item.Value)))
-                .Concat(ContentPlugins.Plugins.Select(item => GetPluginListItem(item.Value)))
-                .Concat(ContentPlugins.Importers.Select(item => GetPluginListItem(item.Value)))
-                .Concat(ToolPlugins.Plugins.Select(item => GetPluginListItem(item.Value)))
-                .Concat(FileSystemProviders.DisabledPlugins.Select(item => GetPluginListItem(item.Value)))
-                .Concat(ContentPlugins.DisabledPlugins.Select(item => GetPluginListItem(item.Value)))                
-                .Concat(ToolPlugins.DisabledPlugins.Select(item => GetPluginListItem(item.Value)));
+            IEnumerable<ISettingsPlugInListItem> plugins = FileSystemProviders.Readers
+                .Select(item => GetPlugInListItem(item.Value))
+                .Concat(FileSystemProviders.Writers.Select(item => GetPlugInListItem(item.Value)))
+                .Concat(ContentPlugIns.PlugIns.Select(item => GetPlugInListItem(item.Value)))
+                .Concat(ContentPlugIns.Importers.Select(item => GetPlugInListItem(item.Value)))
+                .Concat(ToolPlugIns.PlugIns.Select(item => GetPlugInListItem(item.Value)))
+                .Concat(FileSystemProviders.DisabledPlugIns.Select(item => GetPlugInListItem(item.Value)))
+                .Concat(ContentPlugIns.DisabledPlugIns.Select(item => GetPlugInListItem(item.Value)))                
+                .Concat(ToolPlugIns.DisabledPlugIns.Select(item => GetPlugInListItem(item.Value)));
 
-            var result = new SettingsPluginsList();
-            result.Initialize(new SettingsPluginsListParameters(plugins, _viewModelInjection));
+            var result = new SettingsPlugInsList();
+            result.Initialize(new SettingsPlugInsListParameters(plugins, _viewModelInjection));
             return result;
         }
 
@@ -280,18 +339,18 @@ namespace Gorgon.Editor.ViewModels
         /// Function to retrieve the list of settings categories from loaded plug ins.
         /// </summary>
         /// <returns>The list of categories.</returns>
-        private IEnumerable<ISettingsCategoryViewModel> GetPluginSettingsCategories()
+        private IEnumerable<ISettingsCategoryViewModel> GetPlugInSettingsCategories()
         {
             var result = new List<ISettingsCategoryViewModel>();
 
-            IEnumerable<EditorPlugin> plugins = FileSystemProviders.Writers.Select(item => (EditorPlugin)item.Value)
-                .Concat(ContentPlugins.Plugins.Select(item => item.Value))
-                .Concat(ContentPlugins.Importers.Select(item => item.Value))
-                .Concat(ToolPlugins.Plugins.Select(item => item.Value));
+            IEnumerable<EditorPlugIn> plugins = FileSystemProviders.Writers.Select(item => (EditorPlugIn)item.Value)
+                .Concat(ContentPlugIns.PlugIns.Select(item => item.Value))
+                .Concat(ContentPlugIns.Importers.Select(item => item.Value))
+                .Concat(ToolPlugIns.PlugIns.Select(item => item.Value));
 			
-            foreach (EditorPlugin plugin in plugins)
+            foreach (EditorPlugIn plugin in plugins)
             {
-                ISettingsCategoryViewModel settings = plugin.GetPluginSettings();
+                ISettingsCategoryViewModel settings = plugin.GetPlugInSettings();
 
                 if (settings == null)
                 {
@@ -312,9 +371,9 @@ namespace Gorgon.Editor.ViewModels
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="workspace"/> parameter is <b>null</b>.</exception>
         public IMain CreateMainViewModel(string gpuName)
         {
-            ISettingsPluginsList pluginList = GetPluginListViewModel();
+            ISettingsPlugInsList pluginList = GetPlugInListViewModel();
             var settingsVm = new EditorSettingsVm();
-            IEnumerable<ISettingsCategoryViewModel> categories = GetPluginSettingsCategories();
+            IEnumerable<ISettingsCategoryViewModel> categories = GetPlugInSettingsCategories();
             settingsVm.Initialize(new EditorSettingsParameters(new[] { pluginList }.Concat(categories), pluginList, MessageDisplay, BusyService));
 
             var newProjectVm = new StageNewVm
@@ -366,29 +425,7 @@ namespace Gorgon.Editor.ViewModels
                 throw new ArgumentNullException(nameof(file));
             }
 
-            var result = new FileExplorerFileNodeVm();
-
-            result.Initialize(new FileExplorerNodeParameters(file.FullName, project, this, fileSystemService)
-            {
-                Parent = parent,
-                Metadata = metaData
-            });
-
-            if (result.Metadata == null)
-            {
-                if (project.ProjectItems.TryGetValue(result.FullPath, out ProjectItemMetadata existingMetaData))
-                {
-                    result.Metadata = existingMetaData;
-                }
-                else
-                {
-                    result.Metadata = new ProjectItemMetadata();
-                }
-            }
-
-            parent.Children.Add(result);
-
-            return result;
+            return DoCreateFileExplorerFileNode(project, fileSystemService, parent, file, metaData, null);
         }
 
         /// <summary>
@@ -491,7 +528,7 @@ namespace Gorgon.Editor.ViewModels
                                                         this));
 
             // Walk through the content plug ins and register custom search keywords.
-            foreach (ContentPlugin plugin in ContentPlugins.Plugins.Values)
+            foreach (ContentPlugIn plugin in ContentPlugIns.PlugIns.Values)
             {
                 plugin.RegisterSearchKeywords(search);
             }
@@ -581,8 +618,8 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="settings">The settings for the application.</param>
         /// <param name="providers">The providers used to open/save files.</param>
-        /// <param name="contentPlugins">The plugins used for content.</param>
-        /// <param name="toolPlugins">The plugins used for application tools.</param>
+        /// <param name="contentPlugIns">The plugins used for content.</param>
+        /// <param name="toolPlugIns">The plugins used for application tools.</param>
         /// <param name="projectManager">The application project manager.</param>
         /// <param name="viewModelInjection"></param>
         /// <param name="waitState">The wait state service.</param>
@@ -592,8 +629,8 @@ namespace Gorgon.Editor.ViewModels
         /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
         public ViewModelFactory(EditorSettings settings, 
                                 FileSystemProviders providers, 
-                                ContentPluginService contentPlugins,
-								ToolPluginService toolPlugins,
+                                ContentPlugInService contentPlugIns,
+								ToolPlugInService toolPlugIns,
                                 ProjectManager projectManager, 
                                 IViewModelInjection viewModelInjection,                                
                                 ClipboardService clipboardService, 
@@ -602,8 +639,8 @@ namespace Gorgon.Editor.ViewModels
         {
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             FileSystemProviders = providers ?? throw new ArgumentNullException(nameof(providers));
-            ContentPlugins = contentPlugins ?? throw new ArgumentNullException(nameof(contentPlugins));
-            ToolPlugins = toolPlugins ?? throw new ArgumentNullException(nameof(toolPlugins));
+            ContentPlugIns = contentPlugIns ?? throw new ArgumentNullException(nameof(contentPlugIns));
+            ToolPlugIns = toolPlugIns ?? throw new ArgumentNullException(nameof(toolPlugIns));
             _projectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
             _viewModelInjection = viewModelInjection ?? throw new ArgumentNullException(nameof(viewModelInjection));
             _clipboard = clipboardService ?? throw new ArgumentNullException(nameof(clipboardService));

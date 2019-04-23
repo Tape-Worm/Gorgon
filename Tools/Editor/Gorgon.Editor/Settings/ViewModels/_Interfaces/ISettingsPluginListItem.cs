@@ -24,15 +24,15 @@
 // 
 #endregion
 
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ViewModels
 {
     /// <summary>
-    /// An item to display on the <see cref="ISettingsPluginsList"/> view model.
+    /// An item to display on the <see cref="ISettingsPlugInsList"/> view model.
     /// </summary>
-    internal interface ISettingsPluginListItem
+    internal interface ISettingsPlugInListItem
 		: IViewModel
     {
 		/// <summary>
@@ -54,7 +54,7 @@ namespace Gorgon.Editor.ViewModels
 		/// <summary>
         /// Property to return the type for the plug in.
         /// </summary>
-		PluginType Type
+		PlugInType Type
         {
             get;
         }

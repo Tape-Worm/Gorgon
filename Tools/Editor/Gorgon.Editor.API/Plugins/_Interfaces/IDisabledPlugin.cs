@@ -24,7 +24,7 @@
 // 
 #endregion
 
-namespace Gorgon.Editor.Plugins
+namespace Gorgon.Editor.PlugIns
 {
     /// <summary>
     /// The reason code for disabling the plug in.
@@ -48,7 +48,7 @@ namespace Gorgon.Editor.Plugins
     /// <summary>
     /// A plug in that was disabled for a reason.
     /// </summary>
-    public interface IDisabledPlugin
+    public interface IDisabledPlugIn
     {
         /// <summary>
         /// Property to return a description that explains why a plug in was disabled.
@@ -61,7 +61,7 @@ namespace Gorgon.Editor.Plugins
         /// <summary>
         /// Property to return the name of the disabled plug in.
         /// </summary>
-        string PluginName
+        string PlugInName
         {
             get;
         }

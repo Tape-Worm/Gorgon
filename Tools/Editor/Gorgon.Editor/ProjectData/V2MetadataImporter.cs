@@ -30,7 +30,7 @@ using System.IO;
 using System.Xml.Linq;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Metadata;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.IO;
 
@@ -101,7 +101,7 @@ namespace Gorgon.Editor.ProjectData
 
                 files.Add(filePath, new ProjectItemMetadata()
                 {
-                    PluginName = null
+                    PlugInName = null
                 });
 
                 // TODO: We need to import attributes and dependencies.  
@@ -113,7 +113,7 @@ namespace Gorgon.Editor.ProjectData
         /// </summary>
         /// <param name="rootNode">The root node of the metadata.</param>
         /// <returns>The file writer plugin.</returns>
-        private FileWriterPlugin GetWriterPlugin(XElement rootNode)
+        private FileWriterPlugIn GetWriterPlugIn(XElement rootNode)
         {
             string writerTypeName = rootNode.Element(WriterNodeName)?.Attribute(WriterTypeNameAttr)?.Value;
 
@@ -123,7 +123,7 @@ namespace Gorgon.Editor.ProjectData
                 return null;
             }
 
-            FileWriterPlugin plugin = _providers.GetWriterByName(writerTypeName, true);
+            FileWriterPlugIn plugin = _providers.GetWriterByName(writerTypeName, true);
 
             if (plugin == null)
             {                

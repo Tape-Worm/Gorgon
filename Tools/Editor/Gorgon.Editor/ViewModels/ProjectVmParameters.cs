@@ -39,7 +39,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the content plugins.
         /// </summary>
-        public IContentPluginManagerService ContentPlugins => ViewModelFactory.ContentPlugins;
+        public IContentPlugInManagerService ContentPlugIns => ViewModelFactory.ContentPlugIns;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProjectVmParameters" /> class.

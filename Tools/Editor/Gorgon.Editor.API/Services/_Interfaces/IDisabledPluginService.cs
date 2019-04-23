@@ -25,7 +25,7 @@
 #endregion
 
 using System.Collections.Generic;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 
 namespace Gorgon.Editor.Services
 {
@@ -37,12 +37,12 @@ namespace Gorgon.Editor.Services
     /// Use this interface to determine if a plug in is available for use or not.
     /// </para>
     /// </remarks>
-    public interface IDisabledPluginService
+    public interface IDisabledPlugInService
     {
         /// <summary>
         /// Property to return the list of disabled plug ins.
         /// </summary>
-        IReadOnlyDictionary<string, IDisabledPlugin> DisabledPlugins
+        IReadOnlyDictionary<string, IDisabledPlugIn> DisabledPlugIns
         {
             get;
         }

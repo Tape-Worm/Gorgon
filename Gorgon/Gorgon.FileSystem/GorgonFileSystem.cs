@@ -95,10 +95,10 @@ namespace Gorgon.IO
 	/// <code language="csharp">
 	/// <![CDATA[
 	/// // First we need to load the assembly with the provider plug in.
-	/// using (GorgonPluginAssemblyCache assemblies = new GorgonPluginAssemblyCache())
+	/// using (GorgonPlugInAssemblyCache assemblies = new GorgonPlugInAssemblyCache())
 	/// {
 	///		assemblies.Load(@"C:\PlugIns\GorgonFileSystem.Zip.dll"); 
-	///		GorgonPluginService plugInService = new GorgonPluginService(assemblies);
+	///		GorgonPlugInService plugInService = new GorgonPlugInService(assemblies);
 	/// 
 	///		// We'll use the factory to get the zip plug in provider.
 	///		IGorgonFileSystemProviderFactory factory = new GorgonFileSystemProviderFactory(plugInService);
@@ -1111,10 +1111,10 @@ namespace Gorgon.IO
 		/// <code language="csharp">
 		/// <![CDATA[
 		/// // First we need to load the assembly with the provider plug in.
-		/// using (GorgonPluginAssemblyCache assemblies = new GorgonPluginAssemblyCache())
+		/// using (GorgonPlugInAssemblyCache assemblies = new GorgonPlugInAssemblyCache())
 		/// {
 		///		assemblies.Load(@"C:\PlugIns\GorgonFileSystem.Zip.dll"); 
-		///		GorgonPluginService plugInService = new GorgonPluginService(assemblies);
+		///		GorgonPlugInService plugInService = new GorgonPlugInService(assemblies);
 		/// 
 		///		// We'll use the factory to get the zip plug in provider.
 		///		IGorgonFileSystemProviderFactory factory = new GorgonFileSystemProviderFactory(plugInService);

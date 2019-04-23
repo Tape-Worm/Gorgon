@@ -2,12 +2,12 @@
 using System.Drawing;
 using Gorgon.Core;
 
-namespace Gorgon.Editor.Plugins
+namespace Gorgon.Editor.PlugIns
 {
     /// <summary>
     /// Defines a button to display on the ribbon bar, in the tools area.
     /// </summary>
-    public interface IToolPluginRibbonButton
+    public interface IToolPlugInRibbonButton
 		: IGorgonNamedObject
     {
         #region Properties.

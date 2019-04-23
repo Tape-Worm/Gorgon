@@ -35,13 +35,13 @@ using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.IO;
 
-namespace Gorgon.Editor.Plugins
+namespace Gorgon.Editor.PlugIns
 {
     /// <summary>
     /// A plugin type performs a custom import for content.
     /// </summary>
-    public abstract class ContentImportPlugin
-        : EditorPlugin
+    public abstract class ContentImportPlugIn
+        : EditorPlugIn
     {
         #region Constants.
         /// <summary>
@@ -66,7 +66,7 @@ namespace Gorgon.Editor.Plugins
         }
 
         /// <summary>Property to return the type of this plug in.</summary>
-        public override PluginType PluginType => PluginType.ContentImporter;
+        public override PlugInType PlugInType => PlugInType.ContentImporter;
         #endregion
 
         #region Methods.
@@ -79,7 +79,7 @@ namespace Gorgon.Editor.Plugins
         /// This method is only called when the plugin is loaded at startup.
         /// </para>
         /// </remarks>
-        protected virtual void OnInitialize(IContentPluginService pluginService)
+        protected virtual void OnInitialize(IContentPlugInService pluginService)
         {
         }
 
@@ -176,7 +176,7 @@ namespace Gorgon.Editor.Plugins
         /// This method is only called when the plugin is loaded at startup.
         /// </para>
         /// </remarks>
-        public void Initialize(IContentPluginService pluginService, IGraphicsContext graphicsContext)
+        public void Initialize(IContentPlugInService pluginService, IGraphicsContext graphicsContext)
         {
             if (pluginService == null)
             {
@@ -197,9 +197,9 @@ namespace Gorgon.Editor.Plugins
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the ContentImportPlugin class.</summary>
+        /// <summary>Initializes a new instance of the ContentImportPlugIn class.</summary>
         /// <param name="description">Optional description of the plugin.</param>
-        protected ContentImportPlugin(string description)
+        protected ContentImportPlugIn(string description)
             : base(description)
         {
         }

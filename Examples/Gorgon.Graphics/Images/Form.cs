@@ -52,7 +52,7 @@ namespace Gorgon.Examples
     /// Direct Draw Surface (dds)
     /// Graphics Interface Format (gif) - This one supports animation.
     /// 
-    /// Users can also add their own codecs by using the GorgonImageCodecPlugin.  However, this is outside of the scope for this example and is demonstrated 
+    /// Users can also add their own codecs by using the GorgonImageCodecPlugIn.  However, this is outside of the scope for this example and is demonstrated 
     /// in the TvImageCodec example.
     /// 
     /// This example also includes code to show how to load and animate an animated GIF using a background task.

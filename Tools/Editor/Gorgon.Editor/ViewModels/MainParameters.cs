@@ -26,7 +26,7 @@
 
 using System;
 using System.Collections.Generic;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.ViewModels
@@ -88,7 +88,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return a list of content plug ins that can create their own content.
         /// </summary>
-        public IReadOnlyList<IContentPluginMetadata> ContentCreators
+        public IReadOnlyList<IContentPlugInMetadata> ContentCreators
         {
             get;
         }
@@ -104,7 +104,7 @@ namespace Gorgon.Editor.ViewModels
         public MainParameters(IStageNewVm newProject, 
 			IRecentVm recent, 
 			IEditorSettingsVm editorSettings,
-			IReadOnlyList<IContentPluginMetadata> contentCreators, 
+			IReadOnlyList<IContentPlugInMetadata> contentCreators, 
 			ViewModelFactory viewModelFactory, 
 			IEditorFileOpenDialogService openDialog, 
 			IEditorFileSaveAsDialogService saveDialog)

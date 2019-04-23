@@ -39,7 +39,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the content plugins for the file explorer.
         /// </summary>
-        public IContentPluginManagerService ContentPlugins => ViewModelFactory.ContentPlugins;
+        public IContentPlugInManagerService ContentPlugIns => ViewModelFactory.ContentPlugIns;
 
         /// <summary>
         /// Property to return the directory locator service used to select a directory.

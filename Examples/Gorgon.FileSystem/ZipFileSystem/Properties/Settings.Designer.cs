@@ -40,9 +40,9 @@ namespace Gorgon.Examples.Properties {
         [ApplicationScopedSetting()]
         [DebuggerNonUserCode()]
         [DefaultSettingValue("..\\..\\..\\..\\..\\PlugIns\\Bin\\{0}")]
-        public string PluginLocation {
+        public string PlugInLocation {
             get {
-                return ((string)(this["PluginLocation"]));
+                return ((string)(this["PlugInLocation"]));
             }
         }
     }

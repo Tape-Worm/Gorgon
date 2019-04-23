@@ -47,6 +47,7 @@ using System.Diagnostics;
 using System.Text;
 using System.ComponentModel;
 using Gorgon.Collections;
+using System.Collections.Specialized;
 
 namespace Gorgon.Editor.ImageEditor.ViewModels
 {
@@ -503,6 +504,11 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         #endregion
 
         #region Methods.        
+        /// <summary>Handles the CollectionChanged event of the CodecPlugInPaths control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
+        private void CodecPlugInPaths_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) => BuildCodecList(ImageData);
+
         /// <summary>Handles the PropertyChanged event of the CurrentPanel control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
@@ -2082,7 +2088,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <summary>Function to determine the action to take when this content is closing.</summary>
         /// <returns>
         ///   <b>true</b> to continue with closing, <b>false</b> to cancel the close request.</returns>
-        /// <remarks>Plugin authors should override this method to confirm whether save changed content, continue without saving, or cancel the operation entirely.</remarks>
+        /// <remarks>PlugIn authors should override this method to confirm whether save changed content, continue without saving, or cancel the operation entirely.</remarks>
         protected override async Task<bool> OnCloseContentTask()
         {
             if (ContentState == ContentState.Unmodified)
@@ -2136,6 +2142,11 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             _undoCacheDir = _imageIO.ScratchArea.CreateDirectory("/undocache");
 
             _dimensionSettings.MipSupport = MipSupport;
+
+            if (_settings.CodecPlugInPaths != null)
+            {
+                _settings.CodecPlugInPaths.CollectionChanged += CodecPlugInPaths_CollectionChanged;
+            }
         }
 
         /// <summary>Function called when the associated view is unloaded.</summary>
@@ -2145,6 +2156,11 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
             try
             {
+                if (_settings.CodecPlugInPaths != null)
+                {
+                    _settings.CodecPlugInPaths.CollectionChanged -= CodecPlugInPaths_CollectionChanged;
+                }
+
                 CurrentPanel = null;
 
                 if (_workingFile != null)
@@ -2166,7 +2182,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
 
             base.OnUnload();
-        }
+        }        
 
         /// <summary>Function to determine if an object can be dropped.</summary>
         /// <param name="dragData">The drag/drop data.</param>

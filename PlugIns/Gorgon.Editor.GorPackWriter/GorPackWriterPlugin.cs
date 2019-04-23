@@ -34,7 +34,7 @@ using System.Threading;
 using System.Linq;
 using System.Xml.Linq;
 using Gorgon.Editor.GorPackWriter.Properties;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.IO;
 using Gorgon.Math;
 using ICSharpCode.SharpZipLib.BZip2;
@@ -46,8 +46,8 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
     /// <summary>
     /// Gorgon packed file writer plug-in interface.
     /// </summary>
-    internal class GorPackWriterPlugin
-        : FileWriterPlugin
+    internal class GorPackWriterPlugIn
+        : FileWriterPlugIn
 	{
         #region Constants.
         // The maximum size of a write transfer buffer, in bytes.  Sized to avoid the LOH.
@@ -55,7 +55,7 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
         // The header for the file.
         private const string FileHeader = "GORPACK1.SharpZip.BZ2";
         // The type name for v2 of the Gorgon file writer plugin.
-        private const string EquivV2Plugin = "GorgonLibrary.Editor.GorPackWriterPlugIn.GorgonGorPackWriterPlugIn";
+        private const string EquivV2PlugIn = "GorgonLibrary.Editor.GorPackWriterPlugIn.GorgonGorPackWriterPlugIn";
         #endregion
 
         #region Variables.
@@ -66,7 +66,7 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
         #region Properties.
         /// <summary>Property to return the equivalent type name for v2 of the Gorgon file writer plugin.</summary>
         /// <remarks>This is here to facilitate importing of file metadata from v2 of the gorgon editor files. Only specify a compatible type here, otherwise things will go wrong.</remarks>
-        public override string V2PluginName => EquivV2Plugin;
+        public override string V2PlugInName => EquivV2PlugIn;
 
         /// <summary>
         /// Property to return the capabilities of the writer.
@@ -633,9 +633,9 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
 
         #region Constructor/Destructor.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorPackWriterPlugin"/> class.
+        /// Initializes a new instance of the <see cref="GorPackWriterPlugIn"/> class.
         /// </summary>
-        public GorPackWriterPlugin()
+        public GorPackWriterPlugIn()
             : base(Resources.GORPKW_DESC, new[] { new GorgonFileExtension("gorPack", Resources.GORPKW_GORPACK_FILE_EXT_DESC) } )
         {
         }

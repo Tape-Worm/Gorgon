@@ -33,7 +33,7 @@ using Gorgon.Diagnostics;
 using Gorgon.Examples.Properties;
 using Gorgon.IO;
 using Gorgon.IO.Providers;
-using Gorgon.Plugins;
+using Gorgon.PlugIns;
 
 namespace Gorgon.Examples
 {
@@ -61,14 +61,14 @@ namespace Gorgon.Examples
 	internal static class Program
     {
         #region Constants.
-        private const string PluginName = "Gorgon.IO.Zip.ZipProvider";
+        private const string PlugInName = "Gorgon.IO.Zip.ZipProvider";
         #endregion
 
         #region Variables.
 		// The plugin assemblies.
-		private static GorgonMefPluginCache _pluginAssemblies;
+		private static GorgonMefPlugInCache _pluginAssemblies;
 		// The plugin service.
-		private static IGorgonPluginService _pluginService;
+		private static IGorgonPlugInService _pluginService;
 		// File system.
         private static GorgonFileSystem _fileSystem;
         // The log file used for debug logging.
@@ -79,11 +79,11 @@ namespace Gorgon.Examples
         /// <summary>
         /// Property to return the path to the plugins.
         /// </summary>
-        public static string PluginPath
+        public static string PlugInPath
         {
             get
             {
-                string path = Settings.Default.PluginLocation;
+                string path = Settings.Default.PlugInLocation;
 
                 if (path.Contains("{0}"))
                 {
@@ -140,9 +140,9 @@ namespace Gorgon.Examples
         /// Function to load the zip file provider plugin.
         /// </summary>
         /// <returns><b>true</b> if successfully loaded, <b>false</b> if not.</returns>
-        private static bool LoadZipProviderPlugin()
+        private static bool LoadZipProviderPlugIn()
         {
-            var zipProviderFile = new FileInfo(Path.Combine(PluginPath.FormatDirectory(Path.DirectorySeparatorChar), "Gorgon.FileSystem.Zip.dll"));
+            var zipProviderFile = new FileInfo(Path.Combine(PlugInPath.FormatDirectory(Path.DirectorySeparatorChar), "Gorgon.FileSystem.Zip.dll"));
 
 			// Check to see if the file exists.
             if (!zipProviderFile.Exists)
@@ -157,7 +157,7 @@ namespace Gorgon.Examples
             }
 
             // Load the plugin assembly.
-            _pluginAssemblies.LoadPluginAssemblies(zipProviderFile.Directory?.FullName, zipProviderFile.Name);
+            _pluginAssemblies.LoadPlugInAssemblies(zipProviderFile.Directory?.FullName, zipProviderFile.Name);
 
 			// Create our file system provider factory so we can retrieve the zip file provider.
 	        var providerFactory = new GorgonFileSystemProviderFactory(_pluginService, _log);
@@ -167,7 +167,7 @@ namespace Gorgon.Examples
 
 	        try
 	        {
-		        provider = providerFactory.CreateProvider(PluginName);
+		        provider = providerFactory.CreateProvider(PlugInName);
 	        }
 	        catch (GorgonException gEx)
 	        {
@@ -195,9 +195,9 @@ namespace Gorgon.Examples
             _log.LogStart();
 
 			// Create the plugin assembly cache.
-			_pluginAssemblies = new GorgonMefPluginCache(_log);
+			_pluginAssemblies = new GorgonMefPlugInCache(_log);
 			// Create the plugin service.
-			_pluginService = new GorgonMefPluginService(_pluginAssemblies, _log);
+			_pluginService = new GorgonMefPlugInService(_pluginAssemblies, _log);
 
 		    try
 		    {
@@ -215,7 +215,7 @@ namespace Gorgon.Examples
 			    // Unlike the folder file system example, we need to load
 			    // a provider to handle zip files before trying to mount
 			    // one.
-			    if (!LoadZipProviderPlugin())
+			    if (!LoadZipProviderPlugIn())
 			    {
 				    return;
 			    }

@@ -42,7 +42,7 @@ using ComponentFactory.Krypton.Ribbon;
 using System.Linq;
 using Gorgon.Editor.Content;
 using System.Collections.Generic;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using System.Collections.Specialized;
 
 namespace Gorgon.Editor
@@ -176,7 +176,7 @@ namespace Gorgon.Editor
                 return;
             }
 
-            foreach (KeyValuePair<string, IReadOnlyList<IToolPluginRibbonButton>> buttonItem in dataContext.ToolButtons)
+            foreach (KeyValuePair<string, IReadOnlyList<IToolPlugInRibbonButton>> buttonItem in dataContext.ToolButtons)
             {
                 if ((buttonItem.Value == null) || (buttonItem.Value.Count == 0))
                 {
@@ -199,7 +199,7 @@ namespace Gorgon.Editor
                 KryptonRibbonGroupTriple triple = null;
                 KryptonRibbonGroupLines lines = null;
 
-                foreach (IToolPluginRibbonButton button in buttonItem.Value)
+                foreach (IToolPlugInRibbonButton button in buttonItem.Value)
                 {
                     if (_toolButtons.ContainsKey(button.Name))
                     {
@@ -315,12 +315,12 @@ namespace Gorgon.Editor
                 return;
             }
 
-            if (!DataContext.ToolButtons.TryGetValue(ribbonGroup.TextLine1, out IReadOnlyList<IToolPluginRibbonButton> buttons))
+            if (!DataContext.ToolButtons.TryGetValue(ribbonGroup.TextLine1, out IReadOnlyList<IToolPlugInRibbonButton> buttons))
             {
                 return;
             }
 
-            IToolPluginRibbonButton toolButton = buttons.FirstOrDefault(item => string.Equals(item.Name, name, StringComparison.Ordinal));
+            IToolPlugInRibbonButton toolButton = buttons.FirstOrDefault(item => string.Equals(item.Name, name, StringComparison.Ordinal));
 
             toolButton?.ClickCallback();
         }
@@ -594,7 +594,7 @@ namespace Gorgon.Editor
             GroupCreate.Visible = SepCreate.Visible = (DataContext.CreateContentCommand != null) 
                                                         && (DataContext.CreateContentCommand.CanExecute(null));
 
-            foreach (IToolPluginRibbonButton button in DataContext.ToolButtons.SelectMany(item => item.Value))
+            foreach (IToolPlugInRibbonButton button in DataContext.ToolButtons.SelectMany(item => item.Value))
             {
                 if (!_toolButtons.TryGetValue(button.Name, out KryptonRibbonGroupButton ribButton))
                 {
@@ -939,14 +939,14 @@ namespace Gorgon.Editor
         /// Function to update the icons used for the "new" buttons.
         /// </summary>
         /// <param name="metadata">The metadata for plug ins that can create content.</param>
-        private void AddNewIcons(IEnumerable<IContentPluginMetadata> metadata)
+        private void AddNewIcons(IEnumerable<IContentPlugInMetadata> metadata)
         {
             if (metadata == null)
             {                
                 return;
             }
 
-            foreach (IContentPluginMetadata item in metadata)
+            foreach (IContentPlugInMetadata item in metadata)
             {
                 string id = item.NewIconID.ToString("N");
                 Image icon = item.GetNewIcon();
@@ -973,14 +973,14 @@ namespace Gorgon.Editor
         /// Function to update the icons used for the "new" buttons.
         /// </summary>
         /// <param name="metadata">The metadata for plug ins that can create content.</param>
-        private void RemoveNewIcons(IEnumerable<IContentPluginMetadata> metadata)
+        private void RemoveNewIcons(IEnumerable<IContentPlugInMetadata> metadata)
         {
             if (metadata == null)
             {
                 return;
             }
 
-            foreach (IContentPluginMetadata item in metadata)
+            foreach (IContentPlugInMetadata item in metadata)
             {
                 string id = item.NewIconID.ToString("N");
 
@@ -1067,10 +1067,10 @@ namespace Gorgon.Editor
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    AddNewIcons(e.NewItems.OfType<IContentPluginMetadata>());
+                    AddNewIcons(e.NewItems.OfType<IContentPlugInMetadata>());
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    RemoveNewIcons(e.OldItems.OfType<IContentPluginMetadata>());
+                    RemoveNewIcons(e.OldItems.OfType<IContentPlugInMetadata>());
                     break;
                 case NotifyCollectionChangedAction.Reset:
                     ClearNewIcons();

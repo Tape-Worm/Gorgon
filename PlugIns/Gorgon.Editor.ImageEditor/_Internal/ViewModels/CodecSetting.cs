@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,37 +20,54 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: October 29, 2018 1:04:03 PM
+// Created: April 21, 2019 1:39:30 AM
 // 
 #endregion
 
-using System.Collections.Generic;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Core;
+using Gorgon.Graphics.Imaging.Codecs;
 
-namespace Gorgon.Editor.Services
+namespace Gorgon.Editor.ImageEditor
 {
-    /// <summary>
-    /// Provides access to the various tool plugins in the application.
+	/// <summary>
+    /// A setting used to display a loaded codec.
     /// </summary>
-    public interface IToolPlugInService        
-        : IDisabledPlugInService
+    internal class CodecSetting
+		: IGorgonNamedObject
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the list of tool plugins loaded in to the application.
+		/// <summary>
+        /// Property to return the description for the codec.
         /// </summary>
-        IReadOnlyDictionary<string, ToolPlugIn> PlugIns
+        public string Description
         {
             get;
         }
 
 		/// <summary>
-        /// Property to return the list of ribbon buttons available
+        /// Property to return the plug in that contains the codec.
         /// </summary>
-		IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> RibbonButtons
+		public GorgonImageCodecPlugIn PlugIn
         {
             get;
         }
-        #endregion
+
+		/// <summary>
+        /// Property to return the formal name of the codec.
+        /// </summary>
+        public string Name
+        {
+            get;
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="CodecSetting"/> class.</summary>
+        /// <param name="description">The friendly description of the codec.</param>
+        /// <param name="plugin">The plugin for the codec.</param>
+        /// <param name="desc">The description of the codec.</param>
+        public CodecSetting(string description, GorgonImageCodecPlugIn plugin, GorgonImageCodecDescription desc)
+        {
+            Description = description;
+            PlugIn = plugin;
+            Name = desc.Name;
+        }
     }
 }

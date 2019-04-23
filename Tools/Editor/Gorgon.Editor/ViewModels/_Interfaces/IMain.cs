@@ -26,7 +26,7 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ViewModels
@@ -41,7 +41,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the list of tool plug in ribbon buttons.
         /// </summary>
-        IReadOnlyDictionary<string, IReadOnlyList<IToolPluginRibbonButton>> ToolButtons
+        IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> ToolButtons
         {
             get;
         }
@@ -57,7 +57,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return a list of content plugins that can create their own content.
         /// </summary>
-        ObservableCollection<IContentPluginMetadata> ContentCreators
+        ObservableCollection<IContentPlugInMetadata> ContentCreators
         {
             get;
         }

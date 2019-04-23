@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Gorgon.Core;
 
-namespace Gorgon.Plugins
+namespace Gorgon.PlugIns
 {
     /// <summary>
     /// The return values for the an assembly signing test.
@@ -26,17 +26,17 @@ namespace Gorgon.Plugins
     }
 
 	/// <summary>
-	/// A service to create, cache and return <see cref="GorgonPlugin"/> instances.
+	/// A service to create, cache and return <see cref="GorgonPlugIn"/> instances.
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// This service object is meant to instantiate, and cache instances of <see cref="GorgonPlugin"/> objects contained within external assemblies loaded by an assembly cache of some kind. 
+	/// This service object is meant to instantiate, and cache instances of <see cref="GorgonPlugIn"/> objects contained within external assemblies loaded by an assembly cache of some kind. 
 	/// It also allows the user to unload plugin instances when necessary.
 	/// </para>
 	/// <para>
-	/// A plugin can be any class within an assembly that inherits from the <see cref="GorgonPlugin"/> base object. When the service is created, it will retrieve a list of all known plugins types that exist 
-	/// in previously loaded plugin assemblies (this list can also be updated with the <see cref="ScanPlugins"/> method). Plugins are not created until they are requested from the service via the 
-	/// <see cref="GetPlugin{T}"/> or <see cref="GetPlugins{T}"/> methods. When these methods are called, they will instantiate the plugin type, and cache it for quick retrieval on subsequent calls to the 
+	/// A plugin can be any class within an assembly that inherits from the <see cref="GorgonPlugIn"/> base object. When the service is created, it will retrieve a list of all known plugins types that exist 
+	/// in previously loaded plugin assemblies (this list can also be updated with the <see cref="ScanPlugIns"/> method). PlugIns are not created until they are requested from the service via the 
+	/// <see cref="GetPlugIn{T}"/> or <see cref="GetPlugIns{T}"/> methods. When these methods are called, they will instantiate the plugin type, and cache it for quick retrieval on subsequent calls to the 
 	/// methods.
 	/// </para>
     /// <note type="tip">
@@ -58,12 +58,12 @@ namespace Gorgon.Plugins
     /// }
     /// 
     /// // This too will go into the host assembly and be overridden in your plugin assembly.
-    /// public abstract class FunctionalityPlugin
-    ///		: GorgonPlugin
+    /// public abstract class FunctionalityPlugIn
+    ///		: GorgonPlugIn
     /// {
     ///		public abstract FunctionalityBase GetNewFunctionality();
     /// 
-    ///		protected FunctionalityPlugin(string description)
+    ///		protected FunctionalityPlugIn(string description)
     ///		{
     ///		}
     /// }
@@ -88,15 +88,15 @@ namespace Gorgon.Plugins
     ///			}
     ///		}
     /// 
-    ///		public class ConcreteFunctionalityPlugin
-    ///			: FunctionalityPlugin
+    ///		public class ConcreteFunctionalityPlugIn
+    ///			: FunctionalityPlugIn
     ///		{
     ///			public override FunctionalityBase GetNewFunctionality()
     ///			{
     ///				return new ConcreteFunctionality();
     ///			}
     /// 
-    ///			public ConcreteFunctionalityPlugin()
+    ///			public ConcreteFunctionalityPlugIn()
     ///				: base("What is the answer to life, the universe, and blah blah blah?")
     ///			{
     ///			}
@@ -107,7 +107,7 @@ namespace Gorgon.Plugins
     /// </para>
     /// </remarks>
 	/// <example>
-	/// This example shows how to load a plugin and get its plugin instance. It will use the <c>ConcreteFunctionalityPlugin</c> above:
+	/// This example shows how to load a plugin and get its plugin instance. It will use the <c>ConcreteFunctionalityPlugIn</c> above:
 	/// <code language="csharp"> 
 	/// <![CDATA[
 	/// // Our base functionality.
@@ -115,16 +115,16 @@ namespace Gorgon.Plugins
 	/// 
 	/// void LoadFunctionality()
 	/// {
-	///		using (GorgonMefPluginCache assemblies = new GorgonMefPluginCache())
+	///		using (GorgonMefPlugInCache assemblies = new GorgonMefPlugInCache())
 	///		{	
 	///			// For brevity, we've omitted checking to see if the assembly is valid and such.
 	///			// In the real world, you should always determine whether the assembly can be loaded 
 	///			// before calling the Load method.
-	///			assemblies.LoadPluginAssemblies("Your\Directory\Here");  // You can also pass a wild card like (e.g. *.dll, *.exe, etc...)
+	///			assemblies.LoadPlugInAssemblies("Your\Directory\Here");  // You can also pass a wild card like (e.g. *.dll, *.exe, etc...)
 	/// 			
-	///			IGorgonPluginService pluginService = new GorgonMefPluginService(assemblies);
+	///			IGorgonPlugInService pluginService = new GorgonMefPlugInService(assemblies);
 	/// 
-	///			_functionality = pluginService.GetPlugin<FunctionalityBase>("Fully.Qualified.Name.ConcreteFunctionalityPlugin"); 
+	///			_functionality = pluginService.GetPlugIn<FunctionalityBase>("Fully.Qualified.Name.ConcreteFunctionalityPlugIn"); 
 	///		}
 	/// }
 	/// 
@@ -137,13 +137,13 @@ namespace Gorgon.Plugins
 	/// ]]>
 	/// </code>
 	/// </example>
-	public interface IGorgonPluginService
+	public interface IGorgonPlugInService
 	{
         #region Properties.
 		/// <summary>
 		/// Property to return the number of plugins that are currently loaded in this service.
 		/// </summary>
-		int LoadedPluginCount
+		int LoadedPlugInCount
 		{
 			get;
 		}
@@ -153,26 +153,26 @@ namespace Gorgon.Plugins
 		/// <summary>
 		/// Function to retrieve the list of plugins from a given assembly.
 		/// </summary>
-		/// <typeparam name="T">Type of plugin to retrieve. Must implement <see cref="GorgonPlugin"/>.</typeparam>
+		/// <typeparam name="T">Type of plugin to retrieve. Must implement <see cref="GorgonPlugIn"/>.</typeparam>
 		/// <param name="assemblyName">[Optional] The name of the assembly associated with the plugins.</param>
 		/// <returns>A list of plugins from the assembly.</returns>
 		/// <remarks>
 		/// This will retrieve all the plugins from the plugin service of the type <typeparamref name="T"/>. If the <paramref name="assemblyName"/> parameter is not <b>null</b>, then, 
 		/// the only the assembly with that name will be scanned for the plugin type.
 		/// </remarks>
-		IReadOnlyList<T> GetPlugins<T>(AssemblyName assemblyName = null)
-			where T : GorgonPlugin;
+		IReadOnlyList<T> GetPlugIns<T>(AssemblyName assemblyName = null)
+			where T : GorgonPlugIn;
 
 		/// <summary>
 		/// Function to retrieve a plugin by its fully qualified type name.
 		/// </summary>
-		/// <typeparam name="T">The base type of the plugin. Must implement <see cref="GorgonPlugin"/>.</typeparam>
+		/// <typeparam name="T">The base type of the plugin. Must implement <see cref="GorgonPlugIn"/>.</typeparam>
 		/// <param name="pluginName">Fully qualified type name of the plugin to find.</param>
 		/// <returns>The plugin, if found, or <b>null</b> if not.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginName"/> is <b>null</b>.</exception>
 		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="pluginName"/> is empty.</exception>
-		T GetPlugin<T>(string pluginName)
-			where T : GorgonPlugin;
+		T GetPlugIn<T>(string pluginName)
+			where T : GorgonPlugIn;
 
 		/// <summary>
 		/// Function to retrieve a list of names for available plugins.
@@ -185,7 +185,7 @@ namespace Gorgon.Plugins
 		/// If the assembly is not loaded, then an exception is thrown.
 		/// </para>
 		/// </remarks>
-		IReadOnlyList<string> GetPluginNames(AssemblyName assemblyName = null);
+		IReadOnlyList<string> GetPlugInNames(AssemblyName assemblyName = null);
 
 		/// <summary>
 		/// Function to scan for plugins in the loaded plugin assemblies.
@@ -193,7 +193,7 @@ namespace Gorgon.Plugins
 		/// <remarks>
 		/// This method will unload any active plugins, and, if implemented, call the dispose method for any plugin.
 		/// </remarks>
-		void ScanPlugins();
+		void ScanPlugIns();
 
 		/// <summary>
 		/// Function to unload all the plugins.

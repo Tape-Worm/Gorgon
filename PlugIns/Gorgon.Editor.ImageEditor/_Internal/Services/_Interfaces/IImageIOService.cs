@@ -50,7 +50,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>
         /// Property to return the list of installed image codecs.
         /// </summary>
-        CodecRegistry InstalledCodecs
+        ICodecRegistry InstalledCodecs
         {
             get;
         }

@@ -41,7 +41,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// Property to return the list of additional sprite codec plug ins to load.
         /// </summary>
         [JsonProperty]
-        public Dictionary<string, string> CodecPluginPaths
+        public Dictionary<string, string> CodecPlugInPaths
         {
             get;
             private set;

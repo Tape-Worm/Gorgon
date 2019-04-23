@@ -40,7 +40,7 @@ namespace Gorgon.Editor.Services
     {
         #region Variables.
         // The content plugins to scan through.
-        private readonly IContentPluginManagerService _contentPlugins;
+        private readonly IContentPlugInManagerService _contentPlugIns;
         #endregion
 
         #region Methods.
@@ -117,7 +117,7 @@ namespace Gorgon.Editor.Services
 
             foreach(IContentFile contentFile in contentFiles.OfType<IContentFile>())
             {                
-                string pluginName = contentFile.Metadata.PluginName;
+                string pluginName = contentFile.Metadata.PlugInName;
 
                 if (forceScan)
                 {
@@ -131,9 +131,9 @@ namespace Gorgon.Editor.Services
                     prevDeps[dep.Key] = dep.Value;
                 }                
 
-                if (_contentPlugins.AssignContentPlugin(contentFile, contentFileManager, !deepScan))
+                if (_contentPlugIns.AssignContentPlugIn(contentFile, contentFileManager, !deepScan))
                 {                    
-                    if ((!string.Equals(pluginName, contentFile.Metadata.PluginName, StringComparison.OrdinalIgnoreCase))
+                    if ((!string.Equals(pluginName, contentFile.Metadata.PlugInName, StringComparison.OrdinalIgnoreCase))
                         || (!CompareDependencyLists(contentFile.Metadata.Dependencies, prevDeps)))
                     {
                         result = true;
@@ -149,9 +149,9 @@ namespace Gorgon.Editor.Services
 
         #region Constructor.
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.Services.FileScanService"/> class.</summary>
-        /// <param name="contentPlugins">The application content plugin manager service.</param>
-        /// <exception cref="ArgumentNullException"> Thrown when the <paramref name="contentPlugins"/> parameter is <strong>null</strong>.</exception>
-        public FileScanService(IContentPluginManagerService contentPlugins) => _contentPlugins = contentPlugins ?? throw new ArgumentNullException(nameof(contentPlugins));
+        /// <param name="contentPlugIns">The application content plugin manager service.</param>
+        /// <exception cref="ArgumentNullException"> Thrown when the <paramref name="contentPlugIns"/> parameter is <strong>null</strong>.</exception>
+        public FileScanService(IContentPlugInManagerService contentPlugIns) => _contentPlugIns = contentPlugIns ?? throw new ArgumentNullException(nameof(contentPlugIns));
         #endregion
     }
 }

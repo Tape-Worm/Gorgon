@@ -27,7 +27,7 @@
 
 using System;
 using System.Collections.Generic;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Newtonsoft.Json;
 
 namespace Gorgon.Editor.Metadata
@@ -39,7 +39,7 @@ namespace Gorgon.Editor.Metadata
     {
         #region Variables.
         // The metadata for a content plugin.
-        private IContentPluginMetadata _contentMetadata;
+        private IContentPlugInMetadata _contentMetadata;
         #endregion
 
         #region Properties.        
@@ -49,7 +49,7 @@ namespace Gorgon.Editor.Metadata
         /// <remarks>
         /// If this value is <b>null</b>, then the plugin hasn't been set.  If it's an empty string, then no plugin is associated with this metadata.
         /// </remarks>
-        public string PluginName
+        public string PlugInName
         {
             get;
             set;
@@ -80,22 +80,22 @@ namespace Gorgon.Editor.Metadata
         /// </summary>
         /// <remarks>
         /// <para>
-        /// Setting this value will set the value for <see cref="PluginName"/>.
+        /// Setting this value will set the value for <see cref="PlugInName"/>.
         /// </para>
         /// </remarks>
         [JsonIgnore]
-        public IContentPluginMetadata ContentMetadata
+        public IContentPlugInMetadata ContentMetadata
         {
             get => _contentMetadata;
             set
             {
                 if (value == null)
                 {
-                    PluginName = null;
+                    PlugInName = null;
                 }
                 else
                 {
-                    PluginName = value.PluginName;
+                    PlugInName = value.PlugInName;
                 }
 
                 _contentMetadata = value;
@@ -115,7 +115,7 @@ namespace Gorgon.Editor.Metadata
             }
                         
             _contentMetadata = metadata.ContentMetadata;
-            PluginName = metadata.PluginName;
+            PlugInName = metadata.PlugInName;
 
             foreach (KeyValuePair<string, string> attribute in metadata.Attributes)
             {
