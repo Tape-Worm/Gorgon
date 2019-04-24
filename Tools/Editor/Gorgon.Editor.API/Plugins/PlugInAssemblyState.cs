@@ -32,7 +32,7 @@ namespace Gorgon.Editor.PlugIns
     /// <summary>
     /// A record providing plug in state information.
     /// </summary>
-    public class PlugInRecord
+    public class PlugInAssemblyState
     {
 		/// <summary>
         /// Property to returnt he path to the plug in.
@@ -72,7 +72,7 @@ namespace Gorgon.Editor.PlugIns
         /// <param name="isManaged"><b>true</b> if the assembly DLL is managed, <b>false</b> if not.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginAssemblyPath"/> is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrownw hen the <paramref name="pluginAssemblyPath"/> is empty.</exception>
-        public PlugInRecord(string pluginAssemblyPath, string loadFailure, bool isManaged)
+        public PlugInAssemblyState(string pluginAssemblyPath, string loadFailure, bool isManaged)
         {
             if (pluginAssemblyPath == null)
             {

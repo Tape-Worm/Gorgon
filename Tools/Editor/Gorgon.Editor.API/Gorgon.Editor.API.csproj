@@ -61,7 +61,7 @@
     <Compile Include="Content\_Interfaces\IContentFileManager.cs" />
     <Compile Include="Converters\JsonSharpDxRectConverter.cs" />
     <Compile Include="Plugins\ContentImportPlugin.cs" />
-    <Compile Include="Plugins\PluginRecord.cs" />
+    <Compile Include="Plugins\PlugInAssemblyState.cs" />
     <Compile Include="Plugins\_Interfaces\IToolPluginRibbonButton.cs" />
     <Compile Include="Plugins\ToolPlugin.cs" />
     <Compile Include="Plugins\ToolPluginRibbonButton.cs" />

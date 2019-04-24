@@ -67,7 +67,7 @@ namespace Gorgon.Editor.ImageEditor
 
             _log.Print("Loading image codecs...", LoggingLevel.Intermediate);
 
-            IReadOnlyList<PlugInRecord> assemblies = _pluginCache.ValidateAndLoadAssemblies(settings.CodecPlugInPaths.Select(item => new FileInfo(item.Value)), _log);
+            IReadOnlyList<PlugInAssemblyState> assemblies = _pluginCache.ValidateAndLoadAssemblies(settings.CodecPlugInPaths.Select(item => new FileInfo(item.Value)), _log);
 
             if (assemblies.Count == 0)
             {
@@ -154,16 +154,16 @@ namespace Gorgon.Editor.ImageEditor
             var result = new List<GorgonImageCodecPlugIn>();
             _log.Print("Loading image codecs...", LoggingLevel.Intermediate);
 
-            IReadOnlyList<PlugInRecord> assemblies = _pluginCache.ValidateAndLoadAssemblies(new[] { new FileInfo(path) }, _log);
+            IReadOnlyList<PlugInAssemblyState> assemblies = _pluginCache.ValidateAndLoadAssemblies(new[] { new FileInfo(path) }, _log);
 
             if (assemblies.Count == 0)
             {
                 _log.Print("Assembly was not loaded. This means that most likely it's already referenced.", LoggingLevel.Verbose);                
             }
 
-            IEnumerable<PlugInRecord> failedAssemblies = assemblies.Where(item => !item.IsAssemblyLoaded);
+            IEnumerable<PlugInAssemblyState> failedAssemblies = assemblies.Where(item => !item.IsAssemblyLoaded);
 
-            foreach (PlugInRecord failure in failedAssemblies)
+            foreach (PlugInAssemblyState failure in failedAssemblies)
             {
                 localErrors.Add(failure.LoadFailureReason);
             }

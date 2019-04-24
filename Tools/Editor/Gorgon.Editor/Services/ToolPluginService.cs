@@ -161,11 +161,11 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentNullException(nameof(pluginDir));
             }
 
-            IReadOnlyList<PlugInRecord> assemblies = pluginCache.ValidateAndLoadAssemblies(pluginDir.GetFiles("*.dll"), Program.Log);
+            IReadOnlyList<PlugInAssemblyState> assemblies = pluginCache.ValidateAndLoadAssemblies(pluginDir.GetFiles("*.dll"), Program.Log);
 
             if (assemblies.Count > 0)
             {
-                foreach (PlugInRecord record in assemblies.Where(item => !item.IsAssemblyLoaded && item.IsManaged))
+                foreach (PlugInAssemblyState record in assemblies.Where(item => !item.IsAssemblyLoaded && item.IsManaged))
                 {
                     _disabled[Path.GetFileName(record.Path)] = new DisabledPlugIn(DisabledReasonCode.Error, Path.GetFileName(record.Path), record.LoadFailureReason, record.Path);
                 }
