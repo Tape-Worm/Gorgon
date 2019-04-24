@@ -98,13 +98,32 @@ While the prerequisites above must be satisfied prior to having your pull reques
 
 ### C#
 
-All C# code must adhere to the [best practices](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/inside-a-program/coding-conventions) as outlined by Microsoft. Deviations may be acceptable upon review by a maintainer. 
+Code will be subject to code review before pushing into the root branch(es). 
+
+All C# code must adhere to the [best practices](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/inside-a-program/coding-conventions) as outlined by Microsoft. Deviations may be acceptable upon review by a maintainer on a case by case basis. 
+
+Additionally, code must be formatted, as closely as possible, in the style present throughout the library code base.  This means:
+
+* Use Tabs - not spaces. 
+* Only use #region blocks to organize your code. Do _NOT_ use them to hide code.  Types of acceptable region blocks are littered throughout the code.
+* Try to adhere as closely to [SOLID](https://en.wikipedia.org/wiki/SOLID) principles as possible. 
+* When building user interfaces, try to use [MVVM](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel) (or something approaching my bastardization of it - see the Editor code).
+* Try to use small, concise methods. Do not write massive methods that take more than 1.5 pages to get through.
+* Try to keep method/constructor parameters down to 4-6 parameters. Sometimes this is not possible, so this will depend on context.
 
 ### Documentation Styleguide
 
-Documentation must be provided for all classes, methods, and properties and must be in the standard XML format.  
+When writing the documentation for your code, please try to be concise and try to convey your intent clearly. 
+
+* Always comment your code. You don't need to write War & Peace, but something to describe your thinking is required.
+* Comments for events, methods, properties, classes, structs, and non-private variables must use XML commenting. Private variables can use standard commenting.
+* Ensure comments are up to date. Don't make a function that returns the sum of two numbers and have a comment that describes drawing a pixel on the screen.
 
 ## Additional Notes
+
+If your code does something strange to get around a problem, please write comments either in the body, or <remarks> section explaining why the code is written the way it is. Many of the libraries (including .NET itself) in use in Gorgon have quirks, it's good to know where there are.
+
+Gorgon has been in evolving and developed over years, and as such, styles and methodologies have changed over time. This means that the code isn't always compliant with the guidelines in this document. Do not take that to mean that these guidelines are optional, they are not. This is very much a case of do as I say, not as I once did when I was young and dumb.
 
 ### Issue and Pull Request Labels
 
