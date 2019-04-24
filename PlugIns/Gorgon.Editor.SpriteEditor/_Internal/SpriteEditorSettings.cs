@@ -32,10 +32,10 @@ using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
-    /// <summary>
-    /// The settings for the sprite editor plug in.
+	/// <summary>
+    /// The settings for the sprite importer plug in.
     /// </summary>
-    internal class SpriteEditorSettings
+    internal class SpriteImportSettings
     {
         /// <summary>
         /// Property to return the list of additional sprite codec plug ins to load.
@@ -47,6 +47,22 @@ namespace Gorgon.Editor.SpriteEditor
             private set;
         } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
+        /// <summary>
+        /// Property to set or return the last codec plug in path.
+        /// </summary>
+        [JsonProperty]
+        public string LastCodecPlugInPath
+        {
+            get;
+            set;
+        }
+    }
+
+    /// <summary>
+    /// The settings for the sprite editor plug in.
+    /// </summary>
+    internal class SpriteEditorSettings
+    {
         /// <summary>
         /// Property to set or return the position of the manual rectangle editor window.
         /// </summary>

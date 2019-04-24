@@ -20,38 +20,59 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: March 25, 2019 9:47:13 AM
+// Created: April 24, 2019 11:12:27 AM
 // 
 #endregion
 
-using System;
-using Gorgon.Editor.UI.ViewModels;
+using System.Collections.ObjectModel;
+using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.SpriteEditor
 {
-    /// <summary>
-    /// The parameters to pass to the <see cref="IEditorPlugInSettings"/> view model.
+	/// <summary>
+    /// The view model for the importer plug in settings.
     /// </summary>
-    internal class SettingsParameters
-        : ViewModelInjection
+    internal interface IImporterPlugInSettings
+		: ISettingsCategoryViewModel
     {
-        #region Properties.
         /// <summary>
-        /// Property to return the settings for the plug in.
+        /// Property to return the list of selected codecs.
         /// </summary>
-        public SpriteEditorSettings Settings
+        ObservableCollection<CodecSetting> SelectedCodecs
         {
             get;
         }
-        #endregion
 
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.SpriteEditor.SettingsParameters"/> class.</summary>
-        /// <param name="settings">The plug in settings.</param>
-        /// <param name="commonServices">Common application services.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settings" /> parameter is <strong>null</strong>.</exception>
-        public SettingsParameters(SpriteEditorSettings settings, IViewModelInjection commonServices) 
-			: base(commonServices) =>  Settings = settings ?? throw new ArgumentNullException(nameof(settings));
-        #endregion
+        /// <summary>
+        /// Propery to return the paths to the codec plug ins.
+        /// </summary>
+        ObservableCollection<CodecSetting> CodecPlugInPaths
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command for writing setting data.
+        /// </summary>
+        IEditorCommand<object> WriteSettingsCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command for loading a plug in assembly.
+        /// </summary>
+        IEditorCommand<object> LoadPlugInAssemblyCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command to unloading a plug in assembly.
+        /// </summary>
+        IEditorCommand<object> UnloadPlugInAssembliesCommand
+        {
+            get;
+        }
     }
 }

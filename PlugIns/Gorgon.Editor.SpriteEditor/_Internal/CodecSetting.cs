@@ -20,38 +20,54 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: March 25, 2019 9:47:13 AM
+// Created: April 21, 2019 1:39:30 AM
 // 
 #endregion
 
-using System;
-using Gorgon.Editor.UI.ViewModels;
+using Gorgon.Core;
+using Gorgon.IO;
 
 namespace Gorgon.Editor.SpriteEditor
 {
-    /// <summary>
-    /// The parameters to pass to the <see cref="IEditorPlugInSettings"/> view model.
+	/// <summary>
+    /// A setting used to display a loaded codec.
     /// </summary>
-    internal class SettingsParameters
-        : ViewModelInjection
+    internal class CodecSetting
+		: IGorgonNamedObject
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the settings for the plug in.
+		/// <summary>
+        /// Property to return the description for the codec.
         /// </summary>
-        public SpriteEditorSettings Settings
+        public string Description
         {
             get;
         }
-        #endregion
 
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.SpriteEditor.SettingsParameters"/> class.</summary>
-        /// <param name="settings">The plug in settings.</param>
-        /// <param name="commonServices">Common application services.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settings" /> parameter is <strong>null</strong>.</exception>
-        public SettingsParameters(SpriteEditorSettings settings, IViewModelInjection commonServices) 
-			: base(commonServices) =>  Settings = settings ?? throw new ArgumentNullException(nameof(settings));
-        #endregion
+		/// <summary>
+        /// Property to return the plug in that contains the codec.
+        /// </summary>
+		public GorgonSpriteCodecPlugIn PlugIn
+        {
+            get;
+        }
+
+		/// <summary>
+        /// Property to return the formal name of the codec.
+        /// </summary>
+        public string Name
+        {
+            get;
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="CodecSetting"/> class.</summary>
+        /// <param name="description">The friendly description of the codec.</param>
+        /// <param name="plugin">The plugin for the codec.</param>
+        /// <param name="desc">The description of the codec.</param>
+        public CodecSetting(string description, GorgonSpriteCodecPlugIn plugin, GorgonSpriteCodecDescription desc)
+        {
+            Description = description;
+            PlugIn = plugin;
+            Name = desc.Name;
+        }
     }
 }

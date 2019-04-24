@@ -33,8 +33,8 @@ namespace Gorgon.Editor.SpriteEditor
     /// <summary>
     /// The view model used to manipulate the settings for the plug in.
     /// </summary>
-    internal class Settings
-        : ViewModelBase<SettingsParameters>, ISettings, ISpritePickMaskEditor
+    internal class EditorPlugInSettings
+        : ViewModelBase<SettingsParameters>, IEditorPlugInSettings, ISpritePickMaskEditor
     {
         #region Variables.
         // The plug in settings.

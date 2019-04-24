@@ -63,6 +63,16 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap add_plugin_22x22 {
+            get {
+                object obj = ResourceManager.GetObject("add_plugin_22x22", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap anchor_16x16 {
             get {
                 object obj = ResourceManager.GetObject("anchor_16x16", resourceCulture);
@@ -281,6 +291,15 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Select a codec plug in DLL.
+        /// </summary>
+        internal static string GORSPR_CAPTION_SELECT_CODEC_DLL {
+            get {
+                return ResourceManager.GetString("GORSPR_CAPTION_SELECT_CODEC_DLL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enter Sprite Name.
         /// </summary>
         internal static string GORSPR_CAPTION_SPRITE_NAME {
@@ -297,6 +316,17 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         internal static string GORSPR_CONFIRM_CLOSE {
             get {
                 return ResourceManager.GetString("GORSPR_CONFIRM_CLOSE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This will remove all codecs associated with the &apos;{0}&apos; plug in.
+        ///
+        ///Are you sure you want to do this?.
+        /// </summary>
+        internal static string GORSPR_CONFIRM_REMOVE_CODECS {
+            get {
+                return ResourceManager.GetString("GORSPR_CONFIRM_REMOVE_CODECS", resourceCulture);
             }
         }
         
@@ -324,6 +354,66 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         internal static string GORSPR_ERR_CANNOT_ACTIVATE_PANEL {
             get {
                 return ResourceManager.GetString("GORSPR_ERR_CANNOT_ACTIVATE_PANEL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error loading the codec plug in.
+        ///
+        ///Please try again..
+        /// </summary>
+        internal static string GORSPR_ERR_CANNOT_LOAD_CODEC {
+            get {
+                return ResourceManager.GetString("GORSPR_ERR_CANNOT_LOAD_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error while trying to remove the selected codec(s).
+        ///
+        ///Please try again..
+        /// </summary>
+        internal static string GORSPR_ERR_CANNOT_UNLOAD_CODECS {
+            get {
+                return ResourceManager.GetString("GORSPR_ERR_CANNOT_UNLOAD_CODECS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The codec &apos;{0}&apos; was already loaded..
+        /// </summary>
+        internal static string GORSPR_ERR_CODEC_ALREADY_LOADED {
+            get {
+                return ResourceManager.GetString("GORSPR_ERR_CODEC_ALREADY_LOADED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There were errors while trying to load the codec plug in.
+        ///
+        ///Please check the Details pane for more information..
+        /// </summary>
+        internal static string GORSPR_ERR_CODEC_LOAD_ERRORS_PRESENT {
+            get {
+                return ResourceManager.GetString("GORSPR_ERR_CODEC_LOAD_ERRORS_PRESENT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error loading the &apos;{0}&apos; codec..
+        /// </summary>
+        internal static string GORSPR_ERR_CODEC_LOAD_FAIL {
+            get {
+                return ResourceManager.GetString("GORSPR_ERR_CODEC_LOAD_FAIL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The codec plug in &apos;{0}&apos; was already loaded..
+        /// </summary>
+        internal static string GORSPR_ERR_CODEC_PLUGIN_ALREADY_LOADED {
+            get {
+                return ResourceManager.GetString("GORSPR_ERR_CODEC_PLUGIN_ALREADY_LOADED", resourceCulture);
             }
         }
         
@@ -357,6 +447,35 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         internal static string GORSPR_ERR_FIXED_SIZE {
             get {
                 return ResourceManager.GetString("GORSPR_ERR_FIXED_SIZE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error managing the custom image codec plug ins..
+        /// </summary>
+        internal static string GORSPR_ERR_MANAGE_CODECS {
+            get {
+                return ResourceManager.GetString("GORSPR_ERR_MANAGE_CODECS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is no codec loaded that can read the file &apos;{0}&apos;..
+        /// </summary>
+        internal static string GORSPR_ERR_NO_CODEC {
+            get {
+                return ResourceManager.GetString("GORSPR_ERR_NO_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The DLL &apos;{0}&apos; does not contain any image codecs.
+        ///
+        ///Choose another DLL and try again..
+        /// </summary>
+        internal static string GORSPR_ERR_NO_CODECS {
+            get {
+                return ResourceManager.GetString("GORSPR_ERR_NO_CODECS", resourceCulture);
             }
         }
         
@@ -470,6 +589,15 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         internal static string GORSPR_ERR_UPDATING {
             get {
                 return ResourceManager.GetString("GORSPR_ERR_UPDATING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Codec plug in file (*.dll)|*.dll.
+        /// </summary>
+        internal static string GORSPR_FILTER_SELECT_CODEC {
+            get {
+                return ResourceManager.GetString("GORSPR_FILTER_SELECT_CODEC", resourceCulture);
             }
         }
         
@@ -719,6 +847,16 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         internal static System.Drawing.Bitmap redo_48x48 {
             get {
                 object obj = ResourceManager.GetObject("redo_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap remove_plugins_22x22 {
+            get {
+                object obj = ResourceManager.GetObject("remove_plugins_22x22", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

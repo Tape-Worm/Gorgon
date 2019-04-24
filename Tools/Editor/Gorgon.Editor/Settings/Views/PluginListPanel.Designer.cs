@@ -88,7 +88,6 @@
 			this.ListPlugIns.MultiSelect = false;
 			this.ListPlugIns.Name = "ListPlugIns";
 			this.ListPlugIns.Size = new System.Drawing.Size(594, 216);
-			this.ListPlugIns.Sorting = System.Windows.Forms.SortOrder.Ascending;
 			this.ListPlugIns.TabIndex = 1;
 			this.ListPlugIns.UseCompatibleStateImageBehavior = false;
 			this.ListPlugIns.View = System.Windows.Forms.View.Details;

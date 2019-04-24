@@ -44,7 +44,7 @@ namespace Gorgon.Editor.SpriteEditor
         // Flag to indicate whether the interface is active or not.
         private bool _isActive;
         // The sprite editor settings.
-        private ISettings _settings;
+        private IEditorPlugInSettings _settings;
         // Flag to indicate that the interface is moving.
         private bool _isMoving;
 		// The current texture array index.

@@ -1,19 +1,45 @@
-﻿using System;
+﻿#region MIT
+// 
+// Gorgon.
+// Copyright (C) 2019 Michael Winsor
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+// 
+// Created: April 24, 2019 1:54:37 PM
+// 
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using Gorgon.Diagnostics;
-using Gorgon.Editor.ImageEditor.Properties;
+using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Editor.PlugIns;
-using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.PlugIns;
+using Gorgon.Renderers;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.SpriteEditor
 {
     /// <summary>
-    /// A registry for the image codecs used by the plug ins in this assembly.
+    /// A registry for the sprite codecs used by the plug ins in this assembly.
     /// </summary>
     internal class CodecRegistry
 		: ICodecRegistry
@@ -25,47 +51,49 @@ namespace Gorgon.Editor.ImageEditor
         private readonly IGorgonPlugInService _pluginService;
         // The log.
         private readonly IGorgonLog _log;
+		// The 2D renderer for the application.
+        private readonly Gorgon2D _renderer;
         #endregion
 
         #region Properties.
         /// <summary>
         /// Property to return the list of codecs.
         /// </summary>
-        public IList<IGorgonImageCodec> Codecs
+        public IList<IGorgonSpriteCodec> Codecs
         {
             get;
-        } = new List<IGorgonImageCodec>();
+        } = new List<IGorgonSpriteCodec>();
 
         /// <summary>
         /// Property to return the codecs cross referenced with known file extension types.
         /// </summary>
-        public IList<(GorgonFileExtension extension, IGorgonImageCodec codec)> CodecFileTypes
+        public IList<(GorgonFileExtension extension, IGorgonSpriteCodec codec)> CodecFileTypes
         {
             get;
-        } = new List<(GorgonFileExtension extension, IGorgonImageCodec codec)>();
+        } = new List<(GorgonFileExtension extension, IGorgonSpriteCodec codec)>();
 
         /// <summary>
-        /// Property to return the list of image codec plug ins.
+        /// Property to return the list of sprite codec plug ins.
         /// </summary>
-        public IList<GorgonImageCodecPlugIn> CodecPlugIns
+        public IList<GorgonSpriteCodecPlugIn> CodecPlugIns
         {
             get;
-        } = new List<GorgonImageCodecPlugIn>();
+        } = new List<GorgonSpriteCodecPlugIn>();
         #endregion
 
         #region Methods.
         /// <summary>
-        /// Function to load external image codec plug ins.
+        /// Function to load external sprite codec plug ins.
         /// </summary>
         /// <param name="settings">The settings containing the plug in path.</param>
-        private void LoadCodecPlugIns(ImageEditorSettings settings)
+        private void LoadCodecPlugIns(SpriteImportSettings settings)
         {
             if (settings.CodecPlugInPaths.Count == 0)
             {
                 return;
             }
 
-            _log.Print("Loading image codecs...", LoggingLevel.Intermediate);
+            _log.Print("Loading sprite codecs...", LoggingLevel.Intermediate);
 
             IReadOnlyList<PlugInAssemblyState> assemblies = _pluginCache.ValidateAndLoadAssemblies(settings.CodecPlugInPaths.Select(item => new FileInfo(item.Value)), _log);
 
@@ -75,23 +103,23 @@ namespace Gorgon.Editor.ImageEditor
             }
 
             // Load all the codecs contained within the plug in (a plug in can have multiple codecs).
-            foreach (GorgonImageCodecPlugIn plugin in _pluginService.GetPlugIns<GorgonImageCodecPlugIn>())
+            foreach (GorgonSpriteCodecPlugIn plugin in _pluginService.GetPlugIns<GorgonSpriteCodecPlugIn>())
             {
-                foreach (GorgonImageCodecDescription desc in plugin.Codecs)
+                foreach (GorgonSpriteCodecDescription desc in plugin.Codecs)
                 {
                     CodecPlugIns.Add(plugin);
 
                     if (Codecs.Any(item => string.Equals(item.GetType().FullName, desc.Name, StringComparison.OrdinalIgnoreCase)))
                     {
-                        _log.Print($"[WARNING] The image codec '{desc.Name}' is already loaded, skipping this one...", LoggingLevel.Verbose);
+                        _log.Print($"[WARNING] The sprite codec '{desc.Name}' is already loaded, skipping this one...", LoggingLevel.Verbose);
                         continue;
                     }
 
-                    IGorgonImageCodec codec = plugin.CreateCodec(desc.Name);
+                    IGorgonSpriteCodec codec = plugin.CreateCodec(desc.Name, _renderer);
 
                     if (codec == null)
                     {
-                        _log.Print($"[ERROR] The image codec '{desc.Name}' was not created (returned NULL).", LoggingLevel.Simple);
+                        _log.Print($"[ERROR] The sprite codec '{desc.Name}' was not created (returned NULL).", LoggingLevel.Simple);
                         continue;
                     }
 
@@ -101,10 +129,10 @@ namespace Gorgon.Editor.ImageEditor
         }
 
         /// <summary>
-        /// Function to remove an image codec plug in from the registry.
+        /// Function to remove an sprite codec plug in from the registry.
         /// </summary>
         /// <param name="plugin">The plug in to remove.</param>
-        public void RemoveCodecPlugIn(GorgonImageCodecPlugIn plugin)
+        public void RemoveCodecPlugIn(GorgonSpriteCodecPlugIn plugin)
         {
             if (plugin == null)
             {
@@ -116,18 +144,18 @@ namespace Gorgon.Editor.ImageEditor
                 return;
             }
 
-            foreach (GorgonImageCodecDescription desc in plugin.Codecs)
+            foreach (GorgonSpriteCodecDescription desc in plugin.Codecs)
             {
-                IGorgonImageCodec codec = Codecs.FirstOrDefault(item => string.Equals(item.GetType().FullName, desc.Name, StringComparison.OrdinalIgnoreCase));
+                IGorgonSpriteCodec codec = Codecs.FirstOrDefault(item => string.Equals(item.GetType().FullName, desc.Name, StringComparison.OrdinalIgnoreCase));
 
                 if (codec != null)
                 {
                     Codecs.Remove(codec);
                 }
 
-                (GorgonFileExtension extension, IGorgonImageCodec codecType)[] types = CodecFileTypes.Where(item => item.codec == codec).ToArray();
+                (GorgonFileExtension extension, IGorgonSpriteCodec codecType)[] types = CodecFileTypes.Where(item => item.codec == codec).ToArray();
 
-                foreach ((GorgonFileExtension extension, IGorgonImageCodec codecType) type in types)
+                foreach ((GorgonFileExtension extension, IGorgonSpriteCodec codecType) type in types)
                 {
                     CodecFileTypes.Remove(type);
                 }
@@ -144,13 +172,13 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="path">The path to the codec assembly.</param>
         /// <param name="errors">A list of errors if the plug in fails to load.</param>
         /// <returns>A list of codec plugs ins that were loaded.</returns>
-        public IReadOnlyList<GorgonImageCodecPlugIn> AddCodecPlugIn(string path, out IReadOnlyList<string> errors)
+        public IReadOnlyList<GorgonSpriteCodecPlugIn> AddCodecPlugIn(string path, out IReadOnlyList<string> errors)
         {
             var localErrors = new List<string>();
             errors = localErrors;
 
-            var result = new List<GorgonImageCodecPlugIn>();
-            _log.Print("Loading image codecs...", LoggingLevel.Intermediate);
+            var result = new List<GorgonSpriteCodecPlugIn>();
+            _log.Print("Loading sprite codecs...", LoggingLevel.Intermediate);
 
             IReadOnlyList<PlugInAssemblyState> assemblies = _pluginCache.ValidateAndLoadAssemblies(new[] { new FileInfo(path) }, _log);
 
@@ -174,56 +202,56 @@ namespace Gorgon.Editor.ImageEditor
             // Since we can't unload an assembly, we'll have to force a rescan of the plug ins. We may have unloaded one prior, and we might need to get it back.
             _pluginService.ScanPlugIns();
             var assemblyName = AssemblyName.GetAssemblyName(path);
-            IReadOnlyList<GorgonImageCodecPlugIn> pluginList = _pluginService.GetPlugIns<GorgonImageCodecPlugIn>(assemblyName);
+            IReadOnlyList<GorgonSpriteCodecPlugIn> pluginList = _pluginService.GetPlugIns<GorgonSpriteCodecPlugIn>(assemblyName);
 
             if (pluginList.Count == 0)
             {
-                localErrors.Add(string.Format(Resources.GORIMG_ERR_NO_CODECS, Path.GetFileName(path)));
+                localErrors.Add(string.Format(Resources.GORSPR_ERR_NO_CODECS, Path.GetFileName(path)));
                 return result;
             }
 
             // Load all the codecs contained within the plug in (a plug in can have multiple codecs).
-            foreach (GorgonImageCodecPlugIn plugin in pluginList)
+            foreach (GorgonSpriteCodecPlugIn plugin in pluginList)
             {
                 if (CodecPlugIns.Any(item => string.Equals(plugin.Name, item.Name, StringComparison.OrdinalIgnoreCase)))
                 {
                     _log.Print($"[WARNING] Codec plug in '{plugin.Name}' is already loaded.", LoggingLevel.Intermediate);
-                    localErrors.Add(string.Format(Resources.GORIMG_ERR_CODEC_PLUGIN_ALREADY_LOADED, plugin.Name));
+                    localErrors.Add(string.Format(Resources.GORSPR_ERR_CODEC_PLUGIN_ALREADY_LOADED, plugin.Name));
                     continue;
                 }
 
                 CodecPlugIns.Add(plugin);
                 int count = plugin.Codecs.Count;
 
-                foreach (GorgonImageCodecDescription desc in plugin.Codecs)
+                foreach (GorgonSpriteCodecDescription desc in plugin.Codecs)
                 {
                     if (Codecs.Any(item => string.Equals(desc.Name, item.Name, StringComparison.OrdinalIgnoreCase)))
                     {
                         _log.Print($"[WARNING] Codec '{desc.Name}' is already loaded.", LoggingLevel.Intermediate);
-                        localErrors.Add(string.Format(Resources.GORIMG_ERR_CODEC_ALREADY_LOADED, desc.Name));
+                        localErrors.Add(string.Format(Resources.GORSPR_ERR_CODEC_ALREADY_LOADED, desc.Name));
                         --count;
                         continue;
                     }
 
-                    IGorgonImageCodec imageCodec = plugin.CreateCodec(desc.Name);
+                    IGorgonSpriteCodec spriteCodec = plugin.CreateCodec(desc.Name, _renderer);
 
-                    if (imageCodec == null)
+                    if (spriteCodec == null)
                     {
-                        _log.Print($"[ERROR] Could not create image codec '{desc.Name}' from plug in '{plugin.PlugInPath}'.", LoggingLevel.Verbose);
-                        localErrors.Add(string.Format(Resources.GORIMG_ERR_CODEC_LOAD_FAIL, desc.Name));
+                        _log.Print($"[ERROR] Could not create sprite codec '{desc.Name}' from plug in '{plugin.PlugInPath}'.", LoggingLevel.Verbose);
+                        localErrors.Add(string.Format(Resources.GORSPR_ERR_CODEC_LOAD_FAIL, desc.Name));
                         --count;
                         continue;
                     }
 
-                    Codecs.Add(imageCodec);
+                    Codecs.Add(spriteCodec);
 
-                    foreach (string extension in imageCodec.CodecCommonExtensions)
+                    foreach (GorgonFileExtension extension in spriteCodec.FileExtensions)
                     {
-                        (GorgonFileExtension fileExtension, IGorgonImageCodec) codecExtension = (new GorgonFileExtension(extension), imageCodec);
+                        (GorgonFileExtension, IGorgonSpriteCodec) codecExtension = (extension, spriteCodec);
 
-                        if (CodecFileTypes.Any(item => item.extension.Equals(codecExtension.fileExtension)))
+                        if (CodecFileTypes.Any(item => item.extension.Equals(extension)))
                         {
-                            _log.Print($"[WARNING] Another previously loaded codec already uses the file extension '{extension}'.  This file extension will not be registered to the '{imageCodec.Name}' codec.", LoggingLevel.Verbose);
+                            _log.Print($"[WARNING] Another previously loaded codec already uses the file extension '{extension}'.  This file extension will not be registered to the '{spriteCodec.Name}' codec.", LoggingLevel.Verbose);
                             continue;
                         }
 
@@ -244,34 +272,32 @@ namespace Gorgon.Editor.ImageEditor
         /// Function to load the codecs from our settings data.
         /// </summary>
         /// <param name="settings">The settings containing the plug in paths.</param>
-        public void LoadFromSettings(ImageEditorSettings settings)
+        public void LoadFromSettings(SpriteImportSettings settings)
         {
             Codecs.Clear();
             CodecFileTypes.Clear();
 
             // Get built-in codec list.
-            Codecs.Add(new GorgonCodecPng());
-            Codecs.Add(new GorgonCodecJpeg());
-            Codecs.Add(new GorgonCodecTga());
-            Codecs.Add(new GorgonCodecBmp());
-            Codecs.Add(new GorgonCodecGif());
+            Codecs.Add(new GorgonV3SpriteBinaryCodec(_renderer));
+            Codecs.Add(new GorgonV3SpriteJsonCodec(_renderer));
+            Codecs.Add(new GorgonV2SpriteCodec(_renderer));
+            Codecs.Add(new GorgonV1SpriteBinaryCodec(_renderer));
 
             LoadCodecPlugIns(settings);
 
-            foreach (IGorgonImageCodec codec in Codecs)
+            IEnumerable<(GorgonFileExtension extension, IGorgonSpriteCodec codec)> codecGrouping = from codec in Codecs
+                                                                                                   from extension in codec.FileExtensions
+                                                                                                   select (extension, codec);
+
+            foreach ((GorgonFileExtension extension, IGorgonSpriteCodec codec) codecFile in codecGrouping)
             {
-                foreach (string extension in codec.CodecCommonExtensions)
+                if (CodecFileTypes.Any(item => item.extension.Equals(codecFile.extension)))
                 {
-                    (GorgonFileExtension fileExtension, IGorgonImageCodec) codecExtension = (new GorgonFileExtension(extension), codec);
-
-                    if (CodecFileTypes.Any(item => item.extension.Equals(codecExtension.fileExtension)))
-                    {
-                        _log.Print($"[WARNING] Another previously loaded codec already uses the file extension '{extension}'.  This file extension will not be registered to the '{codec.Name}' codec.", LoggingLevel.Verbose);
-                        continue;
-                    }
-
-                    CodecFileTypes.Add(codecExtension);
+                    _log.Print($"[WARNING] Another previously loaded codec already uses the file extension '{codecFile.extension}'.  This file extension will not be registered to the '{codecFile.codec.Name}' codec.", LoggingLevel.Verbose);
+                    continue;
                 }
+
+                CodecFileTypes.Add(codecFile);
             }
         }
         #endregion
@@ -279,10 +305,12 @@ namespace Gorgon.Editor.ImageEditor
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the <see cref="CodecRegistry"/> class.</summary>
         /// <param name="pluginCache">The cache of plug in assemblies.</param>
+        /// <param name="renderer">The 2D renderer for the application.</param>
         /// <param name="log">The log for debug output.</param>
-        public CodecRegistry(GorgonMefPlugInCache pluginCache, IGorgonLog log)
+        public CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer, IGorgonLog log)
         {
             _pluginCache = pluginCache;
+            _renderer = renderer;
             _pluginService = new GorgonMefPlugInService(pluginCache, log);
             _log = log;
         }

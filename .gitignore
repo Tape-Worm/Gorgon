@@ -213,3 +213,4 @@ UpgradeLog*.htm
 # Microsoft Fakes
 FakesAssemblies/
 .gorgon.editor.metadata
+/PlugIns/DummySpriteImport/

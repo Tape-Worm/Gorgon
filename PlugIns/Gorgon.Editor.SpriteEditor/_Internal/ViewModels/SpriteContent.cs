@@ -222,7 +222,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Property to return the view model for the plug in settings.
         /// </summary>
-        public ISettings Settings
+        public IEditorPlugInSettings Settings
         {
             get;
             private set;

@@ -38,7 +38,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Property to return the settings for the sprite editor.
         /// </summary>
-        public ISettings Settings
+        public IEditorPlugInSettings Settings
         {
             get;
         }
@@ -47,7 +47,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="settings">The settings for the sprite editor.</param>
         /// <param name="commonServices">Common application services.</param>
         /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
-        public ManualInputParameters(ISettings settings, IViewModelInjection commonServices)
+        public ManualInputParameters(IEditorPlugInSettings settings, IViewModelInjection commonServices)
 			: base(commonServices) => Settings = settings ?? throw new ArgumentNullException(nameof(settings));
     }
 }

@@ -35,6 +35,7 @@ using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.IO;
 using Gorgon.PlugIns;
+using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -45,23 +46,17 @@ namespace Gorgon.Editor.SpriteEditor
         : ContentImportPlugIn
     {
         #region Variables.
-        // The loaded image codecs.
-        private readonly List<IGorgonSpriteCodec> _codecList = new List<IGorgonSpriteCodec>();
-
-        // The list of available codecs matched by extension.
-        private readonly List<(GorgonFileExtension extension, IGorgonSpriteCodec codec)> _codecs = new List<(GorgonFileExtension extension, IGorgonSpriteCodec codec)>();
-
         // The image editor settings.
-        private SpriteEditorSettings _settings = new SpriteEditorSettings();
+        private IImporterPlugInSettings _settings;
+
+		// The codecs registered with the plug in.
+        private ICodecRegistry _codecs;
 
         // The plug in cache for image codecs.
         private GorgonMefPlugInCache _pluginCache;
-
-        // The content plug in service that loaded this plug in.
-        private IContentPlugInService _pluginService;
         #endregion
 
-        #region Properties.
+        #region Methods.
         /// <summary>
         /// Function to retrieve the codec used by the image.
         /// </summary>
@@ -78,7 +73,7 @@ namespace Gorgon.Editor.SpriteEditor
                 {
                     var extension = new GorgonFileExtension(file.Extension);
 
-                    (GorgonFileExtension, IGorgonSpriteCodec codec)[] results = _codecs.Where(item => item.extension == extension).ToArray();
+                    (GorgonFileExtension, IGorgonSpriteCodec codec)[] results = _codecs.CodecFileTypes.Where(item => item.extension == extension).ToArray();
 
                     if (results.Length == 0)
                     {
@@ -104,61 +99,43 @@ namespace Gorgon.Editor.SpriteEditor
             return null;
         }
 
-        /// <summary>
-        /// Function to load external image codec plug ins.
-        /// </summary>
-        private void LoadCodecPlugIns()
-        {
-            if (_settings.CodecPlugInPaths.Count == 0)
-            {
-                return;
-            }
-
-            CommonServices.Log.Print("Loading sprite codecs...", LoggingLevel.Intermediate);
-            _pluginCache.ValidateAndLoadAssemblies(_settings.CodecPlugInPaths.Select(item => new FileInfo(item.Value)), CommonServices.Log);
-            IGorgonPlugInService plugins = new GorgonMefPlugInService(_pluginCache, CommonServices.Log);
-
-            // Load all the codecs contained within the plug in (a plug in can have multiple codecs).
-            foreach (GorgonSpriteCodecPlugIn plugin in plugins.GetPlugIns<GorgonSpriteCodecPlugIn>())
-            {
-                foreach (GorgonSpriteCodecDescription desc in plugin.Codecs)
-                {
-                    _codecList.Add(plugin.CreateCodec(desc.Name));
-                }
-            }
-        }
+        /// <summary>Function to retrieve the settings interface for this plug in.</summary>
+        /// <param name="injector">Objects to inject into the view model.</param>
+        /// <returns>The settings interface view model.</returns>
+        /// <remarks>
+        ///   <para>
+        /// Implementors who wish to supply customizable settings for their plug ins from the main "Settings" area in the application can override this method and return a new view model based on
+        /// the base <see cref="ISettingsCategoryViewModel"/> type.
+        /// </para>
+        ///   <para>
+        /// Plug ins must register the view associated with their settings panel via the <see cref="ViewFactory.Register``1(System.Func{System.Windows.Forms.Control})"/> method in the
+        /// <see cref="OnInitialize(IContentPlugInService)"/> method or the settings will not display.
+        /// </para>
+        /// </remarks>
+        protected override ISettingsCategoryViewModel OnGetSettings() => _settings;
 
         /// <summary>Function to provide initialization for the plugin.</summary>
         /// <param name="pluginService">The plugin service used to access other plugins.</param>
         /// <remarks>This method is only called when the plugin is loaded at startup.</remarks>
         protected override void OnInitialize(IContentPlugInService pluginService)
         {
-            _pluginService = pluginService;
+            ViewFactory.Register<IImporterPlugInSettings>(() => new SpriteCodecSettingsPanel());
+            
             _pluginCache = new GorgonMefPlugInCache(CommonServices.Log);
 
-            // Get built-in codec list.
-            _codecList.Add(new GorgonV3SpriteBinaryCodec(GraphicsContext.Renderer2D));
-            _codecList.Add(new GorgonV3SpriteJsonCodec(GraphicsContext.Renderer2D));
-            _codecList.Add(new GorgonV2SpriteCodec(GraphicsContext.Renderer2D));
-            _codecList.Add(new GorgonV1SpriteBinaryCodec(GraphicsContext.Renderer2D));
+            SpriteImportSettings settings = pluginService.ReadContentSettings<SpriteImportSettings>(typeof(SpriteImporterPlugIn).FullName);
 
-            SpriteEditorSettings settings = pluginService.ReadContentSettings<SpriteEditorSettings>(SpriteEditorPlugIn.SettingsName);
-
-            if (settings != null)
+            if (settings == null)
             {
-                _settings = settings;
+                settings = new SpriteImportSettings();
             }
 
-            // Load the additional plug ins.
-            LoadCodecPlugIns();
+            _codecs = new CodecRegistry(_pluginCache, GraphicsContext.Renderer2D, CommonServices.Log);
+            _codecs.LoadFromSettings(settings);
 
-            foreach (IGorgonSpriteCodec codec in _codecList)
-            {
-                foreach (GorgonFileExtension extension in codec.FileExtensions)
-                {
-                    _codecs.Add((extension, codec));
-                }
-            }
+            var settingsVm = new ImporterPlugInSettings();
+            settingsVm.Initialize(new ImportPlugInSettingsParameters(settings, _codecs, new FileOpenDialogService(), pluginService, CommonServices));
+            _settings = settingsVm;
         }
 
         /// <summary>Function to provide clean up for the plugin.</summary>
@@ -166,11 +143,13 @@ namespace Gorgon.Editor.SpriteEditor
         {
             try
             {
-                if (_settings != null)
+                if ((_settings?.WriteSettingsCommand != null) && (_settings.WriteSettingsCommand.CanExecute(null)))
                 {
                     // Persist any settings.
-                    _pluginService.WriteContentSettings(SpriteEditorPlugIn.SettingsName, _settings);
+                    _settings.WriteSettingsCommand.Execute(null);
                 }
+
+                ViewFactory.Unregister<IImporterPlugInSettings>();
             }
             catch (Exception ex)
             {
@@ -193,16 +172,11 @@ namespace Gorgon.Editor.SpriteEditor
         protected override bool OnCanOpenContent(FileInfo file) => GetCodec(file) != null;
         #endregion
 
-        #region Methods.
-
-        #endregion
-
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.SpriteEditor.SpriteImporterPlugIn"/> class.</summary>
         public SpriteImporterPlugIn()
             : base(Resources.GORSPR_IMPORT_DESC)
         {
-
         }
         #endregion
     }

@@ -30,6 +30,7 @@ using System.Linq;
 using Gorgon.Core;
 using Gorgon.IO.Properties;
 using Gorgon.PlugIns;
+using Gorgon.Renderers;
 
 namespace Gorgon.IO
 {
@@ -57,20 +58,22 @@ namespace Gorgon.IO
         /// Function to create a new <see cref="IGorgonSpriteCodec"/>.
         /// </summary>
         /// <param name="codec">The codec to retrieve from the plug in.</param>
+        /// <param name="renderer">The renderer used to retrieve sprite textures.</param>
         /// <returns>A new <see cref="IGorgonSpriteCodec"/> object.</returns>
         /// <remarks>
         /// <para>
         /// Implementors must implement this method to return the codec from the plug in assembly.
         /// </para>
         /// </remarks>
-        protected abstract IGorgonSpriteCodec OnCreateCodec(string codec);
+        protected abstract IGorgonSpriteCodec OnCreateCodec(string codec, Gorgon2D renderer);
 
         /// <summary>
         /// Function to create a new image codec object.
         /// </summary>
         /// <param name="codec">The name of the codec to look up within the plug in.</param>
+        /// <param name="renderer">The renderer used to retrieve sprite textures.</param>
         /// <returns>A new instance of a <see cref="IGorgonSpriteCodec"/>.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="codec"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="codec"/>, or the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="codec"/> parameter is empty.</exception>
         /// <exception cref="KeyNotFoundException">Thrown when the <paramref name="codec"/> was not found in this plug in.</exception>
         /// <remarks>
@@ -79,7 +82,7 @@ namespace Gorgon.IO
         /// <see cref="Codecs"/> property on the plug in to locate the plug in name.
         /// </para>
         /// </remarks>
-        public IGorgonSpriteCodec CreateCodec(string codec)
+        public IGorgonSpriteCodec CreateCodec(string codec, Gorgon2D renderer)
         {
             if (codec == null)
             {
@@ -91,12 +94,17 @@ namespace Gorgon.IO
                 throw new ArgumentEmptyException(nameof(codec));
             }
 
+            if (renderer == null)
+            {
+                throw new ArgumentNullException(nameof(renderer));
+            }
+
             if (!Codecs.Any(item => string.Equals(codec, item.Name, StringComparison.OrdinalIgnoreCase)))
             {
                 throw new KeyNotFoundException(string.Format(Resources.GOR2DIO_ERR_CODEC_NOT_IN_PLUGIN, codec));
             }
 
-            IGorgonSpriteCodec result = OnCreateCodec(codec);
+            IGorgonSpriteCodec result = OnCreateCodec(codec, renderer);
 
             if (result == null)
             {
@@ -106,7 +114,6 @@ namespace Gorgon.IO
             return result;
         }
         #endregion
-
 
         #region Constructor/Finalizer.
         /// <summary>

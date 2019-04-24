@@ -128,10 +128,10 @@ namespace Gorgon.Editor.SpriteEditor
         {
             switch (e.PropertyName)
             {
-                case nameof(ISettings.ClipMaskType):
+                case nameof(IEditorPlugInSettings.ClipMaskType):
                     _picker.ClipMask = SpriteContent.Settings.ClipMaskType;
                     break;
-                case nameof(ISettings.ClipMaskValue):
+                case nameof(IEditorPlugInSettings.ClipMaskValue):
                     _picker.ClipMaskValue = SpriteContent.Settings.ClipMaskValue;
                     break;
             }

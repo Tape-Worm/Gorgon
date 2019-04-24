@@ -42,7 +42,7 @@ namespace Gorgon.Editor.SpriteEditor
     {
         #region Variables.
         // The sprite editor settings.
-        private ISettings _settings;
+        private IEditorPlugInSettings _settings;
         // Flag to indicate whether the interface is active or not.
         private bool _isActive;
         // Flag to indicate whether the interface is moving or not.

@@ -64,6 +64,8 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="SpriteEditorPlugin.cs" />
+    <Compile Include="_Internal\CodecRegistry.cs" />
+    <Compile Include="_Internal\CodecSetting.cs" />
     <Compile Include="_Internal\Forms\FormRibbon.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -95,17 +97,20 @@
     <Compile Include="_Internal\Renderers\_Interfaces\ISpriteContentRenderer.cs" />
     <Compile Include="_Internal\Services\_Interfaces\ISpriteTextureService.cs" />
     <Compile Include="_Internal\SpriteEditorCommonConstants.cs" />
+    <Compile Include="_Internal\ViewModels\ImporterPlugInSettings.cs" />
     <Compile Include="_Internal\ViewModels\ManualInputParameters.cs" />
     <Compile Include="_Internal\ViewModels\ManualVertexEditor.cs" />
+    <Compile Include="_Internal\ViewModels\ImportPlugInSettingsParameters.cs" />
     <Compile Include="_Internal\ViewModels\SpriteAnchorEdit.cs" />
     <Compile Include="_Internal\ViewModels\SpriteColorEdit.cs" />
     <Compile Include="_Internal\ViewModels\SpriteWrappingEditor.cs" />
     <Compile Include="_Internal\ViewModels\SpriteWrappingEditorParameters.cs" />
+    <Compile Include="_Internal\ViewModels\_Interfaces\IImporterPlugInSettings.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\IManualInputViewModel.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\IManualVertexEditor.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\ISpritePickMaskEditor.cs" />
-    <Compile Include="_Internal\ViewModels\_Interfaces\ISettings.cs" />
-    <Compile Include="_Internal\ViewModels\Settings.cs" />
+    <Compile Include="_Internal\ViewModels\_Interfaces\IEditorPlugInSettings.cs" />
+    <Compile Include="_Internal\ViewModels\EditorPlugInSettings.cs" />
     <Compile Include="_Internal\ViewModels\SettingsParameters.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\IManualRectangleEditor.cs" />
     <Compile Include="_Internal\ViewModels\ManualRectangleEditor.cs" />
@@ -126,6 +131,12 @@
     </Compile>
     <Compile Include="_Internal\Views\FormManualVertexEdit.Designer.cs">
       <DependentUpon>FormManualVertexEdit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="_Internal\Views\SpriteCodecSettingsPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="_Internal\Views\SpriteCodecSettingsPanel.Designer.cs">
+      <DependentUpon>SpriteCodecSettingsPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="_Internal\Views\SpriteAnchor.cs">
       <SubType>UserControl</SubType>
@@ -158,10 +169,13 @@
       <DependentUpon>SpriteEditorView.cs</DependentUpon>
     </Compile>
     <Compile Include="_Internal\Views\_Interfaces\IManualInputControl.cs" />
+    <Compile Include="_Internal\_Interfaces\ICodecRegistry.cs" />
     <Compile Include="_Internal\_Interfaces\ISpriteContentFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\remove_plugins_22x22.png" />
+    <None Include="Resources\add_plugin_22x22.png" />
     <None Include="Resources\pick_padding_48x48.png" />
     <None Include="Resources\pick_padding_16x16.png" />
     <None Include="Resources\color_pick_48x48.png" />
@@ -232,6 +246,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="_Internal\Views\FormManualVertexEdit.resx">
       <DependentUpon>FormManualVertexEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="_Internal\Views\SpriteCodecSettingsPanel.resx">
+      <DependentUpon>SpriteCodecSettingsPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="_Internal\Views\SpriteAnchor.resx">
       <DependentUpon>SpriteAnchor.cs</DependentUpon>

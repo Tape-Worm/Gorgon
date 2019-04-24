@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
@@ -115,7 +116,8 @@ namespace Gorgon.Editor.ViewModels
         protected override void OnInitialize(SettingsPlugInsListParameters injectionParameters)
         {
             _messageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(injectionParameters.MessageDisplay), nameof(injectionParameters));
-            PlugIns = new ObservableCollection<ISettingsPlugInListItem>(injectionParameters.PlugIns ?? throw new ArgumentMissingException(nameof(injectionParameters.PlugIns), nameof(injectionParameters)));
+            PlugIns = new ObservableCollection<ISettingsPlugInListItem>(injectionParameters.PlugIns?.OrderBy(item => item.Name, StringComparer.CurrentCultureIgnoreCase) 
+																			?? throw new ArgumentMissingException(nameof(injectionParameters.PlugIns), nameof(injectionParameters)));
         }
         #endregion
 

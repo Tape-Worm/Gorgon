@@ -133,7 +133,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Property to return the settings view model.
         /// </summary>
-        public ISettings Settings
+        public IEditorPlugInSettings Settings
         {
             get;
         }
@@ -203,7 +203,7 @@ namespace Gorgon.Editor.SpriteEditor
             ISpriteAnchorEdit anchorEditor,
 			ISpriteWrappingEditor wrapEditor,
 			ISamplerBuildService samplerBuilder,
-            ISettings settings,
+            IEditorPlugInSettings settings,
             IUndoService undoService, 
             IGorgonFileSystemWriter<Stream> scratchArea, 
 			IViewModelInjection commonServices)

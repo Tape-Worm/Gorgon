@@ -60,12 +60,6 @@ namespace Gorgon.Editor.SpriteEditor
         : ContentPlugIn, IContentPlugInMetadata, ISpriteContentFactory
     {
         #region Variables.
-        // The loaded image codecs.
-        private readonly List<IGorgonSpriteCodec> _codecList = new List<IGorgonSpriteCodec>();
-
-        // The plug in cache for image codecs.
-        private GorgonMefPlugInCache _pluginCache;
-
         // The content plug in service that loaded this plug in.
         private IContentPlugInService _pluginService;
 
@@ -86,11 +80,6 @@ namespace Gorgon.Editor.SpriteEditor
 
         // The settings for the plug in.
         private SpriteEditorSettings _settings = new SpriteEditorSettings();
-
-		/// <summary>
-        /// The name of the settings file.
-        /// </summary>
-        public static readonly string SettingsName = typeof(SpriteEditorPlugIn).FullName;
         #endregion
 
         #region Properties.
@@ -147,30 +136,6 @@ namespace Gorgon.Editor.SpriteEditor
             }
 
             dependencyList[SpriteEditorCommonConstants.ImageDependencyType] = textureName;
-        }
-
-        /// <summary>
-        /// Function to load external image codec plug ins.
-        /// </summary>
-        private void LoadCodecPlugIns()
-        {
-            if (_settings.CodecPlugInPaths.Count == 0)
-            {
-                return;
-            }
-
-            CommonServices.Log.Print("Loading sprite codecs...", LoggingLevel.Intermediate);
-            _pluginCache.ValidateAndLoadAssemblies(_settings.CodecPlugInPaths.Select(item => new FileInfo(item.Value)), CommonServices.Log);
-            IGorgonPlugInService plugins = new GorgonMefPlugInService(_pluginCache, CommonServices.Log);
-
-            // Load all the codecs contained within the plug in (a plug in can have multiple codecs).
-            foreach (GorgonSpriteCodecPlugIn plugin in plugins.GetPlugIns<GorgonSpriteCodecPlugIn>())
-            {
-                foreach (GorgonSpriteCodecDescription desc in plugin.Codecs)
-                {
-                    _codecList.Add(plugin.CreateCodec(desc.Name));
-                }
-            }
         }
 
         /// <summary>
@@ -401,7 +366,7 @@ namespace Gorgon.Editor.SpriteEditor
                 stream = file.OpenRead();
                 sprite = _defaultCodec.FromStream(stream, spriteImage);
 
-                var settings = new Settings();
+                var settings = new EditorPlugInSettings();
                 ISpritePickMaskEditor spritePickMaskEditor = settings;
                 settings.Initialize(new SettingsParameters(_settings, CommonServices));
 
@@ -463,17 +428,12 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Function to provide clean up for the plugin.</summary>
         protected override void OnShutdown()
         {
-            foreach (IDisposable codec in _codecList.OfType<IDisposable>())
-            {
-                codec?.Dispose();
-            }
-
             try
             {
                 if (_settings != null)
                 {
                     // Persist any settings.
-                    _pluginService.WriteContentSettings(SettingsName, _settings, new JsonSharpDxRectConverter());
+                    _pluginService.WriteContentSettings(typeof(SpriteEditorPlugIn).FullName, _settings, new JsonSharpDxRectConverter());
                 }
             }
             catch (Exception ex)
@@ -485,7 +445,6 @@ namespace Gorgon.Editor.SpriteEditor
             _rtv?.Dispose();
             _bgPattern?.Dispose();
             _noImage?.Dispose();
-            _pluginCache?.Dispose();
 
             ViewFactory.Unregister<ISpriteContent>();
 
@@ -500,24 +459,16 @@ namespace Gorgon.Editor.SpriteEditor
             ViewFactory.Register<ISpriteContent>(() => new SpriteEditorView());
 
             _pluginService = pluginService;            
-            _pluginCache = new GorgonMefPlugInCache(CommonServices.Log);
 
             // Get built-in codec list.
             _defaultCodec = new GorgonV3SpriteBinaryCodec(GraphicsContext.Renderer2D);
-            _codecList.Add(_defaultCodec);
-            _codecList.Add(new GorgonV3SpriteJsonCodec(GraphicsContext.Renderer2D));
-            _codecList.Add(new GorgonV2SpriteCodec(GraphicsContext.Renderer2D));
-            _codecList.Add(new GorgonV1SpriteBinaryCodec(GraphicsContext.Renderer2D));
 
-            SpriteEditorSettings settings = pluginService.ReadContentSettings<SpriteEditorSettings>(SettingsName, new JsonSharpDxRectConverter());
+            SpriteEditorSettings settings = pluginService.ReadContentSettings<SpriteEditorSettings>(typeof(SpriteEditorPlugIn).FullName, new JsonSharpDxRectConverter());
 
             if (settings != null)
             {
                 _settings = settings;
             }
-
-            // Load the additional plug ins.
-            LoadCodecPlugIns();
 
             _ddsCodec = new GorgonCodecDds();
 

@@ -31,9 +31,9 @@ using Gorgon.Editor.UI;
 namespace Gorgon.Editor.SpriteEditor
 {
     /// <summary>
-    /// The view model used to manipulate the settings for the plug in.
+    /// The view model used to manipulate the settings for the sprite editor plug in.
     /// </summary>
-    internal interface ISettings
+    internal interface IEditorPlugInSettings
 		: IViewModel
     {
         /// <summary>
