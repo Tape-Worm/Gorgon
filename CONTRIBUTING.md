@@ -70,8 +70,8 @@ Enhancement suggestions are tracked as [GitHub issues](https://guides.github.com
 
  You can start by looking through these `beginner` and `help-wanted` issues:
 
-* [Beginner issues][beginner] - issues which should only require a few lines of code, and a test or two.
-* [Help wanted issues][help-wanted] - issues which should be a bit more involved than `beginner` issues.
+* `beginner` - issues which should only require a few lines of code, and a test or two.
+* `help-wanted` - issues which should be a bit more involved than `beginner` issues.
 
 Both issue lists are sorted by total number of comments. 
 
@@ -105,7 +105,38 @@ All C# code must adhere to the [best practices](https://docs.microsoft.com/en-us
 Additionally, code must be formatted, as closely as possible, in the style present throughout the library code base.  This means:
 
 * Use Tabs - not spaces. 
-* Only use #region blocks to organize your code. Do _NOT_ use them to hide code.  Types of acceptable region blocks are littered throughout the code.
+* Only use #region blocks to organize your code. Do _NOT_ use them to hide code, or separate access modifiers (e.g. do not use #region Private members, #region Protected members, etc...).<details><summary>What regions are acceptable?</summary>
+  ~~~csharp
+  #region Constants.
+  // Constants go here.
+  #endregion
+ 
+  #region Classes.
+  // Inner classes go here.  These should always be private.
+  #endregion
+  
+  #region ValueTypes.
+  // Inner value types go here (struct).  These should always be private.
+  #endregion
+  
+  #region Events.
+  // Event declarations go here.
+  #endregion
+  
+  #region Properties.
+  // Properties go here.
+  #endregion
+  
+  #region Methods.
+  // Methods go here.
+  #endregion
+  
+  #region Constructor.
+  // Constructors go here.
+  // Finalizers too (change "Constructor" to "Constructor/Finalizer")
+  #endregion
+  ~~~
+  </details>
 * Try to adhere as closely to [SOLID](https://en.wikipedia.org/wiki/SOLID) principles as possible. 
 * When building user interfaces, try to use [MVVM](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel) (or something approaching my bastardization of it - see the Editor code).
 * Try to use small, concise methods. Do not write massive methods that take more than 1.5 pages to get through.
