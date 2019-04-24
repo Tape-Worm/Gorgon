@@ -70,8 +70,8 @@ Enhancement suggestions are tracked as [GitHub issues](https://guides.github.com
 
  You can start by looking through these `beginner` and `help-wanted` issues:
 
-* [Beginner issues][beginner] - issues which should only require a few lines of code, and a test or two.
-* [Help wanted issues][help-wanted] - issues which should be a bit more involved than `beginner` issues.
+* `beginner` - issues which should only require a few lines of code, and a test or two.
+* `help-wanted` - issues which should be a bit more involved than `beginner` issues.
 
 Both issue lists are sorted by total number of comments. 
 
