@@ -47,9 +47,8 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to retrieve the image data for a sprite texture as a 32 bit RGBA pixel data.
         /// </summary>
         /// <param name="texture">The texture to extract the data from.</param>
-        /// <param name="arrayIndex">The index in the array to use.</param>
         /// <returns>The image data for the texture.</returns>
-        Task<IGorgonImage> GetSpriteTextureImageDataAsync(GorgonTexture2DView texture, int arrayIndex);
+        Task<IGorgonImage> GetSpriteTextureImageDataAsync(GorgonTexture2DView texture);
 
         /// <summary>
         /// Function to load a texture from the file system.

@@ -63,12 +63,12 @@ namespace Gorgon.Editor.UI
         /// Property to set or return the current directory.
         /// </summary>
         [Browsable(false)]
-        public DirectoryInfo CurrentDirectory
+        public string CurrentDirectory
         {
             get => WorkspaceBrowser.CurrentDirectory;
             set
             {
-                WorkspaceBrowser.AssignInitialDirectory(value);
+                WorkspaceBrowser.AssignInitialDirectory(string.IsNullOrWhiteSpace(value) ? null : new DirectoryInfo(value));
                 ButtonOK.Enabled = value != null;
             }
         }
@@ -82,7 +82,7 @@ namespace Gorgon.Editor.UI
         /// <param name="e">The event parameters.</param>
         private void WorkspaceBrowser_FolderEntered(object sender, FolderSelectedArgs e)
         {
-            CurrentDirectory = string.IsNullOrWhiteSpace(e.FolderPath) ? null : new DirectoryInfo(e.FolderPath);
+            CurrentDirectory = string.IsNullOrWhiteSpace(e.FolderPath) ? null : e.FolderPath;
 
             EventHandler<FolderSelectedArgs> handler = FolderEntered;
             handler?.Invoke(this, e);
@@ -95,7 +95,7 @@ namespace Gorgon.Editor.UI
         /// <param name="e">The event parameters..</param>
         private void WorkspaceBrowser_FolderSelected(object sender, FolderSelectedArgs e)
         {
-            CurrentDirectory = string.IsNullOrWhiteSpace(e.FolderPath) ? null : new DirectoryInfo(e.FolderPath);
+            CurrentDirectory = string.IsNullOrWhiteSpace(e.FolderPath) ? null : e.FolderPath;
 
             EventHandler<FolderSelectedArgs> handler = FolderSelected;
             handler?.Invoke(this, e);

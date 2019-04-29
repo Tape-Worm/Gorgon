@@ -44,7 +44,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
-using Gorgon.PlugIns;
 using Gorgon.Renderers;
 using Gorgon.Math;
 using Gorgon.Editor.Converters;
@@ -60,9 +59,6 @@ namespace Gorgon.Editor.SpriteEditor
         : ContentPlugIn, IContentPlugInMetadata, ISpriteContentFactory
     {
         #region Variables.
-        // The content plug in service that loaded this plug in.
-        private IContentPlugInService _pluginService;
-
         // This is the only codec supported by the image plug in.  Images will be converted when imported.
         private GorgonV3SpriteBinaryCodec _defaultCodec;
 
@@ -433,7 +429,7 @@ namespace Gorgon.Editor.SpriteEditor
                 if (_settings != null)
                 {
                     // Persist any settings.
-                    _pluginService.WriteContentSettings(typeof(SpriteEditorPlugIn).FullName, _settings, new JsonSharpDxRectConverter());
+                    ContentPlugInService.WriteContentSettings(typeof(SpriteEditorPlugIn).FullName, _settings, new JsonSharpDxRectConverter());
                 }
             }
             catch (Exception ex)
@@ -452,18 +448,15 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>Function to provide initialization for the plugin.</summary>
-        /// <param name="pluginService">The plugin service used to access other plugins.</param>
         /// <remarks>This method is only called when the plugin is loaded at startup.</remarks>
-        protected override void OnInitialize(IContentPlugInService pluginService)
+        protected override void OnInitialize()
         {
             ViewFactory.Register<ISpriteContent>(() => new SpriteEditorView());
-
-            _pluginService = pluginService;            
 
             // Get built-in codec list.
             _defaultCodec = new GorgonV3SpriteBinaryCodec(GraphicsContext.Renderer2D);
 
-            SpriteEditorSettings settings = pluginService.ReadContentSettings<SpriteEditorSettings>(typeof(SpriteEditorPlugIn).FullName, new JsonSharpDxRectConverter());
+            SpriteEditorSettings settings = ContentPlugInService.ReadContentSettings<SpriteEditorSettings>(typeof(SpriteEditorPlugIn).FullName, new JsonSharpDxRectConverter());
 
             if (settings != null)
             {

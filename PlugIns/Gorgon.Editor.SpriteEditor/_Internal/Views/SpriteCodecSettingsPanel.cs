@@ -31,7 +31,6 @@ using Gorgon.Editor.UI;
 using System.Windows.Forms;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Collections.Generic;
 
 namespace Gorgon.Editor.SpriteEditor
 {

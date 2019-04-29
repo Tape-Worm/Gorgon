@@ -332,12 +332,11 @@ namespace Gorgon.Editor.ImageEditor
         }
 
         /// <summary>Function to provide initialization for the plugin.</summary>
-        /// <param name="pluginService">The plugin service used to access other plugins.</param>
         /// <remarks>This method is only called when the plugin is loaded at startup.</remarks>
-        protected override void OnInitialize(IContentPlugInService pluginService)
+        protected override void OnInitialize()
         {
             ViewFactory.Register<IImageContent>(() => new ImageEditorView());
-            (_codecs, _settings) = SharedDataFactory.GetSharedData(pluginService, CommonServices);
+            (_codecs, _settings) = SharedDataFactory.GetSharedData(ContentPlugInService, CommonServices);
         }
 
         /// <summary>Function to determine if the content plugin can open the specified file.</summary>

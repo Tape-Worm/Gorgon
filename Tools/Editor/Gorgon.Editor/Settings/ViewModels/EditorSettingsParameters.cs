@@ -72,7 +72,7 @@ namespace Gorgon.Editor.ViewModels
             private set;
         }
 
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ViewModels.EditorSettingsParameters"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="EditorSettingsParameters"/> class.</summary>
         /// <param name="factory">The view model factory.</param>
         /// <param name="categories">The list of settings categories.</param>
         /// <param name="pluginsList">The list of plug ins for the fixed plugin list category.</param>

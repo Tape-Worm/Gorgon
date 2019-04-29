@@ -106,9 +106,19 @@ namespace Gorgon.Editor.ViewModels
         private ISearchService<IFileExplorerNodeVm> _searchSystem;
         // The file scanning service used to determine if a file is associated with a plugin or not.
         private IFileScanService _fileScanner;
+		// Flag to indicate we're in batch mode.
+        private int _batchMode;
+		// The node that was selected in the beginning of batch mode.
+        private IFileExplorerNodeVm _batchSelected;		
         #endregion
 
         #region Properties.
+
+        /// <summary>
+        /// Property to return the currently selected file (if one is selected).
+        /// </summary>
+        IContentFile IContentFileManager.SelectedFile => SelectedNode as IContentFile;
+
         /// <summary>
         /// Property to return the current directory.
         /// </summary>
@@ -135,7 +145,8 @@ namespace Gorgon.Editor.ViewModels
             get => _selectedNode;
             private set
             {
-                if (_selectedNode == value)
+                if ((_selectedNode == value)
+					|| (_batchMode != 0))
                 {
                     return;
                 }
@@ -182,7 +193,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the command used to delete the selected node.
         /// </summary>
-        public IEditorCommand<DeleteNodeArgs> DeleteNodeCommand
+        public IEditorAsyncCommand<DeleteNodeArgs> DeleteNodeCommand
         {
             get;
         }
@@ -394,7 +405,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="args">Arguments for the command.</param>
         /// <returns><b>true</b> if the node can be created, <b>false</b> if not.</returns>
-        private bool CanCreateNode(CreateNodeArgs args) => (SearchResults == null) && ((SelectedNode == null) || (SelectedNode.AllowChildCreation));
+        private bool CanCreateNode(CreateNodeArgs args) => (SearchResults == null) && ((args.ParentNode == null) || (args.ParentNode.AllowChildCreation));
 
         /// <summary>
         /// Function to determine if a file system node can be deleted.
@@ -435,7 +446,7 @@ namespace Gorgon.Editor.ViewModels
         /// Function to delete the selected node.
         /// </summary>
         /// <param name="args">The arguments for the command.</param>
-        private async void DoDeleteNode(DeleteNodeArgs args)
+        private async Task DoDeleteNodeAsync(DeleteNodeArgs args)
         {
             bool itemsDeleted = false;
             var cancelSource = new CancellationTokenSource();
@@ -459,15 +470,27 @@ namespace Gorgon.Editor.ViewModels
                 }
                 else
                 {
-                    if (((args.Node.IsOpen) && (args.Node.IsChanged))
-                        || ((hasChildren) && (args.Node.Children.Traverse(n => n.Children).Any(item => item.IsOpen && item.IsChanged))))
+                    if ((args.Node.IsOpen) && (args.Node.IsChanged))
                     {
                         message = string.Format(Resources.GOREDIT_CONFIRM_FILE_OPEN_DELETE, args.Node.FullPath);
+                    }
+                    else
+                    {
+                        if (hasChildren)
+                        {
+                            IFileExplorerNodeVm openNode = args.Node.Children.Traverse(n => n.Children).FirstOrDefault(item => item.IsOpen && item.IsChanged);
+
+                            if (openNode != null)
+                            {
+                                message = string.Format(Resources.GOREDIT_CONFIRM_FILE_OPEN_DELETE, openNode.FullPath);
+                            }
+                        }
                     }
                 }
 
                 if (_messageService.ShowConfirmation(message) != MessageResponse.Yes)
                 {
+                    args.Cancel = true;
                     return;
                 }
 
@@ -516,6 +539,12 @@ namespace Gorgon.Editor.ViewModels
 
                 await args.Node.DeleteNodeAsync(UpdateDeleteProgress, cancelSource.Token);
 
+                if (cancelSource.IsCancellationRequested)
+                {
+                    args.Cancel = true;
+                    return;
+                }
+
                 // Update the search list.
                 if (_searchResults == null)
                 {
@@ -530,6 +559,7 @@ namespace Gorgon.Editor.ViewModels
             catch (Exception ex)
             {
                 _messageService.ShowError(ex, string.Format(Resources.GOREDIT_ERR_DELETE, args.Node));
+                args.Cancel = true;
             }
             finally
             {
@@ -555,7 +585,7 @@ namespace Gorgon.Editor.ViewModels
             try
             {
                 IFileExplorerNodeVm parent = args.ParentNode ?? RootNode;
-                _factory.CreateNewDirectoryNode(_project, _fileSystemService, parent);
+                _factory.CreateNewDirectoryNode(_project, _fileSystemService, parent, args.NewNodeName);
 
                 OnFileSystemChanged();
             }
@@ -2214,6 +2244,28 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Function to locate a node by its path.
+        /// </summary>
+        /// <param name="path">The path to the node.</param>
+        /// <returns>The node, if found. <b>null</b>, if not.</returns>
+        public IFileExplorerNodeVm FindNode(string path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentEmptyException(nameof(path));
+            }
+
+            path = path.FormatDirectory('/');
+
+            return _nodePathLookup.TryGetValue(path, out IFileExplorerNodeVm result) ? result : null;
+        }
+
+        /// <summary>
         /// Function to run the custom importers over the files in the file system.
         /// </summary>
         public async Task RunImportersAsync(CancellationToken cancelToken)
@@ -2348,7 +2400,10 @@ namespace Gorgon.Editor.ViewModels
                 SelectedNode = node;
             }
 
-            OnFileSystemChanged();
+            if (_batchMode == 0)
+            {
+                OnFileSystemChanged();
+            }
         }
 
         /// <summary>
@@ -2434,16 +2489,26 @@ namespace Gorgon.Editor.ViewModels
 
             IFileExplorerNodeVm selected = SelectedNode;
 
+			// If we're in batch mode, then collapse the directory so we can get things out faster (i.e. not have to update the display).
+            if (_batchMode != 0)
+            {
+                dirNode.IsExpanded = false;
+            }
+
             // Add the node to the tree.
             IFileExplorerNodeVm fileNode = _factory.CreateFileExplorerFileNodeVm(_project, _fileSystemService, dirNode, physicalFile);
             
             var result = (IContentFile)fileNode;
             _contentPlugIns.AssignContentPlugIn(result, this, false);
+            result.RefreshMetadata();
             
-            dirNode.IsExpanded = true;
-            SelectedNode = selected;           
+            if (_batchMode == 0)
+            {
+                dirNode.IsExpanded = true;
+                SelectedNode = selected;
 
-            OnFileSystemChanged();
+                OnFileSystemChanged();
+            }
 
             return result;
         }
@@ -2473,6 +2538,67 @@ namespace Gorgon.Editor.ViewModels
             }
 
             return _nodePathLookup.ContainsKey(path.FormatDirectory('/'));
+        }
+
+        /// <summary>
+        /// Function to notify the file system that a batch operation is about to commence.
+        /// </summary>
+        /// <remarks>
+        /// <returns><b>true</b> if the batch was started, <b>false</b> if not.</returns>
+        /// <para>
+        /// Developers should use batch mode when writing multiple files to the file system in rapid succession. Otherwise, the file system may not synchronize properly.
+        /// </para>
+        /// <para>
+        /// Call <see cref="EndBatch"/> to end the batch operation and update the file system.
+        /// </para>
+        /// <para>
+        /// Calling this across multiple threads will force a synchronization. If a thread holds the batch open for longer than 10 seconds, then the other thread trying to start a batch will receive a 
+        /// notification via the return value (<b>false</b>) that it timed out.
+        /// </para>
+        /// </remarks>
+        bool IContentFileManager.BeginBatch()
+        {
+            var timer = Stopwatch.StartNew();
+            var spin = new SpinWait();
+            while (Interlocked.Exchange(ref _batchMode, 1) == 1)
+            {
+                spin.SpinOnce();				
+
+                timer.Stop();
+
+				// Time out, we can't get the batch right now.
+                if (timer.ElapsedMilliseconds > 10000)
+                {
+                    return false;
+                }
+
+                timer.Start();
+            }
+
+            Interlocked.Exchange(ref _batchSelected, SelectedNode);
+            return true;
+        }
+
+        /// <summary>
+        /// Function to end a batch operation.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Developers should use batch mode when writing multiple files to the file system in rapid succession. Otherwise, the file system may not synchronize properly.
+        /// </para>
+        /// <para>
+        /// Call <see cref="BeginBatch"/> to start the batch operation.
+        /// </para>
+        /// </remarks>
+        void IContentFileManager.EndBatch()
+        {
+            IFileExplorerNodeVm selected = Interlocked.Exchange(ref _batchSelected, null);
+            Interlocked.Exchange(ref _batchMode, 0);
+
+            NotifyPropertyChanging(nameof(SelectedNode));
+            _selectedNode = selected;
+            NotifyPropertyChanged(nameof(SelectedNode));
+            OnFileSystemChanged();
         }
 
         /// <summary>
@@ -2540,10 +2666,12 @@ namespace Gorgon.Editor.ViewModels
 
             DirectoryInfo newDir = _fileSystemService.CreateDirectory(new DirectoryInfo(parentDir.PhysicalPath), directoryName);
             _ = _factory.CreateFileExplorerDirectoryNodeVm(_project, _fileSystemService, parentDir, newDir, true);
-
-            SelectedNode = selectedNode;
-
-            OnFileSystemChanged();
+            
+            if (_batchMode == 0)
+            {
+                SelectedNode = selectedNode;
+                OnFileSystemChanged();
+            }
         }
 
         /// <summary>
@@ -2611,7 +2739,10 @@ namespace Gorgon.Editor.ViewModels
                 SelectedNode = selectedNode;
             }
 
-            OnFileSystemChanged();
+            if (_batchMode == 0)
+            {
+                OnFileSystemChanged();
+            }
         }
 
         /// <summary>
@@ -2710,7 +2841,7 @@ namespace Gorgon.Editor.ViewModels
             SelectNodeCommand = new EditorCommand<IFileExplorerNodeVm>(DoSelectNode);
             CreateNodeCommand = new EditorCommand<CreateNodeArgs>(DoCreateNode, CanCreateNode);
             RenameNodeCommand = new EditorCommand<FileExplorerNodeRenameArgs>(DoRenameNode, CanRenameNode);
-            DeleteNodeCommand = new EditorCommand<DeleteNodeArgs>(DoDeleteNode, CanDeleteNode);
+            DeleteNodeCommand = new EditorAsyncCommand<DeleteNodeArgs>(DoDeleteNodeAsync, CanDeleteNode);
             RefreshNodeCommand = new EditorAsyncCommand<IFileExplorerNodeVm>(DoRefreshSelectedNodeAsync);
             CopyNodeCommand = new EditorCommand<CopyNodeArgs>(DoCopyNode, CanCopyNode);
             ExportNodeToCommand = new EditorCommand<IFileExplorerNodeVm>(DoExportNodeAsync, CanExportNode);

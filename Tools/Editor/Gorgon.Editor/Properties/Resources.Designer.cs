@@ -934,6 +934,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There is no root to the file system..
+        /// </summary>
+        internal static string GOREDIT_ERR_NO_ROOT {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_NO_ROOT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There is no video adapter on this machine that can be used by Gorgon.
         ///Gorgon requires a video adapter that is compatible with Direct 3D 11.4 or better..
         /// </summary>

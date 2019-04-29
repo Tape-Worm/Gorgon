@@ -530,33 +530,3 @@ float4 GorgonPixelShaderSobelEdge(GorgonSpriteVertex vertex) : SV_Target
 	return color;
 }
 #endif
-
-// Our default pixel shader with textures, alpha testing and materials.
-/*float4 GorgonPixelShaderTexturedMaterial(GorgonSpriteVertex vertex) : SV_Target
-{
-	float4 color = _gorgonTexture.Sample(_gorgonSampler, (vertex.uv * matTextureTransform.zw) + matTextureTransform.xy) * vertex.color * matDiffuse;
-
-	REJECT_ALPHA(color.a);
-		
-	return color;
-}
-
-// Our default pixel shader with diffuse, alpha testing and materials.
-float4 GorgonPixelShaderDiffuseMaterial(GorgonSpriteVertex vertex) : SV_Target
-{
-	float4 color = vertex.color * matDiffuse;
-
-	REJECT_ALPHA(color.a);
-		
-	return color;
-}
-
-// Our default pixel shader without textures with alpha testing.
-float4 GorgonPixelShaderDiffuse(GorgonSpriteVertex vertex)  : SV_Target
-{
-   REJECT_ALPHA(vertex.color.a);
-
-   return vertex.color;
-}
-
-*/

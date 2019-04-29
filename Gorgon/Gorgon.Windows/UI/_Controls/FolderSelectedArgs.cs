@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.IO;
 
 namespace Gorgon.UI
 {
@@ -54,7 +53,7 @@ namespace Gorgon.UI
         /// Initializes a new instance of the <see cref="FolderSelectedArgs"/> class.
         /// </summary>
         /// <param name="folder">The folder that was selected.</param>
-        public FolderSelectedArgs(DirectoryInfo folder) => FolderPath = folder?.FullName ?? string.Empty;
+        public FolderSelectedArgs(string folder) => FolderPath = folder ?? string.Empty;
         #endregion
 
     }

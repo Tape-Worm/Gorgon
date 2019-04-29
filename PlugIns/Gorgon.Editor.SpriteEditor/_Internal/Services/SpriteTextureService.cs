@@ -66,24 +66,22 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to render the image data into an 32 bit RGBA pixel format render target and then return it as the properly formatted image data.
         /// </summary>
         /// <param name="texture">The texture to render.</param>
-        /// <param name="arrayIndex">The array index to render.</param>
         /// <returns>The converted image data for the texture.</returns>
-        private IGorgonImage RenderImageData(GorgonTexture2DView texture, int arrayIndex)
+        private IGorgonImage RenderImageData(GorgonTexture2DView texture)
         {
             GorgonRenderTargetView oldRtv = _graphics.RenderTargets[0];
             GorgonRenderTarget2DView convertTarget = null;
             GorgonTexture2DView rtvTexture = null;
             IGorgonImage tempImage = null;
-            IGorgonImage resultImage = null;            
             BufferFormat targetFormat = texture.FormatInformation.IsSRgb ? BufferFormat.R8G8B8A8_UNorm_SRgb : BufferFormat.R8G8B8A8_UNorm;
 
             try
             {
-                resultImage = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, targetFormat)
+                IGorgonImage resultImage = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, targetFormat)
                 {
                     Width = texture.Width,
                     Height = texture.Height,
-                    ArrayCount = texture.ArrayCount                    
+                    ArrayCount = texture.ArrayCount
                 });
 
                 convertTarget = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(texture, "Convert_rtv")
@@ -104,8 +102,7 @@ namespace Gorgon.Editor.SpriteEditor
                     _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, texture.Width, texture.Height),
                         GorgonColor.White,
                         texture,
-                        new DX.RectangleF(0, 0, 1, 1),
-                        arrayIndex);
+                        new DX.RectangleF(0, 0, 1, 1), i);
                     _renderer.End();
 
                     tempImage?.Dispose();
@@ -137,7 +134,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Function to retrieve the image data for a sprite texture as a 32 bit RGBA pixel data.</summary>
         /// <param name="texture">The texture to extract the data from.</param>
         /// <returns>The image data for the texture.</returns>
-        public async Task<IGorgonImage> GetSpriteTextureImageDataAsync(GorgonTexture2DView texture, int arrayIndex)
+        public async Task<IGorgonImage> GetSpriteTextureImageDataAsync(GorgonTexture2DView texture)
         {
             IGorgonImage imageData = texture.Texture.ToImage();
 
@@ -160,7 +157,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             // OK, so this is going to take drastic measures.
             imageData.Dispose();
-            return RenderImageData(texture, arrayIndex);
+            return RenderImageData(texture);
         }
 
         /// <summary>Function to load an associated sprite texture for sprite content.</summary>

@@ -74,27 +74,17 @@ namespace Gorgon.Editor.ViewModels
         public IGorgonLog Log => Program.Log;
 
         /// <summary>Property to return the serivce used to show busy states.</summary>
-        public IBusyStateService BusyService 
-        {
-            get;
-        }
+        public IBusyStateService BusyService => ViewModelFactory.BusyService;
 
         /// <summary>Property to return the service used to show message dialogs.</summary>
-        public IMessageDisplayService MessageDisplay
-        {
-            get;
-        }
+        public IMessageDisplayService MessageDisplay => ViewModelFactory.MessageDisplay;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewModelCommonParameters"/> class.
         /// </summary>
         /// <param name="viewModelFactory">The view model factory for creating view models.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="viewModelFactory"/> parameter is <b>null</b>.</exception>
-        public ViewModelCommonParameters(ViewModelFactory viewModelFactory)
-        {
-            ViewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
-            BusyService = ViewModelFactory.BusyService;
-            MessageDisplay = ViewModelFactory.MessageDisplay;
-        }
+        public ViewModelCommonParameters(ViewModelFactory viewModelFactory) =>
+						ViewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));            
     }
 }

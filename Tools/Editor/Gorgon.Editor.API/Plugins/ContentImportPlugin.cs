@@ -57,6 +57,15 @@ namespace Gorgon.Editor.PlugIns
 
         #region Properties.
         /// <summary>
+        /// Property to return the plug in service used to manage content plug ins.
+        /// </summary>
+        protected IContentPlugInService ContentPlugInService
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// Property to return the graphics context for the application.
         /// </summary>
         protected IGraphicsContext GraphicsContext
@@ -73,13 +82,12 @@ namespace Gorgon.Editor.PlugIns
         /// <summary>
         /// Function to provide initialization for the plugin.
         /// </summary>
-        /// <param name="pluginService">The plugin service used to access other plugins.</param>
         /// <remarks>
         /// <para>
         /// This method is only called when the plugin is loaded at startup.
         /// </para>
         /// </remarks>
-        protected virtual void OnInitialize(IContentPlugInService pluginService)
+        protected virtual void OnInitialize()
         {
         }
 
@@ -189,10 +197,11 @@ namespace Gorgon.Editor.PlugIns
             }
 
             CommonServices.Log.Print($"Initializing {Name}...", LoggingLevel.Simple);
-			            
-            GraphicsContext = graphicsContext ?? throw new ArgumentNullException(nameof(graphicsContext));
 
-            OnInitialize(pluginService);
+            ContentPlugInService = pluginService;
+            GraphicsContext = graphicsContext ?? throw new ArgumentNullException(nameof(graphicsContext));            
+
+            OnInitialize();
         }
         #endregion
 

@@ -30,13 +30,14 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using Gorgon.Core;
+using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Native;
 using Gorgon.Windows.Properties;
-using Exception = System.Exception;
 
 namespace Gorgon.UI
 {
@@ -53,12 +54,12 @@ namespace Gorgon.UI
     /// drive types.
     /// </para>
     /// </remarks>
-    public partial class GorgonFolderBrowser 
+    public partial class GorgonFolderBrowser
         : UserControl
     {
         #region Variables.
         // The directory that we are currently viewing in the list.
-        private DirectoryInfo _activeDirectory;
+        private string _activeDirectory;
         // Flag to indicate that we're currently filling the list.
         private int _fillLock;
         // A list of directories to remember.
@@ -85,9 +86,33 @@ namespace Gorgon.UI
         private Image _fileIcon;
         // The item that is being edited.
         private ListViewItem _editItem;
+		// The folder to use as the root of the file system.
+        private DirectoryInfo _rootFolder;
+		// The directory separator character to use.
+        private char _directorySeparator = Path.DirectorySeparatorChar;
+        // The current directory.
+        private string _currentDirectory;
         #endregion
 
         #region Events.
+		/// <summary>
+        /// Event triggered when a folder is about to be deleted from the file system.
+        /// </summary>
+        [Category("Behavior"), Description("Event triggered when a folder is about to be deleted from the file system.")]
+        public event EventHandler<FolderDeleteArgs> FolderDeleting;
+
+		/// <summary>
+        /// Event triggered when a folder is about to be created on the file system.
+        /// </summary>
+        [Category("Behavior"), Description("Event triggered when a folder is about to be created on the file system.")]
+        public event EventHandler<FolderAddArgs> FolderAdding;
+
+		/// <summary>
+        /// Event triggered when a folder is about to be renamed on the file system.
+        /// </summary>
+        [Category("Behavior"), Description("Event triggered when a folder is about to be renamed on the file system.")]
+        public event EventHandler<FolderRenameArgs> FolderRenaming;
+
         /// <summary>
         /// Event triggered when a folder is selected.
         /// </summary>
@@ -103,13 +128,65 @@ namespace Gorgon.UI
 
         #region Properties.
         /// <summary>
+        /// Property to set or return the character to use as the directory separator.
+        /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public char DirectorySeparator
+        {
+            get => _directorySeparator;
+            set
+            {
+                if (_directorySeparator == value)
+                {
+                    return;
+                }
+
+                _directorySeparator = value;
+                FillList(_currentDirectory);
+                Invalidate();
+            }
+        }
+
+		/// <summary>
+        /// Property to set or return the folder that should be used as the root of the file system.
+        /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public DirectoryInfo RootFolder
+        {
+            get => _rootFolder;
+            set
+            {
+                if (string.Equals(_rootFolder?.FullName, value?.FullName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+
+				// Check for trailing slash.
+                if ((value != null) && (!value.FullName.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.OrdinalIgnoreCase)))
+                {
+                    value = new DirectoryInfo(value.FullName.FormatDirectory(Path.DirectorySeparatorChar));
+                }
+
+                _rootFolder = value;
+                SetCurrentDirectory(RootFolder.FullName, false);
+                Invalidate();
+            }
+        }
+
+        /// <summary>
         /// Property to return whether or not the control is in design mode.
         /// </summary>
-        [Browsable(false)]
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool IsDesignTime
         {
             get;
         }
+
+		/// <summary>
+        /// Property to return the current directory.
+        /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+		public string CurrentDirectory => FormatDirectoryPath(_currentDirectory);
 
         /// <summary>
         /// Property to set or return the font to use for the caption.
@@ -168,23 +245,13 @@ namespace Gorgon.UI
         /// <summary>
         /// Gets or sets the text associated with this control.
         /// </summary>
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), 
+        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always),
         Bindable(false), Description("Sets the text for the control header."), Category("Appearance"),
         DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public new string Text
         {
             get => LabelHeader.Text;
             set => LabelHeader.Text = base.Text = value;
-        }
-
-        /// <summary>
-        /// Property to return the current directory.
-        /// </summary>
-        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public DirectoryInfo CurrentDirectory
-        {
-            get;
-            private set;
         }
 
         /// <summary>
@@ -401,6 +468,37 @@ namespace Gorgon.UI
         #endregion
 
         #region Methods.
+		/// <summary>
+        /// Function to format the directory path name to fit the settings of the control.
+        /// </summary>
+        /// <param name="directoryName">The name of the directory.</param>
+        /// <returns>The formatted directory name.</returns>
+        private string FormatDirectoryPath(string directoryName)
+        {
+            string dirSep = _directorySeparator.ToString();
+
+            if (string.IsNullOrWhiteSpace(directoryName))
+            {
+                return RootFolder == null ? string.Empty : dirSep;
+            }
+
+            var path = new StringBuilder(directoryName.FormatDirectory(Path.DirectorySeparatorChar));
+
+            if (RootFolder != null)
+            {
+                directoryName = directoryName.FormatDirectory(Path.DirectorySeparatorChar);
+
+                if (!directoryName.StartsWith(RootFolder.FullName))
+                {
+                    return dirSep;
+                }
+
+                path.Replace(RootFolder.FullName, dirSep);				
+            }
+
+            return path.ToString().FormatDirectory(_directorySeparator);
+        }
+
         /// <summary>
         /// Handles the BeforeLabelEdit event of the ListDirectories control.
         /// </summary>
@@ -419,8 +517,9 @@ namespace Gorgon.UI
                 _editItem = ListDirectories.Items[e.Item];
 
                 // Files don't get any love here.
-                if ((_editItem.Tag != null) && (!(_editItem.Tag is DirectoryInfo)))
+                if ((_editItem.Tag == null) || (!(_editItem.Tag is DirectoryInfo)))
                 {
+                    _editItem = null;
                     e.CancelEdit = true;
                 }
             }
@@ -439,19 +538,37 @@ namespace Gorgon.UI
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonDeleteDir_Click(object sender, EventArgs e)
+        private async void ButtonDeleteDir_Click(object sender, EventArgs e)
         {
             try
             {
-                DirectoryInfo dir = CurrentDirectory;
+                var dir = new DirectoryInfo(_currentDirectory.FormatDirectory(Path.DirectorySeparatorChar));
+                string dirPath = FormatDirectoryPath(dir.FullName);
 
-                if ((dir == null) || (GorgonDialogs.ConfirmBox(ParentForm, string.Format(Resources.GOR_CONFIRM_DIR_DELETE, dir.FullName)) == ConfirmationResult.No))
+                var args = new FolderDeleteArgs(dirPath);
+                EventHandler<FolderDeleteArgs> handler = FolderDeleting;
+                handler?.Invoke(this, args);
+
+                if (args.DeleteTask != null)
+                {
+					Enabled = false;
+                    await args.DeleteTask;
+                    Enabled = true;
+                }
+
+                if (args.Cancel)
+                {
+                    return;
+                }
+
+                if ((dir == null) ||
+					((!args.SuppressPrompt) && (GorgonDialogs.ConfirmBox(ParentForm, string.Format(Resources.GOR_CONFIRM_DIR_DELETE, dirPath)) == ConfirmationResult.No)))
                 {
                     return;
                 }
 
                 dir.Refresh();
-                if (!dir.Exists)
+                if ((!dir.Exists) || (args.DeletionHandled))
                 {
                     SetCurrentDirectory(_activeDirectory, true);
                     return;
@@ -461,7 +578,6 @@ namespace Gorgon.UI
 
                 // Reset back to the active directory.
                 SetCurrentDirectory(_activeDirectory, true);
-                
             }
             catch (Exception ex)
             {
@@ -469,6 +585,7 @@ namespace Gorgon.UI
             }
             finally
             {
+                Enabled = true;
                 ValidateControls();
             }
         }
@@ -481,15 +598,31 @@ namespace Gorgon.UI
         {
             string name = baseName;
             int count = 1;
-            string path = Path.Combine(_activeDirectory.FullName, name);
+            string path = Path.Combine(_activeDirectory, name).FormatDirectory(Path.DirectorySeparatorChar);
 
             while ((Directory.Exists(path)) || (File.Exists(path)))
             {
-                name = $"{baseName} ({++count})";
-                path = Path.Combine(_activeDirectory.FullName, name);
+                name = $"{baseName} ({count++})";
+                path = Path.Combine(_activeDirectory, name).FormatDirectory(Path.DirectorySeparatorChar);
             }
 
             return name;
+        }
+
+		/// <summary>
+        /// Function to fire the specified folder event.
+        /// </summary>
+        /// <param name="handler">The event to trigger.</param>
+        /// <param name="directory">The directory being entered or selected.</param>
+        private void OnFolderSelectedOrEntered(EventHandler<FolderSelectedArgs> handler, string directory)
+        {
+            if (handler == null)
+            {
+                return;
+            }
+
+            string path = FormatDirectoryPath(directory);
+            handler.Invoke(this, new FolderSelectedArgs(path));
         }
 
         /// <summary>
@@ -504,9 +637,23 @@ namespace Gorgon.UI
             try
             {
                 string dirName = GetNewName(Resources.GOR_NEW_DIR);
-                var dir = new DirectoryInfo(Path.Combine(_activeDirectory.FullName, dirName));
-                dir.Create();
-                dir.Refresh();
+                var dir = new DirectoryInfo(Path.Combine(_activeDirectory, dirName).FormatDirectory(Path.DirectorySeparatorChar));
+
+                var args = new FolderAddArgs(FormatDirectoryPath(dir.Parent?.FullName), FormatDirectoryPath(dir.FullName), dir.Name);
+                EventHandler<FolderAddArgs> handler = FolderAdding;
+                FolderAdding?.Invoke(this, args);
+
+                if (args.Cancel)
+                {
+                    return;
+                }
+
+                if (!args.CreationHandled)
+                {
+                    dir.Create();
+                }
+
+                dir.Refresh();                
 
                 ListDirectories.Select();
 
@@ -520,10 +667,8 @@ namespace Gorgon.UI
                 item.EnsureVisible();
                 item.BeginEdit();
 
-                ListDirectories.SelectedItems.Clear();
-                EventHandler<FolderSelectedArgs> handler = FolderSelected;
-                handler?.Invoke(this, new FolderSelectedArgs(_activeDirectory));
-
+                ListDirectories.SelectedItems.Clear();                
+                OnFolderSelectedOrEntered(FolderSelected, _activeDirectory);
 
                 _editItem = item;
             }
@@ -566,7 +711,7 @@ namespace Gorgon.UI
                     return;
                 }
 
-                var dir = new DirectoryInfo(Path.Combine(_activeDirectory.FullName, name));
+                var dir = new DirectoryInfo(Path.Combine(_activeDirectory, name).FormatDirectory(Path.DirectorySeparatorChar));
 
                 if ((!string.Equals(name, editingItem.Text, StringComparison.OrdinalIgnoreCase)) && ((dir.Exists) || (File.Exists(dir.FullName))))
                 {
@@ -584,11 +729,27 @@ namespace Gorgon.UI
                     return;
                 }
 
-                var originalDir = new DirectoryInfo(Path.Combine(_activeDirectory.FullName, editingItem.Text));
-                originalDir.MoveTo(dir.FullName);
-                originalDir.Refresh();
+                var originalDir = new DirectoryInfo(Path.Combine(_activeDirectory, editingItem.Text).FormatDirectory(Path.DirectorySeparatorChar));
 
-                editingItem.Tag = originalDir;
+                var args = new FolderRenameArgs(FormatDirectoryPath(originalDir.FullName), originalDir.Name, FormatDirectoryPath(dir.FullName), dir.Name);
+                EventHandler<FolderRenameArgs> handler = FolderRenaming;
+                handler?.Invoke(this, args);
+
+                if (args.Cancel)
+                {
+                    e.CancelEdit = true;
+                    return;
+                }
+
+                if (!args.RenameHandled)
+                {
+                    originalDir.MoveTo(dir.FullName);
+                }
+
+                originalDir.Refresh();
+                dir.Refresh();
+
+                editingItem.Tag = dir;
                 editingItem.Selected = true;
             }
             catch (Exception ex)
@@ -663,8 +824,20 @@ namespace Gorgon.UI
         private void ButtonDirUp_Click(object sender, EventArgs e)
         {
             try
-            {
-                DirectoryInfo parent = _activeDirectory?.Parent;
+            {				
+                DirectoryInfo parent = null;
+                DirectoryInfo actDir = null;
+                if (_activeDirectory != null)
+                {
+                    actDir = new DirectoryInfo(_activeDirectory.FormatDirectory(Path.DirectorySeparatorChar));
+                }
+
+                string parentPath = actDir?.Parent.FullName.FormatDirectory(Path.DirectorySeparatorChar);
+
+                if (!string.IsNullOrWhiteSpace(parentPath))
+                {
+                    parent = new DirectoryInfo(parentPath);
+                }                
 
                 if (parent == null)
                 {
@@ -685,7 +858,7 @@ namespace Gorgon.UI
                     _undoDirectories.Add(parent);
                 }
 
-                SetCurrentDirectory(parent, false);
+                SetCurrentDirectory(parent.FullName, false);
             }
             catch (Exception ex)
             {
@@ -715,7 +888,7 @@ namespace Gorgon.UI
                 {
                     if (_undoIndex > 0)
                     {
-                        SetCurrentDirectory(_undoDirectories[--_undoIndex], false);
+                        SetCurrentDirectory(_undoDirectories[--_undoIndex].FullName, false);
                     }
                     else
                     {
@@ -729,7 +902,7 @@ namespace Gorgon.UI
                     return;
                 }
 
-                SetCurrentDirectory(_undoDirectories[++_undoIndex], false);
+                SetCurrentDirectory(_undoDirectories[++_undoIndex].FullName, false);
             }
             catch (Exception ex)
             {
@@ -738,6 +911,22 @@ namespace Gorgon.UI
             finally
             {
                 ValidateControls();
+            }
+        }
+
+        /// <summary>Handles the KeyDown event of the ListDirectories control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
+        private void ListDirectories_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.Enter:
+                    if ((ListDirectories.SelectedItems.Count == 1) && (_editItem == null))
+                    {
+                        ListDirectories_DoubleClick(ListDirectories, EventArgs.Empty);
+                    }
+                    break;
             }
         }
 
@@ -756,12 +945,6 @@ namespace Gorgon.UI
                         if (_editItem == null)
                         {
                             ButtonDirUp.PerformClick();
-                        }
-                        break;
-                    case Keys.Enter:
-                        if ((ListDirectories.SelectedItems.Count == 1) && (_editItem == null))
-                        {
-                            ListDirectories_DoubleClick(ListDirectories, EventArgs.Empty);
                         }
                         break;
                     case Keys.Delete:
@@ -810,7 +993,7 @@ namespace Gorgon.UI
 
                 if (ListDirectories.SelectedItems[0].Tag is DirectoryInfo dir)
                 {
-                    SetCurrentDirectory(dir, true);
+                    SetCurrentDirectory(dir.FullName, true);
                 }
             }
             catch (Exception ex)
@@ -837,13 +1020,32 @@ namespace Gorgon.UI
                     return;
                 }
 
-                if (string.IsNullOrWhiteSpace(TextDirectory.Text))
+                string path = TextDirectory.Text.FormatDirectory(_directorySeparator);
+
+                if (RootFolder != null)
+                {
+                    if ((string.IsNullOrWhiteSpace(path)) || (path == _directorySeparator.ToString()))
+                    {
+                        path = RootFolder.FullName.FormatDirectory(Path.DirectorySeparatorChar);
+                    }
+                    else
+                    {
+                        if (path.StartsWith(_directorySeparator.ToString(), StringComparison.OrdinalIgnoreCase))
+                        {
+                            path = path.Substring(1);
+                        }
+
+                        path = Path.Combine(_activeDirectory, path.Replace(_directorySeparator, Path.DirectorySeparatorChar)).FormatDirectory(Path.DirectorySeparatorChar);
+                    }
+                }
+
+                if (string.IsNullOrWhiteSpace(path))
                 {
                     SetCurrentDirectory(null, true);
                     return;
-                }
+                }               
 
-                var dir = new DirectoryInfo(TextDirectory.Text);
+                var dir = new DirectoryInfo(path);
 
                 if (!dir.Exists)
                 {
@@ -854,14 +1056,12 @@ namespace Gorgon.UI
                     }
                     else
                     {
-                        TextDirectory.Text = CurrentDirectory?.FullName ?? string.Empty;
-
-                        // TODO: Should we ask to create the directory?
-                        //SetError(new DirectoryNotFoundException(string.Format(Resources.GOR_ERR_DIR_NOT_FOUND, dir.FullName)));
+                        TextDirectory.Text = FormatDirectoryPath(_currentDirectory);
+                        dir = new DirectoryInfo(_currentDirectory.FormatDirectory(Path.DirectorySeparatorChar));
                     }
                 }
 
-                SetCurrentDirectory(new DirectoryInfo(TextDirectory.Text), true);
+                SetCurrentDirectory(dir.FullName, true);
 
                 TextDirectory.SelectAll();
             }
@@ -891,24 +1091,39 @@ namespace Gorgon.UI
         {
             try
             {
+                DirectoryInfo dir = null;
+
+                if (_currentDirectory != null)
+                {
+                    dir = new DirectoryInfo(_currentDirectory);
+                }
+
                 if ((e.Item == null) || ((!e.IsSelected) && (e.Item != null)) || (ListDirectories.SelectedItems.Count == 0))
                 {
-                    CurrentDirectory = CurrentDirectory?.Parent;
-                    TextDirectory.Text = CurrentDirectory == null ? string.Empty : CurrentDirectory.FullName;
+                    // Don't go any higher than the active directory.
+                    if (!string.Equals(_currentDirectory, _activeDirectory, StringComparison.OrdinalIgnoreCase))
+                    {
+                        _currentDirectory = (RootFolder == null) ? dir?.Parent.FullName : _activeDirectory;
+                        TextDirectory.Text = FormatDirectoryPath(_currentDirectory);
+                    }
                 }
                 else
                 {
-                    if (!(e.Item.Tag is DirectoryInfo dir))
+                    dir = e.Item.Tag as DirectoryInfo;
+
+                    if (dir == null)
                     {
                         return;
                     }
 
-                    CurrentDirectory = dir;
-                    TextDirectory.Text = CurrentDirectory?.FullName;
+                    _currentDirectory = dir.FullName.FormatDirectory(Path.DirectorySeparatorChar);
+                    TextDirectory.Text = FormatDirectoryPath(_currentDirectory);
                 }
 
-                EventHandler<FolderSelectedArgs> handler = FolderSelected;
-                handler?.Invoke(this, new FolderSelectedArgs(CurrentDirectory));
+                if (e.IsSelected)
+                {
+                    OnFolderSelectedOrEntered(FolderSelected, _currentDirectory);
+                }
             }
             finally
             {
@@ -944,8 +1159,14 @@ namespace Gorgon.UI
         /// </summary>
         /// <param name="dir">The directory to set.</param>
         /// <param name="updateUndoList"><b>true</b> to update the undo list at the current directory, or <b>false</b> to leave it alone.</param>
-        private void SetCurrentDirectory(DirectoryInfo dir, bool updateUndoList)
+        private void SetCurrentDirectory(string dir, bool updateUndoList)
         {
+            dir = dir?.FormatDirectory(Path.DirectorySeparatorChar);
+            if ((RootFolder != null) && ((dir == null) || (!dir.StartsWith(RootFolder.FullName))))
+            {
+                dir = RootFolder.FullName;
+            }
+
             if (((_activeDirectory == null) && (dir != null))
                 || ((_activeDirectory != null) && (dir == null)))
             {
@@ -953,8 +1174,8 @@ namespace Gorgon.UI
                 _sortOrder = SortOrder.Ascending;
             }
 
-            CurrentDirectory = dir;
-            
+            _currentDirectory = dir;
+
             if (updateUndoList)
             {
                 // Remove duplicates, or deleted directories if we have any.
@@ -964,7 +1185,7 @@ namespace Gorgon.UI
                     DirectoryInfo undoDir = _undoDirectories[i];
                     undoDir.Refresh();
 
-                    if ((!undoDir.Exists) || (string.Equals(undoDir.FullName, dir?.FullName, StringComparison.OrdinalIgnoreCase)))
+                    if ((!undoDir.Exists) || (string.Equals(undoDir.FullName, dir, StringComparison.OrdinalIgnoreCase)))
                     {
                         _undoDirectories.RemoveAt(i);
                         continue;
@@ -985,12 +1206,12 @@ namespace Gorgon.UI
                     _undoDirectories.Clear();
                 }
 
-                _undoDirectories.Add(dir);
+                _undoDirectories.Add(new DirectoryInfo(dir));
                 _undoIndex = _undoDirectories.Count - 1;
             }
 
-            TextDirectory.Text = dir?.FullName ?? string.Empty;
-            
+            TextDirectory.Text = FormatDirectoryPath(dir);
+
             SetError(null);
             try
             {
@@ -1008,8 +1229,7 @@ namespace Gorgon.UI
             _activeDirectory = dir;
             ValidateControls();
 
-            EventHandler<FolderSelectedArgs> handler = FolderEntered;
-            handler?.Invoke(this, new FolderSelectedArgs(dir));
+            OnFolderSelectedOrEntered(FolderEntered, dir);
         }
 
         /// <summary>
@@ -1037,9 +1257,10 @@ namespace Gorgon.UI
         /// </summary>
         private void ValidateControls()
         {
-            ButtonDirUp.Enabled = (_activeDirectory != null) && (CurrentDirectory != null);
-            ButtonAddDir.Enabled = (ButtonDirUp.Enabled) && (_editItem == null);
-            ButtonDeleteDir.Enabled = (ButtonAddDir.Enabled) && (!string.Equals(CurrentDirectory?.FullName, _activeDirectory?.FullName, StringComparison.OrdinalIgnoreCase));
+            ButtonDirUp.Enabled = (_activeDirectory != null) && (_currentDirectory != null) 
+				&& ((RootFolder == null) || (!string.Equals(RootFolder.FullName, _activeDirectory, StringComparison.OrdinalIgnoreCase)));
+            ButtonAddDir.Enabled = (_activeDirectory != null) && (_currentDirectory != null) && (_editItem == null);
+            ButtonDeleteDir.Enabled = (ButtonAddDir.Enabled) && (!string.Equals(_currentDirectory, _activeDirectory, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>
@@ -1047,12 +1268,14 @@ namespace Gorgon.UI
         /// </summary>
         /// <param name="dir">The directory to evaluate.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Windows.Forms.ListViewItem+ListViewSubItemCollection.Add(System.String)", Justification = "You moron.  There's nothing to localize in here")]
-        private void GetDirectories(DirectoryInfo dir)
+        private void GetDirectories(string dir)
         {
-            IEnumerable<DirectoryInfo> directories = dir.GetDirectories()
+            var dirEntry = new DirectoryInfo(dir.FormatDirectory(Path.DirectorySeparatorChar));
+
+            IEnumerable<DirectoryInfo> directories = dirEntry.GetDirectories()
                                                         .Where(item => ((item.Attributes & FileAttributes.System) != FileAttributes.System)
                                                                        && ((item.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden));
-            IEnumerable<FileInfo> files = dir.GetFiles()
+            IEnumerable<FileInfo> files = dirEntry.GetFiles()
                                              .Where(item => ((item.Attributes & FileAttributes.System) != FileAttributes.System)
                                                             && ((item.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden));
 
@@ -1070,18 +1293,18 @@ namespace Gorgon.UI
                             ? files.OrderByDescending(item => item.Name)
                             : files.OrderByDescending(item => item.LastWriteTime);
             }
-            
+
             ColumnDirectoryDate.Text = Resources.GOR_TEXT_MODIFIED_DATE;
 
             foreach (DirectoryInfo directory in directories)
             {
                 var item = new ListViewItem(directory.Name)
-                           {
-                               ImageIndex = 0,
-                               Tag = directory,
-                               Font = Font
-                           };
-                    
+                {
+                    ImageIndex = 0,
+                    Tag = new DirectoryInfo(directory.FullName.FormatDirectory(Path.DirectorySeparatorChar)),
+                    Font = Font
+                };
+
                 item.SubItems.Add($@"{directory.LastWriteTime.ToShortDateString()} {directory.LastWriteTime.ToShortTimeString()}");
 
                 ListDirectories.Items.Add(item);
@@ -1090,14 +1313,15 @@ namespace Gorgon.UI
             foreach (FileInfo file in files)
             {
                 var item = new ListViewItem(file.Name)
-                           {
-                               ImageIndex = 6,
-                               Tag = null,
-                               Font = Font,
-                               ForeColor = Color.FromKnownColor(KnownColor.DimGray)
-                           };
-                    
+                {
+                    ImageIndex = 6,
+                    Tag = null,
+                    Font = Font,
+                    ForeColor = Color.FromKnownColor(KnownColor.DimGray)
+                };
+
                 item.SubItems.Add($@"{file.LastWriteTime.ToShortDateString()} {file.LastWriteTime.ToShortTimeString()}");
+                item.SubItems.Add($"{file.Length.FormatMemory()}");
 
                 ListDirectories.Items.Add(item);
             }
@@ -1155,9 +1379,11 @@ namespace Gorgon.UI
                     }
 
                     var item = new ListViewItem(driveName)
-                               {
-                                   Tag = null, Font = Font, ImageIndex = imageIndex
-                               };
+                    {
+                        Tag = null,
+                        Font = Font,
+                        ImageIndex = imageIndex
+                    };
 
 
                     item.SubItems.Add($@"{freeSpace.FormatMemory()}");
@@ -1199,10 +1425,10 @@ namespace Gorgon.UI
             foreach (DriveInfo drive in drives)
             {
                 var item = new ListViewItem(drive.Name)
-                           {
-                               Tag = drive.RootDirectory,
-                               Font = Font
-                           };
+                {
+                    Tag = drive.RootDirectory,
+                    Font = Font
+                };
 
                 switch (drive.DriveType)
                 {
@@ -1222,7 +1448,7 @@ namespace Gorgon.UI
                         item.ImageIndex = 1;
                         break;
                 }
-                    
+
 
                 item.SubItems.Add($@"{drive.AvailableFreeSpace.FormatMemory()}");
 
@@ -1234,7 +1460,7 @@ namespace Gorgon.UI
         /// Function to fill the list with directory entries.
         /// </summary>
         /// <param name="dir">The directory to enumerate.</param>
-        private void FillList(DirectoryInfo dir)
+        private void FillList(string dir)
         {
             if (Interlocked.Exchange(ref _fillLock, 1) == 1)
             {
@@ -1247,12 +1473,25 @@ namespace Gorgon.UI
             {
                 ListDirectories.Items.Clear();
 
-                if (dir == null)
+                if ((dir == null) && (RootFolder == null))
                 {
+                    if (ListDirectories.Columns.Contains(ColumnSize))
+                    {
+                        ListDirectories.Columns.Remove(ColumnSize);
+                    }
                     GetDrives();
                 }
                 else
                 {
+                    if (!ListDirectories.Columns.Contains(ColumnSize))
+                    {
+                        ListDirectories.Columns.Add(ColumnSize);
+                    }
+                    if (dir == null)
+                    {
+                        dir = RootFolder.FullName;
+                    }
+
                     GetDirectories(dir);
                 }
 
@@ -1261,7 +1500,9 @@ namespace Gorgon.UI
                     return;
                 }
 
-                ListViewItem selected = ListDirectories.Items.OfType<ListViewItem>().FirstOrDefault(item => item.Tag == dir);
+                ListViewItem selected = ListDirectories.Items
+							.OfType<ListViewItem>()
+							.FirstOrDefault(item => string.Equals((item.Tag as DirectoryInfo)?.FullName, dir, StringComparison.OrdinalIgnoreCase));
 
                 if (selected != null)
                 {
@@ -1297,11 +1538,12 @@ namespace Gorgon.UI
         /// <param name="dir">The directory to assign.</param>
         public void AssignInitialDirectory(DirectoryInfo dir)
         {
+            string dirPath = dir?.FullName.FormatDirectory(Path.DirectorySeparatorChar);
+
             try
             {
                 // We're already set to this directory, so leave.
-                if ((dir == CurrentDirectory)
-                    || (string.Equals(CurrentDirectory?.FullName, dir?.FullName, StringComparison.OrdinalIgnoreCase)))
+                if (string.Equals(_currentDirectory, dirPath, StringComparison.OrdinalIgnoreCase))
                 {
                     return;
                 }
@@ -1320,15 +1562,15 @@ namespace Gorgon.UI
 
                     while (parent != null)
                     {
-                        _undoDirectories.Insert(0, parent);
+                        _undoDirectories.Insert(0, new DirectoryInfo(parent.FullName.FormatDirectory(Path.DirectorySeparatorChar)));
                         parent = parent.Parent;
                     }
 
-                    _undoDirectories.Add(dir);
+                    _undoDirectories.Add(new DirectoryInfo(dirPath));
                     _undoIndex = _undoDirectories.Count - 1;
                 }
-                
-                SetCurrentDirectory(dir, false);
+
+                SetCurrentDirectory(dirPath, false);
             }
             catch (Exception ex)
             {
@@ -1360,8 +1602,8 @@ namespace Gorgon.UI
             DefaultImages.Images.Add("drive_48x48", icon);
             Images.Images.Add("drive_48x48", icon);
             icon = ShellApi.ExtractShellIcon(StandardShellIcons.Removable);
-            DefaultImages.Images.Add("drive_remove_48x48",icon );
-            Images.Images.Add("drive_remove_48x48",icon );
+            DefaultImages.Images.Add("drive_remove_48x48", icon);
+            Images.Images.Add("drive_remove_48x48", icon);
             icon = ShellApi.ExtractShellIcon(StandardShellIcons.CdRom);
             DefaultImages.Images.Add("drive_cdrom_48x48", icon);
             Images.Images.Add("drive_cdrom_48x48", icon);
@@ -1408,7 +1650,7 @@ namespace Gorgon.UI
                 }
                 else
                 {
-                    FillList(CurrentDirectory);
+                    FillList(_currentDirectory);
                 }
             }
             catch (Exception ex)
@@ -1444,7 +1686,7 @@ namespace Gorgon.UI
             Tip.SetToolTip(PanelError, message);
             Tip.SetToolTip(LabelError, message);
             Tip.SetToolTip(LabelErrorIcon, message);
-            
+
             LabelError.Text = message.Replace('\n', ' ').Replace('\r', ' ');
             PanelError.Visible = true;
         }

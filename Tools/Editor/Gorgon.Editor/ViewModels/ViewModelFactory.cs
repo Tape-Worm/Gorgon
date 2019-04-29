@@ -34,6 +34,7 @@ using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
+using Gorgon.Editor.FileSystem;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.ProjectData;
@@ -64,6 +65,8 @@ namespace Gorgon.Editor.ViewModels
         private readonly FileScanService _fileScanService;
 		// A string builder used to construct path names.
         private readonly StringBuilder _pathBuilder = new StringBuilder(512);
+		// The file system folder browser.
+        private readonly IEditorFileSystemFolderBrowseService _folderBrowser;
         #endregion
 
         #region Properties.
@@ -434,13 +437,13 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="project">The project data.</param>
         /// <param name="fileSystemService">The file system service used to manipulate the underlying physical file system.</param>
         /// <param name="parentNode">The parent for the node.</param>
-        /// <param name="orignalDir">The original directory to wrap in the view model.</param>
+        /// <param name="newNodeName">The name of the new node.</param>
         /// <returns>The new file explorer node view model.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, <paramref name="fileSystemService"/>, <paramref name="parentNode"/>, or the <paramref name="directory"/> parameter is <b>null</b>.</exception>
-        public IFileExplorerNodeVm CreateNewDirectoryNode(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parentNode)
+        public IFileExplorerNodeVm CreateNewDirectoryNode(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parentNode, string newNodeName)
         {
             var parent = new DirectoryInfo(parentNode.PhysicalPath);
-            DirectoryInfo directory = fileSystemService.CreateDirectory(parent);
+            DirectoryInfo directory = string.IsNullOrWhiteSpace(newNodeName) ? fileSystemService.CreateDirectory(parent) : fileSystemService.CreateDirectory(parent, newNodeName);
 
             return CreateFileExplorerDirectoryNodeVm(project, fileSystemService, parentNode, directory, true);
         }
@@ -511,7 +514,8 @@ namespace Gorgon.Editor.ViewModels
                 throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, project.FileSystemDirectory.FullName));
             }
 
-            var result = new FileExplorerVm();            
+            var result = new FileExplorerVm();
+            _folderBrowser.FileSystem = result;
             var root = new FileExplorerRootNode();
 
             // This is a special node, used internally.
@@ -603,7 +607,7 @@ namespace Gorgon.Editor.ViewModels
             previewer.Initialize(new ContentPreviewVmParameters(result.FileExplorer, result.ContentFileManager, thumbDirectory, this));
 
             result.ContentPreviewer = previewer;
-            result.Initialize(new ProjectVmParameters(projectData, this));
+            result.Initialize(new ProjectVmParameters(projectData, _folderBrowser, this));
 
             // Empty this list, it will be rebuilt when we save, and having it lying around is a waste.
             projectData.ProjectItems.Clear();
@@ -621,11 +625,11 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="contentPlugIns">The plugins used for content.</param>
         /// <param name="toolPlugIns">The plugins used for application tools.</param>
         /// <param name="projectManager">The application project manager.</param>
-        /// <param name="viewModelInjection"></param>
-        /// <param name="waitState">The wait state service.</param>
+        /// <param name="viewModelInjection">The common services for the application.</param>        
         /// <param name="clipboardService">The application clipboard service.</param>
         /// <param name="dirLocatorService">The directory locator service.</param>
         /// <param name="fileScanService">The file scanning service used to scan content files for content plugin associations.</param>
+        /// <param name="folderBrowser">The file system folder browser service.</param>
         /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
         public ViewModelFactory(EditorSettings settings, 
                                 FileSystemProviders providers, 
@@ -635,7 +639,8 @@ namespace Gorgon.Editor.ViewModels
                                 IViewModelInjection viewModelInjection,                                
                                 ClipboardService clipboardService, 
                                 DirectoryLocateService dirLocatorService,
-                                FileScanService fileScanService)
+                                FileScanService fileScanService,
+                                IEditorFileSystemFolderBrowseService folderBrowser)
         {
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             FileSystemProviders = providers ?? throw new ArgumentNullException(nameof(providers));
@@ -646,6 +651,7 @@ namespace Gorgon.Editor.ViewModels
             _clipboard = clipboardService ?? throw new ArgumentNullException(nameof(clipboardService));
             _dirLocator = dirLocatorService ?? throw new ArgumentNullException(nameof(dirLocatorService));
             _fileScanService = fileScanService ?? throw new ArgumentNullException(nameof(fileScanService));
+            _folderBrowser = folderBrowser ?? throw new ArgumentNullException(nameof(folderBrowser));
         }
         #endregion
     }

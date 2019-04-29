@@ -27,7 +27,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.Services;
 using Gorgon.Editor.PlugIns;
@@ -35,7 +34,6 @@ using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
-using Gorgon.PlugIns;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -97,8 +95,8 @@ namespace Gorgon.Editor.ImageEditor
         /// the base <see cref="ISettingsCategoryViewModel"/> type.
         /// </para>
         ///   <para>
-        /// Plug ins must register the view associated with their settings panel via the <see cref="ViewFactory.Register``1(System.Func{System.Windows.Forms.Control})"/> method in the
-        /// <see cref="OnInitialize(IContentPlugInService)"/> method or the settings will not display.
+        /// Plug ins must register the view associated with their settings panel via the <see cref="ViewFactory.Register{T}(Func{System.Windows.Forms.Control})"/> method in the
+        /// <see cref="OnInitialize()"/> method or the settings will not display.
         /// </para>
         /// </remarks>
         protected override ISettingsCategoryViewModel OnGetSettings() => _settings;
@@ -106,12 +104,12 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Function to provide initialization for the plugin.</summary>
         /// <param name="pluginService">The plugin service used to access other plugins.</param>
         /// <remarks>This method is only called when the plugin is loaded at startup.</remarks>
-        protected override void OnInitialize(IContentPlugInService pluginService)
+        protected override void OnInitialize()
         {
             ViewFactory.Register<ISettings>(() => new ImageCodecSettingsPanel());
 			
 			// Retrieve the shared settings.
-            (_codecs, _settings) = SharedDataFactory.GetSharedData(pluginService, CommonServices);
+            (_codecs, _settings) = SharedDataFactory.GetSharedData(ContentPlugInService, CommonServices);
         }
 
         /// <summary>Function to provide clean up for the plugin.</summary>

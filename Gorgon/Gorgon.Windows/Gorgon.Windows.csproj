@@ -73,6 +73,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="UI\_Controls\FolderDeleteArgs.cs" />
+    <Compile Include="UI\_Controls\FolderRenameArgs.cs" />
+    <Compile Include="UI\_Controls\FolderAddArgs.cs" />
     <Compile Include="UI\_Controls\GorgonAlignmentPicker.cs">
       <SubType>UserControl</SubType>
     </Compile>

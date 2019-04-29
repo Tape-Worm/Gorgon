@@ -45,12 +45,12 @@ namespace Gorgon.Editor.PlugIns
 
         #region Properties.
         /// <summary>
-        /// Property to return the action to perform when the button is clicked.
+        /// Property to set or return the action to perform when the button is clicked.
         /// </summary>
         public Action ClickCallback
         {
             get;
-            private set;
+            set;
         }
 
 		/// <summary>
@@ -59,7 +59,7 @@ namespace Gorgon.Editor.PlugIns
 		public Func<bool> CanExecute
         {
             get;
-            private set;
+            set;
         }
 
         /// <summary>
@@ -113,6 +113,15 @@ namespace Gorgon.Editor.PlugIns
             get;
             set;
         }
+
+        /// <summary>
+        /// Property to set or return the description for the button.
+        /// </summary>
+        public string Description
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Methods.
@@ -158,11 +167,9 @@ namespace Gorgon.Editor.PlugIns
         /// <param name="largeIcon">The large icon.</param>
         /// <param name="smallIcon">The small icon.</param>
         /// <param name="groupName">Name of the group.</param>
-        /// <param name="clickCallback">The callback used when the button is clicked.</param>
-        /// <param name="canExecute">The callback used to determine if the button can be clicked.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="displayText"/>, or the <paramref name="groupName"/> parameter is empty.</exception>
-        public ToolPlugInRibbonButton(string displayText, Image largeIcon, Image smallIcon, string groupName, Action clickCallback, Func<bool> canExecute)
+        public ToolPlugInRibbonButton(string displayText, Image largeIcon, Image smallIcon, string groupName)
             : base(Guid.NewGuid().ToString("N"))
         {
             if (displayText == null)
@@ -189,8 +196,6 @@ namespace Gorgon.Editor.PlugIns
             LargeIcon = largeIcon ?? throw new ArgumentNullException(nameof(largeIcon));
             SmallIcon = smallIcon ?? throw new ArgumentNullException(nameof(smallIcon));
             GroupName = groupName;
-            ClickCallback = clickCallback ?? throw new ArgumentNullException(nameof(clickCallback));
-            CanExecute = canExecute ?? throw new ArgumentNullException(nameof(canExecute));
         }
         #endregion
     }

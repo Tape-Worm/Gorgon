@@ -75,6 +75,15 @@ namespace Gorgon.Editor.PlugIns
         {
             get;
         }
+
+		/// <summary>
+        /// Property to set or return the description for the button.
+        /// </summary>
+		string Description
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Methods.

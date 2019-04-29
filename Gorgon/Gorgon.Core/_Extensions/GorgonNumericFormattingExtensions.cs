@@ -42,8 +42,10 @@ namespace Gorgon.Core
         /// </summary>
         /// <param name="value">Value to format.</param>
         /// <param name="sizeType">Size value to use.</param>
+        /// <param name="requireDecimal">[Optional] <b>true</b> if the value should have a decimal place always appear, or <b>false</b> if not.</param>
         /// <returns>The string formatted to the current UI culture.</returns>
-        private static string GetCultureString(double value, string sizeType) => string.Format(CultureInfo.CurrentCulture, "{0:0.0#} {1}", value, sizeType);
+        private static string GetCultureString(double value, string sizeType, bool requireDecimal = true) => 
+			string.Format(CultureInfo.CurrentCulture, requireDecimal ? "{0:0.0#} {1}" : "{0:0.#} {1}", value, sizeType);
 
         /// <summary>
         /// Function to return a formatted string containing the memory amount.
@@ -60,7 +62,7 @@ namespace Gorgon.Core
         /// // Produces: "128 bytes".
         /// </code>
         /// </remarks>
-        public static string FormatMemory(this byte amount) => GetCultureString(amount, Resources.GOR_UNIT_MEM_BYTES);
+        public static string FormatMemory(this byte amount) => GetCultureString(amount, Resources.GOR_UNIT_MEM_BYTES, false);
 
         /// <summary>
         /// Function to return a formatted string containing the memory amount.
@@ -83,7 +85,7 @@ namespace Gorgon.Core
 		{
 		    double scale = amount.Abs() / 1024.0;
 
-		    return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES);
+		    return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES, false);
 		}
 
 		/// <summary>
@@ -110,7 +112,7 @@ namespace Gorgon.Core
 		{
 		    double scale = amount / 1024.0;
 			
-		    return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES);
+		    return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES, false);
 		}
 
 		/// <summary>
@@ -157,7 +159,7 @@ namespace Gorgon.Core
 
 		    scale = amount / 1024.0;
 
-		    return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES);
+		    return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES, false);
 		}
 
 		/// <summary>
@@ -204,7 +206,7 @@ namespace Gorgon.Core
 
             scale = amount / 1024.0;
 
-		    return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES);
+		    return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES, false);
 		}
 
 		/// <summary>
@@ -270,7 +272,7 @@ namespace Gorgon.Core
 
 			scale = amount / 1024.0;
 
-		    return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES);
+		    return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES, false);
 		}
 
 		/// <summary>
@@ -336,7 +338,7 @@ namespace Gorgon.Core
 
 			scale = amount / 1024.0;
 
-		    return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES);
+		    return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES, false);
 		}
 
 		/// <summary>
@@ -379,7 +381,7 @@ namespace Gorgon.Core
 
             scale = amount / 1024.0;
 
-            return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES);
+            return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES, false);
         }
 
 		/// <summary>
@@ -422,7 +424,7 @@ namespace Gorgon.Core
 
             scale = amount / 1024.0;
 
-            return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES);
+            return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES, false);
         }
 
         /// <summary>

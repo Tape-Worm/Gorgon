@@ -631,7 +631,7 @@ namespace Gorgon.Editor.Views
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ItemDelete_Click(object sender, EventArgs e)
+        private async void ItemDelete_Click(object sender, EventArgs e)
         {
             IFileExplorerNodeVm node;
 
@@ -667,7 +667,7 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            DataContext.DeleteNodeCommand.Execute(args);
+            await DataContext.DeleteNodeCommand.ExecuteAsync(args);
         }
 
         /// <summary>
@@ -808,8 +808,11 @@ namespace Gorgon.Editor.Views
 
             Debug.Assert(TreeFileSystem.SelectedNode != null, "The node needs to be selected after adding.");
 
-            // Default to renaming once the node is added.
-            TreeFileSystem.SelectedNode.BeginEdit();
+            // Default to renaming once the node is added if we didn't supply a name.
+            if (string.IsNullOrWhiteSpace(args.NewNodeName))
+            {
+                TreeFileSystem.SelectedNode.BeginEdit();
+            }
         }
 
         /// <summary>
@@ -839,7 +842,7 @@ namespace Gorgon.Editor.Views
                 MenuSepEdit.Available = MenuItemPaste.Available = _clipboardContext?.CanPaste() ?? false;
                 MenuItemPaste.Enabled = _clipboardContext?.CanPaste() ?? false;
                 MenuSepOrganize.Available = false;
-                MenuSepNew.Available = MenuItemCreateDirectory.Available = dataContext?.CreateNodeCommand?.CanExecute(null) ?? false;                
+                MenuSepNew.Available = MenuItemCreateDirectory.Available = dataContext?.CreateNodeCommand?.CanExecute(new CreateNodeArgs(dataContext.RootNode)) ?? false;                
                 MenuItemDelete.Available = false;
                 MenuItemRename.Available = false;
                 
@@ -856,7 +859,7 @@ namespace Gorgon.Editor.Views
             MenuItemPaste.Available = _clipboardContext != null;
             MenuItemPaste.Enabled = _clipboardContext?.CanPaste() ?? false;
 
-            MenuItemCreateDirectory.Available = dataContext.CreateNodeCommand?.CanExecute(null) ?? false;
+            MenuItemCreateDirectory.Available = dataContext.CreateNodeCommand?.CanExecute(new CreateNodeArgs(dataContext.SelectedNode)) ?? false;
             MenuItemDelete.Available = dataContext.DeleteNodeCommand?.CanExecute(null) ?? false;
 
             MenuSepContent.Available = MenuItemOpenContent.Available = dataContext.OpenContentFileCommand?.CanExecute(dataContext.SelectedNode as IContentFile) ?? false;

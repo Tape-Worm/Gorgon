@@ -204,8 +204,8 @@ namespace Gorgon.Editor.Views
                     TextProjectPath.Text = DataContext.WorkspacePath?.FullName ?? string.Empty;
                     break;
                 case nameof(IStageNewVm.InvalidPathReason):
-                    ResetTextBoxColor(DataContext);
-                    TipError.Show(DataContext.InvalidPathReason, TextProjectPath, new Point(8, TextProjectPath.Height + 2));
+                    ResetTextBoxColor(DataContext);					
+                    TipError.Show(DataContext.InvalidPathReason, TextProjectPath, new Point(0, TextProjectPath.Bottom));
                     break;
             }
 

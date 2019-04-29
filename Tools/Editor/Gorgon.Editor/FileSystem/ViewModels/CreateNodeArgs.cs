@@ -42,8 +42,21 @@ namespace Gorgon.Editor.ViewModels
             get;
         }
 
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ViewModels.CreateNodeArgs"/> class.</summary>
+		/// <summary>
+        /// Property to return the name of the new node.
+        /// </summary>
+		public string NewNodeName
+        {
+            get;
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="CreateNodeArgs"/> class.</summary>
         /// <param name="parent">The parent of the new node.</param>
         public CreateNodeArgs(IFileExplorerNodeVm parent) => ParentNode = parent;
+
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ViewModels.CreateNodeArgs"/> class.</summary>
+        /// <param name="parent">The parent of the new node.</param>
+        public CreateNodeArgs(IFileExplorerNodeVm parent, string newNodeName)
+            : this(parent) => NewNodeName = newNodeName;
     }
 }

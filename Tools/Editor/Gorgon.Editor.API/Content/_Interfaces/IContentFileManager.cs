@@ -43,9 +43,48 @@ namespace Gorgon.Editor.Content
         {
             get;
         }
+
+		/// <summary>
+        /// Property to return the currently selected file (if one is selected).
+        /// </summary>
+		IContentFile SelectedFile
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
+		/// <summary>
+        /// Function to notify the file system that a batch operation is about to commence.
+        /// </summary>
+        /// <remarks>
+        /// <returns><b>true</b> if the batch was started, <b>false</b> if not.</returns>
+        /// <para>
+        /// Developers should use batch mode when writing multiple files to the file system in rapid succession. Otherwise, the file system may not synchronize properly.
+        /// </para>
+        /// <para>
+        /// Call <see cref="EndBatch"/> to end the batch operation and update the file system.
+        /// </para>
+        /// <para>
+        /// Calling this across multiple threads will force a synchronization. If a thread holds the batch open for longer than 10 seconds, then the other thread trying to start a batch will receive a 
+        /// notification via the return value (<b>false</b>) that it timed out.
+        /// </para>
+        /// </remarks>
+        bool BeginBatch();
+
+        /// <summary>
+        /// Function to end a batch operation.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Developers should use batch mode when writing multiple files to the file system in rapid succession. Otherwise, the file system may not synchronize properly.
+        /// </para>
+        /// <para>
+        /// Call <see cref="BeginBatch"/> to start the batch operation.
+        /// </para>
+        /// </remarks>
+        void EndBatch();
+
         /// <summary>
         /// Function to create a new directory
         /// </summary>

@@ -81,6 +81,8 @@ namespace Gorgon.Editor.Services
         private readonly IGraphicsContext _graphicsContext;
 		// The message display service.
         private readonly IViewModelInjection _commonServices;
+        // The file system folder browser.
+        private readonly IFileSystemFolderBrowseService _folderBrowser;
         #endregion
 
         #region Properties.
@@ -442,7 +444,7 @@ namespace Gorgon.Editor.Services
                 {
                     Program.Log.Print($"Creating content plug in '{plugin.Name}'...", LoggingLevel.Simple);
                     plugin.AssignCommonServices(_commonServices);
-                    plugin.Initialize(this, _graphicsContext);
+                    plugin.Initialize(this, _graphicsContext, _folderBrowser);
 
                     // Check to see if this plug in can continue.
                     IReadOnlyList<string> validation = plugin.IsPlugInAvailable();                    
@@ -554,13 +556,15 @@ namespace Gorgon.Editor.Services
         /// <summary>Initializes a new instance of the ContentPlugInService class.</summary>
         /// <param name="settingsDirectory">The directory that will contain settings for the content plug ins.</param>
         /// <param name="graphicsContext">The graphics context used to pass the application graphics context to plug ins.</param>
+        /// <param name="folderBrowser">The folder browser used to browse the file system directory structure.</param>
         /// <param name="commonServices">Common services for the application.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settingsDirectory"/>, <paramref name="graphicsContext"/>, or the <paramref name="messageDisplay"/> parameter is <b>null</b>.</exception>
-        public ContentPlugInService(DirectoryInfo settingsDirectory, IGraphicsContext graphicsContext, IViewModelInjection commonServices)
+        public ContentPlugInService(DirectoryInfo settingsDirectory, IGraphicsContext graphicsContext, IFileSystemFolderBrowseService folderBrowser, IViewModelInjection commonServices)
         {
             _settingsDir = settingsDirectory ?? throw new ArgumentNullException(nameof(settingsDirectory));
             _graphicsContext = graphicsContext ?? throw new ArgumentNullException(nameof(graphicsContext));
             _commonServices = commonServices ?? throw new ArgumentNullException(nameof(commonServices));
+            _folderBrowser = folderBrowser ?? throw new ArgumentNullException(nameof(folderBrowser));
         }
         #endregion
     }

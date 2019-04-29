@@ -106,7 +106,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the command used to delete the selected node.
         /// </summary>
-        IEditorCommand<DeleteNodeArgs> DeleteNodeCommand
+        IEditorAsyncCommand<DeleteNodeArgs> DeleteNodeCommand
         {
             get;
         }
@@ -183,6 +183,13 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="cancelToken">The token used to cancel the operation.</param>
         Task RunImportersAsync(CancellationToken cancelToken);
+
+		/// <summary>
+        /// Function to locate a node by its path.
+        /// </summary>
+        /// <param name="path">The path to the node.</param>
+        /// <returns>The node, if found. <b>null</b>, if not.</returns>
+        IFileExplorerNodeVm FindNode(string path);
         #endregion
     }
 }

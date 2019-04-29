@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -84,9 +85,51 @@ namespace Gorgon.Editor.ViewModels
         private IContentFileManager _contentFileManager;
         // The event triggered when the project metadata is being saved.
         private Task _saveEvent;
+		// The list of tools available to the application.
+        private IToolPlugInService _toolPlugIns;
+		// The list of tool buttons.
+        private Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> _toolButtons = new Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Function to rebuild the list of sorted ribbon buttons.
+        /// </summary>
+        private void RebuildRibbonButtons()
+        {
+            NotifyPropertyChanging(nameof(ToolButtons));
+
+            var result = new Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
+
+            foreach (KeyValuePair<string, ToolPlugIn> plugin in _toolPlugIns.PlugIns)
+            {
+                IToolPlugInRibbonButton button = plugin.Value.GetToolButton(_projectData, _contentFileManager);
+                button.ValidateButton();
+
+                List<IToolPlugInRibbonButton> buttons;
+                if (result.TryGetValue(button.GroupName, out IReadOnlyList<IToolPlugInRibbonButton> roButtons))
+                {
+                    // This is safe because this is the implementation.
+                    buttons = (List<IToolPlugInRibbonButton>)roButtons;
+                }
+                else
+                {
+                    result[button.GroupName] = buttons = new List<IToolPlugInRibbonButton>();
+                }
+
+                buttons.Add(button);
+            }
+
+            _toolButtons = result;
+
+            NotifyPropertyChanged(nameof(ToolButtons));
+        }
+
+        /// <summary>
+        /// Property to return the available tool plug in button definitions for the application.
+        /// </summary>
+        public IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> ToolButtons => _toolButtons;
+
         /// <summary>
         /// Property to set or return the layout for the window.
         /// </summary>
@@ -637,6 +680,9 @@ namespace Gorgon.Editor.ViewModels
             _busyService = injectionParameters.BusyService ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.BusyService), nameof(injectionParameters));            
             _contentPlugIns = injectionParameters.ContentPlugIns ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.ContentPlugIns), nameof(injectionParameters));
 
+			// Get the tool plug ins.
+            _toolPlugIns = _viewModelFactory.ToolPlugIns;
+
             if (_projectData.ProjectWorkSpace == null)
             {
                 _projectTitle = Resources.GOREDIT_NEW_PROJECT;
@@ -662,6 +708,8 @@ namespace Gorgon.Editor.ViewModels
             }
 
             _layout = Encoding.UTF8.GetBytes(_viewModelFactory.Settings.WindowLayout);
+
+            RebuildRibbonButtons();
         }
 
         /// <summary>

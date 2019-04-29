@@ -25,10 +25,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Gorgon.Diagnostics;
 using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Editor.SpriteEditor.Services;
 using Gorgon.Editor.PlugIns;
@@ -108,8 +106,8 @@ namespace Gorgon.Editor.SpriteEditor
         /// the base <see cref="ISettingsCategoryViewModel"/> type.
         /// </para>
         ///   <para>
-        /// Plug ins must register the view associated with their settings panel via the <see cref="ViewFactory.Register``1(System.Func{System.Windows.Forms.Control})"/> method in the
-        /// <see cref="OnInitialize(IContentPlugInService)"/> method or the settings will not display.
+        /// Plug ins must register the view associated with their settings panel via the <see cref="ViewFactory.Register{T}(Func{System.Windows.Forms.Control})"/> method in the
+        /// <see cref="OnInitialize()"/> method or the settings will not display.
         /// </para>
         /// </remarks>
         protected override ISettingsCategoryViewModel OnGetSettings() => _settings;
@@ -117,13 +115,13 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Function to provide initialization for the plugin.</summary>
         /// <param name="pluginService">The plugin service used to access other plugins.</param>
         /// <remarks>This method is only called when the plugin is loaded at startup.</remarks>
-        protected override void OnInitialize(IContentPlugInService pluginService)
+        protected override void OnInitialize()
         {
             ViewFactory.Register<IImporterPlugInSettings>(() => new SpriteCodecSettingsPanel());
             
             _pluginCache = new GorgonMefPlugInCache(CommonServices.Log);
 
-            SpriteImportSettings settings = pluginService.ReadContentSettings<SpriteImportSettings>(typeof(SpriteImporterPlugIn).FullName);
+            SpriteImportSettings settings = ContentPlugInService.ReadContentSettings<SpriteImportSettings>(typeof(SpriteImporterPlugIn).FullName);
 
             if (settings == null)
             {
@@ -134,7 +132,7 @@ namespace Gorgon.Editor.SpriteEditor
             _codecs.LoadFromSettings(settings);
 
             var settingsVm = new ImporterPlugInSettings();
-            settingsVm.Initialize(new ImportPlugInSettingsParameters(settings, _codecs, new FileOpenDialogService(), pluginService, CommonServices));
+            settingsVm.Initialize(new ImportPlugInSettingsParameters(settings, _codecs, new FileOpenDialogService(), ContentPlugInService, CommonServices));
             _settings = settingsVm;
         }
 

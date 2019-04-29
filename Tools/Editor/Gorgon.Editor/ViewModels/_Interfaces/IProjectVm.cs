@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Threading;
@@ -61,6 +62,14 @@ namespace Gorgon.Editor.ViewModels
         : IViewModel
     {
         #region Properties.
+        /// <summary>
+        /// Property to return the available tool plug in button definitions for the application.
+        /// </summary>
+        IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> ToolButtons
+        {
+            get;
+        }
+
         /// <summary>
         /// Property to set or return the layout for the window.
         /// </summary>

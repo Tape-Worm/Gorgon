@@ -24,12 +24,15 @@
 // 
 #endregion
 
+using System.ComponentModel;
+
 namespace Gorgon.Editor.ViewModels
 {
     /// <summary>
     /// The arguments to pass to the <see cref="IFileExplorerVm.DeleteNodeCommand"/>.
     /// </summary>
     internal class DeleteNodeArgs
+		: CancelEventArgs
     {
         /// <summary>
         /// Property to return the path to the node that is being edited.

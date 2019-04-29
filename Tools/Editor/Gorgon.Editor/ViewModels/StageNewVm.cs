@@ -232,7 +232,8 @@ namespace Gorgon.Editor.ViewModels
 
             // Do not allow us to write to the main windows or system folders, that'd be bad.
             if ((directory.FullName.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.System), StringComparison.OrdinalIgnoreCase))
-                || (directory.FullName.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.Windows), StringComparison.OrdinalIgnoreCase)))
+                || (directory.FullName.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.Windows), StringComparison.OrdinalIgnoreCase))
+				|| (directory.Parent == null))
             {
                 InvalidPathReason = string.Format(Resources.GOREDIT_ERR_NOT_AUTHORIZED, directory.FullName.Ellipses(65, true));
                 return false;
@@ -409,13 +410,10 @@ namespace Gorgon.Editor.ViewModels
                     }
                 }
 
-                // If we just entered "C:", then that's not a valid name either.
+                // If we just a drive letter (e.g. "C:"), then restore the path separator so we can treat it as the root of the drive.
                 if (path[path.Length - 1] == Path.VolumeSeparatorChar)
                 {
-                    InvalidPathReason = string.Format(Resources.GOREDIT_ERR_INVALID_PATH, args.WorkspacePath, string.Join(", ", _invalidDirCharacters
-                        .Where(item => (item != Path.VolumeSeparatorChar) && (item != Path.AltDirectorySeparatorChar))
-                        .Select(item => item.ToString())));
-                    return;
+                    path += Path.DirectorySeparatorChar;
                 }
 
                 path = Path.GetFullPath(path);

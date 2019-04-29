@@ -167,16 +167,16 @@ namespace Gorgon.Editor
 		/// <summary>
         /// Function to update the list of buttons, and groups on the tools tab.
         /// </summary>
-        /// <param name="dataContext">The current data context.</param>
-        private void UpdateToolsTab(IMain dataContext)
+        /// <param name="buttons">The buttons to display on the ribbon.</param>
+        private void UpdateToolsTab(IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> buttons)
         {
-            if (dataContext == null)
+            if ((buttons == null) || (buttons.Count == 0))
             {
                 ReleaseToolRibbonItems();
                 return;
             }
 
-            foreach (KeyValuePair<string, IReadOnlyList<IToolPlugInRibbonButton>> buttonItem in dataContext.ToolButtons)
+            foreach (KeyValuePair<string, IReadOnlyList<IToolPlugInRibbonButton>> buttonItem in buttons)
             {
                 if ((buttonItem.Value == null) || (buttonItem.Value.Count == 0))
                 {
@@ -256,8 +256,14 @@ namespace Gorgon.Editor
                         Enabled = false,
                         Tag = button.Name,
                         ImageLarge = button.LargeIcon,
-                        ImageSmall = button.SmallIcon,						
+                        ImageSmall = button.SmallIcon						
                     };
+
+                    if (!string.IsNullOrWhiteSpace(button.Description))
+                    {
+                        newButton.ToolTipTitle = button.DisplayText;
+                        newButton.ToolTipBody = button.Description;
+                    }
 
                     newButton.Click += ToolButton_Click;
 
@@ -301,7 +307,7 @@ namespace Gorgon.Editor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ToolButton_Click(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext?.CurrentProject == null)
             {
                 return;
             }
@@ -315,7 +321,7 @@ namespace Gorgon.Editor
                 return;
             }
 
-            if (!DataContext.ToolButtons.TryGetValue(ribbonGroup.TextLine1, out IReadOnlyList<IToolPlugInRibbonButton> buttons))
+            if (!DataContext.CurrentProject.ToolButtons.TryGetValue(ribbonGroup.TextLine1, out IReadOnlyList<IToolPlugInRibbonButton> buttons))
             {
                 return;
             }
@@ -568,7 +574,7 @@ namespace Gorgon.Editor
             TabFileSystem.Visible = true;
 
             ButtonFileSystemNewDirectory.Enabled = (fileExplorer.CreateNodeCommand != null)
-                                                && (fileExplorer.CreateNodeCommand.CanExecute(null));
+                                                && (fileExplorer.CreateNodeCommand.CanExecute(new CreateNodeArgs(fileExplorer.SelectedNode)));
 
             ButtonFileSystemRename.Enabled = (fileExplorer.RenameNodeCommand != null)
                                             && (fileExplorer.SelectedNode != null);
@@ -594,14 +600,21 @@ namespace Gorgon.Editor
             GroupCreate.Visible = SepCreate.Visible = (DataContext.CreateContentCommand != null) 
                                                         && (DataContext.CreateContentCommand.CanExecute(null));
 
-            foreach (IToolPlugInRibbonButton button in DataContext.ToolButtons.SelectMany(item => item.Value))
+            foreach (IToolPlugInRibbonButton button in project.ToolButtons.SelectMany(item => item.Value))
             {
                 if (!_toolButtons.TryGetValue(button.Name, out KryptonRibbonGroupButton ribButton))
                 {
                     continue;
                 }
 
-                ribButton.Enabled = button.CanExecute();
+                if (button.CanExecute != null)
+                {
+                    ribButton.Enabled = button.CanExecute();
+                }
+                else
+                {
+                    ribButton.Enabled = true;
+                }
             }
         }
 
@@ -927,7 +940,7 @@ namespace Gorgon.Editor
                         RibbonMain.SelectedContext = DataContext.CurrentProject.CommandContext;
 
                         TabFileSystem.Visible = true;
-                        UpdateToolsTab(DataContext);
+                        UpdateToolsTab(DataContext.CurrentProject.ToolButtons);
                     }
                     break;
             }

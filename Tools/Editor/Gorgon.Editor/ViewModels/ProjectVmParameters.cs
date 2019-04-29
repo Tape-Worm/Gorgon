@@ -46,11 +46,9 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="projectData">The project data.</param>
         /// <param name="viewModelFactory">The view model factory.</param>
+        /// <param name="folderBrowser">The file system folder browser service.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public ProjectVmParameters(IProject projectData, ViewModelFactory viewModelFactory)
-            : base(viewModelFactory)
-        {
-            Project = projectData ?? throw new ArgumentNullException(nameof(projectData));
-        }
+        public ProjectVmParameters(IProject projectData, IFileSystemFolderBrowseService folderBrowser, ViewModelFactory viewModelFactory)
+            : base(viewModelFactory) => Project = projectData ?? throw new ArgumentNullException(nameof(projectData));
     }
 }

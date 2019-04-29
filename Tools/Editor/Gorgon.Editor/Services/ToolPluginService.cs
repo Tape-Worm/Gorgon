@@ -28,12 +28,16 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI.ViewModels;
+using Gorgon.IO;
 using Gorgon.PlugIns;
+using Newtonsoft.Json;
 
 namespace Gorgon.Editor.Services
 {
@@ -49,11 +53,15 @@ namespace Gorgon.Editor.Services
         // The list of disabled tool plug ins.
         private readonly Dictionary<string, IDisabledPlugIn> _disabled = new Dictionary<string, IDisabledPlugIn>(StringComparer.OrdinalIgnoreCase);
 		// The list of ribbon buttons for all tools.
-        private Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> _ribbonButtons = new Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
+        //private Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> _ribbonButtons = new Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
         // The application graphics context for passing to tool plug ins.
         private readonly IGraphicsContext _graphicsContext;
 		// Common application services.
         private readonly IViewModelInjection _commonServices;
+        // The directory that contains the settings for the plug ins.
+        private readonly DirectoryInfo _settingsDir;
+		// The file system folder browser.
+        private readonly IFileSystemFolderBrowseService _folderBrowser;
         #endregion
 
         #region Properties.
@@ -63,42 +71,20 @@ namespace Gorgon.Editor.Services
 
         /// <summary>Property to return the list of disabled plug ins.</summary>
         public IReadOnlyDictionary<string, IDisabledPlugIn> DisabledPlugIns => _disabled;
-
-        /// <summary>Property to return the list of ribbon buttons available</summary>
-        public IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> RibbonButtons => _ribbonButtons;
         #endregion
 
         #region Methods.
         /// <summary>
-        /// Function to rebuild the list of sorted ribbon buttons.
+        /// Function to return the file for the content plug in settings.
         /// </summary>
-        private void RebuildRibbonButtons()
-        {
-            var result = new Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
-
-            foreach (KeyValuePair<string, ToolPlugIn> plugin in _plugins)
-            {
-                IToolPlugInRibbonButton button = plugin.Value.Button;
-                button.ValidateButton();
-
-                List<IToolPlugInRibbonButton> buttons;
-                if (result.TryGetValue(button.GroupName, out IReadOnlyList<IToolPlugInRibbonButton> roButtons))
-                {
-                    // This is safe because this is the implementation.
-                    buttons = (List<IToolPlugInRibbonButton>)roButtons;
-                }
-                else
-                {
-                    result[button.GroupName] = buttons = new List<IToolPlugInRibbonButton>();
-                }
-
-                buttons.Add(button);
-            }
-
-            Clear();
-
-            _ribbonButtons = result;
-        }
+        /// <param name="name">The name of the file.</param>
+        /// <returns>The file containing the plug in settings.</returns>
+        private FileInfo GetContentPlugInSettingsPath(string name) =>
+#if DEBUG
+            new FileInfo(Path.Combine(_settingsDir.FullName, name.FormatFileName()) + ".DEBUG.json");
+#else
+            new FileInfo(Path.Combine(_settingsDir.FullName, Path.ChangeExtension(name.FormatFileName(), "json")));
+#endif
 
         /// <summary>Function to add a tool plugin to the service.</summary>
         /// <param name="plugin">The plugin to add.</param>
@@ -116,7 +102,6 @@ namespace Gorgon.Editor.Services
             }
 
             _plugins[plugin.Name] = plugin;
-            RebuildRibbonButtons();
         }
 
         /// <summary>Function to clear all of the tool plugins.</summary>
@@ -124,20 +109,10 @@ namespace Gorgon.Editor.Services
         {
             foreach (KeyValuePair<string, ToolPlugIn> plugin in _plugins)
             {
-                plugin.Value.Shutdown();
+                plugin.Value.Shutdown();				
             }
 
             _plugins.Clear();
-
-            foreach (KeyValuePair<string, IReadOnlyList<IToolPlugInRibbonButton>> button in _ribbonButtons)
-            {
-                foreach (IDisposable disposer in button.Value.OfType<IDisposable>())
-                {
-                    disposer.Dispose();
-                }
-            }
-
-            _ribbonButtons.Clear();
         }
 
         /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
@@ -180,7 +155,7 @@ namespace Gorgon.Editor.Services
                 {
                     Program.Log.Print($"Creating tool plug in '{plugin.Name}'...", LoggingLevel.Simple);
                     plugin.AssignCommonServices(_commonServices);
-                    plugin.Initialize(this, _graphicsContext, Program.Log);
+                    plugin.Initialize(this, _graphicsContext, _folderBrowser);
 
                     // Check to see if this plug in can continue.
                     IReadOnlyList<string> validation = plugin.IsPlugInAvailable();                    
@@ -203,20 +178,6 @@ namespace Gorgon.Editor.Services
                         continue;
                     }
 
-                    if (plugin.Button == null)
-                    {
-                        // Shut the plug in down.
-                        plugin.Shutdown();
-
-                        Program.Log.Print($"WARNING: The tool plug in '{plugin.Name}' is disabled:", LoggingLevel.Simple);
-                        Program.Log.Print($"WARNING: {Resources.GOREDIT_ERR_TOOL_NO_BUTTON}", LoggingLevel.Verbose);
-
-                        _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.ValidationError, plugin.Name, Resources.GOREDIT_ERR_TOOL_NO_BUTTON, plugin.PlugInPath);
-
-                        // Remove this plug in.
-                        plugins.Unload(plugin.Name);
-                    }
-
                     AddToolPlugIn(plugin);                    
                 }
                 catch (Exception ex)
@@ -230,8 +191,6 @@ namespace Gorgon.Editor.Services
                     _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.Error, plugin.Name, string.Format(Resources.GOREDIT_DISABLE_CONTENT_PLUGIN_EXCEPTION, ex.Message), plugin.PlugInPath);
                 }
             }
-
-            RebuildRibbonButtons();
         }
 
         /// <summary>Function to remove a tool plugin from the service.</summary>
@@ -250,20 +209,95 @@ namespace Gorgon.Editor.Services
 
             _plugins.Remove(plugin.Name);
             plugin.Shutdown();
+        }
 
-            RebuildRibbonButtons();
+        /// <summary>Funcion to read the settings for a content plug in from a JSON file.</summary>
+        /// <typeparam name="T">The type of settings to read. Must be a reference type.</typeparam>
+        /// <param name="name">The name of the file.</param>
+        /// <param name="converters">A list of JSON data converters.</param>
+        /// <returns>The settings object for the plug in, or <b>null</b> if no settings file was found for the plug in.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, or the <paramref name="plugin" /> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+        /// <remarks>This will read in the settings for a content plug from the same location where the editor stores its application settings file.</remarks>
+        public T ReadContentSettings<T>(string name, params JsonConverter[] converters)
+            where T : class
+        {
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentEmptyException(nameof(name));
+            }
+
+            FileInfo settingsFile = GetContentPlugInSettingsPath(name);
+
+            if (!settingsFile.Exists)
+            {
+                return null;
+            }
+
+            using (Stream stream = settingsFile.OpenRead())
+            {
+                using (var reader = new StreamReader(stream, Encoding.UTF8))
+                {
+                    return JsonConvert.DeserializeObject<T>(reader.ReadToEnd(), converters);
+                }
+            }
+        }
+
+        /// <summary>Function to write out the settings for a content plug in as a JSON file.</summary>
+        /// <typeparam name="T">The type of settings to write. Must be a reference type.</typeparam>
+        /// <param name="name">The name of the file.</param>
+        /// <param name="contentSettings">The content settings to persist as JSON file.</param>
+        /// <param name="converters">A list of JSON converters.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="plugin" />, or the <paramref name="contentSettings" /> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+        /// <remarks>This will write out the settings for a content plug in to the same location where the editor stores its application settings file.</remarks>
+        public void WriteContentSettings<T>(string name, T contentSettings, params JsonConverter[] converters)
+            where T : class
+        {
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentEmptyException(nameof(name));
+            }
+
+            if (contentSettings == null)
+            {
+                throw new ArgumentNullException(nameof(contentSettings));
+            }
+
+            FileInfo settingsFile = GetContentPlugInSettingsPath(name);
+            using (Stream stream = settingsFile.Open(FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                using (var writer = new StreamWriter(stream, Encoding.UTF8, 80000, false))
+                {
+                    writer.Write(JsonConvert.SerializeObject(contentSettings, converters));
+                }
+            }
         }
         #endregion
 
         #region Constructor.
         /// <summary>Initializes a new instance of the ToolPlugInService class.</summary>
+        /// <param name="settingsDirectory">The directory that will contain settings for the content plug ins.</param>
         /// <param name="graphicsContext">The graphics context used to pass the application graphics context to plug ins.</param>
+        /// <param name="folderBrowser">The folder browser used to browse the file system directory structure.</param>
         /// <param name="commonServices">Common application services.</param>
         /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
-        public ToolPlugInService(IGraphicsContext graphicsContext, IViewModelInjection commonServices)
+        public ToolPlugInService(DirectoryInfo settingsDirectory, IGraphicsContext graphicsContext, IFileSystemFolderBrowseService folderBrowser, IViewModelInjection commonServices)
         {
+            _settingsDir = settingsDirectory ?? throw new ArgumentNullException(nameof(settingsDirectory));
             _graphicsContext = graphicsContext ?? throw new ArgumentNullException(nameof(graphicsContext));
             _commonServices = commonServices ?? throw new ArgumentNullException(nameof(commonServices));
+            _folderBrowser = folderBrowser ?? throw new ArgumentNullException(nameof(folderBrowser));
         }
         #endregion
     }

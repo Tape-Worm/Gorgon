@@ -31,7 +31,6 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using Gorgon.Editor.ImageEditor.Properties;
-using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Imaging.Codecs;

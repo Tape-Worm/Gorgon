@@ -64,7 +64,7 @@ namespace Gorgon.Renderers
 				}
 				
 				_invertAlpha = value;
-				_invertBuffer.Buffer.SetData(ref _invertAlpha);
+				_invertBuffer?.Buffer.SetData(ref _invertAlpha);
 			}
 		}
 		#endregion

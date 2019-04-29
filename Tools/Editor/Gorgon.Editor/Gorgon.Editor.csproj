@@ -67,6 +67,14 @@
     <Compile Include="CommonCommands.cs" />
     <Compile Include="ContentRibbonEventArgs.cs" />
     <Compile Include="Data\FileSystemClipboardData.cs" />
+    <Compile Include="FileSystem\Services\FileSystemFolderBrowseService.cs" />
+    <Compile Include="FileSystem\Services\_Interfaces\IEditorFileSystemFolderBrowseService.cs" />
+    <Compile Include="FileSystem\Views\FormFileSystemFolderBrowser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FileSystem\Views\FormFileSystemFolderBrowser.Designer.cs">
+      <DependentUpon>FormFileSystemFolderBrowser.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -210,6 +218,9 @@
     <Compile Include="FileSystem\Views\ExplorerFilesDragData.cs" />
     <Compile Include="FileSystem\Views\ListViewItemDragData.cs" />
     <Compile Include="FileSystem\Views\TreeNodeDragData.cs" />
+    <EmbeddedResource Include="FileSystem\Views\FormFileSystemFolderBrowser.resx">
+      <DependentUpon>FormFileSystemFolderBrowser.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormMain.resx">
       <DependentUpon>FormMain.cs</DependentUpon>
     </EmbeddedResource>

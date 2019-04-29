@@ -38,150 +38,150 @@ using Gorgon.Windows.Properties;
 
 namespace Gorgon.UI
 {
-	/// <summary>
-	/// An application class for windows <see cref="Form"/> applications.
-	/// </summary> 
-	/// <remarks>
-	/// <para>
-	/// This class is meant as a replacement for the standard windows forms <see cref="Application"/> class. It expands the functionality of the application class by exposing useful functionality for 
-	/// working with the main application <see cref="Form"/>.
-	/// </para>
-	/// <para>
-	/// One of the key components to this class is the introduction of a proper Idle loop. This allows an application to perform operations while the windows message pump is in an idle state. This is useful 
-	/// for things like games, or applications that require constant interaction with other systems. To set an idle loop you may pass a method to execute in one of the <see cref="O:Gorgon.UI.GorgonApplication.Run">Run</see> 
-	/// overloads. Or, if you choose, you may assign an idle method to execute at any point in the application life cycle by assigning a method to the <see cref="IdleMethod"/>.
-	/// </para> 
-	/// <para>
-	/// Like the <see cref="Application"/> class, this class also provides the ability to pass a windows <see cref="Form"/>, or <see cref="ApplicationContext"/> to one of the <see cref="O:Gorgon.UI.GorgonApplication.Run">Run</see> 
-	/// overloads. 
-	/// </para>
-	/// <para>
-	/// <note type="tip">
-	/// <para>
-	/// When passing a form to the <see cref="Run(System.Windows.Forms.Form,System.Func{bool})"/> method, that form automatically becomes the main application window. The application will exit when this form is closed. 
-	/// The main form of an application may be retrieved from the <see cref="MainForm"/> property. 
-	/// </para>
-	/// <para>
-	/// If this is not suitable, one of the other <see cref="O:Gorgon.UI.GorgonApplication.Run">Run</see> overloads will allow you to finely control the life cycle of your application.
-	/// </para>
-	/// </note>
-	/// </para>
-	/// </remarks>
-	/// <example>
-	/// An application that wishes to use this class instead of the <see cref="Application"/> class should follow this pattern:
-	/// <code language="csharp">
-	/// <![CDATA[
-	/// // In program.cs:
-	/// [STAThread]
-	///	static void Main()
-	///	{
-	///		try
-	///		{
-	///			Application.EnableVisualStyles();
-	///			Application.SetCompatibleTextRenderingDefault(false);
-	///
-	///			// Perhaps you could run initialization stuff here.			
-	///
-	///			// This replaces:
-	///			// Application.Run(new YourMainForm());
-	///			
-	///			// This will run with a form and an idle method named "Idle"
-	///			GorgonApplication.Run(new YourMainForm(), Idle);
-	///		}
-	///		catch (Exception ex)
-	///		{
-	///			// You should always catch any unhandled exceptions and either log them, or display them, or something.
-	///			// It can get real ugly for your users otherwise.
-	///			ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), GorgonApplication.Log);
-	///		}
-	///		finally
-	///		{
-	///			// Do your clean up here.
-	///		}
-	///	}
-	/// ]]>
-	/// </code>
-	/// </example>
-	public static class GorgonApplication
-	{
-		#region Constants.
-		// Log file application name.
-		private const string LogFile = "GorgonLibrary";
-		// Peek message NoRemove flag.
-		private const uint PeekMessageNoRemove = 0;
-		#endregion
+    /// <summary>
+    /// An application class for windows <see cref="Form"/> applications.
+    /// </summary> 
+    /// <remarks>
+    /// <para>
+    /// This class is meant as a replacement for the standard windows forms <see cref="Application"/> class. It expands the functionality of the application class by exposing useful functionality for 
+    /// working with the main application <see cref="Form"/>.
+    /// </para>
+    /// <para>
+    /// One of the key components to this class is the introduction of a proper Idle loop. This allows an application to perform operations while the windows message pump is in an idle state. This is useful 
+    /// for things like games, or applications that require constant interaction with other systems. To set an idle loop you may pass a method to execute in one of the <see cref="O:Gorgon.UI.GorgonApplication.Run">Run</see> 
+    /// overloads. Or, if you choose, you may assign an idle method to execute at any point in the application life cycle by assigning a method to the <see cref="IdleMethod"/>.
+    /// </para> 
+    /// <para>
+    /// Like the <see cref="Application"/> class, this class also provides the ability to pass a windows <see cref="Form"/>, or <see cref="ApplicationContext"/> to one of the <see cref="O:Gorgon.UI.GorgonApplication.Run">Run</see> 
+    /// overloads. 
+    /// </para>
+    /// <para>
+    /// <note type="tip">
+    /// <para>
+    /// When passing a form to the <see cref="Run(System.Windows.Forms.Form,System.Func{bool})"/> method, that form automatically becomes the main application window. The application will exit when this form is closed. 
+    /// The main form of an application may be retrieved from the <see cref="MainForm"/> property. 
+    /// </para>
+    /// <para>
+    /// If this is not suitable, one of the other <see cref="O:Gorgon.UI.GorgonApplication.Run">Run</see> overloads will allow you to finely control the life cycle of your application.
+    /// </para>
+    /// </note>
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// An application that wishes to use this class instead of the <see cref="Application"/> class should follow this pattern:
+    /// <code language="csharp">
+    /// <![CDATA[
+    /// // In program.cs:
+    /// [STAThread]
+    ///	static void Main()
+    ///	{
+    ///		try
+    ///		{
+    ///			Application.EnableVisualStyles();
+    ///			Application.SetCompatibleTextRenderingDefault(false);
+    ///
+    ///			// Perhaps you could run initialization stuff here.			
+    ///
+    ///			// This replaces:
+    ///			// Application.Run(new YourMainForm());
+    ///			
+    ///			// This will run with a form and an idle method named "Idle"
+    ///			GorgonApplication.Run(new YourMainForm(), Idle);
+    ///		}
+    ///		catch (Exception ex)
+    ///		{
+    ///			// You should always catch any unhandled exceptions and either log them, or display them, or something.
+    ///			// It can get real ugly for your users otherwise.
+    ///			ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), GorgonApplication.Log);
+    ///		}
+    ///		finally
+    ///		{
+    ///			// Do your clean up here.
+    ///		}
+    ///	}
+    /// ]]>
+    /// </code>
+    /// </example>
+    public static class GorgonApplication
+    {
+        #region Constants.
+        // Log file application name.
+        private const string LogFile = "GorgonLibrary";
+        // Peek message NoRemove flag.
+        private const uint PeekMessageNoRemove = 0;
+        #endregion
 
-		#region Events.
-		/// <summary>
-		/// Event fired when the application is about to exit.
-		/// </summary>
-		public static event EventHandler Exit;
-		/// <summary>
-		/// Event fired when a message pump thread is about to exit.
-		/// </summary>
-		public static event EventHandler ThreadExit;
-		#endregion
+        #region Events.
+        /// <summary>
+        /// Event fired when the application is about to exit.
+        /// </summary>
+        public static event EventHandler Exit;
+        /// <summary>
+        /// Event fired when a message pump thread is about to exit.
+        /// </summary>
+        public static event EventHandler ThreadExit;
+        #endregion
 
-		#region Variables.
-		// Main application form.
+        #region Variables.
+        // Main application form.
         private static Form _mainForm;
-		// Flag to indicate that the application needs to close.
-		private static bool _quitSignalled;
-		// Application loop method.														
-		private static Func<bool> _loop;
-		// The log interface to use.
-		private static IGorgonLog _log;
-		// The dummy log interface.
-		private static readonly IGorgonLog _dummyLog = GorgonLog.NullLog;
-		// A synchronization object for threads.
-		private static readonly object _syncLock = new object();
-		// The number of milliseconds to sleep while the application is unfocused but running in the background.
-		private static int _unfocusedSleepTime = 16;
-		// An atomic to ensure that run is only called by 1 thread at a time.
-		private static int _runAtomic;
-		// Event used to put the application to sleep.
-		private static readonly ManualResetEventSlim _unfocusedTimeout = new ManualResetEventSlim(false, 20);
-		#endregion
+        // Flag to indicate that the application needs to close.
+        private static bool _quitSignalled;
+        // Application loop method.														
+        private static Func<bool> _loop;
+        // The log interface to use.
+        private static IGorgonLog _log;
+        // The dummy log interface.
+        private static readonly IGorgonLog _dummyLog = GorgonLog.NullLog;
+        // A synchronization object for threads.
+        private static readonly object _syncLock = new object();
+        // The number of milliseconds to sleep while the application is unfocused but running in the background.
+        private static int _unfocusedSleepTime = 16;
+        // An atomic to ensure that run is only called by 1 thread at a time.
+        private static int _runAtomic;
+        // Event used to put the application to sleep.
+        private static readonly ManualResetEventSlim _unfocusedTimeout = new ManualResetEventSlim(false, 20);
+        #endregion
 
-		#region Properties.
+        #region Properties.
         /// <summary>
         /// Property to return information about the computer.
         /// </summary>
-	    public static IGorgonComputerInfo ComputerInfo
-	    {
-	        get;
-	    }
+        public static IGorgonComputerInfo ComputerInfo
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to set or return the current <see cref="CultureInfo"/> for the application.
-		/// </summary>
-		/// <remarks>
-		/// This is a pass through for the <see cref="Application.CurrentCulture"/> property.
-		/// </remarks>
-		/// <seealso cref="Application.CurrentCulture"/>
-		public static CultureInfo CurrentCulture
-		{
-			get => Application.CurrentCulture;
-			set => Application.CurrentCulture = value;
-		}
+        /// <summary>
+        /// Property to set or return the current <see cref="CultureInfo"/> for the application.
+        /// </summary>
+        /// <remarks>
+        /// This is a pass through for the <see cref="Application.CurrentCulture"/> property.
+        /// </remarks>
+        /// <seealso cref="Application.CurrentCulture"/>
+        public static CultureInfo CurrentCulture
+        {
+            get => Application.CurrentCulture;
+            set => Application.CurrentCulture = value;
+        }
 
-		/// <summary>
-		/// Property to set or return the current <see cref="InputLanguage"/> for the application.
-		/// </summary>
-		/// <remarks>
-		/// This is a pass through for the <see cref="Application.CurrentInputLanguage"/> property.
-		/// </remarks>
-		/// <seealso cref="Application.CurrentInputLanguage"/>
-		public static InputLanguage CurrentInputLanguage => Application.CurrentInputLanguage;
+        /// <summary>
+        /// Property to set or return the current <see cref="InputLanguage"/> for the application.
+        /// </summary>
+        /// <remarks>
+        /// This is a pass through for the <see cref="Application.CurrentInputLanguage"/> property.
+        /// </remarks>
+        /// <seealso cref="Application.CurrentInputLanguage"/>
+        public static InputLanguage CurrentInputLanguage => Application.CurrentInputLanguage;
 
-		/// <summary>
-		/// Property to return a read-only list of all the forms that are open in the application.
-		/// </summary>
-		/// <remarks>
-		/// This is a pass through for the <see cref="Application.OpenForms"/> property.
-		/// </remarks>
-		/// <seealso cref="Application.OpenForms"/>
-		public static FormCollection OpenForms => Application.OpenForms;
+        /// <summary>
+        /// Property to return a read-only list of all the forms that are open in the application.
+        /// </summary>
+        /// <remarks>
+        /// This is a pass through for the <see cref="Application.OpenForms"/> property.
+        /// </remarks>
+        /// <seealso cref="Application.OpenForms"/>
+        public static FormCollection OpenForms => Application.OpenForms;
 
         /// <summary>
         /// Property to return if the application is running in the foreground or background.
@@ -192,13 +192,17 @@ namespace Gorgon.UI
         /// <see cref="FormWindowState.Minimized"/>, and the window, or one of its child controls, currently has input focus.
         /// </para>
         /// <para>
-        /// If the <see cref="AllowBackground"/> property is set to <b>true</b>, then this property will always return <b>true</b>. 
+        /// This only applies to the <see cref="MainForm"/>. If Gorgon is required to keep processing unfettered, then set the <see cref="AllowBackground"/> property to <b>true</b>. 
+        /// </para>
+        /// <para>
+        /// If <see cref="AllowBackground"/> is <b>true</b>, and the main form is not active, but another form belonging to the executing application is active, then processing will continue at full speed. 
+        /// But, if the entire application does not have focus, then Gorgon will limit the processing time to cycle every 16 milliseconds so as to not hog all the CPU.
         /// </para>
         /// <para>
         /// If no <see cref="MainForm"/> is assigned, then this property will always return <b>false</b>. 
         /// </para>
         /// </remarks>
-        public static bool IsForeground => MainForm == null ? false : (MainForm.WindowState != FormWindowState.Minimized) && (MainForm.ContainsFocus);
+        public static bool IsForeground => ((MainForm != null) && (MainForm.WindowState != FormWindowState.Minimized) && (MainForm.ContainsFocus));
 
         /// <summary>
         /// Property to return the ID of the application UI thread.
@@ -479,7 +483,7 @@ namespace Gorgon.UI
 				}
 
 				// Give up CPU time if we're not focused.
-				if ((MainForm == null) || (MainForm.ContainsFocus) || (_unfocusedSleepTime <= 0))
+				if ((MainForm == null) || (MainForm.ContainsFocus) || (_unfocusedSleepTime <= 0) || (Form.ActiveForm != null))
 				{
 					continue;
 				}

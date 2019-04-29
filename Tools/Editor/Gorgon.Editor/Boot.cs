@@ -47,6 +47,7 @@ using Exception = System.Exception;
 using System.Linq;
 using Gorgon.Editor.Converters;
 using Gorgon.Editor.UI.ViewModels;
+using Gorgon.Editor.FileSystem;
 
 namespace Gorgon.Editor
 {
@@ -75,6 +76,8 @@ namespace Gorgon.Editor
         private ToolPlugInService _toolPlugIns;
 		// The services that are common to the entire application.
         private IViewModelInjection _commonServices;
+		// The folder browser for a file system.
+        private IEditorFileSystemFolderBrowseService _folderBrowser;
         #endregion
 
         #region Properties.
@@ -264,7 +267,14 @@ namespace Gorgon.Editor
         private ToolPlugInService LoadToolPlugIns()
         {
             var toolPlugInsDir = new DirectoryInfo(Path.Combine(_settings.PlugInPath, "Tools"));
-            var toolPlugIns = new ToolPlugInService(_graphicsContext, _commonServices);
+            var toolPlugInSettingsDir = new DirectoryInfo(Path.Combine(Program.ApplicationUserDirectory.FullName, "ToolPlugIns"));
+            var toolPlugIns = new ToolPlugInService(toolPlugInSettingsDir, _graphicsContext, _folderBrowser, _commonServices);
+
+            if (!toolPlugInSettingsDir.Exists)
+            {
+                toolPlugInSettingsDir.Create();
+                toolPlugInSettingsDir.Refresh();
+            }
 
             try
             {
@@ -302,7 +312,7 @@ namespace Gorgon.Editor
                 contentPlugInSettingsDir.Refresh();
             }
 
-            var contentPlugIns = new ContentPlugInService(contentPlugInSettingsDir, _graphicsContext, _commonServices);
+            var contentPlugIns = new ContentPlugInService(contentPlugInSettingsDir, _graphicsContext, _folderBrowser, _commonServices);
 
             try
             {
@@ -378,6 +388,7 @@ namespace Gorgon.Editor
                 // Initalize the common resources.
                 EditorCommonResources.LoadResources();
 
+                _folderBrowser = new FileSystemFolderBrowseService();
                 _commonServices = new ViewModelInjection(Program.Log, new WaitCursorBusyState(), new MessageBoxService());                
                 _pluginCache = new GorgonMefPlugInCache(Program.Log);
                 _graphicsContext = GraphicsContext.Create(Program.Log);
@@ -416,7 +427,8 @@ namespace Gorgon.Editor
 												   _commonServices,
                                                    new ClipboardService(),
                                                    new DirectoryLocateService(),
-                                                   new FileScanService(_contentPlugIns));
+                                                   new FileScanService(_contentPlugIns),
+                                                   _folderBrowser);
 
                 FormWindowState windowState;
                 // Ensure the window state values fall into an acceptable range.

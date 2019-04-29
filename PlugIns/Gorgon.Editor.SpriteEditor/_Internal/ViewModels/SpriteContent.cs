@@ -1893,7 +1893,7 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-            image = await _textureService.GetSpriteTextureImageDataAsync(_sprite.Texture, _sprite.TextureArrayIndex);
+            image = await _textureService.GetSpriteTextureImageDataAsync(_sprite.Texture);
 
             Interlocked.Exchange(ref _imageData, image);
 

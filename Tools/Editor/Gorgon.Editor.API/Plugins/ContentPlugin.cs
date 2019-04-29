@@ -54,6 +54,15 @@ namespace Gorgon.Editor.PlugIns
         #endregion
 
         #region Properties.
+		/// <summary>
+        /// Property to return the plug in service used to manage content plug ins.
+        /// </summary>
+		protected IContentPlugInService ContentPlugInService
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// Property to return the file search service.
         /// </summary>
@@ -67,6 +76,15 @@ namespace Gorgon.Editor.PlugIns
         /// Property to return the graphics context for the application.
         /// </summary>
         protected IGraphicsContext GraphicsContext
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the folder browser used to browse the project file system folder structure.
+        /// </summary>
+        protected IFileSystemFolderBrowseService FolderBrowser
         {
             get;
             private set;
@@ -103,7 +121,7 @@ namespace Gorgon.Editor.PlugIns
         /// <returns>A new writable file system for writing temporary data into.</returns>
         private IGorgonFileSystemWriter<Stream> GetScratchArea(DirectoryInfo tempDirectory)
         {
-            string scratchPath = Path.Combine(tempDirectory.FullName, GetType().FullName).FormatDirectory(Path.DirectorySeparatorChar);
+            string scratchPath = Path.Combine(tempDirectory.FullName, "Content", GetType().FullName).FormatDirectory(Path.DirectorySeparatorChar);
 
             if (!Directory.Exists(scratchPath))
             {
@@ -118,13 +136,12 @@ namespace Gorgon.Editor.PlugIns
         /// <summary>
         /// Function to provide initialization for the plugin.
         /// </summary>
-        /// <param name="pluginService">The plugin service used to access other plugins.</param>
         /// <remarks>
         /// <para>
         /// This method is only called when the plugin is loaded at startup.
         /// </para>
         /// </remarks>
-        protected virtual void OnInitialize(IContentPlugInService pluginService)
+        protected virtual void OnInitialize()
         {
         }
 
@@ -307,29 +324,28 @@ namespace Gorgon.Editor.PlugIns
         /// </summary>
         /// <param name="pluginService">The plugin service used to access other plugins.</param>                
         /// <param name="graphicsContext">The graphics context for the application.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginService"/>, or the <paramref name="graphicsContext"/> parameter is <b>null</b>.</exception>
+        /// <param name="folderBrowser">The file system folder browser.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginService"/>, <paramref name="graphicsContext"/>, or the <paramref name="folderBrowser"/> parameter is <b>null</b>.</exception>
         /// <remarks>
         /// <para>
         /// This method is only called when the plugin is loaded at startup.
         /// </para>
         /// </remarks>
-        public void Initialize(IContentPlugInService pluginService, IGraphicsContext graphicsContext)
+        public void Initialize(IContentPlugInService pluginService, IGraphicsContext graphicsContext, IFileSystemFolderBrowseService folderBrowser)
         {
-            if (pluginService == null)
-            {
-                throw new ArgumentNullException(nameof(pluginService));
-            }
-
             if (Interlocked.Exchange(ref _initialized, 1) == 1)
             {
                 return;
             }
 
+            ContentPlugInService = pluginService ?? throw new ArgumentNullException(nameof(pluginService));
+
             CommonServices.Log.Print($"Initializing {Name}...", LoggingLevel.Simple);
 
             GraphicsContext = graphicsContext ?? throw new ArgumentNullException(nameof(graphicsContext));
+            FolderBrowser = folderBrowser ?? throw new ArgumentNullException(nameof(folderBrowser));
 
-            OnInitialize(pluginService);
+            OnInitialize();
         }
         #endregion
 

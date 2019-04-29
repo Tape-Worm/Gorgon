@@ -86,7 +86,7 @@ namespace Gorgon.Editor.Services
                     Text = string.IsNullOrWhiteSpace(caption) ? Resources.GOREDIT_TITLE_DEFAULT_DIR_LOCATOR : caption
                 };
 
-                locatorUI.CurrentDirectory = initialDir;
+                locatorUI.CurrentDirectory = initialDir.FullName;
 
                 if (onSelected != null)
                 {
@@ -98,7 +98,7 @@ namespace Gorgon.Editor.Services
                     locatorUI.FolderEntered += OnEntered;
                 }
 
-                return locatorUI.ShowDialog(parent) == DialogResult.Cancel ? null : locatorUI.CurrentDirectory;
+                return locatorUI.ShowDialog(parent) == DialogResult.Cancel ? null : new DirectoryInfo(locatorUI.CurrentDirectory);
             }
             finally
             {

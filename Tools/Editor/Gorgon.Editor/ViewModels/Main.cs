@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -69,16 +68,9 @@ namespace Gorgon.Editor.ViewModels
         private IEditorFileSaveAsDialogService _saveDialog;
         // The directory locator service.
         private IDirectoryLocateService _directoryLocator;
-		// The tool plug in management service.
-        private IToolPlugInService _toolPlugIns;
         #endregion
 
         #region Properties.
-        /// <summary>
-        /// Property to return the list of tool plug in ribbon buttons.
-        /// </summary>
-        public IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> ToolButtons => _toolPlugIns.RibbonButtons;
-
 		/// <summary>
 		/// Property to return the settings for the application.
 		/// </summary>
@@ -280,8 +272,7 @@ namespace Gorgon.Editor.ViewModels
             SettingsViewModel = injectionParameters.SettingsVm ?? throw new ArgumentMissingException(nameof(MainParameters.SettingsVm), nameof(injectionParameters));
 
             _directoryLocator = injectionParameters.ViewModelFactory.DirectoryLocator;
-
-            _toolPlugIns = _viewModelFactory.ToolPlugIns;
+            
             ContentCreators = new ObservableCollection<IContentPlugInMetadata>(injectionParameters.ContentCreators ?? throw new ArgumentMissingException(nameof(MainParameters.ContentCreators), nameof(injectionParameters)));
             RecentFiles.OpenProjectCommand = new EditorCommand<RecentItem>(DoOpenRecentAsync, CanOpenRecent);
             NewProject.CreateProjectCommand = new EditorCommand<object>(DoCreateProjectAsync, CanCreateProject);
