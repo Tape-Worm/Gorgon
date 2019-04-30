@@ -344,6 +344,6 @@
     <PostBuildEvent>REM Editor copy
 copy "$(TargetPath)" "$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\Content"
 copy "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\Content"
-</PostBuildEvent>
+copy "$(TargetDir)WinFormsColor.dll" "$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\Content"</PostBuildEvent>
   </PropertyGroup>
 </Project>
