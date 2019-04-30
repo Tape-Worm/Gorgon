@@ -26,7 +26,7 @@
 
 using System.ComponentModel;
 
-namespace Gorgon.Examples
+namespace Gorgon.Graphics.Example
 {
     partial class Form
     {

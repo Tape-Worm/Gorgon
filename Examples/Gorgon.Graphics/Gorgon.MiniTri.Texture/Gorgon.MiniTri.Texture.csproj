@@ -7,7 +7,7 @@
     <ProjectGuid>{FD481DA1-5A0F-4678-98A3-B9986422233B}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Gorgon.Examples</RootNamespace>
+    <RootNamespace>Gorgon.Graphics.Example</RootNamespace>
     <AssemblyName>Gorgon.MiniTri.Texture</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -47,7 +47,7 @@
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Gorgon.Examples.Program</StartupObject>
+    <StartupObject>Gorgon.Graphics.Example.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>..\..\app.manifest</ApplicationManifest>

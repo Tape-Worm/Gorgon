@@ -6,7 +6,7 @@
     <ProjectGuid>{26B09EBD-0140-4274-92EF-6E674FBDBB22}</ProjectGuid>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Gorgon.Examples</RootNamespace>
+    <RootNamespace>Gorgon.Input.Example</RootNamespace>
     <AssemblyName>GamingDeviceDrivers</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -37,7 +37,7 @@
     <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Gorgon.Examples.Program</StartupObject>
+    <StartupObject>Gorgon.Input.Example.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>..\..\app.manifest</ApplicationManifest>
@@ -83,6 +83,10 @@
     <ProjectReference Include="..\..\..\Gorgon\Gorgon.Windows\Gorgon.Windows.csproj">
       <Project>{a19cb981-2d25-4316-9542-1d2bd7064f2b}</Project>
       <Name>Gorgon.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ExamplesCommon\ExamplesCommon.csproj">
+      <Project>{9DC4EEA9-C32A-4FEA-8A52-9CD0AC8AD8AC}</Project>
+      <Name>ExamplesCommon</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

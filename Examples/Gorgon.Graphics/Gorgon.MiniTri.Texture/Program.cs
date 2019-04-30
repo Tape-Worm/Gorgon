@@ -30,14 +30,14 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using Gorgon.Graphics.Core;
-using Gorgon.Examples.Properties;
-using Gorgon.Graphics;
+using Gorgon.Graphics.Example.Properties;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.UI;
+using Gorgon.Examples;
 using DX = SharpDX;
 
-namespace Gorgon.Examples
+namespace Gorgon.Graphics.Example
 {
     /// <summary>
 	/// This is an example based on the MiniTri example that will draw a single triangle with a texture.

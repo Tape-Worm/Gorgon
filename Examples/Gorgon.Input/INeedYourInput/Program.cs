@@ -26,9 +26,10 @@
 
 using System;
 using System.Windows.Forms;
+using Gorgon.Examples;
 using Gorgon.UI;
 
-namespace Gorgon.Examples
+namespace Gorgon.Input.Example
 {
 	/// <summary>
 	/// Example entry point.

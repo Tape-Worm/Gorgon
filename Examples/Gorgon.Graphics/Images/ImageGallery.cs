@@ -36,7 +36,7 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.Math;
 
-namespace Gorgon.Examples
+namespace Gorgon.Graphics.Example
 {
     /// <summary>
     /// A gallery for displaying the example images.

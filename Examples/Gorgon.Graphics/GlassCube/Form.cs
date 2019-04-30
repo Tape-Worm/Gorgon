@@ -30,15 +30,15 @@ using System.IO;
 using System.Windows.Forms;
 using DX = SharpDX;
 using Gorgon.Core;
-using Gorgon.Examples.Properties;
-using Gorgon.Graphics;
+using Gorgon.Graphics.Example.Properties;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Timing;
 using Gorgon.UI;
+using Gorgon.Examples;
 
-namespace Gorgon.Examples
+namespace Gorgon.Graphics.Example
 {
     /// <summary>
     /// The main window for our example.

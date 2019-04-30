@@ -27,8 +27,9 @@
 using System;
 using System.Windows.Forms;
 using Gorgon.UI;
+using Gorgon.Examples;
 
-namespace Gorgon.Examples
+namespace Gorgon.Graphics.Example
 {
 	/// <summary>
 	/// Glass cube example program.

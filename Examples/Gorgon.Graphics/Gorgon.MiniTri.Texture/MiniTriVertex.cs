@@ -29,7 +29,7 @@ using System.Runtime.InteropServices;
 using Gorgon.Graphics.Core;
 using DX = SharpDX;
 
-namespace Gorgon.Examples
+namespace Gorgon.Graphics.Example
 {
 	/// <summary>
 	/// This represents a single vertex in our triangle.

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Gorgon.Examples
+namespace Gorgon.Graphics.Example
 {
     partial class Form
     {
@@ -35,7 +35,7 @@ namespace Gorgon.Examples
             // 
             // ContentArea
             // 
-            this.BackgroundImage = global::Gorgon.Examples.Properties.Resources.TileBg;
+            this.BackgroundImage = global::Gorgon.Graphics.Example.Properties.Resources.TileBg;
             // 
             // FormMain
             // 

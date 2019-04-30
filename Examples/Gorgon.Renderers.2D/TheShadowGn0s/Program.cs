@@ -304,11 +304,7 @@ ESC - Quit.";
                                                      OutlineColor1 = GorgonColor.Black,
                                                      OutlineSize = 2,
                                                      TextureWidth = 512,
-                                                     TextureHeight = 256,
-                                                     Brush = new GorgonGlyphLinearGradientBrush
-                                                             {
-                                                                 Angle = 90, StartColor = GorgonColor.YellowPure, EndColor = GorgonColor.OrangeRed
-                                                             }
+                                                     TextureHeight = 256
                                                  });
 
                 _spriteTexture = GorgonTexture2DView.FromFile(_graphics,

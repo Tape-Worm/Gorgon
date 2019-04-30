@@ -151,13 +151,7 @@ namespace Gorgon.Graphics.Example
         /// </summary>
         private static void LoadShaders()
         {
-            string shaderPath = Path.Combine(GorgonApplication.StartupPath.FullName, "Shaders.hlsl");
-            string shaderCode;
-
-            using (var reader = new StreamReader(shaderPath, Encoding.ASCII))
-            {
-                shaderCode = reader.ReadToEnd();
-            }
+            string shaderCode = Resources.Shaders;
 
             _bufferless = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics, shaderCode, "BufferlessVs", Debugger.IsAttached);
             _vertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics, shaderCode, "VsMain", Debugger.IsAttached);

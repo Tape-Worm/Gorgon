@@ -6,8 +6,14 @@
 
     $plugInPathNode = $xmlFile.SelectSingleNode("//setting[@name='PlugInLocation']")
 
+    while (($plugInPathNode -ne $null) -and ($plugInPathNode.Value.Contains("\\")))
+    {
+        $plugInPathNode.Value = $plugInPathNode.Value.Replace("\\", "\")
+    }
+
     if ($plugInPathNode -ne $null)
     {
+        $plugInPathNode.Value = $plugInPathNode.Value.Replace("\\", "\")
         $plugInPathNode.Value = $plugInPathNode.Value.Replace("..\", [string]::Empty)
         $plugInPathNode.Value = $plugInPathNode.Value.Replace("Bin\{0}", [string]::Empty)
         $plugInPathNode.Value = "..\{0}" -f $plugInPathNode.Value
@@ -36,8 +42,10 @@
 $artifactDir = "$env:BUILD_ARTIFACTSTAGINGDIRECTORY\\Examples"
 $artifactBin = "$artifactDir\\Bin\\"
 $artifactPlugIns = "$artifactDir\\PlugIns\\"
-$artifactResources = "$artifactDir\Resources\"
-
+$artifactResources = "$artifactDir\\Resources\\"
+$artifactImagesFolder = "$artifactBin\\Images\\"
+$baseSrcResources = "Resources\\"
+$baseSrcImages = "Examples\\Gorgon.Graphics\\Images\\Images\\*.*"
 
 if (Test-Path $artifactDir)
 {
@@ -46,22 +54,17 @@ if (Test-Path $artifactDir)
 
 mkdir $artifactDir
 mkdir $artifactBin
+mkdir $artifactImagesFolder
 mkdir $artifactPlugIns
-mkdir $artifactResources
 
-$baseSrcResources = "Resources\"
-$resourceList = (
-    "Textures\Balls\BallsTexture.dds",
-    "FileSystems\BZipFileSystem.gorPack",
-    "FileSystems\FolderSystem\<<DIRECTORY>>",
-    "FileSystems\VFSRoot\<<DIRECTORY>>",
-    "FileSystems\VFSRoot.Zip",
-    "FileSystems\FileSystem.Zip"
-)
+$gorgonExamples = (Get-ChildItem "Examples\\" -include *.dll,*.exe, *.config,*.hlsl -Recurse | where { $_.FullName -notmatch "app.config" -and $_.FullName -notmatch ".vshost.exe" -and $_.FullName -notmatch "\\debug\\" -and $_.FullName -notmatch "\\obj\\" -and $_.FullName -notmatch "_Test" })
+$plugInDlls = (Get-ChildItem "PlugIns\\Bin\\" -include *.dll -Recurse | where { $_.FullName -notmatch "\\debug\\" })
 
-$gorgonExamples = (Get-ChildItem "Examples\\" -include *.dll,*.exe, *.config -Recurse | where { $_.FullName -notmatch "app.config" -and $_.FullName -notmatch ".vshost.exe" -and $_.FullName -notmatch "\\DemoLauncher\\" -and $_.FullName -notmatch "\\Primitives\\" -and $_.FullName -notmatch "\\debug\\" -and $_.FullName -notmatch "\\obj\\" -and $_.FullName -notmatch "\\Fonts\\" -and $_.FullName -notmatch "_Test"})
-$plugInDlls = (Get-ChildItem "PlugIns\\Bin\\" -include *.dll -Recurse | where { $_.FullName -notmatch "\\debug\\" -and $_.BaseName -notmatch "sharpdx"})
-$ballTexture
+Write-Output "$($gorgonExamples.Length) Example files to copy."
+Write-Output "$($plugInDlls.Length) Plug in files to copy."
+
+Copy-Item -Path $baseSrcResources -Destination $artifactDir -Recurse -Container | where { $_.FullName -contains "\\Examples\\" }
+Copy-Item -Path $baseSrcImages -Destination $artifactImagesFolder -Container: $false
 
 ForEach ($example in $gorgonExamples)
 {
@@ -76,23 +79,4 @@ ForEach ($example in $gorgonExamples)
 ForEach ($plugInDll in $plugInDlls)
 {
     Copy-Item $plugInDll.FullName $artifactPlugIns
-}
-
-ForEach ($resource in $resourceList)
-{
-    [string]$destDir = "$artifactResources{0}" -f (Split-Path $resource)
-
-    if (-not (Test-Path $destDir))
-    {
-        mkdir $destDir
-    }
-
-    if ($resource.EndsWith("<<DIRECTORY>>"))
-    {
-        $srcDir = "$baseSrcResources{0}" -f (Split-Path $resource)
-        Get-ChildItem -Path $srcDir | Copy-Item -Destination $destDir -Recurse -Container         
-    } Else
-    {
-        Copy-Item $baseSrcResources$resource $destDir
-    }
 }

@@ -30,12 +30,11 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.Examples.Properties;
+using Gorgon.Input.Example.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging;
-using Gorgon.Input;
 using Gorgon.Math;
 using Gorgon.PlugIns;
 using Gorgon.Renderers;
@@ -43,9 +42,11 @@ using Gorgon.UI;
 using DX = SharpDX;
 using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
 using GorgonMouseButtons = Gorgon.Input.MouseButtons;
-using MouseButtons = System.Windows.Forms.MouseButtons;
+using Gorgon.Examples;
+using System.Reflection;
+using System.Linq;
 
-namespace Gorgon.Examples
+namespace Gorgon.Input.Example
 {
 	/// <summary>
 	/// Main application form.
@@ -261,12 +262,12 @@ namespace Gorgon.Examples
 
 			GorgonMouseButtons buttons = GorgonMouseButtons.None;
 
-			if ((e.Button & MouseButtons.Left) == MouseButtons.Left)
+			if ((e.Button & System.Windows.Forms.MouseButtons.Left) == System.Windows.Forms.MouseButtons.Left)
 			{
 				buttons |= GorgonMouseButtons.Left;
 			}
 
-			if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
+			if ((e.Button & System.Windows.Forms.MouseButtons.Right) == System.Windows.Forms.MouseButtons.Right)
 			{
 				buttons |= GorgonMouseButtons.Right;
 			}
@@ -289,12 +290,12 @@ namespace Gorgon.Examples
 
 			GorgonMouseButtons buttons = GorgonMouseButtons.None;
 
-			if ((e.Button & MouseButtons.Left) == MouseButtons.Left)
+			if ((e.Button & System.Windows.Forms.MouseButtons.Left) == System.Windows.Forms.MouseButtons.Left)
 			{
 				buttons |= GorgonMouseButtons.Left;
 			}
 
-			if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
+			if ((e.Button & System.Windows.Forms.MouseButtons.Right) == System.Windows.Forms.MouseButtons.Right)
 			{
 				buttons |= GorgonMouseButtons.Right;
 			}
@@ -539,19 +540,25 @@ namespace Gorgon.Examples
 		{
 			base.OnFormClosing(e);
 
-			// Always dispose your devices when the window is shutting down.
-			// Failure to do so can lead to unpredictable results.
-			foreach (IGorgonGamingDevice joystick in _joystickList)
-			{
-				joystick.Dispose();
-			}
+            // Always dispose your devices when the window is shutting down.
+            // Failure to do so can lead to unpredictable results.
+            if (_joystickList != null)
+            {
+                foreach (IGorgonGamingDevice joystick in _joystickList)
+                {
+                    joystick.Dispose();
+                }
+            }
 
-			foreach (IGorgonGamingDeviceDriver driver in _drivers)
-			{
-				driver.Dispose();
-			}
+            if (_drivers != null)
+            {
+                foreach (IGorgonGamingDeviceDriver driver in _drivers)
+                {
+                    driver.Dispose();
+                }
+            }
 
-			_input.UnregisterDevice(_mouse);
+			_input?.UnregisterDevice(_mouse);
 			_input?.Dispose();
 
             _assemblyCache?.Dispose();
@@ -565,179 +572,184 @@ namespace Gorgon.Examples
 		{
 			base.OnLoad(e);
 
-			try
-			{
-			    GorgonExample.PlugInLocationDirectory = new DirectoryInfo(Settings.Default.PlugInLocation);
+            try
+            {
+                GorgonExample.PlugInLocationDirectory = new DirectoryInfo(Settings.Default.PlugInLocation);
 
-				// Load the assembly.
-				_assemblyCache = new GorgonMefPlugInCache(GorgonApplication.Log);
+                // Load the assembly.
+                _assemblyCache = new GorgonMefPlugInCache(GorgonApplication.Log);
 
-				// Create the plugin service.
+                // Create the plugin service.
                 IGorgonPlugInService plugInService = new GorgonMefPlugInService(_assemblyCache, GorgonApplication.Log);
 
-				// Create the factory to retrieve gaming device drivers.
-				var factory = new GorgonGamingDeviceDriverFactory(plugInService);
+                // Create the factory to retrieve gaming device drivers.
+                var factory = new GorgonGamingDeviceDriverFactory(plugInService);
 
-				// Create the raw input interface.
-				_input = new GorgonRawInput(this, GorgonApplication.Log);
+                // Create the raw input interface.
+                _input = new GorgonRawInput(this, GorgonApplication.Log);
 
-				// Get available gaming device driver plug ins.
+                // Get available gaming device driver plug ins.
                 _assemblyCache.LoadPlugInAssemblies(GorgonExample.GetPlugInPath().FullName, "Gorgon.Input.DirectInput.dll");
-			    _assemblyCache.LoadPlugInAssemblies(GorgonExample.GetPlugInPath().FullName, "Gorgon.Input.XInput.dll");
+                _assemblyCache.LoadPlugInAssemblies(GorgonExample.GetPlugInPath().FullName, "Gorgon.Input.XInput.dll");
 
-				_drivers = factory.LoadAllDrivers();
+                _drivers = factory.LoadAllDrivers();
 
-				_joystickList = new List<IGorgonGamingDevice>();
+                _joystickList = new List<IGorgonGamingDevice>();
 
-				// Get all gaming devices from the drivers.
-				foreach (IGorgonGamingDeviceDriver driver in _drivers)
-				{
-					IReadOnlyList<IGorgonGamingDeviceInfo> infoList = driver.EnumerateGamingDevices(true);
+                // Get all gaming devices from the drivers.
+                foreach (IGorgonGamingDeviceDriver driver in _drivers)
+                {
+                    IReadOnlyList<IGorgonGamingDeviceInfo> infoList = driver.EnumerateGamingDevices(true);
 
-					foreach (IGorgonGamingDeviceInfo info in infoList)
-					{
-						IGorgonGamingDevice device = driver.CreateGamingDevice(info);
+                    foreach (IGorgonGamingDeviceInfo info in infoList)
+                    {
+                        IGorgonGamingDevice device = driver.CreateGamingDevice(info);
 
-						// Turn off dead zones for this example.
-						foreach (GorgonGamingDeviceAxis axis in device.Axis)
-						{
-							axis.DeadZone = GorgonRange.Empty;
-						}
-						
-						_joystickList.Add(device);
-					}
-				}
+                        // Turn off dead zones for this example.
+                        foreach (GorgonGamingDeviceAxis axis in device.Axis)
+                        {
+                            axis.DeadZone = GorgonRange.Empty;
+                        }
 
-				// Create mouse.
-				_mouse = new GorgonRawMouse();
+                        _joystickList.Add(device);
+                    }
+                }
 
-				// Create the graphics interface.
-			    ClientSize = Settings.Default.Resolution;
+                // Create mouse.
+                _mouse = new GorgonRawMouse();
 
-			    IReadOnlyList<IGorgonVideoAdapterInfo> adapters = GorgonGraphics.EnumerateAdapters();
-				_graphics = new GorgonGraphics(adapters[0], log: GorgonApplication.Log);
+                // Create the graphics interface.
+                ClientSize = Settings.Default.Resolution;
+
+                IReadOnlyList<IGorgonVideoAdapterInfo> adapters = GorgonGraphics.EnumerateAdapters();
+                _graphics = new GorgonGraphics(adapters[0], log: GorgonApplication.Log);
                 _screen = new GorgonSwapChain(_graphics, this, new GorgonSwapChainInfo("INeedYourInput Swapchain")
-                                                               {
-                                                                   Width = Settings.Default.Resolution.Width,
-                                                                   Height = Settings.Default.Resolution.Height,
-                                                                   Format = BufferFormat.R8G8B8A8_UNorm
-                                                               });
+                {
+                    Width = Settings.Default.Resolution.Width,
+                    Height = Settings.Default.Resolution.Height,
+                    Format = BufferFormat.R8G8B8A8_UNorm
+                });
                 _graphics.SetRenderTarget(_screen.RenderTargetView);
 
-			    if (!Settings.Default.IsWindowed)
-			    {
+                if (!Settings.Default.IsWindowed)
+                {
                     _screen.EnterFullScreen();
-			    }
+                }
 
-				// For the backup image. Used to make it as large as the monitor that we're on.
-				var currentScreen = Screen.FromHandle(Handle);
+                // For the backup image. Used to make it as large as the monitor that we're on.
+                var currentScreen = Screen.FromHandle(Handle);
 
-				// Relocate the window to the center of the screen.				
-				Location = new Point(currentScreen.Bounds.Left + (currentScreen.WorkingArea.Width / 2) - (ClientSize.Width / 2),
-				                     currentScreen.Bounds.Top + (currentScreen.WorkingArea.Height / 2) - (ClientSize.Height / 2));
+                // Relocate the window to the center of the screen.				
+                Location = new Point(currentScreen.Bounds.Left + (currentScreen.WorkingArea.Width / 2) - (ClientSize.Width / 2),
+                                     currentScreen.Bounds.Top + (currentScreen.WorkingArea.Height / 2) - (ClientSize.Height / 2));
 
 
-				// Create the 2D renderer.
+                // Create the 2D renderer.
                 _2D = new Gorgon2D(_graphics);
-				
-				// Create the text font.
+
+                // Create the text font.
                 var fontFactory = new GorgonFontFactory(_graphics);
-			    _font = fontFactory.GetFont(new GorgonFontInfo("Arial", 9.0f, FontHeightMode.Points, "Arial 9pt")
-			                                {
-			                                    FontStyle = FontStyle.Bold,
-			                                    AntiAliasingMode = FontAntiAliasMode.AntiAlias
-			                                });
+                _font = fontFactory.GetFont(new GorgonFontInfo("Arial", 9.0f, FontHeightMode.Points, "Arial 9pt")
+                {
+                    FontStyle = FontStyle.Bold,
+                    AntiAliasingMode = FontAntiAliasMode.AntiAlias
+                });
 
-				// Create text sprite.
-			    _messageSprite = new GorgonTextSprite(_font, "Using mouse and keyboard (Windows Forms).")
-			                     {
-			                         Color = Color.Black
-			                     };
+                // Create text sprite.
+                _messageSprite = new GorgonTextSprite(_font, "Using mouse and keyboard (Windows Forms).")
+                {
+                    Color = Color.Black
+                };
 
-				// Create a back buffer.
+                // Create a back buffer.
                 _backBuffer = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo("Backbuffer storage")
-                                                                                     {
-                                                                                         Width = _screen.Width,
-                                                                                         Height = _screen.Height,
-                                                                                         Format =  _screen.Format
-                                                                                     });
-				_backBuffer.Clear(Color.White);
-			    _backBufferView = _backBuffer.GetShaderResourceView();
+                {
+                    Width = _screen.Width,
+                    Height = _screen.Height,
+                    Format = _screen.Format
+                });
+                _backBuffer.Clear(Color.White);
+                _backBufferView = _backBuffer.GetShaderResourceView();
 
-				// Clear our backup image to white to match our primary screen.
-			    using (IGorgonImage image = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, _screen.Format)
-			                                                {
-			                                                    Width = _screen.Width,
-			                                                    Height = _screen.Height,
-			                                                    Format = _screen.Format
-			                                                }))
-			    {
+                // Clear our backup image to white to match our primary screen.
+                using (IGorgonImage image = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, _screen.Format)
+                {
+                    Width = _screen.Width,
+                    Height = _screen.Height,
+                    Format = _screen.Format
+                }))
+                {
                     image.Buffers[0].Fill(0xff);
-			        _backupImage = image.ToTexture2D(_graphics,
-			                                         new GorgonTexture2DLoadOptions
-			                                         {
-			                                             Binding = TextureBinding.None,
-			                                             Usage = ResourceUsage.Staging
-			                                         });
-			    }
+                    _backupImage = image.ToTexture2D(_graphics,
+                                                     new GorgonTexture2DLoadOptions
+                                                     {
+                                                         Binding = TextureBinding.None,
+                                                         Usage = ResourceUsage.Staging
+                                                     });
+                }
 
-			    // Set gorgon events.
+                // Set gorgon events.
                 _screen.BeforeSwapChainResized += BeforeSwapChainResized;
                 _screen.AfterSwapChainResized += AfterSwapChainResized;
 
-				// Enable the mouse.
-				Cursor = Cursors.Cross;
-				_mouse.MouseButtonDown += MouseInput;
-				_mouse.MouseMove += MouseInput;
-				_mouse.MouseWheelMove += (sender, args) =>
-				                         {
-											 _radius += args.WheelDelta.Sign();
+                // Enable the mouse.
+                Cursor = Cursors.Cross;
+                _mouse.MouseButtonDown += MouseInput;
+                _mouse.MouseMove += MouseInput;
+                _mouse.MouseWheelMove += (sender, args) =>
+                                         {
+                                             _radius += args.WheelDelta.Sign();
 
-											 if (_radius < 2.0f)
-											 {
-												 _radius = 2.0f;
-											 }
-											 if (_radius > 10.0f)
-											 {
-												 _radius = 10.0f;
-											 }
-										 };
+                                             if (_radius < 2.0f)
+                                             {
+                                                 _radius = 2.0f;
+                                             }
+                                             if (_radius > 10.0f)
+                                             {
+                                                 _radius = 10.0f;
+                                             }
+                                         };
 
-				// Set the mouse position.
-				_mouse.Position = new Point(ClientSize.Width / 2, ClientSize.Height / 2);
+                // Set the mouse position.
+                _mouse.Position = new Point(ClientSize.Width / 2, ClientSize.Height / 2);
 
                 _noBlending = _blendBuilder.BlendState(GorgonBlendState.NoBlending)
-			                                   .Build();
-			    _inverted = _blendBuilder.BlendState(GorgonBlendState.Inverted)
-			                                 .Build();
+                                               .Build();
+                _inverted = _blendBuilder.BlendState(GorgonBlendState.Inverted)
+                                             .Build();
 
                 // Set up blending states for our pen.
-			    var blendStateBuilder = new GorgonBlendStateBuilder();
-			    _currentBlend = _drawModulatedBlend = _blendBuilder.BlendState(blendStateBuilder
-			                                                                   .ResetTo(GorgonBlendState.Default)
-			                                                                   .DestinationBlend(alpha: Blend.One)
-			                                                                   .Build())
-			                                                       .Build();
+                var blendStateBuilder = new GorgonBlendStateBuilder();
+                _currentBlend = _drawModulatedBlend = _blendBuilder.BlendState(blendStateBuilder
+                                                                               .ResetTo(GorgonBlendState.Default)
+                                                                               .DestinationBlend(alpha: Blend.One)
+                                                                               .Build())
+                                                                   .Build();
 
-			    _drawAdditiveBlend = _blendBuilder.BlendState(blendStateBuilder
-			                                                  .ResetTo(GorgonBlendState.Additive)
-			                                                  .DestinationBlend(alpha: Blend.One)
-			                                                  .Build())
-			                                      .Build();
+                _drawAdditiveBlend = _blendBuilder.BlendState(blendStateBuilder
+                                                              .ResetTo(GorgonBlendState.Additive)
+                                                              .DestinationBlend(alpha: Blend.One)
+                                                              .Build())
+                                                  .Build();
 
-			    _drawNoBlend = _blendBuilder.BlendState(blendStateBuilder
-			                                            .ResetTo(GorgonBlendState.NoBlending)
-			                                            .DestinationBlend(alpha: Blend.One)
-			                                            .Build())
-			                                .Build();
+                _drawNoBlend = _blendBuilder.BlendState(blendStateBuilder
+                                                        .ResetTo(GorgonBlendState.NoBlending)
+                                                        .DestinationBlend(alpha: Blend.One)
+                                                        .Build())
+                                            .Build();
 
-				GorgonApplication.IdleMethod = Gorgon_Idle;
-			}
-			catch (Exception ex)
-			{
-				GorgonExample.HandleException(ex);
-				GorgonApplication.Quit();
-			}
+                GorgonApplication.IdleMethod = Gorgon_Idle;
+            }
+            catch (ReflectionTypeLoadException refEx)
+            {
+                string refErr = string.Join("\n", refEx.LoaderExceptions.Select(item => item.Message));
+                GorgonDialogs.ErrorBox(this, refErr);
+            }
+            catch (Exception ex)
+            {
+                GorgonExample.HandleException(ex);
+                GorgonApplication.Quit();
+            }
 		}
         #endregion
 

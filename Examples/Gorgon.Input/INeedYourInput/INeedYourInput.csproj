@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{0498130A-C954-434E-A02E-4E2733358717}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Gorgon.Examples</RootNamespace>
+    <RootNamespace>Gorgon.Input.Example</RootNamespace>
     <AssemblyName>INeedYourInput</AssemblyName>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>

@@ -28,12 +28,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Gorgon.Core;
-using Gorgon.Examples.Properties;
-using Gorgon.Input;
+using Gorgon.Examples;
+using Gorgon.Input.Example.Properties;
 using Gorgon.PlugIns;
 using Gorgon.UI;
 
-namespace Gorgon.Examples
+namespace Gorgon.Input.Example
 {
 	/// <summary>
 	/// Entry point class.
@@ -73,36 +73,6 @@ namespace Gorgon.Examples
 	    private static GorgonMefPlugInCache _pluginCache;
         #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to return the path to the input plugins.
-		/// </summary>
-		private static string PlugInPath
-		{
-			get
-			{
-				string plugInPath = Settings.Default.InputPlugInPath;
-
-				// Map the plugin path.
-				if (plugInPath.Contains("{0}"))
-				{
-#if DEBUG
-					plugInPath = string.Format(plugInPath, "Debug");
-#else
-					plugInPath = string.Format(plugInPath, "Release");
-#endif
-				}
-
-				if (!plugInPath.EndsWith(Path.DirectorySeparatorChar.ToString()))
-				{
-					plugInPath += Path.DirectorySeparatorChar.ToString();
-				}
-
-				return Path.GetFullPath(plugInPath);
-			}
-		}
-		#endregion
-
 		#region Methods.
 		/// <summary>
 		/// Function to load in the gaming device driver plug ins.
@@ -110,6 +80,8 @@ namespace Gorgon.Examples
 		/// <returns>A list of gaming device driver plug ins.</returns>
 		private static IReadOnlyList<IGorgonGamingDeviceDriver> GetGamingDeviceDrivers()
 		{
+            GorgonExample.PlugInLocationDirectory = new DirectoryInfo(Settings.Default.InputPlugInPath);
+
 			// Access our plugin cache.
 		    _pluginCache = new GorgonMefPlugInCache(GorgonApplication.Log);
 
@@ -118,7 +90,7 @@ namespace Gorgon.Examples
 			// to point at wherever you'd like.  If a {0} place holder is
 			// in the path, it will be replaced with whatever the build
 			// configuration is set to (i.e. DEBUG or RELEASE).
-			_pluginCache.LoadPlugInAssemblies(PlugInPath, "Gorgon.Input.*.dll");
+			_pluginCache.LoadPlugInAssemblies(GorgonExample.GetPlugInPath().FullName, "Gorgon.Input.*.dll");
 
 			if (_pluginCache.PlugInAssemblies.Count == 0)
 			{
@@ -213,9 +185,7 @@ namespace Gorgon.Examples
 		                     Console.WriteLine("Exception:\n{0}\n\nStack Trace:{1}", _.Message, _.StackTrace);
 		                 });
 		        Console.ResetColor();
-#if DEBUG
 		        Console.ReadKey();
-#endif
 		    }
 		    finally
 		    {
