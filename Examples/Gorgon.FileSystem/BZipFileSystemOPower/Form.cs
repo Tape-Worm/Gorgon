@@ -218,7 +218,7 @@ namespace Gorgon.Examples
 
 		    // Draw text.
 		    _poetry.Position = _textPosition;
-            //_renderer.DrawTextSprite(_poetry);
+            _renderer.DrawTextSprite(_poetry);
 
 			_sprites[0].Position = new DX.Vector2(width / 4, height / 4);
 
