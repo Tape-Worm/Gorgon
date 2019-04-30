@@ -678,7 +678,7 @@ namespace Gorgon.Editor
 
             Text = string.Empty;
             Stage.IsStartup = false;
-            Stage.CanOpen = (DataContext.BrowseProjectCommand != null) && (DataContext.BrowseProjectCommand.CanExecute(null));
+            Stage.CanOpen = (DataContext.OpenPackFileCommand != null) && (DataContext.OpenPackFileCommand.CanExecute(null));
 
             Stage.Visible = true;
             _clipboardContext = null;
@@ -1289,7 +1289,7 @@ namespace Gorgon.Editor
             
             DataContext.OnLoad();
 
-            Stage.CanOpen = (DataContext.BrowseProjectCommand != null) && (DataContext.BrowseProjectCommand.CanExecute(null));            
+            Stage.CanOpen = (DataContext.OpenPackFileCommand != null) && (DataContext.OpenPackFileCommand.CanExecute(null));            
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.</summary>

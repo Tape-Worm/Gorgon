@@ -925,6 +925,17 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The plug in path was not found.  No plug ins will be available for the editor.
+        ///
+        ///Please check the application log for more information..
+        /// </summary>
+        internal static string GOREDIT_ERR_NO_PLUGINS {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_NO_PLUGINS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There is no provider loaded that can read the file &apos;{0}&apos;..
         /// </summary>
         internal static string GOREDIT_ERR_NO_PROVIDER {

@@ -828,4 +828,9 @@ Please try again.</value>
   <data name="GOREDIT_ERR_NO_ROOT" xml:space="preserve">
     <value>There is no root to the file system.</value>
   </data>
+  <data name="GOREDIT_ERR_NO_PLUGINS" xml:space="preserve">
+    <value>The plug in path was not found.  No plug ins will be available for the editor.
+
+Please check the application log for more information.</value>
+  </data>
 </root>

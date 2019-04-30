@@ -173,6 +173,10 @@ namespace Gorgon.Editor.Views
             {
                 CheckRecent.PerformClick();
             }
+            else
+            {
+                CheckNew.PerformClick();
+            }
         }
         #endregion
 

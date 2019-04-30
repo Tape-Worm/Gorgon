@@ -78,10 +78,8 @@ namespace Gorgon.Editor
         private IViewModelInjection _commonServices;
 		// The folder browser for a file system.
         private IEditorFileSystemFolderBrowseService _folderBrowser;
-        #endregion
-
-        #region Properties.
-
+		// The path to the plug in folder.
+        private DirectoryInfo _plugInLocation;
         #endregion
 
         #region Methods.
@@ -161,7 +159,6 @@ namespace Gorgon.Editor
                                                            defaultSize.Width,
                                                            defaultSize.Height),
                     WindowState = (int)FormWindowState.Maximized,
-                    PlugInPath = Path.Combine(GorgonApplication.StartupPath.FullName, "PlugIns").FormatDirectory(Path.DirectorySeparatorChar),
                     LastOpenSavePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).FormatDirectory(Path.DirectorySeparatorChar),
                     LastProjectWorkingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).FormatDirectory(Path.DirectorySeparatorChar)
                 };
@@ -197,18 +194,6 @@ namespace Gorgon.Editor
             if (result == null)
             {
                 result = CreateEditorSettings();
-            }
-
-            if (string.IsNullOrWhiteSpace(result.PlugInPath))
-            {
-                result.PlugInPath = Path.Combine(GorgonApplication.StartupPath.FullName, "PlugIns").FormatDirectory(Path.DirectorySeparatorChar);
-            }
-
-            var pluginPath = new DirectoryInfo(result.PlugInPath);
-
-            if (!pluginPath.Exists)
-            {
-                pluginPath.Create();
             }
 
             if (string.IsNullOrWhiteSpace(result.LastOpenSavePath))
@@ -266,7 +251,7 @@ namespace Gorgon.Editor
         /// <returns>The tool plugin manager service used to manipulate the loaded tool plugins.</returns>
         private ToolPlugInService LoadToolPlugIns()
         {
-            var toolPlugInsDir = new DirectoryInfo(Path.Combine(_settings.PlugInPath, "Tools"));
+            var toolPlugInsDir = new DirectoryInfo(Path.Combine(_plugInLocation.FullName, "Tools"));
             var toolPlugInSettingsDir = new DirectoryInfo(Path.Combine(Program.ApplicationUserDirectory.FullName, "ToolPlugIns"));
             var toolPlugIns = new ToolPlugInService(toolPlugInSettingsDir, _graphicsContext, _folderBrowser, _commonServices);
 
@@ -274,6 +259,11 @@ namespace Gorgon.Editor
             {
                 toolPlugInSettingsDir.Create();
                 toolPlugInSettingsDir.Refresh();
+            }
+
+            if (!toolPlugInsDir.Exists)
+            {
+                return toolPlugIns;
             }
 
             try
@@ -303,7 +293,7 @@ namespace Gorgon.Editor
         /// <returns>The content plugin manager service used to manipulate the loaded content plugins.</returns>
         private ContentPlugInService LoadContentPlugIns()
         {
-            var contentPlugInsDir = new DirectoryInfo(Path.Combine(_settings.PlugInPath, "Content"));
+            var contentPlugInsDir = new DirectoryInfo(Path.Combine(_plugInLocation.FullName, "Content"));
             var contentPlugInSettingsDir = new DirectoryInfo(Path.Combine(Program.ApplicationUserDirectory.FullName, "ContentPlugIns"));
 
             if (!contentPlugInSettingsDir.Exists)
@@ -313,6 +303,11 @@ namespace Gorgon.Editor
             }
 
             var contentPlugIns = new ContentPlugInService(contentPlugInSettingsDir, _graphicsContext, _folderBrowser, _commonServices);
+
+            if (!contentPlugInsDir.Exists)
+            {
+                return contentPlugIns;
+            }
 
             try
             {
@@ -341,8 +336,13 @@ namespace Gorgon.Editor
         /// <returns>A file system provider management interface.</returns>
         private FileSystemProviders LoadFileSystemPlugIns()
         {
-            var fileSystemPlugInsDir = new DirectoryInfo(Path.Combine(_settings.PlugInPath, "Filesystem"));
+            var fileSystemPlugInsDir = new DirectoryInfo(Path.Combine(_plugInLocation.FullName, "Filesystem"));
             var result = new FileSystemProviders(_commonServices);
+
+            if (!fileSystemPlugInsDir.Exists)
+            {
+                return result;
+            }
 
             try
             {
@@ -393,6 +393,14 @@ namespace Gorgon.Editor
                 _pluginCache = new GorgonMefPlugInCache(Program.Log);
                 _graphicsContext = GraphicsContext.Create(Program.Log);
 
+                _plugInLocation = new DirectoryInfo(Path.Combine(GorgonApplication.StartupPath.FullName, "PlugIns"));
+
+                if (!_plugInLocation.Exists)
+                {
+					Program.Log.Print($"[ERROR] Plug in path '{_plugInLocation.FullName}' was not found.  No plug ins will be loaded.", LoggingLevel.Simple);
+                    GorgonDialogs.ErrorBox(null, Resources.GOREDIT_ERR_LOADING_PLUGINS);
+                }
+				
                 // Get any application settings we might have.
                 _settings = LoadSettings();
 
