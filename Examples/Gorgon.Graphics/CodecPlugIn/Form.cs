@@ -120,12 +120,13 @@ namespace CodecPlugIn
 			// Find the plugin.
 		    GorgonImageCodecPlugIn plugIn = pluginService.GetPlugIn<GorgonImageCodecPlugIn>(pluginName);
 
-			if (plugIn == null)
+			if ((plugIn == null) || (plugIn.Codecs.Count == 0))
 			{
 				return false;
 			}
 
-			_customCodec = plugIn.CreateCodec(pluginName);
+			// Normally you would enumerate the plug ins, but in this case we know there's only one.
+			_customCodec = plugIn.CreateCodec(plugIn.Codecs[0].Name);
 
 			return _customCodec != null;
 		}
