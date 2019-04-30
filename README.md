@@ -1,6 +1,23 @@
 ![gorgon_2 x_logo_full_site](https://cloud.githubusercontent.com/assets/9710137/23449195/86a8701c-fe12-11e6-9079-c4a8997bd311.png) 
 
+What is Gorgon?
+===================
+
 A modular set of libraries useful for graphics and/or video game development.  Gorgon uses Direct 3D 11.4 (via [SharpDX](http://sharpdx.org)) to provide high performance graphics for your applications.
+
+What is not Gorgon?
+===================
+
+Building applications with Gorgon requires that you write code. There's no nodes, no blueprints, etc... It does not contain:
+
+* A fully featured game engine.
+* An all-in-one editor that uses drag and drop to build your application.
+* A scripting system.
+
+Gorgon is meant for people that want to write their own functionality, get down into the guts of their applications and not have to deal with a black boxed scripting system, or editor. In short, it's more work, but more customizable.
+
+For those that want a more complete (and polished) package to build their applications there's [Unity](https://unity.com/), [Unreal](https://www.unrealengine.com/en-US/) or [Godot](https://godotengine.org/).
+
 
 What’s the licensing? 
 -------------------------------------------------
