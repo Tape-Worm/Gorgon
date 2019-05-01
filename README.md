@@ -21,7 +21,7 @@ For those that want a more complete (and polished) package to build their applic
 Documentation
 =============
 
-Documentation for the Gorgon APIs is located [here](https://www.tape-worm.net/GorgonDocs.index.html).
+Documentation for the Gorgon APIs is located [here](https://www.tape-worm.net/GorgonDocs/index.html).
 
 
 What’s the licensing? 
