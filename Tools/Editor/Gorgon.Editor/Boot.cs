@@ -48,6 +48,7 @@ using System.Linq;
 using Gorgon.Editor.Converters;
 using Gorgon.Editor.UI.ViewModels;
 using Gorgon.Editor.FileSystem;
+using System.Reflection;
 
 namespace Gorgon.Editor
 {
@@ -83,11 +84,64 @@ namespace Gorgon.Editor
         #endregion
 
         #region Methods.
+        /// <summary>Handles the AssemblyResolve event of the CurrentDomain control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="args">The <see cref="ResolveEventArgs"/> instance containing the event data.</param>
+        /// <returns>The referenced assembly, if found.</returns>
+        private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            // Step 1. - Find all currently loaded assemblies.
+            Assembly[] loaded = AppDomain.CurrentDomain.GetAssemblies();
+
+            foreach (Assembly assembly in loaded)
+            {
+                if (string.Equals(args.Name, assembly.FullName, StringComparison.InvariantCulture))
+                {
+                    return assembly;
+                }
+            }
+
+            string[] paths =
+            {
+                args.RequestingAssembly.Location,
+                GorgonApplication.StartupPath.FullName
+            };
+
+            // Step 2. - We did not locate the assembly in the loaded assembly list.  Check the local directory for the assembly requesting the reference.
+            var name = new AssemblyName(args.Name);
+
+            foreach (string path in paths)
+            {
+				// This can happen if the requesting assembly is loaded using a byte array.
+                if (string.IsNullOrWhiteSpace(path))
+                {
+                    continue;
+                }
+
+                var file = new FileInfo(Path.Combine(path, name.Name));
+
+                if (file.Exists)
+                {
+                    var assembly = Assembly.LoadFile(file.FullName);
+                    AssemblyName loadedName = assembly.GetName();
+
+                    if (AssemblyName.ReferenceMatchesDefinition(loadedName, name))
+                    {
+                        return assembly;
+                    }
+                }
+            }
+
+            return null;
+        }
+
         /// <summary>Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.ApplicationContext" /> and optionally releases the managed resources.</summary>
         /// <param name="disposing">
         /// <see langword="true" /> to release both managed and unmanaged resources; <see langword="false" /> to release only unmanaged resources. </param>
         protected override void Dispose(bool disposing)
         {
+            AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
+
             ToolPlugInService toolPlugIns = Interlocked.Exchange(ref _toolPlugIns, null);
             ContentPlugInService contentPlugIns = Interlocked.Exchange(ref _contentPlugIns, null);
             GraphicsContext context = Interlocked.Exchange(ref _graphicsContext, null);
@@ -374,8 +428,12 @@ namespace Gorgon.Editor
         /// <returns>The main application window.</returns>
         public async void BootStrap()
         {
+            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+
             try
             {
+				
+
                 // Get our initial context.
                 SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
 
@@ -458,7 +516,7 @@ namespace Gorgon.Editor
             {
                 Cursor.Current = Cursors.Default;
             }
-        }
+        }        
         #endregion
     }
 }
