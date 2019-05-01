@@ -115,7 +115,7 @@ namespace Gorgon.Editor.UI.Controls
         /// </summary>
         protected void ValidateOk() => ButtonOK.Enabled = OnValidateOk();
 
-        /// <summary>Raises the <see cref=UserControl.Load"/> event.</summary>
+        /// <summary>Raises the <see cref="UserControl.Load"/> event.</summary>
         /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
         protected override void OnLoad(EventArgs e)
         {
