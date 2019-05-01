@@ -241,7 +241,7 @@ namespace Gorgon.Examples
         /// Function to handle the button click event.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="System.EventArgs" /> instance containing the event data.</param>
+        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private static void Button_Click(object sender, EventArgs e)
         {
             var button = (Button)sender;

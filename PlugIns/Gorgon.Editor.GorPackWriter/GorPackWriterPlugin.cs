@@ -44,7 +44,7 @@ using System.Threading.Tasks;
 namespace Gorgon.Editor.GorPackWriterPlugIn
 {
     /// <summary>
-    /// Gorgon packed file writer plug-in interface.
+    /// Gorgon packed file writer plug in interface.
     /// </summary>
     internal class GorPackWriterPlugIn
         : FileWriterPlugIn

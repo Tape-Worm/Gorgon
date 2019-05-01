@@ -118,6 +118,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to change the interpolation mode of the <see cref="IGorgonAnimation.PositionTrack"/>.
         /// </summary>
+        /// <param name="mode">The interpolation mode to apply.</param>
         /// <returns>The fluent interface for this builder.</returns>
         public GorgonAnimationBuilder PositionInterpolationMode(TrackInterpolationMode mode)
         {
@@ -128,6 +129,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to change the interpolation mode of the <see cref="IGorgonAnimation.RotationTrack"/>.
         /// </summary>
+        /// <param name="mode">The interpolation mode to apply.</param>
         /// <returns>The fluent interface for this builder.</returns>
         public GorgonAnimationBuilder RotationInterpolationMode(TrackInterpolationMode mode)
         {
@@ -138,6 +140,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to change the interpolation mode of the <see cref="IGorgonAnimation.ScaleTrack"/>.
         /// </summary>
+        /// <param name="mode">The interpolation mode to apply.</param>
         /// <returns>The fluent interface for this builder.</returns>
         public GorgonAnimationBuilder ScaleInterpolationMode(TrackInterpolationMode mode)
         {
@@ -148,6 +151,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to change the interpolation mode of the <see cref="IGorgonAnimation.ColorTrack"/>.
         /// </summary>
+        /// <param name="mode">The interpolation mode to apply.</param>
         /// <returns>The fluent interface for this builder.</returns>
         public GorgonAnimationBuilder ColorInterpolationMode(TrackInterpolationMode mode)
         {
@@ -158,6 +162,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to change the interpolation mode of the <see cref="IGorgonAnimation.RectBoundsTrack"/>.
         /// </summary>
+        /// <param name="mode">The interpolation mode to apply.</param>
         /// <returns>The fluent interface for this builder.</returns>
         public GorgonAnimationBuilder RectBoundsInterpolationMode(TrackInterpolationMode mode)
         {

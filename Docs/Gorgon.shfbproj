@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="14.0">
   <PropertyGroup>
     <!-- The configuration and platform will be used to determine which
          assemblies to include from solution and project documentation
@@ -8,7 +8,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{bca1725b-f885-4024-90a0-46a241e31bd0}</ProjectGuid>
-    <SHFBSchemaVersion>2015.6.5.0</SHFBSchemaVersion>
+    <SHFBSchemaVersion>2017.9.26.0</SHFBSchemaVersion>
     <!-- AssemblyName, Name, and RootNamespace are not used by SHFB but Visual
          Studio adds them anyway -->
     <AssemblyName>Documentation</AssemblyName>
@@ -29,8 +29,8 @@
     </ApiFilter>
     <ProjectSummary>
     </ProjectSummary>
-    <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, TypeParameter</MissingTags>
-    <VisibleItems>Attributes, InheritedMembers, InheritedFrameworkMembers, Protected, ProtectedInternalAsProtected</VisibleItems>
+    <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, TypeParameter, AutoDocumentDispose</MissingTags>
+    <VisibleItems>Attributes, InheritedMembers, InheritedFrameworkMembers, Protected, ProtectedInternalAsProtected, EditorBrowsableNever, NonBrowsable</VisibleItems>
     <HtmlHelp1xCompilerPath>
     </HtmlHelp1xCompilerPath>
     <HtmlHelp2xCompilerPath>
@@ -41,15 +41,15 @@
     </WorkingPath>
     <BuildLogFile>
     </BuildLogFile>
-    <FrameworkVersion>.NET Framework 4.5</FrameworkVersion>
+    <FrameworkVersion>.NET Framework 4.7.2</FrameworkVersion>
     <Preliminary>True</Preliminary>
     <RootNamespaceContainer>True</RootNamespaceContainer>
     <RootNamespaceTitle>API Reference</RootNamespaceTitle>
     <HelpTitle>Gorgon</HelpTitle>
     <CopyrightHref>http://www.opensource.org/licenses/mit-license.php</CopyrightHref>
-    <CopyrightText>Copyright &amp;#169%3b 2015 - Licensed under the MIT license by Michael Winsor %28Tape_Worm%29.  See MIT.txt for details.</CopyrightText>
+    <CopyrightText>Copyright &amp;#169%3b 2019 - Licensed under the MIT license by Michael Winsor %28Tape_Worm%29.  See MIT.txt for details.</CopyrightText>
     <FeedbackEMailAddress>gorgon%40tape-worm.net</FeedbackEMailAddress>
-    <FooterText>Gorgon v2.0.0.0</FooterText>
+    <FooterText>&amp;lt%3bdiv style=&amp;quot%3bfloat: right%3b&amp;quot%3b&amp;gt%3b&amp;lt%3ba href=&amp;quot%3bhttps://www.tape-worm.net/&amp;quot%3b&amp;gt%3bGo back to OMG NUB!!&amp;lt%3b/a&amp;gt%3b&amp;lt%3b/div&amp;gt%3b</FooterText>
     <SdkLinkTarget>Blank</SdkLinkTarget>
     <PresentationStyle>VS2013</PresentationStyle>
     <ShowFeedbackControl>True</ShowFeedbackControl>
@@ -59,19 +59,33 @@
     <DocumentationSources>
       <DocumentationSource sourceFile="..\Gorgon\Gorgon.Core\bin\Debug\Gorgon.Core.dll" />
       <DocumentationSource sourceFile="..\Gorgon\Gorgon.Core\bin\Debug\Gorgon.Core.xml" />
-      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Input\bin\Debug\Gorgon.Input.dll" />
-      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Input\bin\Debug\Gorgon.Input.xml" />
-      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Native\Gorgon.Native.dll" />
-      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Native\Gorgon.Native.xml" />
-      <DocumentationSource sourceFile="..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.dll" />
-      <DocumentationSource sourceFile="..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.xml" />
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Windows\bin\Debug\Gorgon.Windows.dll" />
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Windows\bin\Debug\Gorgon.Windows.xml" />
       <DocumentationSource sourceFile="..\Gorgon\Gorgon.FileSystem\bin\Debug\Gorgon.FileSystem.dll" />
       <DocumentationSource sourceFile="..\Gorgon\Gorgon.FileSystem\bin\Debug\Gorgon.FileSystem.xml" />
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Input\bin\Debug\Gorgon.Input.dll" />
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Input\bin\Debug\Gorgon.Input.xml" />
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Graphics.Imaging\bin\Debug\Gorgon.Graphics.Imaging.dll" />
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Graphics.Imaging\bin\Debug\Gorgon.Graphics.Imaging.xml" />
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Graphics.Core\bin\Debug\Gorgon.Graphics.Core.dll" />
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Graphics.Core\bin\Debug\Gorgon.Graphics.Core.xml" />
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Graphics.Fonts\bin\Debug\Gorgon.Graphics.Fonts.dll" />
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Graphics.Fonts\bin\Debug\Gorgon.Graphics.Fonts.xml" />
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Animation\bin\Debug\Gorgon.Animation.dll" />
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Animation\bin\Debug\Gorgon.Animation.xml" />
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Renderers\Gorgon2D\bin\Debug\Gorgon.Renderers.Gorgon2D.dll" />
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Renderers\Gorgon2D\bin\Debug\Gorgon.Renderers.Gorgon2D.xml" />
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Renderers\Animation.Gorgon2D\bin\Debug\Gorgon.Animation.Gorgon2D.dll" />
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Renderers\Animation.Gorgon2D\bin\Debug\Gorgon.Animation.Gorgon2D.xml" />
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Renderers\IO.Gorgon2D\bin\Debug\Gorgon.IO.Gorgon2D.dll" />
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Renderers\IO.Gorgon2D\bin\Debug\Gorgon.IO.Gorgon2D.xml" />
+      <DocumentationSource sourceFile="..\Tools\Editor\Gorgon.Editor.API\bin\Debug\Gorgon.Editor.API.dll" />
+      <DocumentationSource sourceFile="..\Tools\Editor\Gorgon.Editor.API\bin\Debug\Gorgon.Editor.API.xml" />
     </DocumentationSources>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="(global)" isDocumented="False" />
-<NamespaceSummaryItem name="Dialogs" isDocumented="True">This namespace contains a static class used to display enhanced dialog boxes (windows forms).</NamespaceSummaryItem>
-<NamespaceSummaryItem name="SlimMath" isDocumented="True">&lt;para&gt;
+      <NamespaceSummaryItem name="Dialogs" isDocumented="True">This namespace contains a static class used to display enhanced dialog boxes (windows forms).</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="SlimMath" isDocumented="True">&lt;para&gt;
 SlimMath is a mathematics API used extensively by Gorgon. It contains many useful functions to perform various calculations for linear algebra and beyond.
 &lt;/para&gt;
 &lt;para&gt;
@@ -80,8 +94,8 @@ SlimMath was created by Mike Popoloski and is located at &lt;a href="https://cod
 &lt;para&gt;
 (Please note, at the time of this writing, Google is shutting down Google Code. Therefore, this URL may not be valid upon release).
 &lt;/para&gt;</NamespaceSummaryItem>
-<NamespaceSummaryItem name="SlimMath.Design" isDocumented="True">This namespace contains design time functionality for the various types in the SlimMath API.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Gorgon.Native" isDocumented="True">&lt;para&gt;
+      <NamespaceSummaryItem name="SlimMath.Design" isDocumented="True">This namespace contains design time functionality for the various types in the SlimMath API.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Gorgon.Native" isDocumented="True">&lt;para&gt;
 This contains functionality for access to native (unmanaged) memory. 
 &lt;/para&gt;
 &lt;para&gt;
@@ -90,8 +104,20 @@ While .NET has a fairly comprehensive set of tools to access native memory, and 
 &lt;para&gt;
 &lt;h2&gt;Disclaimer time&lt;/h2&gt;
 The types in here are inherently dangerous to use because they offer little in the way of protection from poor memory management habits. Buffer overruns, memory leaks, etc.. are all possible with these types. &lt;b&gt;USE AT YOUR OWN RISK&lt;/b&gt;. The garbage collector will not save you. If you have no idea how to use native memory, pointers, etc... then it's recommended that you do not use these types.
-&lt;/para&gt;</NamespaceSummaryItem></NamespaceSummaries>
+&lt;/para&gt;</NamespaceSummaryItem>
+    </NamespaceSummaries>
     <PlugInConfigurations>
+      <PlugInConfig id="Assembly Binding Redirection" enabled="True">
+        <configuration useGAC="false">
+          <assemblyBinding />
+          <ignoreIfUnresolved>
+            <assemblyIdentity name="BusinessObjects.Licensing.KeycodeDecoder" />
+            <assemblyIdentity name="Microsoft.VisualStudio.TestTools.UITest.Playback" />
+            <assemblyIdentity name="SharpDX" />
+            <assemblyIdentity name="SharpDX.Mathematics" />
+          </ignoreIfUnresolved>
+        </configuration>
+      </PlugInConfig>
     </PlugInConfigurations>
     <BuildAssemblerVerbosity>OnlyWarningsAndErrors</BuildAssemblerVerbosity>
     <HelpFileFormat>Website</HelpFileFormat>
@@ -114,12 +140,19 @@ The types in here are inherently dangerous to use because they offer little in t
       <Argument Key="logoAltText" Value="Gorgon v2" />
       <Argument Key="logoPlacement" Value="left" />
       <Argument Key="logoAlignment" Value="left" />
-      <Argument Key="maxVersionParts" Value="" />
+      <Argument Key="maxVersionParts" Value="2" />
       <Argument Key="defaultLanguage" Value="cs" />
+      <Argument Key="includeEnumValues" Value="true" />
+      <Argument Key="baseSourceCodeUrl" Value="" />
+      <Argument Key="requestExampleUrl" Value="" />
     </TransformComponentArguments>
     <WebsiteSdkLinkType>Msdn</WebsiteSdkLinkType>
     <HtmlSdkLinkType>Msdn</HtmlSdkLinkType>
     <BinaryTOC>True</BinaryTOC>
+    <HelpFileVersion>3.0.0.0</HelpFileVersion>
+    <SaveComponentCacheCapacity>100</SaveComponentCacheCapacity>
+    <HeaderText>
+    </HeaderText>
   </PropertyGroup>
   <!-- There are no properties for these two groups but they need to appear in
        order for Visual Studio to perform the build. -->
@@ -152,6 +185,12 @@ The types in here are inherently dangerous to use because they offer little in t
     <None Include="Content\ChunkFileFormat.aml" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="SharpDX">
+      <HintPath>..\Gorgon\Gorgon.Core\bin\Debug\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Mathematics">
+      <HintPath>..\Gorgon\Gorgon.Core\bin\Debug\SharpDX.Mathematics.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   </ItemGroup>
   <!-- Import the SHFB build targets -->

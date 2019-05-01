@@ -84,7 +84,7 @@ namespace Gorgon.Input.XInput.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Gorgon XBOX 360 controller input plug-in..
+        ///   Looks up a localized string similar to Gorgon XBOX 360 controller input plug in..
         /// </summary>
         internal static string GORINP_XINP_SERVICEDESC {
             get {

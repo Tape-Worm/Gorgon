@@ -28,7 +28,7 @@ using System;
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace Gorgon.Windows.UI
+namespace Gorgon.UI
 {
     /// <summary>
     /// A textbox for searching.
@@ -170,7 +170,7 @@ namespace Gorgon.Windows.UI
         #endregion
 
         #region Constructor.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Windows.UI.GorgonSearchBox"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.UI.GorgonSearchBox"/> class.</summary>
         public GorgonSearchBox() =>InitializeComponent();
         #endregion
     }

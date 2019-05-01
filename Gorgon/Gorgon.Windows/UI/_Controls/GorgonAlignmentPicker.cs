@@ -28,9 +28,8 @@ using System;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
-using Gorgon.UI;
 
-namespace Gorgon.Windows.UI
+namespace Gorgon.UI
 {
     /// <summary>
     /// A control used to provide a visual means of specifying an anchor setting.
@@ -144,7 +143,7 @@ namespace Gorgon.Windows.UI
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Windows.UI._Controls.GorgonAnchorPicker"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="GorgonAlignmentPicker"/> class.</summary>
         public GorgonAlignmentPicker()
         {
             InitializeComponent();
@@ -168,7 +167,7 @@ namespace Gorgon.Windows.UI
     internal class GorgonAlignmentPickerDesigner
         : ControlDesigner
     {
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Windows.UI.GorgonAlignmentPickerDesigner"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.UI.GorgonAlignmentPickerDesigner"/> class.</summary>
         internal GorgonAlignmentPickerDesigner() => AutoResizeHandles = true;
 
         /// <summary>Gets the selection rules that indicate the movement capabilities of a component.</summary>

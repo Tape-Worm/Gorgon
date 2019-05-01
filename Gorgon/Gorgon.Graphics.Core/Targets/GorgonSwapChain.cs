@@ -716,10 +716,10 @@ namespace Gorgon.Graphics.Core
         /// decoration on the form is also removed.
         /// </para>
         /// <para>
-        /// If full screen exclusive mode is required, users can call the <see cref="M:EnterFullScreen(in GorgonVideoMode, IGorgonVideoOutputInfo)"/> overload instead.
+        /// If full screen exclusive mode is required, users can call the <see cref="EnterFullScreen(in GorgonVideoMode, IGorgonVideoOutputInfo)"/> overload instead.
         /// </para>
         /// </remarks>
-        /// <seealso cref="M:EnterFullScreen(GorgonVideoMode, IGorgonVideoOutputInfo)"/>
+        /// <seealso cref="O:Gorgon.Graphics.Core.GorgonSwapChain.EnterFullScreen"/>
         public void EnterFullScreen()
         {
             if (ParentForm != Window)
@@ -953,8 +953,7 @@ namespace Gorgon.Graphics.Core
 		/// When the swap chain is already in windowed mode, then this method will do nothing.
 		/// </para>
 		/// </remarks>
-		/// <seealso cref="EnterFullScreen()"/>
-		/// <seealso cref="M:EnterFullScreen(in GorgonVideoMode, IGorgonVideoOutputInfo)"/>
+		/// <seealso cref="O:Gorgon.Graphics.Core.GorgonSwapChain.EnterFullScreen"/>
 		public void ExitFullScreen()
 		{
 			if ((IsWindowed)

@@ -71,11 +71,11 @@ namespace Gorgon.Renderers
                     && (left.LowerAlpha == right.LowerAlpha));// ReSharper restore CompareOfFloatsByEqualityOperator
 
         /// <summary>
-        /// Determines whether the specified <see cref="System.Object" /> is equal to this instance.
+        /// Determines whether the specified <see cref="object" /> is equal to this instance.
         /// </summary>
-        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+        /// <param name="obj">The <see cref="object" /> to compare with this instance.</param>
         /// <returns>
-        ///   <b>true</b> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <b>false</b>.
+        ///   <b>true</b> if the specified <see cref="object" /> is equal to this instance; otherwise, <b>false</b>.
         /// </returns>
         public override bool Equals(object obj) => obj is AlphaTestData data ? data.Equals(this) : base.Equals(obj);
 

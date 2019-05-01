@@ -52,7 +52,7 @@ namespace Gorgon.Examples
 	    }
 
 		/// <summary>
-		/// Property to return the path to the plug-ins.
+		/// Property to return the path to the plug ins.
 		/// </summary>
 		public static string PlugInPath
 		{

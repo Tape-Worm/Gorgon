@@ -1,117 +1,301 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <topic id="0abf7d37-670e-4f0d-8581-e0368e39e8ef" revisionNumber="1">
-	<developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
-		<introduction>
-			<para>
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <introduction>
+      <para>
 			Thanks for downloading and installing Gorgon.			
 			</para>
-			<para>
-			Gorgon is meant to assist any developer in writing an application. Primarily Gorgon is meant for game development, but can be used for so much more. It is a set of libraries that 
-			provides functionality for an assortment of needs. This includes:
-			<list class="bullet">
-				<listItem>
-					<para>A graphics library patterened around Direct 3D 11. This uses the <externalLink><linkText>SharpDX API</linkText><linkUri>http://sharpdx.org/</linkUri></externalLink> to provide access to Direct 3D from .NET</para>
-				</listItem>
-				<listItem>
-					<para>A 2D renderer that utilizes the aforementioned graphics library to provide ultra fast manipulation of 2D graphics.</para>
-				</listItem>
-				<listItem>
-					<para>A virtual file system based on the <externalLink><linkText>PhysFS</linkText><linkUri>http://icculus.org/physfs/</linkUri></externalLink> file system.</para>
-				</listItem>
-				<listItem>
-					<para>An input system that allows the a unified interface to input devices (keyboard, mouse, game devices, etc...)</para>
-				</listItem>
-				<listItem>
-					<para>A plugin system that allows extensibility of an application or even Gorgon's own functionality (e.g. the input system, virtual file system).</para>
-				</listItem>
-				<listItem>
-					<para>An animation system that animates the properties of any type of object.</para>
-				</listItem>			
-				<listItem>
-					<para>An editor that assists in the creation of various types of content for games and/or graphical functionality.</para>
-				</listItem>
-				<listItem>
-					<para>A core library of helpful utility functionality.</para>
-				</listItem>				
-			</list>
-			</para>
-		</introduction>
+      <para>Gorgon is a modular set of libraries useful for graphics and/or video game development.  Gorgon uses Direct 3D 11.4 (via <externalLink><linkText>SharpDX</linkText><linkUri>http://sharpdx.org/</linkUri></externalLink>) to provide high performance graphics for your applications.</para>
+      <para>The current version is <legacyBold>3.0</legacyBold>.</para>
+      <para>Gorgon provides a set of libraries that are capable of handling pretty much any task thrown at it.  It includes:</para>
+      <list class="bullet">
+        <listItem>
+          <para>
+            <legacyBold>Gorgon.Core</legacyBold>
+          </para>
+          <para>Core functionality, plug in support and utility functionality. This is the base library that everything else uses.</para>
+        </listItem>
+        <listItem>
+          <para>
+            <legacyBold>Gorgon.Windows</legacyBold>
+          </para>
+          <para>Core Windows specific functionality. Provides UI functionality, such as custom message box dialogs, timing functionality using QPC and/or the windows multimedia timer and various other bits of utility/diagnostic functionality. </para>
+        </listItem>
+        <listItem>
+          <para>
+            <legacyBold>Gorgon.FileSystem</legacyBold>
+          </para>
+          <para>A virtual file system that can mount a directory as a file system root, or using various file system providers, can mount a packed file as a virtual file system root.  This code is based on the popular <externalLink><linkText>PhysFS library</linkText><linkUri>http://icculus.org/physfs/</linkUri></externalLink>.</para>
+          <para>By default, Gorgon's basic virtual file system is based on the folder/files on the Windows file system, but using filesystem providers via plug ins, applications can read any type of file storage container can be used if the appropriate plug in is available for it. Gorgon comes with two plug ins for file system providers:</para>
+          <list class="bullet">
+            <listItem>
+              <para><legacyBold>Gorgon.FileSystem.GorPack:</legacyBold> Gorgon's proprietary packed file system format, using BZip2 compression.</para>
+						</listItem>
+            <listItem>
+              <para><legacyBold>Gorgon.FileSystem.Zip:</legacyBold> Mounts standard .zip files as virtual file systems.</para>
+						</listItem>
+          </list>
+          <para>By default, the file system provider</para>
+        </listItem>
+        <listItem>
+          <para>
+            <legacyBold>Gorgon.Input</legacyBold>
+          </para>
+          <para>A flexible input library to handle joysticks/gamepads, keyboard and mouse input. The input library can use events or polling to retrieve data from the various input sources. </para>
+          <para>Keyboard and mouse input is provided using the Windows Raw Input API, and joystick/gamepad support is driven by the following plug ins:</para>
+          <list class="bullet">
+            <listItem>
+              <para><legacyBold>Gorgon.Input.XInput:</legacyBold> Support for the XBox 360 controller (and potentially XBox One controller)</para>
+					  </listItem>
+            <listItem><para><legacyBold>Gorgon.Input.DirectInput:</legacyBold> Support for gaming devices that are not covered by the XInput API.</para>
+					  </listItem>
+          </list>
+        </listItem>
+        <listItem>
+          <para>
+            <legacyBold>Gorgon.Graphics.Core</legacyBold>
+          </para>
+          <para>A "low-level" graphics API that sits on top of Direct 3D 11.4. Provides a simplified system to build objects such as render targets, swap chains, buffers, etc... The rendering portion of the API provides a simple mechanism to submit batched state and draw information back to the underlying D3D API.</para>
+        </listItem>
+        <listItem>
+          <para>
+            <legacyBold>Gorgon.Graphics.Imaging</legacyBold>
+          </para>
+          <para>Functionality to read and write image formats. This also contains functionality to use a fluent interface to manipulate images for things like cropping, scaling, etc... </para>
+          <para>Gorgon uses codecs to read/write images and includes codecs for the following formats:</para>
+          <list class="bullet">
+            <listItem>
+              <para><legacyBold>DDS</legacyBold> - Direct Draw Surface</para>
+            </listItem>
+            <listItem>
+                <para><legacyBold>TGA</legacyBold> - Truevision Targa</para>
+            </listItem>
+            <listItem>
+                <para><legacyBold>PNG</legacyBold> - Portable Network Graphics</para>
+            </listItem>
+            <listItem>
+              <para><legacyBold>JPG</legacyBold> - Joint Photographic Experts Group</para>
+            </listItem>
+            <listItem>
+              <para><legacyBold>BMP</legacyBold> - Windows Bitmap</para>
+            </listItem>
+            <listItem>
+              <para>
+                <legacyBold>GIF</legacyBold> - Graphic Interchange Format (supports animated gifs as well)
+              </para>
+            </listItem>
+          </list>
+          <para>In additon to the support above, applications can extend the support for file formats by adding their own custom codec plug in to read/write in their desired format(s).</para>
+        </listItem>
+        <listItem>
+          <para>
+            <legacyBold>Gorgon.Graphics.Fonts</legacyBold>
+          </para>
+          <para>An extensive bitmap font creation interface (within the graphics module) that supports kerning, outlining of font glyphs, and other customizations to help generate impressive looking text.</para>
+          <para>Currently Gorgon supports reading and writing of font files through codecs. Support is included for:</para>
 
-		<section>
-			<title>Getting started</title>
-			<content></content>
-			<sections>
-				<section>
-					<title>What's required?</title>
-					<content>
-						<para>
-							<list class="bullet">
-								<listItem>
-									<para><externalLink><linkText>.NET 4.7</linkText><linkUri>https://www.microsoft.com/en-us/download/details.aspx?id=55170</linkUri></externalLink></para>
-								</listItem>
-								<listItem>
-									<para>Microsoft Windows 10 (build 15063).</para>
-								</listItem>
-								<listItem>
-									<para>Microsoft DirectX 11.1</para>
-								</listItem>
-							</list>
-						</para>						
-					</content>					
-				</section>
-				<section>
-					<title>To compile the Gorgon solution file</title>
-					<content>
-						<para><externalLink><linkText>Microsoft Visual Studio 2017 or better</linkText><linkUri>https://msdn.microsoft.com/en-gb/vstudio/</linkUri></externalLink></para>
-					</content>
-				</section>
-				<section>
-					<title>To use the Gorgon libraries</title>
-					<content>
-						<para>Any .NET 4.7 enabled language (e.g. Visual Basic .NET) can be used to write an application with Gorgon.</para>
-					</content>
-				</section>
-			</sections>						
-		</section>
-		
-		<section>
-			<title>License</title>
-			<content>
-				<para>Gorgon is licensed under the <link xlink:href="97ea73c0-3e89-4464-9a5b-0b61891ab219">MIT open source license</link>.</para>					
-			</content>
-		</section>
-		
-		<section>
-			<title>Acknowledgements</title>
-			<content>
-				<para>Gorgon uses icons from the Oxygen and Onebit 4 icon sets.</para>
-				<para>Oxygen icons may be obtained from:
-				<markup><br/></markup>
-				<externalLink><linkText>https://github.com/pasnox/oxygen-icons-png</linkText><linkUri>https://github.com/pasnox/oxygen-icons-png</linkUri></externalLink>
-				<markup><br/></markup>
-				<externalLink><linkText>http://www.iconarchive.com/show/oxygen-icons-by-oxygen-icons.org.html</linkText><linkUri>http://www.iconarchive.com/show/oxygen-icons-by-oxygen-icons.org.html</linkUri></externalLink>
-				</para>
-				<para>Onebit 4 icons may be obtained from:
-				<markup><br/></markup>
-				<externalLink><linkText>http://www.icojam.com/blog/?p=231</linkText><linkUri>http://www.icojam.com/blog/?p=231</linkUri></externalLink>
-				<markup><br/></markup>
-				<externalLink><linkText>http://www.iconarchive.com/show/onebit-4-icons-by-icojam.html</linkText><linkUri>http://www.iconarchive.com/show/onebit-4-icons-by-icojam.html</linkUri></externalLink>
-				</para>
-				<para>Gorgon uses the several external 3rd party libraries such as:</para>
-				<para>Sharp DX by Alexandre Mutel
-				<markup><br/></markup>
-				<externalLink><linkText>http://sharpdx.org/</linkText><linkUri>http://sharpdx.org/</linkUri></externalLink>
-				<markup><br/></markup>
-				<externalLink><linkText>https://github.com/sharpdx/SharpDX</linkText><linkUri>https://github.com/sharpdx/SharpDX/</linkUri></externalLink>
-				</para>
-				<para>Simplex Noise functionality by Benjamin Ward</para>
-				<markup><br/></markup>
-				<externalLink><linkText>https://github.com/WardBenjamin/SimplexNoise/</linkText><linkUri>https://github.com/WardBenjamin/SimplexNoise</linkUri></externalLink>
-				<para>SharpZipLib by Mike Krueger, and currently maintained by David Pierson.
-				<markup><br/></markup>
-				<externalLink><linkText>http://icsharpcode.github.io/SharpZipLib/</linkText><linkUri>http://icsharpcode.github.io/SharpZipLib/</linkUri></externalLink>
-				</para>
-			</content>
-		</section>
-	</developerConceptualDocument>
+          <list class="bullet">
+            <listItem>
+              <para><legacyBold>GorFont:</legacyBold> A proprietary binary format for Gorgon.</para>
+            </listItem>
+            <listItem>
+              <para><legacyBold><externalLink><linkText>BmFont</linkText> <linkUri>http://www.angelcode.com/products/bmfont/</linkUri><linkTarget>_blank</linkTarget></externalLink>:</legacyBold> A popular font file type created by Andreas Jönsson (Note: this support is limited to the text based file format at this time).</para>
+            </listItem>
+          </list>
+
+          <para>In addition to the support above, applications can introduce their own codecs to read/write whatever font types they wish by extending the <codeEntityReference>T:Gorgon.Graphics.Fonts.Codecs.GorgonFontCodec</codeEntityReference> type. (Plug in support is pending at this time)</para>
+        </listItem>
+
+        <listItem>
+          <para>
+            <legacyBold>
+              Gorgon.Renderers.Gorgon2D
+            </legacyBold>
+          </para>
+
+          <para>A 2D renderer that sits on top of the graphics module to make developing 2D games/applications much easier. It supports:</para>
+
+          <list class="bullet">
+            <listItem>
+              <para>Sprites</para>
+            </listItem>
+
+            <listItem>
+              <para>Primitives (triangles, lines, ellipses, arcs, and rectangles)</para>
+            </listItem>
+
+            <listItem>
+              <para>Text rendering</para>
+            </listItem>
+
+            <listItem>
+              <para>A shader based effects system</para>
+            </listItem>
+          </list>
+          <para>All of these are provided using batched rendering, similar to <externalLink><linkText>MonoGame</linkText> <linkUri>http://www.monogame.net/</linkUri><linkTarget>_blank</linkTarget></externalLink> MonoGame for maximum performance.</para>
+        </listItem>
+
+        <listItem>
+          <para>
+            <legacyBold>
+              Gorgon.IO.Gorgon2D
+            </legacyBold>
+          </para>
+
+          <para>IO functionality for serializing sprite and polysprite data to and from various formats using codecs.</para>
+        </listItem>
+
+        <listItem>
+          <para>
+            <legacyBold>
+              Gorgon.Animation
+            </legacyBold>
+          </para>
+
+          <para>An animation module that allows the creation and playback of key framed animations for various types of objects. </para>
+          <para>Animation controllers for the 2D renderer are provided by the <legacyBold>Gorgon.Animation.Gorgon2D</legacyBold> assembly.</para>
+        </listItem>
+
+        <listItem>
+          <para>
+            <legacyBold>
+              Gorgon.Editor
+            </legacyBold>
+          </para>
+
+          <para>A flexible content editor to allow for the creation and editing of content.        </para>
+
+          <list class="bullet">
+            <listItem>
+              <para>Supports a plug in based architecture to allow developers to extend the editor indefinitely.</para>
+            </listItem>
+
+            <listItem>
+              <para>Supports file management of content by using a simple tree layout for folders and files.</para>
+            </listItem>
+
+            <listItem>
+              <para>Comes with an image editor plug in which allows users to add depth slices to 3D images (I have yet, for the life of me to find anything on the web that does this), mip maps and array indices, and other simple functions.</para>
+            </listItem>
+
+            <listItem>
+              <para>Comes with a sprite editor plug in which allows users to clip sprites from an image and store them as a file.    </para>
+            </listItem>
+
+            <listItem>
+              <para>Can output the files as a packed file. The type of file that be written out is provided via plug in support (currently only supports the proprietary Gorgon packed file format).</para>
+            </listItem>
+
+            <listItem>
+              <para>Can import packed files using file system plug ins (currently has support for zip and the proprietary Gorgon packed file formats - included with Gorgon as file system plug ins).</para>
+            </listItem>
+          </list>
+        </listItem>
+      </list>
+    </introduction>
+
+    <section>
+      <title>Getting started</title>
+      <content></content>
+      <sections>
+        <section>
+          <title>What's required?</title>
+          <content>
+            <list class="bullet">
+              <listItem>
+                <para>
+                  <externalLink>
+                    <linkText>.NET 4.7.2</linkText>
+                    <linkUri>https://www.microsoft.com/net/download/dotnet-framework-runtime</linkUri>
+                    <linkTarget>_blank</linkTarget>
+                  </externalLink>
+                </para>
+              </listItem>
+              <listItem>
+                <para>Microsoft Windows 10 (build 15063 or later).</para>
+              </listItem>
+              <listItem>
+                <para>Microsoft DirectX 11.4</para>
+              </listItem>
+            </list>
+          </content>
+        </section>
+        <section>
+          <title>To compile the Gorgon solution file</title>
+          <content>
+            <para>
+              <externalLink>
+                <linkText>Microsoft Visual Studio 2017</linkText>
+                <linkUri>https://www.microsoft.com/en-us/store/b/visualstudio</linkUri>
+                <linkTarget>_blank</linkTarget>
+              </externalLink> or better <externalLink>
+                <linkText>v15.8 or later.</linkText>
+                <linkUri>https://docs.microsoft.com/en-us/visualstudio/releasenotes/vs2017-relnotes#whats-new-in-158</linkUri>
+                <linkTarget>_blank</linkTarget>
+              </externalLink>
+            </para>
+          </content>
+        </section>
+        <section>
+          <title>To use the Gorgon libraries</title>
+          <content>
+            <para>Any .NET 4.7.2 enabled language (e.g. Visual Basic .NET) can be used to write an application with Gorgon.</para>
+          </content>
+        </section>
+      </sections>
+    </section>
+
+    <section>
+      <title>License</title>
+      <content>
+        <para>Gorgon is licensed under the <link xlink:href="97ea73c0-3e89-4464-9a5b-0b61891ab219">MIT open source license</link>.</para>
+      </content>
+    </section>
+
+    <section>
+      <title>Acknowledgements</title>
+      <content>
+        <para>Gorgon uses icons from the following sources:</para>
+
+        <para>
+          Oxygen 
+          <lineBreak/>
+          <externalLink><linkText>https://github.com/pasnox/oxygen-icons-png</linkText><linkUri>https://github.com/pasnox/oxygen-icons-png</linkUri><linkTarget>_blank</linkTarget></externalLink>
+          <lineBreak/>
+          <externalLink><linkText>http://www.iconarchive.com/show/oxygen-icons-by-oxygen-icons.org.html</linkText><linkUri>http://www.iconarchive.com/show/oxygen-icons-by-oxygen-icons.org.html</linkUri><linkTarget>_blank</linkTarget></externalLink>
+        </para>
+        <para>
+          Icons8
+          <lineBreak/>
+          <externalLink><linkText>https://icons8.com</linkText><linkUri>https://icons8.com</linkUri><linkTarget>_blank</linkTarget></externalLink>
+        </para>
+        <para>
+          Sprites example textures from:
+          <lineBreak/>
+          <externalLink><linkText>http://millionthvector.blogspot.com</linkText><linkUri>http://millionthvector.blogspot.com</linkUri><linkTarget>_blank</linkTarget></externalLink>
+        </para>
+        <para>The following image(s) is/are not redistributable without permission from the original author.</para>
+        <para>
+          <externalLink><linkText>"HotPocket.dds"</linkText><linkUri>https://www.deviantart.com/starkiteckt/art/Hot-Pocket-433337115</linkUri><linkTarget>_blank</linkTarget></externalLink> by Starkiteckt 
+          <lineBreak/>
+          Electronics.DDS, Halifax.DDS, Handmaid.DDS and PewterPup.DDS by <externalLink><linkText>Colleen MacLean</linkText><linkUri>https://www.flickr.com/photos/148757141@N07/</linkUri><linkTarget>_blank</linkTarget></externalLink>
+        </para>
+        <para>Third Party True Type fonts:</para>
+        <para>
+          Tequila by <externalLink><linkText>uZiMweB</linkText><linkUri>http://www.zimina.net/</linkUri><linkTarget>_blank</linkTarget></externalLink>
+          <lineBreak/>
+          A Charming Font <externalLink><linkText>GemFonts</linkText><linkUri>http://www.moorstation.org/typoasis/designers/gemnew/</linkUri><linkTarget>_blank</linkTarget></externalLink>
+          <lineBreak/>
+          Sunset by <externalLink><linkText>Harold's Fonts</linkText><linkUri>http://haroldsfonts.com</linkUri><linkTarget>_blank</linkTarget></externalLink>
+          <lineBreak/>
+          Monsters Attack ! <externalLink><linkText>The Empire of the Claw</linkText><linkUri>http://www.empire-of-the-claw.com</linkUri><linkTarget>_blank</linkTarget></externalLink>
+          <lineBreak/>
+          Grunja by Apostrophic Labs
+          <lineBreak/>
+          The Bold Font by ???
+        </para>
+      </content>
+    </section>
+    <relatedTopics/>
+  </developerConceptualDocument>
 </topic>

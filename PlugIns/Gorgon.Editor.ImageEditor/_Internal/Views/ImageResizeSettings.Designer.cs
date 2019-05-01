@@ -36,7 +36,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ImageResizeSettings));
             this.TableBody = new System.Windows.Forms.TableLayoutPanel();
             this.LabelImageFilter = new System.Windows.Forms.Label();
-            this.AlignmentPicker = new Gorgon.Windows.UI.GorgonAlignmentPicker();
+            this.AlignmentPicker = new Gorgon.UI.GorgonAlignmentPicker();
             this.panelAnchor = new System.Windows.Forms.Panel();
             this.ComboImageFilter = new System.Windows.Forms.ComboBox();
             this.CheckPreserveAspect = new System.Windows.Forms.CheckBox();
@@ -285,7 +285,7 @@
         private System.Windows.Forms.RadioButton RadioResize;
         private System.Windows.Forms.Panel PanelOptionsCaption;
         private System.Windows.Forms.Label LabelImageFilter;
-        private Windows.UI.GorgonAlignmentPicker AlignmentPicker;
+        private Gorgon.UI.GorgonAlignmentPicker AlignmentPicker;
         private System.Windows.Forms.Label LabelAnchor;
         private System.Windows.Forms.Panel panelAnchor;
         private System.Windows.Forms.ComboBox ComboImageFilter;

@@ -37,7 +37,7 @@
             this.NumericMipLevels = new System.Windows.Forms.NumericUpDown();
             this.NumericDepthOrArray = new System.Windows.Forms.NumericUpDown();
             this.NumericHeight = new System.Windows.Forms.NumericUpDown();
-            this.AlignmentPicker = new Gorgon.Windows.UI.GorgonAlignmentPicker();
+            this.AlignmentPicker = new Gorgon.UI.GorgonAlignmentPicker();
             this.RadioCrop = new System.Windows.Forms.RadioButton();
             this.RadioResize = new System.Windows.Forms.RadioButton();
             this.LabelWidth = new System.Windows.Forms.Label();
@@ -374,7 +374,7 @@
         private System.Windows.Forms.RadioButton RadioResize;
         private System.Windows.Forms.Panel PanelOptionsCaption;
         private System.Windows.Forms.Label LabelImageFilter;
-        private Windows.UI.GorgonAlignmentPicker AlignmentPicker;
+        private Gorgon.UI.GorgonAlignmentPicker AlignmentPicker;
         private System.Windows.Forms.Label LabelAnchor;
         private System.Windows.Forms.ComboBox ComboImageFilter;
         private System.Windows.Forms.Label LabelWidth;

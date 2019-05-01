@@ -18,6 +18,11 @@ Gorgon is meant for people that want to write their own functionality, get down 
 
 For those that want a more complete (and polished) package to build their applications there's [Unity](https://unity.com/), [Unreal](https://www.unrealengine.com/en-US/) or [Godot](https://godotengine.org/).
 
+Documentation
+=============
+
+Documentation for the Gorgon APIs is located [here](https://www.tape-worm.net/GorgonDocs.index.html).
+
 
 What’s the licensing? 
 -------------------------------------------------
@@ -116,7 +121,8 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
    * Comes with a sprite editor plug in which allows users to clip sprites from an image and store them as a file.    
    * Can output the files as a packed file. The type of file that be written out is provided via plug in support (currently only supports the proprietary Gorgon packed file format).
    * Can import packed files using file system plug ins (currently has support for zip and the proprietary Gorgon packed file formats - included with Gorgon as file system plug ins).
-   * _TBD..._
+   * _TBD..._  
+   
 
 What's required?
 ----------------
@@ -162,6 +168,7 @@ This following image(s) is/are not redistributable without permission from the o
 
 ["HotPocket.dds"](Resources/Textures/HotPocket.DDS) by Starkiteckt 
 https://www.deviantart.com/starkiteckt/art/Hot-Pocket-433337115
+Electronics.DDS, Halifax.DDS, Handmaid.DDS and PewterPup.DDS by [Colleen MacLean](https://www.flickr.com/photos/148757141@N07/)
 
 Third Party True Type fonts:
 

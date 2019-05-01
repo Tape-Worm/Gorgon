@@ -402,7 +402,7 @@ namespace Gorgon.Editor.ViewModels
 
         /// <summary>Function to notify that the parent of this node was moved.</summary>
         /// <param name="newNode">The new node representing this node under the new parent.</param>
-        /// <exception cref="System.ArgumentNullException">newNode</exception>
+        /// <exception cref="ArgumentNullException">newNode</exception>
         public void NotifyParentMoved(IFileExplorerNodeVm newNode)
         {
             if (newNode == null)

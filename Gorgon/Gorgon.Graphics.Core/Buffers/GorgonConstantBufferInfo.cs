@@ -53,22 +53,22 @@ namespace Gorgon.Graphics.Core
 			set;
 		}
 
-		/// <summary>
-		/// Property to set or return the number of bytes to allocate for the buffer.
-		/// </summary>
-		/// <remarks>
-		/// <note type="important">
-		/// <para>
-		/// <para>
-		/// A <see cref="Core.BufferType.Constant"/> buffer, must set the size to be a multiple of 16. Constant buffer alignment rules require that they be sized to the nearest 16 bytes.
-		/// </para>
-		/// <para>
-		/// If the buffer is not sized to a multiple of 16, Gorgon will attempt to adjust the size to fit the alignment requirement.
-		/// </para>
-		/// </para>
-		/// </note>
-		/// </remarks>
-		public int SizeInBytes
+        /// <summary>
+        /// Property to set or return the number of bytes to allocate for the buffer.
+        /// </summary>
+        /// <remarks>
+        /// <note type="important">
+        /// <para>
+        /// <para>
+        /// A <see cref="BufferType.Constant"/> buffer, must set the size to be a multiple of 16. Constant buffer alignment rules require that they be sized to the nearest 16 bytes.
+        /// </para>
+        /// <para>
+        /// If the buffer is not sized to a multiple of 16, Gorgon will attempt to adjust the size to fit the alignment requirement.
+        /// </para>
+        /// </para>
+        /// </note>
+        /// </remarks>
+        public int SizeInBytes
 		{
 			get;
 			set;
@@ -116,7 +116,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         /// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
         /// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type)"/>
-        /// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type,out System.Collections.Generic.IReadOnlyList{System.Reflection.FieldInfo})"/>
+        /// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type,out IReadOnlyList{FieldInfo})"/>
         public static IGorgonConstantBufferInfo CreateFromType<T>(string name = null, int count = 1, ResourceUsage usage = ResourceUsage.Default)
 			where T : unmanaged
 		{

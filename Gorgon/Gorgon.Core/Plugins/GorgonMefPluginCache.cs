@@ -75,6 +75,39 @@ namespace Gorgon.PlugIns
     /// overhead and potential errors that can come up when multiple assemblies with the same qualified name are loaded into the same context.
     /// </para>
     /// </remarks>
+    /// <example>
+    /// This example shows how to load a plugin and get its plugin instance. It will use the <c>ConcreteFunctionalityPlugIn</c> above:
+    /// <code language="csharp"> 
+    /// <![CDATA[
+    /// // Our base functionality.
+    /// private FunctionalityBase _functionality;
+    /// private GorgonMefPlugInCache _assemblies;
+    /// 
+    /// void LoadFunctionality()
+    /// {
+    ///		assemblies = new GorgonMefPlugInCache();
+    ///		
+    ///		// For brevity, we've omitted checking to see if the assembly is valid and such.
+    ///		// In the real world, you should always determine whether the assembly can be loaded 
+    ///		// before calling the Load method.
+    ///		_assemblies.LoadPlugInAssemblies("Your\Directory\Here", "file search pattern");  // You can pass a wild card like *.dll, *.exe, etc..., or an absolute file name like "MyPlugin.dll".
+    /// 			
+    ///		IGorgonPlugInService pluginService = new GorgonMefPlugInService(_assemblies);
+    /// 
+    ///		_functionality = pluginService.GetPlugIn<FunctionalityBase>("Fully.Qualified.Name.ConcreteFunctionalityPlugIn"); 
+    /// }
+    /// 
+    /// void Main()
+    /// {
+    ///		LoadFunctionality();
+    ///		
+    ///		Console.WriteLine("The ultimate answer and stuff: {0}", _functionality.DoSomething());
+    ///		
+    ///     _assemblies?.Dispose();
+    /// }
+    /// ]]>
+    /// </code>
+    /// </example>
     public sealed class GorgonMefPlugInCache
 		: IDisposable
 	{

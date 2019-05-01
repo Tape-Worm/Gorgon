@@ -78,7 +78,7 @@ namespace Gorgon.Graphics.Core
         public override string Name => _info.Name;
 
         /// <summary>
-        /// Property to return whether or not the buffer is directly readable by the CPU via one of the <see cref="O:Gorgon.Graphics.Core.GorgonBufferCommon.GetData{T}"/> methods.
+        /// Property to return whether or not the buffer is directly readable by the CPU via one of the <see cref="O:Gorgon.Graphics.Core.GorgonBufferCommon.GetData"/> methods.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -90,7 +90,7 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// <para>
         /// If this value is <b>false</b>, then the buffer can still be read, but it will take a slower path by copying to a staging buffer and reading that when calling the
-        /// <see cref="O:Gorgon.Graphics.Core.GorgonBufferCommon.GetData{T}"/> methods.
+        /// <see cref="O:Gorgon.Graphics.Core.GorgonBufferCommon.GetData"/> methods.
         /// </para>
         /// <para>
         /// <note type="information">
@@ -99,7 +99,7 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
-        /// <seealso cref="O:Gorgon.Graphics.Core.GorgonBufferCommon.GetData{T}"/>
+        /// <seealso cref="O:Gorgon.Graphics.Core.GorgonBufferCommon.GetData"/>
         public override bool IsCpuReadable =>
             ((_info.AllowCpuRead) && (Usage == ResourceUsage.Default) && ((Binding & BufferBinding.Shader) == BufferBinding.Shader))
             || (Usage == ResourceUsage.Staging);

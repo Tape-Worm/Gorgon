@@ -53,7 +53,7 @@ using Gorgon.UI;
 namespace Gorgon.Editor.SpriteEditor
 {
     /// <summary>
-    /// Gorgon sprite editor content plug-in interface.
+    /// Gorgon sprite editor content plug in interface.
     /// </summary>
     internal class SpriteEditorPlugIn
         : ContentPlugIn, IContentPlugInMetadata, ISpriteContentFactory

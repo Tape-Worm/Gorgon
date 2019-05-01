@@ -121,7 +121,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="left">The left.</param>
         /// <param name="right">The right.</param>
-        /// <returns></returns>
+        /// <returns><b>true</b> if equal, <b>false</b> if not equal.</returns>
         public static bool operator ==(GorgonMultisampleInfo left, GorgonMultisampleInfo right) => Equals(left, right);
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="left">The left.</param>
         /// <param name="right">The right.</param>
-        /// <returns></returns>
+        /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
         public static bool operator !=(GorgonMultisampleInfo left, GorgonMultisampleInfo right) => !Equals(left, right);
 
         /// <summary>

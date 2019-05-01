@@ -229,7 +229,7 @@ namespace Gorgon.Examples
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="GorgonMouseEventArgs" /> instance containing the event data.</param>
-        /// <exception cref="System.NotSupportedException"></exception>
+        /// <exception cref="NotSupportedException"></exception>
         private void _mouse_ButtonUp(object sender, GorgonMouseEventArgs e) =>
             // Update the buttons so that only the buttons we have held down are showing.
             UpdateMouse(e.RelativePosition, e.ShiftButtons & ~e.Buttons);
@@ -239,7 +239,7 @@ namespace Gorgon.Examples
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="GorgonMouseEventArgs" /> instance containing the event data.</param>
-        /// <exception cref="System.NotSupportedException"></exception>
+        /// <exception cref="NotSupportedException"></exception>
         private void _mouse_ButtonDown(object sender, GorgonMouseEventArgs e) => UpdateMouse(e.RelativePosition, e.Buttons | e.ShiftButtons);
 
         /// <summary>
@@ -247,7 +247,7 @@ namespace Gorgon.Examples
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="GorgonMouseEventArgs" /> instance containing the event data.</param>
-        /// <exception cref="System.NotSupportedException"></exception>
+        /// <exception cref="NotSupportedException"></exception>
         private void _mouse_Move(object sender, GorgonMouseEventArgs e) =>
             // Lock the cursor in place as well so that we can, again, fake an "exclusive" mode.
             UpdateMouse(e.RelativePosition, e.Buttons | e.ShiftButtons);
@@ -300,13 +300,13 @@ namespace Gorgon.Examples
 			UpdateKeyboard(e.Key, e.ModifierKeys);
 		}
 
-		/// <summary>
-		/// Handles the Resize event of the panelDisplay control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-		/// <exception cref="System.NotSupportedException"></exception>
-		private void PanelDisplay_Resize(object sender, EventArgs e)
+        /// <summary>
+        /// Handles the Resize event of the panelDisplay control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+        /// <exception cref="NotSupportedException"></exception>
+        private void PanelDisplay_Resize(object sender, EventArgs e)
 		{
 			if (WindowState == FormWindowState.Minimized)
 			{
@@ -429,11 +429,11 @@ namespace Gorgon.Examples
 			}
 		}
 
-		/// <summary>
-		/// Handles the <see cref="E:Activated" /> event.
-		/// </summary>
-		/// <param name="e">The <see cref="System.EventArgs" /> instance containing the event data.</param>
-		protected override void OnActivated(EventArgs e)
+        /// <summary>
+        /// Handles the <see cref="E:Activated" /> event.
+        /// </summary>
+        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+        protected override void OnActivated(EventArgs e)
 		{
 			base.OnActivated(e);
 
@@ -445,11 +445,11 @@ namespace Gorgon.Examples
 			GorgonRawMouse.CursorVisible = false;
 		}
 
-		/// <summary>
-		/// Handles the <see cref="E:Deactivate" /> event.
-		/// </summary>
-		/// <param name="e">The <see cref="System.EventArgs" /> instance containing the event data.</param>
-		protected override void OnDeactivate(EventArgs e)
+        /// <summary>
+        /// Handles the <see cref="E:Deactivate" /> event.
+        /// </summary>
+        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+        protected override void OnDeactivate(EventArgs e)
 		{
 			base.OnDeactivate(e);
 

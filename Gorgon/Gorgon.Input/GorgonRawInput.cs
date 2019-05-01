@@ -149,27 +149,27 @@ namespace Gorgon.Input
 			}
 		}
 
-		/// <summary>
-		/// Function to register the device with the raw input provider.
-		/// </summary>
-		/// <param name="device">The device to register with the raw input provider.</param>
-		/// <param name="settings">[Optional] Settings for the device type.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="device"/> parameter is <b>null</b>.</exception>
-		/// <remarks>
-		/// <para>
-		/// This will register the <see cref="IGorgonRawInputDevice"/> with the application. For the very first device of a specific type (e.g. a mouse, keyboard, etc...) the Raw Input object will set up 
-		/// the device type registration for the device. This enables an application to start receiving Raw Input messages from a device type.
-		/// </para>
-		/// <para>
-		/// The optional <paramref name="settings"/> parameter allows an application change how raw input handles the device being registered. It can be used to set up background input monitoring, or a 
-		/// target window for raw input messages (which must be set if the background option is turned on). By default, there is no background message processing and no target window (messages go to 
-		/// whichever window has focus).
-		/// </para>
-		/// <para>
-		/// Every call to this method should be paired with a call to <see cref="GorgonRawInput.UnregisterDevice"/> when the device(s) are no longer needed.
-		/// </para>
-		/// </remarks>
-		public void RegisterDevice(IGorgonRawInputDevice device, GorgonRawInputSettings? settings = null)
+        /// <summary>
+        /// Function to register the device with the raw input provider.
+        /// </summary>
+        /// <param name="device">The device to register with the raw input provider.</param>
+        /// <param name="settings">[Optional] Settings for the device type.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="device"/> parameter is <b>null</b>.</exception>
+        /// <remarks>
+        /// <para>
+        /// This will register the <see cref="IGorgonRawInputDevice"/> with the application. For the very first device of a specific type (e.g. a mouse, keyboard, etc...) the Raw Input object will set up 
+        /// the device type registration for the device. This enables an application to start receiving Raw Input messages from a device type.
+        /// </para>
+        /// <para>
+        /// The optional <paramref name="settings"/> parameter allows an application change how raw input handles the device being registered. It can be used to set up background input monitoring, or a 
+        /// target window for raw input messages (which must be set if the background option is turned on). By default, there is no background message processing and no target window (messages go to 
+        /// whichever window has focus).
+        /// </para>
+        /// <para>
+        /// Every call to this method should be paired with a call to <see cref="UnregisterDevice"/> when the device(s) are no longer needed.
+        /// </para>
+        /// </remarks>
+        public void RegisterDevice(IGorgonRawInputDevice device, GorgonRawInputSettings? settings = null)
 		{
 			IntPtr targetHandle = IntPtr.Zero;
 

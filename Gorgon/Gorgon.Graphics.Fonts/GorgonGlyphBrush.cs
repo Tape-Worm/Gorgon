@@ -116,10 +116,10 @@ namespace Gorgon.Graphics.Fonts
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
         public override int GetHashCode() => base.GetHashCode();
 
-        /// <summary>Determines whether the specified <see cref="System.Object"/> is equal to this instance.</summary>
+        /// <summary>Determines whether the specified <see cref="object"/> is equal to this instance.</summary>
         /// <param name="obj">The object to compare with the current object.</param>
         /// <returns>
-        ///   <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.</returns>
+        ///   <c>true</c> if the specified <see cref="object"/> is equal to this instance; otherwise, <c>false</c>.</returns>
         public override bool Equals(object obj) => (obj as GorgonGlyphBrush).Equals(this);
         #endregion
     }

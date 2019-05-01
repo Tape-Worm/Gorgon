@@ -92,36 +92,36 @@ namespace Gorgon.UI
 		    }
 
 		    ConfirmationResult = _showCancel ? ConfirmationResult.Cancel : ConfirmationResult.No;
-		}		
+		}
 
-		/// <summary>
-		/// Handles the Click event of the OKButton control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private void OKButton_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Handles the Click event of the OKButton control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void OKButton_Click(object sender, EventArgs e)
 		{
 			ConfirmationResult = ConfirmationResult.Yes;
 			Close();
 		}
 
-		/// <summary>
-		/// Handles the Click event of the buttonCancel control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private void buttonCancel_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Handles the Click event of the buttonCancel control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void buttonCancel_Click(object sender, EventArgs e)
 		{
 			ConfirmationResult = ConfirmationResult.Cancel;
 			Close();
 		}
 
-		/// <summary>
-		/// Handles the Click event of the buttonNo control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private void buttonNo_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Handles the Click event of the buttonNo control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void buttonNo_Click(object sender, EventArgs e)
 		{
 			ConfirmationResult = ConfirmationResult.No;
 			Close();

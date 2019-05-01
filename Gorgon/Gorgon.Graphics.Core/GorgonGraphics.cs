@@ -79,7 +79,7 @@ namespace Gorgon.Graphics.Core
     /// This can lead to artifacts or can disable rendering entirely and consequently can be quite difficult to track. 
     /// </para>
     /// <para>
-    /// When a draw call is sent, it carries all of the required state information (with the exception of a view resource types). This ensures that if a draw call doesn't need a state at a specific time, 
+    /// When a draw call is sent, it carries all of the required state information (with the exception of resource types). This ensures that if a draw call doesn't need a state at a specific time, 
     /// it will be reset to a sensible default (as defined by the developer). 
     /// </para>
     /// <para>
@@ -102,18 +102,6 @@ namespace Gorgon.Graphics.Core
     /// </para>
     /// <para>
     /// If using a <b>DEBUG</b> compiled version of Gorgon (recommended for development), then the <see cref="IsDebugEnabled"/> property will automatically be set to <b>true</b>.
-    /// </para>
-    /// <para>
-    /// <h3>Requirements</h3>
-    /// </para>
-    /// <para>
-    /// This object requires a minimum of:
-    /// <list type="bullet">
-    ///     <item>C# 7.3 (Visual Studio 2017 v15.7.4) or better - All libraries in Gorgon.</item>
-    ///     <item>.NET 4.7.1 - All libraries in Gorgon.</item>
-    ///     <item>Windows 10 v1703, Build 15603 (aka Creators Update).</item>
-    ///     <item>Direct 3D 11.4 or better.</item>
-    /// </list>
     /// </para>
     /// </remarks>
     /// <seealso cref="IGorgonVideoAdapterInfo"/>
@@ -2776,7 +2764,7 @@ namespace Gorgon.Graphics.Core
         /// Use this to retrieve a list of video adapters available on the system. A video adapter may be a discreet video card, a device on the motherboard, or a software video adapter.
         /// </para>
         /// <para>
-        /// This resulting list will contain <see cref="VideoAdapterInfo"/> objects which can then be passed to a <see cref="GorgonGraphics"/> instance. This allows applications or users to pick and choose which 
+        /// This resulting list will contain <see cref="IGorgonVideoAdapterInfo"/> objects which can then be passed to a <see cref="GorgonGraphics"/> instance. This allows applications or users to pick and choose which 
         /// adapter they wish to use for rendering.
         /// </para>
         /// <para>
@@ -3159,7 +3147,7 @@ namespace Gorgon.Graphics.Core
         /// highest feature of the specified <paramref name="videoAdapterInfo"/>. 
         /// </para>
         /// <para>
-        /// If Gorgon is compiled in DEBUG mode, and <see cref="VideoAdapterInfo"/> is <b>null</b>, then it will attempt to find the most appropriate hardware video adapter, and failing that, will fall 
+        /// If Gorgon is compiled in DEBUG mode, and <paramref name="videoAdapterInfo"/> is <b>null</b>, then it will attempt to find the most appropriate hardware video adapter, and failing that, will fall 
         /// back to a software device.
         /// </para>
         /// <para>
@@ -3181,17 +3169,14 @@ namespace Gorgon.Graphics.Core
         /// IReadOnlyList<IGorgonVideoAdapterInfo> videoAdapters = GorgonGraphics.EnumerateAdapters(false, log);
         ///
         /// // In real code, you should always check for more than 0 devices in the resulting list.
-        /// GorgonGraphics graphics = GorgonGraphics.Create(videoAdapters[0]);
+        /// GorgonGraphics graphics = new GorgonGraphics(videoAdapters[0]);
         /// 
         /// // Create using the requested feature set and the first adapter that supports the nearest feature set requested:
         /// // If the device does not support 12.1, then the device with the nearest feature set (e.g. 12.0) will be used instead.
-        /// GorgonGraphics graphics = GorgonGraphics.Create(videoAdapters[0], FeatureSet.Level_12_1);
-        /// 
-        /// // Create using the requested device and the requested feature set:
-        /// // If the device does not support 12.0, then the highest feature set supported by the device will be used (e.g. 10.1).
         /// IReadOnlyList<IGorgonVideoAdapterInfo> videoAdapters = GorgonGraphics.EnumerateAdapters(false, log);
-        ///
-        /// GorgonGraphics graphics = GorgonGraphics.Create(videoAdapters[0], FeatureSet.Level_12_0); 
+        /// 
+        /// // In real code, you should always check for more than 0 devices in the resulting list.
+        /// GorgonGraphics graphics = new GorgonGraphics(videoAdapters[0], FeatureSet.Level_12_1);
         /// ]]>
         /// </code>
         /// </example>

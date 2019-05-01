@@ -212,24 +212,28 @@ namespace Gorgon.Native
         /// Operator to convert the pointer to an int32 value.
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
+        /// <returns>The address as a <see cref="int"/> value.</returns>
         public static implicit operator int(GorgonReadOnlyPointer pointer) => (int)pointer._data;
 
         /// <summary>
         /// Operator to convert the pointer to an int64 value.
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
+        /// <returns>The address as a <see cref="long"/> value.</returns>
         public static implicit operator long(GorgonReadOnlyPointer pointer) => (long)pointer._data;
 
         /// <summary>
         /// Operator to convert the pointer to a uint32 value.
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
+        /// <returns>The address as a <see cref="uint"/> value.</returns>
         public static implicit operator uint(GorgonReadOnlyPointer pointer) => (uint)pointer._data;
 
         /// <summary>
         /// Operator to convert the pointer to a uint64 value.
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
+        /// <returns>The address as a <see cref="ulong"/> value.</returns>
         public static implicit operator ulong(GorgonReadOnlyPointer pointer) => (ulong)pointer._data;
 
         /// <summary>

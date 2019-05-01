@@ -61,14 +61,14 @@ namespace Gorgon.Examples
     /// 
     /// The difference between this example and the folder file system example is that we're loading
     /// a packed file from the previous version of Gorgon as a file system.  The scenario is the same
-    /// as loading a zip file:  Load the provider plug-in into the file system, and mount the packed
+    /// as loading a zip file:  Load the provider plug in into the file system, and mount the packed
     /// file.
     /// </remarks>
 	public partial class Form 
 		: System.Windows.Forms.Form
 	{
 		#region Variables.
-        // The plug-in assembly cache.
+        // The plug in assembly cache.
 	    private GorgonMefPlugInCache _assemblyCache;
 	    // The file system.
 		private GorgonFileSystem _fileSystem;		        

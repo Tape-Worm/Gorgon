@@ -32,8 +32,24 @@ using Gorgon.Graphics.Core;
 namespace Gorgon.Renderers
 {
     /// <summary>
-    /// A pixel shader for use with the <see cref="Gorgon2D"/> interface.
+    /// A shader for use with the <see cref="Gorgon2D"/> interface.
     /// </summary>
+    /// <typeparam name="T">The type of shader. Must inherit from <see cref="GorgonShader"/>.</typeparam>
+    /// <remarks>
+    /// <para>
+    /// This shader type is a wrapper for the shaders based on <see cref="GorgonShader"/>. It used for passing shader programs to the <see cref="Gorgon2DBatchState"/> when setting up a batch render via 
+    /// <see cref="Gorgon2D.Begin(Gorgon2DBatchState, IGorgon2DCamera)"/>.
+    /// </para>
+    /// <para>
+    /// It may seem redundant to have a secondary shader type, but this type allows an application to send shader related state and resource information along with the shader. Whereas shaders based on 
+    /// <see cref="GorgonShader"/> can only get their state information via a <see cref="GorgonPipelineState"/> and <see cref="GorgonDrawCall"/>. Neither of which are exposed to the end user via the 
+    /// 2D renderer interface.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonPipelineState"/>
+    /// <seealso cref="GorgonDrawCall"/>
+    /// <seealso cref="Gorgon2DBatchState"/>
+    /// <seealso cref="GorgonShader"/>
     public sealed class Gorgon2DShader<T>
         : IDisposable
         where T : GorgonShader

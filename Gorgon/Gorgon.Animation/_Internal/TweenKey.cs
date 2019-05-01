@@ -102,6 +102,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to return the nearest keys to the requested time.
         /// </summary>
+        /// <typeparam name="T">The type of key in the track. Must implement <see cref="IGorgonKeyFrame"/> and be a reference type.</typeparam>
         /// <param name="track">The track to evaluate.</param>
         /// <param name="requestedTime">Track time requested.</param>
         /// <param name="animationLength">The total animation time.</param>

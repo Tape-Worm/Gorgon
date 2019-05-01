@@ -81,7 +81,7 @@
 			this.MenuItemCancel = new System.Windows.Forms.ToolStripMenuItem();
 			this.MenuCopyMove = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.PanelSearch = new System.Windows.Forms.Panel();
-			this.TextSearch = new Gorgon.Windows.UI.GorgonSearchBox();
+			this.TextSearch = new Gorgon.UI.GorgonSearchBox();
 			this.ListSearchResults = new System.Windows.Forms.ListView();
 			this.ColumnFileNode = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.ColumnFilePath = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -319,7 +319,7 @@
 			this.TextSearch.Name = "TextSearch";
 			this.TextSearch.Size = new System.Drawing.Size(600, 24);
 			this.TextSearch.TabIndex = 2;
-			this.TextSearch.Search += new System.EventHandler<Gorgon.Windows.UI.GorgonSearchEventArgs>(this.TextSearch_Search);
+			this.TextSearch.Search += new System.EventHandler<Gorgon.UI.GorgonSearchEventArgs>(this.TextSearch_Search);
 			// 
 			// ListSearchResults
 			// 
@@ -403,7 +403,7 @@
         private System.Windows.Forms.ContextMenuStrip MenuCopyMove;
         private System.Windows.Forms.ToolStripMenuItem MenuItemExportTo;
         private System.Windows.Forms.Panel PanelSearch;
-        private Windows.UI.GorgonSearchBox TextSearch;
+        private Gorgon.UI.GorgonSearchBox TextSearch;
         private System.Windows.Forms.ToolStripMenuItem MenuItemOpenContent;
         private System.Windows.Forms.ToolStripSeparator MenuSepContent;
         private System.Windows.Forms.ListView ListSearchResults;

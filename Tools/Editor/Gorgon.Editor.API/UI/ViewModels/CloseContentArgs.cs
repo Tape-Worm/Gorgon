@@ -46,7 +46,7 @@ namespace Gorgon.Editor.UI
 
         #region Constructor.
 
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.UI.ViewModels.CloseContentArgs"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="CloseContentArgs"/> class.</summary>
         /// <param name="checkForChanges"><b>true</b> to check for changes prior to closing, <b>false</b> to skip the check and force a close.</param>
         public CloseContentArgs(bool checkForChanges) => CheckChanges = checkForChanges;
         #endregion

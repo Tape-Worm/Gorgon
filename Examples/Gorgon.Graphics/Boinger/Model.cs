@@ -218,11 +218,11 @@ namespace Gorgon.Graphics.Example
 			DX.Matrix.Multiply(ref temp, ref _positionMatrix, out _worldMatrix);
 		}
 
-	    /// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		/// <exception cref="System.NotImplementedException"></exception>
-		public void Dispose()
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <exception cref="NotImplementedException"></exception>
+        public void Dispose()
 		{
 			foreach(GorgonVertexBufferBinding binding in VertexBufferBindings)
 			{

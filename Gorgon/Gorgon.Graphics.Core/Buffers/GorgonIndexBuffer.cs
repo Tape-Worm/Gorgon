@@ -43,7 +43,7 @@ namespace Gorgon.Graphics.Core
     /// </para>
     /// <para>
     /// To send indices to the GPU using a index buffer, an application can upload a value type values, representing the indices, to the buffer using one of the 
-    /// <see cref="O:Gorgon.Graphics.GorgonIndexBuffer.Update{T}(ref T)">Update&lt;T&gt;</see> overloads. For best performance, it is recommended to upload index data only once, or rarely. However, in 
+    /// <see cref="O:Gorgon.Graphics.Core.GorgonBufferCommon.SetData"/> overloads. For best performance, it is recommended to upload index data only once, or rarely. However, in 
     /// some scenarios, and with the correct <see cref="IGorgonIndexBufferInfo.Usage"/> flag, indices can be updated regularly for things like dynamic tesselation of surface.
     /// </para>
     /// <para> 
@@ -98,7 +98,7 @@ namespace Gorgon.Graphics.Core
 	    internal override D3D11.BindFlags BindFlags => Native?.Description.BindFlags ?? D3D11.BindFlags.None;
 
 	    /// <summary>
-	    /// Property to return whether or not the buffer is directly readable by the CPU via one of the <see cref="O:Gorgon.Graphics.Core.GorgonBufferCommon.GetData{T}"/> methods.
+	    /// Property to return whether or not the buffer is directly readable by the CPU via one of the <see cref="O:Gorgon.Graphics.Core.GorgonBufferCommon.GetData"/> methods.
 	    /// </summary>
 	    /// <remarks>
 	    /// <para>
@@ -118,7 +118,7 @@ namespace Gorgon.Graphics.Core
 	    /// </note>
 	    /// </para>
 	    /// </remarks>
-	    /// <seealso cref="O:Gorgon.Graphics.Core.GorgonBufferCommon.GetData{T}"/>
+	    /// <seealso cref="O:Gorgon.Graphics.Core.GorgonBufferCommon.GetData"/>
 	    public override bool IsCpuReadable => Usage == ResourceUsage.Staging;
 
 	    /// <summary>

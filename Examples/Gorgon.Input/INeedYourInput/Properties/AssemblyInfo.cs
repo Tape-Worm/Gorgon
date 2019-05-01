@@ -32,10 +32,10 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 #if DEBUG
 [assembly: AssemblyTitle("I need your input. [DEBUG VERSION]")]
-[assembly: AssemblyDescription("Example showing how to use the input plug-in.  This was a version 1.x example, converted to version 2.x of Gorgon. [DEBUG VERSION]")]
+[assembly: AssemblyDescription("Example showing how to use the input plug in.  This was a version 1.x example, converted to version 2.x of Gorgon. [DEBUG VERSION]")]
 #else
 [assembly: AssemblyTitle("I need your input.")]
-[assembly: AssemblyDescription("Example showing how to use the input plug-in.  This was a version 1.x example, converted to version 2.x of Gorgon.")]
+[assembly: AssemblyDescription("Example showing how to use the input plug in.  This was a version 1.x example, converted to version 2.x of Gorgon.")]
 #endif
 [assembly: AssemblyCulture("")]
 

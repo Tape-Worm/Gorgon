@@ -48,7 +48,7 @@ namespace Gorgon.Editor.Views
 			this.ButtonCreate = new System.Windows.Forms.Button();
 			this.panel6 = new System.Windows.Forms.Panel();
 			this.PanelLocateText = new System.Windows.Forms.Panel();
-			this.TextProjectPath = new Gorgon.Windows.UI.GorgonCueTextBox();
+			this.TextProjectPath = new Gorgon.UI.GorgonCueTextBox();
 			this.PanelLocate = new System.Windows.Forms.Panel();
 			this.ButtonSelect = new ComponentFactory.Krypton.Toolkit.KryptonButton();
 			this.PanelWorkspace = new System.Windows.Forms.FlowLayoutPanel();
@@ -418,7 +418,7 @@ namespace Gorgon.Editor.Views
         private System.Windows.Forms.Label LabelHeader;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel PanelsControls;
-        private Gorgon.Windows.UI.GorgonCueTextBox TextProjectPath;
+        private Gorgon.UI.GorgonCueTextBox TextProjectPath;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.Button ButtonCreate;

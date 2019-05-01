@@ -58,6 +58,7 @@ namespace Gorgon.Editor.UI
         /// Function to execute the command.
         /// </summary>
         /// <param name="args">The arguments to pass to the command.</param>
+        /// <returns>A <see cref="Task"/> for asynchronous operation.</returns>
         public Task ExecuteAsync(T args)
         {
             if (_execute != null)

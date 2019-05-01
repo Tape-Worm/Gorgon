@@ -128,7 +128,7 @@ namespace Gorgon.Input
         /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
         /// </summary>
         /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
-        /// <exception cref="System.NotSupportedException"></exception>
+        /// <exception cref="NotSupportedException"></exception>
         void ICollection<KeyState>.Add(KeyState item) => throw new NotSupportedException();
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace Gorgon.Input
         /// </summary>
         /// <param name="array">The array.</param>
         /// <param name="arrayIndex">Index of the array.</param>
-        /// <exception cref="System.NotSupportedException"></exception>
+        /// <exception cref="NotSupportedException"></exception>
         void ICollection<KeyState>.CopyTo(KeyState[] array, int arrayIndex) => throw new NotSupportedException();
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace Gorgon.Input
         /// <returns>
         /// true if item was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false. This method also returns false if item is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"></see>.
         /// </returns>
-        /// <exception cref="System.NotSupportedException"></exception>
+        /// <exception cref="NotSupportedException"></exception>
         bool ICollection<KeyState>.Remove(KeyState item) => false;
         #endregion
         #endregion

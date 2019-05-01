@@ -53,7 +53,7 @@
             this.TableViewControls = new System.Windows.Forms.TableLayoutPanel();
             this.ScrollHorizontal = new System.Windows.Forms.HScrollBar();
             this.ScrollVertical = new System.Windows.Forms.VScrollBar();
-            this.PanelImage = new Gorgon.Windows.UI.GorgonSelectablePanel();
+            this.PanelImage = new Gorgon.UI.GorgonSelectablePanel();
             this.GenMipMapSettings = new Gorgon.Editor.ImageEditor.GenMipMapSettings();
             this.DimensionSettings = new Gorgon.Editor.ImageEditor.ImageDimensionSettings();
             this.CropResizeSettings = new Gorgon.Editor.ImageEditor.ImageResizeSettings();
@@ -487,7 +487,7 @@
         private System.Windows.Forms.TableLayoutPanel TableViewControls;
         private System.Windows.Forms.HScrollBar ScrollHorizontal;
         private System.Windows.Forms.VScrollBar ScrollVertical;
-        private Gorgon.Windows.UI.GorgonSelectablePanel PanelImage;
+        private Gorgon.UI.GorgonSelectablePanel PanelImage;
         private System.Windows.Forms.Button ButtonCenter;
         private System.Windows.Forms.Label LabelArrayIndex;
         private System.Windows.Forms.Label LabelMipLevel;

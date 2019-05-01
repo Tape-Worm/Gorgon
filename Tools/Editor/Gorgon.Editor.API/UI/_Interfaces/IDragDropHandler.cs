@@ -32,6 +32,7 @@ namespace Gorgon.Editor.UI
     /// <summary>
     /// Defines functionality used to handle dragging and dropping.
     /// </summary>
+    /// <typeparam name="T">The type of data being dragged and dropped.</typeparam>
     public interface IDragDropHandler<in T>
     {
         /// <summary>

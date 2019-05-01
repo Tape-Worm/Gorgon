@@ -598,12 +598,12 @@ namespace Gorgon.Examples
 		    }
 		}
 
-		/// <summary>
-		/// Handles the KeyDown event of the _form control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.Windows.Forms.KeyEventArgs"/> instance containing the event data.</param>
-		private static void Form_KeyDown(object sender, KeyEventArgs e)
+        /// <summary>
+        /// Handles the KeyDown event of the _form control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
+        private static void Form_KeyDown(object sender, KeyEventArgs e)
 		{
 			int ballIncrement = 1;
 			switch (e.KeyCode)

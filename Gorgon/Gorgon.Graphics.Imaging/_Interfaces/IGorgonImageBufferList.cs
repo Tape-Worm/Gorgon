@@ -41,7 +41,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the array index or the depth slice parameters are larger than their respective boundaries, or less than 0. Only thrown when this assembly is compiled in DEBUG mode.</exception>
 		/// <remarks>
 		/// <para>
-		/// To get the array length, or the mip map count, use the <see cref="P:Gorgon.Graphics.GorgonImageData.Settings">Settings</see> property.
+		/// To get the array length, or the mip map count, use the <see cref="IGorgonImage"/>.<see cref="IGorgonImageInfo.ArrayCount"/>, or <see cref="IGorgonImage"/>.<see cref="IGorgonImageInfo.MipCount"/> property.
 		/// </para>
 		/// <para>
 		/// To get the depth slice count, use the <see cref="IGorgonImage.GetDepthCount"/> method.
@@ -75,7 +75,7 @@ namespace Gorgon.Graphics.Imaging
 		/// </summary>
 		/// <param name="mipLevel">The mip map level to look up.</param>
 		/// <param name="depthSliceOrArrayIndex">[Optional] The depth slice (for 3D images) or array index (for 1D or 2D images) to look up.</param>
-		/// <returns></returns>
+		/// <returns><b>true</b> if the mip and/or depth slice/array index are in this list.</returns>
 		bool Contains(int mipLevel, int depthSliceOrArrayIndex = 0);
 	}
 }

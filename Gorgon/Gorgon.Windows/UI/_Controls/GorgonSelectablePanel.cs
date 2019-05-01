@@ -31,7 +31,7 @@ using System.Windows.Forms;
 using Gorgon.Design;
 using Gorgon.Windows.Properties;
 
-namespace Gorgon.Windows.UI
+namespace Gorgon.UI
 {
 	/// <summary>
 	/// A <see cref="Panel"/> that can receive keyboard focus.

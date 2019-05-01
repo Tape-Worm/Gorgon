@@ -236,11 +236,11 @@ namespace Gorgon.IO.Extensions
         /// </para>
         /// <para>
         /// The <paramref name="spriteCodecs"/> is a list of codecs for loading sprite data. If the user specifies this parameter, the only the codecs provided will be used for determining if a sprite can
-        /// be read. If it is not supplied, then all built-in (i.e. not plug-in based) sprite codecs will be used.
+        /// be read. If it is not supplied, then all built-in (i.e. not plug in based) sprite codecs will be used.
         /// </para>
         /// <para>
         /// The <paramref name="imageCodecs"/> is a list of codecs for loading image data. If the user specifies this parameter, the only the codecs provided will be used for determining if an image can be 
-        /// read. If it is not supplied, then all built-in (i.e. not plug-in based) image codecs will be used.
+        /// read. If it is not supplied, then all built-in (i.e. not plug in based) image codecs will be used.
         /// </para>
         /// </remarks>
         /// <seealso cref="GorgonFileSystem"/>
@@ -393,11 +393,11 @@ namespace Gorgon.IO.Extensions
         /// </para>
         /// <para>
         /// The <paramref name="spriteCodecs"/> is a list of codecs for loading polygonal sprite data. If the user specifies this parameter, the only the codecs provided will be used for determining if a
-        /// sprite can be read. If it is not supplied, then all built-in (i.e. not plug-in based) sprite codecs will be used.
+        /// sprite can be read. If it is not supplied, then all built-in (i.e. not plug in based) sprite codecs will be used.
         /// </para>
         /// <para>
         /// The <paramref name="imageCodecs"/> is a list of codecs for loading image data. If the user specifies this parameter, the only the codecs provided will be used for determining if an image can be 
-        /// read. If it is not supplied, then all built-in (i.e. not plug-in based) image codecs will be used.
+        /// read. If it is not supplied, then all built-in (i.e. not plug in based) image codecs will be used.
         /// </para>
         /// </remarks>
         /// <seealso cref="GorgonFileSystem"/>
@@ -548,11 +548,11 @@ namespace Gorgon.IO.Extensions
         /// </para>
         /// <para>
         /// The <paramref name="animationCodecs"/> is a list of codecs for loading sprite data. If the user specifies this parameter, the only the codecs provided will be used for determining if an 
-        /// animation can be read. If it is not supplied, then all built-in (i.e. not plug-in based) sprite codecs will be used.
+        /// animation can be read. If it is not supplied, then all built-in (i.e. not plug in based) sprite codecs will be used.
         /// </para>
         /// <para>
         /// The <paramref name="imageCodecs"/> is a list of codecs for loading image data. If the user specifies this parameter, the only the codecs provided will be used for determining if an image can be 
-        /// read. If it is not supplied, then all built-in (i.e. not plug-in based) image codecs will be used.
+        /// read. If it is not supplied, then all built-in (i.e. not plug in based) image codecs will be used.
         /// </para>
         /// </remarks>
         /// <seealso cref="GorgonFileSystem"/>

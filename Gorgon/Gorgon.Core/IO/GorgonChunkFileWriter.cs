@@ -271,26 +271,26 @@ namespace Gorgon.IO
 			_activeWriter.Dispose();
 			_activeWriter = null;
 		}
-		#endregion
+        #endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonChunkFileWriter"/> class.
-		/// </summary>
-		/// <param name="stream">The stream that contains the chunk file to write.</param>
-		/// <param name="appHeaderId">An application specific header ID to write to the file for validation.</param>
-		/// <remarks>
-		/// The <paramref name="stream"/> passed to this method requires that the <see cref="System.IO.Stream.CanSeek"/> property returns a value of <b>true</b>.
-		/// </remarks>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream" /> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="stream" /> is has its <see cref="Stream.CanSeek" /> property set to <b>false</b>.
-		/// <para>-or-</para>
-		/// <para>
-		/// Thrown when the <paramref name="stream"/> is read-only.
-		/// </para>
-		/// </exception>
-		/// <exception cref="IOException"></exception>
-		public GorgonChunkFileWriter(Stream stream, ulong appHeaderId)
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonChunkFileWriter"/> class.
+        /// </summary>
+        /// <param name="stream">The stream that contains the chunk file to write.</param>
+        /// <param name="appHeaderId">An application specific header ID to write to the file for validation.</param>
+        /// <remarks>
+        /// The <paramref name="stream"/> passed to this method requires that the <see cref="Stream.CanSeek"/> property returns a value of <b>true</b>.
+        /// </remarks>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream" /> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="stream" /> is has its <see cref="Stream.CanSeek" /> property set to <b>false</b>.
+        /// <para>-or-</para>
+        /// <para>
+        /// Thrown when the <paramref name="stream"/> is read-only.
+        /// </para>
+        /// </exception>
+        /// <exception cref="IOException"></exception>
+        public GorgonChunkFileWriter(Stream stream, ulong appHeaderId)
 			: base(stream)
 		{
 			if (!stream.CanWrite)

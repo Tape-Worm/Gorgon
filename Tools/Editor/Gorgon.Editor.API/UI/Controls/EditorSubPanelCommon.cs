@@ -34,6 +34,11 @@ namespace Gorgon.Editor.UI.Controls
     /// <summary>
     /// A base control for editor sub panels.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Content plug in developers that require a sub panel to display properties, settings, etc... must inherit this control type on their <see cref="UserControl"/>.
+    /// </para>
+    /// </remarks>
     public partial class EditorSubPanelCommon 
         : EditorBaseControl
     {
@@ -110,8 +115,8 @@ namespace Gorgon.Editor.UI.Controls
         /// </summary>
         protected void ValidateOk() => ButtonOK.Enabled = OnValidateOk();
 
-        /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
-        /// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
+        /// <summary>Raises the <see cref=UserControl.Load"/> event.</summary>
+        /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
@@ -126,7 +131,7 @@ namespace Gorgon.Editor.UI.Controls
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.UI.Controls.EditorSubPanel"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="EditorSubPanelCommon"/> class.</summary>
         public EditorSubPanelCommon() => InitializeComponent();
         #endregion
 

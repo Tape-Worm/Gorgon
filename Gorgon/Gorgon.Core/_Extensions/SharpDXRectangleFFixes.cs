@@ -36,14 +36,7 @@ namespace Gorgon.Core
         /// <summary>Determines whether this rectangle entirely contains a specified rectangle.</summary>
         /// <param name="rect">The source rectangle to compare.</param>
         /// <param name="value">The rectangle to evaluate.</param>
-        public static bool Contains(this DX.RectangleF rect, DX.RectangleF value)
-        {
-            if ((rect.X <= value.X) && (value.Right <= rect.Right) && (rect.Y <= value.Y))
-            {
-                return value.Bottom <= rect.Bottom;
-            }
-
-            return false;
-        }
+        /// <returns><b>true</b> if the rectangle is contained within the other rectangle, or <b>false</b> if not.</returns>
+        public static bool Contains(this DX.RectangleF rect, DX.RectangleF value) => (rect.X <= value.X) && (value.Right <= rect.Right) && (rect.Y <= value.Y) ? value.Bottom <= rect.Bottom : false;
     }
 }

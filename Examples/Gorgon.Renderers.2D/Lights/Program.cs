@@ -286,7 +286,7 @@ namespace Gorgon.Examples
         /// Windows the key down.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="System.Windows.Forms.KeyEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">The <see cref="KeyEventArgs" /> instance containing the event data.</param>
         private static void Window_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
@@ -318,14 +318,14 @@ namespace Gorgon.Examples
         /// Screens the after swap chain resized.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="Gorgon.Graphics.Core.AfterSwapChainResizedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">The <see cref="AfterSwapChainResizedEventArgs" /> instance containing the event data.</param>
         private static void Screen_AfterSwapChainResized(object sender, AfterSwapChainResizedEventArgs e) => UpdateRenderTarget();
 
         /// <summary>
         /// Screens the before swap chain resized.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="Gorgon.Graphics.Core.BeforeSwapChainResizedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">The <see cref="BeforeSwapChainResizedEventArgs" /> instance containing the event data.</param>
         private static void Screen_BeforeSwapChainResized(object sender, BeforeSwapChainResizedEventArgs e)
         {
             // Need to remove these prior to resizing the back buffer, otherwise the size will be mismatched.

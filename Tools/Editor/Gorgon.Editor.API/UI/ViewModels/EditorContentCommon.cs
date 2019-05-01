@@ -35,6 +35,12 @@ namespace Gorgon.Editor.UI
     /// <summary>
     /// Common functionality for the editor content view model.
     /// </summary>
+    /// <typeparam name="T">The type of dependency injection object. Must be a class, and implement <see cref="IContentViewModelInjection"/>.</typeparam>
+    /// <remarks>
+    /// <para>
+    /// Content plug in developers must inherit this type on their content view models as it contains necessary functionality to communicate with the application.
+    /// </para>
+    /// </remarks>
     public abstract class EditorContentCommon<T>
         : ViewModelBase<T>, IEditorContent
         where T : class, IContentViewModelInjection

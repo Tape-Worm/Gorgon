@@ -58,6 +58,7 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Function to return the data from the clipboard as the specified type.
         /// </summary>
+        /// <typeparam name="T">The type of data to return.</typeparam>
         /// <returns>The data as the specified type.</returns>
         /// <remarks>
         /// <para>

@@ -179,17 +179,17 @@ namespace Gorgon.Diagnostics
 			}
 		}
 
-		/// <summary>
-		/// Function to send an exception to the log.
-		/// </summary>
-		/// <param name="ex">The exception to log.</param>
-		/// <remarks>
-		/// <para>
-		/// If the <see cref="GorgonLog.LogFilterLevel"/> is set to <c>LoggingLevel.NoLogging</c>, then the exception will not be logged. If the filter is set to any other setting, it will be logged 
-		/// regardless of filter level.
-		/// </para>
-		/// </remarks>
-		public void LogException(Exception ex)
+        /// <summary>
+        /// Function to send an exception to the log.
+        /// </summary>
+        /// <param name="ex">The exception to log.</param>
+        /// <remarks>
+        /// <para>
+        /// If the <see cref="LogFilterLevel"/> is set to <c>LoggingLevel.NoLogging</c>, then the exception will not be logged. If the filter is set to any other setting, it will be logged 
+        /// regardless of filter level.
+        /// </para>
+        /// </remarks>
+        public void LogException(Exception ex)
 		{
 			string indicator = string.Empty; // Inner exception indicator.
 			string branch = string.Empty; // Branching character.

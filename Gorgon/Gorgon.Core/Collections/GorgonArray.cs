@@ -28,14 +28,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Gorgon.Collections;
 using Gorgon.Math;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Collections
 {
     /// <summary>
     /// A special array type that is used to monitor and track changes to itself.
     /// </summary>
+    /// <typeparam name="T">The type of data in the array.</typeparam>
     /// <returns>
     /// <para>
     /// Due to how the array determines dirty indices, the maximum size of the the array is 64 items.
@@ -175,6 +175,7 @@ namespace Gorgon.Graphics.Core
         /// Function to retrieve the dirty items in this list.
         /// </summary>
         /// <param name="peek">[Optional] <b>true</b> if the dirty state should not be modified by calling this method, or <b>false</b> if it should be.</param>
+        /// <returns>A tuple containing the starting index and the number of items.</returns>
         /// <remarks>
         /// <para>
         /// This will return a tuple that contains the start index, and count of the items that have been changed in this collection.  

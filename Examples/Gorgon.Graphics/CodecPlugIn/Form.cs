@@ -53,11 +53,11 @@ namespace CodecPlugIn
 		private GorgonGraphics _graphics;
 		// The swap chain to use.
 	    private GorgonSwapChain _swap;
-		// Image to display, loaded from our plug-in.
+		// Image to display, loaded from our plug in.
 		private GorgonTexture2DView _texture;
 		// The image in system memory.
 	    private IGorgonImage _image;
-		// Our custom codec loaded from the plug-in.
+		// Our custom codec loaded from the plug in.
 		private IGorgonImageCodec _customCodec;
         #endregion
 
@@ -102,7 +102,7 @@ namespace CodecPlugIn
 		}
 
 		/// <summary>
-		/// Function to load our useless image codec plug-in.
+		/// Function to load our useless image codec plug in.
 		/// </summary>
 		/// <returns><b>true</b> if successful, <b>false</b> if not.</returns>
 	    private bool LoadCodec()
@@ -111,7 +111,7 @@ namespace CodecPlugIn
 
 			_pluginCache = new GorgonMefPlugInCache(GorgonApplication.Log);
 			
-			// Load our plug-in.
+			// Load our plug in.
 			_pluginCache.LoadPlugInAssemblies(GorgonApplication.StartupPath.FullName, "TVImageCodec.dll");
 
 			// Activate the plugin service.
@@ -209,7 +209,7 @@ namespace CodecPlugIn
 				// Load the custom codec.
 				if (!LoadCodec())
 				{
-					GorgonDialogs.ErrorBox(this, "Unable to load the image codec plug-in.");
+					GorgonDialogs.ErrorBox(this, "Unable to load the image codec plug in.");
 					GorgonApplication.Quit();
 					return;
 				}

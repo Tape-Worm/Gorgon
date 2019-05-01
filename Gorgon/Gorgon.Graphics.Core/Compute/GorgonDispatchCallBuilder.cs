@@ -68,6 +68,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="sampler">The sampler to assign.</param>
         /// <param name="index">[Optional] The index of the sampler.</param>
+        /// <returns>The fluent interface for this builder.</returns>
         public GorgonDispatchCallBuilder SamplerState(GorgonSamplerStateBuilder sampler, int index = 0) => SamplerState(sampler.Build(), index);
 
         /// <summary>

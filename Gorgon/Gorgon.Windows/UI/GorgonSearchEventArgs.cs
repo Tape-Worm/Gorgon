@@ -26,7 +26,7 @@
 
 using System;
 
-namespace Gorgon.Windows.UI
+namespace Gorgon.UI
 {
     /// <summary>
     /// Event arguments for the <see cref="GorgonSearchBox.Search"/> event.
@@ -45,7 +45,7 @@ namespace Gorgon.Windows.UI
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Windows.UI.GorgonSearchEventArgs"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.UI.GorgonSearchEventArgs"/> class.</summary>
         /// <param name="searchText">  The text to search for.</param>
         public GorgonSearchEventArgs(string searchText) => SearchText = searchText ?? string.Empty;
         #endregion

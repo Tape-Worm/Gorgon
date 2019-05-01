@@ -31,6 +31,7 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// Provides a read/write (unordered access) view for a <see cref="GorgonBuffer"/>, <see cref="GorgonVertexBuffer"/> or a <see cref="GorgonIndexBuffer"/>.
     /// </summary>
+    /// <typeparam name="T">The type of buffer for this view. Must inherit from <see cref="GorgonBufferCommon"/>.</typeparam>
     /// <remarks>
     /// <para>
     /// This type of view allows for unordered access to a buffer. The buffer must have been created with the <see cref="BufferBinding.ReadWrite"/> flag in its binding property.

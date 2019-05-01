@@ -124,7 +124,7 @@ namespace Gorgon.Renderers
         /// Function to assign a vertex shader to the batch state.
         /// </summary>
         /// <param name="shader">The vertex shader and resources to assign, or <b>null</b> for a default vertex shader and states.</param>
-        /// <returns></returns>
+        /// <returns>The fluent builder interface.</returns>
         public Gorgon2DBatchStateBuilder VertexShader(Gorgon2DShaderBuilder<GorgonVertexShader> shader)
         {
             _worker.VertexShader = shader?.Build();
@@ -146,7 +146,7 @@ namespace Gorgon.Renderers
         /// Function to assign a vertex shader to the batch state.
         /// </summary>
         /// <param name="shader">The vertex shader and resources to assign, or <b>null</b> for a default vertex shader and states.</param>
-        /// <returns></returns>
+        /// <returns>The fluent builder interface.</returns>
         public Gorgon2DBatchStateBuilder VertexShader(Gorgon2DShader<GorgonVertexShader> shader)
         {
             _worker.VertexShader = shader;

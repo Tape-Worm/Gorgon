@@ -95,6 +95,7 @@ namespace Gorgon.Memory
 		/// </summary>
 		/// <param name="initializer">[Optional] A function used to initialize the object returned by the allocator.</param>
 		/// <exception cref="GorgonException">Thrown when the pool is completely full.</exception>
+        /// <returns>The newly allocated object.</returns>
 		/// <remarks>
 		/// <para>
 		/// Applications should check to ensure that there is enough free space in the pool to allocate another object by checking the <see cref="AvailableSlots"/> property prior to calling this method. 

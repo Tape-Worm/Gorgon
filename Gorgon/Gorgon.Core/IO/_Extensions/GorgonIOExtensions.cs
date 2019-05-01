@@ -53,32 +53,32 @@ namespace Gorgon.IO
 		private static byte[] _buffer;
 		// Buffer to hold decoded characters when reading from a stream.
 		private static char[] _charBuffer;
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to copy the contents of this stream into another stream, up to a specified byte count.
-		/// </summary>
-		/// <param name="stream">The source stream that will be copied from.</param>
-		/// <param name="destination">The stream that will receive the copy of the data.</param>
-		/// <param name="count">The number of bytes to copy.</param>
-		/// <param name="bufferSize">[Optional] The size of the temporary buffer used to buffer the data between streams.</param>
-		/// <returns>The number of bytes copied, or 0 if no data was copied or at the end of a stream.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/>, or the <paramref name="stream"/> parameters are <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is write-only.
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="destination"/> is read-only.</para>
-		/// </exception>
-		/// <remarks>
-		/// <para>
-		/// This method is an extension of the <see cref="Stream.CopyTo(System.IO.Stream,int)"/> method. But unlike that method, it will copy up to the number of bytes specified by <paramref name="count"/>. 
-		/// </para>
-		/// <para>
-		/// The <paramref name="bufferSize"/> is used to copy data in blocks, rather than attempt to copy byte-by-byte. This may improve performance significantly. It is not recommended that the buffer 
-		/// exceeds than 85,000 bytes. A value under this will ensure that the internal buffer will remain on the small object heap and be collected quickly when done. 
-		/// </para>
-		/// </remarks>
-		public static int CopyToStream(this Stream stream, Stream destination, int count, int bufferSize = 81920)
+        #region Methods.
+        /// <summary>
+        /// Function to copy the contents of this stream into another stream, up to a specified byte count.
+        /// </summary>
+        /// <param name="stream">The source stream that will be copied from.</param>
+        /// <param name="destination">The stream that will receive the copy of the data.</param>
+        /// <param name="count">The number of bytes to copy.</param>
+        /// <param name="bufferSize">[Optional] The size of the temporary buffer used to buffer the data between streams.</param>
+        /// <returns>The number of bytes copied, or 0 if no data was copied or at the end of a stream.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/>, or the <paramref name="stream"/> parameters are <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is write-only.
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="destination"/> is read-only.</para>
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// This method is an extension of the <see cref="Stream.CopyTo(Stream,int)"/> method. But unlike that method, it will copy up to the number of bytes specified by <paramref name="count"/>. 
+        /// </para>
+        /// <para>
+        /// The <paramref name="bufferSize"/> is used to copy data in blocks, rather than attempt to copy byte-by-byte. This may improve performance significantly. It is not recommended that the buffer 
+        /// exceeds than 85,000 bytes. A value under this will ensure that the internal buffer will remain on the small object heap and be collected quickly when done. 
+        /// </para>
+        /// </remarks>
+        public static int CopyToStream(this Stream stream, Stream destination, int count, int bufferSize = 81920)
 		{
             if (stream.Length <= stream.Position)
             {
@@ -113,7 +113,7 @@ namespace Gorgon.IO
         /// </exception>
         /// <remarks>
         /// <para>
-        /// This method is an extension of the <see cref="Stream.CopyTo(System.IO.Stream,int)"/> method. But unlike that method, it will copy up to the number of bytes specified by <paramref name="count"/>. 
+        /// This method is an extension of the <see cref="Stream.CopyTo(Stream,int)"/> method. But unlike that method, it will copy up to the number of bytes specified by <paramref name="count"/>. 
         /// </para>
         /// <para>
         /// The <paramref name="buffer"/> is used to copy data in blocks, rather than attempt to copy byte-by-byte. This may improve performance significantly. It is not recommended that the buffer 

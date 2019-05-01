@@ -1,4 +1,4 @@
-﻿namespace Gorgon.Windows.UI
+﻿namespace Gorgon.UI
 {
     partial class GorgonAlignmentPicker
     {

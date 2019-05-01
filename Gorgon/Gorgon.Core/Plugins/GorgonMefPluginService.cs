@@ -125,20 +125,20 @@ namespace Gorgon.PlugIns
     /// <![CDATA[
     /// // Our base functionality.
     /// private FunctionalityBase _functionality;
+    /// private GorgonMefPlugInCache _assemblies;
     /// 
     /// void LoadFunctionality()
     /// {
-    ///		using (GorgonMefPlugInCache assemblies = new GorgonMefPlugInCache())
-    ///		{	
-    ///			// For brevity, we've omitted checking to see if the assembly is valid and such.
-    ///			// In the real world, you should always determine whether the assembly can be loaded 
-    ///			// before calling the Load method.
-    ///			assemblies.LoadPlugInAssemblies("Your\Directory\Here");  // You can also pass a wild card like (e.g. *.dll, *.exe, etc...)
+    ///		assemblies = new GorgonMefPlugInCache();
+    ///		
+    ///		// For brevity, we've omitted checking to see if the assembly is valid and such.
+    ///		// In the real world, you should always determine whether the assembly can be loaded 
+    ///		// before calling the Load method.
+    ///		_assemblies.LoadPlugInAssemblies("Your\Directory\Here", "file search pattern");  // You can pass a wild card like *.dll, *.exe, etc..., or an absolute file name like "MyPlugin.dll".
     /// 			
-    ///			IGorgonPlugInService pluginService = new GorgonMefPlugInService(assemblies);
+    ///		IGorgonPlugInService pluginService = new GorgonMefPlugInService(_assemblies);
     /// 
-    ///			_functionality = pluginService.GetPlugIn<FunctionalityBase>("Fully.Qualified.Name.ConcreteFunctionalityPlugIn"); 
-    ///		}
+    ///		_functionality = pluginService.GetPlugIn<FunctionalityBase>("Fully.Qualified.Name.ConcreteFunctionalityPlugIn"); 
     /// }
     /// 
     /// void Main()
@@ -146,6 +146,8 @@ namespace Gorgon.PlugIns
     ///		LoadFunctionality();
     ///		
     ///		Console.WriteLine("The ultimate answer and stuff: {0}", _functionality.DoSomething());
+    ///		
+    ///     _assemblies?.Dispose();
     /// }
     /// ]]>
     /// </code>
@@ -376,7 +378,7 @@ namespace Gorgon.PlugIns
         /// </summary>
         /// <param name="name">Fully qualified type name of the plugin to remove.</param>
         /// <exception cref="ArgumentNullException">The <paramref name="name"/> parameter was <b>null</b>.</exception>
-        /// <exception cref="System.ArgumentException">The <paramref name="name "/> parameter was an empty string.</exception>
+        /// <exception cref="ArgumentException">The <paramref name="name "/> parameter was an empty string.</exception>
         /// <returns><b>true</b> if the plugin was unloaded successfully, <b>false</b> if it did not exist in the collection, or failed to unload.</returns>
         public bool Unload(string name)
         {

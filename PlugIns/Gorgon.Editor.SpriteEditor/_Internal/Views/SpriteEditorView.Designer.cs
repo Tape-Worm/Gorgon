@@ -81,7 +81,7 @@ namespace Gorgon.Editor.SpriteEditor
 			this.TableViewControls = new System.Windows.Forms.TableLayoutPanel();
 			this.ScrollHorizontal = new System.Windows.Forms.HScrollBar();
 			this.ScrollVertical = new System.Windows.Forms.VScrollBar();
-			this.PanelRenderWindow = new Gorgon.Windows.UI.GorgonSelectablePanel();
+			this.PanelRenderWindow = new Gorgon.UI.GorgonSelectablePanel();
 			this.SpriteWrapping = new Gorgon.Editor.SpriteEditor.SpriteWrap();
 			this.SpritePickMaskColor = new Gorgon.Editor.SpriteEditor.SpritePickMaskColor();
 			this.SpriteColorSelector = new Gorgon.Editor.SpriteEditor.SpriteColor();
@@ -392,7 +392,7 @@ namespace Gorgon.Editor.SpriteEditor
         private System.Windows.Forms.TableLayoutPanel TableViewControls;
         private System.Windows.Forms.HScrollBar ScrollHorizontal;
         private System.Windows.Forms.VScrollBar ScrollVertical;
-        private Gorgon.Windows.UI.GorgonSelectablePanel PanelRenderWindow;
+        private Gorgon.UI.GorgonSelectablePanel PanelRenderWindow;
         private System.Windows.Forms.Button ButtonCenter;
         private System.Windows.Forms.Panel PanelBottomBar;
         private System.Windows.Forms.TableLayoutPanel PanelImageViewControls;

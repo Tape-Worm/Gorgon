@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormName));
-            this.TextName = new Gorgon.Windows.UI.GorgonCueTextBox();
+            this.TextName = new Gorgon.UI.GorgonCueTextBox();
             this.ButtonOK = new ComponentFactory.Krypton.Toolkit.KryptonButton();
             this.ButtonCancel = new ComponentFactory.Krypton.Toolkit.KryptonButton();
             this.PanelLocateText = new System.Windows.Forms.Panel();
@@ -159,7 +159,7 @@
 
         #endregion
 
-        private Windows.UI.GorgonCueTextBox TextName;
+        private Gorgon.UI.GorgonCueTextBox TextName;
         private ComponentFactory.Krypton.Toolkit.KryptonButton ButtonOK;
         private ComponentFactory.Krypton.Toolkit.KryptonButton ButtonCancel;
         private System.Windows.Forms.Panel PanelLocateText;

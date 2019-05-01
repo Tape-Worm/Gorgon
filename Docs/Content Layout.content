@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Topics>
-  <Topic id="0abf7d37-670e-4f0d-8581-e0368e39e8ef" visible="True" isDefault="true" isExpanded="true" isSelected="true" title="Gorgon documentation">
+  <Topic id="0abf7d37-670e-4f0d-8581-e0368e39e8ef" visible="True" isDefault="true" isExpanded="true" isSelected="true" title="Gorgon">
     <HelpKeywords>
       <HelpKeyword index="K" term="Welcome,Gorgon" />
     </HelpKeywords>

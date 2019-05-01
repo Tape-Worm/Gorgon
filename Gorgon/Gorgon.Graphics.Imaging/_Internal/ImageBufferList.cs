@@ -61,11 +61,11 @@ namespace Gorgon.Graphics.Imaging
 		/// </summary>
 		public int Count => _buffers.Length;
 
-		/// <summary>
-		/// Gets the element at the specified index in the read-only list.
-		/// </summary>
-		/// <exception cref="System.NotSupportedException">This list is read only.</exception>
-		IGorgonImageBuffer IReadOnlyList<IGorgonImageBuffer>.this[int index] => _buffers[index];
+        /// <summary>
+        /// Gets the element at the specified index in the read-only list.
+        /// </summary>
+        /// <exception cref="NotSupportedException">This list is read only.</exception>
+        IGorgonImageBuffer IReadOnlyList<IGorgonImageBuffer>.this[int index] => _buffers[index];
 
 		/// <summary>
 		/// Property to return the buffer for the given mip map level and depth slice.

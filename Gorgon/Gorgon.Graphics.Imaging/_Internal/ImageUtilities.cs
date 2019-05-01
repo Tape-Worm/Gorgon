@@ -57,24 +57,24 @@ namespace Gorgon.Graphics.Imaging
 	/// </summary>
 	static class ImageUtilities
 	{
-		/// <summary>
-		/// Function to expand a 16BPP scan line in an image to a 32BPP RGBA line.
-		/// </summary>
-		/// <param name="src">The pointer to the source data.</param>
-		/// <param name="srcPitch">The pitch of the source data.</param>
-		/// <param name="srcFormat">Format to convert from.</param>
-		/// <param name="dest">The pointer to the destination data.</param>
-		/// <param name="destPitch">The pitch of the destination data.</param>
-		/// <param name="bitFlags">Image bit conversion control flags.</param>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="srcFormat" /> is not a 16 BPP format.</exception>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="src"/> or the <paramref name="dest"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="srcPitch"/> or the <paramref name="destPitch"/> parameter is less than 0.</exception>
-		/// <remarks>
-		/// <para>
-		/// Use this to expand a 16 BPP (B5G6R5 or B5G5R5A1 format) into a 32 BPP R8G8B8A8 (normalized unsigned integer) format.
-		/// </para>
-		/// </remarks>
-		public static unsafe void Expand16BPPScanline(void* src, int srcPitch, BufferFormat srcFormat, void* dest, int destPitch, ImageBitFlags bitFlags)
+        /// <summary>
+        /// Function to expand a 16BPP scan line in an image to a 32BPP RGBA line.
+        /// </summary>
+        /// <param name="src">The pointer to the source data.</param>
+        /// <param name="srcPitch">The pitch of the source data.</param>
+        /// <param name="srcFormat">Format to convert from.</param>
+        /// <param name="dest">The pointer to the destination data.</param>
+        /// <param name="destPitch">The pitch of the destination data.</param>
+        /// <param name="bitFlags">Image bit conversion control flags.</param>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="srcFormat" /> is not a 16 BPP format.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="src"/> or the <paramref name="dest"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="srcPitch"/> or the <paramref name="destPitch"/> parameter is less than 0.</exception>
+        /// <remarks>
+        /// <para>
+        /// Use this to expand a 16 BPP (B5G6R5 or B5G5R5A1 format) into a 32 BPP R8G8B8A8 (normalized unsigned integer) format.
+        /// </para>
+        /// </remarks>
+        public static unsafe void Expand16BPPScanline(void* src, int srcPitch, BufferFormat srcFormat, void* dest, int destPitch, ImageBitFlags bitFlags)
 		{
 			ushort* srcPtr = (ushort*)src;
 			uint* destPtr = (uint*)dest;
@@ -139,24 +139,24 @@ namespace Gorgon.Graphics.Imaging
 			}
 		}
 
-		/// <summary>
-		/// Function to copy (or update in-place) with bits swizzled to match another format.
-		/// </summary>
-		/// <param name="src">The pointer to the source data.</param>
-		/// <param name="srcPitch">The pitch of the source data.</param>
-		/// <param name="dest">The pointer to the destination data.</param>
-		/// <param name="destPitch">The pitch of the destination data.</param>
-		/// <param name="format">Format of the destination buffer.</param>
-		/// <param name="bitFlags">Image bit conversion control flags.</param>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="format"/> parameter is Unknown.</exception>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="src"/> or the <paramref name="dest"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="srcPitch"/> or the <paramref name="destPitch"/> parameter is less than 0.</exception>
-		/// <remarks>
-		/// <para>
-		/// Use this method to copy a single scanline and swizzle the bits of an image and (optionally) set an opaque constant alpha value.
-		/// </para>
-		/// </remarks>
-		public static unsafe void SwizzleScanline(void* src, int srcPitch, void* dest, int destPitch, BufferFormat format, ImageBitFlags bitFlags)
+        /// <summary>
+        /// Function to copy (or update in-place) with bits swizzled to match another format.
+        /// </summary>
+        /// <param name="src">The pointer to the source data.</param>
+        /// <param name="srcPitch">The pitch of the source data.</param>
+        /// <param name="dest">The pointer to the destination data.</param>
+        /// <param name="destPitch">The pitch of the destination data.</param>
+        /// <param name="format">Format of the destination buffer.</param>
+        /// <param name="bitFlags">Image bit conversion control flags.</param>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="format"/> parameter is Unknown.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="src"/> or the <paramref name="dest"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="srcPitch"/> or the <paramref name="destPitch"/> parameter is less than 0.</exception>
+        /// <remarks>
+        /// <para>
+        /// Use this method to copy a single scanline and swizzle the bits of an image and (optionally) set an opaque constant alpha value.
+        /// </para>
+        /// </remarks>
+        public static unsafe void SwizzleScanline(void* src, int srcPitch, void* dest, int destPitch, BufferFormat format, ImageBitFlags bitFlags)
 		{
 			int size = srcPitch.Min(destPitch);
 			uint r, g, b, a, pixel;

@@ -159,8 +159,8 @@ namespace Gorgon.Graphics.Imaging
         /// </para>
         /// <para>
         /// The resulting image buffer that is returned will share the same memory as the parent buffer (which, in turn, shares its buffer with the <see cref="IGorgonImage"/> it's created from). Because of
-        /// this, the <see cref="IGorgonImageBuffer.Format"/>, <see cref="IGorgonImageBuffer.MipLevel"/>, <see cref="IGorgonImageBuffer.ArrayIndex"/>, <see cref="IGorgonImageBuffer.DepthSliceIndex"/> and
-        /// the <see cref="IGorgonImageBuffer.Depth"/> will the be same as the buffer it was created from. 
+        /// this, the <see cref="Format"/>, <see cref="MipLevel"/>, <see cref="ArrayIndex"/>, <see cref="DepthSliceIndex"/> and
+        /// the <see cref="Depth"/> will the be same as the buffer it was created from. 
         /// </para>
         /// <para>
         /// Because this buffer references a subsection of the same memory as the parent buffer, care must be taken when accessing the memory directly. Even though the <see cref="GorgonNativeBuffer{T}"/>

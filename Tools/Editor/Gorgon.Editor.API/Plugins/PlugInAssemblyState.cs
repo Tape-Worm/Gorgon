@@ -66,7 +66,7 @@ namespace Gorgon.Editor.PlugIns
             get;
         }
 
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.PlugIns.PlugInRecord"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="PlugInAssemblyState"/> class.</summary>
         /// <param name="pluginAssemblyPath">The plugin assembly path.</param>
         /// <param name="loadFailure">The reason why the assembly was not loaded.</param>
         /// <param name="isManaged"><b>true</b> if the assembly DLL is managed, <b>false</b> if not.</param>

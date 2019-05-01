@@ -37,7 +37,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.PanelDisplay = new Gorgon.Windows.UI.GorgonSelectablePanel();
+            this.PanelDisplay = new Gorgon.UI.GorgonSelectablePanel();
             this.SuspendLayout();
             // 
             // PanelDisplay
@@ -63,6 +63,6 @@
 
         #endregion
 
-        private Gorgon.Windows.UI.GorgonSelectablePanel PanelDisplay;
+        private Gorgon.UI.GorgonSelectablePanel PanelDisplay;
     }
 }

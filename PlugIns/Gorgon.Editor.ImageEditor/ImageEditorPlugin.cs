@@ -50,7 +50,7 @@ using System.Windows.Forms;
 namespace Gorgon.Editor.ImageEditor
 {
     /// <summary>
-    /// Gorgon image editor content plug-in interface.
+    /// Gorgon image editor content plug in interface.
     /// </summary>
     internal class ImageEditorPlugIn
         : ContentPlugIn, IContentPlugInMetadata

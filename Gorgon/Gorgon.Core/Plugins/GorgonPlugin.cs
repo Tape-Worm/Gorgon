@@ -29,16 +29,79 @@ using Gorgon.Core;
 
 namespace Gorgon.PlugIns
 {
-	/// <summary>
-	/// The base for all plug ins used by the <see cref="IGorgonPlugInService"/>.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// Any plug ins used by the <see cref="IGorgonPlugInService"/> must be derived from this type. The plug in service will scan any plug in assemblies loaded and will enumerate only types that inherit 
-	/// this type.
-	/// </para>
-	/// </remarks>
-	public abstract class GorgonPlugIn
+    /// <summary>
+    /// The base for all plug ins used by the <see cref="IGorgonPlugInService"/>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Any plug ins used by the <see cref="IGorgonPlugInService"/> must be derived from this type. The plug in service will scan any plug in assemblies loaded and will enumerate only types that inherit 
+    /// this type.
+    /// </para>
+    /// <para>
+    /// <h3>Defining your own plugin</h3>
+    /// While any class can be a plugin within an assembly, Gorgon uses the following strategy to define a plugin assembly.
+    /// </para>
+    /// <para>
+    /// <h3>In your host assembly (an application, DLL, etc...):</h3>
+    /// <code language="csharp">
+    /// <![CDATA[
+    /// // This will go into your host assembly (e.g. an application, another DLL, etc...)
+    /// // This defines the functionality that you wish to override in your plugin assembly.
+    /// public abstract class FunctionalityBase
+    /// {
+    ///		public abstract int DoSomething();
+    /// }
+    /// 
+    /// // This too will go into the host assembly and be overridden in your plugin assembly.
+    /// public abstract class FunctionalityPlugIn
+    ///		: GorgonPlugIn
+    /// {
+    ///		public abstract FunctionalityBase GetNewFunctionality();
+    /// 
+    ///		protected FunctionalityPlugIn(string description)
+    ///		{
+    ///		}
+    /// }
+    ///	]]>
+    /// </code>
+    /// <h3>In your plugin assembly:</h3>
+    /// <note type="tip">
+    /// Be sure to reference your host assembly in the plugin assembly project.
+    /// </note>
+    /// <code language="csharp">
+    /// <![CDATA[
+    /// // We put the namespace here because when loading the plugin in our example below, we need to give a fully qualified name for the type that we're loading.
+    /// namespace Fully.Qualified.Name
+    /// {
+    ///		// Typically Gorgon makes the extension classes internal, but they can have a public accessor if you wish.
+    ///		class ConcreteFunctionality
+    ///			: FunctionalityBase
+    ///		{
+    ///			public override int DoSomething()
+    ///			{
+    ///				return 42;
+    ///			}
+    ///		}
+    /// 
+    ///		public class ConcreteFunctionalityPlugIn
+    ///			: FunctionalityPlugIn
+    ///		{
+    ///			public override FunctionalityBase GetNewFunctionality()
+    ///			{
+    ///				return new ConcreteFunctionality();
+    ///			}
+    /// 
+    ///			public ConcreteFunctionalityPlugIn()
+    ///				: base("What is the answer to life, the universe, and blah blah blah?")
+    ///			{
+    ///			}
+    ///		}
+    /// }
+    /// ]]>
+    /// </code>  
+    /// </para>
+    /// </remarks>
+    public abstract class GorgonPlugIn
 		: IGorgonNamedObject
 	{
 		#region Properties.

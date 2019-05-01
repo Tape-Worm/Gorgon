@@ -58,7 +58,7 @@ namespace Gorgon.UI
     /// <para>
     /// <note type="tip">
     /// <para>
-    /// When passing a form to the <see cref="Run(System.Windows.Forms.Form,System.Func{bool})"/> method, that form automatically becomes the main application window. The application will exit when this form is closed. 
+    /// When passing a form to the <see cref="Run(Form,Func{bool})"/> method, that form automatically becomes the main application window. The application will exit when this form is closed. 
     /// The main form of an application may be retrieved from the <see cref="MainForm"/> property. 
     /// </para>
     /// <para>
@@ -368,27 +368,27 @@ namespace Gorgon.UI
 			private set;
 		}
 
-		/// <summary>
-		/// Property to return the main windows <see cref="Form"/> for the application.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This property can be used to retrieve the <see cref="Form"/> that is the primary form for the application. When this form closes, the application will shut down.
-		/// </para>
-		/// <para>
-		/// This value is set when the <see cref="Run(System.Windows.Forms.Form,System.Func{bool})"/> is used to run the application, or a form has been assigned to the <see cref="System.Windows.Forms.ApplicationContext.MainForm"/> 
-		/// property.
-		/// </para>
-		/// </remarks>
-		public static Form MainForm => ApplicationContext != null ? ApplicationContext.MainForm : _mainForm;
+        /// <summary>
+        /// Property to return the main windows <see cref="Form"/> for the application.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This property can be used to retrieve the <see cref="Form"/> that is the primary form for the application. When this form closes, the application will shut down.
+        /// </para>
+        /// <para>
+        /// This value is set when the <see cref="Run(Form,Func{bool})"/> is used to run the application, or a form has been assigned to the <see cref="System.Windows.Forms.ApplicationContext.MainForm"/> 
+        /// property.
+        /// </para>
+        /// </remarks>
+        public static Form MainForm => ApplicationContext != null ? ApplicationContext.MainForm : _mainForm;
 
-		/// <summary>
-		/// Property to set or return the current application context.
-		/// </summary>
-		/// <remarks>
-		/// This value will return <b>null</b> if this application wasn't started with the <see cref="Run(System.Windows.Forms.ApplicationContext,System.Func{bool})"/> method.
-		/// </remarks>
-		public static ApplicationContext ApplicationContext
+        /// <summary>
+        /// Property to set or return the current application context.
+        /// </summary>
+        /// <remarks>
+        /// This value will return <b>null</b> if this application wasn't started with the <see cref="Run(System.Windows.Forms.ApplicationContext,Func{bool})"/> method.
+        /// </remarks>
+        public static ApplicationContext ApplicationContext
 		{
 			get;
 			private set;
@@ -435,15 +435,15 @@ namespace Gorgon.UI
                 }
 			}
 		}
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Handles the Idle event of the Application control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private static void Application_Idle(object sender, EventArgs e)
+        #region Methods.
+        /// <summary>
+        /// Handles the Idle event of the Application control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private static void Application_Idle(object sender, EventArgs e)
 		{
 			// Windows message to retrieve.
 
@@ -553,12 +553,12 @@ namespace Gorgon.UI
 			IsRunning = !_quitSignalled;
 		}
 
-		/// <summary>
-		/// Handles the ThreadExit event of the Application control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private static void Application_ThreadExit(object sender, EventArgs e)
+        /// <summary>
+        /// Handles the ThreadExit event of the Application control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private static void Application_ThreadExit(object sender, EventArgs e)
 		{
 			Application.ThreadExit -= Application_ThreadExit;
 
@@ -569,12 +569,12 @@ namespace Gorgon.UI
 			exitHandler?.Invoke(sender, e);
 		}
 
-		/// <summary>
-		/// Handles the ApplicationExit event of the Application control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private static void Application_ApplicationExit(object sender, EventArgs e)
+        /// <summary>
+        /// Handles the ApplicationExit event of the Application control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private static void Application_ApplicationExit(object sender, EventArgs e)
 		{
 			Application.ApplicationExit -= Application_ApplicationExit;
 

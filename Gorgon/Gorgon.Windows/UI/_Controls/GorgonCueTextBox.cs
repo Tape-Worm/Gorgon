@@ -29,7 +29,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.ComponentModel;
 
-namespace Gorgon.Windows.UI
+namespace Gorgon.UI
 {
     /// <summary>
     /// An enhancement to the standard text box to show a cue value when no text is available.

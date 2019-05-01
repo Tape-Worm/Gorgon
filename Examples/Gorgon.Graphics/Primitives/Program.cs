@@ -225,12 +225,12 @@ namespace Gorgon.Examples
             _camera.Move(ref cameraDir);
 		}
 
-	    /// <summary>
-	    /// Function to handle the mouse wheel when it is moved.
-	    /// </summary>
-	    /// <param name="sender">The sender.</param>
-	    /// <param name="e">The <see cref="System.Windows.Forms.MouseEventArgs" /> instance containing the event data.</param>
-	    private static void Mouse_Wheel(object sender, MouseEventArgs e)
+        /// <summary>
+        /// Function to handle the mouse wheel when it is moved.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="MouseEventArgs" /> instance containing the event data.</param>
+        private static void Mouse_Wheel(object sender, MouseEventArgs e)
 	    {
 	        if (e.Delta < 0)
 	        {
@@ -252,12 +252,12 @@ namespace Gorgon.Examples
 	        }
 	    }
 
-	    /// <summary>
-	    /// Function called when a key is held down.
-	    /// </summary>
-	    /// <param name="sender">The sender.</param>
-	    /// <param name="e">The <see cref="Gorgon.Input.GorgonKeyboardEventArgs" /> instance containing the event data.</param>
-	    private static void Keyboard_KeyDown(object sender, GI.GorgonKeyboardEventArgs e)
+        /// <summary>
+        /// Function called when a key is held down.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="GI.GorgonKeyboardEventArgs" /> instance containing the event data.</param>
+        private static void Keyboard_KeyDown(object sender, GI.GorgonKeyboardEventArgs e)
 	    {
 	        if (e.Key != Keys.L)
 	        {

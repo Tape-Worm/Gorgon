@@ -150,12 +150,12 @@ namespace GorgonLibrary.IO
         /// Function to begin reading/writing the chunk
         /// </summary>
         /// <param name="chunkName">The name of the chunk.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="chunkName"/> parameter is NULL (Nothing in VB.Net).</exception>
-        /// <exception cref="System.ArgumentException">Thrown when the chunkName parameter is empty.
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="chunkName"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="ArgumentException">Thrown when the chunkName parameter is empty.
         /// <para>-or-</para>
         /// <para>Thrown when the chunkName parameter is less than 8 characters.</para>
         /// </exception>
-        /// <exception cref="System.IO.InvalidDataException">Thrown when reading a chunk ID and it does not match the requested chunk name.</exception>
+        /// <exception cref="InvalidDataException">Thrown when reading a chunk ID and it does not match the requested chunk name.</exception>
         /// <remarks>
         /// Use this to begin a chunk in the stream.  This method must be called before using any of the read/write methods.
         /// <para>The <paramref name="chunkName" /> parameter must be 8 characters in length, otherwise an exception will be thrown.  If the name is longer than 8 characters,
@@ -271,21 +271,21 @@ namespace GorgonLibrary.IO
                 Writer.BaseStream.Seek(byteCount, SeekOrigin.Current);
             }
         }
-		#endregion
+        #endregion
 
         #region Constructor/Destructor.
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonChunkedFormat" /> class.
         /// </summary>
-		/// <param name="stream">The stream to use to output the chunked data.</param>
-		/// <param name="accessMode">Stream access mode for the chunk object.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="accessMode"/> parameter is set to read, but the stream cannot be read.
-		/// <para>-or-</para>
-		/// <para>Thrown when the accessMode parameter is set to write, but the stream cannot be written.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown if the stream can't perform seek operations.</para>
-		/// </exception>
+        /// <param name="stream">The stream to use to output the chunked data.</param>
+        /// <param name="accessMode">Stream access mode for the chunk object.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="accessMode"/> parameter is set to read, but the stream cannot be read.
+        /// <para>-or-</para>
+        /// <para>Thrown when the accessMode parameter is set to write, but the stream cannot be written.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown if the stream can't perform seek operations.</para>
+        /// </exception>
         protected GorgonChunkedFormat(Stream stream, ChunkAccessMode accessMode)
         {		
 			if (stream == null)

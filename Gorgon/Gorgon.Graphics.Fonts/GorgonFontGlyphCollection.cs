@@ -52,11 +52,11 @@ namespace Gorgon.Graphics.Fonts
 		///   </returns>
 		public int Count => _list.Count;
 
-		/// <summary>
-		/// Gets the element at the specified index.
-		/// </summary>
-		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set this property is made.</exception>
-		public GorgonGlyph this[int index] => _list.Values[index];
+        /// <summary>
+        /// Gets the element at the specified index.
+        /// </summary>
+        /// <exception cref="NotSupportedException">Thrown when an attempt to set this property is made.</exception>
+        public GorgonGlyph this[int index] => _list.Values[index];
 
 		/// <summary>
 		/// Property to set or return a glyph in the collection by its character representation.

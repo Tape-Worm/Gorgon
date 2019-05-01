@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -38,6 +39,21 @@ namespace Gorgon.Renderers
     /// A fluent interface used to create shaders for use with the <see cref="Gorgon2D"/> renderer.
     /// </summary>
     /// <typeparam name="T">The type of shader.</typeparam>
+    /// <remarks>
+    /// <para>
+    /// This builder creates shader types that are a wrapper for the shaders based on <see cref="GorgonShader"/>. Shaders produced by this builder are used for passing shader programs to the 
+    /// <see cref="Gorgon2DBatchState"/> when setting up a batch render via <see cref="Gorgon2D.Begin(Gorgon2DBatchState, IGorgon2DCamera)"/>.
+    /// </para>
+    /// <para>
+    /// It may seem redundant to have a secondary shader type, but this type allows an application to send shader related state and resource information along with the shader. Whereas shaders based on 
+    /// <see cref="GorgonShader"/> can only get their state information via a <see cref="GorgonPipelineState"/> and <see cref="GorgonDrawCall"/>. Neither of which are exposed to the end user via the 
+    /// 2D renderer interface.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonPipelineState"/>
+    /// <seealso cref="GorgonDrawCall"/>
+    /// <seealso cref="Gorgon2DBatchState"/>
+    /// <seealso cref="GorgonShader"/>
     [SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable", 
         Justification = "Seriously?  This doesn't even KEEP any IDisposable items, and there's nothing that can be disposed in the object itself. This suggestion is useless.")]
     public class Gorgon2DShaderBuilder<T>
@@ -182,6 +198,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="sampler">The sampler to assign.</param>
         /// <param name="index">[Optional] The index of the sampler.</param>
+        /// <returns>The fluent interface for this builder.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="index"/> parameter is less than 0, or greater than/equal to <see cref="GorgonSamplerStates.MaximumSamplerStateCount"/>.</exception>
         public Gorgon2DShaderBuilder<T> SamplerState(GorgonSamplerStateBuilder sampler, int index = 0) => SamplerState(sampler.Build(), index);
 

@@ -54,11 +54,11 @@ namespace Gorgon.Editor.Content
         #endregion
 
         #region Methods.
-		/// <summary>
+        /// <summary>
         /// Function to notify the file system that a batch operation is about to commence.
         /// </summary>
-        /// <remarks>
         /// <returns><b>true</b> if the batch was started, <b>false</b> if not.</returns>
+        /// <remarks>
         /// <para>
         /// Developers should use batch mode when writing multiple files to the file system in rapid succession. Otherwise, the file system may not synchronize properly.
         /// </para>

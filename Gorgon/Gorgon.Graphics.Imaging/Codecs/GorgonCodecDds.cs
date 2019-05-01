@@ -1471,7 +1471,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// <returns>
         /// <b>true</b> if the codec can read the file, <b>false</b> if not.
         /// </returns>
-        /// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
+        /// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
         public override bool IsReadable(Stream stream)
         {
             uint magicNumber;

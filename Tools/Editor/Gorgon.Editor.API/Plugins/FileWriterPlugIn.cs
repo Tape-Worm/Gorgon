@@ -131,7 +131,7 @@ namespace Gorgon.Editor.PlugIns
 		}
 
         /// <summary>
-        /// Property to return the type of plug-in.
+        /// Property to return the type of plug in.
         /// </summary>
         public sealed override PlugInType PlugInType => PlugInType.Writer;
         #endregion
@@ -253,7 +253,7 @@ namespace Gorgon.Editor.PlugIns
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FileWriterPlugIn"/> class.
 		/// </summary>
-		/// <param name="description">Friendly description of the plug-in.</param>
+		/// <param name="description">Friendly description of the plug in.</param>
         /// <param name="fileExtensions">The file of common file name extensions supported by this writer.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileExtensions"/> parameter is <b>null</b>.</exception>
 		protected FileWriterPlugIn(string description, IEnumerable<GorgonFileExtension> fileExtensions)

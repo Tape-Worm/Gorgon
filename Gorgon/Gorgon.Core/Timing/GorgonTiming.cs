@@ -43,7 +43,7 @@ namespace Gorgon.Timing
 	/// </para>
 	/// </remarks>
 	/// <example>
-	/// When using the <c>Gorgon.Windows.UI.GorgonApplication</c> class, the timing code is automatically updated by its own idle loop:
+	/// When using the <c>Gorgon.UI.GorgonApplication</c> class, the timing code is automatically updated by its own idle loop:
 	/// <code>
 	///	public static bool MyLoop()
 	/// {

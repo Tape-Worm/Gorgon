@@ -27,6 +27,7 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Windows.Forms;
 using ComponentFactory.Krypton.Toolkit;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
@@ -36,6 +37,11 @@ namespace Gorgon.Editor.UI.Forms
     /// <summary>
     /// A form used to input a name.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Plug in developers can use this to present a dialog that will prompt the user for a name.
+    /// </para>
+    /// </remarks>
     public partial class FormName 
         : KryptonForm
     {
@@ -137,7 +143,7 @@ namespace Gorgon.Editor.UI.Forms
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void TextName_TextChanged(object sender, EventArgs e) => ButtonOK.Enabled = !string.IsNullOrWhiteSpace(ObjectName);
 
-        /// <summary>Handles the <see cref="E:Load"/> event.</summary>
+        /// <summary>Handles the <see cref="UserControl.Load"/> event.</summary>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         protected override void OnLoad(EventArgs e)
         {
@@ -149,7 +155,7 @@ namespace Gorgon.Editor.UI.Forms
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.UI.Forms.FormName"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="FormName"/> class.</summary>
         public FormName() => InitializeComponent();
         #endregion
     }

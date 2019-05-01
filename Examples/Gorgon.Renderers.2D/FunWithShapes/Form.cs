@@ -142,11 +142,11 @@ namespace Gorgon.Examples
 		    }
 		}
 
-		/// <summary>
-		/// Raises the <see cref="E:Paint"/> event.
-		/// </summary>
-		/// <param name="e">The <see cref="System.Windows.Forms.PaintEventArgs"/> instance containing the event data.</param>
-		protected override void OnPaint(PaintEventArgs e)
+        /// <summary>
+        /// Raises the <see cref="E:Paint"/> event.
+        /// </summary>
+        /// <param name="e">The <see cref="PaintEventArgs"/> instance containing the event data.</param>
+        protected override void OnPaint(PaintEventArgs e)
 		{
 			base.OnPaint(e);
 

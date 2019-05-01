@@ -124,6 +124,6 @@
     <value>XInput controller #{0}</value>
   </data>
   <data name="GORINP_XINP_SERVICEDESC" xml:space="preserve">
-    <value>Gorgon XBOX 360 controller input plug-in.</value>
+    <value>Gorgon XBOX 360 controller input plug in.</value>
   </data>
 </root>

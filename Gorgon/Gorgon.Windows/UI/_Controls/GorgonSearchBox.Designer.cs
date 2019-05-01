@@ -1,4 +1,4 @@
-﻿namespace Gorgon.Windows.UI
+﻿namespace Gorgon.UI
 {
     partial class GorgonSearchBox
     {
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.ButtonClearSearch = new System.Windows.Forms.Button();
-            this.TextSearch = new Gorgon.Windows.UI.GorgonCueTextBox();
+            this.TextSearch = new Gorgon.UI.GorgonCueTextBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel1.SuspendLayout();

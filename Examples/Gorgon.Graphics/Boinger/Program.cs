@@ -611,7 +611,7 @@ namespace Gorgon.Graphics.Example
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="KeyEventArgs" /> instance containing the event data.</param>
-        /// <exception cref="System.NotSupportedException"></exception>
+        /// <exception cref="NotSupportedException"></exception>
         private static void _mainForm_KeyDown(object sender, KeyEventArgs e)
 		{
 			if ((!e.Alt) || (e.KeyCode != Keys.Enter))
@@ -645,7 +645,7 @@ namespace Gorgon.Graphics.Example
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="AfterSwapChainResizedEventArgs" /> instance containing the event data.</param>
-        /// <exception cref="System.NotSupportedException"></exception>
+        /// <exception cref="NotSupportedException"></exception>
         private static void Swap_AfterResized(object sender, AfterSwapChainResizedEventArgs e)
 		{
 			// This method allows us to restore projection matrix after the swap chain has been resized.  If we didn't do this, we'd have a weird looking (e.g. distorted)

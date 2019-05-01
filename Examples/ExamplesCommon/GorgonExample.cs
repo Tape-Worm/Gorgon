@@ -65,7 +65,7 @@ namespace Gorgon.Examples
 
         #region Properties.
         /// <summary>
-        /// Property to set or return the path to the plug-in directory.
+        /// Property to set or return the path to the plug in directory.
         /// </summary>
         public static DirectoryInfo PlugInLocationDirectory
         {

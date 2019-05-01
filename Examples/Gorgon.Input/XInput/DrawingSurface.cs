@@ -323,11 +323,11 @@ namespace Gorgon.Examples
 			_disposed = true;
 		}
 
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		/// <exception cref="System.NotSupportedException"></exception>
-		public void Dispose()
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <exception cref="NotSupportedException"></exception>
+        public void Dispose()
 		{
 			Dispose(true);
 			GC.SuppressFinalize(this);

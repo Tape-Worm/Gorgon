@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using Gorgon.Collections;
 using Gorgon.Math;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -112,6 +113,7 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonStreamOutBindings"/> class.
 		/// </summary>
+        /// <param name="bindings">[Optional] The list of bindings to copy.</param>
 		public GorgonStreamOutBindings(IReadOnlyList<GorgonStreamOutBinding> bindings = null)
 			: base(MaximumStreamOutCount)
 		{

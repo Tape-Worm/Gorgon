@@ -94,7 +94,7 @@ namespace Gorgon.Graphics.Core
         public override GraphicsResourceType ResourceType => GraphicsResourceType.Buffer;
 
         /// <summary>
-        /// Property to return whether or not the buffer is directly readable by the CPU via one of the <see cref="O:Gorgon.Graphics.Core.GorgonBufferCommon.GetData{T}"/> methods.
+        /// Property to return whether or not the buffer is directly readable by the CPU via one of the <see cref="O:Gorgon.Graphics.Core.GorgonBufferCommon.GetData"/> methods.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -114,7 +114,7 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
-        /// <seealso cref="O:Gorgon.Graphics.Core.GorgonBufferCommon.GetData{T}"/>
+        /// <seealso cref="O:Gorgon.Graphics.Core.GorgonBufferCommon.GetData"/>
         public abstract bool IsCpuReadable
         {
             get;
@@ -552,7 +552,7 @@ namespace Gorgon.Graphics.Core
             {
                 fixed (T* srcPtr = &data[sourceIndex])
                 {
-                    SetDataPtr<T>(srcPtr, typeSize, data.Length, destOffset, count.Value, Usage != ResourceUsage.Default, copyMode);
+                    SetDataPtr(srcPtr, typeSize, data.Length, destOffset, count.Value, Usage != ResourceUsage.Default, copyMode);
                 }
             }
         }
@@ -687,7 +687,7 @@ namespace Gorgon.Graphics.Core
 #endif
             unsafe
             {
-                SetDataPtr<byte>((byte *)data, sizeof(byte), data.SizeInBytes, destOffset, size, Usage != ResourceUsage.Default, copyMode);
+                SetDataPtr((byte *)data, sizeof(byte), data.SizeInBytes, destOffset, size, Usage != ResourceUsage.Default, copyMode);
             }
         }
 
@@ -823,7 +823,7 @@ namespace Gorgon.Graphics.Core
             {
                 fixed(T* dataPtr = &data[sourceIndex])
                 {
-                    SetDataPtr<T>(dataPtr, typeSize, data.Length, destOffset, count.Value, Usage != ResourceUsage.Default, copyMode);
+                    SetDataPtr(dataPtr, typeSize, data.Length, destOffset, count.Value, Usage != ResourceUsage.Default, copyMode);
                 }
             }
         }
@@ -918,7 +918,7 @@ namespace Gorgon.Graphics.Core
             {
                 fixed (T* valuePtr = &value)
                 {
-                    SetDataPtr<T>(valuePtr, typeSize, 1, destOffset, 1, Usage != ResourceUsage.Default, copyMode);
+                    SetDataPtr(valuePtr, typeSize, 1, destOffset, 1, Usage != ResourceUsage.Default, copyMode);
                 }
             }
         }
@@ -1046,7 +1046,7 @@ namespace Gorgon.Graphics.Core
             {
                 fixed (T* resultPtr = &result[0])
                 {
-                    GetDataPtr<T>(resultPtr, typeSize, sourceOffset, size.Value);
+                    GetDataPtr(resultPtr, typeSize, sourceOffset, size.Value);
                 }
             }
 
@@ -1181,7 +1181,7 @@ namespace Gorgon.Graphics.Core
             {
                 fixed(T* destPtr = &destination[destIndex])
                 {
-                    GetDataPtr<T>(destPtr, typeSize, sourceOffset, size.Value);
+                    GetDataPtr(destPtr, typeSize, sourceOffset, size.Value);
                 }
             }
         }
@@ -1312,7 +1312,7 @@ namespace Gorgon.Graphics.Core
             {
                 fixed(T* destPtr = &destination[destIndex])
                 {
-                    GetDataPtr<T>(destPtr, typeSize, sourceOffset, size.Value);
+                    GetDataPtr(destPtr, typeSize, sourceOffset, size.Value);
                 }
             }
         }
@@ -1422,7 +1422,7 @@ namespace Gorgon.Graphics.Core
             {
                 fixed(T* valuePtr = &value)
                 {
-                    GetDataPtr<T>(valuePtr, typeSize, sourceOffset, 1);
+                    GetDataPtr(valuePtr, typeSize, sourceOffset, 1);
                 }
             }
         }

@@ -36,7 +36,7 @@
         private void InitializeComponent()
         {
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.Alignment = new Gorgon.Windows.UI.GorgonAlignmentPicker();
+            this.Alignment = new Gorgon.UI.GorgonAlignmentPicker();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.NumericHorizontal = new System.Windows.Forms.NumericUpDown();
             this.NumericVertical = new System.Windows.Forms.NumericUpDown();
@@ -173,7 +173,7 @@
 
         #endregion
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private Windows.UI.GorgonAlignmentPicker Alignment;
+        private Gorgon.UI.GorgonAlignmentPicker Alignment;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.NumericUpDown NumericHorizontal;
         private System.Windows.Forms.NumericUpDown NumericVertical;

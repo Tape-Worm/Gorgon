@@ -25,6 +25,7 @@
 #endregion
 
 using System.Collections.Generic;
+using Gorgon.Collections;
 using Gorgon.Math;
 
 namespace Gorgon.Graphics.Core

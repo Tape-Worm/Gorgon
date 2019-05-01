@@ -122,7 +122,6 @@
     <Compile Include="Native\_Internal\Win32 Structs\HDITEM.cs" />
     <Compile Include="Native\_Internal\Win32 Structs\MEMORYSTATUSEX.cs" />
     <Compile Include="Native\_Internal\Win32 Structs\MSG.cs" />
-    <Compile Include="Native\_Internal\Win32 Structs\SECURITY_ATTRIBUTES.cs" />
     <Compile Include="Native\_Internal\Win32 Structs\TIMECAPS.cs" />
     <Compile Include="Native\_Internal\WinMultimediaApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

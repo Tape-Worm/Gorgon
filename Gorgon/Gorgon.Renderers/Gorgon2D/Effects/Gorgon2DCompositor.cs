@@ -684,6 +684,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="output">The final output render target for the compositor.</param>
         /// <param name="renderMethod">The method used to render the initial scene.</param>
+        /// <returns>The fluent interface for the effects processor.</returns>
         public Gorgon2DCompositor Render(GorgonRenderTargetView output,
                                             Action renderMethod)
         {

@@ -34,11 +34,11 @@ namespace CodecPlugIn
 	/// <summary>
 	/// This is an example to show a developer how to create their own image codec for loading/saving images.
 	/// 
-	/// A custom image codec may be implemented as a plug-in that can be loaded dynamically, or statically within an application.  This example 
-	/// will focus on using a plug-in to create a fairly useless image codec that will save only the red, green, blue and alpha channels as one 
+	/// A custom image codec may be implemented as a plug in that can be loaded dynamically, or statically within an application.  This example 
+	/// will focus on using a plug in to create a fairly useless image codec that will save only the red, green, blue and alpha channels as one 
 	/// channel per pixel.  That is, the first pixel will be the red channel, the second will be the green, etc... 
 	/// 
-	/// This application will be the UI for the image codec plug-in and will do nothing more than load a DDS image, save it in our custom format 
+	/// This application will be the UI for the image codec plug in and will do nothing more than load a DDS image, save it in our custom format 
 	/// and then load it as a texture for display in the window.
 	/// </summary>
 	internal static class Program

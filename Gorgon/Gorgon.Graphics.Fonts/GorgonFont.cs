@@ -525,6 +525,7 @@ namespace Gorgon.Graphics.Fonts
         /// <summary>
         /// Function to retrieve the glyph used for the default character assigned in the font <see cref="Info"/>.
         /// </summary>
+        /// <param name="glyph">The default glyph, or <b>null</b> if not found.</param>
         /// <returns><b>true</b> if the glyph was found, or <b>false</b> if not.</returns>
         /// <remarks>
         /// <para>
@@ -532,6 +533,7 @@ namespace Gorgon.Graphics.Fonts
         /// </para>
         /// </remarks>
         /// <seealso cref="IGorgonFontInfo"/>
+        /// <seealso cref="GorgonGlyph"/>
         public bool TryGetDefaultGlyph(out GorgonGlyph glyph) => Glyphs.TryGetValue(Info.DefaultCharacter, out glyph);
 
         /// <summary>

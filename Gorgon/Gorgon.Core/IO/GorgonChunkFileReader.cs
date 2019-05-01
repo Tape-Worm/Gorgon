@@ -396,32 +396,32 @@ namespace Gorgon.IO
 
 			return _activeReader;
 		}
-		#endregion
+        #endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonChunkFileReader"/> class.
-		/// </summary>
-		/// <param name="stream">The stream containing the chunk file to read.</param>
-		/// <param name="appSpecificIds">The allowable application specific ids for file validation.</param>
-		/// <remarks>
-		/// </remarks>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="appSpecificIds"/> parameters are <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="appSpecificIds"/> contains no values.
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="stream"/> is write-only</para>
-		/// </exception>
-		/// <exception cref="EndOfStreamException">Thrown when the <paramref name="stream"/> is at its end.</exception>
-		/// <remarks>
-		/// <para>
-		/// The <paramref name="stream"/> passed to this method requires that the <see cref="System.IO.Stream.CanSeek"/> property returns a value of <b>true</b>.
-		/// </para>
-		/// <para>
-		/// The <paramref name="appSpecificIds"/> parameter is an <see cref="IEnumerable{T}"/> because there may be multiple versions of the file that an application might wish to read. By providing a list 
-		/// of which versions are supported through the application specific IDs, the reader can determine if the file type is readable or not.
-		/// </para>
-		/// </remarks>
-		public GorgonChunkFileReader(Stream stream, IEnumerable<ulong> appSpecificIds)
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonChunkFileReader"/> class.
+        /// </summary>
+        /// <param name="stream">The stream containing the chunk file to read.</param>
+        /// <param name="appSpecificIds">The allowable application specific ids for file validation.</param>
+        /// <remarks>
+        /// </remarks>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="appSpecificIds"/> parameters are <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="appSpecificIds"/> contains no values.
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="stream"/> is write-only</para>
+        /// </exception>
+        /// <exception cref="EndOfStreamException">Thrown when the <paramref name="stream"/> is at its end.</exception>
+        /// <remarks>
+        /// <para>
+        /// The <paramref name="stream"/> passed to this method requires that the <see cref="Stream.CanSeek"/> property returns a value of <b>true</b>.
+        /// </para>
+        /// <para>
+        /// The <paramref name="appSpecificIds"/> parameter is an <see cref="IEnumerable{T}"/> because there may be multiple versions of the file that an application might wish to read. By providing a list 
+        /// of which versions are supported through the application specific IDs, the reader can determine if the file type is readable or not.
+        /// </para>
+        /// </remarks>
+        public GorgonChunkFileReader(Stream stream, IEnumerable<ulong> appSpecificIds)
 			: base(stream)
 		{
 			if (Stream.Length == Stream.Position)

@@ -51,22 +51,22 @@ namespace Gorgon.Graphics.Core
 			get;
 		}
 
-		/// <summary>
-		/// Property to return the number of bytes to allocate for the buffer.
-		/// </summary>
-		/// <remarks>
-		/// <note type="important">
-		/// <para>
-		/// <para>
-		/// A <see cref="Core.BufferType.Constant"/> buffer, must set the size to be a multiple of 16. Constant buffer alignment rules require that they be sized to the nearest 16 bytes.
-		/// </para>
-		/// <para>
-		/// If the buffer is not sized to a multiple of 16, Gorgon will attempt to adjust the size to fit the alignment requirement.
-		/// </para>
-		/// </para>
-		/// </note>
-		/// </remarks>
-		int SizeInBytes
+        /// <summary>
+        /// Property to return the number of bytes to allocate for the buffer.
+        /// </summary>
+        /// <remarks>
+        /// <note type="important">
+        /// <para>
+        /// <para>
+        /// A <see cref="BufferType.Constant"/> buffer, must set the size to be a multiple of 16. Constant buffer alignment rules require that they be sized to the nearest 16 bytes.
+        /// </para>
+        /// <para>
+        /// If the buffer is not sized to a multiple of 16, Gorgon will attempt to adjust the size to fit the alignment requirement.
+        /// </para>
+        /// </para>
+        /// </note>
+        /// </remarks>
+        int SizeInBytes
 		{
 			get;
 		}

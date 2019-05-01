@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using Gorgon.Collections;
 using Gorgon.Graphics.Core;
 using DX = SharpDX;
 

@@ -1890,8 +1890,8 @@ namespace Gorgon.Editor.Views
 
         /// <summary>Handles the Search event of the TextSearch control.</summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="T:Gorgon.Windows.UI.GorgonSearchEventArgs"/> instance containing the event data.</param>
-        private void TextSearch_Search(object sender, Windows.UI.GorgonSearchEventArgs e) => SendSearchCommand(e.SearchText);
+        /// <param name="e">The <see cref="T:Gorgon.UI.GorgonSearchEventArgs"/> instance containing the event data.</param>
+        private void TextSearch_Search(object sender, GorgonSearchEventArgs e) => SendSearchCommand(e.SearchText);
         
         /// <summary>Handles the Click event of the ButtonClearSearch control.</summary>
         /// <param name="sender">The source of the event.</param>

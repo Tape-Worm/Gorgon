@@ -35,7 +35,7 @@ using Gorgon.Math;
 namespace Gorgon.Graphics.Imaging.GdiPlus
 {
 	/// <summary>
-	/// Extension methods to use GDI+ (<seealso cref="System.Drawing"/>) bitmaps with <see cref="IGorgonImage"/>
+	/// Extension methods to use GDI+ <see cref="System.Drawing"/> bitmaps with <see cref="IGorgonImage"/>
 	/// </summary>
 	public static class GdiPlusExtensions
 	{
@@ -121,7 +121,7 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
         /// <exception cref="GorgonException">Thrown if the <paramref name="buffer"/> is not a 32 bit <c>R8G8B8A8</c> format, or <c>B8G8R8*</c> format.</exception>
         /// <remarks>
         /// <para>
-        /// This method will take a <see cref="IGorgonImageBuffer"/> and copy its data into a new 2D <seealso cref="System.Drawing.Bitmap"/>. 
+        /// This method will take a <see cref="IGorgonImageBuffer"/> and copy its data into a new 2D <see cref="Bitmap"/>. 
         /// </para>
         /// <para>
         /// Some format conversion is performed on the <paramref name="buffer"/> when it is imported. The format conversion will always convert to a pixel format of <c>Format32bppArgb</c> or 
@@ -263,7 +263,7 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
         /// </exception>
         /// <remarks>
         /// <para>
-        /// This method will take a <see cref="IGorgonImageBuffer"/> and copy its data into a new 2D <see cref="System.Drawing.Bitmap"/>. The <paramref name="buffer"/> and the <paramref name="bitmap"/> must have 
+        /// This method will take a <see cref="IGorgonImageBuffer"/> and copy its data into a new 2D <see cref="Bitmap"/>. The <paramref name="buffer"/> and the <paramref name="bitmap"/> must have 
         /// an identical width and height. Otherwise, an exception will be thrown.
         /// </para>
         /// <para>
@@ -403,7 +403,7 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
         /// </exception>
         /// <remarks>
         /// <para>
-        /// This method will take a <see cref="IGorgonImageBuffer"/> and copy its data into a new 2D <see cref="System.Drawing.Bitmap"/>. The <paramref name="buffer"/> and the <paramref name="bitmap"/> must have 
+        /// This method will take a <see cref="IGorgonImageBuffer"/> and copy its data into a new 2D <see cref="Bitmap"/>. The <paramref name="buffer"/> and the <paramref name="bitmap"/> must have 
         /// an identical width and height. Otherwise, an exception will be thrown.
         /// </para>
         /// <para>
@@ -530,15 +530,15 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
 	    }
 
         /// <summary>
-        /// Function to convert a <see cref="System.Drawing.Bitmap"/> into a <seealso cref="IGorgonImage"/>.
+        /// Function to convert a <see cref="Bitmap"/> into a <see cref="IGorgonImage"/>.
         /// </summary>
-        /// <param name="bitmap">The <seealso cref="System.Drawing.Bitmap"/> to convert.</param>
-        /// <returns>A new <seealso cref="IGorgonImage"/> containing the data from the <seealso cref="System.Drawing.Bitmap"/>.</returns>
+        /// <param name="bitmap">The <see cref="Bitmap"/> to convert.</param>
+        /// <returns>A new <see cref="IGorgonImage"/> containing the data from the <see cref="Bitmap"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="bitmap"/> parameter is <b>null</b>.</exception>
         /// <exception cref="GorgonException">Thrown if the <paramref name="bitmap"/> is not <see cref="PixelFormat.Format32bppArgb"/>.</exception>
         /// <remarks>
         /// <para>
-        /// This method will take a 2D <see cref="System.Drawing.Bitmap"/> and copy its data into a new 2D <seealso cref="IGorgonImage"/>. The resulting <seealso cref="IGorgonImage"/> will only contain 1 array level, 
+        /// This method will take a 2D <see cref="Bitmap"/> and copy its data into a new 2D <see cref="IGorgonImage"/>. The resulting <see cref="IGorgonImage"/> will only contain 1 array level, 
         /// and no mip map levels.
         /// </para>
         /// <para>

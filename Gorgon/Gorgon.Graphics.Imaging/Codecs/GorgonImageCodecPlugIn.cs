@@ -34,7 +34,7 @@ using Gorgon.PlugIns;
 namespace Gorgon.Graphics.Imaging.Codecs
 {
     /// <summary>
-    /// A plug-in to allow for loading of custom image codecs.
+    /// A plug in to allow for loading of custom image codecs.
     /// </summary>
     public abstract class GorgonImageCodecPlugIn
         : GorgonPlugIn
@@ -203,7 +203,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonImageCodecPlugIn"/> class.
 		/// </summary>
-		/// <param name="description">Optional description of the plug-in.</param>
+		/// <param name="description">Optional description of the plug in.</param>
 		/// <remarks>
 		/// <para>
 		/// Objects that implement this base class should pass in a hard coded description on the base constructor.

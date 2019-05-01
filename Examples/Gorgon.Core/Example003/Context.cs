@@ -44,17 +44,17 @@ namespace Gorgon.Examples
 		// A timer for the splash screen.
 		private readonly IGorgonTimer _timer;
 		// A splash screen.
-		private formSplash _splashScreen;		    
-		#endregion
+		private formSplash _splashScreen;
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Handles the KeyDown event of the MainForm control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="KeyEventArgs" /> instance containing the event data.</param>
-		/// <exception cref="System.NotSupportedException"></exception>
-		private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        #region Methods.
+        /// <summary>
+        /// Handles the KeyDown event of the MainForm control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="KeyEventArgs" /> instance containing the event data.</param>
+        /// <exception cref="NotSupportedException"></exception>
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
 		{
 			if (e.KeyCode != Keys.Space)
 			{
