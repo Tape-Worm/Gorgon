@@ -38,8 +38,6 @@ namespace Gorgon.Examples
     public class CloakController
     {
         #region Variables.
-        // The direction of cloaking.
-        private CloakDirection _cloakDir;
         // The angle for the cloaking "pulse".
         private float _cloakPulseAngle = 180.0f;
         // The anggle of the cloaking pulse, in radians.
@@ -81,20 +79,24 @@ namespace Gorgon.Examples
             }
         }
 
-        /// <summary>
-        /// Property to return the cloak direction.
-        /// </summary>
-        public CloakDirection Direction => _cloakDir;
-        #endregion
+		/// <summary>
+		/// Property to return the cloak direction.
+		/// </summary>
+		public CloakDirection Direction
+        {
+            get;
+            private set;
+        }
+		#endregion
 
-        #region Methods.
-        /// <summary>
-        /// Function to initiate the cloak.
-        /// </summary>
-        public void Cloak()
+		#region Methods.
+		/// <summary>
+		/// Function to initiate the cloak.
+		/// </summary>
+		public void Cloak()
         {
             _cloakPulseAngle = 180.0f;
-            _cloakDir = CloakDirection.Cloak;
+            Direction = CloakDirection.Cloak;
         }
 
         /// <summary>
@@ -103,7 +105,7 @@ namespace Gorgon.Examples
         public void Uncloak()
         {
             _stopPulseDirection = _cloakPulseAngle > 180.0f ? -1 : 1;
-            _cloakDir = CloakDirection.UncloakStopPulse;
+            Direction = CloakDirection.UncloakStopPulse;
         }
 
         /// <summary>
@@ -111,7 +113,7 @@ namespace Gorgon.Examples
         /// </summary>
         public void Update()
         {
-            switch (_cloakDir)
+            switch (Direction)
             {
                 case CloakDirection.Cloak:
                     Opacity -= 0.8f * GorgonTiming.Delta;
@@ -122,7 +124,7 @@ namespace Gorgon.Examples
                     
                     if ((_cloakAmount >= 0.25f) && (Opacity <= 0.0f))
                     {
-                        _cloakDir = CloakDirection.CloakPulse;
+                        Direction = CloakDirection.CloakPulse;
                         _cloakPulseAngle = 180.0f;
                         _cloakAngleRads = _cloakPulseAngle.ToRadians();
                     }
@@ -140,7 +142,7 @@ namespace Gorgon.Examples
 
                     if ((_cloakAmount <= 0.0f) && (Opacity >= 1.0f))
                     {
-                        _cloakDir = CloakDirection.None;
+                        Direction = CloakDirection.None;
                     }
                     break;
                 case CloakDirection.UncloakStopPulse:
@@ -151,7 +153,7 @@ namespace Gorgon.Examples
                         || (_cloakPulseAngle < 180.0f) && (_stopPulseDirection == -1))
                     {
                         _cloakPulseAngle = 180.0f;
-                        _cloakDir = CloakDirection.Uncloak;
+                        Direction = CloakDirection.Uncloak;
                     }
 
                     _cloakAngleRads = _cloakPulseAngle.ToRadians();
@@ -162,7 +164,7 @@ namespace Gorgon.Examples
 
                     if (_cloakPulseAngle > 360.0f)
                     {
-                        _cloakPulseAngle = _cloakPulseAngle - 360.0f;
+                        _cloakPulseAngle -= 360.0f;
                     }
                     break;
             }

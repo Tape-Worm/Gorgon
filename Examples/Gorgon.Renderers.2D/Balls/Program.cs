@@ -199,12 +199,12 @@ namespace Gorgon.Examples
 
 				if (currentBall.Rotation > 360.0f)
 				{
-					currentBall.Rotation = currentBall.Rotation - 360.0f;
+					currentBall.Rotation -= 360.0f;
 				}
 
 				if (currentBall.Rotation < 0.0f)
 				{
-					currentBall.Rotation = currentBall.Rotation + 360.0f;
+					currentBall.Rotation += 360.0f;
 				}
 
 				// Adjust position.

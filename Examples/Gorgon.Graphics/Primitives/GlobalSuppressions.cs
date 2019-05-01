@@ -12,3 +12,5 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Build", "CA1031:Modify 'Mouse_Up' to catch a more specific exception type, or rethrow the exception.", Justification = "<Pending>", Scope = "member", Target = "~M:Gorgon.Examples.Program.Mouse_Up(System.Object,Gorgon.Input.GorgonMouseEventArgs)")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Build", "CA1067:Type Gorgon.Examples.Light should override Equals because it implements IEquatable<T>", Justification = "<Pending>", Scope = "type", Target = "~T:Gorgon.Examples.Light")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Build", "CA1815:Vertex3D should override Equals.", Justification = "<Pending>", Scope = "type", Target = "~T:Gorgon.Examples.Vertex3D")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>", Scope = "member", Target = "~M:Gorgon.Examples.Light.Equals(Gorgon.Examples.Light)~System.Boolean")]
+

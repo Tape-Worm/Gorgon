@@ -522,7 +522,6 @@ namespace Gorgon.Graphics.Imaging.Codecs
             GorgonImageInfo settings;
 
             // Start with no conversion.
-            conversionFlags = DdsConversionFlags.None;
 
             // Read the magic # from the header.
             uint magicNumber = reader.ReadUInt32();

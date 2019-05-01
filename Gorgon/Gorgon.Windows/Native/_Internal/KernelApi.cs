@@ -84,14 +84,9 @@ namespace Gorgon.Native
 					dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX))
 				};
 
-				if (GlobalMemoryStatusEx(ref memory))
-				{
-					return memory.ullTotalPhysical;
-				}
-
-				return -1;
-			}
-		}
+                return GlobalMemoryStatusEx(ref memory) ? memory.ullTotalPhysical : -1;
+            }
+        }
 
 		/// <summary>
 		/// Property to return the number of bytes of free available RAM.
@@ -105,14 +100,9 @@ namespace Gorgon.Native
 					dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX))
 				};
 
-				if (GlobalMemoryStatusEx(ref memory))
-				{
-					return memory.ullAvailablePhysical;
-				}
-
-				return -1;
-			}
-		}
+                return GlobalMemoryStatusEx(ref memory) ? memory.ullAvailablePhysical : -1;
+            }
+        }
 		#endregion
 
         #region Delegates.

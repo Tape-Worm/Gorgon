@@ -163,23 +163,22 @@ namespace Gorgon.Examples
 		/// <param name="e">The <see cref="TreeViewCancelEventArgs" /> instance containing the event data.</param>
 		private void TreeFileSystem_BeforeExpand(object sender, TreeViewCancelEventArgs e)
 		{
-			var directory = e.Node.Tag as IGorgonVirtualDirectory;
 
-			try
-			{
-				if (directory == null)
-				{
-					e.Cancel = true;
-					return;
-				}
+            try
+            {
+                if (!(e.Node.Tag is IGorgonVirtualDirectory directory))
+                {
+                    e.Cancel = true;
+                    return;
+                }
 
-				FillTree(directory);
-			}
-			catch (Exception ex)
-			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
-			}
-		}
+                FillTree(directory);
+            }
+            catch (Exception ex)
+            {
+                ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
+            }
+        }
 
 		/// <summary>
 		/// Handles the BeforeCollapse event of the treeFileSystem control.

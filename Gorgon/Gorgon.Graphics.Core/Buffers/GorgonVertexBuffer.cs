@@ -182,8 +182,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="usage">The usage flags for the buffer.</param>
         /// <param name="binding">The bindings to apply to the buffer, pass <b>null</b> to skip usage and binding check.</param>
-        /// <param name="structureSize">The size of a structure within the buffer, in bytes.</param>
-        internal static void ValidateBufferBindings(ResourceUsage usage, VertexIndexBufferBinding binding, int structureSize)
+        internal static void ValidateBufferBindings(ResourceUsage usage, VertexIndexBufferBinding binding)
         {
             switch (usage)
             {
@@ -218,7 +217,7 @@ namespace Gorgon.Graphics.Core
 
 			Log.Print($"{Name} Vertex Buffer: Creating D3D11 buffer. Size: {SizeInBytes} bytes", LoggingLevel.Simple);
 
-		    ValidateBufferBindings(_info.Usage, _info.Binding, 0);
+		    ValidateBufferBindings(_info.Usage, 0);
 
 			D3D11.BindFlags bindFlags = Usage == ResourceUsage.Staging ? D3D11.BindFlags.None : D3D11.BindFlags.VertexBuffer;
 

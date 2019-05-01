@@ -237,8 +237,6 @@ namespace Gorgon.Editor.ImageEditor
         /// <returns>The updated working file.</returns>
         public IGorgonVirtualFile SaveImageFile(string name, IGorgonImage image, BufferFormat pixelFormat, IGorgonImageCodec codec = null)
         {
-            IGorgonVirtualFile result = null;
-
             if (codec == null)
             {
                 codec = DefaultCodec;
@@ -268,6 +266,8 @@ namespace Gorgon.Editor.ImageEditor
 
             _log.Print($"Working image file: '{workFile.FullPath}'.", LoggingLevel.Verbose);
 
+
+            IGorgonVirtualFile result;
             // For compressed images, we need to rely on an external tool to do the job.             
             if (formatInfo.IsCompressed)
             {
@@ -323,7 +323,7 @@ namespace Gorgon.Editor.ImageEditor
                     case BufferFormat.BC3_UNorm_SRgb when image.Format != BufferFormat.R8G8B8A8_UNorm_SRgb:
                     case BufferFormat.BC7_UNorm_SRgb when image.Format != BufferFormat.R8G8B8A8_UNorm_SRgb:
                         image.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm_SRgb);
-                        break;                    
+                        break;
                 }
 
                 if (result == null)

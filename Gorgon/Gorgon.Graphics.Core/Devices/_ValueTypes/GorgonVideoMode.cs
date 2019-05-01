@@ -143,15 +143,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="obj">The object to compare with the current instance. </param>
         /// <returns>
         /// <see langword="true" /> if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, <see langword="false" />. </returns>
-        public override bool Equals(object obj)
-        {
-            if (obj is GorgonVideoMode mode)
-            {
-                return mode.Equals(this);
-            }
-
-            return false;
-        }
+        public override bool Equals(object obj) => obj is GorgonVideoMode mode ? mode.Equals(this) : false;
 
         /// <summary>Returns the hash code for this instance.</summary>
         /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
@@ -180,21 +172,15 @@ namespace Gorgon.Graphics.Core
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns>A value that indicates the relative order of the objects being compared. The return value has these meanings: Value Meaning Less than zero the left instance precedes the right in the sort order.  Zero the left instance occurs in the same position in the sort order as the right. Greater than zero the left instance follows the right in the sort order. </returns>
-        public static int CompareTo(in GorgonVideoMode left, in GorgonVideoMode right)
-        {
-            if (Equals(in left, in right))
-            {
-                return 0;
-            }
-
-            return ((left.Width < right.Width) 
-                || (left.Height < right.Height) 
-                || (left.Format < right.Format) 
+        public static int CompareTo(in GorgonVideoMode left, in GorgonVideoMode right) => Equals(in left, in right)
+                ? 0
+                : ((left.Width < right.Width)
+                || (left.Height < right.Height)
+                || (left.Format < right.Format)
                 || (left.RefreshRate < right.RefreshRate)
                 || (left.Scaling < right.Scaling)
                 || (left.ScanlineOrder < right.ScanlineOrder)
                 || (!left.SupportsStereo)) ? -1 : 1;
-        }
 
         /// <summary>Compares the current instance with another object of the same type and returns an integer that indicates whether the current instance precedes, follows, or occurs in the same position in the sort order as the other object. </summary>
         /// <param name="other">An object to compare with this instance. </param>

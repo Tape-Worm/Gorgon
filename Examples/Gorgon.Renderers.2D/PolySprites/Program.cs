@@ -77,7 +77,7 @@ namespace Gorgon.Examples
 
             if (_angle1 > 360.0f)
             {
-                _angle1 = _angle1 - 360.0f;
+                _angle1 -= 360.0f;
             }
 
             if (_angle2 < 0.0f)

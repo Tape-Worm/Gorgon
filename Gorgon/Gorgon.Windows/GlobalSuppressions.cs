@@ -19,3 +19,4 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Gorgon.UI.GorgonFolderBrowser.ListDirectories_MouseUp(System.Object,System.Windows.Forms.MouseEventArgs)")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Gorgon.UI.GorgonFolderBrowser.OnLoad(System.EventArgs)")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Gorgon.UI.GorgonFolderBrowser.TextDirectory_KeyUp(System.Object,System.Windows.Forms.KeyEventArgs)")]
+

@@ -58,9 +58,11 @@ namespace Gorgon.UI
 			set
 			{
 				if (string.IsNullOrEmpty(value))
-					value = string.Empty;
+                {
+                    value = string.Empty;
+                }
 
-				_errorDetails = value;
+                _errorDetails = value;
 
 				// Fix up line endings.				
 				errorDetails.Text = value.Replace("\n", Environment.NewLine);

@@ -102,12 +102,7 @@ namespace Gorgon.Graphics.Fonts
                 return -1;
             }
 
-            if (Weight < other.Weight)
-            {
-                return -1;
-            }
-
-            return Weight > other.Weight ? 1 : 0;
+            return Weight < other.Weight ? -1 : Weight > other.Weight ? 1 : 0;
         }
 
 

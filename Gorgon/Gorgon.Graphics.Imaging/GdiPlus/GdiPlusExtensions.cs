@@ -44,8 +44,7 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
         /// </summary>
         /// <param name="bitmapLock">The lock on the bitmap to transfer from.</param>
         /// <param name="buffer">The buffer to transfer into.</param>
-        /// <param name="destBufferSize">The size of a pixel, in bytes, in the destination.</param>
-	    private static void Transfer32Argb(BitmapData bitmapLock, IGorgonImageBuffer buffer, int destBufferSize)
+	    private static void Transfer32Argb(BitmapData bitmapLock, IGorgonImageBuffer buffer)
 	    {
 	        unsafe
 	        {
@@ -79,8 +78,7 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
 	    /// </summary>
 	    /// <param name="bitmapLock">The lock on the bitmap to transfer from.</param>
 	    /// <param name="buffer">The buffer to transfer into.</param>
-	    /// <param name="destBufferSize">The size of a pixel, in bytes, in the destination.</param>
-	    private static void Transfer24Rgb(BitmapData bitmapLock, IGorgonImageBuffer buffer, int destBufferSize)
+	    private static void Transfer24Rgb(BitmapData bitmapLock, IGorgonImageBuffer buffer)
 	    {
 	        unsafe
 	        {
@@ -593,11 +591,11 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
                     || (bitmap.PixelFormat == PixelFormat.Format32bppPArgb)
                     || (bitmap.PixelFormat == PixelFormat.Format32bppRgb))
 			    {
-			        Transfer32Argb(bitmapLock, result.Buffers[0], result.FormatInfo.SizeInBytes);
+			        Transfer32Argb(bitmapLock, result.Buffers[0]);
 			    }
 			    else 
 			    {
-			        Transfer24Rgb(bitmapLock, result.Buffers[0], result.FormatInfo.SizeInBytes);
+			        Transfer24Rgb(bitmapLock, result.Buffers[0]);
                 }
 			}
 			catch

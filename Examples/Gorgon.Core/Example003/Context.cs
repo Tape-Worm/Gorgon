@@ -116,11 +116,15 @@ namespace Gorgon.Examples
 					while (_timer.Seconds > 1)
 					{
 						if (annoyUser.Length < 50)
-							annoyUser += ".";
-						else
-							annoyUser = "I'm going to delay you for a bit.";
+                        {
+                            annoyUser += ".";
+                        }
+                        else
+                        {
+                            annoyUser = "I'm going to delay you for a bit.";
+                        }
 
-						_splashScreen.UpdateText(annoyUser);
+                        _splashScreen.UpdateText(annoyUser);
 						_timer.Reset();
 						counter++;
 					}

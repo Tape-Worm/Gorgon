@@ -44,10 +44,6 @@ namespace Gorgon.Editor.ProjectData
         #region Constants.
         // The name of the root node in the metadata.
         private const string RootNodeName = "Gorgon.Editor.MetaData";
-        // The name of the node containing the writer plugin name.
-        private const string WriterNodeName = "WriterPlugIn";
-        // The name of the attribute that stores the writer plugin type name.
-        private const string WriterTypeNameAttr = "TypeName";
         // The name of the file node in the metadata.
         private const string FileNodeName = "File";
         // The name of the file path attribute.
@@ -62,8 +58,6 @@ namespace Gorgon.Editor.ProjectData
         #region Variables.
         // The file containing the metadata.
         private readonly FileInfo _file;
-        // The file system providers.
-        private readonly IFileSystemProviders _providers;
         #endregion
 
         #region Properties.
@@ -103,36 +97,7 @@ namespace Gorgon.Editor.ProjectData
                 {
                     PlugInName = null
                 });
-
-                // TODO: We need to import attributes and dependencies.  
             }
-        }
-
-        /// <summary>
-        /// Function to retrieve the writer plug in metadata.
-        /// </summary>
-        /// <param name="rootNode">The root node of the metadata.</param>
-        /// <returns>The file writer plugin.</returns>
-        private FileWriterPlugIn GetWriterPlugIn(XElement rootNode)
-        {
-            string writerTypeName = rootNode.Element(WriterNodeName)?.Attribute(WriterTypeNameAttr)?.Value;
-
-            if (string.IsNullOrWhiteSpace(writerTypeName))
-            {
-                Program.Log.Print("No writer plugin associated with this file.", LoggingLevel.Verbose);
-                return null;
-            }
-
-            FileWriterPlugIn plugin = _providers.GetWriterByName(writerTypeName, true);
-
-            if (plugin == null)
-            {                
-                Program.Log.Print($"Writer plugin '{writerTypeName}' is associated with this file, but no provider plugin is loaded with that name.", LoggingLevel.Verbose);
-                return null;
-            }
-
-            Program.Log.Print($"Found writer plugin '{writerTypeName}'.", LoggingLevel.Verbose);
-            return plugin;
         }
 
         /// <summary>
@@ -181,12 +146,8 @@ namespace Gorgon.Editor.ProjectData
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the V2MetadataImporter class.</summary>
         /// <param name="metadataFile">The file containing the v2 metadata.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="metadataFile"/>, or the <paramref name="fileSystemProviders"/> parameter is <b>null</b>.</exception>
-        public V2MetadataImporter(FileInfo metadataFile, IFileSystemProviders fileSystemProviders)
-        {
-            _file = metadataFile ?? throw new ArgumentNullException(nameof(metadataFile));
-            _providers = fileSystemProviders ?? throw new ArgumentNullException(nameof(metadataFile));
-        }
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="metadataFile"/> parameter is <b>null</b>.</exception>
+        public V2MetadataImporter(FileInfo metadataFile) => _file = metadataFile ?? throw new ArgumentNullException(nameof(metadataFile));
         #endregion
     }
 }

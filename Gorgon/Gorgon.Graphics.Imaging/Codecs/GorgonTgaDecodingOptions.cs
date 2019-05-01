@@ -51,33 +51,30 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// Some codecs do not use multiple frames in their image data. For those codecs, this flag will be ignored.
 		/// </remarks>
 		bool IGorgonImageCodecDecodingOptions.ReadAllFrames
-		{
-			get
-			{
-				return false;
-			}
-			set
-			{
-				// Intentionally left blank.
-			}
-		}
+        {
+            get => false;
+            set
+            {
+                // Intentionally left blank.
+            }
+        }
 
-		/// <summary>
-		/// Property to set or return whether the to force alpha values of 0 in the image to be fully opaque.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// Some TGA encoded images write out 32 bit images with an alpha value of 0 even though the image has fully opaque color data. This causes an image to appear to be completely transparent when it 
-		/// shouldn't be. Use this flag to force the image to set the alpha channel to fully opaque in such cases.
-		/// </para>
-		/// <para>
-		/// Note that this only works on images where all the alpha values are set to 0. If there is a mix of alpha values in the image, then this option will have no effect.
-		/// </para>
-		/// <para>
-		/// The default value is <b>true</b>.
-		/// </para>
-		/// </remarks>
-		public bool SetZeroAlphaAsOpaque
+        /// <summary>
+        /// Property to set or return whether the to force alpha values of 0 in the image to be fully opaque.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Some TGA encoded images write out 32 bit images with an alpha value of 0 even though the image has fully opaque color data. This causes an image to appear to be completely transparent when it 
+        /// shouldn't be. Use this flag to force the image to set the alpha channel to fully opaque in such cases.
+        /// </para>
+        /// <para>
+        /// Note that this only works on images where all the alpha values are set to 0. If there is a mix of alpha values in the image, then this option will have no effect.
+        /// </para>
+        /// <para>
+        /// The default value is <b>true</b>.
+        /// </para>
+        /// </remarks>
+        public bool SetZeroAlphaAsOpaque
 		{
 			get => Options.GetOptionValue<bool>(nameof(SetZeroAlphaAsOpaque));
 

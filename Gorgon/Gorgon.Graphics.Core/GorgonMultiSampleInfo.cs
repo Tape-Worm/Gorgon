@@ -106,15 +106,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>
         ///   <b>true</b> if the specified <see cref="object" /> is equal to this instance; otherwise, <b>false</b>.
         /// </returns>
-        public override bool Equals(object obj)
-		{
-		    if (obj is GorgonMultisampleInfo multiSample)
-		    {
-		        return multiSample.Equals(this);
-		    }
-
-		    return base.Equals(obj);
-		}
+        public override bool Equals(object obj) => obj is GorgonMultisampleInfo multiSample ? multiSample.Equals(this) : base.Equals(obj);
 
         /// <summary>
         /// Equality operator.

@@ -40,33 +40,31 @@ namespace Gorgon.Editor.SpriteEditor
     internal class SingleSpriteRenderer
         : SpriteContentRenderer
     {
-        #region Variables.
-        // The actual sprite to render.
-        private readonly GorgonSprite _workingSprite;
-        #endregion
-
         #region Properties.
         /// <summary>
         /// Property to set or return the active sprite texture sampler.
         /// </summary>
         protected GorgonSamplerState SpriteSampler
         {
-            get => _workingSprite.TextureSampler;
-            set => _workingSprite.TextureSampler = value;
+            get => Sprite.TextureSampler;
+            set => Sprite.TextureSampler = value;
         }
 
 		/// <summary>
-        /// Property to return the sprite used for rendering.
-        /// </summary>
-        protected GorgonSprite Sprite => _workingSprite;
-        #endregion
+		/// Property to return the sprite used for rendering.
+		/// </summary>
+		protected GorgonSprite Sprite
+        {
+            get;
+        }
+		#endregion
 
-        #region Methods.
+		#region Methods.
 		/// <summary>
-        /// Function to retrieve the sprite texture coordinates, in texel space.
-        /// </summary>
-        /// <returns>The sprite texture coordinates.</returns>
-        protected virtual DX.RectangleF GetSpriteTextureCoordinates() => SpriteContent.TextureCoordinates;
+		/// Function to retrieve the sprite texture coordinates, in texel space.
+		/// </summary>
+		/// <returns>The sprite texture coordinates.</returns>
+		protected virtual DX.RectangleF GetSpriteTextureCoordinates() => SpriteContent.TextureCoordinates;
 
         /// <summary>Function called when the <see cref="P:Gorgon.Editor.SpriteEditor.SpriteContentRenderer.ZoomScaleValue"/> property is changed.</summary>
         protected override void OnZoomScaleChanged() => UpdateWorkingSprite();
@@ -85,17 +83,17 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         private void UpdateWorkingSprite()
         {
-            if (_workingSprite == null)
+            if (Sprite == null)
             {
                 return;
             }
 
-            _workingSprite.Texture = SpriteContent?.Texture;
-            _workingSprite.TextureArrayIndex = TextureArrayIndex;
+            Sprite.Texture = SpriteContent?.Texture;
+            Sprite.TextureArrayIndex = TextureArrayIndex;
 
-            for (int i = 0; i < SpriteColor.Count.Min(_workingSprite.CornerColors.Count); ++i)
+            for (int i = 0; i < SpriteColor.Count.Min(Sprite.CornerColors.Count); ++i)
             {
-                _workingSprite.CornerColors[i] = SpriteColor[i];
+                Sprite.CornerColors[i] = SpriteColor[i];
             }
 
             if (SpriteContent?.Texture == null)
@@ -107,9 +105,9 @@ namespace Gorgon.Editor.SpriteEditor
             var spriteRegion = SpriteContent.Texture.ToPixel(SpriteContent.TextureCoordinates).ToRectangleF();
             DX.RectangleF scaledSprite = ToClient(spriteRegion).Truncate();
 
-            _workingSprite.TextureRegion = GetSpriteTextureCoordinates();
-            _workingSprite.Size = new DX.Size2F(scaledSprite.Width, scaledSprite.Height);
-            _workingSprite.Position = new DX.Vector2(scaledSprite.Left, scaledSprite.Top);
+            Sprite.TextureRegion = GetSpriteTextureCoordinates();
+            Sprite.Size = new DX.Size2F(scaledSprite.Width, scaledSprite.Height);
+            Sprite.Position = new DX.Vector2(scaledSprite.Left, scaledSprite.Top);
         }
 
         /// <summary>Function called when the sprite has a property change.</summary>
@@ -119,7 +117,7 @@ namespace Gorgon.Editor.SpriteEditor
             switch (e.PropertyName)
             {
                 case nameof(ISpriteContent.SamplerState):
-                    _workingSprite.TextureSampler = SpriteContent.SamplerState;
+                    Sprite.TextureSampler = SpriteContent.SamplerState;
                     break;
                 case nameof(ISpriteContent.Texture):
                 case nameof(ISpriteContent.TextureCoordinates):
@@ -128,7 +126,7 @@ namespace Gorgon.Editor.SpriteEditor
                 case nameof(ISpriteContent.VertexColors):
                     for (int i = 0; i < 4; ++i)
                     {
-                        _workingSprite.CornerColors[i] = SpriteContent.VertexColors[i];
+                        Sprite.CornerColors[i] = SpriteContent.VertexColors[i];
                     }
                     break;
             }
@@ -173,7 +171,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
 
             // Draw the sprite layer.
-            Renderer.DrawSprite(_workingSprite);
+            Renderer.DrawSprite(Sprite);
 
             Renderer.End();
 
@@ -193,7 +191,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             InitialTextureAlpha = 0;
 
-            _workingSprite = new GorgonSprite
+            Sprite = new GorgonSprite
             {
                 Texture = sprite.Texture,
                 TextureRegion = sprite.TextureCoordinates,
@@ -205,7 +203,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             for (int i = 0; i < 4; ++i)
             {
-                _workingSprite.CornerColors[i] = sprite.VertexColors[i];
+                Sprite.CornerColors[i] = sprite.VertexColors[i];
             }
 
             UpdateWorkingSprite();

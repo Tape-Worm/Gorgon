@@ -46,13 +46,13 @@ namespace Gorgon.Editor.ImageEditor
         private static WeakReference<IContentPlugInService> _plugInService;
         // The service used to handling content plug ins.
 		// We will keep this alive and undisposed since it's meant to live for the lifetime of the application.
-        private static Lazy<GorgonMefPlugInCache> _plugInCache;
+        private static readonly Lazy<GorgonMefPlugInCache> _plugInCache;
         // The factory that creates/loads the settings.
-        private static Lazy<ImageEditorSettings> _settingsFactory;
+        private static readonly Lazy<ImageEditorSettings> _settingsFactory;
 		// The factory that creates/loads the codec registry.
-        private static Lazy<ICodecRegistry> _codecRegistryFactory;
+        private static readonly Lazy<ICodecRegistry> _codecRegistryFactory;
         // The factory that creates/loads the settings view model.
-        private static Lazy<ISettings> _settingsViewModelFactory;
+        private static readonly Lazy<ISettings> _settingsViewModelFactory;
         #endregion
 
         #region Methods.

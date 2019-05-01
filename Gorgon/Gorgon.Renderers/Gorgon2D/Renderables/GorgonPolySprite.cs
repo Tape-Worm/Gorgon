@@ -367,15 +367,9 @@ namespace Gorgon.Renderers
         /// </remarks>
         public GorgonRangeF? AlphaTest
         {
-            get
-            {
-                if (Renderable.AlphaTestData.IsEnabled == 0)
-                {
-                    return null;
-                }
-
-                return new GorgonRangeF(Renderable.AlphaTestData.LowerAlpha, Renderable.AlphaTestData.UpperAlpha);
-            }
+            get => Renderable.AlphaTestData.IsEnabled == 0
+                    ? null
+                    : (GorgonRangeF?)new GorgonRangeF(Renderable.AlphaTestData.LowerAlpha, Renderable.AlphaTestData.UpperAlpha);
             set
             {
                 // ReSharper disable once ConvertIfStatementToSwitchStatement

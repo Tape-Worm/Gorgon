@@ -41,7 +41,7 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers;
 using Newtonsoft.Json;
 
-namespace Gorgon.IO.Extensions
+namespace Gorgon.IO
 {
     /// <summary>
     /// Extension methods to load editor content.

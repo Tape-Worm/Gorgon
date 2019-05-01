@@ -155,6 +155,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CF42E404-7542-42B7-B467-A04BE64C3350}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		Gorgon\NoLiteralBugFix.ruleset = Gorgon\NoLiteralBugFix.ruleset
+		Examples\NoRules.ruleset = Examples\NoRules.ruleset
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor.ExtractSpriteTool", "PlugIns\Gorgon.Editor.ExtractSpriteTool\Gorgon.Editor.ExtractSpriteTool.csproj", "{0CA64289-C2EF-48D8-BEBE-F8BAEFE0BE3A}"

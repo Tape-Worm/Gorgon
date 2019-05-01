@@ -20,21 +20,31 @@ namespace GorgonTriangulator
 			{
 				//perform the index wrapping
 				while (index < 0)
-					index = Count + index;
-				if (index >= Count)
-					index %= Count;
+                {
+                    index = Count + index;
+                }
 
-				return base[index];
+                if (index >= Count)
+                {
+                    index %= Count;
+                }
+
+                return base[index];
 			}
 			set
 			{
 				//perform the index wrapping
 				while (index < 0)
-					index = Count + index;
-				if (index >= Count)
-					index %= Count;
+                {
+                    index = Count + index;
+                }
 
-				base[index] = value;
+                if (index >= Count)
+                {
+                    index %= Count;
+                }
+
+                base[index] = value;
 			}
 		}
 

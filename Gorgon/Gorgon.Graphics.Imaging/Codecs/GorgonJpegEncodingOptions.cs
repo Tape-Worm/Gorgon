@@ -43,29 +43,26 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// This flag is not supported by this codec and will always return <b>false</b>.
 		/// </remarks>
 		bool IGorgonImageCodecEncodingOptions.SaveAllFrames
-		{
-			get
-			{
-				return false;
-			}
-			set
-			{
-				// Intentionally left blank.
-			}
-		}
+        {
+            get => false;
+            set
+            {
+                // Intentionally left blank.
+            }
+        }
 
-		/// <summary>
-		/// Property to set or return the horizontal dots-per-inch for the encoded image.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This information is metadata only, no action is taken with this value.
-		/// </para>
-		/// <para>
-		/// The default value is 72.
-		/// </para>
-		/// </remarks>
-		public double DpiX
+        /// <summary>
+        /// Property to set or return the horizontal dots-per-inch for the encoded image.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This information is metadata only, no action is taken with this value.
+        /// </para>
+        /// <para>
+        /// The default value is 72.
+        /// </para>
+        /// </remarks>
+        public double DpiX
 		{
 			get => Options.GetOptionValue<double>(nameof(DpiX));
 			set => Options.SetOptionValue(nameof(DpiX), value);
@@ -133,17 +130,14 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </para>
 		/// </remarks>
 		ImageDithering IGorgonWicEncodingOptions.Dithering
-		{
-			get
-			{
-				return ImageDithering.None;
-			}
+        {
+            get => ImageDithering.None;
 
-			set
-			{
-				// Intentionally left blank.
-			}
-		}
+            set
+            {
+                // Intentionally left blank.
+            }
+        }
         #endregion
 
         #region Constructor.

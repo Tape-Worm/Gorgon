@@ -53,8 +53,6 @@ namespace Gorgon.Editor.ProjectData
         : IProjectManager
     {
         #region Constants
-        // The extension applied to editor project directories.
-        private const string EditorProjectDirectoryExtension = ".gorEditProj";
         // The temporary directory name.
         private const string TemporaryDirectoryName = "tmp";
         // The source directory name.
@@ -366,51 +364,6 @@ namespace Gorgon.Editor.ProjectData
             }
 
             return result;
-        }
-
-        /// <summary>
-        /// Function to load a project from a file on disk using the supplied provider.
-        /// </summary>
-        /// <param name="fileSystemFile">The file to load.</param>
-        /// <param name="provider">The provider to use.</param>
-        /// <param name="workspace">The workspace directory for the project.</param>
-        /// <param name="fileSystemDir">The workspace directory to copy the files into.</param>
-        /// <param name="tempDir">The temporary directory in the file system.</param>
-        /// <param name="srcDir">The directory used to hold the source file for import.</param>
-        /// <returns>A new project file.</returns>
-        private async Task<(IProject project, bool isUpgraded)> OpenProjectTask(FileInfo fileSystemFile, IGorgonFileSystemProvider provider, DirectoryInfo workspace, DirectoryInfo fileSystemDir, DirectoryInfo tempDir, DirectoryInfo srcDir)
-        {
-            FileInfo metaData = await CopyFileSystemAsync(fileSystemFile, provider, fileSystemDir);
-
-            // Pull the meta data file into the root of the project directory.
-            if (metaData.Exists)
-            {
-                metaData.MoveTo(Path.Combine(workspace.FullName, metaData.Name));
-            }
-
-            // Create the project using the metadata (if we have any).
-            Project result = null;
-
-            if (!metaData.Exists)
-            {
-                Program.Log.Print("No metadata file exists. A new one will be created.", LoggingLevel.Verbose);
-
-                metaData = new FileInfo(Path.Combine(workspace.FullName, metaData.Name));
-                result = new Project(workspace, tempDir, fileSystemDir, srcDir);
-                BuildMetadataDatabase(result, metaData);
-
-                // If we have v2 meatdata, upgrade the file.
-                var v2Metadata = new FileInfo(Path.Combine(result.ProjectWorkSpace.FullName, V2MetadataImporter.V2MetadataFilename));                
-                if (v2Metadata.Exists)
-                {                    
-                    var importer = new V2MetadataImporter(v2Metadata, Providers);
-                    importer.Import(result);
-                }
-
-                return (result, true);
-            }
-
-            return (CreateFromMetadata(metaData), false);
         }
 
         /// <summary>
@@ -728,7 +681,7 @@ namespace Gorgon.Editor.ProjectData
                 PurgeStaleDirectories(workspace, true);
             }
 
-            (DirectoryInfo actualWorkspace, DirectoryInfo fsDir, DirectoryInfo tempDir, DirectoryInfo srcDir) = SetupProjectFolders(workspace.FullName);
+            (DirectoryInfo _, DirectoryInfo fsDir, DirectoryInfo tempDir, DirectoryInfo srcDir) = SetupProjectFolders(workspace.FullName);
 
             try
             {
@@ -755,7 +708,7 @@ namespace Gorgon.Editor.ProjectData
                     return;
                 }
 
-                var importer = new V2MetadataImporter(v2Metadata, Providers);
+                var importer = new V2MetadataImporter(v2Metadata);
                 importer.Import(dummyProject);
                 PersistMetadata(dummyProject);
             }

@@ -29,7 +29,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Gorgon.IO;
 
-namespace Gorgon.Renderers.Extensions
+namespace Gorgon.Renderers
 {
     /// <summary>
     /// Extension methods for the <see cref="GorgonSprite"/> object.

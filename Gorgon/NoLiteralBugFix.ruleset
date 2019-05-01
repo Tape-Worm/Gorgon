@@ -55,6 +55,7 @@
     <Rule Id="CA1031" Action="None" />
     <Rule Id="CA1043" Action="None" />
     <Rule Id="CA1051" Action="None" />
+    <Rule Id="CA1063" Action="None" />
     <Rule Id="CA1707" Action="None" />
     <Rule Id="CA1710" Action="None" />
     <Rule Id="CA1714" Action="None" />
@@ -75,6 +76,7 @@
     <Rule Id="CA1304" Action="None" />
     <Rule Id="CA1305" Action="None" />
     <Rule Id="CA1307" Action="None" />
+    <Rule Id="CA1816" Action="None" />
     <Rule Id="CA2208" Action="None" />
   </Rules>
   <Rules AnalyzerId="Microsoft.NetCore.CSharp.Analyzers" RuleNamespace="Microsoft.NetCore.CSharp.Analyzers">

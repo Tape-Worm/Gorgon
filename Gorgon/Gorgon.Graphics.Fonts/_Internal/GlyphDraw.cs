@@ -149,15 +149,11 @@ namespace Gorgon.Graphics.Fonts
 				characterRanges[0].Dispose();
 				characterRanges = null;
 
-				if ((result.Width < 0.1f)
-				    || (result.Height < 0.1f))
-				{
-					return null;
-				}
-
-				return result;
-			}
-			finally
+                return ((result.Width < 0.1f) || (result.Height < 0.1f))
+                    ? null
+                    : (RectangleF?)result;
+            }
+            finally
 			{
 				if (characterRanges != null)
 				{
@@ -572,13 +568,8 @@ namespace Gorgon.Graphics.Fonts
 						                var leftSize = new DX.Size2(glyphBounds[left].CharacterRegion.Width, glyphBounds[left].CharacterRegion.Height);
 						                var rightSize = new DX.Size2(glyphBounds[right].CharacterRegion.Width, glyphBounds[right].CharacterRegion.Height);
 
-						                if (leftSize.Height == rightSize.Height)
-						                {
-							                return left.CompareTo(right);
-						                }
-
-						                return leftSize.Height < rightSize.Height ? 1 : -1;
-					                });
+                                        return leftSize.Height == rightSize.Height ? left.CompareTo(right) : leftSize.Height < rightSize.Height ? 1 : -1;
+                                    });
 
 					GlyphPacker.CreateRoot(_fontInfo.TextureWidth - _fontInfo.PackingSpacing, _fontInfo.TextureHeight - _fontInfo.PackingSpacing);
 
@@ -631,8 +622,8 @@ namespace Gorgon.Graphics.Fonts
 					// Increase size to ensure we have some padding.
 					if ((!char.IsWhiteSpace(updatedChar)) && (hasOutline))
 					{
-						characterRange.Width = characterRange.Width + (_fontInfo.OutlineSize * 3);
-						characterRange.Height = characterRange.Height + (_fontInfo.OutlineSize * 3);
+						characterRange.Width += (_fontInfo.OutlineSize * 3);
+						characterRange.Height += (_fontInfo.OutlineSize * 3);
 					}
 					else
 					{

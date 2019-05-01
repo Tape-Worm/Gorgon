@@ -189,21 +189,22 @@ namespace Gorgon.Diagnostics.LogProviders
         /// </summary>
         /// <param name="message">The message to parse.</param>
         /// <returns>The array containing each line.</returns>
-        private static string[] GetLines(string message)
-        {
-            if (string.IsNullOrWhiteSpace(message))
-            {
-                return Array.Empty<string>();
-            }
-
-            return message.Split(new[]
+        private static string[] GetLines(string message) => string.IsNullOrWhiteSpace(message)
+                ? Array.Empty<string>()
+                : message.Split(new[]
                                  {
                                      '\r',
                                      '\n'
                                  },
                                  StringSplitOptions.RemoveEmptyEntries);
-        }
 
+		/// <summary>
+        /// Function to hilight a specific word in a line using a console color.
+        /// </summary>
+        /// <param name="line">The line of text to scan.</param>
+        /// <param name="word">The word to look for.</param>
+        /// <param name="color">The color to apply.</param>
+        /// <returns></returns>
         private static string HilightWord(string line, string word, ConsoleColor color)
         {
             int start = line.IndexOf(word);
@@ -212,8 +213,6 @@ namespace Gorgon.Diagnostics.LogProviders
             {
                 return line;
             }
-
-            string hilight = line.Substring(start, word.Length);
 
             Console.ForegroundColor = color;
             Console.Write(" " + word);

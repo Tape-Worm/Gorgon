@@ -2333,8 +2333,7 @@ namespace Gorgon.Graphics.Core
         internal GorgonTexture2D(GorgonGraphics graphics, IGorgonImage image, GorgonTexture2DLoadOptions options)
 			: base(graphics)
 		{
-            bool isCubeMap = false;
-
+            bool isCubeMap;
             if (options.IsTextureCube == null)
             {
                 isCubeMap = image.ImageType == ImageType.ImageCube;

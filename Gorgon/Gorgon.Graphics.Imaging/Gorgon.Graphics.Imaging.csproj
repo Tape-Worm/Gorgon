@@ -38,6 +38,7 @@
     <DocumentationFile>bin\Release\Gorgon.Graphics.Imaging.XML</DocumentationFile>
     <LangVersion>7.3</LangVersion>
     <UseVSHostingProcess>true</UseVSHostingProcess>
+    <CodeAnalysisRuleSet>..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>

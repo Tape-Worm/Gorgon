@@ -49,33 +49,30 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// The default value is <see cref="WICFlags.None"/>.
 		/// </remarks>
 		WICFlags IGorgonWicDecodingOptions.Flags
-		{
-			get
-			{
-				return WICFlags.None;
-			}
+        {
+            get => WICFlags.None;
 
-			set
-			{
-				// Intentionally left blank.
-			}
-		}
+            set
+            {
+                // Intentionally left blank.
+            }
+        }
 
-		/// <summary>
-		/// Property to set or return whether to read all frames from an image.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This property will tell the codec to decode multiple frames into an image array. Applications can then use that data to animate the GIF images.
-		/// </para>
-		/// <para>
-		/// This value is ignored if the GIF file contains only a single frame.
-		/// </para> 
-		/// <para>
-		/// The default value is <b>true</b>.
-		/// </para>
-		/// </remarks>
-		public bool ReadAllFrames
+        /// <summary>
+        /// Property to set or return whether to read all frames from an image.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This property will tell the codec to decode multiple frames into an image array. Applications can then use that data to animate the GIF images.
+        /// </para>
+        /// <para>
+        /// This value is ignored if the GIF file contains only a single frame.
+        /// </para> 
+        /// <para>
+        /// The default value is <b>true</b>.
+        /// </para>
+        /// </remarks>
+        public bool ReadAllFrames
 		{
 			get => Options.GetOptionValue<bool>(nameof(ReadAllFrames));
 			set => Options.SetOptionValue(nameof(ReadAllFrames), value);
@@ -146,16 +143,13 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </para>
 		/// </remarks>
 		ImageDithering IGorgonWicDecodingOptions.Dithering
-		{
-			get
-			{
-				return ImageDithering.None;
-			}
-			set
-			{
-				// Intentionally left blank.
-			}
-		}
+        {
+            get => ImageDithering.None;
+            set
+            {
+                // Intentionally left blank.
+            }
+        }
         #endregion
 
         #region Constructor.

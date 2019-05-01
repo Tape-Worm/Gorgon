@@ -136,16 +136,13 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// This flag always returns <b>true</b> for this implementation.
 		/// </remarks>
 		bool IGorgonImageCodecDecodingOptions.ReadAllFrames
-		{
-			get
-			{
-				return true;
-			}
-			set
-			{
-				// Intentionally left blank.
-			}
-		}
+        {
+            get => true;
+            set
+            {
+                // Intentionally left blank.
+            }
+        }
         #endregion
 
         #region Constructor/Finalizer.

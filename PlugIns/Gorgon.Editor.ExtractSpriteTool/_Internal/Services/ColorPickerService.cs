@@ -51,12 +51,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
                     Color = originalColor
                 };
 
-                if (picker.ShowDialog(GorgonApplication.MainForm) == DialogResult.Cancel)
-                {
-                    return null;
-                }
-
-                return picker.Color;
+                return picker.ShowDialog(GorgonApplication.MainForm) == DialogResult.Cancel ? null : (GorgonColor?)picker.Color;
             }
             finally
             {

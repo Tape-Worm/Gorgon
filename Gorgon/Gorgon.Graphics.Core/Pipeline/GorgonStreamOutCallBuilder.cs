@@ -165,12 +165,11 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Function to set a constant buffer for a pixel shader.
         /// </summary>
-        /// <param name="shaderType">The shader stage to use.</param>
         /// <param name="constantBuffer">The constant buffer to assign.</param>
         /// <param name="slot">The slot for the constant buffer.</param>
         /// <returns>The fluent builder interface.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="slot"/> is less than 0, or greater than/equal to <see cref="GorgonConstantBuffers.MaximumConstantBufferCount"/>.</exception>
-        public GorgonStreamOutCallBuilder ConstantBuffer(ShaderType shaderType, GorgonConstantBufferView constantBuffer, int slot = 0)
+        public GorgonStreamOutCallBuilder ConstantBuffer(GorgonConstantBufferView constantBuffer, int slot = 0)
         {
             if ((slot < 0) || (slot >= GorgonConstantBuffers.MaximumConstantBufferCount))
             {

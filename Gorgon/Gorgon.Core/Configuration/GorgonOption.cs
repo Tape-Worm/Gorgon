@@ -85,71 +85,51 @@ namespace Gorgon.Configuration
 		{
 			Type type = typeof(T);
 
-			if (typeof(T) != type)
-			{
-				return (T)Convert.ChangeType(_defaultValue, type);
-			}
+            return typeof(T) != type ? (T)Convert.ChangeType(_defaultValue, type) : (T)_defaultValue;
+        }
 
-			return (T)_defaultValue;
-		}
-
-		/// <summary>
-		/// Function to retrieve the minimum allowed value for this option.
-		/// </summary>
-		/// <typeparam name="T">The type of the value.</typeparam>
-		/// <returns>The value, strongly typed.</returns>
-		public T GetMinValue<T>()
+        /// <summary>
+        /// Function to retrieve the minimum allowed value for this option.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <returns>The value, strongly typed.</returns>
+        public T GetMinValue<T>()
 		{
 			Type type = typeof(T);
 
-			if (typeof(T) != type)
-			{
-				return (T)Convert.ChangeType(_minValue, type);
-			}
+            return typeof(T) != type ? (T)Convert.ChangeType(_minValue, type) : (T)_minValue;
+        }
 
-			return (T)_minValue;
-		}
-
-		/// <summary>
-		/// Function to retrieve the maximum allowed value for this option.
-		/// </summary>
-		/// <typeparam name="T">The type of the value.</typeparam>
-		/// <returns>The value, strongly typed.</returns>
-		public T GetMaxValue<T>()
+        /// <summary>
+        /// Function to retrieve the maximum allowed value for this option.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <returns>The value, strongly typed.</returns>
+        public T GetMaxValue<T>()
 		{
 			Type type = typeof(T);
 
-			if (typeof(T) != type)
-			{
-				return (T)Convert.ChangeType(_maxValue, type);
-			}
+            return typeof(T) != type ? (T)Convert.ChangeType(_maxValue, type) : (T)_maxValue;
+        }
 
-			return (T)_maxValue;
-		}
-
-		/// <summary>
-		/// Function to retrieve the value stored in this option.
-		/// </summary>
-		/// <typeparam name="T">The type for the value.</typeparam>
-		/// <returns>The value, strongly typed.</returns>
-		public T GetValue<T>()
+        /// <summary>
+        /// Function to retrieve the value stored in this option.
+        /// </summary>
+        /// <typeparam name="T">The type for the value.</typeparam>
+        /// <returns>The value, strongly typed.</returns>
+        public T GetValue<T>()
 		{
 			Type type = typeof(T);
 
-			if ((typeof(T) != Type) && (_value is IConvertible))
-			{
-				return (T)Convert.ChangeType(_value, type);
-			}
+            return (typeof(T) != Type) && (_value is IConvertible) ? (T)Convert.ChangeType(_value, type) : (T)_value;
+        }
 
-			return (T)_value;
-		}
-
-		/// <summary>
-		/// Function to assign a value for the option.
-		/// </summary>
-		/// <typeparam name="T">The type parmeter for the value.</typeparam>
-		/// <param name="value">The value to assign.</param>
-		public void SetValue<T>(T value)
+        /// <summary>
+        /// Function to assign a value for the option.
+        /// </summary>
+        /// <typeparam name="T">The type parmeter for the value.</typeparam>
+        /// <param name="value">The value to assign.</param>
+        public void SetValue<T>(T value)
 		{
 			object newValue = value;
 			

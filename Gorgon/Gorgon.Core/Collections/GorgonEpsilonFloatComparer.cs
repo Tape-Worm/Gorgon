@@ -44,14 +44,6 @@ namespace Gorgon.Collections
         /// <paramref name="x" /> is less than <paramref name="y" />.Zero
         /// <paramref name="x" /> equals <paramref name="y" />.Greater than zero
         /// <paramref name="x" /> is greater than <paramref name="y" />.</returns>
-        public int Compare(float x, float y)
-        {
-            if (x.EqualsEpsilon(y))
-            {
-                return 0;
-            }
-
-            return x < y ? 1 : -1;
-        }
+        public int Compare(float x, float y) => x.EqualsEpsilon(y) ? 0 : x < y ? 1 : -1;
     }
 }

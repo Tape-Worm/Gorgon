@@ -124,15 +124,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>
         /// 	<b>true</b> if the specified <see cref="object"/> is equal to this instance; otherwise, <b>false</b>.
         /// </returns>
-        public override bool Equals(object obj)
-        {
-            if (obj is GorgonStreamOutBinding streamOut)
-            {
-                return streamOut.Equals(this);
-            }
-
-            return base.Equals(obj);
-        }
+        public override bool Equals(object obj) => obj is GorgonStreamOutBinding streamOut ? streamOut.Equals(this) : base.Equals(obj);
 
         /// <summary>
         /// Function to determine if two instances are equal.

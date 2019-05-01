@@ -87,12 +87,7 @@ namespace Gorgon.Editor.Services
                 return Form.ActiveForm;
             }
 
-            if (Application.OpenForms.Count > 1)
-            {
-                return Application.OpenForms[Application.OpenForms.Count - 1];
-            }
-
-            return GorgonApplication.MainForm;
+            return Application.OpenForms.Count > 1 ? Application.OpenForms[Application.OpenForms.Count - 1] : GorgonApplication.MainForm;
         }
 
         /// <summary>

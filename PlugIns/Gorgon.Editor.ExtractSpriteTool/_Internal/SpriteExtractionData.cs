@@ -65,15 +65,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// </summary>
         public GorgonTexture2DView Texture
         {
-            get
-            {
-                if (!_textureRef.TryGetTarget(out GorgonTexture2DView result))
-                {
-                    return null;
-                }
-
-                return result;
-            }
+            get => !_textureRef.TryGetTarget(out GorgonTexture2DView result) ? null : result;
             set
             {
                 if (value == null)
@@ -134,19 +126,10 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <summary>
         /// Property to return the maximum columns and rows allowed in the grid.
         /// </summary>
-        public DX.Size2 MaxGridSize
-        {
-            get
-            {
-                if ((!_textureRef.TryGetTarget(out GorgonTexture2DView texture))
-					|| (CellSize.Width == 0) || (CellSize.Height == 0))
-                {
-                    return new DX.Size2(1, 1);
-                }
-
-                return new DX.Size2((texture.Width - GridOffset.X) / CellSize.Width, (texture.Height - GridOffset.Y) / CellSize.Height);
-            }
-        }
+        public DX.Size2 MaxGridSize => ((!_textureRef.TryGetTarget(out GorgonTexture2DView texture))
+                    || (CellSize.Width == 0) || (CellSize.Height == 0))
+                    ? new DX.Size2(1, 1)
+                    : new DX.Size2((texture.Width - GridOffset.X) / CellSize.Width, (texture.Height - GridOffset.Y) / CellSize.Height);
 
         /// <summary>
         /// Property to return the number of sprites that will be extracted.

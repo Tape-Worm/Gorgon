@@ -128,32 +128,21 @@ namespace Gorgon.IO
 			get;
 		}
 
-		/// <summary>
-		/// Property to return the full path to the directory.
-		/// </summary>
-		public string FullPath
-		{
-			get
-			{
-				if (Parent == null)
-				{
-					return "/";
-				}
-
-				return Parent.FullPath + Name + "/";
-			}
-		}
-		#endregion
+        /// <summary>
+        /// Property to return the full path to the directory.
+        /// </summary>
+        public string FullPath => Parent == null ? "/" : Parent.FullPath + Name + "/";
+        #endregion
 
         #region Methods.
-		/// <summary>
-		/// Function to return all the parents up to the root directory.
-		/// </summary>
-		/// <returns>A list of all the parents, up to and including the root.</returns>
-		/// <remarks>
-		/// If this value is empty, then there is no parent for this directory. This indicates that the current directory is the root directory for the file system.
-		/// </remarks>
-		public IEnumerable<IGorgonVirtualDirectory> GetParents()
+        /// <summary>
+        /// Function to return all the parents up to the root directory.
+        /// </summary>
+        /// <returns>A list of all the parents, up to and including the root.</returns>
+        /// <remarks>
+        /// If this value is empty, then there is no parent for this directory. This indicates that the current directory is the root directory for the file system.
+        /// </remarks>
+        public IEnumerable<IGorgonVirtualDirectory> GetParents()
 		{
 			IGorgonVirtualDirectory parent = Parent;
 

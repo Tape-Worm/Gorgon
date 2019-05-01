@@ -29,9 +29,11 @@ namespace GorgonTriangulator
 			float? value = null;
 
 			if (intersection != null)
-				value = Vector2.Distance(origin, intersection.Value);
+            {
+                value = Vector2.Distance(origin, intersection.Value);
+            }
 
-			return value;
+            return value;
 		}
 
 		public static Vector2? FindIntersection(LineSegment a, LineSegment b)
@@ -56,10 +58,12 @@ namespace GorgonTriangulator
             
 		    // ReSharper disable CompareOfFloatsByEqualityOperator
 		    if (ua.Clamp(0, 1) != ua || ub.Clamp(0f, 1f) != ub)
-				return null;
-		    // ReSharper restore CompareOfFloatsByEqualityOperator
+            {
+                return null;
+            }
+            // ReSharper restore CompareOfFloatsByEqualityOperator
 
-			return a.A.Position + ((a.B.Position - a.A.Position) * ua);
+            return a.A.Position + ((a.B.Position - a.A.Position) * ua);
 		}
 	}
 }

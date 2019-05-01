@@ -214,12 +214,7 @@ namespace Gorgon.PlugIns
                 ScanPlugIns();
             }
 
-            if (!_loadedPlugIns.TryGetValue(pluginName, out Lazy<GorgonPlugIn, IDictionary<string, object>> plugin))
-            {
-                return null;
-            }
-
-            return plugin.Value as T;
+            return !_loadedPlugIns.TryGetValue(pluginName, out Lazy<GorgonPlugIn, IDictionary<string, object>> plugin) ? null : plugin.Value as T;
         }
 
         /// <summary>

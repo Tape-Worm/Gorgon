@@ -125,72 +125,50 @@ namespace Gorgon.Timing
 			set;
 		}
 
-		/// <summary>
-		/// Property to return the number of seconds since a Gorgon application was started.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This property starts counting at the first call to one of the <see cref="O:Gorgon.UI.GorgonApplication.Run"/> methods. If this property is called prior to that, then 
-		/// it will return 0.
-		/// </para>
-		/// <para>This value is not affected by the <see cref="TimeScale"/> property.</para>
-		/// </remarks>
-		public static float SecondsSinceStart
-		{
-			get
-			{
-                if (_appTimer == null)
-                {
-                    return 0;
-                }
+        /// <summary>
+        /// Property to return the number of seconds since a Gorgon application was started.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This property starts counting at the first call to one of the <see cref="O:Gorgon.UI.GorgonApplication.Run"/> methods. If this property is called prior to that, then 
+        /// it will return 0.
+        /// </para>
+        /// <para>This value is not affected by the <see cref="TimeScale"/> property.</para>
+        /// </remarks>
+        public static float SecondsSinceStart => _appTimer == null ? 0 : MillisecondsSinceStart / 1000.0f;
 
-                return MillisecondsSinceStart / 1000.0f;
-			}
-		}
+        /// <summary>
+        /// Property to return the number of milliseconds since a Gorgon application was started.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This property starts counting at the first call to one of the <see cref="O:Gorgon.UI.GorgonApplication.Run"/> methods. If this property is called prior to that, then 
+        /// it will return 0.
+        /// </para>
+        /// <para>This value is not affected by the <see cref="TimeScale"/> property.</para>
+        /// </remarks>
+        public static float MillisecondsSinceStart => _appTimer == null ? 0 : (float)_appTimer.Milliseconds;
 
-		/// <summary>
-		/// Property to return the number of milliseconds since a Gorgon application was started.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This property starts counting at the first call to one of the <see cref="O:Gorgon.UI.GorgonApplication.Run"/> methods. If this property is called prior to that, then 
-		/// it will return 0.
-		/// </para>
-		/// <para>This value is not affected by the <see cref="TimeScale"/> property.</para>
-		/// </remarks>
-		public static float MillisecondsSinceStart
-		{
-			get
-			{
-			    if (_appTimer == null)
-			    {
-			        return 0;
-			    }
-
-				return (float)_appTimer.Milliseconds;
-			}
-		}
-
-		/// <summary>
-		/// Property to return the number of seconds to run the idle loop for a single iteration.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This is a value to indicate how long it took an iteration of the idle loop to execute. Including the time it took for a video device to draw data. This is the preferred value 
-		/// to read when checking for performance.
-		/// </para>
-		/// <para>
-		/// The article at <a href="https://www.mvps.org/directx/articles/fps_versus_frame_time.htm" target="_blank">https://www.mvps.org/directx/articles/fps_versus_frame_time.htm</a> has more 
-		/// information on using frame delta instead of frames per second. 
-		/// </para>
-		/// <para>
-		/// This is the same as the <see cref="ScaledDelta"/> property when the <see cref="TimeScale">TimeScale</see> is set to 1.0f, otherwise, this value is not affected by <see cref="TimeScale"/>.  
-		/// </para>
-		/// <para>
-		/// Because it is unaffected by TimeScale, this value is the one that should be used when measuring performance.
-		/// </para>
-		/// </remarks>
-		public static float Delta
+        /// <summary>
+        /// Property to return the number of seconds to run the idle loop for a single iteration.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This is a value to indicate how long it took an iteration of the idle loop to execute. Including the time it took for a video device to draw data. This is the preferred value 
+        /// to read when checking for performance.
+        /// </para>
+        /// <para>
+        /// The article at <a href="https://www.mvps.org/directx/articles/fps_versus_frame_time.htm" target="_blank">https://www.mvps.org/directx/articles/fps_versus_frame_time.htm</a> has more 
+        /// information on using frame delta instead of frames per second. 
+        /// </para>
+        /// <para>
+        /// This is the same as the <see cref="ScaledDelta"/> property when the <see cref="TimeScale">TimeScale</see> is set to 1.0f, otherwise, this value is not affected by <see cref="TimeScale"/>.  
+        /// </para>
+        /// <para>
+        /// Because it is unaffected by TimeScale, this value is the one that should be used when measuring performance.
+        /// </para>
+        /// </remarks>
+        public static float Delta
 		{
 			get;
 			private set;

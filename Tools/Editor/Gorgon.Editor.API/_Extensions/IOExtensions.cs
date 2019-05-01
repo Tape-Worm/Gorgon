@@ -27,9 +27,8 @@
 using System;
 using System.IO;
 using System.Text;
-using Gorgon.IO;
 
-namespace Gorgon.Editor
+namespace Gorgon.IO
 {
     /// <summary>
     /// Extension methods for IO functionality.

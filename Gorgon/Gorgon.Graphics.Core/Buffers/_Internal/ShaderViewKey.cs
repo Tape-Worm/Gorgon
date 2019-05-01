@@ -53,14 +53,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="obj">The object to compare with the current instance.</param>
         /// <returns><c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.</returns>
-        public override bool Equals(object obj)
-        {
-            if (obj is BufferShaderViewKey key)
-            {
-                return key.Equals(this);
-            }
-            return base.Equals(obj);
-        }
+        public override bool Equals(object obj) => obj is BufferShaderViewKey key ? key.Equals(this) : base.Equals(obj);
 
         /// <summary>
         /// Returns a hash code for this instance.

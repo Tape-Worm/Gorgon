@@ -55,19 +55,11 @@ namespace Gorgon.Input
         /// <summary>
         /// Indicates whether this instance and a specified object are equal.
         /// </summary>
+        /// <param name="obj">The object to compare with the current instance. </param><filterpriority>2</filterpriority>
         /// <returns>
         /// true if <paramref name="obj"/> and this instance are the same type and represent the same value; otherwise, false. 
-        /// </returns>
-        /// <param name="obj">The object to compare with the current instance. </param><filterpriority>2</filterpriority>
-        public override bool Equals(object obj)
-		{
-			if (obj is DeviceKey devKey)
-			{
-				return devKey.Equals(this);
-			}
-
-			return base.Equals(obj);
-		}
+        /// </returns>        
+        public override bool Equals(object obj) => obj is DeviceKey devKey ? devKey.Equals(this) : base.Equals(obj);
 
         /// <summary>
         /// Returns the hash code for this instance.

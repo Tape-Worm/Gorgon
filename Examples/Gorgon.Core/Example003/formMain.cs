@@ -138,15 +138,21 @@ namespace Gorgon.Examples
 		public void Draw(int lastX, int lastY, int x, int y, Color color)
 		{
 			if (_bitmap == null)
-				return;
-						
-			if ((lastX == x) && (lastY == y))
-				_bitmap.SetPixel(x, y, color);				
-			else
+            {
+                return;
+            }
+
+            if ((lastX == x) && (lastY == y))
+            {
+                _bitmap.SetPixel(x, y, color);
+            }
+            else
 			{
 				using (var pen = new Pen(color))
-					_graphics.DrawLine(pen, new Point(lastX, lastY), new Point(x, y));
-			}
+                {
+                    _graphics.DrawLine(pen, new Point(lastX, lastY), new Point(x, y));
+                }
+            }
 		}
 
         /// <summary>

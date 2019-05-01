@@ -26,16 +26,23 @@ namespace GorgonTriangulator
 			{
 				//perform the index wrapping
 				while (index < 0)
-					index = Count + index;
-				if (index >= Count)
-					index %= Count;
+                {
+                    index = Count + index;
+                }
 
-				//find the proper node
-				LinkedListNode<T> node = First;
+                if (index >= Count)
+                {
+                    index %= Count;
+                }
+
+                //find the proper node
+                LinkedListNode<T> node = First;
 				for (int i = 0; i < index; i++)
-					node = node?.Next;
+                {
+                    node = node?.Next;
+                }
 
-				return node;
+                return node;
 			}
 		}
 
@@ -53,10 +60,14 @@ namespace GorgonTriangulator
         public int IndexOf(T item)
 		{
 			for (int i = 0; i < Count; i++)
-				if (this[i].Value.Equals(item))
-					return i;
+            {
+                if (this[i].Value.Equals(item))
+                {
+                    return i;
+                }
+            }
 
-			return -1;
+            return -1;
 		}
 	}
 }

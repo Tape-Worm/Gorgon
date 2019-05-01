@@ -229,15 +229,7 @@ namespace Gorgon.Graphics
         /// <returns>
         ///   <b>true</b> if the specified <see cref="object" /> is equal to this instance; otherwise, <b>false</b>.
         /// </returns>
-	    public override bool Equals(object obj)
-	    {
-	        if (obj is GorgonBox box)
-	        {
-	            return box.Equals(in this);
-	        }
-
-	        return base.Equals(obj);
-        }
+	    public override bool Equals(object obj) => obj is GorgonBox box ? box.Equals(in this) : base.Equals(obj);
 
         /// <summary>
         /// Operator to determine if 2 instances are equal.

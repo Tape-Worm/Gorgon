@@ -160,7 +160,7 @@ namespace Gorgon.Animation
                     }
 
                     _loopCount++;
-                    _time = _time % CurrentAnimation.Length;
+                    _time %= CurrentAnimation.Length;
 
                     if (CurrentAnimation.Speed < 0)
                     {

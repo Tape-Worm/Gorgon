@@ -167,27 +167,19 @@ namespace Gorgon.Core
 				return -1;
 			}
 
-			if (string.IsNullOrWhiteSpace(characters))
-			{
-				return -1;
-			}
+            return string.IsNullOrWhiteSpace(characters)
+                ? -1
+                : characters.Length > theString.Length ? -1 : theString.ToString().IndexOf(characters, startIndex, comparison);
+        }
 
-			if (characters.Length > theString.Length)
-			{
-				return -1;
-			}
-
-			return theString.ToString().IndexOf(characters, startIndex, comparison);
-		}
-
-		/// <summary>
-		/// Function to find the last index of a character in a <see cref="StringBuilder"/>.
-		/// </summary>
-		/// <param name="theString">The string to search.</param>
-		/// <param name="character">Character to search for.</param>
-		/// <returns>The index of the character, or -1 if not found.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <b>null</b>.</exception>
-		public static int LastIndexOf(this StringBuilder theString, char character)
+        /// <summary>
+        /// Function to find the last index of a character in a <see cref="StringBuilder"/>.
+        /// </summary>
+        /// <param name="theString">The string to search.</param>
+        /// <param name="character">Character to search for.</param>
+        /// <returns>The index of the character, or -1 if not found.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <b>null</b>.</exception>
+        public static int LastIndexOf(this StringBuilder theString, char character)
 		{
 			if (theString == null)
 			{
@@ -235,23 +227,18 @@ namespace Gorgon.Core
 				return -1;
 			}
 
-			if (characters.Length > theString.Length)
-			{
-				return -1;
-			}
+            return characters.Length > theString.Length ? -1 : theString.ToString().LastIndexOf(characters, comparison);
+        }
 
-			return theString.ToString().LastIndexOf(characters, comparison);
-		}
-
-		/// <summary>
-		/// Function to convert a Linq to XML document into a string including a declaration element.
-		/// </summary>
-		/// <param name="document">The document to convert.</param>
-		/// <returns>The XML document serialized as a string.</returns>
-		/// <remarks>
-		/// This method addresses a shortcoming of the Linq-to-XML <see cref="XDocument"/>.<see cref="XNode.ToString()"/> method. The original method leaves out the declaration element when converted to a string.
-		/// </remarks>
-		public static string ToStringWithDeclaration(this XDocument document)
+        /// <summary>
+        /// Function to convert a Linq to XML document into a string including a declaration element.
+        /// </summary>
+        /// <param name="document">The document to convert.</param>
+        /// <returns>The XML document serialized as a string.</returns>
+        /// <remarks>
+        /// This method addresses a shortcoming of the Linq-to-XML <see cref="XDocument"/>.<see cref="XNode.ToString()"/> method. The original method leaves out the declaration element when converted to a string.
+        /// </remarks>
+        public static string ToStringWithDeclaration(this XDocument document)
 		{
 			if (document == null)
 			{

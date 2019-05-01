@@ -168,15 +168,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="info">Information about the element format.</param>
         /// <returns>The number of elements in the buffer.</returns>
-        protected int GetTotalElementCount(GorgonFormatInfo info)
-        {
-            if (info.IsTypeless)
-            {
-                return 0;
-            }
-
-            return SizeInBytes / info.SizeInBytes;
-        }
+        protected int GetTotalElementCount(GorgonFormatInfo info) => info.IsTypeless ? 0 : SizeInBytes / info.SizeInBytes;
 
         /// <summary>
         /// Function to retrieve the appropriate CPU flags for the buffer.
@@ -316,10 +308,9 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <typeparam name="T">The type of data to copy. Must be an unmanaged value type.</typeparam>
         /// <param name="destPtr">The pointer pointing at the memory that will receive the data.</param>
-        /// <param name="typeSize">The size, in bytes, of an element of data.</param>
         /// <param name="srcOffset">The offset within this buffer, in bytes, to start reading from.</param>
         /// <param name="size">The number of bytes to read/write.</param>
-        private unsafe void GetDataPtr<T>(T* destPtr, int typeSize, int srcOffset, int size)
+        private unsafe void GetDataPtr<T>(T* destPtr, int srcOffset, int size)
             where T : unmanaged
         {
             if (size == 0)
@@ -375,7 +366,7 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
-            count = count * typeSize;
+            count *= typeSize;
 
             if (!map)
             {
@@ -1046,7 +1037,7 @@ namespace Gorgon.Graphics.Core
             {
                 fixed (T* resultPtr = &result[0])
                 {
-                    GetDataPtr(resultPtr, typeSize, sourceOffset, size.Value);
+                    GetDataPtr(resultPtr, sourceOffset, size.Value);
                 }
             }
 
@@ -1181,7 +1172,7 @@ namespace Gorgon.Graphics.Core
             {
                 fixed(T* destPtr = &destination[destIndex])
                 {
-                    GetDataPtr(destPtr, typeSize, sourceOffset, size.Value);
+                    GetDataPtr(destPtr, sourceOffset, size.Value);
                 }
             }
         }
@@ -1312,7 +1303,7 @@ namespace Gorgon.Graphics.Core
             {
                 fixed(T* destPtr = &destination[destIndex])
                 {
-                    GetDataPtr(destPtr, typeSize, sourceOffset, size.Value);
+                    GetDataPtr(destPtr, sourceOffset, size.Value);
                 }
             }
         }
@@ -1422,7 +1413,7 @@ namespace Gorgon.Graphics.Core
             {
                 fixed(T* valuePtr = &value)
                 {
-                    GetDataPtr(valuePtr, typeSize, sourceOffset, 1);
+                    GetDataPtr(valuePtr, sourceOffset, 1);
                 }
             }
         }

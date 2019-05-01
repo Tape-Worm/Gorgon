@@ -43,11 +43,11 @@ namespace Gorgon.Editor.ExtractSpriteTool
     {
         #region Variables.
 		// The graphics interface for the application.
-        private GorgonGraphics _graphics;
+        private readonly GorgonGraphics _graphics;
 		// The 2D renderer for the application.
-        private Gorgon2D _renderer;
+        private readonly Gorgon2D _renderer;
 		// The swap chain used to render onto the window.
-        private GorgonSwapChain _swapChain;
+        private readonly GorgonSwapChain _swapChain;
 		// Background texture.
         private GorgonTexture2DView _bgTexture;
 		// The camera for viewing the scene.
@@ -57,7 +57,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
 		// Inverted rendering.
         private Gorgon2DBatchState _inverted;
 		// The sprite to display for preview.
-        private GorgonSprite _previewSprite = new GorgonSprite();
+        private readonly GorgonSprite _previewSprite = new GorgonSprite();
         #endregion
 
         #region Properties.
@@ -165,10 +165,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         }
 
         /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
-        public void Dispose()
-        {
-            _bgTexture?.Dispose();
-        }
+        public void Dispose() => _bgTexture?.Dispose();
 
         /// <summary>Function to perform the rendering.</summary>
         public void Render()

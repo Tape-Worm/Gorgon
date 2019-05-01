@@ -63,15 +63,7 @@ namespace Gorgon.Graphics.Fonts
         /// <returns>
         ///   <b>true</b> if the specified <see cref="object"/> is equal to this instance; otherwise, <b>false</b>.
         /// </returns>
-        public override bool Equals(object obj)
-		{
-			if (obj is GorgonKerningPair kernPair)
-			{
-				return kernPair.Equals(this);
-			}
-
-			return base.Equals(obj);
-		}
+        public override bool Equals(object obj) => obj is GorgonKerningPair kernPair ? kernPair.Equals(this) : base.Equals(obj);
 
         /// <summary>
         /// Returns a hash code for this instance.

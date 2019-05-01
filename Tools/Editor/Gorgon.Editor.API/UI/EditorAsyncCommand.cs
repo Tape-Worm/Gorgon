@@ -59,15 +59,7 @@ namespace Gorgon.Editor.UI
         /// </summary>
         /// <param name="args">The arguments to pass to the command.</param>
         /// <returns>A <see cref="Task"/> for asynchronous operation.</returns>
-        public Task ExecuteAsync(T args)
-        {
-            if (_execute != null)
-            {
-                return _execute(args);
-            }
-
-            return _executeNoArgs();
-        }
+        public Task ExecuteAsync(T args) => _execute != null ? _execute(args) : _executeNoArgs();
 
         /// <summary>
         /// Function to determine if a command can be executed or not.
@@ -81,12 +73,7 @@ namespace Gorgon.Editor.UI
                 return true;
             }
 
-            if (_canExecute != null)
-            {
-                return _canExecute(args);
-            }
-
-            return _canExecuteNoArgs();
+            return _canExecute != null ? _canExecute(args) : _canExecuteNoArgs();
         }
         #endregion
 

@@ -265,10 +265,7 @@ namespace Gorgon.Editor.UI
 
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.UI.RecentFilesControl"/> class.</summary>
-        public RecentFilesControl()
-        {
-            InitializeComponent();
-        }
+        public RecentFilesControl() => InitializeComponent();
         #endregion
     }
 }

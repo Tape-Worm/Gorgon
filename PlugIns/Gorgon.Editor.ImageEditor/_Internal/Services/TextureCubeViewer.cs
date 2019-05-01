@@ -51,8 +51,6 @@ namespace Gorgon.Editor.ImageEditor
         private readonly DX.RectangleF[] _cubeImageBounds = new DX.RectangleF[6];
         // The font used to print each axis.
         private GorgonFont _axisFont;
-        // The current swap chain.
-        private readonly GorgonSwapChain _swapChain;
         // The selection rectangle.
         private IMarchingAnts _selectionRect;
         #endregion
@@ -141,7 +139,6 @@ namespace Gorgon.Editor.ImageEditor
         {
             renderer.End();
             
-            DX.RectangleF canvasRegion = OnGetBackgroundRegion();
             float imageWidth = TextureBounds.Width / 4;
             float imageHeight = TextureBounds.Height / 3;
 
@@ -245,7 +242,6 @@ namespace Gorgon.Editor.ImageEditor
         public TextureCubeViewer(IGraphicsContext graphicsContext, GorgonSwapChain swapChain, ScrollBar hScroll, ScrollBar vScroll)
             : base(graphicsContext, swapChain, hScroll, vScroll)
         {
-            _swapChain = swapChain;
         }
         #endregion
     }

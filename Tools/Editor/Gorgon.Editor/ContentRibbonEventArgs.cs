@@ -45,9 +45,6 @@ namespace Gorgon.Editor
 
         /// <summary>Initializes a new instance of the ContentRibbonAddedEventArgs class.</summary>
         /// <param name="ribbon">The ribbon.</param>
-        public ContentRibbonEventArgs(KryptonRibbon ribbon)
-        {
-            Ribbon = ribbon;
-        }
+        public ContentRibbonEventArgs(KryptonRibbon ribbon) => Ribbon = ribbon;
     }
 }

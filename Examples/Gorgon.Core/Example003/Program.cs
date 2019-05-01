@@ -109,13 +109,17 @@ namespace Gorgon.Examples
 					_color = 0;
 					_component++;
 					if (_component > 2)
-						_component = 0;
-				}
+                    {
+                        _component = 0;
+                    }
+                }
 
 				if (_lastX >= form.GraphicsSize.Width)
-					_lastX = 0;
+                {
+                    _lastX = 0;
+                }
 
-				_lastY = _rnd.Next(0, form.GraphicsSize.Height / 4);
+                _lastY = _rnd.Next(0, form.GraphicsSize.Height / 4);
 			}
 
 			form.Flip();

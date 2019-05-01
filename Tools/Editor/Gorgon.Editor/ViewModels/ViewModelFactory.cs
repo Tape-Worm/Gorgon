@@ -607,7 +607,7 @@ namespace Gorgon.Editor.ViewModels
             previewer.Initialize(new ContentPreviewVmParameters(result.FileExplorer, result.ContentFileManager, thumbDirectory, this));
 
             result.ContentPreviewer = previewer;
-            result.Initialize(new ProjectVmParameters(projectData, _folderBrowser, this));
+            result.Initialize(new ProjectVmParameters(projectData, this));
 
             // Empty this list, it will be rebuilt when we save, and having it lying around is a waste.
             projectData.ProjectItems.Clear();

@@ -37,9 +37,6 @@ namespace Gorgon.UI
         /// <summary>
         /// Initializes a new instance of the <see cref="ProgressPanel"/> class.
         /// </summary>
-        public ProgressPanel()
-        {
-            InitializeComponent();
-        }
+        public ProgressPanel() => InitializeComponent();
     }
 }

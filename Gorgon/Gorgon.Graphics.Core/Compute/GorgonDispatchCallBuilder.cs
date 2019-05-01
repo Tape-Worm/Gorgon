@@ -239,7 +239,7 @@ namespace Gorgon.Graphics.Core
             StateCopy.CopySamplers(final.D3DState.CsSamplers, _worker.D3DState.CsSamplers, 0);
 
             // Copy over shader resource views.
-            (int srvStart, int srvCount) = _worker.D3DState.CsSrvs.GetDirtyItems();
+            (int _, int _) = _worker.D3DState.CsSrvs.GetDirtyItems();
 
             StateCopy.CopySrvs(final.D3DState.CsSrvs, _worker.D3DState.CsSrvs);
 

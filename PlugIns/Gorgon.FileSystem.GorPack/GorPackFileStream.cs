@@ -103,11 +103,16 @@ namespace Gorgon.IO.GorPack
 			set
 			{
 				if (value < 0)
-					value = 0;
-				if (value >= Length)
-					value = Length;
+                {
+                    value = 0;
+                }
 
-				_position = value;
+                if (value >= Length)
+                {
+                    value = Length;
+                }
+
+                _position = value;
 
 				_bzipStream.Position = _basePosition + _position;
 			}

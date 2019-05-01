@@ -164,7 +164,7 @@ namespace Gorgon.Graphics.Core
 
 			Log.Print($"{Name} Index Buffer: Creating D3D11 buffer. Size: {SizeInBytes} bytes", LoggingLevel.Simple);
 
-		    GorgonVertexBuffer.ValidateBufferBindings(_info.Usage, _info.Binding, 0);
+		    GorgonVertexBuffer.ValidateBufferBindings(_info.Usage, 0);
 
 		    D3D11.BindFlags bindFlags = D3D11.BindFlags.IndexBuffer;
 

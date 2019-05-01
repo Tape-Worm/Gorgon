@@ -34,6 +34,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\Gorgon.Editor.API.xml</DocumentationFile>
     <LangVersion>latest</LangVersion>
+    <CodeAnalysisRuleSet>..\..\..\Gorgon\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
@@ -60,6 +61,7 @@
     <Compile Include="Content\ContentFileRenamedEventArgs.cs" />
     <Compile Include="Content\_Interfaces\IContentFileManager.cs" />
     <Compile Include="Converters\JsonSharpDxRectConverter.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Plugins\ContentImportPlugin.cs" />
     <Compile Include="Plugins\PlugInAssemblyState.cs" />
     <Compile Include="Plugins\_Interfaces\IToolPluginRibbonButton.cs" />

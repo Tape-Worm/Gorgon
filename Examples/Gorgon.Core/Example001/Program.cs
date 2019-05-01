@@ -107,7 +107,7 @@ namespace Gorgon.Examples
 		{
 		    while (!_quit)
 			{
-				ConsoleKeyInfo key = Console.KeyAvailable ? Console.ReadKey(true) : default(ConsoleKeyInfo);
+				ConsoleKeyInfo key = Console.KeyAvailable ? Console.ReadKey(true) : default;
 
 				switch (key.Key)
 				{

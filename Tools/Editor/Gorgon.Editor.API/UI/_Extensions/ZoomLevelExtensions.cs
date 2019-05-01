@@ -88,15 +88,7 @@ namespace Gorgon.Editor.UI
         /// </summary>
         /// <param name="zoomLevel">The zoom level to retrieve the name for.</param>
         /// <returns>The friendly name of the zoom level.</returns>
-        public static string GetName(this ZoomLevels zoomLevel)
-        {
-            if (!_names.TryGetValue(zoomLevel, out string name))
-            {
-                return string.Empty;
-            }
-
-            return name;
-        }
+        public static string GetName(this ZoomLevels zoomLevel) => !_names.TryGetValue(zoomLevel, out string name) ? string.Empty : name;
 
         /// <summary>
         /// Function to convert a friendly name to an associated zoom level.

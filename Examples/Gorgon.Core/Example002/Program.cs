@@ -42,7 +42,7 @@ namespace Gorgon.Examples
 	{
 		#region Variables.
         private static readonly Random _rnd = new Random();			// Random number generator.
-        private static formMain _form;				                // Our application form.
+        private static FormMain _form;				                // Our application form.
 		private static int _lastX;						            // Last horizontal coordinate.
 		private static int _lastY;						            // Last vertical coordinate.
 		private static float _lastTime;					            // Last time we drew.
@@ -68,10 +68,12 @@ namespace Gorgon.Examples
 				_lastY = y;
 			}
 			else
-				_form.Draw(x, y, x, y, Color.FromArgb(_rnd.Next(0, 255), _rnd.Next(0, 255), _rnd.Next(0, 255)));
+            {
+                _form.Draw(x, y, x, y, Color.FromArgb(_rnd.Next(0, 255), _rnd.Next(0, 255), _rnd.Next(0, 255)));
+            }
 
-			// Flip the buffer.
-			_form.Flip();
+            // Flip the buffer.
+            _form.Flip();
 
 			_form.DrawFPS("FPS: " + GorgonTiming.FPS.ToString("0.0"));
 
@@ -89,7 +91,7 @@ namespace Gorgon.Examples
 				Application.EnableVisualStyles();
 				Application.SetCompatibleTextRenderingDefault(false);
 
-				_form = new formMain
+				_form = new FormMain
 				    {
 				        ClientSize = new Size(640, 480)
 				    };

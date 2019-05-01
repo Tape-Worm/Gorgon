@@ -29,16 +29,23 @@ namespace GorgonTriangulator
 		{
 			//return true if the point to test is one of the vertices
 			if (point.Equals(A) || point.Equals(B) || point.Equals(C))
-				return true;
+            {
+                return true;
+            }
 
-			bool oddNodes = CheckPointToSegment(C, A, point);
+            bool oddNodes = CheckPointToSegment(C, A, point);
 
 		    if (CheckPointToSegment(A, B, point))
-				oddNodes = !oddNodes;
-			if (CheckPointToSegment(B, C, point))
-				oddNodes = !oddNodes;
+            {
+                oddNodes = !oddNodes;
+            }
 
-			return oddNodes;
+            if (CheckPointToSegment(B, C, point))
+            {
+                oddNodes = !oddNodes;
+            }
+
+            return oddNodes;
 		}
 
         public static bool ContainsPoint(Vertex a, Vertex b, Vertex c, Vertex point) => new Triangle(a, b, c).ContainsPoint(point);
@@ -55,8 +62,10 @@ namespace GorgonTriangulator
 					(sB.Position.X - sA.Position.X));
 				
 				if (x < point.Position.X)
-					return true;
-			}
+                {
+                    return true;
+                }
+            }
 
 			return false;
 		}

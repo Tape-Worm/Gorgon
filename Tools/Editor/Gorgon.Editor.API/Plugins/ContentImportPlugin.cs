@@ -186,11 +186,6 @@ namespace Gorgon.Editor.PlugIns
         /// </remarks>
         public void Initialize(IContentPlugInService pluginService, IGraphicsContext graphicsContext)
         {
-            if (pluginService == null)
-            {
-                throw new ArgumentNullException(nameof(pluginService));
-            }
-
             if (Interlocked.Exchange(ref _initialized, 1) == 1)
             {
                 return;
@@ -198,7 +193,7 @@ namespace Gorgon.Editor.PlugIns
 
             CommonServices.Log.Print($"Initializing {Name}...", LoggingLevel.Simple);
 
-            ContentPlugInService = pluginService;
+            ContentPlugInService = pluginService ?? throw new ArgumentNullException(nameof(pluginService));
             GraphicsContext = graphicsContext ?? throw new ArgumentNullException(nameof(graphicsContext));            
 
             OnInitialize();

@@ -241,8 +241,8 @@ namespace Gorgon.Editor.ImageEditor
                 scale.X = scale.Y;
             }
 
-            textureSize.Width = textureSize.Width * scale.X;
-            textureSize.Height = textureSize.Height * scale.Y;
+            textureSize.Width *= scale.X;
+            textureSize.Height *= scale.Y;
 
             location.X = (location.X - textureSize.Width / 2.0f);
             location.Y = (location.Y - textureSize.Height / 2.0f);
@@ -262,8 +262,8 @@ namespace Gorgon.Editor.ImageEditor
             var textureSize = new DX.Size2F(width, height);
             var location = new DX.Vector2(_swapChain.Width / 2.0f, _swapChain.Height / 2.0f);
 
-            textureSize.Width = textureSize.Width * scale;
-            textureSize.Height = textureSize.Height * scale;
+            textureSize.Width *= scale;
+            textureSize.Height *= scale;
 
             var delta = new DX.Vector2((textureSize.Width - _swapChain.Width) / 2.0f, (textureSize.Height - _swapChain.Height) / 2.0f);
 
@@ -633,7 +633,7 @@ namespace Gorgon.Editor.ImageEditor
 
             _pixelShader = OnGetPixelShader(_context.Graphics, Resources.ImageViewShaders);
 
-            IGorgonAnimation animation = _animations[AnimationType.Fade] = _animBuilder.EditColors()
+            _animations[AnimationType.Fade] = _animBuilder.EditColors()
                 .SetKey(new GorgonKeyGorgonColor(0, new GorgonColor(GorgonColor.White, 0)))
                 .SetKey(new GorgonKeyGorgonColor(0.35f, GorgonColor.White))
                 .EndEdit()
@@ -684,7 +684,7 @@ namespace Gorgon.Editor.ImageEditor
 
             if ((CurrentAnimation == AnimationType.Zoom) && (AnimationController.State == AnimationState.Playing))
             {
-                animTime = animTime - AnimationController.Time;
+                animTime -= AnimationController.Time;
             }
 
             EndAnimation();

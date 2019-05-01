@@ -69,12 +69,9 @@ namespace Gorgon.Renderers
 
             _colorBuffer.Replace("#", string.Empty);
 
-            if (!int.TryParse(_colorBuffer.ToString(), NumberStyles.AllowHexSpecifier, CultureInfo.CurrentCulture, out int color))
-            {
-                return null;
-            }
-            
-            return new GorgonColor(color);
+            return !int.TryParse(_colorBuffer.ToString(), NumberStyles.AllowHexSpecifier, CultureInfo.CurrentCulture, out int color)
+                ? null
+                : (GorgonColor?)new GorgonColor(color);
         }
 
         /// <summary>

@@ -75,12 +75,13 @@ namespace Gorgon.Renderers
     /// <para>
     /// Because this renderer uses batching to achieve its performance, it is worth noting that calls to draw items will share the same global state via the <see cref="GorgonBlendState"/>,
     /// <see cref="GorgonDepthStencilState"/> and <see cref="GorgonRasterState"/> state objects. This includes pixel shaders and vertex shaders, and their associated resources.  And users can send custom
-    /// states and shaders to the <see cref="Begin"/> method. However, when a new item is drawn with a different <see cref="GorgonTexture2DView"/>, 
+    /// states and shaders to the <see cref="Begin"/> method. However, when a new item is drawn with a different <see cref="GorgonTexture2DView"/>, or <see cref="GorgonSamplerState"/>, a state change will 
+    /// be performaned on behalf of the user (for sake of convenience). This means that too many texture/sampler changes between sprites may cause a performance issue.
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonGraphics"/>
     /// <seealso cref="Gorgon2DBatchState"/>
-    public class Gorgon2D
+    public sealed class Gorgon2D
         : IGorgon2DFluent, IGorgon2DDrawingFluent
     {
         #region Constants.
@@ -1745,12 +1746,12 @@ namespace Gorgon.Renderers
             // Ensure we don't get overdraw by limiting the angle sizes.
             while (startAngle > 360.0f)
             {
-                startAngle = startAngle - 360.0f;
+                startAngle -= 360.0f;
             }
 
             while (endAngle > 360.0f)
             {
-                endAngle = endAngle - 360.0f;
+                endAngle -= 360.0f;
             }
 
             float wedgeAngle = (endAngle - startAngle).Abs();
@@ -1870,12 +1871,12 @@ namespace Gorgon.Renderers
             // Ensure we don't get overdraw by limiting the angle sizes.
             while (startAngle > 360.0f)
             {
-                startAngle = startAngle - 360.0f;
+                startAngle -= 360.0f;
             }
 
             while (endAngle > 360.0f)
             {
-                endAngle = endAngle - 360.0f;
+                endAngle -= 360.0f;
             }
 
             float wedgeAngle = (endAngle - startAngle).Abs();

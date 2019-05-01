@@ -191,14 +191,11 @@ namespace Gorgon.Graphics.Core
                            .Select(item =>
                                    {
                                        // If the object has been collected/disposed, then do nothing.
-                                       if ((!item.TryGetTarget(out IDisposable disposable))
-                                           || (!(disposable is T resource)) 
+                                       return ((!item.TryGetTarget(out IDisposable disposable))
+                                           || (!(disposable is T resource))
                                            || (resource.IsDisposed))
-                                       {
-                                           return null;
-                                       }
-
-                                       return resource;
+                                           ? null
+                                           : resource;
                                    })
                            .Where(item => item != null);
         }

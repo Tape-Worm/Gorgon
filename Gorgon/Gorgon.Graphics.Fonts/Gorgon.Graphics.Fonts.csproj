@@ -40,6 +40,7 @@
     <DocumentationFile>bin\Release\Gorgon.Graphics.Fonts.XML</DocumentationFile>
     <LangVersion>latest</LangVersion>
     <UseVSHostingProcess>true</UseVSHostingProcess>
+    <CodeAnalysisRuleSet>..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -58,6 +59,7 @@
     </Compile>
     <Compile Include="Codecs\GorgonCodecBmFont.cs" />
     <Compile Include="Codecs\_Internal\BmFontInfo.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="GorgonFont.cs" />
     <Compile Include="Codecs\GorgonCodecGorFont.cs" />
     <Compile Include="Codecs\GorgonFontCodec.cs" />

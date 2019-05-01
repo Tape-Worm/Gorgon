@@ -117,15 +117,7 @@ namespace Gorgon.Graphics.Imaging
         /// <returns>
         ///   <b>true</b> if the specified <see cref="object" /> is equal to this instance; otherwise, <b>false</b>.
         /// </returns>
-        public override bool Equals(object obj)
-		{
-			if (obj is GorgonPitchLayout pitchLayout)
-			{
-				return pitchLayout.Equals(this);	
-			}
-
-			return base.Equals(obj);
-		}
+        public override bool Equals(object obj) => obj is GorgonPitchLayout pitchLayout ? pitchLayout.Equals(this) : base.Equals(obj);
 
         /// <summary>
         /// Returns a hash code for this instance.

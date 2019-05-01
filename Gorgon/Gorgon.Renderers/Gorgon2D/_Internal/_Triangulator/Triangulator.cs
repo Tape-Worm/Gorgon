@@ -66,10 +66,12 @@ namespace GorgonTriangulator
             
 		    //make sure we have our vertices wound properly
 			if (DetermineWindingOrder(inputVertices) == WindingOrder.Clockwise)
-				ReverseWindingOrder(inputVertices);
-			
-			//clear all of the lists
-		    _triangles.Clear();
+            {
+                ReverseWindingOrder(inputVertices);
+            }
+
+            //clear all of the lists
+            _triangles.Clear();
 			_polygonVertices.Clear();
 			_earVertices.Clear();
 			_convexVertices.Clear();
@@ -77,24 +79,30 @@ namespace GorgonTriangulator
 
 			//generate the cyclical list of vertices in the polygon
 			for (int i = 0; i < inputVertices.Length; i++)
-				_polygonVertices.AddLast(new Vertex((Vector2)inputVertices[i].Position, i));
+            {
+                _polygonVertices.AddLast(new Vertex((Vector2)inputVertices[i].Position, i));
+            }
 
-			//categorize all of the vertices as convex, reflex, and ear
-			FindConvexAndReflexVertices();
+            //categorize all of the vertices as convex, reflex, and ear
+            FindConvexAndReflexVertices();
 			FindEarVertices();
 
 			//clip all the ear vertices
 			while (_polygonVertices.Count > 3 && _earVertices.Count > 0)
-				ClipNextEar();
+            {
+                ClipNextEar();
+            }
 
-			//if there are still three points, use that for the last triangle
-			if (_polygonVertices.Count == 3)
-				_triangles.Add(new Triangle(
+            //if there are still three points, use that for the last triangle
+            if (_polygonVertices.Count == 3)
+            {
+                _triangles.Add(new Triangle(
 					_polygonVertices[0].Value,
 					_polygonVertices[1].Value,
 					_polygonVertices[2].Value));
+            }
 
-			//add all of the triangle indices to the output array
+            //add all of the triangle indices to the output array
             var outputIndices = new GorgonNativeBuffer<int>(_triangles.Count * 3);
 			//move the if statement out of the loop to prevent all the
 			//redundant comparisons
@@ -328,8 +336,11 @@ namespace GorgonTriangulator
 #if DEBUG
 			var vString = new StringBuilder();
 			foreach (Gorgon2DVertex v in vertices)
-				vString.Append($"{v.Position}, ");
-			Log("Original Vertices: {0}", vString);
+            {
+                vString.Append($"{v.Position}, ");
+            }
+
+            Log("Original Vertices: {0}", vString);
 #endif
 		    int end = vertices.Length - 1;
 		    int start = 0;
@@ -346,8 +357,11 @@ namespace GorgonTriangulator
 #if DEBUG
 			vString = new StringBuilder();
 			foreach (Gorgon2DVertex v in vertices)
-				vString.Append($"{v.Position}, ");
-			Log("New Vertices After Reversal: {0}\n", vString);
+            {
+                vString.Append($"{v.Position}, ");
+            }
+
+            Log("New Vertices After Reversal: {0}\n", vString);
 #endif
 		}
 
@@ -371,11 +385,15 @@ namespace GorgonTriangulator
                 Vector4.Subtract(ref p3, ref p2, out Vector4 e2);
 
 				if ((e1.X * e2.Y) - (e1.Y * e2.X) >= 0)
-					clockWiseCount++;
-				else
-					counterClockWiseCount++;
+                {
+                    clockWiseCount++;
+                }
+                else
+                {
+                    counterClockWiseCount++;
+                }
 
-				p1 = p2;
+                p1 = p2;
 			}
 
 			return (clockWiseCount > counterClockWiseCount)
@@ -404,18 +422,27 @@ namespace GorgonTriangulator
 #if DEBUG
 			var rString = new StringBuilder();
 			foreach (Vertex v in _reflexVertices)
-				rString.Append($"{v.Index}, ");
-			Log("Reflex Vertices: {0}", rString);
+            {
+                rString.Append($"{v.Index}, ");
+            }
+
+            Log("Reflex Vertices: {0}", rString);
 
 			var cString = new StringBuilder();
 			foreach (Vertex v in _convexVertices)
-				cString.Append($"{v.Index}, ");
-			Log("Convex Vertices: {0}", cString);
+            {
+                cString.Append($"{v.Index}, ");
+            }
+
+            Log("Convex Vertices: {0}", cString);
 
 			var eString = new StringBuilder();
 			foreach (Vertex v in _earVertices)
-				eString.Append($"{v.Index}, ");
-			Log("Ear Vertices: {0}", eString);
+            {
+                eString.Append($"{v.Index}, ");
+            }
+
+            Log("Ear Vertices: {0}", eString);
 #endif
 		}
 
@@ -506,9 +533,11 @@ namespace GorgonTriangulator
 			foreach (Vertex t in _reflexVertices)
 			{
 				if (t.Equals(p) || t.Equals(c) || t.Equals(n))
-					continue;
+                {
+                    continue;
+                }
 
-			    if (!Triangle.ContainsPoint(p, c, n, t))
+                if (!Triangle.ContainsPoint(p, c, n, t))
 			    {
 			        continue;
 			    }

@@ -116,6 +116,7 @@ namespace Gorgon.Native
         /// <param name="lpRect">The resulting window boundaries.</param>
         /// <returns><b>true</b> if failed, <b>false</b> if successful.</returns>
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+		[return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetWindowRect(IntPtr hwnd, out RECT lpRect);
         #endregion
 

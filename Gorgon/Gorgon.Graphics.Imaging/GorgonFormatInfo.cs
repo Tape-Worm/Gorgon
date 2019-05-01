@@ -893,14 +893,14 @@ namespace Gorgon.Graphics
 		[SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "width+3")]
 		public GorgonPitchLayout GetPitchForFormat(int width, int height, PitchFlags flags = PitchFlags.None)
 		{
-			int rowPitch;
+            int rowPitch;
 
-			// Do calculations for compressed formats.
-			if (IsCompressed)
+            // Do calculations for compressed formats.
+            if (IsCompressed)
 			{
                 int bpb;
 
-				switch (Format)
+                switch (Format)
 				{
 					case BufferFormat.BC1_Typeless:
 					case BufferFormat.BC1_UNorm:
@@ -930,7 +930,6 @@ namespace Gorgon.Graphics
                     numBlocksHigh = (height + 3) / 4;
                 }
                 long rowBytes = numBlocksWide * bpb;
-                long numRows = numBlocksHigh;
                 long numBytes = rowBytes * numBlocksHigh;
 
                 return new GorgonPitchLayout((int)rowBytes, (int)numBytes, (int)numBlocksWide, (int)numBlocksHigh);

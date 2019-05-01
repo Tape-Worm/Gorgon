@@ -98,14 +98,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="obj">The object to compare with the current instance. </param>
         /// <returns>
         /// <see langword="true" /> if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, <see langword="false" />. </returns>
-        public override bool Equals(object obj)
-        {
-            if (obj is GorgonReadWriteViewBinding uav)
-            {
-                return uav.Equals(in this);
-            }
-            return base.Equals(obj);
-        }
+        public override bool Equals(object obj) => obj is GorgonReadWriteViewBinding uav ? uav.Equals(in this) : base.Equals(obj);
 
         /// <summary>
         /// Function to compare this instance with another.

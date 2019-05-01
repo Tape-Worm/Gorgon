@@ -419,7 +419,7 @@ namespace Gorgon.Editor.ImageEditor
 
                     for (int depth = 0; depth < minDepth; ++depth)
                     {
-                        int destOffset = 0;
+                        int destOffset;
                         if (destImage.ImageType == ImageType.Image3D)
                         {
                             destOffset = depth + startArrayOrDepth;

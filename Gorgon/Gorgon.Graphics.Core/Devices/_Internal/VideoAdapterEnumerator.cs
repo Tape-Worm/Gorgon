@@ -158,24 +158,21 @@ namespace Gorgon.Graphics.Core
 		{
 			D3D.FeatureLevel result = device.FeatureLevel;
 
-			if ((Enum.IsDefined(typeof(D3D.FeatureLevel), (int)result))
-				&& (result >= D3D.FeatureLevel.Level_12_0))
-			{
-				return (FeatureSet)result;
-			}
-			
-			return null;
-		}
+            return ((Enum.IsDefined(typeof(D3D.FeatureLevel), (int)result))
+                && (result >= D3D.FeatureLevel.Level_12_0))
+                ? (FeatureSet?)result
+                : null;
+        }
 
-		/// <summary>
-		/// Function to retrieve the outputs attached to a video adapter.
-		/// </summary>
-		/// <param name="device">The Direct 3D device used to filter display modes.</param>
-		/// <param name="adapter">The adapter to retrieve the outputs from.</param>
-		/// <param name="outputCount">The number of outputs for the device.</param>
-		/// <param name="log">The logging interface used to capture debug messages.</param>
-		/// <returns>A list if video output info values.</returns>
-		private static Dictionary<string, VideoOutputInfo> GetOutputs(D3D11.Device5 device, Adapter4 adapter, int outputCount, IGorgonLog log)
+        /// <summary>
+        /// Function to retrieve the outputs attached to a video adapter.
+        /// </summary>
+        /// <param name="device">The Direct 3D device used to filter display modes.</param>
+        /// <param name="adapter">The adapter to retrieve the outputs from.</param>
+        /// <param name="outputCount">The number of outputs for the device.</param>
+        /// <param name="log">The logging interface used to capture debug messages.</param>
+        /// <returns>A list if video output info values.</returns>
+        private static Dictionary<string, VideoOutputInfo> GetOutputs(D3D11.Device5 device, Adapter4 adapter, int outputCount, IGorgonLog log)
 		{
 			var result = new Dictionary<string, VideoOutputInfo>(StringComparer.OrdinalIgnoreCase);
 
