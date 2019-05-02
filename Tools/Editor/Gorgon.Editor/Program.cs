@@ -119,7 +119,10 @@ namespace Gorgon.Editor
 
             if (!string.IsNullOrWhiteSpace(severity))
             {
-                Enum.TryParse(severity, out level);
+                if (!Enum.TryParse(severity, out level))
+                {
+                    level = LoggingLevel.Simple;
+                }
             }
 #endif
             (bool hasLogTypeSwitch, string logType) = GetCommandLineArgument(args, "-logtype");
