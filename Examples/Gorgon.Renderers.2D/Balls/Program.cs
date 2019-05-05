@@ -583,7 +583,8 @@ namespace Gorgon.Examples
 		        var blendStateBuilder = new GorgonBlendStateBuilder();
 
 		        _blurBlend = stateBuilder.BlendState(blendStateBuilder.ResetTo(GorgonBlendState.Default)
-		                                                              .DestinationBlend(alpha: Blend.InverseSourceAlpha)
+																	  .SourceBlend(alpha: Blend.InverseDestinationAlpha)
+		                                                              .DestinationBlend(alpha: Blend.One)
 		                                                              .Build())
 		                                 .Build();
 

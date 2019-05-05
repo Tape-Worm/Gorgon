@@ -19,7 +19,7 @@ namespace Gorgon.Renderers.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -299,6 +299,15 @@ namespace Gorgon.Renderers.Properties {
         internal static string GOR2D_EFFECT_WAVE_DESC {
             get {
                 return ResourceManager.GetString("GOR2D_EFFECT_WAVE_DESC", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        internal static string GOR2D_ERR_ATLAS_INVALID_FORMAT {
+            get {
+                return ResourceManager.GetString("GOR2D_ERR_ATLAS_INVALID_FORMAT", resourceCulture);
             }
         }
         

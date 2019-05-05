@@ -37,6 +37,7 @@ using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Support;
 using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers;
 using Newtonsoft.Json;
@@ -250,6 +251,7 @@ namespace Gorgon.IO
             {
                 texture = GorgonTexture2D.FromStream(graphics, fileStream, codec, file.Size, new GorgonTexture2DLoadOptions
                 {
+					IsTextureCube = false,
                     Name = file.FullPath,
                     Binding = TextureBinding.ShaderResource,
                     Usage = (((usage & ResourceUsage.None) == ResourceUsage.None) || ((usage & ResourceUsage.Staging) == ResourceUsage.Staging)) ? ResourceUsage.Default : usage

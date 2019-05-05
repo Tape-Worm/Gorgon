@@ -110,8 +110,14 @@
     <Compile Include="Renderables\_Internal\_ValueTypes\AlphaTestData.cs" />
     <Compile Include="Renderables\_Internal\_ValueTypes\ColorBlock.cs" />
     <Compile Include="Renderables\_Internal\_ValueTypes\PolyVertexShaderData.cs" />
+    <Compile Include="Services\GorgonTextureAtlas.cs" />
+    <Compile Include="Services\GorgonTextureAtlasService.cs" />
+    <Compile Include="Services\_Internal\SpriteNode .cs" />
+    <Compile Include="Services\_Internal\SpritePacker.cs" />
+    <Compile Include="Services\_Internal\TextureRects.cs" />
     <Compile Include="Shaders\Gorgon2DShader.cs" />
     <Compile Include="Shaders\Gorgon2DShaderBuilder.cs" />
+    <Compile Include="Services\_Interfaces\IGorgonTextureAtlasService.cs" />
     <Compile Include="_Interfaces\IGorgon2DFluent.cs" />
     <Compile Include="_Internal\_Triangulator\CyclicalList.cs" />
     <Compile Include="_Internal\DrawCallFactory.cs" />
