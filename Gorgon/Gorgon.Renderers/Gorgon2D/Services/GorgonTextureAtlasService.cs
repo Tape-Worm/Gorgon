@@ -419,8 +419,8 @@ namespace Gorgon.Renderers.Services
 			
             return (maxSize, rects.Count.Max(minArrayCount));
         }
-		
-		/// <summary>
+
+        /// <summary>
         /// Function to generate the textures and sprites for the texture atlas.
         /// </summary>
         /// <param name="regions">The texture(s), array index and region for each sprite.</param>
@@ -441,12 +441,13 @@ namespace Gorgon.Renderers.Services
         /// reside. This value can be retrieved by calling the <see cref="GetSpriteRegions(IEnumerable{GorgonSprite})"/> method. 
         /// </para>
         /// <para>
-        /// WHen passing the <paramref name="textureFormat"/>, the format should be compatible with render target formats. This can be determined by checking the 
-        /// <see cref="FormatSupportInfo.IsRenderTargetFormat"/> on the <see cref="GorgonGraphics"/>.<seealso cref="GorgonGraphics.FormatSupport"/> property. If the texture format is not supported as a 
+        /// When passing the <paramref name="textureFormat"/>, the format should be compatible with render target formats. This can be determined by checking the 
+        /// <see cref="IGorgonFormatSupportInfo.IsRenderTargetFormat"/> on the <see cref="GorgonGraphics"/>.<see cref="GorgonGraphics.FormatSupport"/> property. If the texture format is not supported as a 
         /// render target texture, an exception will be thrown.
         /// </para>
         /// </remarks>
-        /// <see cref="GetSpriteRegions(IEnumerable{GorgonSprite})"/>
+        /// <seealso cref="IGorgonFormatSupportInfo"/>
+        /// <seealso cref="GetSpriteRegions(IEnumerable{GorgonSprite})"/>
         /// <seealso cref="GorgonTextureAtlas"/>
         public GorgonTextureAtlas GenerateAtlas(IReadOnlyDictionary<GorgonSprite, (int textureIndex, DX.Rectangle region, int arrayIndex)> regions, BufferFormat textureFormat)
         {
