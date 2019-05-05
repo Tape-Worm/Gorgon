@@ -38,4 +38,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("A very simple example for using the Gorgon.Graphics.Core Compute engine to use compute shaders on the GPU to perform an operation.")]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("a74f93ad-12e3-4406-a571-d806b8d19c75")]
+[assembly: Guid("442478FE-44C9-4067-9A26-208B12589D85")]

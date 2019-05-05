@@ -41,4 +41,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("A Direct Input gaming device provider plug in for Gorgon.")]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("2e6ec19c-5854-45f2-9467-3f9e83383547")]
+[assembly: Guid("9623E79D-B8ED-427A-B168-0ADDDA958A22")]

@@ -161,6 +161,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor.ExtractSpriteTool", "PlugIns\Gorgon.Editor.ExtractSpriteTool\Gorgon.Editor.ExtractSpriteTool.csproj", "{0CA64289-C2EF-48D8-BEBE-F8BAEFE0BE3A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor.TextureAtlasTool", "PlugIns\Gorgon.Editor.TextureAtlasTool\Gorgon.Editor.TextureAtlasTool.csproj", "{4C14D439-5508-4320-A164-7D4180680546}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -419,6 +421,10 @@ Global
 		{0CA64289-C2EF-48D8-BEBE-F8BAEFE0BE3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0CA64289-C2EF-48D8-BEBE-F8BAEFE0BE3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0CA64289-C2EF-48D8-BEBE-F8BAEFE0BE3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C14D439-5508-4320-A164-7D4180680546}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C14D439-5508-4320-A164-7D4180680546}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C14D439-5508-4320-A164-7D4180680546}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C14D439-5508-4320-A164-7D4180680546}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -481,6 +487,7 @@ Global
 		{5FC5FC9D-977B-479D-B7E6-86334065F0B1} = {9491DE41-CAB3-4B22-9AFD-8BA8958453E5}
 		{31046A27-D175-4DA6-B768-891D2DBEBF39} = {9491DE41-CAB3-4B22-9AFD-8BA8958453E5}
 		{0CA64289-C2EF-48D8-BEBE-F8BAEFE0BE3A} = {9491DE41-CAB3-4B22-9AFD-8BA8958453E5}
+		{4C14D439-5508-4320-A164-7D4180680546} = {9491DE41-CAB3-4B22-9AFD-8BA8958453E5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BA39288E-AC40-4B74-8AE3-AB6E94D02D77}

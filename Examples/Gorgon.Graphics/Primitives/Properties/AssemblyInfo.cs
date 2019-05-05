@@ -39,4 +39,4 @@ using System.Runtime.InteropServices;
 #endif
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("053f54a1-07b2-4244-b0ba-4ea3af00a16d")]
+[assembly: Guid("D57C6A05-F159-4877-96C6-E8E120BBA043")]

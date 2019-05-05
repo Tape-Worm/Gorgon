@@ -57,10 +57,6 @@ namespace Gorgon.Editor.ExtractSpriteTool
         private readonly Lazy<SpriteExtractionData> _extractData;
         #endregion
 
-        #region Properties.
-
-        #endregion
-
         #region Methods.		
         /// <summary>
         /// Function to determine if the form can be shown.
@@ -106,7 +102,6 @@ namespace Gorgon.Editor.ExtractSpriteTool
             {
                 fileStream?.Dispose();
             }
-
 
             return true;
         }

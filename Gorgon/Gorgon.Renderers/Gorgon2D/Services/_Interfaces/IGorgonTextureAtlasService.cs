@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using System.Collections.Generic;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -32,7 +31,7 @@ using DX = SharpDX;
 
 namespace Gorgon.Renderers.Services
 {
-	/// <summary>
+    /// <summary>
     /// A service used to generate a 2D texture atlas from a series of separate sprites.
     /// </summary>
     /// <remarks>

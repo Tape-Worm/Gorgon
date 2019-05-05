@@ -27,17 +27,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DX = SharpDX;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Core;
 using Gorgon.Renderers.Properties;
-using Gorgon.Graphics.Imaging;
-using Gorgon.Graphics.Imaging.Codecs;
-using System.Diagnostics;
 
 namespace Gorgon.Renderers.Services
 {
@@ -527,32 +522,6 @@ namespace Gorgon.Renderers.Services
                     });
                 }
 
-#warning For testing
-                GorgonCodecPng png = new GorgonCodecPng();
-                IGorgonImage saveImage = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, textureFormat)
-                {
-					Width = _textureSize.Width,
-                    Height = _textureSize.Height,
-					ArrayCount = 1
-                });
-                IGorgonImage defaultImage = null;
-                for (int i = 0; i < srvs.Length; ++i)
-                {
-                    GorgonTexture2D texture = srvs[i].Texture;
-                    defaultImage = texture.ToImage();
-
-                    for (int a = 0; a < ArrayCount; ++a)
-                    {
-                        IGorgonImageBuffer buffer = defaultImage.Buffers[0, a];
-                        buffer.CopyTo(saveImage.Buffers[0]);
-                        png.SaveToFile(saveImage, $@"D:\unpak\Another\{texture.Name}_a{a}.png");
-                    }
-
-                    defaultImage.Dispose();
-                }
-                defaultImage?.Dispose();
-                saveImage.Dispose();
-
                 return new GorgonTextureAtlas(srvs, sprites);
             }
             finally
@@ -565,36 +534,6 @@ namespace Gorgon.Renderers.Services
                 _graphics.SetRenderTarget(original);
             }			
         }
-
-        /*public bool TryGenerate(IEnumerable<GorgonSprite> sprites, BufferFormat textureFormat, out GorgonTextureAtlas result)
-        {
-            if (sprites == null)
-            {
-                throw new ArgumentNullException(nameof(sprites));
-            }
-
-            // Filter out empty sprites.
-            IReadOnlyList<GorgonSprite> filtered = sprites.Where(item => (item.Texture != null) && (!item.TextureRegion.Width.EqualsEpsilon(0)) && (!item.TextureRegion.Height.EqualsEpsilon(0)))
-                                                          .Distinct()
-                                                          .ToArray();
-
-            (IReadOnlyList<IReadOnlyDictionary<int, TextureRects>> rects, bool noChange) = CalculateRegions(filtered, TextureSize, ArrayCount);
-
-            if ((rects.Count == 0) || (rects.All(item => item.Count == 0)))
-            {
-                result = null;
-                return false;
-            }
-
-            if (noChange)
-            {
-                result = new GorgonTextureAtlas(new[] { filtered[0].Texture }, filtered);
-                return false;
-            }
-
-            result = null;
-			return false;
-        }*/
         #endregion
 
         #region Constructor/Finalizer.
