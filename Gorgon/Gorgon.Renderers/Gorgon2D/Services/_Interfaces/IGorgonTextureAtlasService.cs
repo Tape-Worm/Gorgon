@@ -35,6 +35,18 @@ namespace Gorgon.Renderers.Services
 	/// <summary>
     /// A service used to generate a 2D texture atlas from a series of separate sprites.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// To get the best performance when rendering sprites, batching is essential. In order to achieve this, rendering sprites that use the same texture is necessary. This is where building a texture atlas 
+    /// comes in. A texture atlas is a combination of multiple sprite images into a single texture, each sprite that is embedded into the atlas uses a different set of texture coordinates. When rendering 
+    /// these sprites with the atlas, only a single texture change is required.
+    /// </para>
+    /// <para>
+    /// When generating an atlas, a series of existing sprites, that reference different textures is fed to the service and each sprite's dimensions is fit into a texture region, with the image from the 
+    /// original sprite texture transferred and packed into the new atlas texture. Should the texture not have enough empty space for the sprites, array indices will be used to store the extra sprites. 
+    /// In the worst case, multiple textures will be generated.
+    /// </para>
+    /// </remarks>
     public interface IGorgonTextureAtlasService
     {
         #region Properties.
