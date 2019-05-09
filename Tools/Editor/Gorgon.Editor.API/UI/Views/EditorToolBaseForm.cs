@@ -285,7 +285,7 @@ namespace Gorgon.Editor.UI.Views
 
             _oldBackgroundState = GorgonApplication.AllowBackground;
 
-            GorgonApplication.AllowBackground = true;
+            GorgonApplication.AllowBackground = allowBackgroundRendering;
             GorgonApplication.IdleMethod = Idle;
         }
         #endregion
