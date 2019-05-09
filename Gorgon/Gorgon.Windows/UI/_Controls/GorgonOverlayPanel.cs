@@ -53,6 +53,7 @@ namespace Gorgon.UI
         /// <summary>
         /// Property to return whether or not this control is in the designer.
         /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool IsDesignTime
         {
             get;
@@ -302,6 +303,23 @@ namespace Gorgon.UI
             get => null;
             set => base.BackgroundImage = null;
         }
+
+        /// <summary>
+        /// Property to set or return whether or not the overlay will take focus away or not.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// By default, the overlay will take focus away from other controls on the same form so that the UI is locked down while the overlay is active. In most cases, this is the desired behavior. But, 
+        /// for cases where a control is sitting on top of the overlay, and the control requires focus, this may be disruptive. To counter this, setting this value to <b>false</b> will ensure that it does 
+        /// not take focus from the other controls.
+        /// </para>
+        /// </remarks>
+        [Browsable(true), Category("Behavior"), Description("Sets whether or the overlay will take focus from other controls."), DefaultValue(true)]
+        public bool AllowStealFocus
+        {
+            get;
+            set;
+        } = true;
         #endregion
 
         #region Methods.
@@ -320,6 +338,43 @@ namespace Gorgon.UI
             ResumeLayout(false);
         }
 
+        /// <summary>Raises the <see cref="E:System.Windows.Forms.Control.GotFocus"/> event.</summary>
+        /// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
+        protected override void OnGotFocus(EventArgs e)
+        {
+            base.OnGotFocus(e);
+
+            if (AllowStealFocus)
+            {
+                return;
+            }
+
+			// If we can't steal focus, then we shouldn't accept focus either, so move to the next control.
+            int thisIndex = Parent.Controls.GetChildIndex(this);
+
+            // We're at the top, so nothing to do.
+            if (thisIndex < 1)
+            {
+                return;
+            }
+
+            --thisIndex;
+
+            for (int i = thisIndex; i >= 0; --i)
+            {
+                if (!Parent.Controls[i].CanSelect)
+                {
+                    if (Parent.Controls[i].SelectNextControl(Parent.Controls[i], true, true, true, true))
+                    {
+                        return;
+                    }
+                    continue;
+                }
+
+                Parent.Controls[i]?.Select();
+            }
+        }
+
         /// <summary>Processes a command key.</summary>
         /// <param name="msg">A <see cref="T:System.Windows.Forms.Message" />, passed by reference, that represents the window message to process. </param>
         /// <param name="keyData">One of the <see cref="T:System.Windows.Forms.Keys" /> values that represents the key to process. </param>
@@ -327,10 +382,7 @@ namespace Gorgon.UI
         /// <see langword="true" /> if the character was processed by the control; otherwise, <see langword="false" />.</returns>
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData) =>
             // Attempt to mitigate Tab switching while this control is live.
-            ((keyData == Keys.Tab)
-                || (keyData == (Keys.Tab | Keys.Shift)))
-                ? true
-                : base.ProcessCmdKey(ref msg, keyData);
+            ((keyData & Keys.Tab) == Keys.Tab) && (AllowStealFocus) ? true : base.ProcessCmdKey(ref msg, keyData);
 
         /// <summary>
         /// Function called after the siblings for this control are rendered.
@@ -381,15 +433,15 @@ namespace Gorgon.UI
                 return;
             }
 
-            if (parentForm != null)
+            int zIndex = Parent.Controls.GetChildIndex(this);
+
+            if ((parentForm != null) && (AllowStealFocus))
             {
                 parentForm.ActiveControl = this;
             }
             
             using (var backingImage = new Bitmap(Parent.Width, Parent.Height))
             {
-                int zIndex = Parent.Controls.GetChildIndex(this);
-
                 IEnumerable<Control> siblings = (from sibling in Parent.Controls.Cast<Control>()
                                                  where (sibling.Enabled) && (sibling.Visible)
                                                 let siblingZ = Parent.Controls.GetChildIndex(sibling)

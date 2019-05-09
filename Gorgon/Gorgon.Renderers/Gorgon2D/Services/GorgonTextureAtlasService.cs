@@ -239,7 +239,7 @@ namespace Gorgon.Renderers.Services
                 {
 					// If a sprite can't find into the actual texture size, then stop right away.
 					// Better to not have anything come back than have a single sprite missing out of many.
-                    if ((sprite.region.Width > textureBounds.Width) || (textureBounds.Height > textureBounds.Height))
+                    if ((sprite.region.Width > textureBounds.Width) || (sprite.region.Height > textureBounds.Height))
                     {
                         result.Clear();
                         return (result, false);
@@ -300,8 +300,8 @@ namespace Gorgon.Renderers.Services
         /// method. Multiple <c>textureIndex</c> values are possible if the method could not find enough room to accomodate the sprites within the <see cref="TextureSize"/> and <see cref="ArrayCount"/>.
         /// </para>
         /// <para>
-        /// If all <paramref name="sprites"/> already share the same texture, will return with the original sprite texture and original <paramref name="sprites"/> since the sprites are already part of an 
-        /// atlas.
+        /// If all <paramref name="sprites"/> already share the same texture, then this method will return <b>false</b>, and method will return with the original sprite locations since they're already 
+        /// on an atlas.
         /// </para>
         /// <para>
         /// If a sprite in the <paramref name="sprites"/> list does not have an attached texture, then it will be ignored.
@@ -407,12 +407,7 @@ namespace Gorgon.Renderers.Services
                 return (maxSize, 0);
             }
 
-            if (rects.Count == 0)
-            {
-                return (DX.Size2.Zero, 0);
-            }
-			
-            return (maxSize, rects.Count.Max(minArrayCount));
+            return rects.Count == 0 ? (DX.Size2.Zero, 0) : (maxSize, rects.Count.Max(minArrayCount));
         }
 
         /// <summary>
@@ -460,7 +455,7 @@ namespace Gorgon.Renderers.Services
 
             if (regions.Count == 0)
             {
-                return new GorgonTextureAtlas(Array.Empty<GorgonTexture2DView>(), Array.Empty<GorgonSprite>());
+                return new GorgonTextureAtlas(Array.Empty<GorgonTexture2DView>(), Array.Empty<(GorgonSprite, GorgonSprite)>());
             }
 
             // Get the total number of textures.
@@ -468,7 +463,7 @@ namespace Gorgon.Renderers.Services
             var srvs = new GorgonTexture2DView[textureCount];
             GorgonRenderTarget2DView rtv = null;
             GorgonRenderTargetView original = _graphics.RenderTargets[0];
-            var sprites = new List<GorgonSprite>(regions.Count);            
+            var sprites = new List<(GorgonSprite, GorgonSprite)>(regions.Count);            
             var rtvs = new HashSet<GorgonRenderTargetView>();
             string textureName = $"{(string.IsNullOrWhiteSpace(BaseTextureName) ? "texture_atlas" : BaseTextureName)}_{{0}}";
 
@@ -514,12 +509,12 @@ namespace Gorgon.Renderers.Services
 
                     _graphics.SetRenderTarget(original);
 
-                    sprites.Add(new GorgonSprite(region.Key)
+                    sprites.Add((region.Key, new GorgonSprite(region.Key)
                     {
 						Texture = srv,
 						TextureRegion = srv.ToTexel(region.Value.spriteRegion),
 						TextureArrayIndex = region.Value.arrayIndex
-                    });
+                    }));
                 }
 
                 return new GorgonTextureAtlas(srvs, sprites);

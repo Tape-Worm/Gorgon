@@ -6,4 +6,5 @@
 
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>", Scope = "member", Target = "~M:Gorgon.Editor.Services.FileOpenDialogService.GetParentForm~System.Windows.Forms.Form")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>", Scope = "member", Target = "~M:Gorgon.Editor.UI.EditorAsyncCommand`1.CanExecute(`0)~System.Boolean")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>", Scope = "member", Target = "~M:Gorgon.Editor.UI.Controls.ContentFileExplorer.FileComparer.Compare(System.Windows.Forms.DataGridViewRow,System.Windows.Forms.DataGridViewRow)~System.Int32")]
 

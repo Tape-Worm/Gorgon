@@ -2163,7 +2163,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             // Only perform special operations if the dragged type is an image, otherwise, fall back.
             if ((dragData?.File == null)
-                || (!dragData.File.Metadata.Attributes.TryGetValue(ContentTypeAttr, out string dataType))
+                || (!dragData.File.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string dataType))
                 || (!string.Equals(dataType, ImageEditorCommonConstants.ContentType, StringComparison.OrdinalIgnoreCase)))
             {                
                 return false;

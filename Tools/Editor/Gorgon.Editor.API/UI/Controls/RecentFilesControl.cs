@@ -33,7 +33,7 @@ using Gorgon.Editor.ProjectData;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.Editor.UI.Controls
 {
     /// <summary>
     /// A control for displaying the <see cref="RecentItem"/> items.

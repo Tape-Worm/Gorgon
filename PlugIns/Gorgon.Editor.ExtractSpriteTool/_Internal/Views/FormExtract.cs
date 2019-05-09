@@ -29,35 +29,23 @@ using System.ComponentModel;
 using System.Threading;
 using System.Windows.Forms;
 using DX = SharpDX;
-using ComponentFactory.Krypton.Toolkit;
-using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
-using Gorgon.Graphics;
-using Gorgon.Graphics.Core;
-using Gorgon.UI;
 using Gorgon.Math;
 using System.Threading.Tasks;
 using Gorgon.Editor.ExtractSpriteTool.Properties;
+using Gorgon.Editor.UI.Views;
 
 namespace Gorgon.Editor.ExtractSpriteTool
 {
-	/// <summary>
+    /// <summary>
     /// The main view for the tool.
     /// </summary>
     internal partial class FormExtract 
-		: KryptonForm, IDataContext<IExtract>
+		: EditorToolBaseForm, IDataContext<IExtract>
     {
         #region Variables.
-		// The swap chain for this window.
-        private GorgonSwapChain _swapChain;
-		// The graphics context.
-        private IGraphicsContext _context;
         // The renderer for this window.
         private IRenderer _renderer;
-		// Previous idle method.
-        private WeakReference<Func<bool>> _oldIdle;
-		// The previous flag for background operation.
-        private bool _oldBackgroundState;
 		// State flag for the closing operations.
         private int _closeState;
         #endregion
@@ -97,49 +85,6 @@ namespace Gorgon.Editor.ExtractSpriteTool
             ButtonNextArray.Enabled = DataContext.NextPreviewArrayCommand?.CanExecute(null) ?? false;
             ButtonPrevArray.Enabled = DataContext.PrevPreviewArrayCommand?.CanExecute(null) ?? false;
             ButtonSendToArrayStart.Enabled = DataContext.SendPreviewArrayToStartCommand?.CanExecute(null) ?? false;
-        }
-
-        /// <summary>
-        /// Function to shut down the graphics context for this form.
-        /// </summary>
-        private void ShutdownGraphics()
-        {
-            Func<bool> oldIdle = null;
-
-            _oldIdle?.TryGetTarget(out oldIdle);
-            GorgonApplication.IdleMethod = oldIdle;
-            GorgonApplication.AllowBackground = _oldBackgroundState;
-
-            GorgonSwapChain swap = Interlocked.Exchange(ref _swapChain, null);
-            IRenderer renderer = Interlocked.Exchange(ref _renderer, null);
-
-            renderer?.SetDataContext(null);
-            renderer?.Dispose();
-
-            if (swap != null)
-            {
-                _context.ReturnSwapPresenter(ref swap);
-            }
-
-            _context = null;
-        }
-
-        /// <summary>
-        /// Function to perform actons during idle time.
-        /// </summary>
-        /// <returns><b>true</b> to continue, <b>false</b> to stop.</returns>
-        private bool Idle()
-        {
-            Func<bool> oldIdle = null;
-
-            _swapChain.RenderTargetView.Clear(GorgonColor.Black);
-            _renderer.Render();
-            _swapChain.Present(1);
-
-            _oldIdle?.TryGetTarget(out oldIdle);
-            oldIdle?.Invoke();
-
-            return true;
         }
 		
         /// <summary>Handles the Click event of the SkipColor control.</summary>
@@ -557,6 +502,44 @@ namespace Gorgon.Editor.ExtractSpriteTool
             UpdateArrayLabel(dataContext);
         }
 
+        /// <summary>Function to perform clean up when graphics operations are shutting down.</summary>
+        /// <remarks>Any resources created in the <see cref="EditorToolBaseForm.OnSetupGraphics"/> method must be disposed of here.</remarks>
+        protected override void OnShutdownGraphics()
+        {
+            IRenderer renderer = Interlocked.Exchange(ref _renderer, null);
+            renderer?.SetDataContext(null);
+            renderer?.Dispose();
+        }
+
+        /// <summary>Function to perform custom rendering using the graphics functionality.</summary>
+        /// <remarks>
+        ///   <para>
+        /// This method is called once per frame to allow for custom graphics drawing on the <see cref="EditorToolBaseForm.RenderControl"/>.
+        /// </para>
+        ///   <para>
+        /// Tool plug in implementors need to override this in order to perform custom rendering with the <see cref="EditorToolBaseForm.GraphicsContext"/>.
+        /// </para>
+        /// </remarks>
+        protected override void OnRender() => _renderer.Render();
+
+        /// <summary>Function to perform custom graphics set up.</summary>
+        /// <remarks>
+        ///   <para>
+        /// This method allows tool plug in implementors to setup additional functionality for custom graphics rendering.
+        /// </para>
+        ///   <para>
+        /// Resources created by this method should be cleaned up in the <see cref="EditorToolBaseForm.OnShutdownGraphics"/> method.
+        /// </para>
+        ///   <para>
+        /// Implementors do not need to set up a <see cref="EditorToolBaseForm.SwapChain"/> since one is already provided.
+        /// </para>
+        /// </remarks>
+        protected override void OnSetupGraphics()
+        {
+            _renderer = new Renderer(GraphicsContext, SwapChain);
+            _renderer.Setup();
+        }
+
         /// <summary>Raises the <see cref="Form.FormClosing"/> event.</summary>
         /// <param name="e">A <see cref="FormClosingEventArgs"/> that contains the event data.</param>
         protected override async void OnFormClosing(FormClosingEventArgs e)
@@ -566,11 +549,6 @@ namespace Gorgon.Editor.ExtractSpriteTool
             if (_closeState > 0)
             {
                 e.Cancel = _closeState == 1;
-
-                if (!e.Cancel)
-                {
-                    ShutdownGraphics();
-                }
                 return;
             }
 
@@ -602,7 +580,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         {
             base.OnShown(e);
 
-            if (DataContext.IsMaximized)
+            if ((DataContext != null) && (DataContext.IsMaximized))
             {
                 WindowState = FormWindowState.Maximized;
             }
@@ -623,38 +601,6 @@ namespace Gorgon.Editor.ExtractSpriteTool
             ValidateControls();
 
             PanelRender.Select();
-        }
-
-        /// <summary>
-        /// Function to set up the graphics interface for this window.
-        /// </summary>
-        /// <param name="context">The application graphics context.</param>
-        public void SetupGraphics(IGraphicsContext context)
-        {
-            if (_context != null)
-            {
-                return;
-            }
-
-            _context = context;
-            _swapChain = context.LeaseSwapPresenter(PanelRender);
-
-            _renderer = new Renderer(_context, _swapChain);
-            _renderer.Setup();
-
-            if (GorgonApplication.IdleMethod != null)
-            {
-                _oldIdle = new WeakReference<Func<bool>>(GorgonApplication.IdleMethod);
-            }
-            else
-            {
-                _oldIdle = null;
-            }
-
-            _oldBackgroundState = GorgonApplication.AllowBackground;
-
-            GorgonApplication.AllowBackground = true;
-            GorgonApplication.IdleMethod = Idle;           
         }
 
         /// <summary>Function to assign a data context to the view as a view model.</summary>

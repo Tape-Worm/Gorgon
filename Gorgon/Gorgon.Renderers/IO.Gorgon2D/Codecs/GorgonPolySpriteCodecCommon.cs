@@ -133,8 +133,9 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="stream">The stream containing the sprite.</param>
         /// <param name="byteCount">The number of bytes to read from the stream.</param>
+        /// <param name="overrideTexture">[Optional] The texture to assign to the sprite instead of the texture associated with the name stored in the file.</param>
         /// <returns>A new <see cref="GorgonPolySprite"/>.</returns>
-        protected abstract GorgonPolySprite OnReadFromStream(Stream stream, int byteCount);
+        protected abstract GorgonPolySprite OnReadFromStream(Stream stream, int byteCount, GorgonTexture2DView overrideTexture);
 
         /// <summary>
         /// Function to determine if the data in a stream is readable by this codec.
@@ -231,7 +232,7 @@ namespace Gorgon.IO
                 throw new EndOfStreamException();
             }
 
-            GorgonPolySprite result = OnReadFromStream(stream, byteCount.Value);
+            GorgonPolySprite result = OnReadFromStream(stream, byteCount.Value, overrideTexture);
 
             if ((result.Texture != overrideTexture)  && (overrideTexture != null))
             {

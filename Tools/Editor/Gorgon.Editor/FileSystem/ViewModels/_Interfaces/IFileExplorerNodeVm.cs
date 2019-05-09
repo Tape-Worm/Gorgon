@@ -61,7 +61,7 @@ namespace Gorgon.Editor.ViewModels
     {
         #region Properties.
         /// <summary>
-        /// Property to return the list of items dependant upon this node
+        /// Property to return the list of items dependent upon this node
         /// </summary>
         ObservableCollection<IFileExplorerNodeVm> Dependencies
         {

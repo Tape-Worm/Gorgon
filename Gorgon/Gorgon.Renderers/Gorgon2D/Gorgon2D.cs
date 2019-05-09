@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using System.Threading;
-using System.Windows;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
@@ -432,11 +431,11 @@ namespace Gorgon.Renderers
                 _polyTransformVertexShader.RwConstantBuffers[1] = _polySpriteDataBuffer;
                 _polyPixelShader.RwConstantBuffers[0] = _alphaTest;
 
-                WeakEventManager<GorgonGraphics, EventArgs>.AddHandler(Graphics, nameof(GorgonGraphics.RenderTargetChanged), RenderTarget_Changed);
-                WeakEventManager<GorgonGraphics, EventArgs>.AddHandler(Graphics, nameof(GorgonGraphics.ViewportChanged), RenderTarget_Changed);
-                WeakEventManager<GorgonGraphics, CancelEventArgs>.AddHandler(Graphics, nameof(GorgonGraphics.RenderTargetChanging), ValidateBeginEndCall);
-                WeakEventManager<GorgonGraphics, CancelEventArgs>.AddHandler(Graphics, nameof(GorgonGraphics.ViewportChanging), ValidateBeginEndCall);
-                WeakEventManager<GorgonGraphics, CancelEventArgs>.AddHandler(Graphics, nameof(GorgonGraphics.DepthStencilChanging), ValidateBeginEndCall);
+                Graphics.RenderTargetChanging += ValidateBeginEndCall;
+                Graphics.ViewportChanging += ValidateBeginEndCall;
+                Graphics.DepthStencilChanging += ValidateBeginEndCall;
+                Graphics.RenderTargetChanged += RenderTarget_Changed;
+                Graphics.ViewportChanged += RenderTarget_Changed;
 
                 Interlocked.Exchange(ref _initialized, 2);
             }
@@ -2093,11 +2092,11 @@ namespace Gorgon.Renderers
             GorgonConstantBufferView alphaTest = Interlocked.Exchange(ref _alphaTest, null);
             Lazy<GorgonFontFactory> defaultFont = Interlocked.Exchange(ref _defaultFontFactory, null);
 
-            WeakEventManager<GorgonGraphics, CancelEventArgs>.RemoveHandler(Graphics, nameof(GorgonGraphics.RenderTargetChanging), ValidateBeginEndCall);
-            WeakEventManager<GorgonGraphics, CancelEventArgs>.RemoveHandler(Graphics, nameof(GorgonGraphics.ViewportChanging), ValidateBeginEndCall);
-            WeakEventManager<GorgonGraphics, CancelEventArgs>.RemoveHandler(Graphics, nameof(GorgonGraphics.DepthStencilChanging), ValidateBeginEndCall);
-            WeakEventManager<GorgonGraphics, EventArgs>.RemoveHandler(Graphics, nameof(GorgonGraphics.RenderTargetChanged), RenderTarget_Changed);
-            WeakEventManager<GorgonGraphics, EventArgs>.RemoveHandler(Graphics, nameof(GorgonGraphics.ViewportChanged), RenderTarget_Changed);
+            Graphics.RenderTargetChanging -= ValidateBeginEndCall;
+            Graphics.ViewportChanging -= ValidateBeginEndCall;
+            Graphics.DepthStencilChanging -= ValidateBeginEndCall;
+            Graphics.RenderTargetChanged -= RenderTarget_Changed;
+            Graphics.ViewportChanged -= RenderTarget_Changed;
             
             if (defaultFont?.IsValueCreated ?? false)
             {

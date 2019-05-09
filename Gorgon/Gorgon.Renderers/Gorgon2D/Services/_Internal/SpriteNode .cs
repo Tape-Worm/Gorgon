@@ -113,8 +113,6 @@ namespace Gorgon.Renderers.Services
 			}
 
             // The region occupied by the requested dimensions.
-            var dimRegion = new DX.Rectangle(Region.X, Region.Y, dimensions.Width, dimensions.Height);
-
 			Left = new SpriteNode(this);
 			Right = new SpriteNode(this);
 

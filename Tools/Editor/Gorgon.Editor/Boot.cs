@@ -90,6 +90,12 @@ namespace Gorgon.Editor
         /// <returns>The referenced assembly, if found.</returns>
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
+            // If we don't know who wants the assembly, then we can't load it.
+            if (args.RequestingAssembly == null)
+            {
+                return null;
+            }
+
             // Step 1. - Find all currently loaded assemblies.
             Assembly[] loaded = AppDomain.CurrentDomain.GetAssemblies();
 

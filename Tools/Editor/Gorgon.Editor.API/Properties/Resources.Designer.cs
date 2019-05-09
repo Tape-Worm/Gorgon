@@ -83,6 +83,26 @@ namespace Gorgon.Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap check_8x8 {
+            get {
+                object obj = ResourceManager.GetObject("check_8x8", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap collapsed_8x8 {
+            get {
+                object obj = ResourceManager.GetObject("collapsed_8x8", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap drive_48x48 {
             get {
                 object obj = ResourceManager.GetObject("drive_48x48", resourceCulture);
@@ -133,9 +153,39 @@ namespace Gorgon.Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap error_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("error_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap expanded_8x8 {
+            get {
+                object obj = ResourceManager.GetObject("expanded_8x8", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap file_48x48 {
             get {
                 object obj = ResourceManager.GetObject("file_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap folder_20x20 {
+            get {
+                object obj = ResourceManager.GetObject("folder_20x20", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -151,6 +201,16 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap generic_file_20x20 {
+            get {
+                object obj = ResourceManager.GetObject("generic_file_20x20", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error updating the associated file information after it was moved.
         ///
         ///This content will now close in order to avoid corrupting the file..
@@ -158,6 +218,15 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_AFTER_MOVE_UPDATE {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_AFTER_MOVE_UPDATE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot find the row associated with the file..
+        /// </summary>
+        internal static string GOREDIT_ERR_BROKEN_FILEROW {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_BROKEN_FILEROW", resourceCulture);
             }
         }
         
@@ -243,6 +312,15 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_NO_CONTENT_VIEW {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_NO_CONTENT_VIEW", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No render control is assigned to this control..
+        /// </summary>
+        internal static string GOREDIT_ERR_NO_RENDER_CONTROL {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_NO_RENDER_CONTROL", resourceCulture);
             }
         }
         
@@ -409,6 +487,24 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_PLUGIN_TYPE_WRITER {
             get {
                 return ResourceManager.GetString("GOREDIT_PLUGIN_TYPE_WRITER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to dir:.
+        /// </summary>
+        internal static string GOREDIT_SEARCH_DIRECTORY_TAG1 {
+            get {
+                return ResourceManager.GetString("GOREDIT_SEARCH_DIRECTORY_TAG1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to directory:.
+        /// </summary>
+        internal static string GOREDIT_SEARCH_DIRECTORY_TAG2 {
+            get {
+                return ResourceManager.GetString("GOREDIT_SEARCH_DIRECTORY_TAG2", resourceCulture);
             }
         }
         

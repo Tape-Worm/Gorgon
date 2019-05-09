@@ -128,7 +128,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <returns><b>true</b> if the file is an image, supported by this editor, or <b>false</b> if not.</returns>
         public bool IsContentImage(IContentFile file) => ((file != null)
                 && (file.Metadata != null)
-                && (file.Metadata.Attributes.TryGetValue(SpriteContent.ContentTypeAttr, out string contentType))
+                && (file.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string contentType))
                 && (string.Equals(contentType, "image", StringComparison.OrdinalIgnoreCase)));
 
         /// <summary>Function to retrieve the image data for a sprite texture as a 32 bit RGBA pixel data.</summary>

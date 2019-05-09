@@ -28,6 +28,7 @@ using System;
 using System.IO;
 using System.Text;
 using Gorgon.Core;
+using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
 using Newtonsoft.Json;
@@ -125,15 +126,16 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="stream">The stream containing the sprite.</param>
         /// <param name="byteCount">The number of bytes to read from the stream.</param>
+        /// <param name="overrideTexture">The texture to assign to the sprite instead of the texture associated with the name stored in the file.</param>
         /// <returns>A new <see cref="GorgonPolySprite"/>.</returns>
-        protected override GorgonPolySprite OnReadFromStream(Stream stream, int byteCount)
+        protected override GorgonPolySprite OnReadFromStream(Stream stream, int byteCount, GorgonTexture2DView overrideTexture)
         {
             using (var wrappedStream = new GorgonStreamWrapper(stream, stream.Position, byteCount, false))
             {
                 using (var reader = new StreamReader(wrappedStream, Encoding.UTF8, true, 80192, true))
                 {
                     string jsonString = reader.ReadToEnd();
-                    return FromJson(Renderer, jsonString);
+                    return FromJson(Renderer, overrideTexture, jsonString);
                 }
             }
         }
@@ -217,12 +219,13 @@ namespace Gorgon.IO
         /// Function to convert a JSON string into a sprite object.
         /// </summary>
         /// <param name="renderer">The renderer for the sprite.</param>
+        /// <param name="overrideTexture">The texture to assign to the sprite instead of the texture associated with the name stored in the file.</param>
         /// <param name="json">The JSON string containing the sprite data.</param>
         /// <returns>A new <see cref="GorgonPolySprite"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/>, or the <paramref name="json"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="json"/> parameter is empty.</exception>
         /// <exception cref="GorgonException">Thrown if the JSON string does not contain sprite data, or there is a version mismatch.</exception>
-        public static GorgonPolySprite FromJson(Gorgon2D renderer, string json)
+        public static GorgonPolySprite FromJson(Gorgon2D renderer, GorgonTexture2DView overrideTexture, string json)
         {
             if (renderer == null)
             {
@@ -251,7 +254,7 @@ namespace Gorgon.IO
             serializer.Converters.Add(new JsonGorgonColorConverter());
             serializer.Converters.Add(new JsonRectangleFConverter());
             serializer.Converters.Add(new JsonSamplerConverter(renderer.Graphics));
-            serializer.Converters.Add(new JsonTexture2DConverter(renderer.Graphics));
+            serializer.Converters.Add(new JsonTexture2DConverter(renderer.Graphics, overrideTexture));
             serializer.Converters.Add(new VersionConverter());
 
             // Parse the string so we can extract our header/version for comparison.

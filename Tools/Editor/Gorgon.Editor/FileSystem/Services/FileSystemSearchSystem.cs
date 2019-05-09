@@ -30,7 +30,6 @@ using System.Linq;
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
-using Gorgon.Editor.UI;
 using Gorgon.Editor.ViewModels;
 
 namespace Gorgon.Editor.Services
@@ -47,12 +46,8 @@ namespace Gorgon.Editor.Services
         // The type of search keywords that can be used.
         private readonly Dictionary<string, string> _searchKeywords = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase)
         {
-            { Resources.GOREDIT_SEARCH_KEYWORD_CONTENT_TYPE, EditorContentCommon<IContentViewModelInjection>.ContentTypeAttr }
+            { Resources.GOREDIT_SEARCH_KEYWORD_CONTENT_TYPE, CommonEditorConstants.ContentTypeAttr }
         };
-        #endregion
-
-        #region Properties.
-
         #endregion
 
         #region Methods.
@@ -172,7 +167,7 @@ namespace Gorgon.Editor.Services
             // Check for search mode.
             if (searchText.Length > 1)
             {
-                if ((searchText.Length > 3) && (searchText[0] == '"') && (searchText[searchText.Length - 1] == '"'))
+                if ((searchText.Length >= 3) && (searchText[0] == '"') && (searchText[searchText.Length - 1] == '"'))
                 {
                     mode = SearchMode.OnlyWord;
                     searchText = searchText.Substring(1, searchText.Length - 2);

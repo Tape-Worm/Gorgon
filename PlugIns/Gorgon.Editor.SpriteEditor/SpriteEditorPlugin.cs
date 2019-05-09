@@ -164,7 +164,7 @@ namespace Gorgon.Editor.SpriteEditor
                 return null;
             }
 
-            if ((!textureFile.Metadata.Attributes.TryGetValue(SpriteContent.ContentTypeAttr, out string imageType))
+            if ((!textureFile.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string imageType))
                 || (!string.Equals(imageType, textureFileContentType, StringComparison.OrdinalIgnoreCase)))
             {
                 CommonServices.Log.Print($"[ERROR] Sprite '{spriteFile.Path}' has texture '{texturePath}', but the texture has a content type ID of '{textureFileContentType}', and the sprite requires a content type ID of '{imageType}'.", LoggingLevel.Verbose);
@@ -299,10 +299,10 @@ namespace Gorgon.Editor.SpriteEditor
                 needsRefresh = true;
             }
 
-            if ((attributes.TryGetValue(SpriteContent.ContentTypeAttr, out string currentContentType))
+            if ((attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string currentContentType))
                 && (string.Equals(currentContentType, SpriteEditorCommonConstants.ContentType, StringComparison.OrdinalIgnoreCase)))
             {
-                attributes.Remove(SpriteContent.ContentTypeAttr);
+                attributes.Remove(CommonEditorConstants.ContentTypeAttr);
                 needsRefresh = true;
             }
 
@@ -314,10 +314,10 @@ namespace Gorgon.Editor.SpriteEditor
                 needsRefresh = true;
             }
             
-            if ((!attributes.TryGetValue(SpriteContent.ContentTypeAttr, out currentContentType))
+            if ((!attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out currentContentType))
                 || (!string.Equals(currentContentType, SpriteEditorCommonConstants.ContentType, StringComparison.OrdinalIgnoreCase)))
             {
-                attributes[SpriteContent.ContentTypeAttr] = SpriteEditorCommonConstants.ContentType;
+                attributes[CommonEditorConstants.ContentTypeAttr] = SpriteEditorCommonConstants.ContentType;
                 needsRefresh = true;
             }
 

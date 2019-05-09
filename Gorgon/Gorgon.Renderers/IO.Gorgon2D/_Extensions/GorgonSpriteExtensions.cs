@@ -75,7 +75,7 @@ namespace Gorgon.Renderers
             serializer.Converters.Add(new JsonGorgonColorConverter());
             serializer.Converters.Add(new JsonRectangleFConverter());
             serializer.Converters.Add(new JsonSamplerConverter(null));
-            serializer.Converters.Add(new JsonTexture2DConverter(null));
+            serializer.Converters.Add(new JsonTexture2DConverter(null, null));
 
             var jsonObj = JObject.FromObject(sprite, serializer);
             JToken firstProp = jsonObj.First;
@@ -112,7 +112,7 @@ namespace Gorgon.Renderers
             serializer.Converters.Add(new JsonGorgonColorConverter());
             serializer.Converters.Add(new JsonRectangleFConverter());
             serializer.Converters.Add(new JsonSamplerConverter(null));
-            serializer.Converters.Add(new JsonTexture2DConverter(null));
+            serializer.Converters.Add(new JsonTexture2DConverter(null, null));
 
             var jsonObj = JObject.FromObject(sprite, serializer);
             JToken firstProp = jsonObj.First;

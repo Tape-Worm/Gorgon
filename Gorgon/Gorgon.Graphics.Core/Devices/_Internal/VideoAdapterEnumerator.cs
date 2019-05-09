@@ -132,7 +132,7 @@ namespace Gorgon.Graphics.Core
 		/// <returns>A list of display compatible full screen video modes.</returns>
 		private static IEnumerable<ModeDescription1> GetVideoModes(D3D11.Device1 D3DDevice, Output1 giOutput)
 		{
-		    var formats = ((Format[])Enum.GetValues(typeof(Format)))
+            Format[] formats = ((Format[])Enum.GetValues(typeof(Format)))
 		        .Where(item => (D3DDevice.CheckFormatSupport(item) & D3D11.FormatSupport.Display) == D3D11.FormatSupport.Display)
 		        .ToArray();
 

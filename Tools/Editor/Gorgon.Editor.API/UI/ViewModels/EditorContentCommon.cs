@@ -45,13 +45,6 @@ namespace Gorgon.Editor.UI
         : ViewModelBase<T>, IEditorContent
         where T : class, IContentViewModelInjection
     {
-        #region Constants.
-        /// <summary>
-        /// The attribute name for the content type attribute.
-        /// </summary>
-        public const string ContentTypeAttr = "Type";
-        #endregion
-
         #region Events.
         /// <summary>Event to notify the view that the content should close.</summary>
         public event EventHandler CloseContent;
@@ -310,7 +303,7 @@ namespace Gorgon.Editor.UI
 
             if (!string.IsNullOrWhiteSpace(ContentType))
             {
-                _file.Metadata.Attributes[ContentTypeAttr] = ContentType;
+                _file.Metadata.Attributes[CommonEditorConstants.ContentTypeAttr] = ContentType;
             }
 
             _file.Closed += File_Closed;

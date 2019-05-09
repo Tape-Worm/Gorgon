@@ -27,8 +27,6 @@ namespace Gorgon.Editor.ExtractSpriteTool
                 UnassignEvents();
 
                 DataContext?.OnUnload();
-
-                ShutdownGraphics();
             }
 
             base.Dispose(disposing);
@@ -835,6 +833,8 @@ namespace Gorgon.Editor.ExtractSpriteTool
 			// 
 			this.TipInstructions.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
 			this.TipInstructions.ForeColor = System.Drawing.Color.White;
+			this.TipInstructions.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
+			this.TipInstructions.ToolTipTitle = "Help";
 			// 
 			// FormExtract
 			// 
@@ -845,13 +845,10 @@ namespace Gorgon.Editor.ExtractSpriteTool
 			this.CancelButton = this.ButtonCancel;
 			this.ClientSize = new System.Drawing.Size(1008, 729);
 			this.Controls.Add(this.TableExtractControls);
-			this.Font = new System.Drawing.Font("Segoe UI", 9F);
-			this.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-			this.MinimizeBox = false;
-			this.MinimumSize = new System.Drawing.Size(1024, 768);
+			this.MinimumSize = new System.Drawing.Size(800, 600);
 			this.Name = "FormExtract";
-			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+			this.RenderControl = this.PanelRender;
 			this.Text = "Extract Sprites by Grid";
 			this.TableExtractControls.ResumeLayout(false);
 			this.TableExtractControls.PerformLayout();

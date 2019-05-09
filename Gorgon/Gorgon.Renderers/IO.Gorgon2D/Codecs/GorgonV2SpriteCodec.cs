@@ -138,7 +138,7 @@ namespace Gorgon.IO
         /// <returns>Texture filtering value.</returns>
         private static SampleFilter ConvertV2TextureFilterToFilter(TextureFilter filter)
         {
-            var result = SampleFilter.MinMagMipPoint;
+            SampleFilter result = SampleFilter.MinMagMipPoint;
 
             switch (filter)
             {
@@ -325,13 +325,14 @@ namespace Gorgon.IO
 	        }
 	    }
 
-		/// <summary>
-		/// Function to load a version 1.x Gorgon sprite.
-		/// </summary>
-		/// <param name="graphics">The graphics interface used to create states.</param>
-		/// <param name="reader">Binary reader to use to read in the data.</param>
-		/// <returns>The sprite from the stream data.</returns>
-		private static GorgonSprite LoadSprite(GorgonGraphics graphics, GorgonChunkReader reader)
+        /// <summary>
+        /// Function to load a version 1.x Gorgon sprite.
+        /// </summary>
+        /// <param name="graphics">The graphics interface used to create states.</param>
+        /// <param name="reader">Binary reader to use to read in the data.</param>
+        /// <param name="overrideTexture">The texture to assign to the sprite instead of the texture associated with the name stored in the file.</param>
+        /// <returns>The sprite from the stream data.</returns>
+        private static GorgonSprite LoadSprite(GorgonGraphics graphics, GorgonChunkReader reader, GorgonTexture2DView overrideTexture)
 		{
             var sprite = new GorgonSprite();
 
@@ -384,23 +385,27 @@ namespace Gorgon.IO
             TextureWrap vWrap = ConvertV2TextureWrapToTextureAddress(reader.Read<int>());
             SampleFilter filter = ConvertV2TextureFilterToFilter(reader.Read<TextureFilter>());
 		    string textureName = reader.ReadString();
-		    GorgonTexture2DView textureView = null;
+		    GorgonTexture2DView textureView;
 
-		    // Bind the texture (if we have one bound to this sprite) if it's already loaded, otherwise defer it.
-		    if (!string.IsNullOrEmpty(textureName))
-		    {
-		        GorgonTexture2D texture = graphics.LocateResourcesByName<GorgonTexture2D>(textureName).FirstOrDefault();
+            // Bind the texture (if we have one bound to this sprite) if it's already loaded, otherwise defer it.
+            if ((!string.IsNullOrEmpty(textureName)) && (overrideTexture == null))
+            {
+                GorgonTexture2D texture = graphics.LocateResourcesByName<GorgonTexture2D>(textureName).FirstOrDefault();
 
                 // If we used the editor build to sprite, the path to the texture is stored in the name instead of just the name.
                 // So let's try and strip out the path information and extension and try again.
-		        if (texture == null)
-		        {
-		            textureName = Path.GetFileNameWithoutExtension(textureName);
-		            texture = graphics.LocateResourcesByName<GorgonTexture2D>(textureName).FirstOrDefault();
-		        }
+                if (texture == null)
+                {
+                    textureName = Path.GetFileNameWithoutExtension(textureName);
+                    texture = graphics.LocateResourcesByName<GorgonTexture2D>(textureName).FirstOrDefault();
+                }
 
-		        textureView = texture?.GetShaderResourceView();
-		    }
+                textureView = texture?.GetShaderResourceView();
+            }
+            else
+            {
+                textureView = overrideTexture;
+            }
 
             sprite.TextureRegion = reader.ReadRectangleF();
 
@@ -485,15 +490,16 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="stream">The stream containing the sprite.</param>
         /// <param name="byteCount">The number of bytes to read from the stream.</param>
+        /// <param name="overrideTexture">The texture to assign to the sprite instead of the texture associated with the name stored in the file.</param>
         /// <returns>A new <see cref="GorgonSprite"/>.</returns>
-        protected override GorgonSprite OnReadFromStream(Stream stream, int byteCount)
+        protected override GorgonSprite OnReadFromStream(Stream stream, int byteCount, GorgonTexture2DView overrideTexture)
         {
             var reader = new GorgonChunkReader(stream);
 
             try
             {
                 // We don't need byte count for this.
-                return LoadSprite(Graphics, reader);
+                return LoadSprite(Graphics, reader, overrideTexture);
             }
             finally
             {

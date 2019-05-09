@@ -26,6 +26,7 @@
 
 using System;
 using Gorgon.Editor.ProjectData;
+using Gorgon.Editor.UI.Controls;
 
 namespace Gorgon.Editor.UI
 {

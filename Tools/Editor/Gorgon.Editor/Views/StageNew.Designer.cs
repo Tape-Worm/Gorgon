@@ -40,7 +40,6 @@ namespace Gorgon.Editor.Views
         private void InitializeComponent()
         {
 			this.components = new System.ComponentModel.Container();
-			ComponentFactory.Krypton.Toolkit.Values.PopupPositionValues popupPositionValues1 = new ComponentFactory.Krypton.Toolkit.Values.PopupPositionValues();
 			this.PanelNew = new System.Windows.Forms.Panel();
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.PanelsControls = new System.Windows.Forms.Panel();
@@ -208,8 +207,6 @@ namespace Gorgon.Editor.Views
 			this.ButtonSelect.Name = "ButtonSelect";
 			this.ButtonSelect.Size = new System.Drawing.Size(40, 24);
 			this.ButtonSelect.TabIndex = 7;
-			popupPositionValues1.PlacementMode = ComponentFactory.Krypton.Toolkit.PlacementMode.Bottom;
-			this.ButtonSelect.ToolTipValues.ToolTipPosition = popupPositionValues1;
 			this.ButtonSelect.Values.Text = "...";
 			this.ButtonSelect.Click += new System.EventHandler(this.ButtonSelect_Click);
 			// 

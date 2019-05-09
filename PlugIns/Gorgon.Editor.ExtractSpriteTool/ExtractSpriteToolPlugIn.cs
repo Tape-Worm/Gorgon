@@ -71,7 +71,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
             }
 
             if ((_fileManager.SelectedFile.Metadata == null)
-                || (!_fileManager.SelectedFile.Metadata.Attributes.TryGetValue("Type", out string contentType))
+                || (!_fileManager.SelectedFile.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string contentType))
                 || (!string.Equals(contentType, "Image", StringComparison.OrdinalIgnoreCase)))
             {
                 return false;

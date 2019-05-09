@@ -110,7 +110,7 @@ namespace Gorgon.Graphics.Fonts
 				            new CharacterRange(0, 1)
 			            };
 
-			var style = System.Drawing.FontStyle.Regular;
+            System.Drawing.FontStyle style = System.Drawing.FontStyle.Regular;
 
 			switch (fontInfo.FontStyle)
 			{

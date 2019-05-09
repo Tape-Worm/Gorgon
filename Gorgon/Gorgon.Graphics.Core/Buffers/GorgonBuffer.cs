@@ -218,7 +218,7 @@ namespace Gorgon.Graphics.Core
             
             ValidateBufferBindings(bufferInfo.Usage, bufferInfo.Binding, bufferInfo.StructureSize);
 
-            var options = D3D11.ResourceOptionFlags.None;
+            D3D11.ResourceOptionFlags options = D3D11.ResourceOptionFlags.None;
 
             if (bufferInfo.IndirectArgs)
             {

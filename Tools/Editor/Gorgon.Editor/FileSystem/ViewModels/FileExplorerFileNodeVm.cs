@@ -53,7 +53,7 @@ namespace Gorgon.Editor.ViewModels
         private bool _isOpen;
         // The file system information object.
         private FileInfo _fileInfo;
-        // The list of content file dependant upon this file.
+        // The list of content file dependent upon this file.
         private readonly ObservableCollection<IContentFile> _dependencies;
         #endregion
 
@@ -149,7 +149,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>Property to return the physical path to the node.</summary>
         public override string PhysicalPath => Parent == null ? null : Path.Combine(Parent.PhysicalPath, Name);
 
-        /// <summary>Property to return the list of items dependant upon this node</summary>
+        /// <summary>Property to return the list of items dependent upon this node</summary>
         IReadOnlyList<IContentFile> IContentFile.Dependencies => _dependencies;
         #endregion
 
@@ -755,7 +755,7 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Function to link a content file to be dependant upon this content.
+        /// Function to link a content file to be dependent upon this content.
         /// </summary>
         /// <param name="child">The child content to link to this content.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="child"/> parameter is <b>null.</b></exception>
@@ -775,7 +775,7 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Function to unlink a content file from being dependant upon this content.
+        /// Function to unlink a content file from being dependent upon this content.
         /// </summary>
         /// <param name="child">The child content to unlink from this content.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="child"/> parameter is <b>null.</b></exception>

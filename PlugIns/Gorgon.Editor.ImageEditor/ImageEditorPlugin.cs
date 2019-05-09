@@ -219,10 +219,10 @@ namespace Gorgon.Editor.ImageEditor
                 needsRefresh = true;
             }
 
-            if ((attributes.TryGetValue(ImageContent.ContentTypeAttr, out string currentContentType))
+            if ((attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string currentContentType))
                 && (string.Equals(currentContentType, ImageEditorCommonConstants.ContentType, StringComparison.OrdinalIgnoreCase)))
             {
-                attributes.Remove(ImageContent.ContentTypeAttr);
+                attributes.Remove(CommonEditorConstants.ContentTypeAttr);
                 needsRefresh = true;
             }
 
@@ -234,10 +234,10 @@ namespace Gorgon.Editor.ImageEditor
                 needsRefresh = true;
             }
 
-            if ((!attributes.TryGetValue(ImageContent.ContentTypeAttr, out currentContentType))
+            if ((!attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out currentContentType))
                 || (!string.Equals(currentContentType, ImageEditorCommonConstants.ContentType, StringComparison.OrdinalIgnoreCase)))
             {
-                attributes[ImageContent.ContentTypeAttr] = ImageEditorCommonConstants.ContentType;
+                attributes[CommonEditorConstants.ContentTypeAttr] = ImageEditorCommonConstants.ContentType;
                 needsRefresh = true;
             }
 

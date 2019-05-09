@@ -142,13 +142,14 @@ namespace Gorgon.IO
 	        }
 	    }
 
-		/// <summary>
-		/// Function to load a version 1.x Gorgon sprite.
-		/// </summary>
-		/// <param name="graphics">The graphics interface used to create states.</param>
-		/// <param name="reader">Binary reader to use to read in the data.</param>
-		/// <returns>The sprite from the stream data.</returns>
-		private static GorgonSprite LoadSprite(GorgonGraphics graphics, GorgonBinaryReader reader)
+        /// <summary>
+        /// Function to load a version 1.x Gorgon sprite.
+        /// </summary>
+        /// <param name="graphics">The graphics interface used to create states.</param>
+        /// <param name="reader">Binary reader to use to read in the data.</param>
+        /// <param name="overrideTexture">The texture to assign to the sprite instead of the texture associated with the name stored in the file.</param>
+        /// <returns>The sprite from the stream data.</returns>
+        private static GorgonSprite LoadSprite(GorgonGraphics graphics, GorgonBinaryReader reader, GorgonTexture2DView overrideTexture)
 		{
 		    Version version;
 			string imageName = string.Empty;
@@ -390,16 +391,20 @@ namespace Gorgon.IO
 			sprite.HorizontalFlip = reader.ReadBoolean();
 			sprite.VerticalFlip = reader.ReadBoolean();
 
-		    GorgonTexture2DView textureView = null;
+		    GorgonTexture2DView textureView;
 
-			// Bind the texture (if we have one bound to this sprite) if it's already loaded, otherwise defer it.
-			if (!string.IsNullOrEmpty(imageName))
-			{
-			    GorgonTexture2D texture = graphics.LocateResourcesByName<GorgonTexture2D>(imageName).FirstOrDefault();
-			    textureView = texture?.GetShaderResourceView();
-			}
+            // Bind the texture (if we have one bound to this sprite) if it's already loaded, otherwise defer it.
+            if ((!string.IsNullOrEmpty(imageName)) && (overrideTexture == null))
+            {
+                GorgonTexture2D texture = graphics.LocateResourcesByName<GorgonTexture2D>(imageName).FirstOrDefault();
+                textureView = texture?.GetShaderResourceView();
+            }
+            else
+            {
+                textureView = overrideTexture;
+            }
             
-		    // If we cannot load the image, then fall back to the standard coordinates.
+		    // If we cannot load the image, then fall back to the standard coordinates.            
 		    if (textureView == null)
 		    {
 		        sprite.TextureRegion = new DX.RectangleF(0, 0, 1, 1);
@@ -501,13 +506,14 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="stream">The stream containing the sprite.</param>
         /// <param name="byteCount">The number of bytes to read from the stream.</param>
+        /// <param name="overrideTexture">[Optional] The texture to assign to the sprite instead of the texture associated with the name stored in the file.</param>
         /// <returns>A new <see cref="GorgonSprite"/>.</returns>
-        protected override GorgonSprite OnReadFromStream(Stream stream, int byteCount)
+        protected override GorgonSprite OnReadFromStream(Stream stream, int byteCount, GorgonTexture2DView overrideTexture)
         {
             using (var reader = new GorgonBinaryReader(stream, true))
             {
                 // We don't need the byte count here.
-                return LoadSprite(Graphics, reader);
+                return LoadSprite(Graphics, reader, overrideTexture);
             }
         }
 

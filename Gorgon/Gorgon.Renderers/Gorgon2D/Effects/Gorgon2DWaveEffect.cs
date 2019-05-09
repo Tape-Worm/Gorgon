@@ -229,7 +229,7 @@ namespace Gorgon.Renderers
             _settings = new Settings(10.0f, 50.0f, 0.0f, 100.0f, WaveType.Horizontal);
             _waveBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _settings, "Gorgon2DWaveEffect Constant Buffer", ResourceUsage.Dynamic);
 
-            var macros = new []
+            GorgonShaderMacro[] macros = new []
                          {
                              new GorgonShaderMacro("WAVE_EFFECT")
                          };

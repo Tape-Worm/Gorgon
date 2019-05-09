@@ -60,7 +60,7 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this.Picker);
 			this.Font = new System.Drawing.Font("Segoe UI", 9F);
-			this.Name = "ColorPicker";
+			this.Name = "GorgonColorPicker";
 			this.Size = new System.Drawing.Size(418, 306);
 			this.ResumeLayout(false);
 			this.PerformLayout();

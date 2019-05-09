@@ -290,7 +290,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public GorgonStreamOutCall Build(GorgonStreamOutCallPoolAllocator allocator)
         {
-            var final = allocator == null ? new GorgonStreamOutCall() : allocator.Allocate();
+            GorgonStreamOutCall final = allocator == null ? new GorgonStreamOutCall() : allocator.Allocate();
             final.SetupConstantBuffers();
             final.SetupSamplers();
             final.SetupViews();

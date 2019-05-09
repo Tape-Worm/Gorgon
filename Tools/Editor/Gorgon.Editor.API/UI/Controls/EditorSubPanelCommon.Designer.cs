@@ -140,7 +140,7 @@
             this.Controls.Add(this.PanelConfirmCancel);
             this.Controls.Add(this.PanelCaptionBorder);
             this.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.Name = "EditorSubPanelCommon";
+            this.Name = "GorgonEditorSubPanelCommon";
             this.Size = new System.Drawing.Size(539, 493);
             this.PanelCaptionBorder.ResumeLayout(false);
             this.PanelCaptionBorder.PerformLayout();

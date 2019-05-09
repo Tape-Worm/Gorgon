@@ -46,7 +46,7 @@ namespace Gorgon.Editor.ViewModels
         : ViewModelBase<FileExplorerNodeParameters>, IFileExplorerNodeVm, IContentFile
     {
         #region Variables.
-        // The content file dependant.
+        // The content file dependent.
         private readonly IContentFile _content;
         // The node represented by this dependency..
         private readonly IFileExplorerNodeVm _node;
@@ -196,10 +196,10 @@ namespace Gorgon.Editor.ViewModels
             }
         }
 
-        /// <summary>Property to return the list of items dependant upon this node</summary>
+        /// <summary>Property to return the list of items dependent upon this node</summary>
         public ObservableCollection<IFileExplorerNodeVm> Dependencies => _node.Dependencies;
 
-        /// <summary>Property to return the list of items dependant upon this node</summary>        
+        /// <summary>Property to return the list of items dependent upon this node</summary>        
         IReadOnlyList<IContentFile> IContentFile.Dependencies => _content.Dependencies;
         #endregion
 
@@ -451,11 +451,11 @@ namespace Gorgon.Editor.ViewModels
             base.OnUnload();
         }
 
-        /// <summary>Function to link a content file to be dependant upon this content.</summary>
+        /// <summary>Function to link a content file to be dependent upon this content.</summary>
         /// <param name="child">The child content to link to this content.</param>
         void IContentFile.LinkContent(IContentFile child) => _content.LinkContent(child);
 
-        /// <summary>Function to unlink a content file from being dependant upon this content.</summary>
+        /// <summary>Function to unlink a content file from being dependent upon this content.</summary>
         /// <param name="child">The child content to unlink from this content.</param>
         void IContentFile.UnlinkContent(IContentFile child) => _content.UnlinkContent(child);
 

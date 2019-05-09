@@ -1,4 +1,4 @@
-﻿namespace Gorgon.Editor.UI
+﻿namespace Gorgon.Editor.UI.Controls
 {
     partial class RecentFilesControl
     {
@@ -60,7 +60,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.Controls.Add(this.PanelRecentItems);
-            this.Name = "RecentFilesControl";
+            this.Name = "GorgonRecentFilesControl";
             this.Size = new System.Drawing.Size(546, 418);
             this.ResumeLayout(false);
 

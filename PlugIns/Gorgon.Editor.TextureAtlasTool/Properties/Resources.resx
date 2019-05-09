@@ -1,0 +1,263 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="folder_20x20" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\folder_20x20.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORTAG_ERR_GEN_ATLAS" xml:space="preserve">
+    <value>There was an error while generating the atlas.
+
+Please try again.</value>
+  </data>
+  <data name="GORTAG_TEXT_NO_SPRITES" xml:space="preserve">
+    <value>No sprites loaded.</value>
+  </data>
+  <data name="GORTAG_DESC_FOLDER_SELECT" xml:space="preserve">
+    <value>Select a folder to save the atlas texture(s) into.</value>
+  </data>
+  <data name="GORTAG_PLUGIN_DESC" xml:space="preserve">
+    <value>Gorgon Texture Atlas</value>
+  </data>
+  <data name="GORTAG_ERR_LOAD_SPRITES" xml:space="preserve">
+    <value>There was an error loading the selected sprites.
+
+Please try again.</value>
+  </data>
+  <data name="GORTAG_TEXT_SPRITE_COUNT" xml:space="preserve">
+    <value>{0} sprites loaded.</value>
+  </data>
+  <data name="left_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\left_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="texture_atlas_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\texture_atlas_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORTAG_ERR_LAUNCH" xml:space="preserve">
+    <value>There was an error launching the texture atlas generation tool.
+
+Please try again.</value>
+  </data>
+  <data name="GORTAG_GROUP_BUTTON" xml:space="preserve">
+    <value>Sprites</value>
+  </data>
+  <data name="right_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\right_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORTAG_ERR_SEARCH" xml:space="preserve">
+    <value>There was an error searching through the sprites.
+
+Please try again.</value>
+  </data>
+  <data name="GORTAG_CAPTION_FOLDER_SELECT" xml:space="preserve">
+    <value>Output folder</value>
+  </data>
+  <data name="GORTAG_ERR_PREVIEW_ARRAY" xml:space="preserve">
+    <value>There was an error while changing the array or texture index.
+
+Please try again.</value>
+  </data>
+  <data name="texture_atlas_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\texture_atlas_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORTAG_DESC_BUTTON" xml:space="preserve">
+    <value>A tool for generating a texture atlas from a series of sprites.</value>
+  </data>
+  <data name="GORTAG_TEXT_NO_ATLAS" xml:space="preserve">
+    <value>No atlas generated.  Click the "Generate Atlas" button to create an atlas.</value>
+  </data>
+  <data name="GORTAG_TEXT_BUTTON" xml:space="preserve">
+    <value>Texture Atlas</value>
+  </data>
+  <data name="calculate_22x22" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\calculate_22x22.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="info_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\info_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORTAG_TEXT_SHOW_LOAD_SPRITE" xml:space="preserve">
+    <value>There was an error showing the sprite file manager.
+
+Please try again.</value>
+  </data>
+  <data name="White_2x2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\White_2x2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORTAG_ERR_FOLDER_SELECT" xml:space="preserve">
+    <value>There was an error browsing the file system folders.
+
+Please try again.</value>
+  </data>
+  <data name="GORTAG_ERR_IMAGE_OPEN" xml:space="preserve">
+    <value>Cannot write the image file '{0}' because it is already open in the editor.</value>
+  </data>
+  <data name="GORTAG_ERR_NO_ROOM" xml:space="preserve">
+    <value>There was not enough room for one or more of the sprites.
+
+Please increase the texture size, and/or array count, or reduce the padding and try again.</value>
+  </data>
+  <data name="GORTAG_ERR_SPRITE_OPEN" xml:space="preserve">
+    <value>Cannot update the sprite file '{0}' because it is already open in the editor.</value>
+  </data>
+  <data name="GORTAG_CONFIRM_SOME_NO_TEXTURE" xml:space="preserve">
+    <value>Some of the sprites selected are not bound to any texture.
+
+Would you like to continue?</value>
+  </data>
+  <data name="GORTAG_INF_ALREADY_ATLASED" xml:space="preserve">
+    <value>The selected sprites are already on a texture atlas.
+
+No changes will be made.</value>
+  </data>
+  <data name="GORTAG_ERR_NO_TEXTURES" xml:space="preserve">
+    <value>None of the selected sprites have a texture attached.
+
+Sprites must have textures in order to generate an atlas.</value>
+  </data>
+  <data name="GORTAG_CONFIRM_OVERWRITE" xml:space="preserve">
+    <value>Generating the texture atlas will overwrite one or more textures.
+
+Are you sure you want to do this?</value>
+  </data>
+  <data name="GORTAG_ERR_CALC" xml:space="preserve">
+    <value>There was an error while calculating the texture dimensions.
+
+Please try again.</value>
+  </data>
+  <data name="GORTAG_ERR_CALC_TOO_LARGE" xml:space="preserve">
+    <value>The calculated size would be too large for this video adapter to handle.</value>
+  </data>
+  <data name="GORTAG_TEXT_ARRAY_COUNT" xml:space="preserve">
+    <value>Array index {0}/{1}</value>
+  </data>
+  <data name="GORTAG_TEXT_ARRAY_TEXTURE_COUNT" xml:space="preserve">
+    <value>Array index {0}/{1}, Texture {2}/{3}</value>
+  </data>
+  <data name="GORTAG_TEXT_NO_ATLAS_MESSAGE" xml:space="preserve">
+    <value>Click 'generate' to create a texture atlas from the loaded sprites.</value>
+  </data>
+  <data name="GORTAG_TEXT_TEXTURE_COUNT" xml:space="preserve">
+    <value>Texture {0}/{1}</value>
+  </data>
+  <data name="GORTAG_ERR_SAVE" xml:space="preserve">
+    <value>There was an error while attempting to save the texture atlas.
+
+Please try again.</value>
+  </data>
+</root>

@@ -32,6 +32,11 @@ namespace Gorgon.Editor
     public static class CommonEditorConstants
     {
         /// <summary>
+        /// The attribute name for the content type attribute.
+        /// </summary>
+        public const string ContentTypeAttr = "Type";
+
+        /// <summary>
         /// The current version for an editor project.
         /// </summary>
         public const string EditorCurrentProjectVersion = "GOREDIT30";

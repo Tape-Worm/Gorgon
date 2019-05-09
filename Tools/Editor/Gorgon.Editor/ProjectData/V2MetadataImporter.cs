@@ -30,8 +30,6 @@ using System.IO;
 using System.Xml.Linq;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Metadata;
-using Gorgon.Editor.PlugIns;
-using Gorgon.Editor.Services;
 using Gorgon.IO;
 
 namespace Gorgon.Editor.ProjectData

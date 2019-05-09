@@ -36,7 +36,7 @@
 			this.PanelRecent = new System.Windows.Forms.Panel();
 			this.PanelBorder = new System.Windows.Forms.Panel();
 			this.panel1 = new System.Windows.Forms.Panel();
-			this.RecentFiles = new Gorgon.Editor.UI.RecentFilesControl();
+			this.RecentFiles = new Gorgon.Editor.UI.Controls.RecentFilesControl();
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.panel3 = new System.Windows.Forms.Panel();
 			this.LabelHeader = new System.Windows.Forms.Label();
@@ -151,6 +151,6 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Label LabelHeader;
-        private UI.RecentFilesControl RecentFiles;
+        private UI.Controls.RecentFilesControl RecentFiles;
     }
 }

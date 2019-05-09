@@ -26,6 +26,7 @@
 
 using System.ComponentModel;
 using Gorgon.Editor.ProjectData;
+using Gorgon.Editor.UI.Controls;
 
 namespace Gorgon.Editor.UI
 {
@@ -43,7 +44,7 @@ namespace Gorgon.Editor.UI
             get;
         }
 
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.UI.RecentItemDeleteEventArgs"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="RecentItemDeleteEventArgs"/> class.</summary>
         /// <param name="item">The item.</param>
         public RecentItemDeleteEventArgs(RecentItem item) => Item = item;
     }

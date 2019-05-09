@@ -37,7 +37,6 @@ using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Support;
 using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers;
 using Newtonsoft.Json;
@@ -232,7 +231,7 @@ namespace Gorgon.IO
                 return null;
             }
 
-            if ((!textureMetadata.Attributes.TryGetValue("Type", out string contentType))
+            if ((!textureMetadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string contentType))
                 || (!string.Equals(contentType, "image", StringComparison.OrdinalIgnoreCase))
                 || (!textureMetadata.Attributes.TryGetValue("ImageCodec", out string imageCodecTypeName))
                 || (!codecs.TryGetValue(imageCodecTypeName, out IGorgonImageCodec codec)))
@@ -345,7 +344,7 @@ namespace Gorgon.IO
             IReadOnlyDictionary<string, IGorgonSpriteCodec> supportedSpriteCodecs = GetSpriteCodecs(renderer, spriteCodecs);
             IReadOnlyDictionary<string, IGorgonImageCodec> supportedImageCodecs = GetImageCodecs(imageCodecs);
 
-            if ((!fileMetadata.Attributes.TryGetValue("Type", out string contentType))
+            if ((!fileMetadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string contentType))
                 || (!string.Equals(contentType, "sprite", StringComparison.OrdinalIgnoreCase)))
             {
                 throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_NOT_SPRITE, path));

@@ -314,4 +314,34 @@ These platforms are incompatible and cannot be mixed.</value>
   <data name="GOREDIT_PLUGIN_TYPE_IMPORTER" xml:space="preserve">
     <value>Content importer</value>
   </data>
+  <data name="collapsed_8x8" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\collapsed_8x8.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="expanded_8x8" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\expanded_8x8.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="check_8x8" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\check_8x8.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="folder_20x20" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\folder_20x20.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="generic_file_20x20" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\generic_file_20x20.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="error_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\error_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GOREDIT_ERR_BROKEN_FILEROW" xml:space="preserve">
+    <value>Cannot find the row associated with the file.</value>
+  </data>
+  <data name="GOREDIT_SEARCH_DIRECTORY_TAG1" xml:space="preserve">
+    <value>dir:</value>
+  </data>
+  <data name="GOREDIT_SEARCH_DIRECTORY_TAG2" xml:space="preserve">
+    <value>directory:</value>
+  </data>
+  <data name="GOREDIT_ERR_NO_RENDER_CONTROL" xml:space="preserve">
+    <value>No render control is assigned to this control.</value>
+  </data>
 </root>

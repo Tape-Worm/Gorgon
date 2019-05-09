@@ -123,6 +123,6 @@ namespace Gorgon.IO
         /// Initializes a new instance of the <see cref="JsonTextureKeyConverter"/> class.
         /// </summary>
         /// <param name="graphics">The graphics interface to use for texture lookup.</param>
-        public JsonTextureKeyConverter(GorgonGraphics graphics) => _textureConverter = new JsonTexture2DConverter(graphics);
+        public JsonTextureKeyConverter(GorgonGraphics graphics) => _textureConverter = new JsonTexture2DConverter(graphics, null);
     }
 }

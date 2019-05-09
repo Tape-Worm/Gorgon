@@ -2650,7 +2650,7 @@ namespace Gorgon.Editor.ViewModels
 
             int lastSlash = path.LastIndexOf("/", StringComparison.Ordinal);            
             string directoryName = path.Substring(lastSlash + 1);
-            string directoryPath = path.Substring(0, lastSlash);
+            string directoryPath = path.Substring(0, lastSlash).FormatDirectory('/');
             IFileExplorerNodeVm parentDir;
 
             if (string.IsNullOrWhiteSpace(directoryPath))
@@ -2789,14 +2789,57 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Function to retrieve the content sub directories for a given directory path.
+        /// </summary>
+        /// <param name="directoryPath">The directory path to search under.</param>
+        /// <param name="searchMask">The search mask to use.</param>
+        /// <param name="recursive">[Optional] <b>true</b> to retrieve all files under the path, including those in sub directories, or <b>false</b> to retrieve files in the immediate path.</param>
+        /// <returns>An <c>IEnumerable</c> containing the directory paths found on the path.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryPath"/>, or the <paramref name="searchMask"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="directoryPath"/>, or the <paramref name="searchMask"/> parameter is empty.</exception>        
+        /// <remarks>
+        /// <para>
+        /// This will search on the specified <paramref name="directoryPath"/> for directories that match the <paramref name="searchMask"/>. 
+        /// </para>
+        /// <para>
+        /// The <paramref name="searchMask"/> parameter can be a full directory name, or can contain a wildcard character (<b>*</b>) to filter the search. If the <paramref name="searchMask"/> is set to <b>*</b>, then 
+        /// all sub directories under the directory will be returned.
+        /// </para>
+        /// </remarks>
+        IEnumerable<string> IContentFileManager.EnumerateDirectories(string directoryPath, string searchMask, bool recursive)
+        {
+            if (directoryPath == null)
+            {
+                throw new ArgumentNullException(nameof(directoryPath));
+            }
+
+            if (searchMask == null)
+            {
+                throw new ArgumentNullException(nameof(searchMask));
+            }
+
+            if (string.IsNullOrWhiteSpace(directoryPath))
+            {
+                throw new ArgumentEmptyException(nameof(directoryPath));
+            }
+
+            if (string.IsNullOrWhiteSpace(searchMask))
+            {
+                throw new ArgumentEmptyException(nameof(searchMask));
+            }
+
+            return EnumerateNodes(directoryPath, searchMask, recursive).Where(item => item.AllowChildCreation).Select(item => item.FullPath);
+        }
+
+        /// <summary>
         /// Function to retrieve the content files for a given directory path.
         /// </summary>
         /// <param name="directoryPath">The directory path to search under.</param>
         /// <param name="searchMask">The search mask to use.</param>
         /// <param name="recursive">[Optional] <b>true</b> to retrieve all files under the path, including those in sub directories, or <b>false</b> to retrieve files in the immediate path.</param>
         /// <returns>An <c>IEnumerable</c> containing the content files found on the path.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryPath"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="directoryPath"/> parameter is empty.</exception>        
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryPath"/>, or the <paramref name="searchMask"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="directoryPath"/>, or the <paramref name="searchMask"/> parameter is empty.</exception>        
         /// <remarks>
         /// <para>
         /// This will search on the specified <paramref name="directoryPath"/> for all content files that match the <paramref name="searchMask"/>. 

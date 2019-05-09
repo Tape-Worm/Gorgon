@@ -42,6 +42,8 @@ namespace Gorgon.IO
     {
         // The graphics object to use for resource look up.
         private readonly GorgonGraphics _graphics;
+        // The override texture.
+        private readonly GorgonTexture2DView _override;
         // The list of properties for the type.
         private readonly HashSet<string> _propNames = new HashSet<string>(StringComparer.Ordinal)
                                                       {
@@ -207,6 +209,11 @@ namespace Gorgon.IO
                 return null;
             }
 
+            if (_override != null)
+            {
+                return _override;
+            }
+
             GorgonTexture2D texture = _graphics?.LocateResourcesByName<GorgonTexture2D>(textureName)
                                                .FirstOrDefault(item => (item.Width == texWidth)
                                                                        && (item.Height == texHeight)
@@ -230,6 +237,11 @@ namespace Gorgon.IO
         /// Initializes a new instance of the <see cref="JsonTexture2DConverter"/> class.
         /// </summary>
         /// <param name="graphics">The graphics interface used for resource lookup.</param>
-        public JsonTexture2DConverter(GorgonGraphics graphics) => _graphics = graphics;
+        /// <param name="overrideTexture">The texture to assign to the sprite instead of the texture associated with the name stored in the file.</param>
+        public JsonTexture2DConverter(GorgonGraphics graphics, GorgonTexture2DView overrideTexture)
+        {
+            _graphics = graphics;
+            _override = overrideTexture;
+        }
     }
 }

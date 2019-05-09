@@ -26,6 +26,9 @@
 
 using System;
 using System.ComponentModel;
+using System.ComponentModel.Design;
+using System.Drawing;
+using System.Drawing.Design;
 using System.Windows.Forms;
 
 namespace Gorgon.UI
@@ -54,7 +57,7 @@ namespace Gorgon.UI
             set => base.Padding = value;
         }
         
-        /// <summary>Gets or sets the current text in the <see cref="T:System.Windows.Forms.TextBox" />.</summary>
+        /// <summary>Gets or sets the current text in the <see cref="TextBox" />.</summary>
         /// <returns>The text displayed in the control.</returns>
         /// <filterpriority>1</filterpriority>
         public override string Text
@@ -66,6 +69,67 @@ namespace Gorgon.UI
                 TextSearch.SelectionLength = 0;
                 TextSearch.SelectionStart = 0;
             }
+        }
+
+		/// <summary>
+        /// Property to set or return the tooltip text to display on the control.
+        /// </summary>
+        [Browsable(true), Category("Appearance"), Description("Sets the text to display in a tooltip for the control."), 
+			Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
+		public string ToolTipText
+        {
+            get => TipSearch.GetToolTip(TextSearch);
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    TipSearch.RemoveAll();
+                    return;
+                }
+
+                TipSearch.SetToolTip(TextSearch, value);
+                TipSearch.SetToolTip(ButtonClearSearch, value);
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the tooltip title to display on the tool tip.
+        /// </summary>
+        [Browsable(true), Category("Appearance"), Description("Sets the text to display in a tooltip title.")]
+        public string ToolTipTitle
+        {
+            get => TipSearch.ToolTipTitle;
+            set => TipSearch.ToolTipTitle = value;
+        }
+
+        /// <summary>
+        /// Property to set or return the tooltip icon to display on the tool tip.
+        /// </summary>
+        [Browsable(true), Category("Appearance"), Description("Sets the icon to display in a tooltip.")]
+        public ToolTipIcon ToolTipIcon
+        {
+            get => TipSearch.ToolTipIcon;
+            set => TipSearch.ToolTipIcon = value;
+        }
+
+        /// <summary>
+        /// Property to set or return the color used for the background of the tool tip.
+        /// </summary>
+        [Browsable(true), Category("Appearance"), Description("Sets the color to use for the tooltip background.")]
+		public Color ToolTipBackColor
+        {
+            get => TipSearch.BackColor;
+            set => TipSearch.BackColor = value;
+        }
+
+        /// <summary>
+        /// Property to set or return the color used for the text of the tool tip.
+        /// </summary>
+        [Browsable(true), Category("Appearance"), Description("Sets the color to use for the tooltip text.")]
+        public Color ToolTipForeColor
+        {
+            get => TipSearch.ForeColor;
+            set => TipSearch.ForeColor = value;
         }
         #endregion
 
@@ -81,9 +145,13 @@ namespace Gorgon.UI
             }
             else
             {
-                ButtonClearSearch.Visible = true;
+                if (!ButtonClearSearch.Visible)
+                {
+                    ButtonClearSearch.Visible = true;
+                    TextSearch.Select();
+                }
             }
-
+            
             base.Text = TextSearch.Text;
         }
 

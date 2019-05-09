@@ -130,8 +130,8 @@ namespace Gorgon.Renderers.Services
         /// This will return the new pixel coordinates and array index for each sprite on the texture atlas. The key values for the dictionary are the same sprite references passed in to the method. 
         /// </para>
         /// <para>
-        /// If all <paramref name="sprites"/> already share the same texture, then this method will return <b>false</b>, and <paramref name="result"/> will return with the original sprite texture and 
-        /// original <paramref name="sprites"/> since the sprites are already part of an atlas.
+        /// If all <paramref name="sprites"/> already share the same texture, then this method will return <b>false</b>, and method will return with the original sprite locations since they're already 
+        /// on an atlas.
         /// </para>
         /// <para>
         /// If a sprite in the <paramref name="sprites"/> list does not have an attached texture, then it will be ignored.
