@@ -32,7 +32,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Gorgon.Collections;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
@@ -55,6 +54,8 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Variables.
+		// The list of missing metadata links.
+        private readonly List<string> _missingMetadataLinks = new List<string>();
         // The factory used to create view models.
         private ViewModelFactory _viewModelFactory;
         // The project data for the view model.
@@ -83,12 +84,14 @@ namespace Gorgon.Editor.ViewModels
         private IContentPreviewVm _contentPreviewer;
         // The file manager used to manage content through content plug ins.
         private IContentFileManager _contentFileManager;
-        // The event triggered when the project metadata is being saved.
-        private Task _saveEvent;
 		// The list of tools available to the application.
         private IToolPlugInService _toolPlugIns;
 		// The list of tool buttons.
         private Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> _toolButtons = new Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
+        // The event triggered when the project metadata is being saved.
+        private Task _saveEvent;
+		// The cancel token for the save event task.
+        private CancellationTokenSource _cancelSource;
         #endregion
 
         #region Properties.
@@ -829,43 +832,68 @@ namespace Gorgon.Editor.ViewModels
         /// <returns>A task for asynchronous operation.</returns>
         public async Task SaveProjectMetadataAsync()
         {
-            if (_saveEvent != null) 
+            if (_saveEvent != null)
             {
-                // Wait for our previous task to finish, or wait for 30 seconds for the previous save operation to complete (if it takes this long, we're in big trouble).
-                Task finishedTask = await Task.WhenAny(_saveEvent, Task.Delay(30000));
-
-                // We timed out, try again later.                
-                if (finishedTask != _saveEvent)
+				// Try to cancel the previous operation.
+                if (_cancelSource != null)
                 {
-                    Log.Print("[WARNING] A previous project metadata task was scheduled and has not yet completed after 30 seconds.  The current save project metadata task will be abandoned.", LoggingLevel.Intermediate);
-                    return;
-                }                
+                    _cancelSource.Cancel();
+                }
+
+                // Wait for our previous task to cancel out.
+                await _saveEvent;
             }
 
-            _saveEvent = Task.Run(() =>
-                                {
-                                    // Rebuild the project item metadata list.
-                                    _projectData.ProjectItems.Clear();
-                                    foreach (IFileExplorerNodeVm node in _fileExplorer.RootNode.Children.Traverse(n => n.Children).Where(n => n.Metadata != null))
-                                    {
-                                        node.Metadata.Dependencies.Clear();
-                                    }
+            // Rebuild the project item metadata list.
+            _projectData.ProjectItems.Clear();
 
-                                    foreach (IFileExplorerNodeVm node in _fileExplorer.RootNode.Children.Traverse(n => n.Children).Where(n => n.Metadata != null))
-                                    {
-                                        foreach (IFileExplorerNodeVm depNode in node.Dependencies)
-                                        {
-                                            if (!string.IsNullOrWhiteSpace(node.Metadata.ContentMetadata?.ContentTypeID))
-                                            {
-                                                depNode.Metadata.Dependencies[node.Metadata.ContentMetadata.ContentTypeID] = node.FullPath;
-                                            }                                            
-                                        }
+            IReadOnlyDictionary<string, IFileExplorerNodeVm> nodes = _fileExplorer.GetFlattenedList();
 
-                                        _projectData.ProjectItems[node.FullPath] = node.Metadata;
-                                    }
+            // We have to reset the dependency metadata prior to rebuilding it.  Otherwise we may end up with duplicated dependencies and such.
+            foreach (KeyValuePair<string, IFileExplorerNodeVm> node in nodes.Where(item => item.Value.Metadata != null))
+            {
+				// Get rid of any dead links.
+                _missingMetadataLinks.Clear();
+                foreach (KeyValuePair<string, string> parentDep in node.Value.Metadata.DependsOn)
+                {
+					// If the node in question doesn't even exist in the file system, then drop it.
+                    if (!nodes.TryGetValue(parentDep.Value, out IFileExplorerNodeVm parentDepNode))
+                    {
+                        _missingMetadataLinks.Add(parentDep.Key);
+                        continue;
+                    }
 
-                                    _projectManager.PersistMetadata(_projectData);
-                                });
+					// If it exists, but the actual parent node link doesn't have any record of this node as a dependency, then 
+					// drop it, otherwise continue on.
+                    if (parentDepNode.Dependencies.Any(item => string.Equals(item.FullPath, node.Key, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        continue;
+                    }
+
+                    _missingMetadataLinks.Add(parentDep.Key);
+                }
+
+				// We have to do this outside of here because we can't iterate and delete at the same time.
+                for (int i = 0; i < _missingMetadataLinks.Count; ++i)
+                {
+                    node.Value.Metadata.DependsOn.Remove(_missingMetadataLinks[i]);
+                }
+
+                foreach (IFileExplorerNodeVm depNode in node.Value.Dependencies)
+                {
+                    if (!string.IsNullOrWhiteSpace(node.Value.Metadata.ContentMetadata?.ContentTypeID))
+                    {
+                        depNode.Metadata.DependsOn[node.Value.Metadata.ContentMetadata.ContentTypeID] = node.Key;
+                    }
+                }
+
+                _projectData.ProjectItems[node.Key] = node.Value.Metadata;
+            }
+
+            _cancelSource = new CancellationTokenSource();
+
+			// This is the slowest part of this operation, so we'll push it into the background.
+			_saveEvent = Task.Run(() => _projectManager.PersistMetadata(_projectData, _cancelSource.Token), _cancelSource.Token);
 
             await _saveEvent;
         }
@@ -924,13 +952,14 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         public override void OnUnload()
         {
-            // Wait for 30 seconds if we've not finished our save operation.
+            // Wait for 1 minute if we've not finished our save operation.
             if (_saveEvent != null)
             {
-                _saveEvent.Wait(30000);
+                _saveEvent.Wait(60_000);
             }
 
-            // TODO: This should probably be placed in a command.
+            _cancelSource?.Dispose();
+
             if (_projectData != null)
             {
                 _projectManager.CloseProject(_projectData);

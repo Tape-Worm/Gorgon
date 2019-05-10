@@ -633,11 +633,11 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Function to save the current project.
+        /// Function to save the current project to a packed file.
         /// </summary>
         /// <param name="args">The save project arguments.</param>
         /// <returns><b>true</b> if saved successfully, <b>false</b> if cancelled.</returns>
-        private async Task<bool> CreateSaveProjectTask(SavePackFileArgs args)
+        private async Task<bool> CreateSaveProjectToPackFileTask(SavePackFileArgs args)
         {
             var cancelSource = new CancellationTokenSource();
             FileInfo projectFile = null;
@@ -718,14 +718,14 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Function to save a project file.
+        /// Function to save a project file to a packed file.
         /// </summary>
         /// <param name="args">The arguments for the command.</param>
-        private async Task DoSaveProjectAsync(SavePackFileArgs args)
+        private async Task DoSaveProjectToPackFileAsync(SavePackFileArgs args)
         {
             try
             {
-                await CreateSaveProjectTask(args);
+                await CreateSaveProjectToPackFileTask(args);
             }
             catch (Exception ex)
             {
@@ -965,7 +965,7 @@ namespace Gorgon.Editor.ViewModels
         {
             BrowseProjectCommand = new EditorCommand<object>(DoOpenProjectAsync);
             OpenPackFileCommand = new EditorCommand<object>(DoOpenPackFileAsync, CanOpenProjects);
-            SavePackFileCommand = new EditorAsyncCommand<SavePackFileArgs>(DoSaveProjectAsync, CanSaveProject);
+            SavePackFileCommand = new EditorAsyncCommand<SavePackFileArgs>(DoSaveProjectToPackFileAsync, CanSaveProject);
             AppClosingAsyncCommand = new EditorAsyncCommand<AppCloseArgs>(DoAppClose);
             CreateContentCommand = new EditorCommand<string>(DoCreateContentAsync, CanCreateContent);
         }

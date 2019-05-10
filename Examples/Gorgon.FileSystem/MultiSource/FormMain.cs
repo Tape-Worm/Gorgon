@@ -219,7 +219,7 @@ namespace Gorgon.Examples
 				pluginAssemblies.LoadPlugInAssemblies(Program.PlugInPath, "Gorgon.FileSystem.Zip.DLL");
 
 				var providerFactory = new GorgonFileSystemProviderFactory(
-					new GorgonMefPlugInService(pluginAssemblies, Program.Log),
+					new GorgonMefPlugInService(pluginAssemblies),
 					Program.Log);
 
 				_fileSystem = new GorgonFileSystem(providerFactory.CreateProvider(zipProviderPlugInName), Program.Log);

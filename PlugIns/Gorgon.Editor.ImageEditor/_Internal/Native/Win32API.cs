@@ -235,7 +235,7 @@ namespace Gorgon.Editor.ImageEditor.Native
                                                    string filePath,
                                                    string extra,
                                                    [Out] StringBuilder result,
-                                                   out int size);
+                                                   [In][Out] ref int size);
 
         /// <summary>
         /// Function to determine if this file has an associated application or not.
@@ -257,13 +257,13 @@ namespace Gorgon.Editor.ImageEditor.Native
         /// <returns>A string containing the friendly name, or an empty string if no friendly name is found.</returns>
         public static string GetFriendlyExeName(string filePath)
         {
-
-            _ = AssocQueryString(AssociationFlags.InitializeByExeName | AssociationFlags.OpenByExeName,
+            int size = 0;
+            _ = AssocQueryString(AssociationFlags.Verify,
                              AssociationStringType.FriendlyApplicationName,
                              filePath,
                              null,
                              null,
-                             out int size);
+                             ref size);
 
             if (size <= 0)
             {
@@ -272,12 +272,12 @@ namespace Gorgon.Editor.ImageEditor.Native
 
             var result = new StringBuilder(size);
 
-            return AssocQueryString(AssociationFlags.InitializeByExeName | AssociationFlags.OpenByExeName,
+            return AssocQueryString(AssociationFlags.Verify,
                                     AssociationStringType.FriendlyApplicationName,
                                     filePath,
                                     null,
                                     result,
-                                    out _) != 0 ? string.Empty : result.ToString();
+                                    ref size) != 0 ? string.Empty : result.ToString();
         }
 
         /// <summary>
@@ -287,28 +287,23 @@ namespace Gorgon.Editor.ImageEditor.Native
         /// <returns>The path to the associated executable file, or an empty string if no executable is associated with the file.</returns>
         public static string GetAssociatedExecutable(string filePath)
         {
-            var exePath = new StringBuilder(1024);
-            IntPtr errorCode = FindExecutable(filePath, null, exePath);
+            int size = 0;
+            int hresult = AssocQueryString(AssociationFlags.DontRemapCLSID, AssociationStringType.Executable, filePath, null, null, ref size);
 
-            if (errorCode.ToInt32() > 32)
+			// WARNING: That shitty fucking photo UWP app steals the registration of some image files.  When this happens, we can't get the path info.  UWP is ABSOLUTE GARBAGE.
+            if ((size <= 0) || (hresult != 1))
             {
-                return exePath.ToString();
+                return string.Empty;
             }
 
-            var error = (FindExecutableResult)errorCode;
+            var result = new StringBuilder(size);
 
-            switch (error)
-            {
-                case FindExecutableResult.AccessDenied:
-                    throw new UnauthorizedAccessException();
-                case FindExecutableResult.PathNotValid:
-                case FindExecutableResult.FileNotFound:
-                    throw new FileNotFoundException(string.Format(Resources.GORIMG_ERR_FILE_NOT_FOUND, filePath));                
-                case FindExecutableResult.OutOfMemory:
-                    throw new OutOfMemoryException();
-                default:
-                    return string.Empty;
-            }
+            return AssocQueryString(AssociationFlags.DontRemapCLSID,
+                                    AssociationStringType.Executable,
+                                    filePath,
+                                    null,
+                                    result,
+                                    ref size) != 0 ? string.Empty : result.ToString();
         }
     }
 }

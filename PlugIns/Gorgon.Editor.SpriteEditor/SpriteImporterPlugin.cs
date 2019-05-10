@@ -71,6 +71,7 @@ namespace Gorgon.Editor.SpriteEditor
                 {
                     var extension = new GorgonFileExtension(file.Extension);
 
+					// Since all Gorgon's sprite files use the same extension, we'll have to be a little more aggressive when determining type.
                     (GorgonFileExtension, IGorgonSpriteCodec codec)[] results = _codecs.CodecFileTypes.Where(item => item.extension == extension).ToArray();
 
                     if (results.Length == 0)

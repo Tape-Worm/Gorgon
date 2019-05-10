@@ -388,7 +388,7 @@ namespace Gorgon.Editor.Services
                 }
             }
 
-            IGorgonPlugInService plugins = new GorgonMefPlugInService(pluginCache, Program.Log);
+            IGorgonPlugInService plugins = new GorgonMefPlugInService(pluginCache);
 
             // Before we load, pull in any importers so they'll be initialized and ready for content plug ins (if they're needed).
             IReadOnlyList<ContentImportPlugIn> importers = plugins.GetPlugIns<ContentImportPlugIn>();

@@ -115,6 +115,14 @@ namespace Gorgon.Animation
             // Not used.
         }
 
+        /// <summary>Function called when the size needs to be updated on the object.</summary>
+        /// <param name="animObject">The object being animated.</param>
+        /// <param name="size">The new size.</param>
+        protected override void OnSizeUpdate(GorgonPolySprite animObject, DX.Vector3 size)
+        {
+			// Not used.			
+        }
+
         /// <summary>
         /// Function called when a texture needs to be updated on the object.
         /// </summary>

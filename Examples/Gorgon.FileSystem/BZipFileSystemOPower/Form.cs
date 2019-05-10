@@ -125,7 +125,7 @@ namespace Gorgon.Examples
             _assemblyCache = new GorgonMefPlugInCache(GorgonApplication.Log);
 	        _assemblyCache.LoadPlugInAssemblies(GorgonExample.GetPlugInPath().FullName, gorPackDll);
 
-            var plugIns = new GorgonMefPlugInService(_assemblyCache, GorgonApplication.Log);
+            var plugIns = new GorgonMefPlugInService(_assemblyCache);
 	        return plugIns.GetPlugIn<GorgonFileSystemProvider>(gorPackPlugInName);
 	    }
 

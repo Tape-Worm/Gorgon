@@ -98,7 +98,6 @@
     <Compile Include="_Internal\ViewModels\DimensionSettings.cs" />
     <Compile Include="_Internal\ViewModels\DimensionSettingsParameters.cs" />
     <Compile Include="_Internal\ViewModels\ImageContentParameters.cs" />
-    <Compile Include="_Internal\ImageEditorCommonConstants.cs" />
     <Compile Include="ImageEditorPlugin.cs" />
     <Compile Include="_Internal\ImageEditorSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

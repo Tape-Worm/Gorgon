@@ -424,12 +424,11 @@ namespace Gorgon.PlugIns
         /// Initializes a new instance of the <see cref="GorgonMefPlugInService"/> class.
         /// </summary>
         /// <param name="mefCache">The cache of MEF plugin assemblies.</param>
-        /// <param name="log">[Optional] The log used for debug logging.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="mefCache"/> parameter is <b>null</b>.</exception>
-        public GorgonMefPlugInService(GorgonMefPlugInCache mefCache, IGorgonLog log = null)
+        public GorgonMefPlugInService(GorgonMefPlugInCache mefCache)
         {
             _cache = mefCache ?? throw new ArgumentNullException(nameof(mefCache));
-            _log = log ?? GorgonLog.NullLog;
+            _log = mefCache.Log ?? GorgonLog.NullLog;
         }
         #endregion
     }

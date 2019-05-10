@@ -110,8 +110,19 @@ namespace Gorgon.IO.Extensions
         /// <returns>The image codec to use, or <b>null</b> if no appropriate codec was found.</returns>
         private static IGorgonImageCodec FindTextureCodec(IGorgonVirtualFile file, IEnumerable<IGorgonImageCodec> codecs)
         {
-            using (Stream textureStream = file.OpenStream())
+            Stream textureStream = file.OpenStream();
+
+            try
             {
+                if (!textureStream.CanSeek)
+                {
+                    Stream newStream = new DataStream((int)textureStream.Length, true, true);
+                    textureStream.CopyTo(newStream);
+                    newStream.Position = 0;
+                    textureStream.Dispose();
+                    textureStream = newStream;
+                }
+
                 // First try to find the codec by file extension.
                 IEnumerable<IGorgonImageCodec> matchedExtensions =
                     codecs.Where(item => item.CodecCommonExtensions.Any(ext => string.Equals(file.Extension, ext, StringComparison.OrdinalIgnoreCase)));
@@ -132,6 +143,10 @@ namespace Gorgon.IO.Extensions
                         return codec;
                     }
                 }
+            }
+            finally
+            {
+                textureStream.Dispose();
             }
 
             return null;
@@ -300,13 +315,18 @@ namespace Gorgon.IO.Extensions
                 spriteCodecs = spriteCodecs.Where(item => item.CanDecode);
             }
 
-            // We need to copy the sprite data into a memory stream since the underlying stream may not be seekable (BZip2 lies and says it is seekable, but it really isn't).
-            using (var spriteStream = new MemoryStream())
+            // We need to copy the sprite data into a memory stream since the underlying stream may not be seekable.
+            Stream spriteStream = file.OpenStream();
+
+            try
             {
-                using (Stream stream = file.OpenStream())
+                if (!spriteStream.CanSeek)
                 {
-                    stream.CopyTo(spriteStream);
-                    spriteStream.Position = 0;
+                    Stream newStream = new DataStream((int)spriteStream.Length, true, true);
+                    spriteStream.CopyTo(newStream);
+                    spriteStream.Dispose();
+                    newStream.Position = 0;
+                    spriteStream = newStream;
                 }
 
                 IGorgonSpriteCodec spriteCodec = GetSpriteCodec(spriteStream, spriteCodecs);
@@ -355,6 +375,10 @@ namespace Gorgon.IO.Extensions
                 }
 
                 return spriteCodec.FromStream(spriteStream, textureForSprite, (int)file.Size);
+            }
+            finally
+            {
+                spriteStream?.Dispose();
             }
         }
 
@@ -455,13 +479,17 @@ namespace Gorgon.IO.Extensions
                 spriteCodecs = spriteCodecs.Where(item => item.CanDecode);
             }
 
-            // We need to copy the sprite data into a memory stream since the underlying stream may not be seekable (BZip2 lies and says it is seekable, but it really isn't).
-            using (var spriteStream = new MemoryStream())
+            Stream spriteStream = file.OpenStream();
+
+            try
             {
-                using (Stream stream = file.OpenStream())
+                if (!spriteStream.CanSeek)
                 {
-                    stream.CopyTo(spriteStream);
-                    spriteStream.Position = 0;
+                    Stream newStream = new DataStream((int)spriteStream.Length, true, true);
+                    spriteStream.CopyTo(newStream);
+                    newStream.Position = 0;
+                    spriteStream.Dispose();
+                    spriteStream = newStream;
                 }
 
                 IGorgonPolySpriteCodec spriteCodec = GetPolySpriteCodec(spriteStream, spriteCodecs);
@@ -510,6 +538,10 @@ namespace Gorgon.IO.Extensions
                 }
 
                 return spriteCodec.FromStream(spriteStream, textureForSprite, (int)file.Size);
+            }
+            finally
+            {
+                spriteStream?.Dispose();
             }
         }
 
@@ -611,13 +643,18 @@ namespace Gorgon.IO.Extensions
                 animationCodecs = animationCodecs.Where(item => item.CanDecode);
             }
 
-            // We need to copy the sprite data into a memory stream since the underlying stream may not be seekable (BZip2 lies and says it is seekable, but it really isn't).
-            using (var animStream = new MemoryStream())
+            Stream animStream = file.OpenStream();
+
+            try
             {
-                using (Stream stream = file.OpenStream())
+                if (!animStream.CanSeek)
                 {
-                    stream.CopyTo(animStream);
-                    animStream.Position = 0;
+                    Stream newStream = new DataStream((int)animStream.Length, true, true);
+                    animStream.CopyTo(newStream);
+                    newStream.Position = 0;
+
+                    animStream.Dispose();
+                    animStream = newStream;
                 }
 
                 IGorgonAnimationCodec animationCodec = GetAnimationCodec(animStream, animationCodecs);
@@ -659,7 +696,7 @@ namespace Gorgon.IO.Extensions
                     {
                         using (Stream textureStream = textureFile.OpenStream())
                         {
-                            textureKey.Value  = GorgonTexture2DView.FromStream(renderer.Graphics,
+                            textureKey.Value = GorgonTexture2DView.FromStream(renderer.Graphics,
                                                                               textureStream,
                                                                               codec,
                                                                               textureFile.Size,
@@ -682,6 +719,10 @@ namespace Gorgon.IO.Extensions
                 }
 
                 return animation;
+            }
+            finally
+            {
+                animStream?.Dispose();
             }
         }
         // ReSharper restore PossibleMultipleEnumeration

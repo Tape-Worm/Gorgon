@@ -123,10 +123,8 @@ namespace Gorgon.PlugIns
         #region Variables.
         // The contract name for the plug in.
         private readonly string _contractName = typeof(GorgonPlugIn).FullName;
-		// Application log file.
-		private readonly IGorgonLog _log;
         // The root catalog for the plugins.
-	    private AggregateCatalog _rootCatalog = new AggregateCatalog();
+        private AggregateCatalog _rootCatalog = new AggregateCatalog();
         // The container for the plugin definitions.
         private CompositionContainer _container;
         // The synchronization lock for multiple threads..
@@ -136,10 +134,18 @@ namespace Gorgon.PlugIns
 		#endregion
 
 		#region Properties.
-	    /// <summary>
-	    /// Property to return the list of cached plugin assemblies.
-	    /// </summary>
-	    public IReadOnlyList<string> PlugInAssemblies
+		/// <summary>
+		/// Property to return the logging interface for debug logging.
+		/// </summary>
+		internal IGorgonLog Log
+        {
+            get;
+        }
+
+		/// <summary>
+		/// Property to return the list of cached plugin assemblies.
+		/// </summary>
+		public IReadOnlyList<string> PlugInAssemblies
 	    {
             get;
 	        private set;
@@ -379,7 +385,7 @@ namespace Gorgon.PlugIns
 	    /// </remarks>
 	    public void Dispose()
 	    {
-	        _log.Print("Unloading MEF plugin container and catalogs.", LoggingLevel.Intermediate);
+	        Log.Print("Unloading MEF plugin container and catalogs.", LoggingLevel.Intermediate);
 
             _container?.Dispose();
 	        _container = null;
@@ -422,7 +428,7 @@ namespace Gorgon.PlugIns
 
             var directory = new DirectoryInfo(directoryPath);
 
-            _log.Print($"Searching '{directory.FullName}\\{filePattern}' for plug in assemblies.", LoggingLevel.Simple);
+            Log.Print($"Searching '{directory.FullName}\\{filePattern}' for plug in assemblies.", LoggingLevel.Simple);
 
 	        if (!directory.Exists)
 	        {
@@ -441,7 +447,7 @@ namespace Gorgon.PlugIns
 	            // This catalog was already loaded, so just refresh it by recomposing.
 	            if (catalog != null)
 	            {
-	                _log.Print("Path is already registered in cache, no need to re-add.", LoggingLevel.Verbose);
+	                Log.Print("Path is already registered in cache, no need to re-add.", LoggingLevel.Verbose);
 	                catalog.Refresh();
 	            }
 	            else
@@ -449,7 +455,7 @@ namespace Gorgon.PlugIns
 	                catalog = new DirectoryCatalog(directory.FullName, filePattern, _builder);
 	                _rootCatalog.Catalogs.Add(catalog);
 
-	                _log.Print($"Added {catalog.LoadedFiles.Count} plug in assemblies to cache.", LoggingLevel.Verbose);
+	                Log.Print($"Added {catalog.LoadedFiles.Count} plug in assemblies to cache.", LoggingLevel.Verbose);
 	            }
 	        }
 
@@ -471,7 +477,7 @@ namespace Gorgon.PlugIns
 
 	            PlugInAssemblies = assemblyList.ToArray();
 
-	            _log.Print($"{PlugInAssemblies.Count} cached with valid plug in types.", LoggingLevel.Simple);
+	            Log.Print($"{PlugInAssemblies.Count} cached with valid plug in types.", LoggingLevel.Simple);
 	        }
 	    }
 		#endregion
@@ -489,7 +495,7 @@ namespace Gorgon.PlugIns
 		                                                                          b.AddMetadata("Assembly", t => t.Assembly.GetName());
 		                                                                          b.Inherited();
 		                                                                      });
-		    _log = log ?? GorgonLog.NullLog;
+		    Log = log ?? GorgonLog.NullLog;
             _container = new CompositionContainer(_rootCatalog, CompositionOptions.DisableSilentRejection | CompositionOptions.IsThreadSafe);
 		}
 		#endregion

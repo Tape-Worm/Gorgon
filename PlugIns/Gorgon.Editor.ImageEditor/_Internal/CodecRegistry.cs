@@ -283,7 +283,7 @@ namespace Gorgon.Editor.ImageEditor
         public CodecRegistry(GorgonMefPlugInCache pluginCache, IGorgonLog log)
         {
             _pluginCache = pluginCache;
-            _pluginService = new GorgonMefPlugInService(pluginCache, log);
+            _pluginService = new GorgonMefPlugInService(pluginCache);
             _log = log;
         }
         #endregion

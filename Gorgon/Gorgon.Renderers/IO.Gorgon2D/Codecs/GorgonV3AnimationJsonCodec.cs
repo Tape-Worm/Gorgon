@@ -372,12 +372,14 @@ namespace Gorgon.IO
             TrackInterpolationMode posInterp = TrackInterpolationMode.None;
             TrackInterpolationMode scaleInterp = TrackInterpolationMode.None;
             TrackInterpolationMode rotInterp = TrackInterpolationMode.None;
+            TrackInterpolationMode sizeInterp = TrackInterpolationMode.None;
             TrackInterpolationMode colorInterp = TrackInterpolationMode.None;
             TrackInterpolationMode boundInterp = TrackInterpolationMode.None;
 
             List<GorgonKeyVector3> positions = null;
             List<GorgonKeyVector3> rotations = null;
             List<GorgonKeyVector3> scales = null;
+            List<GorgonKeyVector3> sizes = null;
             List<GorgonKeyGorgonColor> colors = null;
             List<GorgonKeyRectangle> bounds = null;
             List<GorgonKeyTexture2D> textures = null;
@@ -409,6 +411,9 @@ namespace Gorgon.IO
                             break;
                         case "ROTATIONS":
                             rotations = ReadVector3(reader, vec3Converter, out rotInterp);
+                            break;
+                        case "SIZE":
+                            sizes = ReadVector3(reader, vec3Converter, out sizeInterp);
                             break;
                         case "BOUNDS":
                             bounds = ReadRects(reader, rectConverter, out boundInterp);
@@ -464,6 +469,14 @@ namespace Gorgon.IO
                 builder.RotationInterpolationMode(rotInterp)
                        .EditRotation()
                        .SetKeys(rotations)
+                       .EndEdit();
+            }
+
+            if ((sizes != null) && (sizes.Count > 0))
+            {
+                builder.SizeInterpolationMode(sizeInterp)
+                       .EditSize()
+                       .SetKeys(sizes)
                        .EndEdit();
             }
 

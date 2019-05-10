@@ -91,6 +91,11 @@ namespace Gorgon.Animation
             animObject.Depth = position.Z;
         }
 
+        /// <summary>Function called when the size needs to be updated on the object.</summary>
+        /// <param name="animObject">The object being animated.</param>
+        /// <param name="size">The new size.</param>
+        protected override void OnSizeUpdate(GorgonSprite animObject, DX.Vector3 size) => animObject.Size = new DX.Size2F(size.X, size.Y);
+
         /// <summary>
         /// Function called when the angle of rotation needs to be updated on the object.
         /// </summary>

@@ -177,7 +177,6 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to persist the project metadata to the disk.
         /// </summary>
-        /// <returns>A task for asynchronous operation.</returns>
         Task SaveProjectMetadataAsync();
         #endregion
     }

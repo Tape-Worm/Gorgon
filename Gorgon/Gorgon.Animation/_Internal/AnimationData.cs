@@ -116,6 +116,20 @@ namespace Gorgon.Animation
         }
 
         /// <summary>
+        /// Property to return the editable track used for the size of an object.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This track is read/write and should only be used by a corresponding <see cref="IGorgonTrackKeyBuilder{T}"/>. Any other usage is not supported and will have unintended side effects.
+        /// </para>
+        /// </remarks>
+        protected internal IGorgonTrack<GorgonKeyVector3> SizeTrack
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to return the editable track used for updating a 2D texture on an object.
         /// </summary>
         /// <remarks>
@@ -197,6 +211,11 @@ namespace Gorgon.Animation
         /// Property to return the track used for rectangular boundaries of an object.
         /// </summary>
         IGorgonTrack<GorgonKeyRectangle> IGorgonAnimation.RectBoundsTrack => RectBoundsTrack;
+
+        /// <summary>
+        /// Property to return the track used for rectangular boundaries of an object.
+        /// </summary>
+        IGorgonTrack<GorgonKeyVector3> IGorgonAnimation.SizeTrack => SizeTrack;
 
         /// <summary>
         /// Property to return the track used for updating a 2D texture on an object.

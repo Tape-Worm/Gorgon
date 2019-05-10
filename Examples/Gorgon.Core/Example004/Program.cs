@@ -87,7 +87,7 @@ namespace Gorgon.Examples
 
 			// Create our plugin service.
 			// This takes the cache of assemblies we just created.
-            IGorgonPlugInService pluginService = new GorgonMefPlugInService(pluginCache, _log);
+            IGorgonPlugInService pluginService = new GorgonMefPlugInService(pluginCache);
 
 			try
 			{

@@ -216,7 +216,12 @@ namespace Gorgon.Animation
 	            OnRotationUpdate(_animatedObject, rotValue);
 	        }
 
-	        if (TrackKeyProcessor.TryUpdateColor(CurrentAnimation.Length, CurrentAnimation.ColorTrack, _time, out GorgonColor colorValue))
+            if (TrackKeyProcessor.TryUpdateVector3(CurrentAnimation.Length, CurrentAnimation.SizeTrack, _time, out DX.Vector3 sizeValue))
+            {
+                OnSizeUpdate(_animatedObject, sizeValue);
+            }
+
+            if (TrackKeyProcessor.TryUpdateColor(CurrentAnimation.Length, CurrentAnimation.ColorTrack, _time, out GorgonColor colorValue))
 	        {
                 OnColorUpdate(_animatedObject, colorValue);
 	        }
@@ -280,6 +285,13 @@ namespace Gorgon.Animation
         /// <param name="animObject">The object being animated.</param>
         /// <param name="color">The new color.</param>
 	    protected abstract void OnColorUpdate(T animObject, GorgonColor color);
+
+		/// <summary>
+        /// Function called when the size needs to be updated on the object.
+        /// </summary>
+        /// <param name="animObject">The object being animated.</param>
+        /// <param name="size">The new size.</param>
+        protected abstract void OnSizeUpdate(T animObject, DX.Vector3 size);
 
 		/// <summary>
 		/// Function to update the currently playing animation time and bound properties.

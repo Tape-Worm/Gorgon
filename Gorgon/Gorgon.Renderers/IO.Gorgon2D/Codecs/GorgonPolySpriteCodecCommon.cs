@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
@@ -232,14 +233,26 @@ namespace Gorgon.IO
                 throw new EndOfStreamException();
             }
 
-            GorgonPolySprite result = OnReadFromStream(stream, byteCount.Value, overrideTexture);
+            Stream externalStream = stream;
 
-            if ((result.Texture != overrideTexture)  && (overrideTexture != null))
+            try
             {
-                result.Texture = overrideTexture;
-            }
+                if (!stream.CanSeek)
+                {
+                    externalStream = new DX.DataStream(byteCount ?? (int)stream.Length, true, true);
+                    stream.CopyTo(externalStream, byteCount ?? (int)stream.Length);
+                    externalStream.Position = 0;
+                }
 
-            return result;
+                return OnReadFromStream(externalStream, byteCount.Value, overrideTexture);
+            }
+            finally
+            {
+                if (externalStream != stream)
+                {
+                    externalStream?.Dispose();
+                }
+            }
         }
 
         /// <summary>

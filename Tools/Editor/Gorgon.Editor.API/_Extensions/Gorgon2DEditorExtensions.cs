@@ -30,6 +30,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Editor;
 using Gorgon.Editor.Metadata;
@@ -250,7 +251,7 @@ namespace Gorgon.IO
             {
                 texture = GorgonTexture2D.FromStream(graphics, fileStream, codec, file.Size, new GorgonTexture2DLoadOptions
                 {
-					IsTextureCube = false,
+                    IsTextureCube = false,
                     Name = file.FullPath,
                     Binding = TextureBinding.ShaderResource,
                     Usage = (((usage & ResourceUsage.None) == ResourceUsage.None) || ((usage & ResourceUsage.Staging) == ResourceUsage.Staging)) ? ResourceUsage.Default : usage
@@ -370,7 +371,7 @@ namespace Gorgon.IO
             GorgonTexture2D texture = null;
             if (overrideTexture == null)
             {
-                if (fileMetadata.Dependencies.TryGetValue("Image", out string imagePath))
+                if (fileMetadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out string imagePath))
                 {
                     texture = GetTexture(renderer.Graphics, fileSystem, metaData, imagePath, textureUsage, supportedImageCodecs);
                     overrideTexture = texture.GetShaderResourceView();

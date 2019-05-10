@@ -100,7 +100,8 @@ namespace Gorgon.Editor.ProjectData
         /// Function to persist out the metadata for the project.
         /// </summary>
         /// <param name="project">The project to write out.</param>
-        void PersistMetadata(IProject project);
+        /// <param name="cancelToken">The token used to cancel the operation.</param>
+        void PersistMetadata(IProject project, CancellationToken cancelToken);
 
         /// <summary>
         /// Function to close the project and clean up its working data.

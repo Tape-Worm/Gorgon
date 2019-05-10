@@ -93,7 +93,7 @@ namespace Gorgon.Editor.ImageEditor
         public Guid NewIconID => Guid.Empty;
 
         /// <summary>Property to return the ID for the type of content produced by this plug in.</summary>
-        public override string ContentTypeID => ImageEditorCommonConstants.ContentType;
+        public override string ContentTypeID => CommonEditorContentTypes.ImageType;
 
         /// <summary>Property to return the friendly (i.e shown on the UI) name for the type of content.</summary>
         public string ContentType => string.Empty;
@@ -220,7 +220,7 @@ namespace Gorgon.Editor.ImageEditor
             }
 
             if ((attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string currentContentType))
-                && (string.Equals(currentContentType, ImageEditorCommonConstants.ContentType, StringComparison.OrdinalIgnoreCase)))
+                && (string.Equals(currentContentType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)))
             {
                 attributes.Remove(CommonEditorConstants.ContentTypeAttr);
                 needsRefresh = true;
@@ -235,9 +235,9 @@ namespace Gorgon.Editor.ImageEditor
             }
 
             if ((!attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out currentContentType))
-                || (!string.Equals(currentContentType, ImageEditorCommonConstants.ContentType, StringComparison.OrdinalIgnoreCase)))
+                || (!string.Equals(currentContentType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)))
             {
-                attributes[CommonEditorConstants.ContentTypeAttr] = ImageEditorCommonConstants.ContentType;
+                attributes[CommonEditorConstants.ContentTypeAttr] = CommonEditorContentTypes.ImageType;
                 needsRefresh = true;
             }
 

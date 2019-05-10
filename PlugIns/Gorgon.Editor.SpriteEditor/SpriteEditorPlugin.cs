@@ -101,7 +101,7 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>Property to return the ID for the type of content produced by this plug in.</summary>
-        public override string ContentTypeID => SpriteEditorCommonConstants.ContentType;
+        public override string ContentTypeID => CommonEditorContentTypes.SpriteType;
 
         /// <summary>Property to return the friendly (i.e shown on the UI) name for the type of content.</summary>
         public string ContentType => Resources.GORSPR_CONTENT_TYPE;
@@ -131,7 +131,7 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-            dependencyList[SpriteEditorCommonConstants.ImageDependencyType] = textureName;
+            dependencyList[CommonEditorContentTypes.ImageType] = textureName;
         }
 
         /// <summary>
@@ -142,8 +142,8 @@ namespace Gorgon.Editor.SpriteEditor
         /// <returns>The file representing the image associated with the sprite.</returns>
         private IContentFile FindImage(IContentFile spriteFile, IContentFileManager fileManager)
         {
-            if ((spriteFile.Metadata.Dependencies.Count == 0)
-                || (!spriteFile.Metadata.Dependencies.TryGetValue(SpriteEditorCommonConstants.ImageDependencyType, out string texturePath)))
+            if ((spriteFile.Metadata.DependsOn.Count == 0)
+                || (!spriteFile.Metadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out string texturePath)))
             {
                 return null;
             }
@@ -300,7 +300,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
 
             if ((attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string currentContentType))
-                && (string.Equals(currentContentType, SpriteEditorCommonConstants.ContentType, StringComparison.OrdinalIgnoreCase)))
+                && (string.Equals(currentContentType, CommonEditorContentTypes.SpriteType, StringComparison.OrdinalIgnoreCase)))
             {
                 attributes.Remove(CommonEditorConstants.ContentTypeAttr);
                 needsRefresh = true;
@@ -315,9 +315,9 @@ namespace Gorgon.Editor.SpriteEditor
             }
             
             if ((!attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out currentContentType))
-                || (!string.Equals(currentContentType, SpriteEditorCommonConstants.ContentType, StringComparison.OrdinalIgnoreCase)))
+                || (!string.Equals(currentContentType, CommonEditorContentTypes.SpriteType, StringComparison.OrdinalIgnoreCase)))
             {
-                attributes[CommonEditorConstants.ContentTypeAttr] = SpriteEditorCommonConstants.ContentType;
+                attributes[CommonEditorConstants.ContentTypeAttr] = CommonEditorContentTypes.SpriteType;
                 needsRefresh = true;
             }
 
@@ -546,7 +546,7 @@ namespace Gorgon.Editor.SpriteEditor
                 if (_defaultCodec.IsReadable(stream))
                 {
                     UpdateFileMetadataAttributes(file.Metadata.Attributes);
-                    UpdateDependencies(stream, file.Metadata.Dependencies, fileManager);
+                    UpdateDependencies(stream, file.Metadata.DependsOn, fileManager);
                     return true;
                 }
                                 
