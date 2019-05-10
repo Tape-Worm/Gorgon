@@ -94,7 +94,7 @@ namespace Gorgon.Editor.TextureAtlasTool
                 {
                     GorgonTexture2DView texture = null;
 
-                    if (file.Metadata.Dependencies.TryGetValue("Image", out string texturePath))
+                    if (file.Metadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out string texturePath))
                     {
                         if (!textures.TryGetValue(texturePath, out texture))
                         {
@@ -221,7 +221,7 @@ namespace Gorgon.Editor.TextureAtlasTool
                     IContentFile textureFile = _fileSystem.GetFile(sprite.Texture.Texture.Name);
                     IContentFile oldFile = spriteFiles.FirstOrDefault(item => item.Value == original).Key;
 
-                    if (oldFile.Metadata.Dependencies.TryGetValue("Image", out string oldTexturePath))
+                    if (oldFile.Metadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out string oldTexturePath))
                     {
                         oldTextureFile = _fileSystem.GetFile(oldTexturePath);
                     }

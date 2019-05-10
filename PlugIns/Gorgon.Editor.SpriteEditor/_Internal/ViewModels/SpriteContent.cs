@@ -217,7 +217,7 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>Property to return the type of content.</summary>
-        public override string ContentType => SpriteEditorCommonConstants.ContentType;
+        public override string ContentType => CommonEditorContentTypes.SpriteType;
 
         /// <summary>
         /// Property to return the view model for the plug in settings.
@@ -684,7 +684,7 @@ namespace Gorgon.Editor.SpriteEditor
                             BusyState.SetBusy();
                             SaveSprite();
                             BusyState.SetIdle();
-                            return;
+                            break;
                         case MessageResponse.Cancel:
                             return;
                     }

@@ -97,7 +97,6 @@
     <Compile Include="_Internal\Services\SpriteTextureService.cs" />
     <Compile Include="_Internal\Renderers\_Interfaces\ISpriteContentRenderer.cs" />
     <Compile Include="_Internal\Services\_Interfaces\ISpriteTextureService.cs" />
-    <Compile Include="_Internal\SpriteEditorCommonConstants.cs" />
     <Compile Include="_Internal\ViewModels\ImporterPlugInSettings.cs" />
     <Compile Include="_Internal\ViewModels\ManualInputParameters.cs" />
     <Compile Include="_Internal\ViewModels\ManualVertexEditor.cs" />

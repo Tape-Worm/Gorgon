@@ -98,7 +98,7 @@ namespace Gorgon.Input.Example
 			}
 			
 			// Create our plugin service.
-			IGorgonPlugInService pluginService = new GorgonMefPlugInService(_pluginCache, GorgonApplication.Log);
+			IGorgonPlugInService pluginService = new GorgonMefPlugInService(_pluginCache);
 
 			// Create our input service factory.
 			var factory = new GorgonGamingDeviceDriverFactory(pluginService, GorgonApplication.Log);

@@ -1718,7 +1718,7 @@ namespace Gorgon.Editor.ViewModels
                 return;
             }
 
-            var dependencyPaths = node.Metadata.Dependencies.ToDictionary(k => k.Key, v => v.Value, StringComparer.OrdinalIgnoreCase);
+            var dependencyPaths = node.Metadata.DependsOn.ToDictionary(k => k.Key, v => v.Value, StringComparer.OrdinalIgnoreCase);
 
             if (dependencyPaths.Count == 0)
             {
@@ -1918,7 +1918,7 @@ namespace Gorgon.Editor.ViewModels
                     {
                         file.RefreshMetadata();
 
-                        if (file.Metadata.Dependencies.Count > 0)
+                        if (file.Metadata.DependsOn.Count > 0)
                         {
                             SetupDependencyNodes(file);
                         }
@@ -2873,6 +2873,12 @@ namespace Gorgon.Editor.ViewModels
 
             return EnumerateNodes(directoryPath, searchMask, recursive).OfType<IContentFile>();
         }
+
+        /// <summary>
+        /// Function to retrieve the list of nodes as a flattened list.
+        /// </summary>
+        /// <returns>A dictionary of the nodes in the file system, flattened and indexed by full path.</returns>
+        public IReadOnlyDictionary<string, IFileExplorerNodeVm> GetFlattenedList() => _nodePathLookup;
         #endregion
 
         #region Constructor/Finalizer.

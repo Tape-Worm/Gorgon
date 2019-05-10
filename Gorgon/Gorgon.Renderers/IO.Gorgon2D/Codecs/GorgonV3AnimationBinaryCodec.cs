@@ -73,6 +73,10 @@ namespace Gorgon.IO
         /// </summary>
         public static readonly ulong BoundsData = "BNDSDATA".ChunkID();
         /// <summary>
+        /// The bounds track data chunk ID.
+        /// </summary>
+        public static readonly ulong SizeData = "SIZEDATA".ChunkID();
+        /// <summary>
         /// The texture track data chunk ID.
         /// </summary>
         public static readonly ulong TextureData = "TXTRDATA".ChunkID();
@@ -236,6 +240,23 @@ namespace Gorgon.IO
                     writer.CloseChunk();
                 }
 
+                // Write out size track.
+                if (animation.SizeTrack.KeyFrames.Count > 0)
+                {
+                    binWriter = writer.OpenChunk(SizeData);
+                    binWriter.WriteValue(animation.SizeTrack.InterpolationMode);
+                    binWriter.Write(animation.SizeTrack.KeyFrames.Count);
+
+                    for (int i = 0; i < animation.SizeTrack.KeyFrames.Count; ++i)
+                    {
+                        GorgonKeyVector3 key = animation.SizeTrack.KeyFrames[i];
+                        binWriter.Write(key.Time);
+                        binWriter.WriteValue(ref key.Value);
+                    }
+
+                    writer.CloseChunk();
+                }
+
                 // Write out bounds track.
                 if (animation.RectBoundsTrack.KeyFrames.Count > 0)
                 {
@@ -383,6 +404,21 @@ namespace Gorgon.IO
                     keyCount = binReader.ReadInt32();
 
                     IGorgonTrackKeyBuilder<GorgonKeyVector3> track = builder.EditRotation();
+                    for (int i = 0; i < keyCount; ++i)
+                    {
+                        track.SetKey(new GorgonKeyVector3(binReader.ReadSingle(), binReader.ReadValue<DX.Vector3>()));
+                    }
+                    track.EndEdit();
+                    reader.CloseChunk();
+                }
+
+                if (reader.Chunks.Contains(SizeData))
+                {
+                    binReader = reader.OpenChunk(SizeData);
+                    builder.SizeInterpolationMode(binReader.ReadValue<TrackInterpolationMode>());
+                    keyCount = binReader.ReadInt32();
+
+                    IGorgonTrackKeyBuilder<GorgonKeyVector3> track = builder.EditSize();
                     for (int i = 0; i < keyCount; ++i)
                     {
                         track.SetKey(new GorgonKeyVector3(binReader.ReadSingle(), binReader.ReadValue<DX.Vector3>()));

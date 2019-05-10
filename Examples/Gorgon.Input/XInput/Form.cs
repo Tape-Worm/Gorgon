@@ -363,7 +363,7 @@ namespace Gorgon.Examples
 				_assemblies.LoadPlugInAssemblies(GorgonExample.GetPlugInPath().FullName, "Gorgon.Input.XInput.dll");
 
 				// Create the plug services.
-				IGorgonPlugInService pluginService = new GorgonMefPlugInService(_assemblies, GorgonApplication.Log);
+				IGorgonPlugInService pluginService = new GorgonMefPlugInService(_assemblies);
 
 				// Create the gaming device driver factory.
 				var factory = new GorgonGamingDeviceDriverFactory(pluginService, GorgonApplication.Log);

@@ -580,7 +580,7 @@ namespace Gorgon.Input.Example
                 _assemblyCache = new GorgonMefPlugInCache(GorgonApplication.Log);
 
                 // Create the plugin service.
-                IGorgonPlugInService plugInService = new GorgonMefPlugInService(_assemblyCache, GorgonApplication.Log);
+                IGorgonPlugInService plugInService = new GorgonMefPlugInService(_assemblyCache);
 
                 // Create the factory to retrieve gaming device drivers.
                 var factory = new GorgonGamingDeviceDriverFactory(plugInService);

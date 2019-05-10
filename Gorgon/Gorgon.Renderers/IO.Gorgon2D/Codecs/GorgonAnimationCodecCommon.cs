@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using DX = SharpDX;
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
@@ -182,7 +183,26 @@ namespace Gorgon.IO
                 throw new EndOfStreamException();
             }
 
-            return OnReadFromStream(stream, byteCount.Value);
+            Stream externalStream = stream;
+
+            try
+            {
+                if (!stream.CanSeek)
+                {
+                    externalStream = new DX.DataStream(byteCount ?? (int)stream.Length, true, true);
+                    stream.CopyTo(externalStream, byteCount ?? (int)stream.Length);
+                    externalStream.Position = 0;
+                }
+
+                return OnReadFromStream(externalStream, byteCount.Value);
+            }
+            finally
+            {
+                if (externalStream != stream)
+                {
+                    externalStream?.Dispose();
+                }
+            }
         }
 
         /// <summary>

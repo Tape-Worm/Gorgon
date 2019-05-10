@@ -2,6 +2,7 @@
 <RuleSet Name="Code analysis rules for Gorgon" Description="Code analysis rules for Gorgon - Disables CA2213 as it's being deprecated (see https://github.com/dotnet/roslyn-analyzers/issues/310)" ToolsVersion="16.0">
   <Include Path="basiccorrectnessrules.ruleset" Action="Default" />
   <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
+    <Rule Id="CA1001" Action="None" />
     <Rule Id="CA1032" Action="Warning" />
     <Rule Id="CA1033" Action="None" />
     <Rule Id="CA1054" Action="Warning" />
@@ -70,6 +71,7 @@
     <Rule Id="CA2007" Action="None" />
   </Rules>
   <Rules AnalyzerId="Microsoft.CodeQuality.CSharp.Analyzers" RuleNamespace="Microsoft.CodeQuality.CSharp.Analyzers">
+    <Rule Id="CA1001" Action="None" />
     <Rule Id="CA1200" Action="None" />
   </Rules>
   <Rules AnalyzerId="Microsoft.NetCore.Analyzers" RuleNamespace="Microsoft.NetCore.Analyzers">

@@ -134,7 +134,7 @@ namespace Gorgon.Examples
 			// Create a plugin assembly cache to hold our plugin assemblies.
 			_pluginAssemblies = new GorgonMefPlugInCache(_log);
 			// Create the plugin service.
-			_pluginService = new GorgonMefPlugInService(_pluginAssemblies, _log);
+			_pluginService = new GorgonMefPlugInService(_pluginAssemblies);
 
 		    try
 		    {

@@ -164,7 +164,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             && (_formatSupport[CurrentPixelFormat].FormatSupport & BufferFormatSupport.Mip) == BufferFormatSupport.Mip;
 
         /// <summary>Property to return the type of content.</summary>
-        public override string ContentType => ImageEditorCommonConstants.ContentType;
+        public override string ContentType => CommonEditorContentTypes.ImageType;
 
         /// <summary>
         /// Property to return the image data.
@@ -2164,7 +2164,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             // Only perform special operations if the dragged type is an image, otherwise, fall back.
             if ((dragData?.File == null)
                 || (!dragData.File.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string dataType))
-                || (!string.Equals(dataType, ImageEditorCommonConstants.ContentType, StringComparison.OrdinalIgnoreCase)))
+                || (!string.Equals(dataType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)))
             {                
                 return false;
             }

@@ -190,6 +190,12 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="path">The path to the node.</param>
         /// <returns>The node, if found. <b>null</b>, if not.</returns>
         IFileExplorerNodeVm FindNode(string path);
+
+		/// <summary>
+        /// Function to retrieve the list of nodes as a flattened list.
+        /// </summary>
+        /// <returns>A dictionary of the nodes in the file system, flattened and indexed by full path.</returns>
+        IReadOnlyDictionary<string, IFileExplorerNodeVm> GetFlattenedList();
         #endregion
     }
 }

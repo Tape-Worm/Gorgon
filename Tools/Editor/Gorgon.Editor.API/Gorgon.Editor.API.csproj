@@ -58,6 +58,7 @@
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CommonEditorConstants.cs" />
+    <Compile Include="CommonEditorContentTypes.cs" />
     <Compile Include="Content\ContentFileRenamedEventArgs.cs" />
     <Compile Include="Content\_Interfaces\IContentFileManager.cs" />
     <Compile Include="Converters\JsonSharpDxRectConverter.cs" />

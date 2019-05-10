@@ -77,12 +77,6 @@ namespace Gorgon.Editor.ImageEditor
         {
             _log.Print($"Retrieving associated executable for files of type {workingFile.Extension}.", LoggingLevel.Verbose);
 
-            if (!Win32API.HasAssociation(workingFile.PhysicalFile.FullPath))
-            {
-                _log.Print($"No associations for files of type {workingFile.Extension}.", LoggingLevel.Verbose);
-                return null;
-            }
-
             string exePath = Win32API.GetAssociatedExecutable(workingFile.PhysicalFile.FullPath);
 
             if (string.IsNullOrWhiteSpace(exePath))

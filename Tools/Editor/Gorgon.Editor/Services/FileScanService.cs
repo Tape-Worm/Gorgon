@@ -122,11 +122,11 @@ namespace Gorgon.Editor.Services
                 if (forceScan)
                 {
                     contentFile.Metadata.ContentMetadata = null;
-                    contentFile.Metadata.Dependencies.Clear();
+                    contentFile.Metadata.DependsOn.Clear();
                 }
 
                 prevDeps.Clear();
-                foreach (KeyValuePair<string, string> dep in contentFile.Metadata.Dependencies)
+                foreach (KeyValuePair<string, string> dep in contentFile.Metadata.DependsOn)
                 {
                     prevDeps[dep.Key] = dep.Value;
                 }                
@@ -134,7 +134,7 @@ namespace Gorgon.Editor.Services
                 if (_contentPlugIns.AssignContentPlugIn(contentFile, contentFileManager, !deepScan))
                 {                    
                     if ((!string.Equals(pluginName, contentFile.Metadata.PlugInName, StringComparison.OrdinalIgnoreCase))
-                        || (!CompareDependencyLists(contentFile.Metadata.Dependencies, prevDeps)))
+                        || (!CompareDependencyLists(contentFile.Metadata.DependsOn, prevDeps)))
                     {
                         result = true;
                     }

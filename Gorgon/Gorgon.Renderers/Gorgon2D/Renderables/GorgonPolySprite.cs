@@ -271,7 +271,7 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
-        /// Property to set or return the size of the sprite.
+        /// Property to return the size of the sprite.
         /// </summary>
         [JsonIgnore]
         public DX.Size2F Size => Bounds.Size;

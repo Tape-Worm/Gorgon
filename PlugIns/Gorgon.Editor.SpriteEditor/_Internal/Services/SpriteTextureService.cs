@@ -166,14 +166,14 @@ namespace Gorgon.Editor.SpriteEditor
         public async Task<(GorgonTexture2DView, IContentFile)> LoadFromSpriteContentAsync(IContentFile spriteContent)
         {
             if ((spriteContent.Metadata == null)
-                || (spriteContent.Metadata.Dependencies.Count == 0))
+                || (spriteContent.Metadata.DependsOn.Count == 0))
             {
                 return (null, null);
             }
 
             (IGorgonImage imageData, IContentFile file) = await Task.Run(() =>
             {
-                if (!spriteContent.Metadata.Dependencies.TryGetValue(SpriteEditorCommonConstants.ImageDependencyType, out string dependency))
+                if (!spriteContent.Metadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out string dependency))
                 {
                     return (null, null);
                 }

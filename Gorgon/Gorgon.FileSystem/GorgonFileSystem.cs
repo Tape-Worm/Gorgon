@@ -722,7 +722,7 @@ namespace Gorgon.IO
 		/// </note>
 		/// </para>
 		/// </remarks>
-		public IEnumerable<IGorgonVirtualFile> FindFiles(string path, string fileMask, bool recursive = true) => InternalFindFiles("/", fileMask, recursive);
+		public IEnumerable<IGorgonVirtualFile> FindFiles(string path, string fileMask, bool recursive = true) => InternalFindFiles(path, fileMask, recursive);
 
 		/// <summary>
 		/// Function to find all the files with the name specified by the file mask.

@@ -68,8 +68,8 @@ namespace Gorgon.Editor.Metadata
         /// <summary>
         /// Property to return the list of item paths that this item depends on.
         /// </summary>
-        [JsonProperty]
-        public Dictionary<string, string> Dependencies
+        [JsonProperty(PropertyName = "Dependencies")]
+        public Dictionary<string, string> DependsOn
         {
             get;
             private set;
@@ -122,9 +122,9 @@ namespace Gorgon.Editor.Metadata
                 Attributes[attribute.Key] = attribute.Value;
             }
 
-            foreach (KeyValuePair<string, string> path in metadata.Dependencies)
+            foreach (KeyValuePair<string, string> path in metadata.DependsOn)
             {
-                Dependencies[path.Key] = path.Value;
+                DependsOn[path.Key] = path.Value;
             }
         }
 

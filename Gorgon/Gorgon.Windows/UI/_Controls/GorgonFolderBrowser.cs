@@ -832,7 +832,7 @@ namespace Gorgon.UI
                     actDir = new DirectoryInfo(_activeDirectory.FormatDirectory(Path.DirectorySeparatorChar));
                 }
 
-                string parentPath = actDir?.Parent.FullName.FormatDirectory(Path.DirectorySeparatorChar);
+                string parentPath = actDir?.Parent?.FullName.FormatDirectory(Path.DirectorySeparatorChar);
 
                 if (!string.IsNullOrWhiteSpace(parentPath))
                 {

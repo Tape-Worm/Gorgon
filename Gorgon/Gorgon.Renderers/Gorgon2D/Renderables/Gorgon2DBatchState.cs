@@ -66,6 +66,42 @@ namespace Gorgon.Renderers
                                                                        };
 
         /// <summary>
+        /// A default batch state that enabled depth testing/writing and no blending.
+        /// </summary>
+        public static readonly Gorgon2DBatchState DepthEnabledNoBlend = new Gorgon2DBatchState
+        {
+            BlendState = GorgonBlendState.NoBlending,
+            DepthStencilState = GorgonDepthStencilState.DepthEnabled
+        };
+
+        /// <summary>
+        /// A default batch state that enabled depth testing/writing and modulated blending.
+        /// </summary>
+        public static readonly Gorgon2DBatchState DepthEnabled = new Gorgon2DBatchState
+        {
+			BlendState = GorgonBlendState.Default,
+            DepthStencilState = GorgonDepthStencilState.DepthEnabled
+        };
+
+        /// <summary>
+        /// A default batch state that enabled depth testing/writing and additive blending.
+        /// </summary>
+        public static readonly Gorgon2DBatchState DepthEnabledAdditiveBlend = new Gorgon2DBatchState
+        {
+            BlendState = GorgonBlendState.Additive,
+            DepthStencilState = GorgonDepthStencilState.DepthEnabled
+        };
+
+        /// <summary>
+        /// A default batch state that enabled depth testing/writing and premultiplied blending.
+        /// </summary>
+        public static readonly Gorgon2DBatchState DepthEnabledPremultipliedBlend = new Gorgon2DBatchState
+        {
+            BlendState = GorgonBlendState.Premultiplied,
+            DepthStencilState = GorgonDepthStencilState.DepthEnabled
+        };
+
+        /// <summary>
         /// Property to return the current blending state to apply.
         /// </summary>
         public GorgonBlendState BlendState

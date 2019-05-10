@@ -145,6 +145,15 @@ namespace Gorgon.Animation
         }
 
         /// <summary>
+        /// Property to return the track used for the size of an object.
+        /// </summary>
+        [JsonProperty("size")]
+        IGorgonTrack<GorgonKeyVector3> SizeTrack
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the track used for updating a 2D texture on an object.
         /// </summary>
         [JsonProperty("textures")]

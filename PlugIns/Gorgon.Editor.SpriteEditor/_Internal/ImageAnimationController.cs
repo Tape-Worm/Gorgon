@@ -55,6 +55,13 @@ namespace Gorgon.Editor.SpriteEditor
 
         }
 
+        /// <summary>Function called when the size needs to be updated on the object.</summary>
+        /// <param name="animObject">The object being animated.</param>
+        /// <param name="size">The new size.</param>
+        protected override void OnSizeUpdate(SpriteContentRenderer animObject, Vector3 size)
+        {
+        }
+
         /// <summary>Function called when the angle of rotation needs to be updated on the object.</summary>
         /// <param name="animObject">The object being animated.</param>
         /// <param name="rotation">The new angle of rotation, in degrees, on the x, y and z axes.</param>

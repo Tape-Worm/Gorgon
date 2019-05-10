@@ -35,49 +35,51 @@ using Gorgon.PlugIns;
 
 namespace Gorgon.IO.Providers
 {
-	/// <summary>
-	/// A factory object used to create file system provider plug ins.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This will generate providers that will allow access to different types of file systems. For example, a user may create a file system provider that will open 7-zip files, but the <see cref="IGorgonFileSystem"/> 
-	/// will not know how to read those files without the appropriate provider. This object would be used to load that 7-zip provider, and add it to the file system object so that it will know how to mount those 
-	/// file types.
-	/// </para>
-	/// <para>
-	/// File system providers are plug ins, and should have their assemblies loaded by the <see cref="GorgonMefPlugInCache"/> before using this method and a <see cref="IGorgonPlugInService"/> should be 
-	/// created in order to pass it to this factory.
-	/// </para>
-	/// </remarks>
-	/// <example>
-	/// The following example shows how to use the provider factory:
-	/// <code language="csharp"> 
-	/// <![CDATA[
-	/// using (GorgonPlugInAssemblyCache cache = new GorgonPlugInAssemblyCache())
-	/// {
-	///		// Load the assembly.
-	///		service.Load("c:\path\to\your\assembly\7zProvider.dll");
-	/// 
-	///		// Get the plug in service.
-	///		GorgonPlugInService service = new GorgonPlugInService(cache);
-	/// 	
-	///		// Create the provider factory.
-	///		IGorgonFileSystemProviderFactory factory = new GorgonFileSystemProviderFactory(service);
-	/// 
-	///		// Get our provider from the factory.
-	///		IGorgonFileSystemProvider provider = CreateProvider("Fully.Qualified.TypeName.SevenZipProvider");
-	/// 
-	///		// Mount the file system.
-	///		GorgonFileSystem fileSystem = new GorgonFileSystem(provider);
-	/// 
-	///		fileSystem.Mount("c:\path\to\your\archive\file.7z");
-	///		
-	///		// Do stuff...
-	/// }
-	/// ]]>
-	/// </code>
-	/// </example>
-	public sealed class GorgonFileSystemProviderFactory 
+    /// <summary>
+    /// A factory object used to create file system provider plug ins.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This will generate providers that will allow access to different types of file systems. For example, a user may create a file system provider that will open 7-zip files, but the <see cref="IGorgonFileSystem"/> 
+    /// will not know how to read those files without the appropriate provider. This object would be used to load that 7-zip provider, and add it to the file system object so that it will know how to mount those 
+    /// file types.
+    /// </para>
+    /// <para>
+    /// File system providers are plug ins, and should have their assemblies loaded by the <see cref="GorgonMefPlugInCache"/> before using this method and a <see cref="IGorgonPlugInService"/> should be 
+    /// created in order to pass it to this factory.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// The following example shows how to use the provider factory:
+    /// <code language="csharp"> 
+    /// <![CDATA[
+    /// // In a real world application, you would keep your cache for as long as you need your plug ins.
+    /// // Premature disposal can cause errors.
+    /// using (GorgonMefPlugInCache cache = new GorgonMefPlugInCache())
+    /// {
+    ///		// Load the assembly.
+    ///		cache.LoadPlugInAssemblies(@"c:\path\to\your\assembly\", "7zProvider.dll");
+    /// 
+    ///		// Get the plug in service.
+    ///		IGorgonPlugInService service = new GorgonPlugInService(cache);
+    /// 	
+    ///		// Create the provider factory.
+    ///		IGorgonFileSystemProviderFactory factory = new GorgonFileSystemProviderFactory(service);
+    /// 
+    ///		// Get our provider from the factory.
+    ///		IGorgonFileSystemProvider provider = CreateProvider("Fully.Qualified.TypeName.SevenZipProvider");
+    /// 
+    ///		// Mount the file system.
+    ///		IGorgonFileSystem fileSystem = new GorgonFileSystem(provider);
+    /// 
+    ///		fileSystem.Mount("c:\path\to\your\archive\file.7z");
+    ///		
+    ///		// Do stuff...
+    /// }
+    /// ]]>
+    /// </code>
+    /// </example>
+    public sealed class GorgonFileSystemProviderFactory 
 		: IGorgonFileSystemProviderFactory
 	{
 		#region Variables.

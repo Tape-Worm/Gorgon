@@ -151,7 +151,7 @@ namespace Gorgon.Editor.ProjectData
                 metadataFile.Refresh();
             }
 
-            PersistMetadata(project);
+            PersistMetadata(project, CancellationToken.None);
 
             metadataFile.Attributes = FileAttributes.Archive | FileAttributes.Normal;
             metadataFile.Refresh();
@@ -710,7 +710,7 @@ namespace Gorgon.Editor.ProjectData
 
                 var importer = new V2MetadataImporter(v2Metadata);
                 importer.Import(dummyProject);
-                PersistMetadata(dummyProject);
+                PersistMetadata(dummyProject, CancellationToken.None);
             }
             finally
             {
@@ -724,8 +724,9 @@ namespace Gorgon.Editor.ProjectData
         /// Function to persist out the metadata for the project.
         /// </summary>
         /// <param name="project">The project to write out.</param>
+        /// <param name="cancelToken">The token used to cancel the operation.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/> parameter is <b>null</b>.</exception>
-        public void PersistMetadata(IProject project)
+        public void PersistMetadata(IProject project, CancellationToken cancelToken)
         {
             if (project == null)
             {
@@ -744,6 +745,11 @@ namespace Gorgon.Editor.ProjectData
                 jsonWriter.Write(JsonConvert.SerializeObject(project));
                 jsonWriter.Flush();
                 jsonWriter.Close();
+
+                if (cancelToken.IsCancellationRequested)
+                {
+                    return;
+                }
 
                 tempPath.Refresh();
 

@@ -47,7 +47,13 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="position">The new position.</param>
         protected override void OnPositionUpdate(ITextureViewerService animObject, Vector3 position)
         {
+        }
 
+        /// <summary>Function called when the size needs to be updated on the object.</summary>
+        /// <param name="animObject">The object being animated.</param>
+        /// <param name="size">The new size.</param>
+        protected override void OnSizeUpdate(ITextureViewerService animObject, Vector3 size)
+        {
         }
 
         /// <summary>Function called when a rectangle boundary needs to be updated on the object.</summary>

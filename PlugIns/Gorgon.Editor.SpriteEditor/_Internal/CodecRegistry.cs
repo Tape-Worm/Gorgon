@@ -248,13 +248,6 @@ namespace Gorgon.Editor.SpriteEditor
                     foreach (GorgonFileExtension extension in spriteCodec.FileExtensions)
                     {
                         (GorgonFileExtension, IGorgonSpriteCodec) codecExtension = (extension, spriteCodec);
-
-                        if (CodecFileTypes.Any(item => item.extension.Equals(extension)))
-                        {
-                            _log.Print($"[WARNING] Another previously loaded codec already uses the file extension '{extension}'.  This file extension will not be registered to the '{spriteCodec.Name}' codec.", LoggingLevel.Verbose);
-                            continue;
-                        }
-
                         CodecFileTypes.Add(codecExtension);
                     }
                 }
@@ -291,12 +284,6 @@ namespace Gorgon.Editor.SpriteEditor
 
             foreach ((GorgonFileExtension extension, IGorgonSpriteCodec codec) codecFile in codecGrouping)
             {
-                if (CodecFileTypes.Any(item => item.extension.Equals(codecFile.extension)))
-                {
-                    _log.Print($"[WARNING] Another previously loaded codec already uses the file extension '{codecFile.extension}'.  This file extension will not be registered to the '{codecFile.codec.Name}' codec.", LoggingLevel.Verbose);
-                    continue;
-                }
-
                 CodecFileTypes.Add(codecFile);
             }
         }
@@ -311,7 +298,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             _pluginCache = pluginCache;
             _renderer = renderer;
-            _pluginService = new GorgonMefPlugInService(pluginCache, log);
+            _pluginService = new GorgonMefPlugInService(pluginCache);
             _log = log;
         }
         #endregion

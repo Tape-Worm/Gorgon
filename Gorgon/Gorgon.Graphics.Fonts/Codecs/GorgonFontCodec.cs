@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
@@ -331,7 +332,26 @@ namespace Gorgon.Graphics.Fonts.Codecs
 				throw new ArgumentException(Resources.GORGFX_ERR_STREAM_WRITE_ONLY, nameof(stream));
 			}
 
-			return OnLoadFromStream(name, stream);
+            Stream externalStream = stream;
+
+            try
+            {
+                if (!stream.CanSeek)
+                {
+                    externalStream = new DX.DataStream((int)stream.Length, true, true);
+                    stream.CopyTo(externalStream);
+                    externalStream.Position = 0;
+                }
+
+                return OnLoadFromStream(name, externalStream);
+            }
+            finally
+            {
+                if (externalStream != stream)
+                {
+                    externalStream.Dispose();
+                }
+            }
 		}
 
 		/// <summary>

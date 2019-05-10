@@ -253,7 +253,7 @@ namespace Gorgon.Editor.Services
                 }
             }
 
-            IGorgonPlugInService plugins = new GorgonMefPlugInService(pluginCache, Program.Log);
+            IGorgonPlugInService plugins = new GorgonMefPlugInService(pluginCache);
             IReadOnlyList<GorgonFileSystemProvider> readers = plugins.GetPlugIns<GorgonFileSystemProvider>();
             IReadOnlyList<FileWriterPlugIn> writers = plugins.GetPlugIns<FileWriterPlugIn>();
 

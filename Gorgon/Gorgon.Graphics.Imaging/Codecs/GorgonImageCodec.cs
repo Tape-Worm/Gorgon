@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 
@@ -346,11 +347,6 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				throw new ArgumentException(Resources.GORIMG_ERR_STREAM_IS_WRITEONLY, nameof(stream));
 			}
 
-		    if (!stream.CanSeek)
-		    {
-		        throw new ArgumentException(Resources.GORIMG_ERR_STREAM_CANNOT_SEEK, nameof(stream));
-		    }
-
 			if (size + stream.Position > stream.Length)
 			{
 				throw new EndOfStreamException();
@@ -368,15 +364,34 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		        size = stream.Length;
 		    }
 
-		    IGorgonImage result = OnDecodeFromStream(stream, size.Value);
+            Stream externalStream = stream;
 
-			// Move the base stream to the number of bytes written (this is already done if we've copied the stream into memory above).
-			if (stream.Position < basePosition + size)
-			{
-				stream.Position = basePosition + size.Value;
-			}
+            try
+            {
+                if (!stream.CanSeek)
+                {
+                    externalStream = new DX.DataStream((int)(size ?? stream.Length), true, true);
+                    stream.CopyTo(externalStream, (int)(size ?? stream.Length));
+                    externalStream.Position = 0;
+                }
 
-			return result;
+                IGorgonImage result = OnDecodeFromStream(externalStream, size.Value);
+
+                // Move the base stream to the number of bytes written (this is already done if we've copied the stream into memory above).
+                if (stream.Position < basePosition + size)
+                {
+                    stream.Position = basePosition + size.Value;
+                }
+
+                return result;
+            }
+            finally
+            {
+                if (externalStream != stream)
+                {
+                    externalStream?.Dispose();
+                }
+            }
 		}
 
 		/// <summary>
@@ -460,7 +475,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="stream">The stream that is used to read the image data.</param>
 		/// <returns><b>true</b> if the codec can read the file, <b>false</b> if not.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
+		/// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only, or non-seekable.</exception>
 		/// <remarks>
 		/// <para>
 		/// When overloading this method, the implementor should remember to reset the stream position back to the original position when they are done reading the data.  Failure to do so may cause 
