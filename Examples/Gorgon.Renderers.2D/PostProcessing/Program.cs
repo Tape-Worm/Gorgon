@@ -83,6 +83,8 @@ namespace Gorgon.Examples
         private static Gorgon2DSobelEdgeDetectEffect _sobelEffect;
         // The old film effect.
         private static Gorgon2DOldFilmEffect _oldFilmEffect;
+        // The bloom effect.
+        private static Gorgon2DBloomEffect _bloomEffect;
         // The buttons for the composition passes.
         private static Button[] _buttons;
         // The button currently being dragged.
@@ -316,6 +318,14 @@ namespace Gorgon.Examples
                              {
                                  ScrollSpeed = 0.05f
                              };
+            // A HDR bloom effect.
+            _bloomEffect = new Gorgon2DBloomEffect(_renderer)
+            {
+                Threshold = 1.11f,
+                BloomIntensity = 35.0f,
+                BlurAmount = 6.0f,
+                ColorIntensity = 1.15f
+            };
 
 
             _compositor = new Gorgon2DCompositor(_renderer);
@@ -331,6 +341,7 @@ namespace Gorgon.Examples
                        .EffectPass("Invert", _invertEffect)
                        .EffectPass("Sharpen", _sharpenEffect)
                        .EffectPass("Emboss", _embossEffect)
+                       .EffectPass("Bloom", _bloomEffect)
                        .Pass(new Gorgon2DCompositionPass("Sobel Edge Detection", _sobelEffect)
                              {
                                  BlendOverride = GorgonBlendState.Default, ClearColor = GorgonColor.White
@@ -368,10 +379,11 @@ namespace Gorgon.Examples
                                                     _renderer.DrawFilledRectangle(rectPosition, color, prevEffect, texCoords);
                                                 }
 
-                             })
+                             })                       
                        .InitialClearColor(GorgonColor.White)
                        .FinalClearColor(GorgonColor.White);
 
+            _compositor.Passes["Bloom"].Enabled = false;
             _compositor.Passes["Posterize"].Enabled = false;
             _compositor.Passes["Grayscale"].Enabled = false;
             _compositor.Passes["1-Bit Color"].Enabled = false;

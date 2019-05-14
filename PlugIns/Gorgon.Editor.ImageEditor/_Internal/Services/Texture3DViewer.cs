@@ -93,7 +93,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Function to retrieve the shader resource view for the texture pixel shader.</summary>
         /// <param name="builder">The builder used to create the shader.</param>
         /// <returns>The shader resource view.</returns>
-        protected override void OnGetShaderResourceViews(Gorgon2DShaderBuilder<GorgonPixelShader> builder) => builder.ShaderResources(new[] { null, _textureView });
+        protected override void OnGetShaderResourceViews(Gorgon2DShaderStateBuilder<GorgonPixelShader> builder) => builder.ShaderResources(new[] { null, _textureView });
 
         /// <summary>Function called to create the pixel shader.</summary>
         /// <param name="graphics">The graphics interface used to create the shader.</param>

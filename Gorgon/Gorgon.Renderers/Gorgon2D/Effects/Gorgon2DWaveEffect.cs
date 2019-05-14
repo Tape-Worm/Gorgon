@@ -118,7 +118,8 @@ namespace Gorgon.Renderers
 	    // Flag to indicate that the parameters were updated.
 		private bool _isUpdated = true;
         // The shader used to render the wave effect.
-	    private Gorgon2DShader<GorgonPixelShader> _waveShader;
+        private GorgonPixelShader _waveShader;
+	    private Gorgon2DShaderState<GorgonPixelShader> _waveState;
         // The batch state for rendering.
 	    private Gorgon2DBatchState _batchState;
 		#endregion
@@ -229,22 +230,15 @@ namespace Gorgon.Renderers
             _settings = new Settings(10.0f, 50.0f, 0.0f, 100.0f, WaveType.Horizontal);
             _waveBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _settings, "Gorgon2DWaveEffect Constant Buffer", ResourceUsage.Dynamic);
 
-            GorgonShaderMacro[] macros = new []
-                         {
-                             new GorgonShaderMacro("WAVE_EFFECT")
-                         };
-
-            _waveShader = PixelShaderBuilder
-                          .Shader(GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics,
-                                                                                 Resources.BasicSprite,
-                                                                                 "GorgonPixelShaderWaveEffect",
-                                                                                 GorgonGraphics.IsDebugEnabled,
-                                                                                 macros))
+			Macros.Add(new GorgonShaderMacro("WAVE_EFFECT"));
+            _waveShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderWaveEffect");
+            _waveState = PixelShaderBuilder
+                          .Shader(_waveShader)
                           .ConstantBuffer(_waveBuffer, 1)
                           .Build();
 
             _batchState = BatchStateBuilder
-                          .PixelShader(_waveShader)
+                          .PixelShaderState(_waveState)
                           .Build();
         }
 
@@ -304,7 +298,7 @@ namespace Gorgon.Renderers
 		    }
 
 		    GorgonConstantBufferView waveBuffer = Interlocked.Exchange(ref _waveBuffer, null);
-		    Gorgon2DShader<GorgonPixelShader> shader = Interlocked.Exchange(ref _waveShader, null);
+		    GorgonPixelShader shader = Interlocked.Exchange(ref _waveShader, null);
 
             waveBuffer?.Dispose();
             shader?.Dispose();

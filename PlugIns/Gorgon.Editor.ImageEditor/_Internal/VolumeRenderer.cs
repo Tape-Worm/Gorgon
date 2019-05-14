@@ -155,7 +155,7 @@ namespace Gorgon.Editor.ImageEditor
                     Width = (int)VolumeRegion.Width,
                     Height = (int)VolumeRegion.Height
                 });
-                _volumeSections[i] = _volumeRtSections[i].Texture.GetShaderResourceView();
+                _volumeSections[i] = _volumeRtSections[i].GetShaderResourceView();
             }
 
             var drawBuilder = new GorgonDrawIndexCallBuilder();

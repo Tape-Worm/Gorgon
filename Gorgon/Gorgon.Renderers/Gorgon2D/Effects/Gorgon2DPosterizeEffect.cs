@@ -86,7 +86,8 @@ namespace Gorgon.Renderers
 	    // Buffer for the posterize effect.
 		private GorgonConstantBufferView _posterizeBuffer;
         // The shader used to render the effect.
-	    private Gorgon2DShader<GorgonPixelShader> _shader;
+        private GorgonPixelShader _posterizeShader;
+	    private Gorgon2DShaderState<GorgonPixelShader> _posterizeState;
         // The renderer batch state.
 	    private Gorgon2DBatchState _batchState;
 	    // Settings for the effect shader.
@@ -174,13 +175,14 @@ namespace Gorgon.Renderers
 	    {
 	        _posterizeBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _settings, "Gorgon 2D Posterize Effect Constant Buffer");
 
-	        _shader = PixelShaderBuilder
+            _posterizeShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderPosterize");
+            _posterizeState = PixelShaderBuilder
 	                  .ConstantBuffer(_posterizeBuffer, 1)
-	                  .Shader(CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderPosterize"))
+	                  .Shader(_posterizeShader)
 	                  .Build();
 
 	        _batchState = BatchStateBuilder
-	                      .PixelShader(_shader)
+	                      .PixelShaderState(_posterizeState)
 	                      .Build();
 	    }
 
@@ -247,7 +249,7 @@ namespace Gorgon.Renderers
         protected override void Dispose(bool disposing)
 	    {
 	        GorgonConstantBufferView buffer = Interlocked.Exchange(ref _posterizeBuffer, null);
-	        Gorgon2DShader<GorgonPixelShader> shader = Interlocked.Exchange(ref _shader, null);
+	        GorgonPixelShader shader = Interlocked.Exchange(ref _posterizeShader, null);
 
             buffer?.Dispose();
 	        shader?.Dispose();

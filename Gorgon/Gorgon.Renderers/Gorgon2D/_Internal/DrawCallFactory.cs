@@ -76,17 +76,17 @@ namespace Gorgon.Renderers
             where TD : GorgonDrawCallCommon
         {
             // If we haven't specified values for our first texture and sampler, then do so now.
-            batchState.PixelShader.RwSrvs[0] = renderable.Texture ?? _defaultTexture;
-            batchState.PixelShader.RwSamplers[0] = renderable.TextureSampler ?? GorgonSamplerState.Default;
+            batchState.PixelShaderState.RwSrvs[0] = renderable.Texture ?? _defaultTexture;
+            batchState.PixelShaderState.RwSamplers[0] = renderable.TextureSampler ?? GorgonSamplerState.Default;
 
-            builder.ConstantBuffers(ShaderType.Vertex, batchState.VertexShader.RwConstantBuffers)
-                   .ConstantBuffers(ShaderType.Pixel, batchState.PixelShader.RwConstantBuffers)
-                   .ShaderResources(ShaderType.Vertex, batchState.VertexShader.RwSrvs)
-                   .ShaderResources(ShaderType.Pixel, batchState.PixelShader.RwSrvs)
-                   .SamplerStates(ShaderType.Vertex, batchState.VertexShader.RwSamplers)
-                   .SamplerStates(ShaderType.Pixel, batchState.PixelShader.RwSamplers)
-                   .PipelineState(_stateBuilder.PixelShader(batchState.PixelShader.Shader)
-                                               .VertexShader(batchState.VertexShader.Shader)
+            builder.ConstantBuffers(ShaderType.Vertex, batchState.VertexShaderState.RwConstantBuffers)
+                   .ConstantBuffers(ShaderType.Pixel, batchState.PixelShaderState.RwConstantBuffers)
+                   .ShaderResources(ShaderType.Vertex, batchState.VertexShaderState.RwSrvs)
+                   .ShaderResources(ShaderType.Pixel, batchState.PixelShaderState.RwSrvs)
+                   .SamplerStates(ShaderType.Vertex, batchState.VertexShaderState.RwSamplers)
+                   .SamplerStates(ShaderType.Pixel, batchState.PixelShaderState.RwSamplers)
+                   .PipelineState(_stateBuilder.PixelShader(batchState.PixelShaderState.Shader)
+                                               .VertexShader(batchState.VertexShaderState.Shader)
                                                .DepthStencilState(batchState.DepthStencilState)
                                                .RasterState(batchState.RasterState)
                                                .BlendState(batchState.BlendState)

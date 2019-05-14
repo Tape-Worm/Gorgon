@@ -64,6 +64,7 @@
     <Compile Include="Cameras\Gorgon2DPerspectiveCamera.cs" />
     <Compile Include="Cameras\_Internal\CameraController.cs" />
     <Compile Include="Effects\Gorgon2D1BitEffect.cs" />
+    <Compile Include="Effects\Gorgon2DBloomEffect.cs" />
     <Compile Include="Effects\Gorgon2DBurnDodgeEffect.cs" />
     <Compile Include="Effects\Gorgon2DDeferredLightingEffect.cs" />
     <Compile Include="Effects\Gorgon2DDisplacementEffect.cs" />
@@ -114,8 +115,8 @@
     <Compile Include="Services\_Internal\SpriteNode .cs" />
     <Compile Include="Services\_Internal\SpritePacker.cs" />
     <Compile Include="Services\_Internal\TextureRects.cs" />
-    <Compile Include="Shaders\Gorgon2DShader.cs" />
-    <Compile Include="Shaders\Gorgon2DShaderBuilder.cs" />
+    <Compile Include="Shaders\Gorgon2DShaderState.cs" />
+    <Compile Include="Shaders\Gorgon2DShaderStateBuilder.cs" />
     <Compile Include="Services\_Interfaces\IGorgonTextureAtlasService.cs" />
     <Compile Include="_Interfaces\IGorgon2DFluent.cs" />
     <Compile Include="_Internal\_Triangulator\CyclicalList.cs" />
@@ -131,6 +132,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <Content Include="Resources\HdrBloom.hlsl" />
+    <None Include="Resources\black_2x2.png" />
     <None Include="..\..\NoLiteralBugFix.ruleset">
       <Link>NoLiteralBugFix.ruleset</Link>
     </None>

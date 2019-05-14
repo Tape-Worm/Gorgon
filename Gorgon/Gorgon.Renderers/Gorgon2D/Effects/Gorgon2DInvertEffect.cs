@@ -44,7 +44,8 @@ namespace Gorgon.Renderers
 	    // Flag to invert the alpha channel.
         private bool _invertAlpha;
         // The pixel shader for the effect.
-	    private Gorgon2DShader<GorgonPixelShader> _shader;
+        private GorgonPixelShader _invertShader;
+	    private Gorgon2DShaderState<GorgonPixelShader> _invertState;
         // The batch render state.
 	    private Gorgon2DBatchState _batchState;
 		#endregion
@@ -97,13 +98,14 @@ namespace Gorgon.Renderers
         {
             _invertBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _invertAlpha, "Gorgon2DInvertEffect Constant Buffer");
 
-            _shader = PixelShaderBuilder
+            _invertShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderInvert");
+            _invertState = PixelShaderBuilder
                       .ConstantBuffer(_invertBuffer, 1)
-                      .Shader(CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderInvert"))
+                      .Shader(_invertShader)
                       .Build();
 
             _batchState = BatchStateBuilder
-                          .PixelShader(_shader)
+                          .PixelShaderState(_invertState)
                           .Build();
         }
 
@@ -146,7 +148,7 @@ namespace Gorgon.Renderers
         protected override void Dispose(bool disposing)
 	    {
 	        GorgonConstantBufferView buffer = Interlocked.Exchange(ref _invertBuffer, null);
-	        Gorgon2DShader<GorgonPixelShader> pixelShader = Interlocked.Exchange(ref _shader, null);
+	        GorgonPixelShader pixelShader = Interlocked.Exchange(ref _invertShader, null);
 
             buffer?.Dispose();
             pixelShader?.Dispose();

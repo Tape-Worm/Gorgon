@@ -44,13 +44,15 @@ namespace Gorgon.Renderers
 	public class Gorgon2DBurnDodgeEffect
 		: Gorgon2DEffect
 	{
-		#region Variables.
+        #region Variables.
 	    // Burn/dodge buffer.
-		private GorgonConstantBufferView _burnDodgeBuffer;			    
-	    // Dodge/burn shader.
-		private Gorgon2DShader<GorgonPixelShader> _dodgeBurn;							
-	    // Linear dodge/burn shader.
-		private Gorgon2DShader<GorgonPixelShader> _linearDodgeBurn;						
+		private GorgonConstantBufferView _burnDodgeBuffer;
+        // Dodge/burn shader.
+        private GorgonPixelShader _dodgeBurnShader;
+        private Gorgon2DShaderState<GorgonPixelShader> _dodgeBurn;
+        // Linear dodge/burn shader.
+        private GorgonPixelShader _linearDodgeBurnShader;
+		private Gorgon2DShaderState<GorgonPixelShader> _linearDodgeBurn;						
 	    // Flag to indicate that the effect parameters are updated.
 		private bool _isUpdated = true;									
 	    // Flag to indicate whether to use dodging or burning.
@@ -106,18 +108,21 @@ namespace Gorgon.Renderers
 	                                                                             SizeInBytes = 16
 	                                                                         });
 
-	        _linearDodgeBurn = PixelShaderBuilder
-	                           .Shader(CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderLinearBurnDodge"))
+            _dodgeBurnShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderLinearBurnDodge");
+            _linearDodgeBurnShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderBurnDodge");
+			
+            _linearDodgeBurn = PixelShaderBuilder
+	                           .Shader(_linearDodgeBurnShader)
 	                           .ConstantBuffer(_burnDodgeBuffer, 1)
 	                           .Build();
 
 	        _dodgeBurn = PixelShaderBuilder
-	                     .Shader(CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderBurnDodge"))
+	                     .Shader(_dodgeBurnShader)
 	                     .Build();
 
-	        _batchStateLinearDodgeBurn = BatchStateBuilder.PixelShader(_linearDodgeBurn)
+	        _batchStateLinearDodgeBurn = BatchStateBuilder.PixelShaderState(_linearDodgeBurn)
 	                                                      .Build();
-	        _batchStateDodgeBurn = BatchStateBuilder.PixelShader(_dodgeBurn)
+	        _batchStateDodgeBurn = BatchStateBuilder.PixelShaderState(_dodgeBurn)
 	                                                .Build();
 	    }
 
@@ -191,8 +196,8 @@ namespace Gorgon.Renderers
 		    }
 
 		    GorgonConstantBufferView buffer = Interlocked.Exchange(ref _burnDodgeBuffer, null);
-		    Gorgon2DShader<GorgonPixelShader> shader1 = Interlocked.Exchange(ref _linearDodgeBurn, null);
-		    Gorgon2DShader<GorgonPixelShader> shader2 = Interlocked.Exchange(ref _dodgeBurn, null);
+		    GorgonPixelShader shader1 = Interlocked.Exchange(ref _linearDodgeBurnShader, null);
+		    GorgonPixelShader shader2 = Interlocked.Exchange(ref _dodgeBurnShader, null);
 
             buffer?.Dispose();
             shader1?.Dispose();

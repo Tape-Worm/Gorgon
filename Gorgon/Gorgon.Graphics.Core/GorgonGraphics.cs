@@ -267,6 +267,9 @@ namespace Gorgon.Graphics.Core
 
         // The texture blitter used to draw 2D textures to the render target.
         private Lazy<TextureBlitter> _textureBlitter;
+
+		// A factory for creating temporary render targets.
+        private RenderTargetFactory _rtvFactory;
         #endregion
 
         #region Properties.
@@ -422,9 +425,82 @@ namespace Gorgon.Graphics.Core
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return a factory for creating/retrieving render targets for temporary use.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// During the lifecycle of an application, many render targets may be required. In most instances, creating a render target for a scene and disposing of it when done is all that is required. But, when 
+        /// dealing with effects, shaders, etc... render targets may need to be created and released during a frame and doing this several times in a frame can be costly.
+        /// </para>
+        /// <para>
+        /// This factory allows applications to "rent" a render target and return it when done with only an initial cost when creating a target for the first time. This way, temporary render targets can be reused 
+        /// when needed.
+        /// </para>
+        /// <para>
+        /// When the factory retrieves a target, it will check its internal pool and see if a render target already exists. If it exists, and is not in use, it will return the existing target. If the target 
+        /// does not exist, or is being used elsewhere, then a new target is created and added to the pool.
+        /// </para>
+        /// <para>
+        /// Targets retrieved by this factory must be returned when they are no longer needed, otherwise the purpose of the factory is defeated. 
+        /// </para>
+        /// <note type="warning">
+        /// <para>
+        /// This factory is <b>not</b> thread safe.
+        /// </para>
+        /// </note>
+        /// </remarks>
+        public IGorgonRenderTargetFactory TemporaryTargets => _rtvFactory;
         #endregion
 
         #region Methods.
+		/// <summary>
+        /// Function to initialize the cache for some common render target views.
+        /// </summary>
+        private void InitializeCachedTempRtvs()
+        {
+            BufferFormat[] formats = new[]
+            {
+				BufferFormat.R16G16B16A16_Float,
+				BufferFormat.R8G8B8A8_UNorm,
+				BufferFormat.R8G8B8A8_UNorm_SRgb
+            };
+
+            int count = 0;
+            int totalSize = 0;
+            foreach (BufferFormat format in formats)
+            {
+                int w = 1024;
+                int h = 1024;
+
+                while ((w > 0) && (h > 0))
+                {
+                    GorgonRenderTarget2DView rtv = _rtvFactory.Rent(new GorgonTexture2DInfo($"Gorgon_RtvCommon_{w}x{h}_{format}")
+                    {
+						ArrayCount = 1,
+						Binding = TextureBinding.ShaderResource | TextureBinding.RenderTarget,
+						Usage = ResourceUsage.Default,
+						Format = format,
+						Width = w,
+						Height = h
+                    });
+
+                    totalSize += rtv.Texture.SizeInBytes;
+
+                    Log.Print($"Caching common render target for {w}x{h} {format} for ~{rtv.Texture.SizeInBytes.FormatMemory()}.", LoggingLevel.Verbose);
+
+                    _rtvFactory.Return(rtv);
+
+                    w >>= 1;
+                    h >>= 1;
+                    ++count;
+                }
+            }
+
+            Log.Print($"Cached {count} common render targets for ~{totalSize.FormatMemory()}.", LoggingLevel.Verbose);
+        }
+
         /// <summary>
         /// Function to initialize the cached sampler states with the predefined states provided on the sampler state class.
         /// </summary>
@@ -3090,6 +3166,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         public void Dispose()
         {
+            RenderTargetFactory rtvFactory = Interlocked.Exchange(ref _rtvFactory, null);
             D3D11.DeviceContext4 context = Interlocked.Exchange(ref _d3DDeviceContext, null);
             D3D11.Device5 device = Interlocked.Exchange(ref _d3DDevice, null);
             Adapter4 adapter = Interlocked.Exchange(ref _dxgiAdapter, null);
@@ -3105,6 +3182,8 @@ namespace Gorgon.Graphics.Core
             {
                 return;
             }
+
+            rtvFactory?.Dispose();
 
             if (blitter.IsValueCreated)
             {
@@ -3223,6 +3302,10 @@ namespace Gorgon.Graphics.Core
                                                            blitter.Initialize();
                                                            return blitter;
                                                        });
+
+            _rtvFactory = new RenderTargetFactory(this);
+
+            InitializeCachedTempRtvs();
 
             Log.Print("Gorgon Graphics initialized.", LoggingLevel.Simple);
         }

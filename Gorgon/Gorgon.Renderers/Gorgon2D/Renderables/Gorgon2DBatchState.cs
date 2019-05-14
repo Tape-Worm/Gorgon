@@ -50,6 +50,14 @@ namespace Gorgon.Renderers
                                                                   };
 
         /// <summary>
+        /// A default batch state that sets up soft additive blending.
+        /// </summary>
+        public static readonly Gorgon2DBatchState SoftAdditiveBlend = new Gorgon2DBatchState
+        {
+            BlendState = GorgonBlendState.SoftAdditive
+        };
+
+        /// <summary>
         /// A default batch state that sets up premultiplied blending.
         /// </summary>
         public static readonly Gorgon2DBatchState PremultipliedBlend = new Gorgon2DBatchState
@@ -131,7 +139,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to return the current pixel shader to use.
         /// </summary>
-        public Gorgon2DShader<GorgonPixelShader> PixelShader
+        public Gorgon2DShaderState<GorgonPixelShader> PixelShaderState
         {
             get;
             internal set;
@@ -140,7 +148,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to return the current vertex shader to use.
         /// </summary>
-        public Gorgon2DShader<GorgonVertexShader> VertexShader
+        public Gorgon2DShaderState<GorgonVertexShader> VertexShaderState
         {
             get;
             internal set;

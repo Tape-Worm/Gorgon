@@ -40,9 +40,10 @@ namespace Gorgon.Renderers
 	public class Gorgon2DDisplacementEffect
 		: Gorgon2DEffect
 	{
-		#region Variables.
+        #region Variables.
         // The shader used for displacement.
-	    private Gorgon2DShader<GorgonPixelShader> _displacementShader;
+        private GorgonPixelShader _displacementShader;
+	    private Gorgon2DShaderState<GorgonPixelShader> _displacementState;
 	    // The displacement render target.
 		private GorgonRenderTarget2DView _displacementTarget;
         // The displacement texture view.
@@ -114,12 +115,12 @@ namespace Gorgon.Renderers
 		    _displacementView = _displacementTarget.GetShaderResourceView();
 
             // We store this in the 1st slot so we can read back from it when necessary.
-		    _displacementShader = PixelShaderBuilder
+		    _displacementState = PixelShaderBuilder
 		                          .ShaderResource(_displacementView, 1)
 		                          .Build();
 
 		    _batchState = BatchStateBuilder
-		                  .PixelShader(_displacementShader)
+		                  .PixelShaderState(_displacementState)
 		                  .Build();
 
 			_isUpdated = true;
@@ -140,13 +141,15 @@ namespace Gorgon.Renderers
                                                                                             Usage = ResourceUsage.Dynamic,
                                                                                             SizeInBytes = DX.Vector4.SizeInBytes
                                                                                         });
-	        _displacementShader = PixelShaderBuilder
-	                              .Shader(CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderDisplacementDecoder"))
+
+            _displacementShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderDisplacementDecoder");
+            _displacementState = PixelShaderBuilder
+	                              .Shader(_displacementShader)
 	                              .ConstantBuffer(_displacementSettingsBuffer, 1)
 	                              .Build();
 
             _batchState = BatchStateBuilder
-                          .PixelShader(_displacementShader)
+                          .PixelShaderState(_displacementState)
                           .BlendState(GorgonBlendState.NoBlending)
                           .Build();
         }
@@ -258,7 +261,7 @@ namespace Gorgon.Renderers
             FreeResources();
 
 		    GorgonConstantBufferView displacementBuffer = Interlocked.Exchange(ref _displacementSettingsBuffer, null);
-		    Gorgon2DShader<GorgonPixelShader> shader = Interlocked.Exchange(ref _displacementShader, null);
+		    GorgonPixelShader shader = Interlocked.Exchange(ref _displacementShader, null);
 
             displacementBuffer?.Dispose();
 		    shader?.Dispose();

@@ -121,6 +121,9 @@
   <data name="BasicSprite" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\BasicSprite.hlsl;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="Black_2x2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\black_2x2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="FilmGrain" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\FilmGrain.hlsl;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
@@ -129,6 +132,12 @@
   </data>
   <data name="GOR2D_EFFECT_1BIT_DESC" xml:space="preserve">
     <value>Draws an image with 1-bit color information (2 colors).</value>
+  </data>
+  <data name="GOR2D_EFFECT_BLOOM" xml:space="preserve">
+    <value>Bloom Effect</value>
+  </data>
+  <data name="GOR2D_EFFECT_BLOOM_DESC" xml:space="preserve">
+    <value>Provides a bloom (glow) effect to bright areas on an image.</value>
   </data>
   <data name="GOR2D_EFFECT_BURN_DODGE" xml:space="preserve">
     <value>Burn/Dodge Effect</value>
@@ -225,6 +234,9 @@
   </data>
   <data name="GOR2D_ERR_SRV_SLOT_INVALID" xml:space="preserve">
     <value>The shader resource slot must be 0 or less than {0}.</value>
+  </data>
+  <data name="HdrBloom" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\HdrBloom.hlsl;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="Icons" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Icons.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

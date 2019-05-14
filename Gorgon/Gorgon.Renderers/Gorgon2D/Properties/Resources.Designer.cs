@@ -85,6 +85,16 @@ namespace Gorgon.Renderers.Properties {
         // Comment stripped.
         // Comment stripped.
         // Comment stripped.
+        internal static System.Drawing.Bitmap Black_2x2 {
+            get {
+                object obj = ResourceManager.GetObject("Black_2x2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
         // Comment stripped.
         // Comment stripped.
         // Comment stripped.
@@ -119,6 +129,24 @@ namespace Gorgon.Renderers.Properties {
         internal static string GOR2D_EFFECT_1BIT_DESC {
             get {
                 return ResourceManager.GetString("GOR2D_EFFECT_1BIT_DESC", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        internal static string GOR2D_EFFECT_BLOOM {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_BLOOM", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        internal static string GOR2D_EFFECT_BLOOM_DESC {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_BLOOM_DESC", resourceCulture);
             }
         }
         
@@ -407,6 +435,23 @@ namespace Gorgon.Renderers.Properties {
         internal static string GOR2D_ERR_SRV_SLOT_INVALID {
             get {
                 return ResourceManager.GetString("GOR2D_ERR_SRV_SLOT_INVALID", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        internal static string HdrBloom {
+            get {
+                return ResourceManager.GetString("HdrBloom", resourceCulture);
             }
         }
         

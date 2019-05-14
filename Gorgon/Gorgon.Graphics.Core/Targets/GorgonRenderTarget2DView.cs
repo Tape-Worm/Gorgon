@@ -60,7 +60,16 @@ namespace Gorgon.Graphics.Core
         private RawRectangle[] _clearRects;
         #endregion
 
-		#region Properties.
+        #region Properties.
+        /// <summary>
+        /// Property to set or return the owner <see cref="RenderTargetFactory"/> for this texture.
+        /// </summary>
+        internal RenderTargetFactory OwnerFactory
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Property to return the type of image data.
         /// </summary>
@@ -447,7 +456,13 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		public override void Dispose()
 		{
-		    Texture = null;
+            if (OwnerFactory != null)
+            {
+                OwnerFactory.Return(this);
+                return;
+            }
+
+            Texture = null;
             base.Dispose();
 		}
 

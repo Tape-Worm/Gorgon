@@ -44,9 +44,11 @@ namespace Gorgon.Renderers
     {
         #region Variables.
         // The shader used for blurring.
-        private Gorgon2DShader<GorgonPixelShader> _blurShader;
+        private GorgonPixelShader _blurShader;
+        private Gorgon2DShaderState<GorgonPixelShader> _blurState;
         // The shader used for blurring (no alpha channel support).
-        private Gorgon2DShader<GorgonPixelShader> _blurShaderNoAlpha;
+        private GorgonPixelShader _blurShaderNoAlpha;
+        private Gorgon2DShaderState<GorgonPixelShader> _blurStateNoAlpha;
         // Buffer for blur kernel data.
         private GorgonConstantBufferView _blurBufferKernel;
         // Buffer for buffer settings.
@@ -65,12 +67,9 @@ namespace Gorgon.Renderers
         private int _blurRadius;												
         // The size of the render targets used to blur.
         private DX.Size2 _renderTargetSize = new DX.Size2(256, 256);
-        // The format for the render targets.
-        private BufferFormat _targetFormat = BufferFormat.R8G8B8A8_UNorm;
+
         // Flag to indicate that the kernel data needs updating.
         private bool _needKernelUpdate = true;
-        // Flag to indicate that the render targets need updating.
-        private bool _needTargetUpdate = true;
         // Flag to indicate that the offsets need updating.
         private bool _needOffsetUpdate = true;
         // The batch states to use when rendering this effect.
@@ -78,6 +77,8 @@ namespace Gorgon.Renderers
         private Gorgon2DBatchState _batchStateNoAlpha;
         // The number of floats for the offset data.
         private readonly int _offsetSize;
+        // The info for the blur render targets.
+        private readonly GorgonTexture2DInfo _blurRtvInfo;
         #endregion
 
         #region Properties.
@@ -180,37 +181,28 @@ namespace Gorgon.Renderers
             }
         }
 
-        /// <summary>
-        /// Property to set or return the format of the internal render targets used for blurring.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// This is the default texture surface format for the internal render targets used for blurring. This value may be any type of format supported by a render target (see 
-        /// <see cref="GorgonGraphics.FormatSupport"/> for determining an acceptable format).
-        /// </para>
-        /// <para>
-        /// If this value is set to an unacceptable format, then the effect will throw an exception during rendering.
-        /// </para>
-        /// <para>
-        /// The default value is <see cref="BufferFormat.R8G8B8A8_UNorm"/>
-        /// </para>
-        /// </remarks>
-        /// <seealso cref="GorgonGraphics"/>
-        /// <seealso cref="BufferFormat"/>
-        public BufferFormat BlurTargetFormat
+		/// <summary>
+		/// Property to set or return the format of the internal render targets used for blurring.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This is the default texture surface format for the internal render targets used for blurring. This value may be any type of format supported by a render target (see 
+		/// <see cref="GorgonGraphics.FormatSupport"/> for determining an acceptable format).
+		/// </para>
+		/// <para>
+		/// If this value is set to an unacceptable format, then the effect will throw an exception during rendering.
+		/// </para>
+		/// <para>
+		/// The default value is <see cref="BufferFormat.R8G8B8A8_UNorm"/>
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="GorgonGraphics"/>
+		/// <seealso cref="BufferFormat"/>
+		public BufferFormat BlurTargetFormat
         {
-            get => _targetFormat;
-            set
-            {
-                if (_targetFormat == value)
-                {
-                    return;
-                }
-
-                _targetFormat = value;
-                _needTargetUpdate = true;
-            }
-        }
+            get;
+            set;
+        } = BufferFormat.R8G8B8A8_UNorm;
 
         /// <summary>
         /// Property to set or return the size of the internal render targets used for blurring.
@@ -249,7 +241,6 @@ namespace Gorgon.Renderers
                 value.Height = value.Height.Max(3).Min(Graphics.VideoAdapter.MaxTextureHeight);
 
                 _renderTargetSize = value;
-                _needTargetUpdate = true;
                 _needOffsetUpdate = true;
             }
         }
@@ -265,21 +256,16 @@ namespace Gorgon.Renderers
             FreeTargets();
 
             // Now recreate with a new size and format (if applicable).
-            _hPass = GorgonRenderTarget2DView.CreateRenderTarget(Graphics,
-                                                                 new GorgonTexture2DInfo("Effect.Gauss_BlurHPass")
-                                                                 {
-                                                                     Format = _targetFormat,
-                                                                     Width = _renderTargetSize.Width,
-                                                                     Height = _renderTargetSize.Height,
-                                                                     Binding = TextureBinding.ShaderResource
-                                                                 });
+            _blurRtvInfo.Format = BlurTargetFormat;
+            _blurRtvInfo.Width = _renderTargetSize.Width;
+            _blurRtvInfo.Height = _renderTargetSize.Height;           
+
+            _hPass = Graphics.TemporaryTargets.Rent(_blurRtvInfo, clearOnRetrieve: false);
+
             _hPassView = _hPass.GetShaderResourceView();
 
-            _vPass = GorgonRenderTarget2DView.CreateRenderTarget(Graphics,
-                                                                   new GorgonTexture2DInfo(_hPass, "Effect.Gauss_BlurVPass"));
+            _vPass = Graphics.TemporaryTargets.Rent(_blurRtvInfo, clearOnRetrieve: false);
             _vPassView = _vPass.GetShaderResourceView();
-
-            _needTargetUpdate = false;
         }
 
         /// <summary>
@@ -358,8 +344,6 @@ namespace Gorgon.Renderers
             vView?.Dispose();
             hPass?.Dispose();
             vPass?.Dispose();
-
-            _needTargetUpdate = true;
         }
 
         /// <summary>
@@ -418,29 +402,30 @@ namespace Gorgon.Renderers
                                                                             });
 
             // Set up the constants used by our pixel shader.
+            _blurShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderGaussBlur");
             PixelShaderBuilder.SamplerState(GorgonSamplerState.Default)
                               .ConstantBuffer(_blurBufferKernel, 1)
                               .ConstantBuffer(_blurBufferPass, 2)
-                              .Shader(CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderGaussBlur"));
+                              .Shader(_blurShader);
 
-            _blurShader = PixelShaderBuilder.Build();
+            _blurState = PixelShaderBuilder.Build();
 
-            PixelShaderBuilder.Shader(CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderGaussBlurNoAlpha"));
+			_blurShaderNoAlpha = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderGaussBlurNoAlpha");
+            PixelShaderBuilder.Shader(_blurShaderNoAlpha);
 
-            _blurShaderNoAlpha = PixelShaderBuilder.Build();
-            
-            UpdateRenderTarget();
+            _blurStateNoAlpha = PixelShaderBuilder.Build();
+                        
             UpdateKernelWeights();
             UpdateOffsets();
 
             _batchState = BatchStateBuilder
                           .BlendState(GorgonBlendState.NoBlending)
-                          .PixelShader(_blurShader)
+                          .PixelShaderState(_blurState)
                           .Build();
 
             _batchStateNoAlpha = BatchStateBuilder
                                  .BlendState(GorgonBlendState.NoBlending)
-                                 .PixelShader(_blurShaderNoAlpha)
+                                 .PixelShaderState(_blurStateNoAlpha)
                                  .Build();
         }
 
@@ -465,11 +450,6 @@ namespace Gorgon.Renderers
             if (_needOffsetUpdate)
             {
                 UpdateOffsets();
-            }
-
-            if (!_needTargetUpdate)
-            {
-                return;
             }
 
             // Update the render target prior to rendering.
@@ -529,6 +509,8 @@ namespace Gorgon.Renderers
             Renderer.Begin(Gorgon2DBatchState.NoBlend);
             BlitTexture(_vPassView, new DX.Size2(output.Width, output.Height));
             Renderer.End();
+
+            FreeTargets();
         }
 
         /// <summary>
@@ -544,8 +526,8 @@ namespace Gorgon.Renderers
 
             FreeTargets();
 
-            Gorgon2DShader<GorgonPixelShader> blurShader = Interlocked.Exchange(ref _blurShader, null);
-            Gorgon2DShader<GorgonPixelShader> blurShaderNoAlpha = Interlocked.Exchange(ref _blurShaderNoAlpha, null);
+            GorgonPixelShader blurShader = Interlocked.Exchange(ref _blurShader, null);
+            GorgonPixelShader blurShaderNoAlpha = Interlocked.Exchange(ref _blurShaderNoAlpha, null);
             GorgonNativeBuffer<float> kernelData = Interlocked.Exchange(ref _blurKernelData, null);
             GorgonConstantBufferView kernelBuffer = Interlocked.Exchange(ref _blurBufferKernel, null);
             GorgonConstantBufferView passBuffer = Interlocked.Exchange(ref _blurBufferPass, null);
@@ -599,6 +581,11 @@ namespace Gorgon.Renderers
             // Adjust offset size to start on a 4 float boundary.
             _offsetSize = ((2 * KernelSize) + 3) & ~3; 
             _blurRadius = MaximumBlurRadius;
+
+            _blurRtvInfo = new GorgonTexture2DInfo
+            {
+                Binding = TextureBinding.ShaderResource | TextureBinding.RenderTarget
+            };
 
             Macros.Add(new GorgonShaderMacro("GAUSS_BLUR_EFFECT"));
             Macros.Add(new GorgonShaderMacro("MAX_KERNEL_SIZE", KernelSize.ToString(CultureInfo.InvariantCulture)));

@@ -110,46 +110,46 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
-        /// Function to assign a pixel shader to the batch state.
+        /// Function to assign a pixel shader state to the batch state.
         /// </summary>
         /// <param name="shader">The pixel shader and resources to assign, or <b>null</b> for a default pixel shader and states.</param>
         /// <returns>The fluent builder interface.</returns>
-        public Gorgon2DBatchStateBuilder PixelShader(Gorgon2DShaderBuilder<GorgonPixelShader> shader)
+        public Gorgon2DBatchStateBuilder PixelShaderState(Gorgon2DShaderStateBuilder<GorgonPixelShader> shader)
         {
-            _worker.PixelShader = shader?.Build();
+            _worker.PixelShaderState = shader?.Build();
             return this;
         }
 
         /// <summary>
-        /// Function to assign a vertex shader to the batch state.
+        /// Function to assign a vertex shader state to the batch state.
         /// </summary>
         /// <param name="shader">The vertex shader and resources to assign, or <b>null</b> for a default vertex shader and states.</param>
         /// <returns>The fluent builder interface.</returns>
-        public Gorgon2DBatchStateBuilder VertexShader(Gorgon2DShaderBuilder<GorgonVertexShader> shader)
+        public Gorgon2DBatchStateBuilder VertexShaderState(Gorgon2DShaderStateBuilder<GorgonVertexShader> shader)
         {
-            _worker.VertexShader = shader?.Build();
+            _worker.VertexShaderState = shader?.Build();
             return this;
         }
 
         /// <summary>
-        /// Function to assign a pixel shader to the batch state.
+        /// Function to assign a pixel shader state to the batch state.
         /// </summary>
         /// <param name="shader">The pixel shader and resources to assign, or <b>null</b> for a default pixel shader and states.</param>
         /// <returns>The fluent builder interface.</returns>
-        public Gorgon2DBatchStateBuilder PixelShader(Gorgon2DShader<GorgonPixelShader> shader)
+        public Gorgon2DBatchStateBuilder PixelShaderState(Gorgon2DShaderState<GorgonPixelShader> shader)
         {
-            _worker.PixelShader = shader;
+            _worker.PixelShaderState = shader;
             return this;
         }
 
         /// <summary>
-        /// Function to assign a vertex shader to the batch state.
+        /// Function to assign a vertex shader state to the batch state.
         /// </summary>
         /// <param name="shader">The vertex shader and resources to assign, or <b>null</b> for a default vertex shader and states.</param>
         /// <returns>The fluent builder interface.</returns>
-        public Gorgon2DBatchStateBuilder VertexShader(Gorgon2DShader<GorgonVertexShader> shader)
+        public Gorgon2DBatchStateBuilder VertexShaderState(Gorgon2DShaderState<GorgonVertexShader> shader)
         {
-            _worker.VertexShader = shader;
+            _worker.VertexShaderState = shader;
             return this;
         }
         #endregion
@@ -163,8 +163,8 @@ namespace Gorgon.Renderers
         {
             var result = new Gorgon2DBatchState
                          {
-                             PixelShader = _worker.PixelShader,
-                             VertexShader = _worker.VertexShader,
+                             PixelShaderState = _worker.PixelShaderState,
+                             VertexShaderState = _worker.VertexShaderState,
                              BlendState = _worker.BlendState,
                              DepthStencilState = _worker.DepthStencilState,
                              RasterState = _worker.RasterState
@@ -179,8 +179,8 @@ namespace Gorgon.Renderers
         /// <returns>The fluent builder interface.</returns>
         public Gorgon2DBatchStateBuilder Clear()
         {
-            _worker.PixelShader = null;
-            _worker.VertexShader = null;
+            _worker.PixelShaderState = null;
+            _worker.VertexShaderState = null;
             _worker.BlendState = null;
             _worker.DepthStencilState = null;
             _worker.RasterState = null;
@@ -199,8 +199,8 @@ namespace Gorgon.Renderers
                 return Clear();
             }
 
-            _worker.PixelShader = builderObject.PixelShader;
-            _worker.VertexShader = builderObject.VertexShader;
+            _worker.PixelShaderState = builderObject.PixelShaderState;
+            _worker.VertexShaderState = builderObject.VertexShaderState;
             _worker.BlendState = builderObject.BlendState;
             _worker.DepthStencilState = builderObject.DepthStencilState;
             _worker.RasterState = builderObject.RasterState;

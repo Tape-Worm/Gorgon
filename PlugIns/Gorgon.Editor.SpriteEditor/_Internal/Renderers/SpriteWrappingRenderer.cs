@@ -78,7 +78,7 @@ namespace Gorgon.Editor.SpriteEditor
                 Binding = TextureBinding.ShaderResource
             });
 
-            _srv = _rtv.Texture.GetShaderResourceView();
+            _srv = _rtv.GetShaderResourceView();
         }
 
 		/// <summary>

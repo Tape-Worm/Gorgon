@@ -107,7 +107,7 @@ namespace Gorgon.Editor.ImageEditor
         // The current render batch state.
         private Gorgon2DBatchState _batchState;
         // Pixel shader used to render the image.
-        private Gorgon2DShader<GorgonPixelShader> _batchShader;
+        private Gorgon2DShaderState<GorgonPixelShader> _batchShaderState;
         // The animation builder used to create animations.
         private readonly GorgonAnimationBuilder _animBuilder = new GorgonAnimationBuilder();
         // The list of available animations.
@@ -306,12 +306,12 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         /// <param name="shader">The current pixel shader.</param>
         /// <returns>The new batch state.</returns>
-        private Gorgon2DBatchState GetBatchState(Gorgon2DShader<GorgonPixelShader> shader)
+        private Gorgon2DBatchState GetBatchState(Gorgon2DShaderState<GorgonPixelShader> shader)
         {
             var builder = new Gorgon2DBatchStateBuilder();
 
             return builder.ResetTo(_batchState)
-                .PixelShader(shader)
+                .PixelShaderState(shader)
                 .Build();
         }
 
@@ -390,7 +390,7 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         /// <param name="builder">The builder used to create the shader.</param>
         /// <returns>The shader resource view.</returns>
-        protected abstract void OnGetShaderResourceViews(Gorgon2DShaderBuilder<GorgonPixelShader> builder);
+        protected abstract void OnGetShaderResourceViews(Gorgon2DShaderStateBuilder<GorgonPixelShader> builder);
 
         /// <summary>
         /// Function called when a playing animation should end.
@@ -541,9 +541,9 @@ namespace Gorgon.Editor.ImageEditor
 
             SetZoomLevel(ZoomLevel, image);
 
-            var shaderBuilder = new Gorgon2DShaderBuilder<GorgonPixelShader>();
+            var shaderBuilder = new Gorgon2DShaderStateBuilder<GorgonPixelShader>();
             shaderBuilder
-                .ResetTo(_batchShader)
+                .ResetTo(_batchShaderState)
                 .ConstantBuffer(_textureParameters.GetView(), 1)
                 .Shader(_pixelShader)
                 .SamplerState(GorgonSamplerState.PointFiltering, 0)
@@ -551,8 +551,8 @@ namespace Gorgon.Editor.ImageEditor
 
             OnGetShaderResourceViews(shaderBuilder);
 
-            _batchShader = shaderBuilder.Build();
-            _batchState = GetBatchState(_batchShader);
+            _batchShaderState = shaderBuilder.Build();
+            _batchState = GetBatchState(_batchShaderState);
 
             UpdateTextureParameters(image);
 
@@ -656,8 +656,6 @@ namespace Gorgon.Editor.ImageEditor
 
             _pixelShader?.Dispose();
             _pixelShader = null;
-            _batchShader?.Dispose();
-            _batchShader = null;
         }
 
         /// <summary>

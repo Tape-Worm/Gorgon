@@ -84,7 +84,8 @@ namespace Gorgon.Renderers
 	    // Buffer for the sobel edge detection.
 		private GorgonConstantBufferView _sobelBuffer;
         // The pixel shader for the effect.
-	    private Gorgon2DShader<GorgonPixelShader> _shader;
+        private GorgonPixelShader _sobelShader;
+	    private Gorgon2DShaderState<GorgonPixelShader> _sobelState;
         // The batch state used for the effect.
 	    private Gorgon2DBatchState _batchState;
 	    // Settings for the effect.
@@ -176,14 +177,15 @@ namespace Gorgon.Renderers
 	    {
 	        _sobelBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _settings, "Gogron 2D Sobel Edge Detect Filter Effect Constant Buffer");
 
-	        _shader = PixelShaderBuilder
+            _sobelShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderSobelEdge");
+            _sobelState = PixelShaderBuilder
 	                  .ConstantBuffer(_sobelBuffer, 1)
-	                  .Shader(CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderSobelEdge"))
+	                  .Shader(_sobelShader)
 	                  .Build();
 
 
 	        _batchState = BatchStateBuilder
-	                      .PixelShader(_shader)
+	                      .PixelShaderState(_sobelState)
 	                      .Build();
 	    }
 
@@ -257,7 +259,7 @@ namespace Gorgon.Renderers
         protected override void Dispose(bool disposing)
 	    {
 	        GorgonConstantBufferView buffer = Interlocked.Exchange(ref _sobelBuffer, null);
-	        Gorgon2DShader<GorgonPixelShader> shader = Interlocked.Exchange(ref _shader, null);
+	        GorgonPixelShader shader = Interlocked.Exchange(ref _sobelShader, null);
 
             buffer?.Dispose();
             shader?.Dispose();

@@ -174,9 +174,11 @@
     <Compile Include="Targets\GorgonDepthStencil2DView.cs" />
     <Compile Include="Targets\GorgonRenderTarget3DView.cs" />
     <Compile Include="Targets\GorgonRenderTarget2DView.cs" />
+    <Compile Include="Targets\_Internal\RenderTargetFactory.cs" />
     <Compile Include="Targets\GorgonRenderTargetView.cs" />
     <Compile Include="Targets\GorgonSwapChain.cs" />
     <Compile Include="Targets\GorgonSwapChainInfo.cs" />
+    <Compile Include="Targets\_Interfaces\IGorgonRenderTargetFactory.cs" />
     <Compile Include="Targets\_Interfaces\IGorgonSwapChainInfo.cs" />
     <Compile Include="Textures\GorgonTexture1D.cs" />
     <Compile Include="Textures\GorgonTexture3DReadWriteView.cs" />
