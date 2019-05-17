@@ -487,7 +487,6 @@ namespace Gorgon.Renderers
             switch (passIndex)
             {
                 case 0:
-                    return Gorgon2DBatchState.NoBlend;
                     if ((statesChanged) || (_pass0State == null))
                     {
                         _pass0State = BatchStateBuilder.Build();
