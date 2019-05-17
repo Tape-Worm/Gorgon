@@ -70,6 +70,11 @@ namespace Gorgon.Graphics.Core
         public static readonly GorgonBlendState Additive;
 
         /// <summary>
+        /// Soft additive blending on render target 0.
+        /// </summary>
+        public static readonly GorgonBlendState SoftAdditive;
+
+        /// <summary>
         /// Premultiplied alpha blending on render target 0.
         /// </summary>
         public static readonly GorgonBlendState Premultiplied;
@@ -319,8 +324,16 @@ namespace Gorgon.Graphics.Core
                        {
                            IsBlendingEnabled = true,
                            SourceColorBlend = Blend.SourceAlpha,
-                           DestinationColorBlend = Blend.One
+                           DestinationColorBlend = Blend.One						   
                        };
+
+            // Soft Additive
+            SoftAdditive = new GorgonBlendState
+            {
+                IsBlendingEnabled = true,
+                SourceColorBlend = Blend.One,
+                DestinationColorBlend = Blend.InverseSecondarySourceColor
+            };
 
             // Premultiplied
             Premultiplied = new GorgonBlendState

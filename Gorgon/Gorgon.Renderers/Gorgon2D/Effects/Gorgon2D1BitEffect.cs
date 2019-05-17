@@ -105,8 +105,10 @@ namespace Gorgon.Renderers
 		private Settings _settings;											
         // Flag to indicate that the parameters were updated.
 		private bool _isUpdated = true;
+		// The pixel shader for the effect.
+        private GorgonPixelShader _shader;
         // The shader used to render the image.
-	    private Gorgon2DShader<GorgonPixelShader> _shader;
+	    private Gorgon2DShaderState<GorgonPixelShader> _shaderState;
         // The batch state to render.
 	    private Gorgon2DBatchState _batchState;
 		#endregion
@@ -212,11 +214,12 @@ namespace Gorgon.Renderers
 	    {
 	        _1BitBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _settings, "Gorgon2D1BitEffect Constant Buffer");
 
-	        _shader = PixelShaderBuilder.ConstantBuffer(_1BitBuffer, 1)
-	                                    .Shader(CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShader1Bit"))
+            _shader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShader1Bit");
+            _shaderState = PixelShaderBuilder.ConstantBuffer(_1BitBuffer, 1)
+	                                    .Shader(_shader)
 	                                    .Build();
 
-	        _batchState = BatchStateBuilder.PixelShader(_shader)
+	        _batchState = BatchStateBuilder.PixelShaderState(_shaderState)
 	                                       .Build();
 	    }
 
@@ -275,7 +278,7 @@ namespace Gorgon.Renderers
 	        }
 
 	        GorgonConstantBufferView buffer = Interlocked.Exchange(ref _1BitBuffer, null);
-	        Gorgon2DShader<GorgonPixelShader> shader = Interlocked.Exchange(ref _shader, null);
+	        GorgonPixelShader shader = Interlocked.Exchange(ref _shader, null);
 	        
             buffer?.Dispose();
             shader?.Dispose();

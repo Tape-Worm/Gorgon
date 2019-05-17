@@ -86,13 +86,16 @@ namespace Gorgon.Renderers
         public const int MaxLightCount = int.MaxValue / 16;
         #endregion
 
-        #region Variables.
+        #region Variables.        
         // Our custom vertex shader so we can calculate the tangent and bi-tangent.
-        private Gorgon2DShader<GorgonVertexShader> _vertexShader;
+        private GorgonVertexShader _vertexShader;
+        private Gorgon2DShaderState<GorgonVertexShader> _vertexShaderState;
         // A pixel shader used to render the scene to multiple render targets.
-        private Gorgon2DShader<GorgonPixelShader> _deferredShader;
-        // A pixel shader used to render point lights.
-        private Gorgon2DShader<GorgonPixelShader> _lightShader;
+        private GorgonPixelShader _deferredShader;
+        private Gorgon2DShaderState<GorgonPixelShader> _deferredShaderState;
+        // A pixel shader used to render lights.
+        private GorgonPixelShader _lightShader;
+        private Gorgon2DShaderState<GorgonPixelShader> _lightShaderState;
         // The constant buffer that will send the screen size on update.
         private GorgonConstantBufferView _screenSizeData;
         // The buffer that will hold the lighting data.
@@ -206,9 +209,9 @@ namespace Gorgon.Renderers
                 return;
             }
 
-            Gorgon2DShader<GorgonVertexShader> vertexShader = Interlocked.Exchange(ref _vertexShader, null);
-            Gorgon2DShader<GorgonPixelShader> deferredShader = Interlocked.Exchange(ref _deferredShader, null);
-            Gorgon2DShader<GorgonPixelShader> lightShader = Interlocked.Exchange(ref _lightShader, null);
+            GorgonVertexShader vertexShader = Interlocked.Exchange(ref _vertexShader, null);
+            GorgonPixelShader deferredShader = Interlocked.Exchange(ref _deferredShader, null);
+            GorgonPixelShader lightShader = Interlocked.Exchange(ref _lightShader, null);
             GorgonConstantBufferView screenSizeData = Interlocked.Exchange(ref _screenSizeData, null);
             GorgonConstantBufferView lightData = Interlocked.Exchange(ref _lightData, null);
             GorgonTexture2D texture = Interlocked.Exchange(ref _gbuffer, null);
@@ -351,41 +354,32 @@ namespace Gorgon.Renderers
                                                                            SizeInBytes = Unsafe.SizeOf<PointLightData>()
                                                                        });
 
-            _vertexShader = VertexShaderBuilder.Shader(GorgonShaderFactory.Compile<GorgonVertexShader>(Graphics,
-                                                                                                       Resources.Lighting,
-                                                                                                       "GorgonVertexLightingShader",
-                                                                                                       GorgonGraphics.IsDebugEnabled))
+            _vertexShader = CompileShader<GorgonVertexShader>(Resources.Lighting, "GorgonVertexLightingShader");
+            _vertexShaderState = VertexShaderBuilder.Shader(_vertexShader)
                                                .Build();
 
             Macros.Add(new GorgonShaderMacro("DEFERRED_LIGHTING"));
-            _deferredShader = PixelShaderBuilder.Shader(GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics,
-                                                                                                       Resources.Lighting,
-                                                                                                       "GorgonPixelShaderDeferred",
-                                                                                                       GorgonGraphics.IsDebugEnabled,
-                                                                                                       Macros))
+            _deferredShader = CompileShader<GorgonPixelShader>(Resources.Lighting, "GorgonPixelShaderDeferred");
+            _deferredShaderState = PixelShaderBuilder.Shader(_deferredShader)
                                                 .Build();
 
             Macros.Clear();
             Macros.Add(new GorgonShaderMacro("LIGHTS"));
-
-            _lightShader = PixelShaderBuilder.Shader(GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics,
-                                                                                                    Resources.Lighting,
-                                                                                                    "GorgonPixelShaderLighting",
-                                                                                                    GorgonGraphics.IsDebugEnabled,
-                                                                                                    Macros))
+            _lightShader = CompileShader<GorgonPixelShader>(Resources.Lighting, "GorgonPixelShaderLighting");
+            _lightShaderState = PixelShaderBuilder.Shader(_lightShader)
                                              .ConstantBuffer(_screenSizeData, 1)
                                              .ConstantBuffer(_lightData, 2)
                                              .Build();
 
             // Rebuild our states for the new pixel shaders.
-            _lightingState = BatchStateBuilder.PixelShader(_lightShader)
+            _lightingState = BatchStateBuilder.PixelShaderState(_lightShaderState)
                                                 .BlendState(GorgonBlendState.Additive)
                                                 .Build();
 
             var blendBuilder = new GorgonBlendStateBuilder();
 
-            _deferredState = BatchStateBuilder.PixelShader(_deferredShader)
-                                              .VertexShader(_vertexShader)
+            _deferredState = BatchStateBuilder.PixelShaderState(_deferredShaderState)
+                                              .VertexShaderState(_vertexShaderState)
                                               .BlendState(blendBuilder.DestinationBlend(alpha: Blend.InverseSourceAlpha))
                                               .Build();
         }

@@ -728,6 +728,30 @@ namespace Gorgon.Math
         public static float Pow(this float value, float power) => (float)System.Math.Pow(value, power);
 
         /// <summary>
+        /// Function to compute the logarithim of a value.
+        /// </summary>
+        /// <param name="value">The value to compute the logarithim from.</param>
+        /// <param name="power">The new base for the logarithm.</param>
+        /// <returns>The logarithim value.</returns>
+        public static float Log(this float value, float power) => (float)System.Math.Log(value, power);
+
+        /// <summary>
+        /// Function to compute the logarithim of a value.
+        /// </summary>
+        /// <param name="value">The value to compute the logarithim from.</param>
+        /// <param name="power">The new base for the logarithm.</param>
+        /// <returns>The logarithim value.</returns>
+        public static double Log(this double value, double power) => System.Math.Log(value, power);
+
+        /// <summary>
+        /// Function to compute the logarithim of a value.
+        /// </summary>
+        /// <param name="value">The value to compute the logarithim from.</param>
+        /// <param name="power">The new base for the logarithm.</param>
+        /// <returns>The logarithim value.</returns>
+        public static decimal Log(this decimal value, decimal power) => (decimal)System.Math.Log((double)value, (double)power);
+
+        /// <summary>
         /// Function to return the largest integer less than or equal to the specified <see cref="float"/> value.
         /// </summary>
         /// <param name="value">The value to find the floor for.</param>

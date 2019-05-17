@@ -54,6 +54,24 @@ cbuffer GorgonAlphaTest : register(b0)
 	float alphaTestValueHi = 0.0f;
 }
 
+// Converts an sRGB color value to linear.
+float3 SRgbToLinear(float3 c)
+{
+    half3 linearRGBLo = c / 12.92;
+    half3 linearRGBHi = pow((c + 0.055) / 1.055, half3(2.4, 2.4, 2.4));
+    half3 linearRGB = (c <= 0.04045) ? linearRGBLo : linearRGBHi;
+    return linearRGB;
+}
+
+// Converts a linear color value to sRGB.
+float3 LinearToSRgb(float3 c)
+{
+    half3 sRGBLo = c * 12.92;
+    half3 sRGBHi = (pow(c, half3(1.0 / 2.4, 1.0 / 2.4, 1.0 / 2.4)) * 1.055) - 0.055;
+    half3 sRGB = (c <= 0.0031308) ? sRGBLo : sRGBHi;
+    return sRGB;
+}
+
 // Creates a 4x4 matrix from the 4, 4 component floating point values (columns).
 float4x4 CreateFrom4x4FromFloat4(float4 c0, float4 c1, float4 c2, float4 c3)
 {

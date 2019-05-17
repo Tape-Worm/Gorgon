@@ -40,11 +40,13 @@ namespace Gorgon.Renderers
 	{
 		#region Variables.
 	    // Constant buffer for the sharpen/emboss information.
-		private GorgonConstantBufferView _sharpenEmbossBuffer;			        
-	    // Pixel shader used to sharpen an image.
-		private Gorgon2DShader<GorgonPixelShader> _sharpenShader;							
-	    // Pixel shader used to emboss an image.
-		private Gorgon2DShader<GorgonPixelShader> _embossShader;
+		private GorgonConstantBufferView _sharpenEmbossBuffer;
+        // Pixel shader used to sharpen an image.
+        private GorgonPixelShader _sharpenShader;
+		private Gorgon2DShaderState<GorgonPixelShader> _sharpenState;
+        // Pixel shader used to emboss an image.
+        private GorgonPixelShader _embossShader;
+		private Gorgon2DShaderState<GorgonPixelShader> _embossState;
         // The batch render state for sharpening.
 	    private Gorgon2DBatchState _sharpenBatchState;
         // The batch render state for embossing.
@@ -99,14 +101,16 @@ namespace Gorgon.Renderers
 	                                                                                       {
                                                                                                SizeInBytes = 16
 	                                                                                       });
+            _sharpenShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderSharpen");
+            _embossShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderEmboss");
 
-	        _sharpenShader = PixelShaderBuilder
+            _sharpenState = PixelShaderBuilder
 	                         .ConstantBuffer(_sharpenEmbossBuffer, 1)
-	                         .Shader(CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderSharpen"))
+	                         .Shader(_sharpenShader)
 	                         .Build();
 
-	        _embossShader = PixelShaderBuilder
-	                        .Shader(CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderEmboss"))
+	        _embossState = PixelShaderBuilder
+	                        .Shader(_embossShader)
 	                        .Build();
 
         }
@@ -123,10 +127,10 @@ namespace Gorgon.Renderers
 	        if (statesChanged)
 	        {
 	            _sharpenBatchState = BatchStateBuilder
-	                                 .PixelShader(_sharpenShader)
+	                                 .PixelShaderState(_sharpenState)
 	                                 .Build();
 	            _embossBatchState = BatchStateBuilder
-	                                .PixelShader(_embossShader)
+	                                .PixelShaderState(_embossState)
 	                                .Build();
 	        }
 
@@ -183,8 +187,8 @@ namespace Gorgon.Renderers
         protected override void Dispose(bool disposing)
 		{
 		    GorgonConstantBufferView buffer = Interlocked.Exchange(ref _sharpenEmbossBuffer, null);
-		    Gorgon2DShader<GorgonPixelShader> shader1 = Interlocked.Exchange(ref _sharpenShader, null);
-		    Gorgon2DShader<GorgonPixelShader> shader2 = Interlocked.Exchange(ref _embossShader, null);
+		    GorgonPixelShader shader1 = Interlocked.Exchange(ref _sharpenShader, null);
+		    GorgonPixelShader shader2 = Interlocked.Exchange(ref _embossShader, null);
 
             buffer?.Dispose();
             shader1?.Dispose();

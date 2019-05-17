@@ -120,6 +120,14 @@ namespace Gorgon.Renderers
 
         #region Properties.
         /// <summary>
+        /// Property to return a texture to pass to shaders when no texture is desired.
+        /// </summary>
+        /// <remarks>
+        /// This will keep D3D from complaining about a missing texture.
+        /// </remarks>
+        protected GorgonTexture2DView EmptyTexture => Renderer.EmptyBlackTexture;
+
+        /// <summary>
         /// Property to return the list of recorded render targets.
         /// </summary>
         protected IReadOnlyList<GorgonRenderTargetView> RecordedRenderTargets => _targets;
@@ -156,12 +164,12 @@ namespace Gorgon.Renderers
         } = new Gorgon2DBatchStateBuilder();
 
         /// <summary>
-        /// Property to return the pixel shader builder used to create our pixel shader(s) for the effect.
+        /// Property to return the pixel shader state builder used to create our pixel shader(s) for the effect.
         /// </summary>
-        protected Gorgon2DShaderBuilder<GorgonPixelShader> PixelShaderBuilder
+        protected Gorgon2DShaderStateBuilder<GorgonPixelShader> PixelShaderBuilder
         {
             get;
-        } = new Gorgon2DShaderBuilder<GorgonPixelShader>();
+        } = new Gorgon2DShaderStateBuilder<GorgonPixelShader>();
 
         /// <summary>
         /// Property to return the macros to apply to the shader.
@@ -172,12 +180,12 @@ namespace Gorgon.Renderers
         } = new List<GorgonShaderMacro>();
 
         /// <summary>
-        /// Property to return the vertex shader builder used to create our vertex shader(s) for the effect.
+        /// Property to return the vertex shader state builder used to create our vertex shader(s) for the effect.
         /// </summary>
-        protected Gorgon2DShaderBuilder<GorgonVertexShader> VertexShaderBuilder
+        protected Gorgon2DShaderStateBuilder<GorgonVertexShader> VertexShaderBuilder
         {
             get;
-        } = new Gorgon2DShaderBuilder<GorgonVertexShader>();
+        } = new Gorgon2DShaderStateBuilder<GorgonVertexShader>();
 
         /// <summary>
         /// Property to return the renderer used to render the effect.
@@ -309,20 +317,6 @@ namespace Gorgon.Renderers
         protected virtual void OnAfterRender(GorgonRenderTargetView output)
         {
         }
-
-        /// <summary>
-        /// Function called prior to rendering a pass.
-        /// </summary>
-        /// <param name="passIndex">The index of the pass to render.</param>
-        /// <returns>A <see cref="PassContinuationState"/> to instruct the effect on how to proceed.</returns>
-        /// <remarks>
-        /// <para>
-        /// Applications can use this to set up per-pass states and other configuration settings prior to executing a single render pass.
-        /// </para>
-        /// </remarks>
-        /// <seealso cref="PassContinuationState"/>
-        [Obsolete("Get rid of this.")]
-        protected virtual PassContinuationState OnBeforeRenderPass(int passIndex) => PassContinuationState.Continue;
 
         /// <summary>
         /// Function called prior to rendering a pass.

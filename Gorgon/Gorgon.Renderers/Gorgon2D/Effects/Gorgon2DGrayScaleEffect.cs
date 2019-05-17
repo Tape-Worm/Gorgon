@@ -42,7 +42,8 @@ namespace Gorgon.Renderers
         // The batch state to use when rendering.
 	    private Gorgon2DBatchState _batchState;
         // The shader used to render grayscale images.
-	    private Gorgon2DShader<GorgonPixelShader> _grayScaleShader;
+        private GorgonPixelShader _grayScaleShader;
+	    private Gorgon2DShaderState<GorgonPixelShader> _grayScaleState;
         #endregion
 
 		#region Methods.
@@ -54,13 +55,14 @@ namespace Gorgon.Renderers
         /// </remarks>
 	    protected override void OnInitialize()
 	    {
-	        // Compile our blur shader.
-	        _grayScaleShader = PixelShaderBuilder
-	                           .Shader(CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderGrayScale"))
+            // Compile our blur shader.
+            _grayScaleShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderGrayScale");
+            _grayScaleState = PixelShaderBuilder
+	                           .Shader(_grayScaleShader)
 	                           .Build();
 
 	        _batchState = BatchStateBuilder
-	                      .PixelShader(_grayScaleShader)
+	                      .PixelShaderState(_grayScaleState)
 	                      .Build();
 	    }
 
@@ -75,7 +77,7 @@ namespace Gorgon.Renderers
 		        return;
 		    }
 
-		    Gorgon2DShader<GorgonPixelShader> shader = Interlocked.Exchange(ref _grayScaleShader, null);
+		    GorgonPixelShader shader = Interlocked.Exchange(ref _grayScaleShader, null);
 		    shader?.Dispose();
 		}
 

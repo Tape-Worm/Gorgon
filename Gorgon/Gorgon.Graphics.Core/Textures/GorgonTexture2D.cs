@@ -38,7 +38,7 @@ using Gorgon.Math;
 using SharpDX.DXGI;
 using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
-
+using System.Linq;
 
 namespace Gorgon.Graphics.Core
 {
@@ -2234,8 +2234,14 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         public override void Dispose()
 		{
+            // We cannot dispose of a texture that has a render target owned by a factory. We'll let the factory deal with the destruction of this object.
+            if ((_cachedRtvs != null) && (_cachedRtvs.Values.Any(item => item.OwnerFactory != null)))
+            {
+                return;
+            }
+
             // Destroy all cached views.
-		    Dictionary<TextureViewKey, GorgonTexture2DView> cachedSrvs = Interlocked.Exchange(ref _cachedSrvs, null);
+            Dictionary<TextureViewKey, GorgonTexture2DView> cachedSrvs = Interlocked.Exchange(ref _cachedSrvs, null);
 		    Dictionary<TextureViewKey, GorgonRenderTarget2DView> cachedRtvs = Interlocked.Exchange(ref _cachedRtvs, null);
 		    Dictionary<TextureViewKey, GorgonDepthStencil2DView> cachedDsvs = Interlocked.Exchange(ref _cachedDsvs, null);
 		    Dictionary<TextureViewKey, GorgonTexture2DReadWriteView> cachedReadWriteViews = Interlocked.Exchange(ref _cachedReadWriteViews, null);

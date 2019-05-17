@@ -126,7 +126,8 @@ namespace Gorgon.Renderers
 	    // Noise frequency.
 		private float _noiseFrequency = 42.0f;
         // The shader used for the film effect.
-	    private Gorgon2DShader<GorgonPixelShader> _filmShader;
+        private GorgonPixelShader _filmShader;
+	    private Gorgon2DShaderState<GorgonPixelShader> _filmState;
         // The batch state to use when rendering.
 	    private Gorgon2DBatchState _batchState;
         // The current time, in seconds.
@@ -441,20 +442,21 @@ namespace Gorgon.Renderers
             _scratchBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _scratchSettings, "Gorgon 2D Old Film Effect - Scratch settings");
 		    _sepiaBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _sepiaSettings, "Gorgon 2D Old Film Effect - Sepia settings");
 
-		    // Create pixel shader.
-		    _filmShader = PixelShaderBuilder
+            // Create pixel shader.
+            _filmShader = CompileShader<GorgonPixelShader>(Resources.FilmGrain, "GorgonPixelShaderFilmGrain");
+            _filmState = PixelShaderBuilder
 		                  .ConstantBuffer(_timingBuffer, 1)
 		                  .ConstantBuffer(_scratchBuffer, 2)
 		                  .ConstantBuffer(_sepiaBuffer, 3)
 		                  .ShaderResource(_randomTexture, 1)
 		                  .SamplerState(GorgonSamplerState.Wrapping, 1)
-		                  .Shader(CompileShader<GorgonPixelShader>(Resources.FilmGrain, "GorgonPixelShaderFilmGrain"))
+		                  .Shader(_filmShader)
 		                  .Build();
 
             // Build our state.
 		    _batchState = BatchStateBuilder
 		                  .BlendState(GorgonBlendState.NoBlending)
-		                  .PixelShader(_filmShader)
+		                  .PixelShaderState(_filmState)
 		                  .Build();
 		}
 
@@ -633,7 +635,7 @@ namespace Gorgon.Renderers
 		        return;
 		    }
 
-		    Gorgon2DShader<GorgonPixelShader> shader = Interlocked.Exchange(ref _filmShader, null);
+		    GorgonPixelShader shader = Interlocked.Exchange(ref _filmShader, null);
 		    GorgonTexture2DView texture = Interlocked.Exchange(ref _randomTexture, null);
 		    GorgonConstantBufferView buffer1 = Interlocked.Exchange(ref _timingBuffer, null);
 		    GorgonConstantBufferView buffer2 = Interlocked.Exchange(ref _scratchBuffer, null);

@@ -32,26 +32,20 @@ using Gorgon.Graphics.Core;
 namespace Gorgon.Renderers
 {
     /// <summary>
-    /// A shader for use with the <see cref="Gorgon2D"/> interface.
+    /// A shader state for use with a <see cref="Gorgon2DBatchState"/>.
     /// </summary>
     /// <typeparam name="T">The type of shader. Must inherit from <see cref="GorgonShader"/>.</typeparam>
     /// <remarks>
     /// <para>
-    /// This shader type is a wrapper for the shaders based on <see cref="GorgonShader"/>. It used for passing shader programs to the <see cref="Gorgon2DBatchState"/> when setting up a batch render via 
-    /// <see cref="Gorgon2D.Begin(Gorgon2DBatchState, IGorgon2DCamera)"/>.
-    /// </para>
-    /// <para>
-    /// It may seem redundant to have a secondary shader type, but this type allows an application to send shader related state and resource information along with the shader. Whereas shaders based on 
-    /// <see cref="GorgonShader"/> can only get their state information via a <see cref="GorgonPipelineState"/> and <see cref="GorgonDrawCall"/>. Neither of which are exposed to the end user via the 
-    /// 2D renderer interface.
+    /// This provides state information wrapped around shaders based on <see cref="GorgonShader"/>. These states are used for passing shader programs and related states to the 
+    /// <see cref="Gorgon2DBatchState"/> when setting up a batch render via <see cref="Gorgon2D.Begin(Gorgon2DBatchState, IGorgon2DCamera)"/>.
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonPipelineState"/>
     /// <seealso cref="GorgonDrawCall"/>
     /// <seealso cref="Gorgon2DBatchState"/>
     /// <seealso cref="GorgonShader"/>
-    public sealed class Gorgon2DShader<T>
-        : IDisposable
+    public sealed class Gorgon2DShaderState<T>
         where T : GorgonShader
     {
         #region Variables.
@@ -67,25 +61,22 @@ namespace Gorgon.Renderers
         /// The shader resource views, with read/write access.
         /// </summary>
         internal GorgonArray<GorgonShaderResourceView> RwSrvs = new GorgonArray<GorgonShaderResourceView>(16);
+		#endregion
 
-        // The basic shader.
-        private T _shader;
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to return the shader.
-        /// </summary>
-        public T Shader
+		#region Properties.
+		/// <summary>
+		/// Property to return the shader.
+		/// </summary>
+		public T Shader
         {
-            get => _shader;
-            internal set => _shader = value;
+            get;
+			internal set;
         }
 
-        /// <summary>
-        /// Property to return the samplers for the shader.
-        /// </summary>
-        public IGorgonReadOnlyArray<GorgonSamplerState> Samplers => RwSamplers;
+		/// <summary>
+		/// Property to return the samplers for the shader.
+		/// </summary>
+		public IGorgonReadOnlyArray<GorgonSamplerState> Samplers => RwSamplers;
 
         /// <summary>
         /// Property to return the constant buffers for the shader.
@@ -98,22 +89,11 @@ namespace Gorgon.Renderers
         public IGorgonReadOnlyArray<GorgonShaderResourceView> ShaderResources => RwSrvs;
         #endregion
 
-        #region Methods.
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            T shader = Interlocked.Exchange(ref _shader, null);
-            shader?.Dispose();
-        }
-        #endregion
-
         #region Constructor.
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonShaderResources"/> class.
         /// </summary>
-        internal Gorgon2DShader()
+        internal Gorgon2DShaderState()
         {
         }
         #endregion

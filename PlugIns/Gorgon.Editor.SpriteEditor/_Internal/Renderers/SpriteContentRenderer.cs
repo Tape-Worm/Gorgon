@@ -320,7 +320,7 @@ namespace Gorgon.Editor.SpriteEditor
                 Usage = ResourceUsage.Default
             });
 
-            ImageBufferTexture = _imageBuffer.Texture.GetShaderResourceView();
+            ImageBufferTexture = _imageBuffer.GetShaderResourceView();
 
             _imageBuffer.Clear(GorgonColor.BlackTransparent);
         }

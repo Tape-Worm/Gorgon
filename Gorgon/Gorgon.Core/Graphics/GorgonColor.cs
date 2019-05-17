@@ -53,11 +53,11 @@ namespace Gorgon.Graphics
 	public readonly struct GorgonColor
 		: IGorgonEquatableByRef<GorgonColor>, ISerializable
 	{
-		#region Variables.
-		/// <summary>
-		/// A completely transparent color.
-		/// </summary>
-		public static readonly GorgonColor Transparent = new GorgonColor(1, 1, 1, 0);
+        #region Variables.
+        /// <summary>
+        /// A completely transparent color.
+        /// </summary>
+        public static readonly GorgonColor Transparent = new GorgonColor(1, 1, 1, 0);
 	    /// <summary>
 	    /// A completely transparent color.
 	    /// </summary>
@@ -620,6 +620,45 @@ namespace Gorgon.Graphics
 		                  ((((uint)(Green * 255.0f)) & 0xff) << 8) | (((uint)(Red * 255.0f)) & 0xff);
 			return (int)result;
 		}
+
+        /// <summary>
+        /// Function to convert the sRGB version of the color to a linear color value.
+        /// </summary>
+        /// <returns>The linear color value.</returns>
+        [Pure]
+        public GorgonColor ToLinear()
+        {            
+            var linearRGBLo = new GorgonColor(Red / 12.92f, Green / 12.92f, Blue / 12.92f, Alpha);
+            var linearRGBHi = new GorgonColor(((Red + 0.055f) / 1.055f).Pow(2.4f), 
+                                            ((Green + 0.055f) / 1.055f).Pow(2.4f), 
+                                            ((Blue + 0.055f) / 1.055f).Pow(2.4f), 
+                                            Alpha);
+            return ((Red <= 0.04045f) && (Green <= 0.04045f) && (Blue <= 0.04045f)) ? linearRGBLo : linearRGBHi;
+        }
+
+        /// <summary>
+        /// Function to convert the linear version of the color to a sRGB color value.
+        /// </summary>
+        /// <returns>The linear color value.</returns>
+        [Pure]
+        public GorgonColor ToSRgb()
+        {
+            const float pow = 1.0f / 2.4f;
+
+            var sRGBLo = new GorgonColor(Red * 12.92f, Green * 12.92f, Blue * 12.92f, Alpha);
+            var sRGBHi = new GorgonColor((Red.Pow(pow) * 1.055f) - 0.055f,
+                                        (Green.Pow(pow) * 1.055f) -0.055f,
+                                        (Blue.Pow(pow) * 1.055f) - 0.055f,
+                                        Alpha);
+            return ((Red <= 0.0031308f) && (Green <= 0.0031308f) && (Blue <= 0.0031308f)) ? sRGBLo : sRGBHi;
+        }
+
+        /// <summary>
+        /// Function to apply a gamma value to this color to increase or decrease its intensity.
+        /// </summary>
+        /// <param name="gammaValue">The gamma value to apply.</param>
+        /// <returns>The adjusted color.</returns>
+        public GorgonColor ApplyGamma(float gammaValue) => new GorgonColor(Red * 2.0f.Pow(gammaValue), Green * 2.0f.Pow(gammaValue), Blue * 2.0f.Pow(gammaValue), Alpha);
 
         /// <summary>
         /// Function to convert this <see cref="GorgonColor"/> into a <see cref="Color"/>.
