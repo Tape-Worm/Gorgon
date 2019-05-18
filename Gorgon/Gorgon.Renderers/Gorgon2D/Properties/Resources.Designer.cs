@@ -108,6 +108,29 @@ namespace Gorgon.Renderers.Properties {
         // Comment stripped.
         // Comment stripped.
         // Comment stripped.
+        // Comment stripped.
+        internal static string ChromaticAberration {
+            get {
+                return ResourceManager.GetString("ChromaticAberration", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
         internal static string FilmGrain {
             get {
                 return ResourceManager.GetString("FilmGrain", resourceCulture);
@@ -165,6 +188,24 @@ namespace Gorgon.Renderers.Properties {
         internal static string GOR2D_EFFECT_BURN_DODGE_DESC {
             get {
                 return ResourceManager.GetString("GOR2D_EFFECT_BURN_DODGE_DESC", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        internal static string GOR2D_EFFECT_CHROMATIC_ABBERATION {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_CHROMATIC_ABBERATION", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        internal static string GOR2D_EFFECT_CHROMATIC_ABBERATION_DESC {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_CHROMATIC_ABBERATION_DESC", resourceCulture);
             }
         }
         

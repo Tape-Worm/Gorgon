@@ -66,6 +66,7 @@
     <Compile Include="Effects\Gorgon2D1BitEffect.cs" />
     <Compile Include="Effects\Gorgon2DBloomEffect.cs" />
     <Compile Include="Effects\Gorgon2DBurnDodgeEffect.cs" />
+    <Compile Include="Effects\Gorgon2DChromaticAberrationEffect.cs" />
     <Compile Include="Effects\Gorgon2DDeferredLightingEffect.cs" />
     <Compile Include="Effects\Gorgon2DDisplacementEffect.cs" />
     <Compile Include="Effects\Gorgon2DEffect.cs" />
@@ -132,6 +133,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\ChromaticAberration.hlsl" />
     <Content Include="Resources\HdrBloom.hlsl" />
     <None Include="Resources\black_2x2.png" />
     <None Include="..\..\NoLiteralBugFix.ruleset">

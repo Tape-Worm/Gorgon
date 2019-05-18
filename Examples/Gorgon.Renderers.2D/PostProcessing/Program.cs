@@ -85,6 +85,8 @@ namespace Gorgon.Examples
         private static Gorgon2DOldFilmEffect _oldFilmEffect;
         // The bloom effect.
         private static Gorgon2DBloomEffect _bloomEffect;
+        // The chromatic aberration effect.
+        private static Gorgon2DChromaticAberrationEffect _chromatic;
         // The buttons for the composition passes.
         private static Button[] _buttons;
         // The button currently being dragged.
@@ -326,13 +328,18 @@ namespace Gorgon.Examples
                 BlurAmount = 6.0f,
                 ColorIntensity = 1.15f
             };
-
+			// A chromatic aberration effect.
+            _chromatic = new Gorgon2DChromaticAberrationEffect(_renderer)
+            {
+				Intensity = 0.25f
+            };
 
             _compositor = new Gorgon2DCompositor(_renderer);
             // Set up each pass for the compositor.
             // As you can see, we're not strictly limited to using our 2D effect objects, we can define custom passes as well.
             // And, we can also define how existing effects are rendered for things like animation and such.
-            _compositor.EffectPass("1-Bit Color", _1BitEffect)
+            _compositor.EffectPass("Chromatic Aberration", _chromatic)
+					   .EffectPass("1-Bit Color", _1BitEffect)
                        .EffectPass("Blur", _blurEffect)
                        .EffectPass("Grayscale", _grayScaleEffect)
                        .EffectPass("Posterize", _posterizeEffect)
@@ -383,6 +390,7 @@ namespace Gorgon.Examples
                        .InitialClearColor(GorgonColor.White)
                        .FinalClearColor(GorgonColor.White);
 
+            _compositor.Passes["Chromatic Aberration"].Enabled = false;
             _compositor.Passes["Bloom"].Enabled = false;
             _compositor.Passes["Posterize"].Enabled = false;
             _compositor.Passes["Grayscale"].Enabled = false;

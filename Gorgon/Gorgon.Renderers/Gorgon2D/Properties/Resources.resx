@@ -124,6 +124,9 @@
   <data name="Black_2x2" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\black_2x2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="ChromaticAberration" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ChromaticAberration.hlsl;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
   <data name="FilmGrain" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\FilmGrain.hlsl;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
@@ -144,6 +147,12 @@
   </data>
   <data name="GOR2D_EFFECT_BURN_DODGE_DESC" xml:space="preserve">
     <value>Applies a burn or dodge processing to the image being rendered.</value>
+  </data>
+  <data name="GOR2D_EFFECT_CHROMATIC_ABBERATION" xml:space="preserve">
+    <value>Chromatic Aberration</value>
+  </data>
+  <data name="GOR2D_EFFECT_CHROMATIC_ABBERATION_DESC" xml:space="preserve">
+    <value>Provides a simulation of chromatic aberration around the edges of an image.</value>
   </data>
   <data name="GOR2D_EFFECT_DISPLACEMENT" xml:space="preserve">
     <value>Displacement Effect</value>
