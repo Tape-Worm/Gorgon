@@ -830,7 +830,7 @@ namespace Gorgon.Editor.ViewModels
         /// Function to persist the project metadata to the disk.
         /// </summary>
         /// <returns>A task for asynchronous operation.</returns>
-        public async Task SaveProjectMetadataAsync()
+        public Task SaveProjectMetadataAsync()
         {
             if (_saveEvent != null)
             {
@@ -841,7 +841,7 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 // Wait for our previous task to cancel out.
-                await _saveEvent;
+                //await _saveEvent;
             }
 
             // Rebuild the project item metadata list.
@@ -892,10 +892,18 @@ namespace Gorgon.Editor.ViewModels
 
             _cancelSource = new CancellationTokenSource();
 
-			// This is the slowest part of this operation, so we'll push it into the background.
-			_saveEvent = Task.Run(() => _projectManager.PersistMetadata(_projectData, _cancelSource.Token), _cancelSource.Token);
+			// Async disabled for now, objects are not staying linked.
 
-            await _saveEvent;
+            // This is the slowest part of this operation, so we'll push it into the background.
+            //_saveEvent = Task.Run(() => _projectManager.PersistMetadata(_projectData, _cancelSource.Token), _cancelSource.Token);
+
+            _projectManager.PersistMetadata(_projectData, _cancelSource.Token);
+
+            //await _saveEvent;
+
+            _saveEvent = Task.CompletedTask;
+
+            return _saveEvent;
         }
 
         /// <summary>

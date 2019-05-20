@@ -470,7 +470,11 @@ namespace Gorgon.Editor.SpriteEditor
                 _noImage = _ddsCodec.LoadFromStream(noImageStream);
             }
 
-            _bgPattern = GorgonTexture2DView.CreateTexture(GraphicsContext.Graphics, new GorgonTexture2DInfo($"Sprite_Editor_Bg_Preview_{Guid.NewGuid():N}"), EditorCommonResources.CheckerBoardPatternImage);
+            _bgPattern = GorgonTexture2DView.CreateTexture(GraphicsContext.Graphics, new GorgonTexture2DInfo($"Sprite_Editor_Bg_Preview_{Guid.NewGuid():N}")
+            {
+				Width = EditorCommonResources.CheckerBoardPatternImage.Width,
+                Height = EditorCommonResources.CheckerBoardPatternImage.Height
+            }, EditorCommonResources.CheckerBoardPatternImage);
 
             _rtv = GorgonRenderTarget2DView.CreateRenderTarget(GraphicsContext.Graphics, new GorgonTexture2DInfo($"SpriteEditor_Rtv_Preview_{Guid.NewGuid():N}")
             {

@@ -52,7 +52,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Stop rendering entirely.
         /// </summary>
-        Stop = 2
+        Stop = 2,
     }
 
     /// <summary>
@@ -225,8 +225,9 @@ namespace Gorgon.Renderers
         /// <param name="depthStencilStateOverride">An override for the current depth/stencil state.</param>
         /// <param name="rasterStateOverride">An override for the current raster state.</param>
         /// <param name="output">The target used as the output.</param>
+        /// <param name="camera">The active camera.</param>
         /// <returns><b>true</b> if state was overridden, <b>false</b> if not or <b>null</b> if rendering is canceled.</returns>
-        private bool SetupStates(GorgonBlendState blendStateOverride, GorgonDepthStencilState depthStencilStateOverride, GorgonRasterState rasterStateOverride, GorgonRenderTargetView output)
+        private bool SetupStates(GorgonBlendState blendStateOverride, GorgonDepthStencilState depthStencilStateOverride, GorgonRasterState rasterStateOverride, GorgonRenderTargetView output, IGorgon2DCamera camera)
         {
             if (!_isInitialized)
             {
@@ -243,7 +244,7 @@ namespace Gorgon.Renderers
                 outputSizeChanged = true;
             }
 
-            OnBeforeRender(output, outputSizeChanged);
+            OnBeforeRender(output, camera, outputSizeChanged);
 
             if ((blendStateOverride == _blendStateOverride) 
                 && (depthStencilStateOverride == _depthStencilStateOverride) 
@@ -294,6 +295,7 @@ namespace Gorgon.Renderers
         /// Function called prior to rendering.
         /// </summary>
         /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+        /// <param name="camera">The currently active camera.</param>
         /// <param name="sizeChanged"><b>true</b> if the output size changed since the last render, or <b>false</b> if it's the same.</param>
         /// <remarks>
         /// <para>
@@ -301,7 +303,7 @@ namespace Gorgon.Renderers
         /// targets (if applicable).
         /// </para>
         /// </remarks>
-        protected virtual void OnBeforeRender(GorgonRenderTargetView output, bool sizeChanged)
+        protected virtual void OnBeforeRender(GorgonRenderTargetView output, IGorgon2DCamera camera, bool sizeChanged)
         {
         }
 
@@ -323,6 +325,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="passIndex">The index of the pass to render.</param>
         /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+        /// <param name="camera">The currently active camera.</param>
         /// <returns>A <see cref="PassContinuationState"/> to instruct the effect on how to proceed.</returns>
         /// <remarks>
         /// <para>
@@ -331,7 +334,7 @@ namespace Gorgon.Renderers
         /// </remarks>
         /// <seealso cref="PassContinuationState"/>
 
-        protected virtual PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output) => PassContinuationState.Continue;
+        protected virtual PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, IGorgon2DCamera camera) => PassContinuationState.Continue;
 
         /// <summary>
         /// Function called after a pass is finished rendering.
@@ -429,14 +432,14 @@ namespace Gorgon.Renderers
             renderMethod.ValidateObject(nameof(renderMethod));
             output.ValidateObject(nameof(output));
 
-            bool stateChanged = SetupStates(blendStateOverride, depthStencilStateOverride, rasterStateOverride, output);
+            bool stateChanged = SetupStates(blendStateOverride, depthStencilStateOverride, rasterStateOverride, output, camera);
 
             for (int i = 0; i < PassCount; ++i)
             {
                 // Batch state should be cached on the implementation side, otherwise the GC could be impacted by a lot of dead objects per frame.
                 Gorgon2DBatchState batchState = OnGetBatchState(i, stateChanged);
 
-                switch (OnBeforeRenderPass(i, output))
+                switch (OnBeforeRenderPass(i, output, camera))
                 {
                     case PassContinuationState.Continue:
                         Renderer.Begin(batchState, camera);
@@ -448,6 +451,7 @@ namespace Gorgon.Renderers
                     case PassContinuationState.Skip:
                         continue;
                     default:
+                        OnAfterRender(output);
                         return;
                 }
             }

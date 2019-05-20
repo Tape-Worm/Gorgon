@@ -165,18 +165,19 @@ namespace Gorgon.Renderers
             rtv?.Dispose();
 	    }
 
-	    /// <summary>
-	    /// Function called prior to rendering.
-	    /// </summary>
-	    /// <param name="output">The final render target that will receive the rendering from the effect.</param>
-	    /// <param name="sizeChanged"><b>true</b> if the output size changed since the last render, or <b>false</b> if it's the same.</param>
-	    /// <remarks>
-	    /// <para>
-	    /// Applications can use this to set up common states and other configuration settings prior to executing the render passes. This is an ideal method to initialize and resize your internal render
-	    /// targets (if applicable).
-	    /// </para>
-	    /// </remarks>
-	    protected override void OnBeforeRender(GorgonRenderTargetView output, bool sizeChanged)
+        /// <summary>
+        /// Function called prior to rendering.
+        /// </summary>
+        /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+        /// <param name="camera">The currently active camera.</param>
+        /// <param name="sizeChanged"><b>true</b> if the output size changed since the last render, or <b>false</b> if it's the same.</param>
+        /// <remarks>
+        /// <para>
+        /// Applications can use this to set up common states and other configuration settings prior to executing the render passes. This is an ideal method to initialize and resize your internal render
+        /// targets (if applicable).
+        /// </para>
+        /// </remarks>
+        protected override void OnBeforeRender(GorgonRenderTargetView output, IGorgon2DCamera camera, bool sizeChanged)
 		{
 		    if ((_displacementView == null) || (sizeChanged))
 		    {
@@ -193,19 +194,20 @@ namespace Gorgon.Renderers
 			_isUpdated = false;
 		}
 
-	    /// <summary>
-	    /// Function called prior to rendering a pass.
-	    /// </summary>
-	    /// <param name="passIndex">The index of the pass to render.</param>
-	    /// <param name="output">The final render target that will receive the rendering from the effect.</param>
-	    /// <returns>A <see cref="PassContinuationState"/> to instruct the effect on how to proceed.</returns>
-	    /// <remarks>
-	    /// <para>
-	    /// Applications can use this to set up per-pass states and other configuration settings prior to executing a single render pass.
-	    /// </para>
-	    /// </remarks>
-	    /// <seealso cref="PassContinuationState"/>
-	    protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output)
+        /// <summary>
+        /// Function called prior to rendering a pass.
+        /// </summary>
+        /// <param name="passIndex">The index of the pass to render.</param>
+        /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+        /// <param name="camera">The currently active camera.</param>
+        /// <returns>A <see cref="PassContinuationState"/> to instruct the effect on how to proceed.</returns>
+        /// <remarks>
+        /// <para>
+        /// Applications can use this to set up per-pass states and other configuration settings prior to executing a single render pass.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="PassContinuationState"/>
+        protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, IGorgon2DCamera camera)
 	    {
 			if (_displacementTarget == null)
 			{

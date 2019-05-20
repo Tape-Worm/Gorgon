@@ -63,82 +63,6 @@ namespace Gorgon.IO
     public static class Gorgon2DEditorExtensions
     {
         /// <summary>
-        /// Function to load the metadata for the project.
-        /// </summary>
-        /// <param name="fileSystem">The file system we're working with.</param>
-        /// <returns>The project metadata interface.</returns>
-        private static IProjectMetadata GetMetadata(IGorgonFileSystem fileSystem)
-        {
-            FileInfo externalProjectData = null;
-            IGorgonVirtualFile jsonMetaDataFile = fileSystem.GetFile(CommonEditorConstants.EditorMetadataFileName);
-
-            // If we're loading directly from an editor file system folder, then check in the directory above the mount point.
-            // The editor places all file system data in a directory called "fs", and the metadata is located in the directory above that, so 
-            // we just need to find the mount point for the "fs" directory, and go up one.
-            if (jsonMetaDataFile == null)
-            {
-                foreach (GorgonFileSystemMountPoint mountPoint in fileSystem.MountPoints.Where(item => item.PhysicalPath.EndsWith(Path.DirectorySeparatorChar + "fs" + Path.DirectorySeparatorChar)))
-                {                    
-                    string dirName = Path.GetDirectoryName(mountPoint.PhysicalPath.Substring(0, mountPoint.PhysicalPath.Length - 1));
-                    if (File.Exists(Path.Combine(dirName, CommonEditorConstants.EditorMetadataFileName)))
-                    {
-                        externalProjectData = new FileInfo(Path.Combine(dirName, CommonEditorConstants.EditorMetadataFileName));
-                    }
-                }
-
-                if (externalProjectData == null)
-                {
-                    throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_NOT_EDITOR_PROJECT);
-                }
-            }
-
-            int expectedVersion = Convert.ToInt32(CommonEditorConstants.EditorCurrentProjectVersion.Replace("GOREDIT", string.Empty));
-            int fileVersion = int.MaxValue;
-
-            using (Stream stream = externalProjectData == null ? jsonMetaDataFile.OpenStream() : externalProjectData.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
-            using (var reader = new StreamReader(stream, Encoding.UTF8))
-            using (var jsonReader = new JsonTextReader(reader))
-            {
-                // First property must be the version #.
-                if ((!jsonReader.Read()) || (!jsonReader.Read()))
-                {
-                    throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_NOT_EDITOR_PROJECT);
-                }
-
-                if ((jsonReader.TokenType != JsonToken.PropertyName)
-                    || (!string.Equals(jsonReader.Value.ToString(), nameof(IProjectMetadata.Version), StringComparison.Ordinal)))
-                {
-                    throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_NOT_EDITOR_PROJECT);
-                }
-
-                if (!int.TryParse(jsonReader.ReadAsString().Replace("GOREDIT", string.Empty), NumberStyles.Integer, CultureInfo.InvariantCulture, out fileVersion))
-                {
-                    throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_NOT_EDITOR_PROJECT);
-                }        
-
-                // Ensure we have the correct version.
-                if (expectedVersion < fileVersion)
-                {
-                    throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_VERSION_MISMATCH, fileVersion, expectedVersion));
-                }
-            }
-
-            using (Stream stream = externalProjectData == null ? jsonMetaDataFile.OpenStream() : externalProjectData.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
-            using (var reader = new StreamReader(stream, Encoding.UTF8))
-            {
-                string jsonString = reader.ReadToEnd();
-
-                switch (fileVersion)
-                {
-                    case 30:
-                        return JsonConvert.DeserializeObject<EditorProjectMetadata30>(jsonString);
-                    default:
-                        throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_VERSION_MISMATCH, fileVersion, expectedVersion));
-                }
-            }
-        }
-
-        /// <summary>
         /// Function to retrieve the list of available codecs for loading sprite data.
         /// </summary>
         /// <param name="renderer">The 2D renderer being used to handle the sprite data.</param>
@@ -233,7 +157,7 @@ namespace Gorgon.IO
             }
 
             if ((!textureMetadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string contentType))
-                || (!string.Equals(contentType, "image", StringComparison.OrdinalIgnoreCase))
+                || (!string.Equals(contentType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase))
                 || (!textureMetadata.Attributes.TryGetValue("ImageCodec", out string imageCodecTypeName))
                 || (!codecs.TryGetValue(imageCodecTypeName, out IGorgonImageCodec codec)))
             {
@@ -335,7 +259,7 @@ namespace Gorgon.IO
                 throw new ArgumentEmptyException(nameof(path));
             }
 
-            IProjectMetadata metaData = GetMetadata(fileSystem);
+            IProjectMetadata metaData = fileSystem.GetMetadata();
 
             if (!metaData.ProjectItems.TryGetValue(path, out ProjectItemMetadata fileMetadata))
             {
@@ -346,7 +270,7 @@ namespace Gorgon.IO
             IReadOnlyDictionary<string, IGorgonImageCodec> supportedImageCodecs = GetImageCodecs(imageCodecs);
 
             if ((!fileMetadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string contentType))
-                || (!string.Equals(contentType, "sprite", StringComparison.OrdinalIgnoreCase)))
+                || (!string.Equals(contentType, CommonEditorContentTypes.SpriteType, StringComparison.OrdinalIgnoreCase)))
             {
                 throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_NOT_SPRITE, path));
             }

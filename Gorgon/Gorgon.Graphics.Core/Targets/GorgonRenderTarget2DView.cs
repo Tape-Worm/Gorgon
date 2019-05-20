@@ -513,13 +513,12 @@ namespace Gorgon.Graphics.Core
 
             var newInfo = new GorgonTexture2DInfo(info)
                           {
-                              // Can't see a reason to use anything other than default for rtvs
                               Usage = ResourceUsage.Default,
                               Binding = binding
                           };
 
             var texture = new GorgonTexture2D(graphics, newInfo);
-            GorgonRenderTarget2DView result = texture.GetRenderTargetView(arrayIndex: arrayIndex, arrayCount: arrayCount ?? texture.ArrayCount);
+            GorgonRenderTarget2DView result = texture.GetRenderTargetView(arrayIndex: arrayIndex, arrayCount: arrayCount ?? 1);
             result.OwnsResource = true;
 
             return result;

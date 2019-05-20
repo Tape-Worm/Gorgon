@@ -38,6 +38,7 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
+using Gorgon.Math;
 
 namespace Gorgon.Examples
 {
@@ -86,7 +87,7 @@ namespace Gorgon.Examples
         /// <param name="outputSize">The size of the output render target.</param>
         private static void DrawLitScene(int pass, int passCount, DX.Size2 outputSize)
         {
-            _logoSprite.Position = new DX.Vector2(outputSize.Width / 2.0f, outputSize.Height / 2.0f);
+            _logoSprite.Position = new DX.Vector2(outputSize.Width / 2.0f, outputSize.Height / 2.0f);            
             _renderer.DrawSprite(_logoSprite);
         }
 
@@ -247,24 +248,28 @@ namespace Gorgon.Examples
                                };
 
                 // Create the effect that will light up our sprite(s).
-                _lightEffect = new Gorgon2DDeferredLightingEffect(_renderer);
+                _lightEffect = new Gorgon2DDeferredLightingEffect(_renderer)
+                {
+                    FlipYNormal = true // Need this to be true because CrazyBump exported the normal map with Y inverted.
+                };
+
                 _lightEffect.Lights.Add(new Gorgon2DLight
                                         {
                                             Color = new GorgonColor(0.25f, 0.25f, 0.25f),
-                                            Attenuation = 1.0f,
+                                            Attenuation = 75,
                                             LightType = LightType.Point,
                                             SpecularEnabled = true,
-                                            SpecularPower = 5.0f,
-                                            Position = new DX.Vector3((_screen.Width / 2.0f) - 150.0f, (_screen.Height / 2.0f) - 150.0f, 100)
+                                            SpecularPower = 6.0f,
+                                            Position = new DX.Vector3((_screen.Width / 2.0f) - 150.0f, (_screen.Height / 2.0f) - 150.0f, -50)
                                         });
                 _lightEffect.Lights.Add(new Gorgon2DLight
                                         {
                                             Color = GorgonColor.White,
-                                            Attenuation = 0.025f,
+                                            Intensity = 0.075f,
                                             LightType = LightType.Directional,
                                             SpecularEnabled = false,
-                                            Position = new DX.Vector3(0, 0, 200),
-                                            LightDirection = new DX.Vector3(1, -1, 1)
+                                            Position = new DX.Vector3(0, 0, -200),
+                                            LightDirection = new DX.Vector3(0, 0, 1)
                                         });
 
                 GorgonExample.LoadResources(_graphics);

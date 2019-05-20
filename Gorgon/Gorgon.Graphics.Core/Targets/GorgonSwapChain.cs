@@ -629,7 +629,7 @@ namespace Gorgon.Graphics.Core
                           ? Graphics.DepthStencilView
                           : null;
 
-                if (dsv == null)
+                if ((dsv == null) && (Graphics.DepthStencilView.Texture != null))
                 {
                     // Log a warning here because we didn't unbind our depth/stencil.
                     Graphics.Log.Print($"Warning: Depth/Stencil view for resource '{Graphics.DepthStencilView.Texture.Name}' ({Graphics.DepthStencilView.Width}x{Graphics.DepthStencilView.Height}) does not match the size of the swap chain ({_info.Width}x{_info.Height}). Therefore, the depth/stencil view will be unbound from the pipeline.",
@@ -1176,8 +1176,25 @@ namespace Gorgon.Graphics.Core
                 
                 // Remove all items from the list so we don't hang on to them.
 			    Array.Clear(_previousViews, prevTargetRange.FirstIndex, prevTargetRange.TargetCount);
-			}
-			catch (DX.SharpDXException sdex)
+
+                if (!GorgonGraphics.IsDebugEnabled)
+                {
+                    return;
+                }
+
+                // Check for temporary render target memory leaks.
+                if (Graphics.TemporaryTargets.RentedCount > 4)
+                {
+                    Graphics.Log.Print($"[WARNING] There are still {Graphics.TemporaryTargets.RentedCount} render targets in flight at the end of this frame. This may indicate a memory leak. Please ensure to call the Return method to release the rented targets.", LoggingLevel.Simple);
+                }
+
+                if (Graphics.TemporaryTargets.RentedCount > 100)
+                {
+                    Graphics.Log.Print($"[ERROR] There are over 100 render targets in flight at the end of this frame. This is almost certainly a memory leak. The application has been stopped in order to keep from running out of memory.", LoggingLevel.Simple);
+                    throw new GorgonException(GorgonResult.OutOfMemory, Resources.GORGFX_ERR_RENTED_TARGETS_IN_FLIGHT);
+                }
+            }
+            catch (DX.SharpDXException sdex)
 			{
 				if ((sdex.ResultCode == ResultCode.DeviceReset)
 					|| (sdex.ResultCode == ResultCode.DeviceRemoved)

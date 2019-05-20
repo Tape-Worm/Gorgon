@@ -24,7 +24,9 @@
 // 
 #endregion
 
+using System;
 using Gorgon.Graphics;
+using Gorgon.Math;
 using DX = SharpDX;
 
 namespace Gorgon.Renderers
@@ -54,7 +56,8 @@ namespace Gorgon.Renderers
     /// </remarks>
     /// <seealso cref="Gorgon2DDeferredLightingEffect"/>
 	public class Gorgon2DLight
-	{
+		: IEquatable<Gorgon2DLight>
+    {
 		#region Properties.
         /// <summary>
         /// Property to set or return the type of light to render.
@@ -113,21 +116,65 @@ namespace Gorgon.Renderers
 		    set;
 		}
 
+        /// <summary>
+        /// Property to set or return how bright the light will be.
+        /// </summary>
+        public float Intensity
+        {
+            get;
+            set;
+        }
+
 		/// <summary>
 		/// Property to set or return the intensity/falloff for the light.
 		/// </summary>
+        /// <remarks>
+        /// This property does not apply if the <see cref="LightType"/> property is set to <see cref="LightType.Directional"/>.
+        /// </remarks>
 		public float Attenuation
 		{
 			get;
 		    set;
 		}
-		#endregion
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Gorgon2DLight"/> class.
-		/// </summary>
-		public Gorgon2DLight()
+        #region Methods.
+        /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        ///   <span class="keyword">
+        ///     <span class="languageSpecificText">
+        ///       <span class="cs">true</span>
+        ///       <span class="vb">True</span>
+        ///       <span class="cpp">true</span>
+        ///     </span>
+        ///   </span>
+        ///   <span class="nu">
+        ///     <span class="keyword">true</span> (<span class="keyword">True</span> in Visual Basic)</span> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <span class="keyword"><span class="languageSpecificText"><span class="cs">false</span><span class="vb">False</span><span class="cpp">false</span></span></span><span class="nu"><span class="keyword">false</span> (<span class="keyword">False</span> in Visual Basic)</span>.
+        /// </returns>
+        public bool Equals(Gorgon2DLight other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            return ((LightType == other.LightType)
+                && (Attenuation.EqualsEpsilon(other.Attenuation))
+                && (Intensity.EqualsEpsilon(other.Intensity))
+                && (SpecularPower.EqualsEpsilon(other.SpecularPower))
+                && (SpecularEnabled == other.SpecularEnabled)
+                && (Color.Equals(other.Color))
+                && (Position.Equals(other.Position))
+                && (LightDirection.Equals(other.LightDirection)));
+        }
+        #endregion
+
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Gorgon2DLight"/> class.
+        /// </summary>
+        public Gorgon2DLight()
 		{
 		    Color = GorgonColor.White;
 		    Position = DX.Vector3.Zero;
@@ -135,7 +182,8 @@ namespace Gorgon.Renderers
 		    Attenuation = 1.0f;
 		    SpecularEnabled = false;
 		    SpecularPower = 0.0f;
+            Intensity = 1.0f;
 		}
-		#endregion
-	}
+        #endregion
+    }
 }

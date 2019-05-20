@@ -2682,9 +2682,9 @@ namespace Gorgon.Graphics.Core
             }
 
             int rtvCount = renderTargets.Length.Min(_renderTargets.Length);
-
+            _isTargetUpdated = (false, depthStencil != DepthStencilView);
             for (int i = 0; i < rtvCount; ++i)
-            {
+            {				
                 if (_renderTargets[i] == renderTargets[i])
                 {
                     continue;

@@ -295,14 +295,20 @@ namespace Gorgon.Examples
         /// </summary>
         /// <param name="resolution">The client side resolution to use.</param>
         /// <param name="appTitle">The title for the application.</param>
+        /// <param name="formLoad">The method to execute when the form load event is triggered.</param>
         /// <returns>The newly created form.</returns>
-        public static FormMain Initialize(DX.Size2 resolution, string appTitle)
+        public static FormMain Initialize(DX.Size2 resolution, string appTitle, EventHandler formLoad = null)
         {
             _mainForm = new FormMain
                         {
                             Text = appTitle,
                             ClientSize = new Drawing.Size(resolution.Width, resolution.Height)
                         };
+
+            if (formLoad != null)
+            {
+                _mainForm.Load += formLoad;
+            }
 
             _mainForm.Show();
 

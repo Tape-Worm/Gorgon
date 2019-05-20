@@ -530,7 +530,7 @@ namespace Gorgon.Examples
 	                  };
 	        _renderer.Meshes.Add(_sphere);
 
-	        _icoSphere = new IcoSphere(_graphics, 5.0f, new RectangleF(0, 0, 1, 1), DX.Vector3.Zero, 3)
+	        _icoSphere = new IcoSphere(_graphics, 5.0f, new DX.RectangleF(0, 0, 1, 1), DX.Vector3.Zero, 3)
 	                     {
 	                         Rotation = new DX.Vector3(0, -45.0f, 0),
 	                         Position = new DX.Vector3(10, 2, 9.5f),

@@ -48,6 +48,8 @@ namespace Gorgon.Examples
         private float _attenuation;
         // The position of the light.
         private DX.Vector3 _position;
+		// The intensity of the light.
+        private float _intensity;
         #endregion
 
         #region Properties.
@@ -149,6 +151,24 @@ namespace Gorgon.Examples
                 IsDirty = true;
             }
         }
+
+		/// <summary>
+        /// Property to set or return the intensity of the light.
+        /// </summary>
+		public float Intensity
+        {
+            get => _intensity;
+            set
+            {
+                if (_intensity.EqualsEpsilon(value))
+                {
+                    return;
+                }
+
+                _intensity = value;
+                IsDirty = true;
+            }
+        }
         #endregion
 
         #region Methods.
@@ -173,7 +193,8 @@ namespace Gorgon.Examples
                     && (_specularPower.EqualsEpsilon(other._specularPower))
                     && (_lightColor.Equals(in other._lightColor))
                     && (_specularColor.Equals(in other._specularColor))
-                    && (_position.Equals(ref other._position)));
+                    && (_position.Equals(ref other._position))
+					&& (_intensity.EqualsEpsilon(other._intensity)));
         }
         #endregion
 
@@ -188,6 +209,7 @@ namespace Gorgon.Examples
 		    _lightColor = GorgonColor.White;
 		    _specularColor = GorgonColor.White;
 		    _specularPower = 512.0f;
+            _intensity = 1.0f;
 		}
         #endregion
     }

@@ -25,6 +25,7 @@
 #endregion
 
 using Gorgon.Collections;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using DX = SharpDX;
 
@@ -88,6 +89,15 @@ namespace Gorgon.Examples
             get;
             set;
         }
+
+		/// <summary>
+        /// Property to set or return the albedo color for the mesh.
+        /// </summary>
+        public GorgonColor Albedo
+        {
+            get;
+            set;
+        } = GorgonColor.White;
         #endregion
 
         #region Constructor/Finalizer.

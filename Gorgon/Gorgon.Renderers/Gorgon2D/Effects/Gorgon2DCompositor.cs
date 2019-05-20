@@ -692,7 +692,7 @@ namespace Gorgon.Renderers
             renderMethod.ValidateObject(nameof(renderMethod));
 
             // Create or update our resources
-            if (NeedsResourceUpdate(output))
+            if ((_final != output) || (NeedsResourceUpdate(output)))
             {
                 FreeResources();
                 CreateResources(output);

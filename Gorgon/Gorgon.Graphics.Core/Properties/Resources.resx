@@ -657,4 +657,11 @@ Current binding: [{0}]</value>
   <data name="GORGFX_ERR_BACKBUFFER_USAGE_INVALID" xml:space="preserve">
     <value>The back buffer texture usage must be either [Default] or [Staging].</value>
   </data>
+  <data name="GORGFX_ERR_RENTED_TARGETS_IN_FLIGHT" xml:space="preserve">
+    <value>There are over 100 temporary render targets still in flight at the end of this frame.
+
+This is most likely a memory leak.  Please ensure that each rented temporary target is returned prior to the end of the frame.
+
+This application will now exit.</value>
+  </data>
 </root>

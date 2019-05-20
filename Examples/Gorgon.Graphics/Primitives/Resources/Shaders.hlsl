@@ -22,6 +22,7 @@ cbuffer WorldMatrix : register(b1)
 
 cbuffer Material : register(b2)
 {
+	float4 albedo;
 	float2 uvOffset;
 	float specularPower;
 }

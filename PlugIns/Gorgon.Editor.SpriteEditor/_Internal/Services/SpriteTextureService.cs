@@ -129,7 +129,7 @@ namespace Gorgon.Editor.SpriteEditor
         public bool IsContentImage(IContentFile file) => ((file != null)
                 && (file.Metadata != null)
                 && (file.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string contentType))
-                && (string.Equals(contentType, "image", StringComparison.OrdinalIgnoreCase)));
+                && (string.Equals(contentType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)));
 
         /// <summary>Function to retrieve the image data for a sprite texture as a 32 bit RGBA pixel data.</summary>
         /// <param name="texture">The texture to extract the data from.</param>
@@ -201,7 +201,9 @@ namespace Gorgon.Editor.SpriteEditor
                 return (GorgonTexture2DView.CreateTexture(_graphics, new GorgonTexture2DInfo(file.Path)
                     {
                         Binding = TextureBinding.ShaderResource,
-                        Usage = ResourceUsage.Default
+                        Usage = ResourceUsage.Default,
+						Width = imageData.Width,
+						Height = imageData.Height
                     }, imageData), file);
             }
             finally
@@ -242,7 +244,9 @@ namespace Gorgon.Editor.SpriteEditor
                 return GorgonTexture2DView.CreateTexture(_graphics, new GorgonTexture2DInfo(file.Path)
                 {
                     Binding = TextureBinding.ShaderResource,
-                    Usage = ResourceUsage.Default
+                    Usage = ResourceUsage.Default,
+					Width = imageData.Width,
+					Height = imageData.Height
                 }, imageData);
             }
             finally

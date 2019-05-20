@@ -438,8 +438,6 @@ namespace Gorgon.Editor
 
             try
             {
-				
-
                 // Get our initial context.
                 SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
 
@@ -479,7 +477,7 @@ namespace Gorgon.Editor
 
                 // Create the project manager for the application
                 _projectManager = new ProjectManager(fileSystemProviders);
-                
+
                 _mainForm = new FormMain
                             {
                                 Location = new Point(_settings.WindowBounds.Value.X, _settings.WindowBounds.Value.Y),

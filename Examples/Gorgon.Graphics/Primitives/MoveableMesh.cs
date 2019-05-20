@@ -149,6 +149,14 @@ namespace Gorgon.Examples
         }
         #endregion
 
+        #region Methods.
+        /// <summary>
+        /// Function to retrieve the 2D axis aligned bounding box for the mesh.
+        /// </summary>
+        /// <returns>The rectangle that represents a 2D axis aligned bounding box.</returns>
+        public virtual DX.RectangleF GetAABB() => DX.RectangleF.Empty;
+        #endregion
+
         #region Constructor.
         /// <summary>
         /// Initializes a new instance of the <see cref="MoveableMesh" /> class.

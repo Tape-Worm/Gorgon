@@ -174,10 +174,11 @@ namespace Gorgon.Renderers
         /// <summary>Function called prior to rendering a pass.</summary>
         /// <param name="passIndex">The index of the pass to render.</param>
         /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+        /// <param name="camera">The currently active camera.</param>
         /// <returns>A <see cref="PassContinuationState"/> to instruct the effect on how to proceed.</returns>
         /// <remarks>Applications can use this to set up per-pass states and other configuration settings prior to executing a single render pass.</remarks>
         /// <seealso cref="PassContinuationState" />
-        protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output)
+        protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, IGorgon2DCamera camera)
         {
             DX.Vector2 intensity = FullScreen ? new DX.Vector2((Intensity * 16) * (1.0f / output.Width), (Intensity * 16) * (1.0f / output.Height))
                 : new DX.Vector2(Intensity * 0.05f, 0);

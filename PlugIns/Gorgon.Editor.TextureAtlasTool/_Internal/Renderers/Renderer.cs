@@ -163,7 +163,9 @@ namespace Gorgon.Editor.TextureAtlasTool
             _bgTexture = GorgonTexture2DView.CreateTexture(_graphics, new GorgonTexture2DInfo("Texture Atlas BG Texture")
             {
                 Binding = TextureBinding.ShaderResource,
-                Usage = ResourceUsage.Immutable
+                Usage = ResourceUsage.Immutable,
+				Width = EditorCommonResources.CheckerBoardPatternImage.Width,
+				Height = EditorCommonResources.CheckerBoardPatternImage.Height
             }, EditorCommonResources.CheckerBoardPatternImage);
 
             _camera = new Gorgon2DOrthoCamera(_renderer, new DX.Size2F(_swapChain.Width, _swapChain.Height))

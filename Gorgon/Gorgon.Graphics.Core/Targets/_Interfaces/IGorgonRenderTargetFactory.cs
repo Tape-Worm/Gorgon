@@ -43,11 +43,32 @@ namespace Gorgon.Graphics.Core
     /// does not exist, or is being used elsewhere, then a new target is created and added to the pool.
     /// </para>
     /// <para>
-    /// Targets retrieved by this factory must be returned when they are no longer needed, otherwise the purpose of the factory is defeated. 
+    /// Targets retrieved by this factory must be returned when they are no longer needed, otherwise the purpose of the factory is defeated. As such, best practice is to rent and return a render target during 
+    /// the lifetime of a single frame. If the <see cref="GorgonGraphics.IsDebugEnabled"/> property is set to <b>true</b>, then after a swap chain presentation, a warning will be sent to the application log 
+    /// complaining about render targets still rented out at the end of the frame.
     /// </para>
     /// </remarks>
     public interface IGorgonRenderTargetFactory
     {
+        #region Properties.
+        /// <summary>
+        /// Property to return the number of render targets that are currently in flight.
+        /// </summary>
+        int RentedCount
+        {
+            get;
+        }
+
+		/// <summary>
+        /// Property to return the total number of render targets available in the factory.
+        /// </summary>
+		int TotalCount
+        {
+            get;
+        }
+        #endregion
+
+        #region Methods.
         /// <summary>
         /// Function to rent a render target from the factory.
         /// </summary>
@@ -78,5 +99,6 @@ namespace Gorgon.Graphics.Core
         /// <param name="rtv">The render target to return.</param>
         /// <returns><b>true</b> if the target was returned successfully, <b>false</b> if not.</returns>
         bool Return(GorgonRenderTarget2DView rtv);
+        #endregion
     }
 }

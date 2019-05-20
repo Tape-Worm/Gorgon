@@ -433,6 +433,7 @@ namespace Gorgon.Renderers
         /// Function called prior to rendering.
         /// </summary>
         /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+        /// <param name="camera">The currently active camera.</param>
         /// <param name="sizeChanged"><b>true</b> if the output size changed since the last render, or <b>false</b> if it's the same.</param>
         /// <remarks>
         /// <para>
@@ -440,7 +441,7 @@ namespace Gorgon.Renderers
         /// targets (if applicable).
         /// </para>
         /// </remarks>
-        protected override void OnBeforeRender(GorgonRenderTargetView output, bool sizeChanged)
+        protected override void OnBeforeRender(GorgonRenderTargetView output, IGorgon2DCamera camera, bool sizeChanged)
         {
             if (_needKernelUpdate)
             {
@@ -461,6 +462,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="passIndex">The index of the pass to render.</param>
         /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+        /// <param name="camera">The currently active camera.</param>
         /// <returns>A <see cref="PassContinuationState"/> to instruct the effect on how to proceed.</returns>
         /// <remarks>
         /// <para>
@@ -468,7 +470,7 @@ namespace Gorgon.Renderers
         /// </para>
         /// </remarks>
         /// <seealso cref="PassContinuationState"/>
-        protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output)
+        protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, IGorgon2DCamera camera)
         {
             if (_blurRadius == 0)
             {
@@ -501,6 +503,11 @@ namespace Gorgon.Renderers
         /// </remarks>
         protected override void OnAfterRender(GorgonRenderTargetView output)
         {
+            if ((_hPass == null) || (_vPass == null))
+            {
+                return;
+            }
+
             if (Graphics.RenderTargets[0] != output)
             {
                 Graphics.SetRenderTarget(output, Graphics.DepthStencilView);

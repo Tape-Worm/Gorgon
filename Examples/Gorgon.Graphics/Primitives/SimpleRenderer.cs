@@ -98,9 +98,14 @@ namespace Gorgon.Examples
         /// <summary>
         /// Material data.
         /// </summary>
-        [StructLayout(LayoutKind.Sequential, Pack = 16, Size = 16)]
+        [StructLayout(LayoutKind.Sequential, Pack = 16, Size = 32)]
         private struct Material
         {
+			/// <summary>
+            /// The albdeo color.
+            /// </summary>
+            public DX.Vector4 Albedo;
+
             /// <summary>
             /// The offset of the texture.
             /// </summary>
@@ -432,6 +437,7 @@ namespace Gorgon.Examples
         {
             var materialData = new Material
                                     {
+										Albedo = material.Albedo,
                                         UVOffset = material.TextureOffset,
                                         SpecularPower = material.SpecularPower
                                     };

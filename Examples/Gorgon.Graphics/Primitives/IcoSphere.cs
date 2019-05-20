@@ -282,7 +282,7 @@ namespace Gorgon.Examples
 		/// <param name="radius">Radius of the sphere.</param>
 		/// <param name="tesselation">Tessellation factor for the sphere.</param>
 		/// <param name="textureCoordinates">Texture coordinate offset and scale.</param>
-		private void BuildSphere(GorgonGraphics graphics, float radius, int tesselation, RectangleF textureCoordinates)
+		private void BuildSphere(GorgonGraphics graphics, float radius, int tesselation, DX.RectangleF textureCoordinates)
 		{
 			GetBaseVertices();
 			List<int[]> indices = GetBaseIndices();
@@ -397,6 +397,16 @@ namespace Gorgon.Examples
 				                                    indexData);
 			}
 		}
+
+        /// <summary>Function to retrieve the 2D axis aligned bounding box for the mesh.</summary>
+        /// <returns>The rectangle that represents a 2D axis aligned bounding box.</returns>
+        public override DX.RectangleF GetAABB()
+        {
+            DX.RectangleF result = new DX.RectangleF(-Radius * 0.5f, -Radius * 0.5f, Radius, Radius);
+            result.Offset((DX.Vector2)Position);
+
+            return result;
+        }
         #endregion
 
         #region Constructor/Destructor.
@@ -408,7 +418,7 @@ namespace Gorgon.Examples
         /// <param name="textureCoordinates">The texture coordinates to apply to the sphere.</param>
         /// <param name="angle">The angle of rotation, in degrees.</param>
         /// <param name="subDivisions">The tessellation level for the sphere.</param>
-        public IcoSphere(GorgonGraphics graphics, float radius, RectangleF textureCoordinates, DX.Vector3 angle, int subDivisions = 2)
+        public IcoSphere(GorgonGraphics graphics, float radius, DX.RectangleF textureCoordinates, DX.Vector3 angle, int subDivisions = 2)
             : base(graphics)
 	    {
 		    Radius = radius;

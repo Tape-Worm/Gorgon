@@ -67,6 +67,18 @@ namespace Gorgon.Graphics.Core
         private readonly GorgonGraphics _graphics;
         #endregion
 
+        #region Properties.
+		/// <summary>
+        /// Property to return the number of render targets that are currently in flight.
+        /// </summary>
+        public int RentedCount => _rented.Count;
+
+        /// <summary>
+        /// Property to return the total number of render targets available in the factory.
+        /// </summary>
+        public int TotalCount => _rented.Count + _renderTargets.Count;
+        #endregion
+
         #region Methods.
         /// <summary>
         /// Function to rent a render target from the factory.

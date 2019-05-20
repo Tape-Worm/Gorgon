@@ -19,7 +19,7 @@ namespace Gorgon.Graphics.Core.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -839,6 +839,19 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_RENDERTARGET_NOT_DEFAULT {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_RENDERTARGET_NOT_DEFAULT", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        internal static string GORGFX_ERR_RENTED_TARGETS_IN_FLIGHT {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_RENTED_TARGETS_IN_FLIGHT", resourceCulture);
             }
         }
         

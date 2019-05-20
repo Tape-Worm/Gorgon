@@ -594,7 +594,9 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 BackgroundPattern = GorgonTexture2DView.CreateTexture(Graphics, new GorgonTexture2DInfo("SpriteEditor_Bg_Pattern")
                 {
-                    Usage = ResourceUsage.Immutable
+                    Usage = ResourceUsage.Immutable,
+					Width = EditorCommonResources.CheckerBoardPatternImage.Width,
+					Height = EditorCommonResources.CheckerBoardPatternImage.Height
                 }, EditorCommonResources.CheckerBoardPatternImage);                
             }
 

@@ -145,7 +145,7 @@ namespace Gorgon.Renderers
         // A builder used to create states for 2D batch rendering.
         private readonly Gorgon2DBatchStateBuilder _batchBuilder = new Gorgon2DBatchStateBuilder();
         // Information used to build render targets.
-        private GorgonTexture2DInfo _targetInfo;
+        private readonly GorgonTexture2DInfo _targetInfo;
         // The bloom intensity level.
         private float _intensity = 1;
         // The amount of blur to apply.
@@ -520,13 +520,14 @@ namespace Gorgon.Renderers
 
         /// <summary>Function called prior to rendering.</summary>
         /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+        /// <param name="camera">The currently active camera.</param>
         /// <param name="sizeChanged">
         ///   <b>true</b> if the output size changed since the last render, or <b>false</b> if it's the same.</param>
         /// <remarks>
         /// Applications can use this to set up common states and other configuration settings prior to executing the render passes. This is an ideal method to initialize and resize your internal render
         /// targets (if applicable).
         /// </remarks>
-        protected override void OnBeforeRender(GorgonRenderTargetView output, bool sizeChanged)
+        protected override void OnBeforeRender(GorgonRenderTargetView output, IGorgon2DCamera camera, bool sizeChanged)
         {
             // Allocate a render target that matches the size of our output.
             // We will render our data into this.
@@ -546,9 +547,10 @@ namespace Gorgon.Renderers
         /// <summary>Function called prior to rendering a pass.</summary>
         /// <param name="passIndex">The index of the pass to render.</param>
         /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+        /// <param name="camera">The currently active camera.</param>
         /// <returns>A <see cref="PassContinuationState"/> to instruct the effect on how to proceed.</returns>
         /// <remarks>Applications can use this to set up per-pass states and other configuration settings prior to executing a single render pass.</remarks>
-        protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output)
+        protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, IGorgon2DCamera camera)
         {
             if ((_blurAmount.EqualsEpsilon(0)) || (_intensity.EqualsEpsilon(0)))
             {
@@ -642,8 +644,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="renderer">The renderer used to render this effect.</param>
         public Gorgon2DBloomEffect(Gorgon2D renderer)
-            : base(renderer, Resources.GOR2D_EFFECT_BLOOM, Resources.GOR2D_EFFECT_BLOOM_DESC, 3)
-        {
+            : base(renderer, Resources.GOR2D_EFFECT_BLOOM, Resources.GOR2D_EFFECT_BLOOM_DESC, 3) =>
             // Set up common properties for our targets.
             _targetInfo = new GorgonTexture2DInfo
             {
@@ -651,7 +652,6 @@ namespace Gorgon.Renderers
                 Usage = ResourceUsage.Default,
                 Binding = TextureBinding.ShaderResource | TextureBinding.RenderTarget
             };
-        }
         #endregion
     }
 }

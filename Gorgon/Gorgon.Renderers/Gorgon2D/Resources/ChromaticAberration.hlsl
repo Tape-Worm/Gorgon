@@ -21,7 +21,7 @@ float4 ChromaticAberration(GorgonSpriteVertex vertex) : SV_Target
 	float2 start = vertex.uv.xy;
 	float2 centeredUv = 2.0f * start - 1.0f;	
 	// Find the ending of our sample range and scale it by vingetteing, this will make the effect less intense as it goes to the center of the render target.
-	float2 end = start - centeredUv * dot(centeredUv, centeredUv) * _settings.x; // Apply intensity.
+	float2 end = start - centeredUv * dot(centeredUv, centeredUv) * _settings.x; 
 	float2 range = end - start;
 	// Figure out how many samples we'll have depending on the size of the current render target.
 	int sampleCount = clamp(int(length(_settings.zw * (range * 0.5f))), 3, 16);	

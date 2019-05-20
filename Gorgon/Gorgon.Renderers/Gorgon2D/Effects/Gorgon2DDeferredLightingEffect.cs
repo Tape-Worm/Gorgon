@@ -45,7 +45,7 @@ namespace Gorgon.Renderers
     {
         #region Value Types.
         // Constant buffer data for a point light.
-        [StructLayout(LayoutKind.Sequential, Size = 64)]
+        [StructLayout(LayoutKind.Sequential, Size = 80)]
         private struct PointLightData
         {
             /// <summary>
@@ -61,17 +61,27 @@ namespace Gorgon.Renderers
             /// </summary>
             public DX.Vector4 LightDirection;
             /// <summary>
-            /// Various attributes (x = Specular enabled, y = Specular power, z = Attenuation/Intensity).
+            /// Various attributes (x = Specular power, y = Attenuation, z = Intensity, w = Specular enabled flag).
             /// </summary>
-            public DX.Vector2 LightAttribs;
-            /// <summary>
-            /// Specularity enabled.
-            /// </summary>
-            public int SpecularEnabled;
-            /// <summary>
-            /// The light type.
+            public DX.Vector4 LightAttribs;
+			/// <summary>
+            /// The type of light.
             /// </summary>
             public int LightType;
+        }
+
+        // Constant buffer data for a point light.
+        [StructLayout(LayoutKind.Sequential, Size = 32, Pack = 16)]
+        private struct GlobalEffectData
+        {
+            /// <summary>
+            /// Position for the light in screen space.
+            /// </summary>
+            public DX.Vector3 CameraPosition;
+            /// <summary>
+            /// The flag to indicate whether to flip the Y channel on the normal map.
+            /// </summary>
+            public int FlipYNormal;
         }
         #endregion
 
@@ -83,27 +93,28 @@ namespace Gorgon.Renderers
         /// <summary>
         /// The maximum number of lights that can be used at one time.
         /// </summary>
-        public const int MaxLightCount = int.MaxValue / 16;
+        public const int MaxLightCount = 1024;
         #endregion
 
         #region Variables.        
         // Our custom vertex shader so we can calculate the tangent and bi-tangent.
-        private GorgonVertexShader _vertexShader;
-        private Gorgon2DShaderState<GorgonVertexShader> _vertexShaderState;
+        private GorgonVertexShader _vertexDeferShader;
+        private Gorgon2DShaderState<GorgonVertexShader> _vertexDeferShaderState;
         // A pixel shader used to render the scene to multiple render targets.
-        private GorgonPixelShader _deferredShader;
-        private Gorgon2DShaderState<GorgonPixelShader> _deferredShaderState;
+        private GorgonPixelShader _pixelDeferShader;
+        private Gorgon2DShaderState<GorgonPixelShader> _pixelDeferShaderState;
+        // Our custom vertex shader for per pixel lighting.
+        private GorgonVertexShader _vertexLitShader;
+        private Gorgon2DShaderState<GorgonVertexShader> _vertexLitShaderState;
         // A pixel shader used to render lights.
-        private GorgonPixelShader _lightShader;
-        private Gorgon2DShaderState<GorgonPixelShader> _lightShaderState;
-        // The constant buffer that will send the screen size on update.
-        private GorgonConstantBufferView _screenSizeData;
-        // The buffer that will hold the lighting data.
+        private GorgonPixelShader _pixelLitShader;
+        private Gorgon2DShaderState<GorgonPixelShader> _pixelLitShaderState;
+        // The buffer that will hold the lighting data for an individual light.
         private GorgonConstantBufferView _lightData;
-        // The gbuffer data.
-        private GorgonTexture2D _gbuffer;
+        // The buffer that will hold the global effect data.
+        private GorgonConstantBufferView _globalData;
         // The render target for the gbuffer channels.
-        private GorgonRenderTargetView[] _gbufferTargets = new GorgonRenderTargetView[3];
+        private GorgonRenderTarget2DView[] _gbufferTargets = new GorgonRenderTarget2DView[3];
         // The texture used to draw the gbuffer data.
         private GorgonTexture2DView _gbufferTexture;
         // The batch render state for drawing to the deferred targets.
@@ -112,6 +123,8 @@ namespace Gorgon.Renderers
         private Gorgon2DBatchState _lightingState;
         // The color used to clear the normal map render target.
         private readonly GorgonColor _normalClearColor = new GorgonColor(127.0f / 255.0f, 127.0f / 255.0f, 254.0f / 255.0f, 1.0f);
+        // Render target information.
+        private readonly GorgonTexture2DInfo _rtvInfo;
         #endregion
 
         #region Properties.
@@ -121,7 +134,20 @@ namespace Gorgon.Renderers
         public IList<Gorgon2DLight> Lights
         {
             get;
-        } = new List<Gorgon2DLight>(MaxLightCount);
+        } = new List<Gorgon2DLight>(8);
+
+		/// <summary>
+        /// Property to set or return whether the Y (green channel) in the normal map should be flipped. 
+        /// </summary>
+        /// <remarks>
+        /// Some normal map generating packages export their maps using a flipped green channel, which can cause weird behavior with diffuse. If your lights do not look quite correct, try setting this 
+        /// value to <b>true</b>.
+        /// </remarks>
+		public bool FlipYNormal
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Methods.
@@ -130,72 +156,64 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="width">The width of the render targets.</param>
         /// <param name="height">The height of the render targets.</param>
-        private void BuildRenderTargets(int width, int height)
+        /// <param name="format">The format of the buffer.</param>
+        private void BuildRenderTargets(int width, int height, BufferFormat format)
         {
-            _gbufferTexture?.Dispose();
-
-            for (int i = 0; i < _gbufferTargets.Length; ++i)
-            {
-                _gbufferTargets[i]?.Dispose();
-            }
-
-            _gbuffer?.Dispose();
-
             // For the lighting effect, we use a deferred rendering technique where we have 3 render targets for diffuse, specularity, and normal mapping.
             // These targets are sub resources of the same texture resource (array indices).
-            _gbuffer = new GorgonTexture2D(Graphics, new GorgonTexture2DInfo("Gorgon 2D GBuffer")
-                                                     {
-                                                         Width = width,
-                                                         Height = height,
-                                                         Format = BufferFormat.R8G8B8A8_UNorm,
-                                                         Binding = TextureBinding.ShaderResource | TextureBinding.RenderTarget,
-                                                         ArrayCount = 3
-                                                     });
-            // Diffuse.
-            _gbufferTargets[0] = _gbuffer.GetRenderTargetView(arrayIndex: 0, arrayCount: 1);
-            // Specular.
-            _gbufferTargets[1] = _gbuffer.GetRenderTargetView(arrayIndex: 1, arrayCount: 1);
-            // Normals.
-            _gbufferTargets[2] = _gbuffer.GetRenderTargetView(arrayIndex: 2, arrayCount: 1);
 
-            _gbufferTexture = _gbuffer.GetShaderResourceView();
+            // Diffuse.
+            _rtvInfo.Width = width;
+            _rtvInfo.Height = height;
+            _rtvInfo.Format = format;
+            _rtvInfo.ArrayCount = 2;
+
+            _gbufferTargets[0] = Graphics.TemporaryTargets.Rent(_rtvInfo, "Gorgon 2D GBuffer - Diffuse/Specular", false);
+            _gbufferTargets[0].Clear(GorgonColor.Black);
+            // Specular.
+            _gbufferTargets[1] = _gbufferTargets[0].Texture.GetRenderTargetView(arrayIndex: 1, arrayCount: 1);
+
+            _rtvInfo.Format = BufferFormat.R8G8B8A8_UNorm;
+            _rtvInfo.ArrayCount = 1;
+
+            // Normals.
+            // We'll clear it before the pass, the default color is insufficient.
+            _gbufferTargets[2] = Graphics.TemporaryTargets.Rent(_rtvInfo, "Gorgon 2D Buffer - Normals", false); 
+            GorgonTexture2DView normalSrv = _gbufferTargets[2].GetShaderResourceView();
+
+            if (_pixelDeferShaderState.ShaderResources[1] != normalSrv)
+            {
+                _pixelLitShaderState = PixelShaderBuilder
+                                                .ResetTo(_pixelLitShaderState)
+                                                .ShaderResource(normalSrv, 1)                                                
+                                                .Build();
+
+                _lightingState = BatchStateBuilder
+                                                .ResetTo(_lightingState)
+                                                .PixelShaderState(_pixelLitShaderState)												
+                                                .Build();
+            }
+
+
+            _gbufferTexture = _gbufferTargets[0].Texture.GetShaderResourceView();
         }
 
         /// <summary>
         /// Function to update the light data in the lighting shader.
         /// </summary>
-        /// <param name="lightIndex">The index of the light to update.</param>
-        private void UpdateLight(int lightIndex)
+        /// <param name="light">The light to retrieve data from.</param>
+        private void UpdateLight(Gorgon2DLight light)
         {
-            Gorgon2DLight light = Lights[lightIndex];
-
-            if (light == null)
-            {
-                return;
-            }
-
             var lightData = new PointLightData
-                            {
-                                Position = new DX.Vector4(light.Position, 1.0f),
-                                Color = light.Color,
-                                LightDirection = new DX.Vector4(light.LightDirection, 0),
-                                LightAttribs = new DX.Vector2(light.SpecularPower, light.Attenuation),
-                                SpecularEnabled = light.SpecularEnabled ? 1 : 0,
-                                LightType = (int)light.LightType
-                            };
+            {
+                Position = new DX.Vector4(new DX.Vector3(light.Position.X, light.Position.Y, -light.Position.Z), 1.0f),
+                Color = light.Color,
+                LightDirection = new DX.Vector4(new DX.Vector3(light.LightDirection.X, light.LightDirection.Y, -light.LightDirection.Z), 0),
+                LightAttribs = new DX.Vector4(light.SpecularPower, light.Attenuation, light.Intensity, light.SpecularEnabled ? 1 : 0),
+                LightType = (int)light.LightType
+            };
 
             _lightData.Buffer.SetData(ref lightData);
-        }
-
-        /// <summary>
-        /// Function to send the gbuffer to the final output target and perform the lighting calculations.
-        /// </summary>
-        /// <param name="lightIndex">The index of the light to render.</param>
-        /// <param name="output">The output render target to render into.</param>
-        private void RenderToOutput(int lightIndex, GorgonRenderTargetView output)
-        {
-            UpdateLight(lightIndex);
-            BlitTexture(_gbufferTexture, new DX.Size2(output.Width, output.Height));
         }
 
         /// <summary>
@@ -209,15 +227,14 @@ namespace Gorgon.Renderers
                 return;
             }
 
-            GorgonVertexShader vertexShader = Interlocked.Exchange(ref _vertexShader, null);
-            GorgonPixelShader deferredShader = Interlocked.Exchange(ref _deferredShader, null);
-            GorgonPixelShader lightShader = Interlocked.Exchange(ref _lightShader, null);
-            GorgonConstantBufferView screenSizeData = Interlocked.Exchange(ref _screenSizeData, null);
+            GorgonVertexShader vertexShader = Interlocked.Exchange(ref _vertexDeferShader, null);
+            GorgonPixelShader deferredShader = Interlocked.Exchange(ref _pixelDeferShader, null);
+            GorgonPixelShader lightShader = Interlocked.Exchange(ref _pixelLitShader, null);
             GorgonConstantBufferView lightData = Interlocked.Exchange(ref _lightData, null);
-            GorgonTexture2D texture = Interlocked.Exchange(ref _gbuffer, null);
+            GorgonConstantBufferView globalData = Interlocked.Exchange(ref _globalData, null);
             GorgonRenderTargetView[] targets = Interlocked.Exchange(ref _gbufferTargets, null);
             GorgonTexture2DView textureView = Interlocked.Exchange(ref _gbufferTexture, null);
-            
+
             textureView?.Dispose();
 
             for (int i = 0; i < targets.Length; ++i)
@@ -225,9 +242,8 @@ namespace Gorgon.Renderers
                 targets[i]?.Dispose();
             }
 
-            texture?.Dispose();
+            globalData?.Dispose();
             lightData?.Dispose();
-            screenSizeData?.Dispose();
             lightShader?.Dispose();
             deferredShader?.Dispose();
             vertexShader?.Dispose();
@@ -244,25 +260,33 @@ namespace Gorgon.Renderers
             switch (passIndex)
             {
                 case 0:
+                    if ((statesChanged) || (_deferredState == null))
+                    {
+                        _deferredState = BatchStateBuilder
+											.PixelShaderState(_pixelDeferShaderState)
+                                            .VertexShaderState(_vertexDeferShaderState)															
+											.BlendState(GorgonBlendState.NoBlending)
+											.Build();
+                    }
+
                     return _deferredState;
                 default:
                     return _lightingState;
             }
         }
 
-        /// <summary>
-        /// Function called prior to rendering a pass.
-        /// </summary>
+        /// <summary>Function called prior to rendering a pass.</summary>
         /// <param name="passIndex">The index of the pass to render.</param>
         /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+        /// <param name="camera">The currently active camera.</param>
         /// <returns>A <see cref="PassContinuationState"/> to instruct the effect on how to proceed.</returns>
         /// <remarks>
-        /// <para>
+        ///   <para>
         /// Applications can use this to set up per-pass states and other configuration settings prior to executing a single render pass.
         /// </para>
         /// </remarks>
         /// <seealso cref="PassContinuationState"/>
-        protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output)
+        protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, IGorgon2DCamera camera)
         {
             Debug.Assert(passIndex >= 0, "Illegal pass index.");
 
@@ -275,23 +299,24 @@ namespace Gorgon.Renderers
             switch (passIndex)
             {
                 case 0:
-                    _gbufferTargets[0].Clear(GorgonColor.BlackTransparent);
-                    _gbufferTargets[1].Clear(GorgonColor.BlackTransparent);
+                    // Array 0 is cleared on rental.
+                    _gbufferTargets[1].Clear(GorgonColor.Black);
                     _gbufferTargets[2].Clear(_normalClearColor);
                     Graphics.SetRenderTargets(_gbufferTargets, Graphics.DepthStencilView);
                     return PassContinuationState.Continue;
                 case 1:
                     Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
                     return PassContinuationState.Continue;
-                default:
-                    return Lights[lightIndex ] != null ? PassContinuationState.Continue : PassContinuationState.Skip;
             }
+
+            return PassContinuationState.Stop;
         }
 
         /// <summary>
         /// Function called prior to rendering.
         /// </summary>
         /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+        /// <param name="camera">The currently active camera.</param>
         /// <param name="sizeChanged"><b>true</b> if the output size changed since the last render, or <b>false</b> if it's the same.</param>
         /// <remarks>
         /// <para>
@@ -299,18 +324,25 @@ namespace Gorgon.Renderers
         /// targets (if applicable).
         /// </para>
         /// </remarks>
-        protected override void OnBeforeRender(GorgonRenderTargetView output, bool sizeChanged)
+        protected override void OnBeforeRender(GorgonRenderTargetView output, IGorgon2DCamera camera, bool sizeChanged)
         {
-            if ((!sizeChanged) && (_gbuffer != null))
-            {
-                return;
-            }
-            
-            // We need to rebuild the render targets to match our output size.
-            BuildRenderTargets(output.Width, output.Height);
+            BuildRenderTargets(output.Width, output.Height, output.Format);
 
-            var screenSize = new DX.Vector4(output.Width, output.Height, 0, 0);
-            _screenSizeData.Buffer.SetData(ref screenSize);
+			var globals = new GlobalEffectData
+            {
+                FlipYNormal = FlipYNormal ? 1 : 0,
+                CameraPosition = Renderer.CurrentCamera == null ? DX.Vector3.Zero : camera.Position
+            };
+            _globalData.Buffer.SetData(ref globals);
+        }
+
+        /// <summary>Function called after rendering is complete.</summary>
+        /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+        /// <remarks>Applications can use this to clean up and/or restore any states when rendering is finished. This is an ideal method to copy any rendering imagery to the final output render target.</remarks>
+        protected override void OnAfterRender(GorgonRenderTargetView output)
+        {
+            Graphics.TemporaryTargets.Return(_gbufferTargets[0]);
+            Graphics.TemporaryTargets.Return(_gbufferTargets[2]);
         }
 
         /// <summary>
@@ -329,12 +361,43 @@ namespace Gorgon.Renderers
             if (passIndex == 0)
             {
                 renderMethod(passIndex, PassCount, new DX.Size2(output.Width, output.Height));
+                return;
             }
-            else
+
+            // We'll do our own drawing so we can ensure we have screen space.
+            IGorgon2DCamera currentCamera = Renderer.CurrentCamera;
+            Renderer.End();
+
+            var destRect = new DX.RectangleF(0, 0, output.Width, output.Height);
+            float minZ = 0;
+
+            // Calculate our full screen blit area in camera projection if we're using another camera.
+            if (currentCamera != null)
             {
-                // The actual lighting will be done in this method.
-                RenderToOutput(passIndex - 1, output);
+                minZ = currentCamera.MinimumDepth;
+                destRect = currentCamera.ViewableRegion;
             }
+			            
+			for (int i = 0; i < Lights.Count; ++i)
+            {
+                Gorgon2DLight light = Lights[i];
+
+                if (light == null)
+                {
+                    continue;
+                }
+								
+                UpdateLight(light);
+
+                Renderer.Begin(_lightingState, currentCamera);
+                Renderer.DrawFilledRectangle(destRect,
+                                            GorgonColor.White,
+                                            _gbufferTexture,
+                                            new DX.RectangleF(0, 0, 1, 1),
+                                            textureSampler: GorgonSamplerState.Default,
+                                            depth: minZ);                
+                Renderer.End();
+            }            
         }
 
         /// <summary>
@@ -343,45 +406,48 @@ namespace Gorgon.Renderers
         /// <remarks>Applications must implement this method to ensure that any required resources are created, and configured for the effect.</remarks>
         protected override void OnInitialize()
         {
-            _screenSizeData = GorgonConstantBufferView.CreateConstantBuffer(Graphics,
-                                                                            new GorgonConstantBufferInfo("Deferred Lighting Screen Size Buffer")
-                                                                            {
-                                                                                SizeInBytes = DX.Vector4.SizeInBytes
-                                                                            });
+            var globalData = new GlobalEffectData
+            {
+				CameraPosition = DX.Vector3.Zero,
+				FlipYNormal = FlipYNormal ? 1 : 0
+            };
+
+            _globalData = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref globalData, "Global deferred light effect data.", ResourceUsage.Default);
+
             _lightData = GorgonConstantBufferView.CreateConstantBuffer(Graphics,
                                                                        new GorgonConstantBufferInfo("Deferred Lighting Light Data Buffer")
                                                                        {
-                                                                           SizeInBytes = Unsafe.SizeOf<PointLightData>()
+                                                                           SizeInBytes = Unsafe.SizeOf<PointLightData>(),
+																		   Usage = ResourceUsage.Dynamic
                                                                        });
 
-            _vertexShader = CompileShader<GorgonVertexShader>(Resources.Lighting, "GorgonVertexLightingShader");
-            _vertexShaderState = VertexShaderBuilder.Shader(_vertexShader)
+            Macros.Add(new GorgonShaderMacro("DEFERRED_LIGHTING"));
+            _vertexDeferShader = CompileShader<GorgonVertexShader>(Resources.Lighting, "GorgonVertexLightingShader");
+            _vertexDeferShaderState = VertexShaderBuilder.Shader(_vertexDeferShader)
                                                .Build();
 
-            Macros.Add(new GorgonShaderMacro("DEFERRED_LIGHTING"));
-            _deferredShader = CompileShader<GorgonPixelShader>(Resources.Lighting, "GorgonPixelShaderDeferred");
-            _deferredShaderState = PixelShaderBuilder.Shader(_deferredShader)
+            _pixelDeferShader = CompileShader<GorgonPixelShader>(Resources.Lighting, "GorgonPixelShaderDeferred");
+            _pixelDeferShaderState = PixelShaderBuilder.Shader(_pixelDeferShader)
                                                 .Build();
 
             Macros.Clear();
             Macros.Add(new GorgonShaderMacro("LIGHTS"));
-            _lightShader = CompileShader<GorgonPixelShader>(Resources.Lighting, "GorgonPixelShaderLighting");
-            _lightShaderState = PixelShaderBuilder.Shader(_lightShader)
-                                             .ConstantBuffer(_screenSizeData, 1)
-                                             .ConstantBuffer(_lightData, 2)
+            _vertexLitShader = CompileShader<GorgonVertexShader>(Resources.Lighting, "GorgonVertexLitShader");
+            _vertexLitShaderState = VertexShaderBuilder.Shader(_vertexLitShader)
+                                               .Build();
+
+            _pixelLitShader = CompileShader<GorgonPixelShader>(Resources.Lighting, "GorgonPixelShaderLighting");
+            _pixelLitShaderState = PixelShaderBuilder.Shader(_pixelLitShader)
+                                             .ConstantBuffer(_lightData, 1)
+											 .ConstantBuffer(_globalData, 2)
+                                             .SamplerState(GorgonSamplerState.Default, 1)
                                              .Build();
 
             // Rebuild our states for the new pixel shaders.
-            _lightingState = BatchStateBuilder.PixelShaderState(_lightShaderState)
+            _lightingState = BatchStateBuilder.PixelShaderState(_pixelLitShaderState)
+                                              .VertexShaderState(_vertexLitShaderState)
                                                 .BlendState(GorgonBlendState.Additive)
                                                 .Build();
-
-            var blendBuilder = new GorgonBlendStateBuilder();
-
-            _deferredState = BatchStateBuilder.PixelShaderState(_deferredShaderState)
-                                              .VertexShaderState(_vertexShaderState)
-                                              .BlendState(blendBuilder.DestinationBlend(alpha: Blend.InverseSourceAlpha))
-                                              .Build();
         }
         #endregion
 
@@ -392,10 +458,10 @@ namespace Gorgon.Renderers
         /// <param name="renderer">The renderer used to draw with the effect.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
         public Gorgon2DDeferredLightingEffect(Gorgon2D renderer)
-            : base(renderer, "Deferred Lighting", "Renders a scene with deferred per-pixel lighting.", MaxLightCount + 1)
-        {
-
-        }
+            : base(renderer, "Deferred Lighting", "Renders a scene with deferred per-pixel lighting.", 2) => _rtvInfo = new GorgonTexture2DInfo()
+            {
+                Binding = TextureBinding.ShaderResource | TextureBinding.RenderTarget
+            };
         #endregion
     }
 }
