@@ -136,11 +136,11 @@ steps:
     CleanTargetFolder: true
     TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/Tools'
 
-- task: PowerShell@2
-  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/Examples'
-  inputs:
-    targetType: filePath
-    filePath: '.\Deploy_Examples.ps1'
+#- task: PowerShell@2
+#  displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/Examples'
+#  inputs:
+#    targetType: filePath
+#    filePath: '.\Deploy_Examples.ps1'
 
 - task: PublishBuildArtifacts@1
   inputs:
