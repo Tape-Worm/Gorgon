@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="564985CC-F18F-4711-A2BC-0796D266E54D" revisionNumber="1">
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <introduction>
+      <para>This will cover the how to get your application set up to use Gorgon.</para>
+    </introduction>
+    
+    <sections>
+      <section>
+        <title>Prerequisites</title>
+        <content>
+          <para>To use Gorgon in your project you will need the following. </para>
+          <list class="bullet">
+            <listItem>Visual Studio 2017 15.8 or better.</listItem>
+            <listItem>.NET 4.7.2 or better.</listItem>
+            <listItem>Ideally, C# (language specification v7.3 or better). However, it should work with Visual Basic.NET as well as any other .NET enabled language as long as .NET 4.7.2 is supported.</listItem>
+            <listItem>Direct 3D 11.4 or better (for graphics functionality).</listItem>
+            <listItem>Windows 10 v1703 Build 15603 (Creators Update) or better.</listItem>
+          </list>	      
+        </content>
+      </section>
+      <section>
+        <title>Creating the project.</title>
+        <content>      		
+          <para>Create a new project by selecting Visual C# > Windows Desktop > Windows Forms App (.NET Framework).</para>
+          <mediaLink>
+            <image xlink:href="WinFormsProj"/>
+          </mediaLink>
+          <para>Ensure that the .NET Framework, version 4.7.2 (or better) is selected and click OK.</para>
+			  </content>          
+      </section>  
+      <section>
+        <title>Project setup.</title>
+        <content>
+          <para>Unlike previous versions of Gorgon, this version takes a little more elbow grease to get up correctly. This is due to the more complex nature of this version and the upgrades to .NET overall in recent years.</para>
+          <para>This first step is to ensure that you application is set up for the correct version of C# (7.3). To do this:</para>
+          <list class="ordered">
+            <listItem>Right click on your project, and select <codeInline>Properties</codeInline>.</listItem>
+            <listItem>Select the <codeInline>Build</codeInline> tab.</listItem>
+            <listItem>Change the <codeInline>Configuration:</codeInline> dropdown to <codeInline>All configurations</codeInline>.</listItem>
+            <listItem><phrase>(Optional, but recommended)</phrase> Uncheck <codeInline>Prefer 32 bit...</codeInline> (it's SO stupid that's the default).</listItem>
+            <listItem>Click <codeInline>Advanced...</codeInline></listItem>              
+            <listItem>On the <codeInline>Language Version:</codeInline> drop down, select <codeInline>C# latest minor version (latest)</codeInline> and click OK.</listItem>
+          </list>
+          <mediaLink>
+            <image xlink:href="ProjProps"/>
+          </mediaLink>
+          <para>Next, an application manifest should be created for the project. This is used to define which version of Windows we're building for, and will enable some functionality in .NET (specifically DPI aware functionality).</para>
+          <list class="ordered">
+            <listItem>Right click on the project and select <codeInline>Add</codeInline> and then <codeInline>New Item...</codeInline></listItem>
+            <listItem>Search for the manifest template type and select it.</listItem>
+            <listItem>When the XML document for the manifest appears, uncomment the <literal>&lt;supportedOS Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}" /&gt;</literal> item.</listItem>
+            <listItem>Save the file.</listItem>
+            <listItem>Go back to the project properties.</listItem>
+            <listItem>Select the <codeInline>Application</codeInline> tab.</listItem>
+            <listItem>Change the <codeInline>Manifest:</codeInline> drop down to <codeInline>app.manifest</codeInline> (if it is not there, then you will need to go back to step 1).</listItem>
+          </list>
+          <mediaLink>
+            <image xlink:href="Manifest"/>
+          </mediaLink>
+        </content>
+      </section>
+      <section>
+        <title>Nuget and other project references.</title>
+        <content>
+          <para>Now that the project is configured we need to add nuget packages for dependency resolution. To do this, right click on the project and select <codeInline>Manage NuGet Packages...</codeInline></para>
+          <para>Once the NuGet tab appears, ensure that <codeInline>Browse</codeInline> is selected and search for <localUri>SharpDX</localUri>.</para>
+          <para>Select the <localUri>SharpDX</localUri> and <localUri>SharpDX.Mathematics</localUri> items. These assemblies allow us to access useful utility functionality and types. The SharpDX API gives us types like rectangles, size, point, etc... and the math library allows the use of types like vectors, matrices, quaternions, etc... Gorgon makes heavy use of these types, especially for the graphics operations.</para>
+          <alert class="important">
+            <para>Only use version <application>4.2.0</application> of SharpDX.  Gorgon has not been tested with any other version.</para>
+          </alert>
+          <alert class="important">
+            <para>As of this writing, SharpDX is no longer being worked on, or maintained by its creator. This means that it is possible that the NuGet packages may disappear in the future. If this is the case, check the <externalLink><linkText>Gorgon</linkText><linkUri>https://tape-worm.net/</linkUri></externalLink> website for more information.</para>
+          </alert>
+          <mediaLink>
+            <image xlink:href="SharpDX1"/>
+          </mediaLink>
+          <mediaLink>
+            <image xlink:href="SharpDX2"/>
+          </mediaLink>
+        </content>
+        <sections>
+          <section>
+            <title>Gorgon references.</title>
+            <content>
+              <para>Finally, we need to add references to the Gorgon assemblies. To do so, right click on the <codeInline>References</codeInline> and select <codeInline>Add Reference...</codeInline></para>
+              <para>When the references window appears, click on the <codeInline>Browse</codeInline> button and locate the Gorgon assemblies that you unpacked after downloading from <externalLink><linkText>Github.</linkText><linkUri>https://github.com/Tape-Worm/Gorgon/releases</linkUri></externalLink></para>
+              <para>To determine which assemblies you should use, go to this <link xlink:href="6DFFD6AF-951B-44FC-B9D0-A222D7CBF359">section</link>.</para>
+            </content>
+          </section>
+        </sections>
+      </section>
+    </sections>
+    <relatedTopics>
+      <link topicType_id="1FE70836-AA7D-4515-B54B-E10C4B516E50" xlink:href="6DFFD6AF-951B-44FC-B9D0-A222D7CBF359" />            
+    </relatedTopics>
+  </developerConceptualDocument>
+</topic>

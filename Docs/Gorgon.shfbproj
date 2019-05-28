@@ -118,14 +118,17 @@ The types in here are inherently dangerous to use because they offer little in t
           </ignoreIfUnresolved>
         </configuration>
       </PlugInConfig>
-<PlugInConfig id="Member ID Fix-Ups" enabled="True"><configuration>
-  <expressions>
-    <expression matchExpression="Equals(`0@" replacementValue="Equals(`0@|System.Runtime.InteropServices.InAttribute" matchAsRegEx="false" />
-    <expression matchExpression="SharpDX.Rectangle@" replacementValue="SharpDX.Rectangle@|System.Runtime.InteropServices.InAttribute" matchAsRegEx="false" />
-    <expression matchExpression="System.Nullable{SharpDX.Rectangle}@" replacementValue="System.Nullable{SharpDX.Rectangle}@|System.Runtime.InteropServices.InAttribute" matchAsRegEx="false" />
-    <expression matchExpression="Gorgon.Renderers.GorgonTriangleVertex@" replacementValue="Gorgon.Renderers.GorgonTriangleVertex@|System.Runtime.InteropServices.InAttribute" matchAsRegEx="false" />
-  </expressions>
-</configuration></PlugInConfig></PlugInConfigurations>
+      <PlugInConfig id="Member ID Fix-Ups" enabled="True">
+        <configuration>
+          <expressions>
+            <expression matchExpression="Equals(`0@" replacementValue="Equals(`0@|System.Runtime.InteropServices.InAttribute" matchAsRegEx="false" />
+            <expression matchExpression="SharpDX.Rectangle@" replacementValue="SharpDX.Rectangle@|System.Runtime.InteropServices.InAttribute" matchAsRegEx="false" />
+            <expression matchExpression="System.Nullable{SharpDX.Rectangle}@" replacementValue="System.Nullable{SharpDX.Rectangle}@|System.Runtime.InteropServices.InAttribute" matchAsRegEx="false" />
+            <expression matchExpression="Gorgon.Renderers.GorgonTriangleVertex@" replacementValue="Gorgon.Renderers.GorgonTriangleVertex@|System.Runtime.InteropServices.InAttribute" matchAsRegEx="false" />
+          </expressions>
+        </configuration>
+      </PlugInConfig>
+    </PlugInConfigurations>
     <BuildAssemblerVerbosity>OnlyWarningsAndErrors</BuildAssemblerVerbosity>
     <HelpFileFormat>Website</HelpFileFormat>
     <IndentHtml>False</IndentHtml>
@@ -190,6 +193,11 @@ The types in here are inherently dangerous to use because they offer little in t
     <None Include="Content\Welcome.aml" />
     <None Include="Content\MIT.aml" />
     <None Include="Content\ChunkFileFormat.aml" />
+    <None Include="Content\GettingStarted.aml" />
+    <None Include="Content\WhichAssemblies.aml" />
+    <None Include="Content\FirstProgram.aml" />
+    <None Include="Content\SecondProgram.aml" />
+    <None Include="Content\FinalProgram.aml" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="SharpDX">
@@ -199,6 +207,40 @@ The types in here are inherently dangerous to use because they offer little in t
       <HintPath>..\Gorgon\Gorgon.Core\bin\Debug\SharpDX.Mathematics.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Content\WinFormsProj.png">
+      <ImageId>WinFormsProj</ImageId>
+      <AlternateText>Windows Forms Project</AlternateText>
+    </Image>
+    <Image Include="Content\ProjProps.png">
+      <ImageId>ProjProps</ImageId>
+      <AlternateText>Project Properties Step 1</AlternateText>
+    </Image>
+    <Image Include="Content\Manifest.png">
+      <ImageId>Manifest</ImageId>
+      <AlternateText>Manifest</AlternateText>
+    </Image>
+    <Image Include="Content\SharpDX1.png">
+      <ImageId>SharpDX1</ImageId>
+      <AlternateText>SharpDX NuGet package</AlternateText>
+    </Image>
+    <Image Include="Content\SharpDX2.png">
+      <ImageId>SharpDX2</ImageId>
+      <AlternateText>SharpDX Mathematics NuGet package</AlternateText>
+    </Image>
+    <Image Include="Content\ExampleSprite.png">
+      <ImageId>ExampleSprite</ImageId>
+      <AlternateText>Example Sprite</AlternateText>
+    </Image>
+    <Image Include="Content\ExampleSwapChain.png">
+      <ImageId>ExampleSwapChain</ImageId>
+      <AlternateText>Example Swap Chain</AlternateText>
+    </Image>
+    <Image Include="Content\SpriteSheet.png">
+      <ImageId>SpriteSheet</ImageId>
+      <AlternateText>Sprite Sheet</AlternateText>
+    </Image>
   </ItemGroup>
   <!-- Import the SHFB build targets -->
   <Import Project="$(SHFBROOT)\SandcastleHelpFileBuilder.targets" />

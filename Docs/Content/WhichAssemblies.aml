@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="6DFFD6AF-951B-44FC-B9D0-A222D7CBF359" revisionNumber="1">
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <introduction>
+        <para>Which Gorgon assemblies you require will depend on what you intend to do. But, as a basic rule, you <ui>ALWAYS</ui> need to add a reference to <codeInline>Gorgon.Core.dll</codeInline>. This assembly is required by all other assemblies.</para>        
+    </introduction>
+    
+    <sections>
+      <section>      
+        <title>Gorgon Assemblies</title>      
+        <content>
+          <para>The following table will indicate the intended usage for each library:</para>
+          <table>
+            <tableHeader>
+              <row>
+                <entry><para>Assembly name</para></entry>
+                <entry><para>Purpose</para></entry>
+                <entry><para>Requires</para></entry>
+              </row>
+            </tableHeader>
+            <row>
+              <entry><para>Gorgon.Core.dll</para></entry>
+              <entry><para>Core library, must install.</para></entry>
+              <entry><para>N/A</para></entry>                
+            </row>
+            <row>
+              <entry><para>Gorgon.Windows.dll</para></entry>
+              <entry><para>Required for using windows forms specific UI functionality, or other windows specific functionality such as timers.</para>
+              <para>This assembly will be required most of the time if you are building anything utilizing Windows Forms.</para>
+              </entry>
+              <entry><list class="bullet"><listItem>Gorgon.Core.dll</listItem></list></entry>
+            </row>
+            <row>
+              <entry><para>Gorgon.FileSystem.dll</para></entry>
+              <entry><para>Required for using Gorgon's virtual file system functionality. Extra virtual file system types such as zip files, are provided via plug in interfaces.</para></entry>
+              <entry><list class="bullet"><listItem>Gorgon.Core.dll</listItem></list></entry>
+            </row>
+            <row>
+              <entry><para>Gorgon.Input.dll</para></entry>
+              <entry><para>Required for using Raw Input functionality for mouse/keyboard, and provides game device access (e.g. Xbox controllers, joysticks, etc...) via plug in interfaces.</para></entry>
+              <entry><list class="bullet"><listItem>Gorgon.Core.dll</listItem><listItem>Gorgon.Windows.dll</listItem></list></entry>
+            </row>
+            <row>
+              <entry><para>Gorgon.Graphics.Imaging.dll</para></entry>
+              <entry><para>Provides functionality for accessing and manipulating raw image data in system memory.</para>
+                    <para>I/O functionality for loading/saving this image data is provide via codecs available in this API, common codecs like DDS, PNG, JPG are supported. Users may also implement their own codecs using a plug in interface.</para>
+              </entry>
+              <entry><list class="bullet"><listItem>Gorgon.Core.dll</listItem></list></entry>
+            </row>
+            <row>
+              <entry><para>Gorgon.Graphics.Core.dll</para></entry>
+              <entry><para>This is what you're likely here for. This provides low level functionality to send graphics data for rendering to the GPU.</para>
+                    <alert class="note">
+                      <para>This is a <application>core</application> API, and as such only provides the bare minimum in functionality. External renderers are used to allow more complicated functionality.</para>
+                    </alert>
+              </entry>
+              <entry><list class="bullet"><listItem>Gorgon.Core.dll</listItem><listItem>Gorgon.Graphics.Imaging.dll</listItem></list></entry>
+            </row>
+            <row>
+              <entry><para>Gorgon.Graphics.Fonts.dll</para></entry>
+              <entry><para>Provides font generation facilities.</para>
+                    <para>Fonts can be saved/loaded using a font codec. Gorgon supports its own proprietary format, and importing of BMFont font types. Users may add their own custom codecs via plug in interfaces.</para>
+              </entry>
+              <entry><list class="bullet"><listItem>Gorgon.Core.dll</listItem><listItem>Gorgon.Graphics.Core.dll</listItem><listItem>Gorgon.Graphics.Imaging.dll</listItem></list></entry>
+            </row>
+            <row>
+              <entry><para>Gorgon.Animation.dll</para></entry>
+              <entry><para>Provides basic animation functionality. Animations are executed via controller objects which are defined by the objects that need animating.</para>
+                    <para>Users can define their own custom controllers for animating pretty much any type with the required property types.</para>                      
+                    <alert class="note">
+                      <para>This is a <application>core</application> API, and as such only provides the bare minimum in functionality. External assemblies are used to allow more complicated functionality.</para>
+                    </alert>
+              </entry>
+              <entry><list class="bullet"><listItem>Gorgon.Core.dll</listItem><listItem>Gorgon.Graphics.Core.dll</listItem><listItem>Gorgon.Graphics.Imaging.dll</listItem></list></entry>
+            </row>
+            <row>
+              <entry><para>Gorgon.Renderers.Gorgon2D.dll</para></entry>
+              <entry><para>Provides 2D rendering functionality for drawing primitives like lines, circles, rectangles, etc... This renderer also provides support for rendering sprites and text.</para>
+              </entry>
+              <entry><list class="bullet"><listItem>Gorgon.Core.dll</listItem><listItem>Gorgon.Graphics.Core.dll</listItem><listItem>Gorgon.Graphics.Imaging.dll</listItem><listItem>Gorgon.Graphics.Fonts.dll</listItem></list></entry>
+            </row>
+            <row>
+              <entry><para>Gorgon.IO.Gorgon2D.dll</para></entry>
+              <entry><para>Provides file system functionality for loading/saving sprites, and 2D animations. Meant for use with the 2D renderer.</para>
+              <para>This assembly also allows applications to create their own file formats (for proprietary formats, or other external formats) for sprites/animations using plug in interfaces.</para>
+              </entry>
+              <entry><list class="bullet"><listItem>Gorgon.Core.dll</listItem><listItem>Gorgon.FileSystem.dll</listItem><listItem>Gorgon.Graphics.Core.dll</listItem><listItem>Gorgon.Graphics.Imaging.dll</listItem><listItem>Gorgon.Graphics.Fonts.dll</listItem><listItem>Gorgon.Animation.dll</listItem><listItem>Gorgon.Renderers.Gorgon2D.dll</listItem></list></entry>
+            </row>
+            <row>
+              <entry><para>Gorgon.Animation.Gorgon2D.dll</para></entry>
+              <entry><para>Provides animation controllers for sprites and text sprites.</para>
+              </entry>
+              <entry><list class="bullet"><listItem>Gorgon.Core.dll</listItem><listItem>Gorgon.FileSystem.dll</listItem><listItem>Gorgon.Graphics.Core.dll</listItem><listItem>Gorgon.Graphics.Imaging.dll</listItem><listItem>Gorgon.Graphics.Fonts.dll</listItem><listItem>Gorgon.Animation.dll</listItem><listItem>Gorgon.Renderers.Gorgon2D.dll</listItem></list></entry>
+            </row>
+          </table>
+        </content>
+      </section>
+    </sections>
+  </developerConceptualDocument>
+</topic>

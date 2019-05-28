@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Topics>
-  <Topic id="0abf7d37-670e-4f0d-8581-e0368e39e8ef" visible="True" isDefault="true" isExpanded="true" isSelected="true" title="Gorgon">
+  <Topic id="0abf7d37-670e-4f0d-8581-e0368e39e8ef" visible="True" isDefault="true" isExpanded="true" title="Gorgon">
     <HelpKeywords>
       <HelpKeyword index="K" term="Welcome,Gorgon" />
     </HelpKeywords>
@@ -8,6 +8,46 @@
       <HelpKeywords>
         <HelpKeyword index="K" term="License,MIT" />
       </HelpKeywords>
+    </Topic>
+    <Topic id="564985CC-F18F-4711-A2BC-0796D266E54D" visible="True" isExpanded="true" title="Getting Started">
+      <HelpKeywords>
+        <HelpKeyword index="K" term="Getting started" />
+      </HelpKeywords>
+      <Topic id="6DFFD6AF-951B-44FC-B9D0-A222D7CBF359" visible="True" title="But wait... which assemblies do I use?">
+        <HelpKeywords>
+          <HelpKeyword index="K" term="Assemblies" />
+          <HelpKeyword index="K" term="Getting started" />
+        </HelpKeywords>
+      </Topic>
+      <Topic id="6F8A9863-C003-4503-9310-70E75D7E5C81" visible="True" title="Your first Gorgon program">
+        <HelpKeywords>
+          <HelpKeyword index="K" term="Gorgon" />
+          <HelpKeyword index="K" term="2D" />
+          <HelpKeyword index="K" term="Tutorial" />
+          <HelpKeyword index="K" term="Example" />
+          <HelpKeyword index="K" term="Getting started" />
+        </HelpKeywords>
+      </Topic>
+      <Topic id="3F43A9BF-35A1-4BD4-A02A-503D257F0119" visible="True" title="Your second Gorgon program">
+        <HelpKeywords>
+          <HelpKeyword index="K" term="Graphics" />
+          <HelpKeyword index="K" term="2D" />
+          <HelpKeyword index="K" term="Tutorial" />
+          <HelpKeyword index="K" term="Example" />
+          <HelpKeyword index="K" term="Getting started" />
+        </HelpKeywords>
+      </Topic>
+      <Topic id="FD2302C9-66E7-4AF2-9927-EC1CBFC27F43" visible="True" isSelected="true" title="Your third Gorgon program.">
+        <HelpKeywords>
+          <HelpKeyword index="K" term="Graphics" />
+          <HelpKeyword index="K" term="2D" />
+          <HelpKeyword index="K" term="Tutorial" />
+          <HelpKeyword index="K" term="Example" />
+          <HelpKeyword index="K" term="Getting started" />
+          <HelpKeyword index="K" term="Renderer" />
+          <HelpKeyword index="K" term="Sprite" />
+        </HelpKeywords>
+      </Topic>
     </Topic>
     <Topic id="17845af9-16ae-4c27-a5f9-fde15bc414f4" visible="True" noFile="true" isExpanded="true" title="Specifications" tocTitle="Specifications">
       <Topic id="7b81343e-e2fc-4f0f-926a-d9193ae481fe" visible="True" title="Gorgon chunked file format (GCFF)" tocTitle="Gorgon chunked file format (GCFF)">
