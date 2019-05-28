@@ -120,8 +120,7 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
    * Comes with an image editor plug in which allows users to add depth slices to 3D images (I have yet, for the life of me to find anything on the web that does this), mip maps and array indices, and other simple functions.
    * Comes with a sprite editor plug in which allows users to clip sprites from an image and store them as a file.    
    * Can output the files as a packed file. The type of file that be written out is provided via plug in support (currently only supports the proprietary Gorgon packed file format).
-   * Can import packed files using file system plug ins (currently has support for zip and the proprietary Gorgon packed file formats - included with Gorgon as file system plug ins).
-   * _TBD..._  
+   * Can import packed files using file system plug ins (currently has support for zip and the proprietary Gorgon packed file formats - included with Gorgon as file system plug ins).   
    
 
 What's required?
@@ -144,10 +143,7 @@ To use the library
 Source code
 -----------
 
-The master branch contains the current release version of Gorgon 2.0.  
-
-The 3.0 branch contains version 3.0 of Gorgon which supports Direct 3D 11.4.  
-**Please note:** *This version is still in development and should not be used in a production environment as breaking changes can and will happen.*
+The master branch contains the current release version of Gorgon 3.0.  
 
 Acknowledgements
 ================
