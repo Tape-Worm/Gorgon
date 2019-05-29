@@ -72,11 +72,11 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="DotNetZip">
+      <Version>1.13.3</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
       <Version>2.9.2</Version>
-    </PackageReference>
-    <PackageReference Include="SharpZipLib">
-      <Version>1.1.0</Version>
     </PackageReference>
     <PackageReference Include="System.Buffers">
       <Version>4.5.0</Version>
@@ -116,7 +116,8 @@
     <PostBuildEvent>REM Editor copy.
 copy "$(TargetPath)" "$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\FileSystem"
 copy "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\FileSystem"
-copy "$(TargetDir)ICSharpCode.SharpZipLib.dll" "$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\FileSystem"
+REM copy "$(TargetDir)ICSharpCode.SharpZipLib.dll" "$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\FileSystem"
+copy "$(TargetDir)DotNetZip.dll" "$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\FileSystem"
 </PostBuildEvent>
   </PropertyGroup>
 </Project>

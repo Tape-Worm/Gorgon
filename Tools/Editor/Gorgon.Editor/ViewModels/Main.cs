@@ -707,6 +707,8 @@ namespace Gorgon.Editor.ViewModels
                     return false;
                 }
 
+                Settings.LastOpenSavePath = projectFile.DirectoryName.FormatDirectory(Path.DirectorySeparatorChar);
+
                 Program.Log.Print($"Saved project '{CurrentProject.ProjectTitle}' to '{projectFile.FullName}'.", LoggingLevel.Simple);
                 return true;
             }

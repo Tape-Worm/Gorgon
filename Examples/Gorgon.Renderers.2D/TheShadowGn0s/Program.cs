@@ -322,7 +322,7 @@ ESC - Quit.";
                 _sprite1 = spriteCodec.FromFile(Path.Combine(GorgonExample.GetResourcePath(@"Sprites\TheShadowGn0s\").FullName, "Mother.gorSprite"));
                 _sprite2 = spriteCodec.FromFile(Path.Combine(GorgonExample.GetResourcePath(@"Sprites\TheShadowGn0s\").FullName, "Mother2c.gorSprite"));
 
-                _gaussBlur = new Gorgon2DGaussBlurEffect(_renderer)
+                _gaussBlur = new Gorgon2DGaussBlurEffect(_renderer, 9)
                              {
                                  BlurRenderTargetsSize = new DX.Size2(_screen.Width / 2, _screen.Height / 2)
                              };

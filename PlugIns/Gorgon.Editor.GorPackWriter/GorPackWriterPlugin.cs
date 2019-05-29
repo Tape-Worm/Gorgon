@@ -37,9 +37,9 @@ using Gorgon.Editor.GorPackWriter.Properties;
 using Gorgon.Editor.PlugIns;
 using Gorgon.IO;
 using Gorgon.Math;
-using ICSharpCode.SharpZipLib.BZip2;
 using Gorgon.Core;
 using System.Threading.Tasks;
+using System.Buffers;
 
 namespace Gorgon.Editor.GorPackWriterPlugIn
 {
@@ -50,17 +50,19 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
         : FileWriterPlugIn
 	{
         #region Constants.
-        // The maximum size of a write transfer buffer, in bytes.  Sized to avoid the LOH.
-        private const int MaxBufferSize = 81920;
         // The header for the file.
         private const string FileHeader = "GORPACK1.SharpZip.BZ2";
         // The type name for v2 of the Gorgon file writer plugin.
         private const string EquivV2PlugIn = "GorgonLibrary.Editor.GorPackWriterPlugIn.GorgonGorPackWriterPlugIn";
+        /// <summary>
+        /// The maximum size of a write transfer buffer, in bytes.
+        /// </summary>
+        public const int MaxBufferSize = 1048575;
         #endregion
 
         #region Variables.
         // The global buffer used to write out data to a stream.
-        private readonly byte[] _globalWriteBuffer = new byte[MaxBufferSize];
+        private byte[] _globalWriteBuffer;
         #endregion
 
         #region Properties.
@@ -119,12 +121,11 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
         private void CompressData(Stream inStream, Stream outStream, byte[] writeBuffer, int compressionRate, CancellationToken token)
 		{
 			Debug.Assert(outStream != null, "outStream != null");
-
-            using (var bzStream = new BZip2OutputStream(outStream, compressionRate))
+            
+            using (var bzStream = new Ionic.BZip2.ParallelBZip2OutputStream(outStream, compressionRate, true))
             {
                 long streamSize = inStream.Length;
-                bzStream.IsStreamOwner = false;
-
+                
                 while (streamSize > 0)
                 {
                     if (token.IsCancellationRequested)
@@ -157,7 +158,7 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
                     streamSize -= readSize;
                 }
             }
-		}
+        }
 
         /// <summary>
         /// Function to build up the file layout XML data.
@@ -266,12 +267,11 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
         /// </summary>
         /// <param name="outDirectory">The directory used to temporarily store the compressed file.</param>
         /// <param name="file">The file to compress.</param>
-        /// <param name="writeBuffer">The buffer used to transfer blocks of data from one stream to the next.</param>
         /// <param name="compressedSizeNode">The node containing the size of the file, in bytes, when compressed.</param>
         /// <param name="compressionRate">The value used to define how well to compress the data.</param>
         /// <param name="cancelToken">The token used to cancel the process.</param>
         /// <returns>The path to the compressed file.</returns>
-        private FileInfo CompressFile(DirectoryInfo outDirectory, FileInfo file, byte[] writeBuffer, XElement compressedSizeNode, int compressionRate, CancellationToken cancelToken)
+        private FileInfo CompressFile(DirectoryInfo outDirectory, FileInfo file, XElement compressedSizeNode, int compressionRate, CancellationToken cancelToken)
         {
             if (cancelToken.IsCancellationRequested)
             {
@@ -282,7 +282,8 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
             string filePath = Path.Combine(outDirectory.FullName, Path.GetFileNameWithoutExtension(file.Name) + Guid.NewGuid().ToString("N") + file.Extension);
             var result = new FileInfo(filePath);
             Stream outputFile = null;
-            Stream fileStream = null;            
+            Stream fileStream = null;
+            byte[] writeBuffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);
 
             try
             {
@@ -294,13 +295,15 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
                 outputFile = result.Open(FileMode.Create, FileAccess.Write, FileShare.None);
                 fileStream = file.Open(FileMode.Open, FileAccess.Read, FileShare.Read);
 
-                // Just copy if we have no compression, or if the file is less than 1K - Not much sense to compress something so small.
-                if (compressionRate == 0)
+                // Just copy if we have no compression, or if the file is less than 4K - Not much sense to compress something so small.
+                if ((compressionRate == 0) || (file.Length <= 4096))
                 {
+                    
                     BlockCopyStream(fileStream, outputFile, writeBuffer, cancelToken);
                 }
                 else
                 {
+                    Debug.Print($"Compressing '{file.FullName}' {file.Length.FormatMemory()}");
                     CompressData(fileStream, outputFile, writeBuffer, compressionRate, cancelToken);
                     compressSize = outputFile.Length;
                 }
@@ -326,6 +329,8 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
             }
             finally
             {
+                ArrayPool<byte>.Shared.Return(writeBuffer, true);
+
                 outputFile?.Dispose();
                 fileStream?.Dispose();
 
@@ -445,9 +450,8 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
                     XElement compressedSizeNode = fileNode.Element("CompressedSize");
                     FileInfo compressedFile = CompressFile(tempFile.Directory,
                                                         physicalPath,
-                                                        jobData.WriteBuffer,
                                                         compressedSizeNode,
-                                                        (int)(Compression * 9),
+                                                        (int)(Compression * 9), // Bzip compression block size is from 0 - 9.
                                                         cancelToken);
 
                     if ((compressedFile == null) || (cancelToken.IsCancellationRequested))
@@ -571,8 +575,18 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
             var fatStream = new MemoryStream();
             var compressedFatStream = new MemoryStream();
 
+            _globalWriteBuffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);            
+
             try
             {
+                // Allow cancelation immediately.
+                progressCallback?.Invoke(0, 1, true);
+
+                if (cancelToken.IsCancellationRequested)
+                {
+                    return;
+                }
+
                 XDocument fat = await BuildFileSystemLayoutAsync(tempFile, workspace, progressCallback, cancelToken);
 
                 if ((cancelToken.IsCancellationRequested) || (fat == null))
@@ -611,6 +625,8 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
             }
             finally
             {
+                ArrayPool<byte>.Shared.Return(_globalWriteBuffer, true);
+                    
                 compressedFatStream?.Dispose();
                 fatStream.Dispose();
                 outStream?.Dispose();

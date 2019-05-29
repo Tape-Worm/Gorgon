@@ -564,7 +564,7 @@ namespace Gorgon.Editor.ProjectData
 
             // Move the metadata file into the file system so it can be captured.
             var metadataFile = new FileInfo(Path.Combine(project.ProjectWorkSpace.FullName, CommonEditorConstants.EditorMetadataFileName));
-            metadataFile = metadataFile.CopyTo(Path.Combine(project.FileSystemDirectory.FullName, CommonEditorConstants.EditorMetadataFileName));
+            metadataFile = metadataFile.CopyTo(Path.Combine(project.FileSystemDirectory.FullName, CommonEditorConstants.EditorMetadataFileName), true);
 
             try
             {

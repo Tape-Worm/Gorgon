@@ -24,7 +24,7 @@ Documentation
 Documentation for the Gorgon APIs is located [here](https://www.tape-worm.net/GorgonDocs/index.html).
 
 
-What’s the licensing? 
+What's the licensing? 
 -------------------------------------------------
 
 Gorgon is licensed under the [MIT license](http://opensource.org/licenses/MIT).
@@ -112,7 +112,7 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
   
   Animation controllers for the 2D renderer are provided by the [Gorgon.Animation.Gorgon2D](Gorgon/Gorgon.Renderers/Animation.Gorgon2D) assembly.
   
-  - [x] __[Gorgon.Editor](Tools/Editor)__ _**(In Development)**_ 
+  - [x] __[Gorgon.Editor](Tools/Editor)__ 
   
   A flexible content editor to allow for the creation and editing of content.        
    * Supports a plug in based architecture to allow developers to extend the editor indefinitely. 

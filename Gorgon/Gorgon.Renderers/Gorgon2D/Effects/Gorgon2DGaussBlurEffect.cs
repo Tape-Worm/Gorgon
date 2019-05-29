@@ -335,15 +335,17 @@ namespace Gorgon.Renderers
         /// </summary>
         private void FreeTargets()
         {
-            GorgonRenderTarget2DView hPass = Interlocked.Exchange(ref _hPass, null);
-            GorgonRenderTarget2DView vPass = Interlocked.Exchange(ref _vPass, null);
-            GorgonTexture2DView hView = Interlocked.Exchange(ref _hPassView, null);
-            GorgonTexture2DView vView = Interlocked.Exchange(ref _vPassView, null);
+            if (_hPass != null)
+            {
+                Graphics.TemporaryTargets.Return(_hPass);
+            }
 
-            hView?.Dispose();
-            vView?.Dispose();
-            hPass?.Dispose();
-            vPass?.Dispose();
+            if (_vPass == null)
+            {
+                return;
+            }
+
+			Graphics.TemporaryTargets.Return(_vPass);
         }
 
         /// <summary>

@@ -37,14 +37,6 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
     {
         #region Properties.
         /// <summary>
-        /// Property to return the buffer to use for writing data into a stream.
-        /// </summary>
-        public byte[] WriteBuffer
-        {
-            get;
-        } = new byte[81920];
-
-        /// <summary>
         /// Property to return the files to process for this job.
         /// </summary>
         public List<(XElement node, FileInfo file)> Files
