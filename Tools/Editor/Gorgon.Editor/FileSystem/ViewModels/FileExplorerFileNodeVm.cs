@@ -516,7 +516,6 @@ namespace Gorgon.Editor.ViewModels
 
             if (dupeNode == null)
             {
-                // Once the file is actually on the file system, make a node and attach it to the parent.            
                 return ViewModelFactory.CreateFileExplorerFileNodeVm(Project, FileSystemService, copyNodeData.Destination, destFile, new ProjectItemMetadata(Metadata));
             }
 

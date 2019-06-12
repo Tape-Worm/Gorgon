@@ -121,11 +121,6 @@ namespace Gorgon.Editor.Metadata
             {
                 Attributes[attribute.Key] = attribute.Value;
             }
-
-            foreach (KeyValuePair<string, string> path in metadata.DependsOn)
-            {
-                DependsOn[path.Key] = path.Value;
-            }
         }
 
         /// <summary>
