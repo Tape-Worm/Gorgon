@@ -13,6 +13,12 @@ variables:
 
 name: 3.0.$(Rev:r).$(DayOfYear)
 
+trigger:
+  branches:
+    include:
+    - master
+    - 3.0
+    
 steps:
 - task: PowerShell@2
   displayName: 'Updating version to $(Build.BuildNumber)'
