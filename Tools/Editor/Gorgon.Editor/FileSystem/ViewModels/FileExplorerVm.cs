@@ -371,6 +371,11 @@ namespace Gorgon.Editor.ViewModels
                 return true;
             }
 
+            if (SelectedNode.NodeType == NodeType.Link)
+            {
+                return false;
+            }
+
             if (targetNode == node)
             {
                 return false;
@@ -913,7 +918,6 @@ namespace Gorgon.Editor.ViewModels
             var files = new List<FileInfo>();
 
             bool IsDirectoryValid(DirectoryInfo directory) => (((directory.Attributes & FileAttributes.Directory) == FileAttributes.Directory)
-                                                            && ((directory.Attributes & FileAttributes.System) != FileAttributes.System)
                                                             && ((directory.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden));
             bool IsFileValid(FileInfo file) => ((!string.Equals(file.Name, CommonEditorConstants.EditorMetadataFileName, StringComparison.OrdinalIgnoreCase))
                                                             && ((file.Attributes & FileAttributes.Directory) != FileAttributes.Directory)
@@ -1750,8 +1754,7 @@ namespace Gorgon.Editor.ViewModels
                     parentNode.Dependencies.Remove(existingDep);
                 }
 
-                parentNode.Dependencies.Add(depNode);
-                _nodePathLookup[depNode.FullPath] = depNode;
+                parentNode.Dependencies.Add(depNode);                
             }
         }
 
@@ -1983,13 +1986,13 @@ namespace Gorgon.Editor.ViewModels
         /// Function to return whether or not the item can use the cut functionality for the clipboard.
         /// </summary>
         /// <returns><b>true</b> if the clipboard handler can cut an item, <b>false</b> if not.</returns>
-        bool IClipboardHandler.CanCut() => (SelectedNode != null) && (SelectedNode.AllowDelete) && ((SearchResults?.Count ?? 0) == 0);
+        bool IClipboardHandler.CanCut() => (SelectedNode != null) && (SelectedNode.AllowDelete) && ((SearchResults?.Count ?? 0) == 0) && (SelectedNode.NodeType != NodeType.Link);
 
         /// <summary>
         /// Function to return whether or not the item can use the copy functionality for the clipboard.
         /// </summary>
         /// <returns><b>true</b> if the clipboard handler can copy an item, <b>false</b> if not.</returns>
-        bool IClipboardHandler.CanCopy() => SelectedNode != null && ((SearchResults?.Count ?? 0) == 0);
+        bool IClipboardHandler.CanCopy() => SelectedNode != null && ((SearchResults?.Count ?? 0) == 0) && (SelectedNode.NodeType != NodeType.Link);
 
         /// <summary>
         /// Function to return whether or not the item can use the paste functionality for the clipboard.

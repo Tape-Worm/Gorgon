@@ -589,6 +589,35 @@ namespace Gorgon.Editor.ViewModels
 
                 ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_LOADING_CONTENT, file.Name));
 
+                // Locate the node for the content file.
+                IFileExplorerNodeVm dirNode = _fileExplorer.FindNode(Path.GetDirectoryName(file.Path));
+
+                if (dirNode == null)
+                {
+                    Log.Print($"[ERROR] Content file '{file.Path}' directory has no node.", LoggingLevel.Verbose);
+                    throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, file.Path));
+                }
+
+                IFileExplorerNodeVm fileNode = dirNode.Children.FirstOrDefault(item => string.Equals(item.Name, file.Name, StringComparison.OrdinalIgnoreCase));
+
+                if (fileNode == null)
+                {
+                    Log.Print($"[ERROR] Content file '{file.Path}' has no associated file node.", LoggingLevel.Verbose);
+                    throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, file.Path));
+                }
+
+                if (fileNode != file)
+                {
+                    file = (IContentFile)fileNode;
+                }
+
+				// If we're on a dependency node, then go to the actual node that we're working on.
+                if (_fileExplorer.SelectedNode != fileNode)
+                {
+                    dirNode.IsExpanded = true;
+                    _fileExplorer.SelectNodeCommand?.Execute(fileNode);
+                }
+
                 if (file.ContentPlugIn == null)
                 {
                     // Reset back to unassigned.                    

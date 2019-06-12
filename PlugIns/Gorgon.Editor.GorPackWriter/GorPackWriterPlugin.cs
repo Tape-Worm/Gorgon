@@ -172,7 +172,6 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
             subDirs.Enqueue(workspace);
             var parentNodes = new Queue<XElement>();
             parentNodes.Enqueue(fatRoot);
-            int totalFileCount = workspace.GetFiles("*", SearchOption.AllDirectories).Length;
             var fileNodes = new List<(XElement fileNode, FileInfo physicalPath)>();
 
             if (cancelToken.IsCancellationRequested)

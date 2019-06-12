@@ -160,7 +160,6 @@ namespace Gorgon.Editor.Services
             foreach (DirectoryInfo item in directories)
             {
                 if (((item.Attributes & FileAttributes.Directory) != FileAttributes.Directory)
-                            || ((item.Attributes & FileAttributes.System) == FileAttributes.System)
                             || ((item.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden))
                 {
                     excluded.Add(item);
@@ -173,7 +172,6 @@ namespace Gorgon.Editor.Services
                 while (!string.Equals(parent.FullName.FormatDirectory(Path.DirectorySeparatorChar), directory.FullName, StringComparison.OrdinalIgnoreCase))
                 {
                     if (((parent.Attributes & FileAttributes.Directory) != FileAttributes.Directory)
-                                || ((parent.Attributes & FileAttributes.System) == FileAttributes.System)
                                 || ((parent.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden))
                     {
                         excluded.Add(item);

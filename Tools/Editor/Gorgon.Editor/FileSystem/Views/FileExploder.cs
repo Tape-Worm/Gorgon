@@ -42,6 +42,7 @@ using Gorgon.Collections;
 using Gorgon.Editor.Content;
 using System.Threading.Tasks;
 using Gorgon.UI;
+using System.Threading;
 
 namespace Gorgon.Editor.Views
 {
@@ -91,6 +92,8 @@ namespace Gorgon.Editor.Views
         private readonly SolidBrush _listViewHeaderBackColor;
         // The background color for the list view header.
         private readonly SolidBrush _listViewHeaderForeColor;
+		// Flag to indicate that a node is being opened, this is used to get around an issue with double clicking on a node, and having the mouse up event fire immediately after.
+        private int _nodeOpening;
         #endregion
 
         #region Properties.
@@ -1295,16 +1298,26 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The [TreeNodeMouseClickEventArgs] instance containing the event data.</param>
         private void TreeFileSystem_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            _nodeLinks.TryGetValue((KryptonTreeNode)e.Node, out IFileExplorerNodeVm node);
-
-            var contentFile = node as IContentFile;
-
-            if ((DataContext?.OpenContentFileCommand == null) || (!DataContext.OpenContentFileCommand.CanExecute(contentFile)))
+            TreeFileSystem.MouseUp -= TreeFileSystem_MouseUp;
+            try
             {
-                return;
-            }
+                _nodeLinks.TryGetValue((KryptonTreeNode)e.Node, out IFileExplorerNodeVm node);
 
-            DataContext.OpenContentFileCommand.Execute(contentFile);
+                var contentFile = node as IContentFile;
+
+                if ((DataContext?.OpenContentFileCommand == null) || (!DataContext.OpenContentFileCommand.CanExecute(contentFile)))
+                {
+                    return;
+                }
+
+                DataContext.OpenContentFileCommand.Execute(contentFile);
+
+                Interlocked.Exchange(ref _nodeOpening, 1);
+            }
+            finally
+            {
+                TreeFileSystem.MouseUp += TreeFileSystem_MouseUp;
+            }
         }
 
         /// <summary>
@@ -1534,6 +1547,12 @@ namespace Gorgon.Editor.Views
             TreeFileSystem.AfterSelect -= TreeFileSystem_AfterSelect;
             try
             {
+				// Ignore this message if we're opening a file.
+                if (Interlocked.Exchange(ref _nodeOpening, 0) != 0)
+                {
+                    return;
+                }
+
                 SelectNode(hitResult?.Node as KryptonTreeNode);
 
                 if (e.Button == MouseButtons.Right)
