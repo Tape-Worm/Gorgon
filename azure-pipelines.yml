@@ -138,7 +138,7 @@ steps:
   displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/Gorgon/Tools'  
   inputs:
     sourceFolder: '$(Build.SourcesDirectory)/Tools/Editor/Gorgon.Editor/bin/$(buildConfiguration)/'
-    contents: '**/?(*.exe|*.dll|*.config)'
+    contents: '**/?(*.exe|*.dll|*.config|Gorgon.Editor.API.xml)'
     CleanTargetFolder: true
     TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/Tools'
 
