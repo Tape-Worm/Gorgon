@@ -48,7 +48,7 @@ SamplerState _normalSampler : register(s1);
 float4 TransformNormal(float4 texel, float3 tangent, float3 biTangent)
 {
 	float3 bump = (texel.xyz * 2.0f) - 1.0f;
-	float3 normal = (normalize(float3(0, 0, 1) + (bump.x * tangent + bump.y * biTangent)) + 1.0f) / 2.0f;
+	float3 normal = (normalize(float3(0, 0, bump.z) + (bump.x * tangent + bump.y * biTangent)) + 1.0f) * 0.5f;
 
 	return float4(normal, texel.a);
 }
@@ -77,7 +77,7 @@ GorgonLitVertex GorgonVertexLightingShader(GorgonSpriteVertex vertex)
 
 	// Build up our tangents.  Without this, rotating a sprite would not look right when lit.
 	output.tangent = normalize(mul(rotation, float3(1, 0, 0)));
-	output.bitangent = normalize(float3(output.tangent.y, output.tangent.x, 0) * -1.0f);
+	output.bitangent = normalize(cross(output.tangent, float3(0, 0, -1)));
 
 	return output;
 }

@@ -248,10 +248,7 @@ namespace Gorgon.Examples
                                };
 
                 // Create the effect that will light up our sprite(s).
-                _lightEffect = new Gorgon2DDeferredLightingEffect(_renderer)
-                {
-                    FlipYNormal = true // Need this to be true because CrazyBump exported the normal map with Y inverted.
-                };
+                _lightEffect = new Gorgon2DDeferredLightingEffect(_renderer);
 
                 _lightEffect.Lights.Add(new Gorgon2DLight
                                         {
