@@ -88,8 +88,6 @@ ESC - Quit.";
         private static int _bgBlurAmount;
         // Blend state for our layer RTV.
         private static Gorgon2DBatchState _rtvBlendState;
-        // Font factory used to create the font for our help text.
-        private static GorgonFontFactory _fontFactory;
         // Font for our help text.
         private static GorgonFont _helpFont;
         // Flag to indicate that the help text should be visible.
@@ -296,17 +294,6 @@ ESC - Quit.";
                 // Create our 2D renderer.
                 _renderer = new Gorgon2D(_graphics);
 
-                _fontFactory = new GorgonFontFactory(_graphics);
-                _helpFont = _fontFactory.GetFont(new GorgonFontInfo("Segoe UI", 12.0f, FontHeightMode.Points, "Segoe UI 12pt Bold, Outlined")
-                                                 {
-                                                     FontStyle = FontStyle.Bold,
-                                                     OutlineColor2 = GorgonColor.Black,
-                                                     OutlineColor1 = GorgonColor.Black,
-                                                     OutlineSize = 2,
-                                                     TextureWidth = 512,
-                                                     TextureHeight = 256
-                                                 });
-
                 _spriteTexture = GorgonTexture2DView.FromFile(_graphics,
                                                               Path.Combine(GorgonExample.GetResourcePath(@"Textures\TheShadowGn0s\").FullName,
                                                                            "0_HardVacuum.png"),
@@ -362,6 +349,16 @@ ESC - Quit.";
                 _screen.AfterSwapChainResized += (sender, args) => BuildRenderTargets(args.Size);
 
                 GorgonExample.LoadResources(_graphics);
+
+                _helpFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo("Segoe UI", 12.0f, FontHeightMode.Points, "Segoe UI 12pt Bold, Outlined")
+                {
+                    FontStyle = FontStyle.Bold,
+                    OutlineColor2 = GorgonColor.Black,
+                    OutlineColor1 = GorgonColor.Black,
+                    OutlineSize = 2,
+                    TextureWidth = 512,
+                    TextureHeight = 256
+                });
 
                 return window;
             }
@@ -471,7 +468,6 @@ ESC - Quit.";
             {
                 GorgonExample.UnloadResources();
 
-                _fontFactory?.Dispose();
                 _helpFont?.Dispose();
                 _shadowTexture?.Dispose();
                 _gaussBlur?.Dispose();

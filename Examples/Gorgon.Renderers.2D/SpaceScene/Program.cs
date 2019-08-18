@@ -84,8 +84,6 @@ namespace Gorgon.Examples
         // This is used to ensure that the display area scales correctly when the window is resized.  We ensure that the sprites and whatnot remain at the same size no matter what the actual 
         // screen size is by locking our scale to a base of the resolution set here. 
         private static readonly DX.Vector2 _baseResolution = new DX.Vector2(1920, 1080);
-        // The factory used to generate font faces.
-        private static GorgonFontFactory _fontFactory;
         // The font used to draw the help text.
         private static GorgonFont _helpFont;
         // Text sprite for instructions.
@@ -351,8 +349,7 @@ namespace Gorgon.Examples
                 SetupScene();
 
                 // Build up a font to use for rendering any GUI text.
-                _fontFactory = new GorgonFontFactory(_graphics);
-                _helpFont = _fontFactory.GetFont(new GorgonFontInfo("Segoe UI", 10.0f, FontHeightMode.Points, "Segoe UI 10pt")
+                _helpFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo("Segoe UI", 10.0f, FontHeightMode.Points, "Segoe UI 10pt")
                 {
                     OutlineSize = 2,
                     Characters = (Resources.Instructions + "S:1234567890x").Distinct().ToArray(),
@@ -415,7 +412,6 @@ namespace Gorgon.Examples
                 }
 
                 _helpFont?.Dispose();
-                _fontFactory?.Dispose();
 								
                 GorgonExample.UnloadResources();
 

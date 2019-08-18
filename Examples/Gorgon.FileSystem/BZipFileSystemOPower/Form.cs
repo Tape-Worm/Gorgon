@@ -86,8 +86,6 @@ namespace Gorgon.Examples
 	    private readonly GorgonTexture2DView[] _blurredImage = new GorgonTexture2DView[2];
         // The blur amount.
 	    private float _blurAmount = 3.0f;
-        // Font factory for the application.
-	    private GorgonFontFactory _fontFactory;
 	    // Font for text display.
 		private GorgonFont _textFont;				        
 	    // Font for help screen.
@@ -323,14 +321,13 @@ namespace Gorgon.Examples
             GorgonExample.LoadResources(_graphics);
 
 		    // Create fonts.
-            _fontFactory = new GorgonFontFactory(_graphics);
-		    _textFont = _fontFactory.GetFont(new GorgonFontInfo("GiGi", 24.0f, FontHeightMode.Points, "GiGi_24pt")
+		    _textFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo("GiGi", 24.0f, FontHeightMode.Points, "GiGi_24pt")
 		                                     {
 		                                         AntiAliasingMode = FontAntiAliasMode.AntiAlias, TextureWidth = 512, TextureHeight = 256
 		                                     });
 
 		    // Use the form font for this one.
-		    _helpFont = _fontFactory.GetFont(new GorgonFontInfo(Font.FontFamily.Name,
+		    _helpFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo(Font.FontFamily.Name,
 		                                                        Font.Size,
 		                                                        Font.Unit == GraphicsUnit.Pixel ? FontHeightMode.Pixels : FontHeightMode.Points,
 		                                                        "Form Font")

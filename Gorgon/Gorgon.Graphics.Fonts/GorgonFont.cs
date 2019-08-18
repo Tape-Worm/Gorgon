@@ -364,7 +364,7 @@ namespace Gorgon.Graphics.Fonts
 
 						texture = image.ToTexture2D(Graphics, new GorgonTexture2DLoadOptions
 						                                      {
-                                                                  Name = $"GorgonFont_Internal_Texture_{Guid.NewGuid():N}"
+                                                                  Name = $"GorgonFont_{Name}_Internal_Texture_{Guid.NewGuid():N}"
 						                                      });
 						_internalTextures.Add(texture);
 					}

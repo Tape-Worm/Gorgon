@@ -81,8 +81,10 @@ namespace Gorgon.Input.Example
 		private GorgonSwapChain _screen;
 		// The 2D renderer.
 		private Gorgon2D _2D;
-		// Text font. 
-		private GorgonFont _font;
+        // The factory used to produce fonts.
+        private GorgonFontFactory _fontFactory;
+        // Text font. 
+        private GorgonFont _font;
 		// Input factory.
 		private GorgonRawInput _input;                         
 		// Mouse object.
@@ -561,6 +563,7 @@ namespace Gorgon.Input.Example
 			_input?.UnregisterDevice(_mouse);
 			_input?.Dispose();
 
+            _fontFactory?.Dispose();
             _assemblyCache?.Dispose();
 		}
 
@@ -648,8 +651,8 @@ namespace Gorgon.Input.Example
                 _2D = new Gorgon2D(_graphics);
 
                 // Create the text font.
-                var fontFactory = new GorgonFontFactory(_graphics);
-                _font = fontFactory.GetFont(new GorgonFontInfo("Arial", 9.0f, FontHeightMode.Points, "Arial 9pt")
+                _fontFactory = new GorgonFontFactory(_graphics);
+                _font = _fontFactory.GetFont(new GorgonFontInfo("Arial", 9.0f, FontHeightMode.Points, "Arial 9pt")
                 {
                     FontStyle = FontStyle.Bold,
                     AntiAliasingMode = FontAntiAliasMode.AntiAlias

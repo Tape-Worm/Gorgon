@@ -68,7 +68,7 @@ namespace Gorgon.Graphics.Fonts
         // The list of external fonts loaded from the file system.
         private PrivateFontCollection _externalFonts = new PrivateFontCollection();
         // The default font.
-	    private static Lazy<GorgonFont> _defaultFont;
+	    private Lazy<GorgonFont> _defaultFont;
         // Synchronization object for multiple threads.
 	    private readonly object _syncLock = new object();
 		#endregion
@@ -356,10 +356,10 @@ namespace Gorgon.Graphics.Fonts
 		public void Dispose()
 		{
 		    PrivateFontCollection ttFonts = Interlocked.Exchange(ref _externalFonts, null);
-			Lazy<GorgonFont> defaultFont = Interlocked.Exchange(ref _defaultFont, null);
+            Lazy<GorgonFont> defaultFont = Interlocked.Exchange(ref _defaultFont, null);
 
-		    if ((defaultFont != null) && (defaultFont.IsValueCreated))
-		    {
+            if ((defaultFont != null) && (defaultFont.IsValueCreated))
+		    {                
                 defaultFont.Value.Dispose();
 		    }
 
@@ -378,9 +378,9 @@ namespace Gorgon.Graphics.Fonts
 		{
 			Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
 		    _defaultFont = new Lazy<GorgonFont>(() =>
-		                                        {
+		                                        {                                                    
 		                                            // Create the default font.
-		                                            var result = new GorgonFont("Gorgon.Font.Default.SegoeUI_9pt",
+		                                            var result = new GorgonFont("Gorgon_Font_Default_SegoeUI_9pt",
 		                                                                        this,
 		                                                                        new GorgonFontInfo("Segoe UI", 9, FontHeightMode.Points)
 		                                                                        {
@@ -393,7 +393,8 @@ namespace Gorgon.Graphics.Fonts
 		                                                                {
 		                                                                    _externalFonts
 		                                                                });
-		                                            return result;
+
+                                                    return result;
 		                                        },
 		                                        true);
 		}

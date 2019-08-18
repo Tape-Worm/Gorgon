@@ -79,8 +79,6 @@ namespace Gorgon.Examples
 		private static float _accumulator;																        
 	    // Font to display our FPS, etc...
 		private static GorgonFont _ballFont;
-        // The font factory.
-	    private static GorgonFontFactory _fontFactory;
 	    // Render target for the balls.
 		private static GorgonRenderTarget2DView _ballTarget;
         // The texture view for the ball target.
@@ -527,58 +525,6 @@ namespace Gorgon.Examples
 		        // Assign event handlers.
 		        _window.KeyDown += Form_KeyDown;
 
-		        // Create our font.
-		        _fontFactory = new GorgonFontFactory(_graphics);
-		        _ballFont = _fontFactory.GetFont(new GorgonFontInfo("Arial", 9.0f, FontHeightMode.Points, "Arial 9pt Bold")
-		                                         {
-		                                             FontStyle = FontStyle.Bold,
-		                                             Characters = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890()_.-+:\u2191\u2193",
-		                                             OutlineSize = 1,
-		                                             OutlineColor1 = GorgonColor.Black,
-		                                             OutlineColor2 = GorgonColor.Black
-		                                         });
-
-		        // Create statistics render target.
-
-		        _statsTexture = GorgonTexture2DView.CreateTexture(_graphics,
-		                                                          new GorgonTexture2DInfo("Stats Render Target")
-		                                                          {
-		                                                              Width = (int)_ballFont
-		                                                                           .MeasureText(string.Format(Resources.FPSLine,
-		                                                                                                      999999,
-		                                                                                                      999999.999,
-		                                                                                                      _ballCount,
-		                                                                                                      9999),
-		                                                                                        true).Width,
-		                                                              Height = (int)((_ballFont.FontHeight * 4) + _ballFont.Descent),
-		                                                              Format = BufferFormat.R8G8B8A8_UNorm,
-		                                                              Binding = TextureBinding.RenderTarget
-		                                                          });
-
-		        // Statistics text buffer.
-		        _fpsText = new StringBuilder(64);
-
-		        _helpTextSprite = new GorgonTextSprite(_ballFont,
-		                                               string.Format(Resources.HelpText,
-		                                                             _graphics.VideoAdapter.Name,
-		                                                             _graphics.VideoAdapter.FeatureSet,
-		                                                             _graphics.VideoAdapter.Memory.Video.FormatMemory()))
-		                          {
-		                              Color = Color.Yellow,
-		                              Position = new DX.Vector2(3, (_statsTexture.Height + 8.0f).FastFloor()),
-		                              DrawMode = TextDrawMode.OutlinedGlyphs
-		                          };
-
-		        using (GorgonRenderTarget2DView rtv = _statsTexture.Texture.GetRenderTargetView())
-		        {
-		            // Draw our stats window frame.
-		            rtv.Clear(new GorgonColor(0, 0, 0, 0.5f));
-		            _graphics.SetRenderTarget(rtv);
-		            _2D.Begin();
-		            _2D.DrawRectangle(new DX.RectangleF(0, 0, rtv.Width, rtv.Height), new GorgonColor(0.86667f, 0.84314f, 0.7451f, 1.0f));
-		            _2D.End();
-		        }
-
 		        var stateBuilder = new Gorgon2DBatchStateBuilder();
 		        var blendStateBuilder = new GorgonBlendStateBuilder();
 
@@ -590,8 +536,57 @@ namespace Gorgon.Examples
 
                 GorgonExample.LoadResources(_graphics);
 
-		        // Set our main render target.
-		        _graphics.SetRenderTarget(_mainScreen.RenderTargetView);
+                _ballFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo("Arial", 9.0f, FontHeightMode.Points, "Arial 9pt Bold")
+                {
+                    FontStyle = FontStyle.Bold,
+                    Characters = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890()_.-+:\u2191\u2193",
+                    OutlineSize = 1,
+                    OutlineColor1 = GorgonColor.Black,
+                    OutlineColor2 = GorgonColor.Black
+                });
+
+                // Statistics text buffer.
+                _fpsText = new StringBuilder(64);
+
+                // Create statistics render target.
+                _statsTexture = GorgonTexture2DView.CreateTexture(_graphics,
+                                                                  new GorgonTexture2DInfo("Stats Render Target")
+                                                                  {
+                                                                      Width = (int)_ballFont
+                                                                                   .MeasureText(string.Format(Resources.FPSLine,
+                                                                                                              999999,
+                                                                                                              999999.999,
+                                                                                                              _ballCount,
+                                                                                                              9999),
+                                                                                                true).Width,
+                                                                      Height = (int)((_ballFont.FontHeight * 4) + _ballFont.Descent),
+                                                                      Format = BufferFormat.R8G8B8A8_UNorm,
+                                                                      Binding = TextureBinding.RenderTarget
+                                                                  });
+
+                using (GorgonRenderTarget2DView rtv = _statsTexture.Texture.GetRenderTargetView())
+                {
+                    // Draw our stats window frame.
+                    rtv.Clear(new GorgonColor(0, 0, 0, 0.5f));
+                    _graphics.SetRenderTarget(rtv);
+                    _2D.Begin();
+                    _2D.DrawRectangle(new DX.RectangleF(0, 0, rtv.Width, rtv.Height), new GorgonColor(0.86667f, 0.84314f, 0.7451f, 1.0f));
+                    _2D.End();
+                }
+
+                _helpTextSprite = new GorgonTextSprite(_ballFont,
+                                                       string.Format(Resources.HelpText,
+                                                                     _graphics.VideoAdapter.Name,
+                                                                     _graphics.VideoAdapter.FeatureSet,
+                                                                     _graphics.VideoAdapter.Memory.Video.FormatMemory()))
+                {
+                    Color = Color.Yellow,
+                    Position = new DX.Vector2(3, (_statsTexture.Height + 8.0f).FastFloor()),
+                    DrawMode = TextDrawMode.OutlinedGlyphs
+                };
+
+                // Set our main render target.
+                _graphics.SetRenderTarget(_mainScreen.RenderTargetView);
 		    }
 		    finally
 		    {
@@ -703,7 +698,6 @@ namespace Gorgon.Examples
 		{
             GorgonExample.UnloadResources();
 			_window?.Dispose();
-            _fontFactory?.Dispose();
 			_graphics?.Dispose();
 		}
 

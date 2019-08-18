@@ -57,8 +57,6 @@ namespace Gorgon.Examples
         private static GorgonSwapChain _screen;
         // Our 2D renderer, used to draw text.
         private static Gorgon2D _renderer;
-        // Our factory used to generate fonts.
-        private static GorgonFontFactory _fontFactory;
         // The list of built-in Windows font family names to use.
         private static readonly List<string> _fontFamilies = new List<string>
         {
@@ -182,7 +180,7 @@ namespace Gorgon.Examples
                                        Brush = brush
                                    };
 
-                    _font.Add(_fontFactory.GetFont(fontInfo));
+                    _font.Add(GorgonExample.Fonts.GetFont(fontInfo));
 
                     // Texture brushes have to be disposed when we're done with them.
                     var disposableBrush = brush as IDisposable;
@@ -209,7 +207,7 @@ namespace Gorgon.Examples
             foreach (FileInfo file in files)
             {
                 window.UpdateStatus($"Loading Font: {file.FullName}".Ellipses(50));
-                Drawing.FontFamily externFont = _fontFactory.LoadTrueTypeFontFamily(file.FullName);
+                Drawing.FontFamily externFont = GorgonExample.Fonts.LoadTrueTypeFontFamily(file.FullName);
                 _fontFamilies.Insert(0, externFont.Name);
                 fontFamilies.Add(externFont);
             }
@@ -383,14 +381,11 @@ namespace Gorgon.Examples
                 // Load our logo.
                 GorgonExample.LoadResources(_graphics);
 
-                // We need to create a font factory so we can create/load (and cache) fonts.
-                _fontFactory = new GorgonFontFactory(_graphics);
-
                 // Create our fonts.
                 GenerateGorgonFonts(LoadTrueTypeFonts(window), window);
 
                 // Build our text sprite.
-                _text = new GorgonTextSprite(_fontFactory.DefaultFont, Resources.Lorem_Ipsum)
+                _text = new GorgonTextSprite(GorgonExample.Fonts.DefaultFont, Resources.Lorem_Ipsum)
                         {
                             LineSpace = 0
                         };
@@ -424,7 +419,6 @@ namespace Gorgon.Examples
             {
                 GorgonExample.UnloadResources();
 
-                _fontFactory?.Dispose();
                 _renderer?.Dispose();
                 _screen?.Dispose();
                 _graphics?.Dispose();

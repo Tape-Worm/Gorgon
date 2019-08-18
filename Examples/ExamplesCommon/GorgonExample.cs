@@ -90,6 +90,11 @@ namespace Gorgon.Examples
             get;
             set;
         } = true;
+
+        /// <summary>
+        /// Property to return the font factory used to handle font creation for our examples.
+        /// </summary>
+        public static GorgonFontFactory Fonts => _factory;
         #endregion
 
         #region Methods.

@@ -92,8 +92,6 @@ namespace Gorgon.Examples
 	    private static SimpleRenderer _renderer;
         // Our 2D renderer for rendering text.
 	    private static Gorgon2D _2DRenderer;
-        // A font factory used to build fonts.
-	    private static GorgonFontFactory _fontFactory;
         // The font used to render our text.
 	    private static GorgonFont _font;
         // The text sprite used to display our info.
@@ -666,23 +664,24 @@ namespace Gorgon.Examples
 		                                                _graphics.SetDepthStencil(_depthBuffer);
 		                                            };
 
-		        // Create a font so we can render some text.
-		        _fontFactory = new GorgonFontFactory(_graphics);
-		        _font = _fontFactory.GetFont(new GorgonFontInfo("Segoe UI", 14.0f, FontHeightMode.Points, "Segoe UI 14pt")
-		                                     {
-		                                         OutlineSize = 2, OutlineColor1 = GorgonColor.Black, OutlineColor2 = GorgonColor.Black
-		                                     });
-
 		        _2DRenderer = new Gorgon2D(_graphics);
 
-		        _textSprite = new GorgonTextSprite(_font)
-		                      {
-		                          DrawMode = TextDrawMode.OutlinedGlyphs
-		                      };
-
                 GorgonExample.LoadResources(_graphics);
-		    }
-		    finally
+
+                // Create a font so we can render some text.
+                _font = GorgonExample.Fonts.GetFont(new GorgonFontInfo("Segoe UI", 14.0f, FontHeightMode.Points, "Segoe UI 14pt")
+                {
+                    OutlineSize = 2,
+                    OutlineColor1 = GorgonColor.Black,
+                    OutlineColor2 = GorgonColor.Black
+                });
+
+                _textSprite = new GorgonTextSprite(_font)
+                {
+                    DrawMode = TextDrawMode.OutlinedGlyphs
+                };
+            }
+            finally
 		    {
                 GorgonExample.EndInit();
 		    }
@@ -712,7 +711,6 @@ namespace Gorgon.Examples
                 GorgonExample.UnloadResources();
 
                 _2DRenderer.Dispose();
-                _fontFactory.Dispose();
 
 		        _input?.Dispose();
 

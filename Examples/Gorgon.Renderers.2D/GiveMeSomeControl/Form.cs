@@ -57,8 +57,6 @@ namespace Gorgon.Examples
         private GorgonSwapChain _rightPanel;
         // The 2D renderer to use.
         private Gorgon2D _renderer;
-        // The factory used to create fonts.
-        private GorgonFontFactory _fontFactory;
         // The font for the application.
         private GorgonFont _appFont;
         // The texture containing the animation frames.
@@ -184,18 +182,6 @@ namespace Gorgon.Examples
 
             _renderer = new Gorgon2D(_graphics);
 
-            _fontFactory = new GorgonFontFactory(_graphics);
-            _appFont = _fontFactory.GetFont(new GorgonFontInfo(Font.FontFamily.Name, Font.Size * 1.33333f, FontHeightMode.Points, "Form Font")
-                                            {
-                                                Characters = "SpdtoxDrag me!\u2190:1234567890.",
-                                                TextureWidth = 128,
-                                                TextureHeight = 128,
-                                                OutlineSize = 2,
-                                                FontStyle = FontStyle.Bold,
-                                                OutlineColor1 = GorgonColor.Black,
-                                                OutlineColor2 = GorgonColor.Black
-                                            });
-
             _torusTexture = GorgonTexture2DView.FromFile(_graphics,
                                                          Path.Combine(GorgonExample.GetResourcePath(@"Textures\GiveMeSomeControl\").FullName, "Torus.png"),
                                                          new GorgonCodecPng(),
@@ -220,6 +206,17 @@ namespace Gorgon.Examples
             BuildAnimation();
 
             GorgonExample.LoadResources(_graphics);
+
+            _appFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo(Font.FontFamily.Name, Font.Size * 1.33333f, FontHeightMode.Points, "Form Font")
+            {
+                Characters = "SpdtoxDrag me!\u2190:1234567890.",
+                TextureWidth = 128,
+                TextureHeight = 128,
+                OutlineSize = 2,
+                FontStyle = FontStyle.Bold,
+                OutlineColor1 = GorgonColor.Black,
+                OutlineColor2 = GorgonColor.Black
+            });
         }
 
         /// <summary>
@@ -306,7 +303,6 @@ namespace Gorgon.Examples
 
             GorgonExample.UnloadResources();
 
-            _fontFactory?.Dispose();
             _renderer?.Dispose();
             _leftPanel?.Dispose();
             _rightPanel?.Dispose();
