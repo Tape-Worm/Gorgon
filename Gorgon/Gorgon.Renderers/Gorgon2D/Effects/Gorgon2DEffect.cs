@@ -188,6 +188,21 @@ namespace Gorgon.Renderers
         } = new Gorgon2DShaderStateBuilder<GorgonVertexShader>();
 
         /// <summary>
+        /// Property to return the state used to override the default blend state for the effect.
+        /// </summary>
+        protected GorgonBlendState BlendStateOverride => _blendStateOverride;
+
+        /// <summary>
+        /// Property to return the state used to override the default depth/stencil state for the effect.
+        /// </summary>
+        protected GorgonDepthStencilState DepthStencilStateOverride => _depthStencilStateOverride;
+
+        /// <summary>
+        /// Property to return the state used to override the default raster state for the effect.
+        /// </summary>
+        protected GorgonRasterState RasterStateOverride => _rasterStateOverride;
+
+        /// <summary>
         /// Property to return the renderer used to render the effect.
         /// </summary>
         public Gorgon2D Renderer

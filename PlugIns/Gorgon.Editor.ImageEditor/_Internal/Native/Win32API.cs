@@ -25,11 +25,9 @@
 #endregion
 
 using System;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
-using Gorgon.Editor.ImageEditor.Properties;
 
 namespace Gorgon.Editor.ImageEditor.Native
 {

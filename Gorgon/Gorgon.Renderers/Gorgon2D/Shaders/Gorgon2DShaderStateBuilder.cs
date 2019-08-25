@@ -27,11 +27,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
-using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Renderers.Properties;
 

@@ -66,9 +66,30 @@ namespace Gorgon.Graphics.Core
         {
             get;
         }
+
+        /// <summary>
+        /// Property to set or return the maximum lifetime for an unrented render target, in minutes.
+        /// </summary>
+        double ExpiryTime
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to expire any previously allocated targets after a certain amount of time.
+        /// </summary>
+        /// <param name="force"><b>true</b> to clear all unrented targets immediately, <b>false</b> to only remove targets that have expired past the <see cref="ExpiryTime"/>.</param>
+        /// <remarks>
+        /// <para>
+        /// Applications should call this method to free up memory associated with the cached render targets.  This only affects targets that are not currently rented out.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="ExpiryTime"/>
+        void ExpireTargets(bool force = false);
+
         /// <summary>
         /// Function to rent a render target from the factory.
         /// </summary>

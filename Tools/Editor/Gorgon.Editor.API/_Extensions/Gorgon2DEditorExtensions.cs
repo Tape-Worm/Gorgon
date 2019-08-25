@@ -26,21 +26,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Editor;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
-using Gorgon.Editor.Support;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers;
-using Newtonsoft.Json;
 
 namespace Gorgon.IO
 {

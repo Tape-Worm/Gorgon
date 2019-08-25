@@ -40,6 +40,46 @@ namespace Gorgon.Renderers
     /// <summary>
     /// An effect used to render a scene with deferred per-pixel lighting.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This effect simulates lighting on 2D rendering by using a normal map (and specular map) to determine how to render a pixels shading. It does this by using a G-Buffer which contains a render target 
+    /// for the diffuse (unlit color), specular, and normal map data.
+    /// </para>
+    /// <para>
+    /// The effect renders the lighting data in 2 passes. The first renders the diffuse layer using a callback defined by the user to render their objects that they wish to have lit.  Then, the 2nd pass 
+    /// combines all the layers of the G-buffer together using additive blending for each <see cref="Lights">light</see> defined and returns the combined lighting data to a render target specified by the 
+    /// user. This output can then be combined with the scene using additive blending to produce the desired lighting effect. 
+    /// </para>
+    /// <para>
+    /// <note type="information">
+    /// <para>
+    /// Please note that this last compositing pass is not done by the effect and must be handled by the user. This is done in the interest of flexibility to allow the user to decide how to best handle 
+    /// the compositing of their scene.
+    /// </para>
+    /// </note>
+    /// </para>
+    /// <para>
+    /// In order for a sprite, or other 2D graphics object to be rendered using lighting, the backing texture must use a texture with an array count of 3 or higher. Each index of the array corresponds to a
+    /// layer used by the G-buffer to composite the lighting together. These array indices must be in the following order (while the word sprite is used, this can apply to anything that is textured):
+    /// <list type="number">
+    /// <item>
+    ///		<description>The diffuse layer for the sprite - This is just the unlit colors for your sprite, basically the standard texture you'd normally use. Ideally, this texture should not contain 
+    ///		any shading at all as this will be handled by the effect.</description>
+    /// </item>
+    /// <item>
+    ///		<description>The specular layer for the sprite - This is the texture array index that controls which parts of the sprite are "shiny". Leaving this black will produce no specular hilighting at 
+    ///		all, while pure white will make all parts of it shiny. This amount of specular is controlled by the <see cref="Gorgon2DLight.SpecularPower"/> property on a light.</description>
+    /// </item>
+    /// <item>
+    ///		<description>The normal map layer for the sprite - This is the texture array index that provides normals for the lighting calculations. This layer must have data in it or else no lighting will 
+    ///		be applied. Gorgon does not generate normal map for your texture, however there are a multitude of tools available online to help with this (e.g. CrazyBump, SpriteIlluminator, etc...).</description>
+    /// </item>
+    /// </list>
+    /// </para>
+    /// <para>
+    /// The user must also supply at least a single light source to effectively view the lighting on the 2D object.
+    /// </para>
+    /// </remarks>
     public class Gorgon2DDeferredLightingEffect
         : Gorgon2DEffect
     {
@@ -125,6 +165,12 @@ namespace Gorgon.Renderers
         private readonly GorgonColor _normalClearColor = new GorgonColor(127.0f / 255.0f, 127.0f / 255.0f, 254.0f / 255.0f, 1.0f);
         // Render target information.
         private readonly GorgonTexture2DInfo _rtvInfo;
+        // The filter for diffuse mapping.
+        private GorgonSamplerState _diffuseFilter = GorgonSamplerState.Default;
+        // The filter for normal mapping.
+        private GorgonSamplerState _normalFilter = GorgonSamplerState.PointFiltering;
+        // The filter for specular mapping.
+        private GorgonSamplerState _specularFilter = GorgonSamplerState.Default;
         #endregion
 
         #region Properties.
@@ -140,14 +186,50 @@ namespace Gorgon.Renderers
         /// Property to set or return whether the Y (green channel) in the normal map should be flipped. 
         /// </summary>
         /// <remarks>
-        /// Some normal map generating packages export their maps using a flipped green channel, which can cause weird behavior with diffuse. If your lights do not look quite correct, try setting this 
-        /// value to <b>true</b>.
+        /// This property is no longer supported. Use an application such as Adobe Photoshop or Gimp to flip the normal axes. 
         /// </remarks>
+        [Obsolete("This property is not working correctly and will be removed. Users should flip their normal map axes using an application such as Photoshop or Gimp.")]
 		public bool FlipYNormal
         {
             get;
             set;
         }
+
+        /// <summary>
+        /// Property to set or return the texture filtering to apply to the diffuse texture.
+        /// </summary>
+        /// <remarks>
+        /// The default value is <see cref="GorgonSamplerState.Default"/>.
+        /// </remarks>
+        public GorgonSamplerState DiffuseFiltering
+        {
+            get;
+            set;
+        } = GorgonSamplerState.Default;
+
+        /// <summary>
+        /// Property to set or return the texture filtering to apply to the normal maps.
+        /// </summary>
+        /// <remarks>
+        /// The default value is <see cref="GorgonSamplerState.PointFiltering"/>.
+        /// </remarks>
+        public GorgonSamplerState NormalFiltering
+        {
+            get;
+            set;
+        } = GorgonSamplerState.PointFiltering;
+
+        /// <summary>
+        /// Property to set or return the texture filtering to apply to the specular maps.
+        /// </summary>
+        /// <remarks>
+        /// The default value is <see cref="GorgonSamplerState.Default"/>.
+        /// </remarks>
+        public GorgonSamplerState SpecularFiltering
+        {
+            get;
+            set;
+        } = GorgonSamplerState.Default;
         #endregion
 
         #region Methods.
@@ -181,17 +263,34 @@ namespace Gorgon.Renderers
             _gbufferTargets[2] = Graphics.TemporaryTargets.Rent(_rtvInfo, "Gorgon 2D Buffer - Normals", false); 
             GorgonTexture2DView normalSrv = _gbufferTargets[2].GetShaderResourceView();
 
-            if (_pixelDeferShaderState.ShaderResources[1] != normalSrv)
+            if ((_pixelDeferShaderState.ShaderResources[1] != normalSrv)
+                || (_diffuseFilter != DiffuseFiltering)
+                || (_normalFilter != NormalFiltering)
+                || (_specularFilter != SpecularFiltering))
             {
+                _diffuseFilter = DiffuseFiltering ?? GorgonSamplerState.Default;
+                _normalFilter = NormalFiltering ?? GorgonSamplerState.PointFiltering;
+                _specularFilter = SpecularFiltering ?? GorgonSamplerState.Default;
+
+                _pixelDeferShaderState = PixelShaderBuilder.ResetTo(_pixelDeferShaderState)
+                                                    .SamplerState(_diffuseFilter, 0)
+                                                    .SamplerState(_normalFilter, 1)
+                                                    .SamplerState(_specularFilter, 2)
+                                                    .Build();
+
                 _pixelLitShaderState = PixelShaderBuilder
                                                 .ResetTo(_pixelLitShaderState)
-                                                .ShaderResource(normalSrv, 1)                                                
+                                                .ShaderResource(normalSrv, 1)
+                                                .SamplerState(_diffuseFilter, 0)
+                                                .SamplerState(_normalFilter, 1)
+                                                .SamplerState(_specularFilter, 2)
                                                 .Build();
 
                 _lightingState = BatchStateBuilder
                                                 .ResetTo(_lightingState)
                                                 .PixelShaderState(_pixelLitShaderState)												
                                                 .Build();
+
             }
 
 
@@ -265,7 +364,7 @@ namespace Gorgon.Renderers
                         _deferredState = BatchStateBuilder
 											.PixelShaderState(_pixelDeferShaderState)
                                             .VertexShaderState(_vertexDeferShaderState)															
-											.BlendState(GorgonBlendState.NoBlending)
+											.BlendState(BlendStateOverride ?? GorgonBlendState.NoBlending)
 											.Build();
                     }
 
@@ -330,7 +429,7 @@ namespace Gorgon.Renderers
 
 			var globals = new GlobalEffectData
             {
-                FlipYNormal = FlipYNormal ? 1 : 0,
+                FlipYNormal = 0,
                 CameraPosition = Renderer.CurrentCamera == null ? DX.Vector3.Zero : camera.Position
             };
             _globalData.Buffer.SetData(ref globals);
@@ -409,7 +508,7 @@ namespace Gorgon.Renderers
             var globalData = new GlobalEffectData
             {
 				CameraPosition = DX.Vector3.Zero,
-				FlipYNormal = FlipYNormal ? 1 : 0
+				FlipYNormal = 0
             };
 
             _globalData = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref globalData, "Global deferred light effect data.", ResourceUsage.Default);
@@ -428,6 +527,9 @@ namespace Gorgon.Renderers
 
             _pixelDeferShader = CompileShader<GorgonPixelShader>(Resources.Lighting, "GorgonPixelShaderDeferred");
             _pixelDeferShaderState = PixelShaderBuilder.Shader(_pixelDeferShader)
+                                                .SamplerState(_diffuseFilter, 0)
+                                                .SamplerState(_normalFilter, 1)
+                                                .SamplerState(_specularFilter, 2)
                                                 .Build();
 
             Macros.Clear();
@@ -440,7 +542,9 @@ namespace Gorgon.Renderers
             _pixelLitShaderState = PixelShaderBuilder.Shader(_pixelLitShader)
                                              .ConstantBuffer(_lightData, 1)
 											 .ConstantBuffer(_globalData, 2)
-                                             .SamplerState(GorgonSamplerState.Default, 1)
+                                                .SamplerState(_diffuseFilter, 0)
+                                                .SamplerState(_normalFilter, 1)
+                                                .SamplerState(_specularFilter, 2)
                                              .Build();
 
             // Rebuild our states for the new pixel shaders.

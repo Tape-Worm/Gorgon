@@ -26,10 +26,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Diagnostics;
+using Gorgon.Timing;
 
 namespace Gorgon.Graphics.Core
 {
@@ -50,6 +48,10 @@ namespace Gorgon.Graphics.Core
     /// does not exist, or is being used elsewhere, then a new target is created and added to the pool.
     /// </para>
     /// <para>
+    /// Render targets allocated by the factory will be reclaimed over time so memory usage will not get out of control. The default is 2.5 minutes, which is adjustable via the <see cref="ExpiryTime"/> 
+    /// proeprty after each target is returned. This only affects targets that are not currently rented out, so there should be no danger of reclaiming a target that is in use.
+    /// </para>
+    /// <para>
     /// Targets retrieved by this factory must be returned when they are no longer needed, otherwise the purpose of the factory is defeated. 
     /// </para>
     /// </remarks>
@@ -65,6 +67,12 @@ namespace Gorgon.Graphics.Core
         private readonly HashSet<GorgonRenderTarget2DView> _rented = new HashSet<GorgonRenderTarget2DView>();
         // The graphics interface that owns this factory.
         private readonly GorgonGraphics _graphics;
+        // The time at which a render target was last returned from rental.
+        private readonly Dictionary<GorgonRenderTarget2DView, double> _expiryTime = new Dictionary<GorgonRenderTarget2DView, double>();
+        // The list used to clean up expired targets.
+        private readonly List<GorgonRenderTarget2DView> _cleanupList = new List<GorgonRenderTarget2DView>();
+        // The timer used to expire the render targets.
+        private readonly IGorgonTimer _expiryTimer;
         #endregion
 
         #region Properties.
@@ -77,9 +85,77 @@ namespace Gorgon.Graphics.Core
         /// Property to return the total number of render targets available in the factory.
         /// </summary>
         public int TotalCount => _rented.Count + _renderTargets.Count;
+
+        /// <summary>
+        /// Property to set or return the maximum lifetime for an unrented render target, in minutes.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This value applies only to newly created render targets via the <see cref="Rent"/> method. Any previously created targets will use whatever expiry time that was set previously.
+        /// </para>
+        /// <para>
+        /// The default value is 2.5 minutes.
+        /// </para>
+        /// </remarks>
+        public double ExpiryTime
+        {
+            get;
+            set;
+        } = 2.5;
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to expire any previously allocated targets after a certain amount of time.
+        /// </summary>
+        /// <param name="force"><b>true</b> to clear all unrented targets immediately, <b>false</b> to only remove targets that have expired past the <see cref="ExpiryTime"/>.</param>
+        /// <remarks>
+        /// <para>
+        /// Applications should call this method to free up memory associated with the cached render targets.  This only affects targets that are not currently rented out.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="ExpiryTime"/>
+        public void ExpireTargets(bool force = false)
+        {
+            double currentMinutes = _expiryTimer.Minutes;
+            _cleanupList.Clear();
+
+            foreach (KeyValuePair<GorgonRenderTarget2DView, double> time in _expiryTime)
+            {
+                // If we're already rented, then do nothing.
+                if ((_rented.Contains(time.Key)) || (!_renderTargets.Contains(time.Key)))
+                {
+                    continue;
+                }
+
+                // If a target has been alive for more than time limit, then dump it.
+                if ((!force) && ((currentMinutes - time.Value) < 0))
+                {
+                    continue;
+                }
+
+                _cleanupList.Add(time.Key);
+            }
+
+            foreach (GorgonRenderTarget2DView target in _cleanupList)
+            {
+                GorgonShaderResourceView srv = target.GetShaderResourceView();
+
+                if (_srvs.Contains(srv))
+                {
+                    srv.Dispose();
+                    _srvs.Remove(srv);
+                }
+
+                target.OwnerFactory = null;
+                _renderTargets.Remove(target);
+                _expiryTime.Remove(target);
+                target.Dispose();                
+            }
+
+            _cleanupList.Clear();
+        }
+
         /// <summary>
         /// Function to rent a render target from the factory.
         /// </summary>
@@ -107,6 +183,8 @@ namespace Gorgon.Graphics.Core
         {
             targetInfo.ValidateObject(nameof(targetInfo));
 
+            ExpireTargets();
+
             // Ensure the information is valid.
             targetInfo = new GorgonTexture2DInfo(targetInfo, string.IsNullOrWhiteSpace(name) ? $"TempTarget_{_srvs.Count}_{targetInfo.Name}" : name)
             {
@@ -129,9 +207,15 @@ namespace Gorgon.Graphics.Core
                     }
 
                     _renderTargets.Remove(rtv);
-                    _rented.Add(rtv);
+                    _expiryTime.Remove(rtv);
+                    _rented.Add(rtv);                    
                     return rtv;
                 }
+            }
+
+            if (_renderTargets.Count == 0)
+            {
+                _expiryTimer.Reset();
             }
 
             var newRtv = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, targetInfo);
@@ -150,6 +234,8 @@ namespace Gorgon.Graphics.Core
         /// <returns><b>true</b> if the target was returned successfully, <b>false</b> if not.</returns>
         public bool Return(GorgonRenderTarget2DView rtv)
         {
+            ExpireTargets();
+
             if ((rtv == null) || (rtv.OwnerFactory != this))
             {
                 return false;
@@ -161,12 +247,15 @@ namespace Gorgon.Graphics.Core
             }
 
             _renderTargets.Add(rtv);
+            _expiryTime[rtv] = _expiryTimer.Minutes + (ExpiryTime < 0 ? 0 : ExpiryTime);
             return true;
         }
 
         /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
         public void Dispose()
         {
+            _expiryTime.Clear();
+
             foreach (GorgonShaderResourceView srv in _srvs)
             {
                 srv.Dispose();
@@ -185,14 +274,19 @@ namespace Gorgon.Graphics.Core
             }
 
             _rented.Clear();
-            _renderTargets.Clear();
+            _srvs.Clear();
+            _renderTargets.Clear();            
         }
         #endregion
 
         #region Constructor/Finalizer.		
         /// <summary>Initializes a new instance of the <see cref="RenderTargetFactory"/> class.</summary>
         /// <param name="graphics">The graphics interface that owns this factory.</param>
-        public RenderTargetFactory(GorgonGraphics graphics) => _graphics = graphics;
+        public RenderTargetFactory(GorgonGraphics graphics)
+        {
+            _graphics = graphics;
+            _expiryTimer = GorgonTimerQpc.SupportsQpc() ? (IGorgonTimer)new GorgonTimerQpc() : new GorgonTimerMultimedia();            
+        }
         #endregion
     }
 }

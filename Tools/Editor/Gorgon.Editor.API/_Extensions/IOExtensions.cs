@@ -36,7 +36,6 @@ using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Support;
-using Gorgon.Editor.UI;
 using Newtonsoft.Json;
 
 namespace Gorgon.IO

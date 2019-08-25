@@ -43,6 +43,7 @@ struct GorgonSpriteLitVertex
 
 Texture2D _normalTexture : register(t1);
 SamplerState _normalSampler : register(s1);
+SamplerState _specSampler : register(s2);
 
 // Function to transform a normal from the normal map using our tangent and bitangent vectors.
 float4 TransformNormal(float4 texel, float3 tangent, float3 biTangent)
@@ -91,8 +92,8 @@ DeferredRenderOutput GorgonPixelShaderDeferred(GorgonLitVertex vertex)
 
 	REJECT_ALPHA(diffuse.a);
 
-	float4 specular = _gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy, vertex.uv.z + 1));
-	float4 normal = _gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy, vertex.uv.z + 2));
+	float4 specular = _gorgonTexture.Sample(_specSampler, float3(vertex.uv.xy, vertex.uv.z + 1));
+	float4 normal = _gorgonTexture.Sample(_normalSampler, float3(vertex.uv.xy, vertex.uv.z + 2));
 		
 	result.Diffuse = diffuse;
 	result.Specular = specular;
@@ -119,7 +120,7 @@ float3 GetNormalData(float2 uv)
 // Gets the specular value based on the specular map supplied.
 float4 GetSpecularValue(float3 lightDir, float3 normal, float3 toEye, float3 uv, float specularPower)
 {
-	float4 specTexCol = _gorgonTexture.Sample(_gorgonSampler, uv);
+	float4 specTexCol = _gorgonTexture.Sample(_specSampler, uv);
 	float3 halfWay = normalize(-lightDir + toEye);
 	float specIntensity = saturate(dot(normal, halfWay));
 	return pow(specIntensity, specularPower) * specTexCol;
@@ -146,7 +147,7 @@ float4 PointLight(float3 worldPos, float2 uv)
 	{
 		result += diffuseAmount * GetSpecularValue(normalize(worldPos - _lightPosition), normal, normalize(worldPos - _cameraPos), float3(uv.xy, 1), _attribs.x);
 	}
-	result.a = 1.0f;
+	result.a = color.a;
 
 	return saturate(result);
 }

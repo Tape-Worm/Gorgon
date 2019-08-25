@@ -24,15 +24,10 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Gorgon.Editor
 {
-	/// <summary>
+    /// <summary>
     /// Defines type names for the most common content types used in Gorgon.
     /// </summary>
     /// <remarks>
