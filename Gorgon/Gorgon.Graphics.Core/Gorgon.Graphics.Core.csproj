@@ -46,9 +46,6 @@
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Gorgon.Windows">
-      <HintPath>..\..\..\..\..\Assemblies\Gorgon_3.0.72.168\lib\Gorgon.Windows.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
@@ -244,6 +241,10 @@
     <ProjectReference Include="..\Gorgon.Graphics.Imaging\Gorgon.Graphics.Imaging.csproj">
       <Project>{9dd1ec99-5d74-4b0a-ad93-14746939f6be}</Project>
       <Name>Gorgon.Graphics.Imaging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Gorgon.Windows\Gorgon.Windows.csproj">
+      <Project>{a19cb981-2d25-4316-9542-1d2bd7064f2b}</Project>
+      <Name>Gorgon.Windows</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
