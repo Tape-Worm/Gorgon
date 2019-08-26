@@ -108,7 +108,6 @@ namespace Gorgon.Renderers.Properties {
         // Comment stripped.
         // Comment stripped.
         // Comment stripped.
-        // Comment stripped.
         internal static string ChromaticAberration {
             get {
                 return ResourceManager.GetString("ChromaticAberration", resourceCulture);
@@ -374,6 +373,15 @@ namespace Gorgon.Renderers.Properties {
         // Comment stripped.
         // Comment stripped.
         // Comment stripped.
+        internal static string GOR2D_ERR_2D_IMAGE_ONLY {
+            get {
+                return ResourceManager.GetString("GOR2D_ERR_2D_IMAGE_ONLY", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
         internal static string GOR2D_ERR_ATLAS_INVALID_FORMAT {
             get {
                 return ResourceManager.GetString("GOR2D_ERR_ATLAS_INVALID_FORMAT", resourceCulture);
@@ -506,13 +514,6 @@ namespace Gorgon.Renderers.Properties {
             }
         }
         
-        // Comment stripped.
-        // Comment stripped.
-        // Comment stripped.
-        // Comment stripped.
-        // Comment stripped.
-        // Comment stripped.
-        // Comment stripped.
         // Comment stripped.
         // Comment stripped.
         // Comment stripped.

@@ -208,6 +208,9 @@
   <data name="GOR2D_EFFECT_WAVE_DESC" xml:space="preserve">
     <value>Causes a waving effect on a texture.</value>
   </data>
+  <data name="GOR2D_ERR_2D_IMAGE_ONLY" xml:space="preserve">
+    <value>The {0} image must be 2D.</value>
+  </data>
   <data name="GOR2D_ERR_ATLAS_INVALID_FORMAT" xml:space="preserve">
     <value>The texture format [{0}] is not valid for a texture atlas.</value>
   </data>

@@ -32,6 +32,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Imaging;
 using Gorgon.Renderers.Properties;
 using DX = SharpDX;
 
@@ -552,6 +553,128 @@ namespace Gorgon.Renderers
                                               .VertexShaderState(_vertexLitShaderState)
                                                 .BlendState(GorgonBlendState.Additive)
                                                 .Build();
+        }
+
+
+        /// <summary>
+        /// Function to create a compatible image to use when drawing with this effect.
+        /// </summary>
+        /// <param name="diffuse">The diffuse map.</param>
+        /// <param name="normalMap">The normal map.</param>
+        /// <param name="specularMap">[Optional] The specular map.</param>
+        /// <returns>A new image with the maps combined as an image array to use with the effect.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="diffuse"/>, or the <paramref name="normalMap"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentException">Thrown if any of the images passed in are not a <see cref="ImageType.Image2D"/> type.</exception>
+        /// <remarks>
+        /// <para>
+        /// Since the lighting effect requires that textures be drawn using an array of 3 images, developers can use this helper method to create a new image based on separate images that will be suitable 
+        /// for rendering with this effect.
+        /// </para>
+        /// <para>
+        /// The resulting image from this method is guaranteed to contain the correct image data, in the correct order, for use with this effect. The image can then be used in any of the 
+        /// texture types for rendering.
+        /// </para>
+        /// <para>
+        /// The images passed to this method must be a 2D image type, otherwise an exception will thrown.
+        /// </para>
+        /// <para>
+        /// All images passed to this method should be the same width, height and pixel format. Otherwise undesired artifacts may appear on the generated maps.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="IGorgonImage"/>
+        /// <seealso cref="GorgonTexture2D"/>
+        /// <seealso cref="GorgonTexture2DView"/>
+        public IGorgonImage CreateLightingImage(IGorgonImage diffuse, IGorgonImage normalMap, IGorgonImage specularMap = null)
+        {
+            if (diffuse == null)
+            {
+                throw new ArgumentNullException(nameof(diffuse));
+            }
+
+            if (normalMap == null)
+            {
+                throw new ArgumentNullException(nameof(normalMap));
+            }
+
+            if (diffuse.ImageType != ImageType.Image2D)
+            {
+                throw new ArgumentException(string.Format(Resources.GOR2D_ERR_2D_IMAGE_ONLY, nameof(diffuse)));
+            }
+
+            if (normalMap.ImageType != ImageType.Image2D)
+            {
+                throw new ArgumentException(string.Format(Resources.GOR2D_ERR_2D_IMAGE_ONLY, nameof(normalMap)));
+            }
+
+            if ((specularMap != null) && (specularMap.ImageType != ImageType.Image2D))
+            {
+                throw new ArgumentException(string.Format(Resources.GOR2D_ERR_2D_IMAGE_ONLY, nameof(specularMap)));
+            }
+
+            IGorgonImage result = null;
+            IGorgonImage workSpecular = specularMap?.Clone();
+            IGorgonImage workDiffuse = diffuse.Clone();
+            IGorgonImage workNormal = normalMap.Clone();
+
+            if (workSpecular == null)
+            {
+                workSpecular = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, diffuse.Format)
+                {
+                    Width = diffuse.Width,
+                    Height = diffuse.Height
+                });
+                workSpecular.Buffers[0].Fill(0x00);
+            }
+
+            try
+            {
+                // Ensure formats are the same across all array entries.
+                if (workNormal.Format != workDiffuse.Format)
+                {
+                    workNormal.ConvertToFormat(workDiffuse.Format);
+                }
+
+                if (workSpecular.Format != workDiffuse.Format)
+                {
+                    workSpecular.ConvertToFormat(workDiffuse.Format);
+                }
+
+                // Ensure width and height matches.
+                if ((workNormal.Width != workDiffuse.Width) || (workDiffuse.Height != workNormal.Height))
+                {
+                    workNormal.Resize(workDiffuse.Width, workDiffuse.Height, 1);
+                }
+
+                if ((workSpecular.Width != workDiffuse.Width) || (workSpecular.Height != workNormal.Height))
+                {
+                    workSpecular.Resize(workDiffuse.Width, workDiffuse.Height, 1);
+                }
+
+                var info = new GorgonImageInfo(ImageType.Image2D, diffuse.Format)
+                {
+                    Width = diffuse.Width,
+                    Height = diffuse.Height,
+                    ArrayCount = 3
+                };
+
+                result = new GorgonImage(info);
+                workDiffuse.Buffers[0].CopyTo(result.Buffers[0, 0]);
+                workSpecular.Buffers[0].CopyTo(result.Buffers[0, 1]);
+                workNormal.Buffers[0].CopyTo(result.Buffers[0, 2]);
+
+                return result;
+            }
+            catch
+            {
+                result?.Dispose();
+                throw;
+            }
+            finally
+            {
+                workDiffuse?.Dispose();
+                workNormal?.Dispose();
+                workSpecular.Dispose();
+            }
         }
         #endregion
 
