@@ -32,7 +32,7 @@ Gorgon is licensed under the [MIT license](http://opensource.org/licenses/MIT).
 How far along are you?  Is it done yet?  How about now?
 -------------------------------------------------------
 
-Gorgon 3.0 is currently in sporadic development as time allows. At this point, there's no release planned.
+Gorgon 3.0 is now available.
 
 What can it do?
 ---------------
