@@ -99,24 +99,27 @@ namespace Gorgon.Editor.ImageEditor
         {
             FileSystemWatcher result;
 
+            void HandleFileSystemChange(object sender, FileSystemEventArgs e)
+            {
+                if (!string.Equals(values.FilePath, e.FullPath, StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+
+                values.HasChanges = true;
+            }
+
             result = new FileSystemWatcher
             {
-                NotifyFilter = NotifyFilters.Attributes | NotifyFilters.CreationTime | NotifyFilters.LastWrite | NotifyFilters.Size,
+                NotifyFilter = NotifyFilters.Attributes | NotifyFilters.CreationTime | NotifyFilters.LastWrite | NotifyFilters.Size | NotifyFilters.FileName | NotifyFilters.Security,
                 Path = Path.GetDirectoryName(values.FilePath).FormatDirectory(Path.DirectorySeparatorChar),                
                 Filter = "*" + Path.GetExtension(values.FilePath),
                 IncludeSubdirectories = false,
                 EnableRaisingEvents = true
             };
 
-            result.Changed += (s, e) =>
-                {
-                    if (!string.Equals(values.FilePath, e.FullPath, StringComparison.OrdinalIgnoreCase))
-                    {
-                        return;
-                    }
-
-                    values.HasChanges = true;
-                };
+            result.Created += HandleFileSystemChange;
+            result.Changed += HandleFileSystemChange;
 
             return result;
         }

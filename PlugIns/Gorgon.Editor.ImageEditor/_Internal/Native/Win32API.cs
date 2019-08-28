@@ -286,7 +286,7 @@ namespace Gorgon.Editor.ImageEditor.Native
         public static string GetAssociatedExecutable(string filePath)
         {
             int size = 0;
-            int hresult = AssocQueryString(AssociationFlags.DontRemapCLSID, AssociationStringType.Executable, filePath, null, null, ref size);
+            int hresult = AssocQueryString(AssociationFlags.DontRemapCLSID | AssociationFlags.RemapRunDLL, AssociationStringType.Executable, filePath, null, null, ref size);
 
 			// WARNING: That shitty fucking photo UWP app steals the registration of some image files.  When this happens, we can't get the path info.  UWP is ABSOLUTE GARBAGE.
             if ((size <= 0) || (hresult != 1))
@@ -296,7 +296,7 @@ namespace Gorgon.Editor.ImageEditor.Native
 
             var result = new StringBuilder(size);
 
-            return AssocQueryString(AssociationFlags.DontRemapCLSID,
+            return AssocQueryString(AssociationFlags.DontRemapCLSID | AssociationFlags.RemapRunDLL,
                                     AssociationStringType.Executable,
                                     filePath,
                                     null,
