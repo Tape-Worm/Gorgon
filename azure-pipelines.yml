@@ -17,7 +17,8 @@ trigger:
   branches:
     include:
     - master
-    - 3.0
+    - Staging
+    - BugFixes
     
 steps:
 - task: PowerShell@2
