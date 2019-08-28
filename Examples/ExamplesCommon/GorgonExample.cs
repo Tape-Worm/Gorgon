@@ -205,6 +205,47 @@ namespace Gorgon.Examples
         /// Function to draw the statistics and the logo for the example.
         /// </summary>
         /// <param name="renderer">The 2D renderer that we are using.</param>
+        public static void DrawStatsAndLogo(IGorgon2DFluent renderer)
+        {
+            renderer.ValidateObject(nameof(renderer));
+
+            GorgonRenderTargetView currentRtv = renderer.Graphics.RenderTargets[0];
+
+            if ((currentRtv == null) || (_logo == null) || (_statsFont == null))
+            {
+                return;
+            }
+
+            // We won't include these in the draw call count. 
+            _statsText.Length = 0;
+            _statsText.AppendFormat("Average FPS: {0:0.0}\nFrame Delta: {1:0.00#} seconds\nDraw Call Count: {2}", GorgonTiming.AverageFPS, GorgonTiming.Delta, renderer.Graphics.DrawCallCount);
+
+            DX.Size2F measure = _statsFont.MeasureText(_statsText.ToString(), true);
+            var statsRegion = new DX.RectangleF(0, 0, currentRtv.Width, measure.Height + 4);
+            var logoRegion = new DX.RectangleF(currentRtv.Width - _logo.Width - 5, currentRtv.Height - _logo.Height - 2, _logo.Width, _logo.Height);
+
+            renderer
+                .Begin()
+                .DrawIf(() => ShowStatistics, r =>
+                {
+                    // Draw translucent window.
+                    r.DrawFilledRectangle(statsRegion, new GorgonColor(0, 0, 0, 0.5f));
+                    // Draw lines for separators.
+                    r.DrawLine(0, measure.Height + 3, currentRtv.Width, measure.Height + 3, GorgonColor.White);
+                    r.DrawLine(0, measure.Height + 4, currentRtv.Width, measure.Height + 4, GorgonColor.Black);
+
+                    // Draw FPS text.
+                    r.DrawString(_statsText.ToString(), DX.Vector2.One, _statsFont, GorgonColor.White);
+                })
+                .DrawFilledRectangle(logoRegion, GorgonColor.White, _logo, new DX.RectangleF(0, 0, 1, 1))
+                .End()
+                .Update(g => g.ResetDrawCallStatistics());
+        }
+
+        /// <summary>
+        /// Function to draw the statistics and the logo for the example.
+        /// </summary>
+        /// <param name="renderer">The 2D renderer that we are using.</param>
         public static void DrawStatsAndLogo(Gorgon2D renderer)
         {
             renderer.ValidateObject(nameof(renderer));

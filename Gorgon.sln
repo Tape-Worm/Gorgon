@@ -167,6 +167,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Depth", "Examples\Gorgon.Re
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaceScene", "Examples\Gorgon.Renderers.2D\SpaceScene\SpaceScene.csproj", "{DA326050-B5F2-47F6-BA6B-11EED65FD5B4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentInterface", "Examples\Gorgon.Renderers.2D\FluentInterface\FluentInterface.csproj", "{3AC09A65-F30F-4F37-ADCF-CFF7A858F5FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -437,6 +439,10 @@ Global
 		{DA326050-B5F2-47F6-BA6B-11EED65FD5B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA326050-B5F2-47F6-BA6B-11EED65FD5B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA326050-B5F2-47F6-BA6B-11EED65FD5B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AC09A65-F30F-4F37-ADCF-CFF7A858F5FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AC09A65-F30F-4F37-ADCF-CFF7A858F5FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AC09A65-F30F-4F37-ADCF-CFF7A858F5FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AC09A65-F30F-4F37-ADCF-CFF7A858F5FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -502,6 +508,7 @@ Global
 		{4C14D439-5508-4320-A164-7D4180680546} = {9491DE41-CAB3-4B22-9AFD-8BA8958453E5}
 		{CA2C267B-4ECC-4758-8AFC-4F60CE94986C} = {324C46F5-D8B6-4711-ABB7-8E22BD9EAE10}
 		{DA326050-B5F2-47F6-BA6B-11EED65FD5B4} = {324C46F5-D8B6-4711-ABB7-8E22BD9EAE10}
+		{3AC09A65-F30F-4F37-ADCF-CFF7A858F5FB} = {324C46F5-D8B6-4711-ABB7-8E22BD9EAE10}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BA39288E-AC40-4B74-8AE3-AB6E94D02D77}

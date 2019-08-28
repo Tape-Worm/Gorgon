@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -108,7 +109,34 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="updateMethod">A method supplied by the user to perform some custom logic on objects that need to be rendered.</param>
         /// <returns>The fluent interface for the 2D interface.</returns>
-        IGorgon2DFluent Update(Action updateMethod);
+        IGorgon2DFluent Update(Action<GorgonGraphics> updateMethod);
+
+        /// <summary>
+        /// Property to return the bounds of the sprite, with transformation applied.
+        /// </summary>
+        /// <param name="sprite">The sprite to retrieve the boundaries from.</param>
+        /// <param name="result">The measurement result.</param>
+        /// <returns>The fluent interface for the 2D interface.</returns>
+        /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>        
+        IGorgon2DFluent MeasureSprite(GorgonPolySprite sprite, out DX.RectangleF result);
+
+        /// <summary>
+        /// Property to return the bounds of the sprite, with transformation applied.
+        /// </summary>
+        /// <param name="sprite">The sprite to retrieve the boundaries from.</param>
+        /// <param name="result">The measurement result.</param>
+        /// <returns>The fluent interface for the 2D interface.</returns>
+        /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>        
+        IGorgon2DFluent MeasureSprite(GorgonTextSprite sprite, out DX.RectangleF result);
+
+        /// <summary>
+        /// Property to return the bounds of the sprite, with transformation applied.
+        /// </summary>
+        /// <param name="sprite">The sprite to retrieve the boundaries from.</param>
+        /// <param name="result">The measurement result.</param>
+        /// <returns>The fluent interface for the 2D interface.</returns>
+        /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>        
+        IGorgon2DFluent MeasureSprite(GorgonSprite sprite, out DX.RectangleF result);
     }
 
     /// <summary>
@@ -117,11 +145,45 @@ namespace Gorgon.Renderers
     public interface IGorgon2DDrawingFluent
     {
         /// <summary>
+        /// Function to execute a callback method for each item in an enumerable list of items.
+        /// </summary>
+        /// <param name="items">The list of items to enumerate through.</param>
+        /// <param name="drawCommands">The callback method containing the drawing commands.</param>
+        /// <returns>The fluent interface for drawing.</returns>
+        /// <remarks>
+        /// <para>
+        /// The <paramref name="drawCommands"/> parameter is a function that supplies the current iteration number of the loop, the fluent drawing interface and returns <b>true</b> to indicate that looping 
+        /// should continue, or <b>false</b> to stop looping. 
+        /// </para>
+        /// </remarks>
+        IGorgon2DDrawingFluent DrawEach<T>(IEnumerable<T> items, Func<T, IGorgon2DDrawingFluent, bool> drawCommands);
+
+        /// <summary>
+        /// Function to evaluate an expression and if the expression is <b>true</b>, then execute a series of drawing commands contained within a callback method.
+        /// </summary>
+        /// <param name="expression">The expression to evaluate.</param>
+        /// <param name="drawCommands">The callback method containing the drawing commands.</param>
+        /// <returns>The fluent interface for drawing.</returns>
+        IGorgon2DDrawingFluent DrawIf(Func<bool> expression, Action<IGorgon2DDrawingFluent> drawCommands);
+
+        /// <summary>
+        /// Function to execute a callback method containing drawing commands for the supplied amount of times.
+        /// </summary>
+        /// <param name="count">The number of times to loop.</param>
+        /// <param name="drawCommands">The callback method containing the drawing commands.</param>
+        /// <returns>The fluent interface for drawing.</returns>
+        /// <para>
+        /// The <paramref name="drawCommands"/> parameter is a function that supplies the current iteration number of the loop, the fluent drawing interface and returns <b>true</b> to indicate that looping 
+        /// should continue, or <b>false</b> to stop looping. 
+        /// </para>
+        IGorgon2DDrawingFluent DrawLoop(int count, Func<int, IGorgon2DDrawingFluent, bool> drawCommands);
+
+        /// <summary>
         /// Function to perform an arbitrary update of any required logic while rendering.
         /// </summary>
         /// <param name="updateMethod">A method supplied by the user to perform some custom logic on objects that need to be rendered.</param>
         /// <returns>The fluent interface for drawing.</returns>
-        IGorgon2DDrawingFluent Update(Action updateMethod);
+        IGorgon2DDrawingFluent Update(Action<IGorgon2DDrawingFluent> updateMethod);
 
         /// <summary>
         /// Function to draw a polygonal sprite.
@@ -402,6 +464,33 @@ namespace Gorgon.Renderers
                                            int textureArrayIndex = 0,
                                            GorgonSamplerState textureSampler = null,
                                            float depth = 0);
+
+        /// <summary>
+        /// Property to return the bounds of the sprite, with transformation applied.
+        /// </summary>
+        /// <param name="sprite">The sprite to retrieve the boundaries from.</param>
+        /// <param name="result">The measurement result.</param>
+        /// <returns>The fluent interface for drawing.</returns>        
+        /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>        
+        IGorgon2DDrawingFluent MeasureSprite(GorgonPolySprite sprite, out DX.RectangleF result);
+
+        /// <summary>
+        /// Property to return the bounds of the sprite, with transformation applied.
+        /// </summary>
+        /// <param name="sprite">The sprite to retrieve the boundaries from.</param>
+        /// <param name="result">The measurement result.</param>
+        /// <returns>The fluent interface for drawing.</returns>        
+        /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>        
+        IGorgon2DDrawingFluent MeasureSprite(GorgonTextSprite sprite, out DX.RectangleF result);
+
+        /// <summary>
+        /// Property to return the bounds of the sprite, with transformation applied.
+        /// </summary>
+        /// <param name="sprite">The sprite to retrieve the boundaries from.</param>
+        /// <param name="result">The measurement result.</param>
+        /// <returns>The fluent interface for drawing.</returns>        
+        /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>        
+        IGorgon2DDrawingFluent MeasureSprite(GorgonSprite sprite, out DX.RectangleF result);
 
         /// <summary>
         /// Function to end rendering.

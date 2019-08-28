@@ -2539,9 +2539,9 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="updateMethod">A method supplied by the user to perform some custom logic on objects that need to be rendered.</param>
         /// <returns>The fluent interface for drawing.</returns>
-        IGorgon2DDrawingFluent IGorgon2DDrawingFluent.Update(Action updateMethod)
+        IGorgon2DDrawingFluent IGorgon2DDrawingFluent.Update(Action<IGorgon2DDrawingFluent> updateMethod)
         {
-            updateMethod?.Invoke();
+            updateMethod?.Invoke(this);
             return this;
         }
 
@@ -2550,9 +2550,9 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="updateMethod">A method supplied by the user to perform some custom logic on objects that need to be rendered.</param>
         /// <returns>The fluent interface for the 2D interface.</returns>
-        IGorgon2DFluent IGorgon2DFluent.Update(Action updateMethod)
+        IGorgon2DFluent IGorgon2DFluent.Update(Action<GorgonGraphics> updateMethod)
         {
-            updateMethod?.Invoke();
+            updateMethod?.Invoke(Graphics);
             return this;
         }
 
@@ -2576,6 +2576,160 @@ namespace Gorgon.Renderers
         IGorgon2DFluent IGorgon2DDrawingFluent.End()
         {
             End();
+            return this;
+        }
+
+        /// <summary>Property to return the bounds of the sprite, with transformation applied.</summary>
+        /// <param name="sprite">The sprite to retrieve the boundaries from.</param>
+        /// <param name="result">The measurement result.</param>
+        /// <returns>The fluent interface for the 2D interface.</returns>
+        /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>
+        IGorgon2DFluent IGorgon2DFluent.MeasureSprite(GorgonPolySprite sprite, out DX.RectangleF result)
+        {
+            result = MeasureSprite(sprite);
+            return this;
+        }
+
+        /// <summary>Property to return the bounds of the sprite, with transformation applied.</summary>
+        /// <param name="sprite">The sprite to retrieve the boundaries from.</param>
+        /// <param name="result">The measurement result.</param>
+        /// <returns>The fluent interface for the 2D interface.</returns>
+        /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>
+        IGorgon2DFluent IGorgon2DFluent.MeasureSprite(GorgonTextSprite sprite, out DX.RectangleF result)
+        {
+            result = MeasureSprite(sprite);
+            return this;
+        }
+
+        /// <summary>Property to return the bounds of the sprite, with transformation applied.</summary>
+        /// <param name="sprite">The sprite to retrieve the boundaries from.</param>
+        /// <param name="result">The measurement result.</param>
+        /// <returns>The fluent interface for the 2D interface.</returns>
+        /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>
+        IGorgon2DFluent IGorgon2DFluent.MeasureSprite(GorgonSprite sprite, out DX.RectangleF result)
+        {
+            result = MeasureSprite(sprite);
+            return this;
+        }
+
+        /// <summary>Property to return the bounds of the sprite, with transformation applied.</summary>
+        /// <param name="sprite">The sprite to retrieve the boundaries from.</param>
+        /// <param name="result">The measurement result.</param>
+        /// <returns>The fluent interface for drawing.</returns>
+        /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>
+        IGorgon2DDrawingFluent IGorgon2DDrawingFluent.MeasureSprite(GorgonPolySprite sprite, out DX.RectangleF result)
+        {
+            result = MeasureSprite(sprite);
+            return this;
+        }
+
+        /// <summary>Property to return the bounds of the sprite, with transformation applied.</summary>
+        /// <param name="sprite">The sprite to retrieve the boundaries from.</param>
+        /// <param name="result">The measurement result.</param>
+        /// <returns>The fluent interface for drawing.</returns>
+        /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>
+        IGorgon2DDrawingFluent IGorgon2DDrawingFluent.MeasureSprite(GorgonTextSprite sprite, out DX.RectangleF result)
+        {
+            result = MeasureSprite(sprite);
+            return this;
+        }
+
+        /// <summary>Property to return the bounds of the sprite, with transformation applied.</summary>
+        /// <param name="sprite">The sprite to retrieve the boundaries from.</param>
+        /// <param name="result">The measurement result.</param>
+        /// <returns>The fluent interface for drawing.</returns>
+        /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>
+        IGorgon2DDrawingFluent IGorgon2DDrawingFluent.MeasureSprite(GorgonSprite sprite, out DX.RectangleF result)
+        {
+            result = MeasureSprite(sprite);
+            return this;
+        }
+
+        /// <summary>
+        /// Function to evaluate an expression and if the expression is <b>true</b>, then execute a series of drawing commands.
+        /// </summary>
+        /// <param name="expression">The expression to evaluate.</param>
+        /// <param name="drawCommands">The commands to execute.</param>
+        /// <returns>The fluent interface for drawing.</returns>
+        /// <exception cref="ArgumentNullException">Thrown if the <paramref name="expression"/> parameter is <b>null</b>.</exception>
+        IGorgon2DDrawingFluent IGorgon2DDrawingFluent.DrawIf(Func<bool> expression, Action<IGorgon2DDrawingFluent> drawCommands)
+        {
+            if (expression == null)
+            {
+                throw new ArgumentNullException(nameof(expression));
+            }
+
+            if (expression())
+            {
+                drawCommands?.Invoke(this);
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Function to execute a callback method for each item in an enumerable list of items.
+        /// </summary>
+        /// <param name="items">The list of items to enumerate through.</param>
+        /// <param name="drawCommands">The callback method containing the drawing commands.</param>
+        /// <returns>The fluent interface for drawing.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="items"/> parameter is <b>null</b>.</exception>
+        /// <remarks>
+        /// <para>
+        /// The <paramref name="drawCommands"/> parameter is a function that supplies the current iteration number of the loop, the fluent drawing interface and returns <b>true</b> to indicate that looping 
+        /// should continue, or <b>false</b> to stop looping. 
+        /// </para>
+        /// </remarks>
+        IGorgon2DDrawingFluent IGorgon2DDrawingFluent.DrawEach<T>(IEnumerable<T> items, Func<T, IGorgon2DDrawingFluent, bool> drawCommands)
+        {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
+            if (drawCommands == null)
+            {
+                return this;
+            }
+
+            foreach (T item in items)
+            {
+                if (!drawCommands(item, this))
+                {
+                    return this;
+                }
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Function to execute a callback method containing drawing commands for the supplied amount of times.
+        /// </summary>
+        /// <param name="count">The number of times to loop.</param>
+        /// <param name="drawCommands">The callback method containing the drawing commands.</param>
+        /// <returns>The fluent interface for drawing.</returns>
+        /// <remarks>
+        /// <para>
+        /// The <paramref name="drawCommands"/> parameter is a function that supplies the current iteration number of the loop, the fluent drawing interface and returns <b>true</b> to indicate that looping 
+        /// should continue, or <b>false</b> to stop looping. 
+        /// </para>
+        /// </remarks>
+        IGorgon2DDrawingFluent IGorgon2DDrawingFluent.DrawLoop(int count, Func<int, IGorgon2DDrawingFluent, bool> drawCommands)
+        {
+            if (drawCommands == null)
+            {
+                return this;
+            }
+
+            for (int i = 0; i < count; ++i)
+            {
+                if (!drawCommands(i, this))
+                {
+                    return this;
+                }
+            }
+
             return this;
         }
         #endregion
