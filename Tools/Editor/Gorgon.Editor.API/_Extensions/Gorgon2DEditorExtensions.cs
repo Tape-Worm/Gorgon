@@ -135,8 +135,9 @@ namespace Gorgon.IO
         /// <param name="imagePath">The path to the image.</param>
         /// <param name="usage">The intended usage for the texture.</param>
         /// <param name="codecs">The list of available codecs.</param>
+        /// <param name="convertToPremultiplied"><b>true</b> to convert the image data to premultiplied alpha, or <b>false</b> to leave as-is.</param>
         /// <returns>A new texture containing the sprite texture data.</returns>
-        private static GorgonTexture2D GetTexture(GorgonGraphics graphics, IGorgonFileSystem fileSystem, IProjectMetadata metadata, string imagePath, ResourceUsage usage, IReadOnlyDictionary<string, IGorgonImageCodec> codecs)
+        private static GorgonTexture2D GetTexture(GorgonGraphics graphics, IGorgonFileSystem fileSystem, IProjectMetadata metadata, string imagePath, ResourceUsage usage, IReadOnlyDictionary<string, IGorgonImageCodec> codecs, bool convertToPremultiplied)
         {
             // First, check to see if this texture isn't already loaded into memory.
             GorgonTexture2D texture = graphics.LocateResourcesByName<GorgonTexture2D>(imagePath).FirstOrDefault();
@@ -170,6 +171,7 @@ namespace Gorgon.IO
             {
                 texture = GorgonTexture2D.FromStream(graphics, fileStream, codec, file.Size, new GorgonTexture2DLoadOptions
                 {
+                    ConvertToPremultipliedAlpha = convertToPremultiplied,
                     IsTextureCube = false,
                     Name = file.FullPath,
                     Binding = TextureBinding.ShaderResource,
@@ -190,6 +192,7 @@ namespace Gorgon.IO
         /// <param name="spriteCodecs">[Optional] A list of additonal codecs used to read sprite data.</param>
         /// <param name="imageCodecs">[Optional] A list of additonal codecs used to read image data.</param>
         /// <param name="overrideTexture">[Optional] A texture view to use instead of loading the texture from the file system.</param>
+        /// <param name="usePremultipliedAlpha">[Optional] <b>true</b> to convert the associated texture to use premultiplied alpha when loading, <b>false</b> to use standard alpha.</param>
         /// <returns>A new <see cref="GorgonSprite"/>, along with its associated texture.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileSystem"/>, <paramref name="renderer"/>, or the <paramref name="path"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
@@ -210,6 +213,8 @@ namespace Gorgon.IO
         /// When the method returns, it returns a tuple containing the sprite that was loaded, and the associated texture resource for the sprite. If the texture could not be loaded for any reason, 
         /// and the <paramref name="overrideTexture"/> parameter is <b>null</b>, then the texture return value will be <b>null</b>, and no texture will be assigned to the sprite.
         /// </para>
+        /// The <paramref name="usePremultipliedAlpha"/> parameter will convert the texture associated with the sprite to use premultiplied alpha instead of standard alpha when set to <b>true</b>. This 
+        /// only applies to textures that are actually loaded (i.e. not cached) from the file system. If <paramref name="overrideTexture"/> is not <b>null</b>, this parameter will do nothing.
         /// <para>
         /// <h2>Technical info</h2>
         /// <para>
@@ -232,7 +237,7 @@ namespace Gorgon.IO
         /// </note>
         /// </para>
         /// </remarks>
-        public static (GorgonSprite sprite, GorgonTexture2D texture) LoadSprite(this IGorgonFileSystem fileSystem, Gorgon2D renderer, string path, ResourceUsage textureUsage = ResourceUsage.Default, IReadOnlyList<IGorgonSpriteCodec> spriteCodecs = null, IReadOnlyList<IGorgonImageCodec> imageCodecs = null, GorgonTexture2DView overrideTexture = null)
+        public static (GorgonSprite sprite, GorgonTexture2D texture) LoadSprite(this IGorgonFileSystem fileSystem, Gorgon2D renderer, string path, ResourceUsage textureUsage = ResourceUsage.Default, IReadOnlyList<IGorgonSpriteCodec> spriteCodecs = null, IReadOnlyList<IGorgonImageCodec> imageCodecs = null, GorgonTexture2DView overrideTexture = null, bool usePremultipliedAlpha = false)
         {
             if (fileSystem == null)
             {
@@ -292,7 +297,7 @@ namespace Gorgon.IO
             {
                 if (fileMetadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out string imagePath))
                 {
-                    texture = GetTexture(renderer.Graphics, fileSystem, metaData, imagePath, textureUsage, supportedImageCodecs);
+                    texture = GetTexture(renderer.Graphics, fileSystem, metaData, imagePath, textureUsage, supportedImageCodecs, usePremultipliedAlpha);
                     overrideTexture = texture.GetShaderResourceView();
                 }
             }

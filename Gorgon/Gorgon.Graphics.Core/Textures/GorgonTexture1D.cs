@@ -1474,7 +1474,7 @@ namespace Gorgon.Graphics.Core
 
 	        return view;
         }
-        
+
         /// <summary>
         /// Function to load a texture from a <see cref="Stream"/>.
         /// </summary>
@@ -1510,6 +1510,10 @@ namespace Gorgon.Graphics.Core
         ///		<item>
         ///			<term>Multisample info</term>
         ///			<description>Not used by 1D textures and is ignored.</description>
+        ///		</item>
+        ///		<item>
+        ///		    <term>ConvertToPremultipliedAlpha</term>
+        ///		    <description>Converts the image to premultiplied alpha before uploading the image data to the texture.</description>
         ///		</item>
         /// </list>
         /// </para>
@@ -1558,6 +1562,11 @@ namespace Gorgon.Graphics.Core
 
             using (IGorgonImage image = codec.LoadFromStream(stream, size))
             {
+                if (options.ConvertToPremultipliedAlpha)
+                {
+                    image.ConvertToPremultipliedAlpha();
+                }
+
                 return new GorgonTexture1D(graphics, image, options);
             }
         }
@@ -1591,6 +1600,10 @@ namespace Gorgon.Graphics.Core
         ///		<item>
         ///			<term>Multisample info</term>
         ///			<description>Not used by 1D textures and is ignored.</description>
+        ///		</item>
+        ///		<item>
+        ///		    <term>ConvertToPremultipliedAlpha</term>
+        ///		    <description>Converts the image to premultiplied alpha before uploading the image data to the texture.</description>
         ///		</item>
         /// </list>
         /// </para>
@@ -1629,6 +1642,11 @@ namespace Gorgon.Graphics.Core
 
             using (IGorgonImage image = codec.LoadFromFile(filePath))
             {
+                if (options.ConvertToPremultipliedAlpha)
+                {
+                    image.ConvertToPremultipliedAlpha();
+                }
+
                 return new GorgonTexture1D(graphics, image, options);
             }
         }

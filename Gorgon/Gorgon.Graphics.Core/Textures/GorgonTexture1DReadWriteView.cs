@@ -514,6 +514,10 @@ namespace Gorgon.Graphics.Core
         ///			<term>Multisample info</term>
         ///			<description>When defined (i.e. not <b>null</b>), defines the multisampling to apply to the texture. If omitted, then the default is <see cref="GorgonMultisampleInfo.NoMultiSampling"/>.</description>
         ///		</item>
+        ///		<item>
+        ///		    <term>ConvertToPremultipliedAlpha</term>
+        ///		    <description>Converts the image to premultiplied alpha before uploading the image data to the texture.</description>
+        ///		</item>
         /// </list>
         /// </para>
         /// <para>
@@ -592,6 +596,10 @@ namespace Gorgon.Graphics.Core
         ///		<item>
         ///			<term>Multisample info</term>
         ///			<description>When defined (i.e. not <b>null</b>), defines the multisampling to apply to the texture. If omitted, then the default is <see cref="GorgonMultisampleInfo.NoMultiSampling"/>.</description>
+        ///		</item>
+        ///		<item>
+        ///		    <term>ConvertToPremultipliedAlpha</term>
+        ///		    <description>Converts the image to premultiplied alpha before uploading the image data to the texture.</description>
         ///		</item>
         /// </list>
         /// </para>

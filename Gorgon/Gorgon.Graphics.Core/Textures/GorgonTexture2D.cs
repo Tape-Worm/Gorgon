@@ -2070,7 +2070,7 @@ namespace Gorgon.Graphics.Core
 
 	        return view;
 	    }
-        
+
         /// <summary>
         /// Function to load a texture from a <see cref="Stream"/>.
         /// </summary>
@@ -2106,6 +2106,10 @@ namespace Gorgon.Graphics.Core
         ///		<item>
         ///			<term>Multisample info</term>
         ///			<description>When defined (i.e. not <b>null</b>), defines the multisampling to apply to the texture. If omitted, then the default is <see cref="GorgonMultisampleInfo.NoMultiSampling"/>.</description>
+        ///		</item>
+        ///		<item>
+        ///		    <term>ConvertToPremultipliedAlpha</term>
+        ///		    <description>Converts the image to premultiplied alpha before uploading the image data to the texture.</description>
         ///		</item>
         /// </list>
         /// </para>
@@ -2154,6 +2158,11 @@ namespace Gorgon.Graphics.Core
 
             using (IGorgonImage image = codec.LoadFromStream(stream, size))
             {
+                if (options.ConvertToPremultipliedAlpha)
+                {
+                    image.ConvertToPremultipliedAlpha();
+                }
+
                 return new GorgonTexture2D(graphics, image, options);
             }
         }
@@ -2187,6 +2196,10 @@ namespace Gorgon.Graphics.Core
         ///		<item>
         ///			<term>Multisample info</term>
         ///			<description>When defined (i.e. not <b>null</b>), defines the multisampling to apply to the texture. If omitted, then the default is <see cref="GorgonMultisampleInfo.NoMultiSampling"/>.</description>
+        ///		</item>
+        ///		<item>
+        ///		    <term>ConvertToPremultipliedAlpha</term>
+        ///		    <description>Converts the image to premultiplied alpha before uploading the image data to the texture.</description>
         ///		</item>
         /// </list>
         /// </para>
@@ -2225,6 +2238,11 @@ namespace Gorgon.Graphics.Core
 
             using (IGorgonImage image = codec.LoadFromFile(filePath))
             {
+                if (options.ConvertToPremultipliedAlpha)
+                {
+                    image.ConvertToPremultipliedAlpha();
+                }
+
                 return new GorgonTexture2D(graphics, image, options);
             }
         }

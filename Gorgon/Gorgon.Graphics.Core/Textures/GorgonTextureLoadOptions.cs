@@ -43,6 +43,9 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to set or return the intended usage for the texture.
         /// </summary>
+        /// <remarks>
+        /// The default value is <see cref="ResourceUsage.Default"/>.
+        /// </remarks>
         public ResourceUsage Usage
         {
             get;
@@ -53,10 +56,25 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to set or return the allowed bindings for the texture.
         /// </summary>
+        /// <remarks>
+        /// The default value is <see cref="TextureBinding.ShaderResource"/>.
+        /// </remarks>
         public TextureBinding Binding
         {
             get;
             set;
         } = TextureBinding.ShaderResource;
+
+        /// <summary>
+        /// Property to set or return whether to convert the texture data to premultiplied alpha when loading.
+        /// </summary>
+        /// <remarks>
+        /// The default value is <b>false</b>.
+        /// </remarks>
+        public bool ConvertToPremultipliedAlpha
+        {
+            get;
+            set;
+        }
    }
 }
