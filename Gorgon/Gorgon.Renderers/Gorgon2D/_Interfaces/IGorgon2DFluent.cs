@@ -117,6 +117,13 @@ namespace Gorgon.Renderers
     public interface IGorgon2DDrawingFluent
     {
         /// <summary>
+        /// Function to perform an arbitrary update of any required logic while rendering.
+        /// </summary>
+        /// <param name="updateMethod">A method supplied by the user to perform some custom logic on objects that need to be rendered.</param>
+        /// <returns>The fluent interface for drawing.</returns>
+        IGorgon2DDrawingFluent Update(Action updateMethod);
+
+        /// <summary>
         /// Function to draw a polygonal sprite.
         /// </summary>
         /// <param name="sprite">The polygon sprite to draw.</param>
