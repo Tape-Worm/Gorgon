@@ -25,8 +25,8 @@
 #endregion
 
 using System;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Collections;

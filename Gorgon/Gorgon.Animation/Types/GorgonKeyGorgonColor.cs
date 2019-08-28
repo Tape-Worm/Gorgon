@@ -43,34 +43,34 @@ namespace Gorgon.Animation
     /// </remarks>
     /// <seealso cref="IGorgonTrack{T}"/>
     public class GorgonKeyGorgonColor
-		: IGorgonKeyFrame
-	{
-		#region Variables.
+        : IGorgonKeyFrame
+    {
+        #region Variables.
         // The value for the key frame.
-	    private GorgonColor _value;
+        private GorgonColor _value;
         #endregion
 
         #region Properties.
-	    /// <summary>
-	    /// Property to set or return the value to store in the key frame.
-	    /// </summary>
-	    public ref GorgonColor Value => ref _value;
+        /// <summary>
+        /// Property to set or return the value to store in the key frame.
+        /// </summary>
+        public ref GorgonColor Value => ref _value;
 
-	    /// <summary>
-	    /// Property to return the time for the key frame in the animation.
-	    /// </summary>
-	    public float Time
-	    {
-	        get;
-	    }
+        /// <summary>
+        /// Property to return the time for the key frame in the animation.
+        /// </summary>
+        public float Time
+        {
+            get;
+        }
 
-	    /// <summary>
-	    /// Property to return the type of data for this key frame.
-	    /// </summary>
-	    public Type DataType
-	    {
-	        get;
-	    } = typeof(GorgonColor);
+        /// <summary>
+        /// Property to return the type of data for this key frame.
+        /// </summary>
+        public Type DataType
+        {
+            get;
+        } = typeof(GorgonColor);
         #endregion
 
         #region Methods.
@@ -88,10 +88,10 @@ namespace Gorgon.Animation
         /// <param name="time">The time for the key frame.</param>
         /// <param name="value">The value to apply to the key frame.</param>
         public GorgonKeyGorgonColor(float time, GorgonColor value)
-		{
-			Time = time;
-			_value = value;
-		}
+        {
+            Time = time;
+            _value = value;
+        }
         #endregion
     }
 }

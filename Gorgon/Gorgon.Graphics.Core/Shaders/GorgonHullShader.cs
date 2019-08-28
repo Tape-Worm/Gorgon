@@ -96,9 +96,9 @@ namespace Gorgon.Graphics.Core
         {
             graphics.Log.Print($"Creating {ShaderType} '{name}' ({ID})", LoggingLevel.Verbose);
             _shader = new D3D11.HullShader(graphics.D3DDevice, byteCode)
-                      {
-                          DebugName = name + "_ID3D11HullShader"
-                      };
+            {
+                DebugName = name + "_ID3D11HullShader"
+            };
         }
         #endregion
     }

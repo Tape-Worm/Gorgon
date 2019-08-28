@@ -30,15 +30,15 @@ using Gorgon.Properties;
 
 namespace Gorgon.Graphics
 {
-	/// <summary>
-	/// A structure with a width, height and depth.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This value type merely represents the dimensions of a box, it does not draw a box. 
-	/// </para>
-	/// </remarks>
-	public struct GorgonBox
+    /// <summary>
+    /// A structure with a width, height and depth.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This value type merely represents the dimensions of a box, it does not draw a box. 
+    /// </para>
+    /// </remarks>
+    public struct GorgonBox
         : IGorgonEquatableByRef<GorgonBox>
     {
         #region Variables.
@@ -46,39 +46,39 @@ namespace Gorgon.Graphics
         /// An empty box.
         /// </summary>
 	    public static readonly GorgonBox Empty = new GorgonBox
-	    {
+        {
             X = 0,
             Y = 0,
             Z = 0,
             Width = 0,
             Height = 0,
             Depth = 0
-	    };
+        };
 
         /// <summary>
 		/// Horizontal position.
 		/// </summary>
 		public int X;
-		/// <summary>
-		/// Vertical position
-		/// </summary>
-		public int Y;
-		/// <summary>
-		/// Depth position.
-		/// </summary>
-		public int Z;
-		/// <summary>
-		/// Width of the box.
-		/// </summary>
-		public int Width;
-		/// <summary>
-		/// Height of the box.
-		/// </summary>
-		public int Height;
-		/// <summary>
-		/// Depth of the box.
-		/// </summary>
-		public int Depth;
+        /// <summary>
+        /// Vertical position
+        /// </summary>
+        public int Y;
+        /// <summary>
+        /// Depth position.
+        /// </summary>
+        public int Z;
+        /// <summary>
+        /// Width of the box.
+        /// </summary>
+        public int Width;
+        /// <summary>
+        /// Height of the box.
+        /// </summary>
+        public int Height;
+        /// <summary>
+        /// Depth of the box.
+        /// </summary>
+        public int Depth;
         #endregion
 
         #region Properties.
@@ -87,14 +87,14 @@ namespace Gorgon.Graphics
         /// </summary>
 	    public bool IsEmpty => Width == 0 && Height == 0 && Depth == 0 && X == 0 && Y == 0 && Z == 0;
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return the left value for the box.
         /// </summary>
         public int Left
         {
             get => X;
-			set => X = value;
-		}
+            set => X = value;
+        }
 
         /// <summary>
         /// Property to set or return the top value for the box.
@@ -102,7 +102,7 @@ namespace Gorgon.Graphics
         public int Top
         {
             get => Y;
-	        set => Y = value;
+            set => Y = value;
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace Gorgon.Graphics
         public int Front
         {
             get => Z;
-	        set => Z = value;
+            set => Z = value;
         }
 
         /// <summary>
@@ -119,12 +119,12 @@ namespace Gorgon.Graphics
         /// </summary>
         public int Right => X + Width;
 
-		/// <summary>
+        /// <summary>
         /// Property to return the bottom value of the box.
         /// </summary>
         public int Bottom => Y + Height;
 
-		/// <summary>
+        /// <summary>
         /// Property to return the back value of the box.
         /// </summary>
         public int Back => Z + Depth;
@@ -195,9 +195,9 @@ namespace Gorgon.Graphics
         public static GorgonBox Intersect(GorgonBox box1, GorgonBox box2)
         {
 
-			Intersect(in box1, in box2, out GorgonBox result);
+            Intersect(in box1, in box2, out GorgonBox result);
 
-			return result;
+            return result;
         }
 
         /// <summary>
@@ -208,9 +208,9 @@ namespace Gorgon.Graphics
 	    public GorgonBox Intersect(GorgonBox box)
         {
 
-			Intersect(in this, in box, out GorgonBox result);
+            Intersect(in this, in box, out GorgonBox result);
 
-			return result;
+            return result;
         }
 
         /// <summary>

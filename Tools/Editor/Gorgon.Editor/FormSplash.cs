@@ -35,107 +35,107 @@ namespace Gorgon.Editor
     /// <summary>
     /// Splash screen form.
     /// </summary>
-    partial class FormSplash 
-		: Form
-	{
-		#region Variables.
-		// The application version number.
-		private readonly Version _appVersion;
-		#endregion
+    partial class FormSplash
+        : Form
+    {
+        #region Variables.
+        // The application version number.
+        private readonly Version _appVersion;
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to set or return the text shown in the information label.
-		/// </summary>
-		public string InfoText
-		{
-			get => labelInfo.Text;
-			set
-			{
-				labelInfo.Text = value;
+        #region Properties.
+        /// <summary>
+        /// Property to set or return the text shown in the information label.
+        /// </summary>
+        public string InfoText
+        {
+            get => labelInfo.Text;
+            set
+            {
+                labelInfo.Text = value;
 
-				// Print any text to the log.
-				Program.Log.Print("AppStart: {0}", LoggingLevel.Intermediate, value);
+                // Print any text to the log.
+                Program.Log.Print("AppStart: {0}", LoggingLevel.Intermediate, value);
 
-				labelInfo.Refresh();
-			}
-		}
-		#endregion
+                labelInfo.Refresh();
+            }
+        }
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to update the version text.
-		/// </summary>
-		private void UpdateVersion()
-		{
-			labelVersionNumber.Text = _appVersion.ToString();
-			labelVersionNumber.Refresh();
-		}
+        #region Methods.
+        /// <summary>
+        /// Function to update the version text.
+        /// </summary>
+        private void UpdateVersion()
+        {
+            labelVersionNumber.Text = _appVersion.ToString();
+            labelVersionNumber.Refresh();
+        }
 
-		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.
-		/// </summary>
-		/// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs" /> that contains the event data.</param>
-		protected override void OnFormClosing(FormClosingEventArgs e)
-		{
-			base.OnFormClosing(e);
+        /// <summary>
+        /// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.
+        /// </summary>
+        /// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs" /> that contains the event data.</param>
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
 
-			if (e.CloseReason == CloseReason.UserClosing)
-			{
-				e.Cancel = true;
-			}
-		}
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                e.Cancel = true;
+            }
+        }
 
-		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.Form.Load"/> event.
-		/// </summary>
-		/// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
-		protected override void OnLoad(EventArgs e)
-		{
-			base.OnLoad(e);
+        /// <summary>
+        /// Raises the <see cref="E:System.Windows.Forms.Form.Load"/> event.
+        /// </summary>
+        /// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
 
-			UpdateVersion();
+            UpdateVersion();
 
-			InfoText = Resources.GOREDIT_TEXT_INITIALIZING;
-		}
+            InfoText = Resources.GOREDIT_TEXT_INITIALIZING;
+        }
 
-		/// <summary>
-		/// Function to fade the splash screen in or out.
-		/// </summary>
-		/// <param name="fadeIn"><b>true</b> to fade in, <b>false</b> to fade out.</param>
-		/// <param name="time">Time, in milliseconds, for the fade.</param>
-		public async Task FadeAsync(bool fadeIn, int time)
-		{
-		    Refresh();
-            
-			// Fade the splash screen in.
-			while (((fadeIn) && (Opacity < 1))
+        /// <summary>
+        /// Function to fade the splash screen in or out.
+        /// </summary>
+        /// <param name="fadeIn"><b>true</b> to fade in, <b>false</b> to fade out.</param>
+        /// <param name="time">Time, in milliseconds, for the fade.</param>
+        public async Task FadeAsync(bool fadeIn, int time)
+        {
+            Refresh();
+
+            // Fade the splash screen in.
+            while (((fadeIn) && (Opacity < 1))
                 || ((!fadeIn) && (Opacity > 0)))
-			{
-			    await Task.Delay(time);
+            {
+                await Task.Delay(time);
 
-			    if (fadeIn)
-			    {
-			        Opacity += 0.05;
-			    }
-			    else
-			    {
-			        Opacity -= 0.05f;
-			    }
-			}
-		}
-		#endregion
+                if (fadeIn)
+                {
+                    Opacity += 0.05;
+                }
+                else
+                {
+                    Opacity -= 0.05f;
+                }
+            }
+        }
+        #endregion
 
-		#region Constructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="FormSplash"/> class.
-		/// </summary>
-		public FormSplash()
-		{
-			InitializeComponent();
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FormSplash"/> class.
+        /// </summary>
+        public FormSplash()
+        {
+            InitializeComponent();
 
-			_appVersion = GetType().Assembly.GetName().Version;
-		}
-		#endregion
-	}
+            _appVersion = GetType().Assembly.GetName().Version;
+        }
+        #endregion
+    }
 }

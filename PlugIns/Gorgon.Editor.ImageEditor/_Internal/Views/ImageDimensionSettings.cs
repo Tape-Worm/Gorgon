@@ -26,19 +26,19 @@
 
 using System;
 using System.ComponentModel;
-using Gorgon.Editor.UI;
+using System.Windows.Forms;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.ViewModels;
-using Gorgon.Graphics.Imaging;
-using System.Windows.Forms;
+using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
+using Gorgon.Graphics.Imaging;
 
 namespace Gorgon.Editor.ImageEditor
 {
     /// <summary>
     /// The panel used to provide settings for image import resizing.
     /// </summary>
-    internal partial class ImageDimensionSettings 
+    internal partial class ImageDimensionSettings
         : EditorSubPanelCommon, IDataContext<IDimensionSettings>
     {
         #region Properties.
@@ -66,8 +66,8 @@ namespace Gorgon.Editor.ImageEditor
                     ComboImageFilter.Enabled = LabelAnchor.Enabled = false;
                 return;
             }
-            
-            LabelAnchor.Enabled = AlignmentPicker.Enabled = RadioCrop.Checked;                        
+
+            LabelAnchor.Enabled = AlignmentPicker.Enabled = RadioCrop.Checked;
             LabelImageFilter.Enabled = ComboImageFilter.Enabled = RadioResize.Checked;
         }
 
@@ -84,7 +84,7 @@ namespace Gorgon.Editor.ImageEditor
                 return;
             }
 
-            LabelMipLevels.Enabled = NumericMipLevels.Enabled = 
+            LabelMipLevels.Enabled = NumericMipLevels.Enabled =
             LabelMipLevels.Visible = NumericMipLevels.Visible = dataContext.MipSupport;
         }
 
@@ -155,7 +155,7 @@ namespace Gorgon.Editor.ImageEditor
             switch (e.PropertyName)
             {
                 case nameof(IDimensionSettings.CurrentMode):
-                    RadioCrop.Checked = (DataContext.CurrentMode == CropResizeMode.Crop) 
+                    RadioCrop.Checked = (DataContext.CurrentMode == CropResizeMode.Crop)
                                     || (DataContext.CurrentMode == CropResizeMode.None);
                     RadioResize.Checked = !RadioCrop.Checked;
                     break;
@@ -287,7 +287,7 @@ namespace Gorgon.Editor.ImageEditor
         {
             RadioCrop.Enabled = RadioResize.Enabled = RadioCrop.Checked = RadioResize.Checked = false;
             AlignmentPicker.Alignment = Gorgon.UI.Alignment.Center;
-            AlignmentPicker.Enabled = false;            
+            AlignmentPicker.Enabled = false;
             ComboImageFilter.Text = string.Empty;
             ComboImageFilter.Items.Clear();
             UpdateLabels(null);
@@ -307,7 +307,7 @@ namespace Gorgon.Editor.ImageEditor
             }
 
             RadioResize.Enabled = RadioCrop.Enabled = true;
-            
+
             switch (dataContext.CurrentMode)
             {
                 case CropResizeMode.Resize:
@@ -317,7 +317,7 @@ namespace Gorgon.Editor.ImageEditor
                     RadioCrop.Checked = true;
                     break;
             }
-            
+
             AlignmentPicker.Alignment = dataContext.CropAlignment;
             ComboImageFilter.SelectedItem = dataContext.ImageFilter;
             UpdateLabels(dataContext);
@@ -327,7 +327,7 @@ namespace Gorgon.Editor.ImageEditor
             UpdateNumericUpDown(NumericMipLevels, dataContext.MaxMipLevels, dataContext.MipLevels);
             UpdateNumericUpDown(NumericDepthOrArray, dataContext.MaxDepthOrArrayIndices, dataContext.DepthSlicesOrArrayIndices);
         }
-        
+
         /// <summary>Function to cancel the change.</summary>
         protected override void OnCancel()
         {

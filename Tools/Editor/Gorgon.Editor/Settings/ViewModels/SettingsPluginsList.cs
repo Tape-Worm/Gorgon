@@ -40,9 +40,9 @@ namespace Gorgon.Editor.ViewModels
         : ViewModelBase<SettingsPlugInsListParameters>, ISettingsPlugInsList
     {
         #region Variables.
-		// The current plug in.
+        // The current plug in.
         private ISettingsPlugInListItem _current;
-		// The message display service.
+        // The message display service.
         private IMessageDisplayService _messageDisplay;
         #endregion
 
@@ -86,7 +86,7 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Methods.
-		/// <summary>
+        /// <summary>
         /// Function to select a plug in from the list.
         /// </summary>
         /// <param name="index">The index of the plug in.</param>
@@ -116,8 +116,8 @@ namespace Gorgon.Editor.ViewModels
         protected override void OnInitialize(SettingsPlugInsListParameters injectionParameters)
         {
             _messageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(injectionParameters.MessageDisplay), nameof(injectionParameters));
-            PlugIns = new ObservableCollection<ISettingsPlugInListItem>(injectionParameters.PlugIns?.OrderBy(item => item.Name, StringComparer.CurrentCultureIgnoreCase) 
-																			?? throw new ArgumentMissingException(nameof(injectionParameters.PlugIns), nameof(injectionParameters)));
+            PlugIns = new ObservableCollection<ISettingsPlugInListItem>(injectionParameters.PlugIns?.OrderBy(item => item.Name, StringComparer.CurrentCultureIgnoreCase)
+                                                                            ?? throw new ArgumentMissingException(nameof(injectionParameters.PlugIns), nameof(injectionParameters)));
         }
         #endregion
 

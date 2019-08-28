@@ -30,34 +30,34 @@ using Gorgon.Diagnostics.LogProviders;
 
 namespace Gorgon.Diagnostics
 {
-	/// <summary>
-	/// An implementation of the <see cref="IGorgonThreadedLog"/> type that does nothing.
-	/// </summary>
-	internal class LogDummy
-		: IGorgonThreadedLog
-	{
-		#region Properties.
-		/// <summary>
-		/// Property to return the ID of the thread that created the log object.
-		/// </summary>
-		public int ThreadID
-		{
-			get;
-		}
+    /// <summary>
+    /// An implementation of the <see cref="IGorgonThreadedLog"/> type that does nothing.
+    /// </summary>
+    internal class LogDummy
+        : IGorgonThreadedLog
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to return the ID of the thread that created the log object.
+        /// </summary>
+        public int ThreadID
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to set or return the filtering level of this log.
-		/// </summary>
-		public LoggingLevel LogFilterLevel
-		{
-			get;
-			set;
-		}
+        /// <summary>
+        /// Property to set or return the filtering level of this log.
+        /// </summary>
+        public LoggingLevel LogFilterLevel
+        {
+            get;
+            set;
+        }
 
-		/// <summary>
-		/// Property to return the name of the application that is being logged.
-		/// </summary>
-		public string LogApplication => string.Empty;
+        /// <summary>
+        /// Property to return the name of the application that is being logged.
+        /// </summary>
+        public string LogApplication => string.Empty;
 
         /// <summary>
         /// Property to return the provider for this log.
@@ -77,20 +77,20 @@ namespace Gorgon.Diagnostics
         /// </para>
         /// </remarks>
         public void LogException(Exception ex)
-		{
-			// Intentionally left blank.
-		}
+        {
+            // Intentionally left blank.
+        }
 
-		/// <summary>
-		/// Function to print a formatted line of text to the log.
-		/// </summary>
-		/// <param name="formatSpecifier">Format specifier for the line.</param>
-		/// <param name="level">Level that this message falls under.</param>
-		/// <param name="arguments">List of optional arguments.</param>
-		public void Print(string formatSpecifier, LoggingLevel level, params object[] arguments)
-		{
-			// Intentionally left blank.
-		}
+        /// <summary>
+        /// Function to print a formatted line of text to the log.
+        /// </summary>
+        /// <param name="formatSpecifier">Format specifier for the line.</param>
+        /// <param name="level">Level that this message falls under.</param>
+        /// <param name="arguments">List of optional arguments.</param>
+        public void Print(string formatSpecifier, LoggingLevel level, params object[] arguments)
+        {
+            // Intentionally left blank.
+        }
 
         /// <summary>
         /// Function to perform any one time inital logging.

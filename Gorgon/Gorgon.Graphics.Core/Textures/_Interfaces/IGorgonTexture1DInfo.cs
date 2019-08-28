@@ -38,14 +38,14 @@ namespace Gorgon.Graphics.Core
     /// </remarks>
     public interface IGorgonTexture1DInfo
         : IGorgonNamedObject
-	{
-		/// <summary>
-		/// Property to return the width of the texture, in pixels.
-		/// </summary>
-		int Width
-		{
-			get;
-		}
+    {
+        /// <summary>
+        /// Property to return the width of the texture, in pixels.
+        /// </summary>
+        int Width
+        {
+            get;
+        }
 
         /// <summary>
         /// Property to return the number of array levels for a texture.
@@ -62,60 +62,60 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// </remarks>
         int ArrayCount
-		{
-			get;
-		}
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the format of the texture.
-		/// </summary>
-		BufferFormat Format
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the format of the texture.
+        /// </summary>
+        BufferFormat Format
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the number of mip-map levels for the texture.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// If the texture is multisampled, this value must be set to 1.
-		/// </para>
-		/// <para>
-		/// This value is defaulted to 1.
-		/// </para>
-		/// </remarks>
-		int MipLevels
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the number of mip-map levels for the texture.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// If the texture is multisampled, this value must be set to 1.
+        /// </para>
+        /// <para>
+        /// This value is defaulted to 1.
+        /// </para>
+        /// </remarks>
+        int MipLevels
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the intended usage flags for this texture.
-		/// </summary>
-		/// <remarks>
-		/// This value is defaulted to <see cref="ResourceUsage.Default"/>.
-		/// </remarks>
-		ResourceUsage Usage
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the intended usage flags for this texture.
+        /// </summary>
+        /// <remarks>
+        /// This value is defaulted to <see cref="ResourceUsage.Default"/>.
+        /// </remarks>
+        ResourceUsage Usage
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the flags to determine how the texture will be bound with the pipeline when rendering.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// If the <see cref="Usage"/> property is set to <see cref="ResourceUsage.Staging"/>, then the texture must be created with a value of <see cref="TextureBinding.None"/> as staging textures do not 
-		/// support bindings of any kind. If this value is set to anything other than <see cref="TextureBinding.None"/>, an exception will be thrown.
-		/// </para>
-		/// <para>
-		/// This value is defaulted to <see cref="TextureBinding.ShaderResource"/>. 
-		/// </para>
-		/// </remarks>
-		TextureBinding Binding
-		{
-			get;
-		}
-	}
+        /// <summary>
+        /// Property to return the flags to determine how the texture will be bound with the pipeline when rendering.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// If the <see cref="Usage"/> property is set to <see cref="ResourceUsage.Staging"/>, then the texture must be created with a value of <see cref="TextureBinding.None"/> as staging textures do not 
+        /// support bindings of any kind. If this value is set to anything other than <see cref="TextureBinding.None"/>, an exception will be thrown.
+        /// </para>
+        /// <para>
+        /// This value is defaulted to <see cref="TextureBinding.ShaderResource"/>. 
+        /// </para>
+        /// </remarks>
+        TextureBinding Binding
+        {
+            get;
+        }
+    }
 }

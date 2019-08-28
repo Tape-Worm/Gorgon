@@ -100,7 +100,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         bool IsContent
         {
-            get;            
+            get;
         }
 
         /// <summary>

@@ -34,8 +34,8 @@ namespace Gorgon.Native
     /// <summary>
     /// IIimageList COM object interface.
     /// </summary>
-    [ComImport(), 
-     Guid("46EB5926-582E-4017-9FDF-E8998DAA0950"), 
+    [ComImport(),
+     Guid("46EB5926-582E-4017-9FDF-E8998DAA0950"),
      InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IImageList
     {

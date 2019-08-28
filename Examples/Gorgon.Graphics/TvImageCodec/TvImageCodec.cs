@@ -96,38 +96,38 @@ namespace Gorgon.Graphics.Example
         /// </summary>
         public override string CodecDescription => "TV image";
 
-	    /// <summary>
+        /// <summary>
         /// Property to return the abbreviated name of the codec (e.g. PNG).
         /// </summary>
         public override string Codec => "TV";
 
-	    /// <summary>
-	    /// Property to return the pixel formats supported by the codec.
-	    /// </summary>
-	    public override IReadOnlyList<BufferFormat> SupportedPixelFormats => _supportedFormats;
+        /// <summary>
+        /// Property to return the pixel formats supported by the codec.
+        /// </summary>
+        public override IReadOnlyList<BufferFormat> SupportedPixelFormats => _supportedFormats;
 
-	    /// <summary>
+        /// <summary>
         /// Property to return whether the image codec supports a depth component for volume textures.
         /// </summary>
         /// <remarks>This tv format doesn't support volume textures.</remarks>
         public override bool SupportsDepth => false;
 
-	    /// <summary>
-	    /// Property to return whether the codec supports decoding/encoding multiple frames or not.
-	    /// </summary>
-	    public override bool SupportsMultipleFrames => false;
+        /// <summary>
+        /// Property to return whether the codec supports decoding/encoding multiple frames or not.
+        /// </summary>
+        public override bool SupportsMultipleFrames => false;
 
-	    /// <summary>
+        /// <summary>
         /// Property to return whether the image codec supports mip maps.
         /// </summary>
         /// <remarks>This tv format doesn't support mip mapping.</remarks>
         public override bool SupportsMipMaps => false;
 
-	    /// <summary>
+        /// <summary>
         /// Property to return whether the image codec supports block compression.
         /// </summary>
         public override bool SupportsBlockCompression => false;
-	    #endregion
+        #endregion
 
         #region Methods.
         /// <summary>
@@ -135,7 +135,7 @@ namespace Gorgon.Graphics.Example
         /// </summary>
         /// <param name="stream">Stream containing the image data.</param>
         /// <returns>An image settings object containing information about the image.</returns>
-		private static GorgonImageInfo ReadMetaData(Stream stream)
+        private static GorgonImageInfo ReadMetaData(Stream stream)
         {
             if (!stream.CanRead)
             {
@@ -152,7 +152,7 @@ namespace Gorgon.Graphics.Example
             TvHeader header;
 
             // Load the header for the image.
-            using(var reader = new GorgonBinaryReader(stream, true))
+            using (var reader = new GorgonBinaryReader(stream, true))
             {
                 header = reader.ReadValue<TvHeader>();
             }
@@ -176,70 +176,70 @@ namespace Gorgon.Graphics.Example
             return settings;
         }
 
-	    /// <summary>
-	    /// Function to decode an image from a <see cref="Stream"/>.
-	    /// </summary>
-	    /// <param name="stream">The stream containing the image data to read.</param>
-	    /// <param name="size">The size of the image within the stream, in bytes.</param>
-	    /// <returns>A <see cref="IGorgonImage"/> containing the image data from the stream.</returns>
-	    /// <exception cref="GorgonException">Thrown when the image data in the stream has a pixel format that is unsupported.</exception>
-	    /// <remarks>
-	    /// <para>
-	    /// A codec must implement this method in order to decode the image data. 
-	    /// </para>
-	    /// </remarks>
-	    protected override IGorgonImage OnDecodeFromStream(Stream stream, long size)
-	    {
-			// Read the image meta data so we'll know how large the data should be.
-			IGorgonImageInfo settings = ReadMetaData(stream);
+        /// <summary>
+        /// Function to decode an image from a <see cref="Stream"/>.
+        /// </summary>
+        /// <param name="stream">The stream containing the image data to read.</param>
+        /// <param name="size">The size of the image within the stream, in bytes.</param>
+        /// <returns>A <see cref="IGorgonImage"/> containing the image data from the stream.</returns>
+        /// <exception cref="GorgonException">Thrown when the image data in the stream has a pixel format that is unsupported.</exception>
+        /// <remarks>
+        /// <para>
+        /// A codec must implement this method in order to decode the image data. 
+        /// </para>
+        /// </remarks>
+        protected override IGorgonImage OnDecodeFromStream(Stream stream, long size)
+        {
+            // Read the image meta data so we'll know how large the data should be.
+            IGorgonImageInfo settings = ReadMetaData(stream);
 
-			// Calculate the expected size of the image.
-			int dataSize = settings.Width * settings.Height * sizeof(ushort);
+            // Calculate the expected size of the image.
+            int dataSize = settings.Width * settings.Height * sizeof(ushort);
 
-			if ((size - TvHeader.SizeInBytes) != dataSize)
-			{
-				throw new GorgonException(GorgonResult.CannotRead, "The data in the stream is not the same size as the proposed image size.");
-			}
+            if ((size - TvHeader.SizeInBytes) != dataSize)
+            {
+                throw new GorgonException(GorgonResult.CannotRead, "The data in the stream is not the same size as the proposed image size.");
+            }
 
-			// Create our resulting image buffer.
-			var result = new GorgonImage(settings);
+            // Create our resulting image buffer.
+            var result = new GorgonImage(settings);
 
-		    using (var reader = new GorgonBinaryReader(stream, true))
-		    {
-				// Write each scanline.
-				for (int y = 0; y < settings.Height; ++y)
-				{
-					// Ensure that we move to the next line by the row pitch and not the amount of pixels.
-					// Some images put padding in for alignment reasons which can throw off the data offsets.
-				    int ptrPosition = (y * result.Buffers[0].PitchInformation.RowPitch);
+            using (var reader = new GorgonBinaryReader(stream, true))
+            {
+                // Write each scanline.
+                for (int y = 0; y < settings.Height; ++y)
+                {
+                    // Ensure that we move to the next line by the row pitch and not the amount of pixels.
+                    // Some images put padding in for alignment reasons which can throw off the data offsets.
+                    int ptrPosition = (y * result.Buffers[0].PitchInformation.RowPitch);
 
-					// Decode the pixels in the scan line for our resulting image.
-					for (int x = 0; x < settings.Width; ++x)
-				    {
-					    // Get our current pixel.
-					    ushort pixel = reader.ReadUInt16();
+                    // Decode the pixels in the scan line for our resulting image.
+                    for (int x = 0; x < settings.Width; ++x)
+                    {
+                        // Get our current pixel.
+                        ushort pixel = reader.ReadUInt16();
 
-					    // Since we encode 1 byte per color component for each pixel, we need to bump up the bit shift
-					    // by 8 bits.  Once we get above 24 bits we'll start over since we're only working with 4 bytes 
-					    // per pixel in the destination.
+                        // Since we encode 1 byte per color component for each pixel, we need to bump up the bit shift
+                        // by 8 bits.  Once we get above 24 bits we'll start over since we're only working with 4 bytes 
+                        // per pixel in the destination.
 
-					    // We determine how many bits to shift the pixel based on horizontal positioning.
-					    // We assume that the image is based on 4 bytes/pixel.  In most cases this value should be 
-					    // determined by dividing the row pitch by the image width.
+                        // We determine how many bits to shift the pixel based on horizontal positioning.
+                        // We assume that the image is based on 4 bytes/pixel.  In most cases this value should be 
+                        // determined by dividing the row pitch by the image width.
 
-					    // Write the color by shifting the byte in the source data to the appropriate byte position.
-					    uint color = (uint)(((pixel >> 8) & 0xff) << (8 * (x % 3)));
-					    uint alpha = (uint)((pixel & 0xff) << 24);
+                        // Write the color by shifting the byte in the source data to the appropriate byte position.
+                        uint color = (uint)(((pixel >> 8) & 0xff) << (8 * (x % 3)));
+                        uint alpha = (uint)((pixel & 0xff) << 24);
 
-				        ref uint imagePixel = ref result.ImageData.ReadAs<uint>(ptrPosition);
+                        ref uint imagePixel = ref result.ImageData.ReadAs<uint>(ptrPosition);
                         imagePixel = color | alpha;
-					    ptrPosition += sizeof(uint);
-				    }
-			    }
-		    }
+                        ptrPosition += sizeof(uint);
+                    }
+                }
+            }
 
-		    return result;
-	    }
+            return result;
+        }
 
         /// <summary>
 	    /// Function to persist a <see cref="IGorgonImage"/> to a stream.
@@ -257,66 +257,66 @@ namespace Gorgon.Graphics.Example
 	    /// </remarks>
 	    public override void SaveToStream(IGorgonImage imageData, Stream stream)
         {
-	        if (imageData.Format != BufferFormat.R8G8B8A8_UNorm)
-	        {
-				throw new ArgumentException(@"The image format must be R8G8B8A8_UNorm", nameof(imageData));    
-	        }
+            if (imageData.Format != BufferFormat.R8G8B8A8_UNorm)
+            {
+                throw new ArgumentException(@"The image format must be R8G8B8A8_UNorm", nameof(imageData));
+            }
 
-			// First, we'll need to set up our header metadata.
-	        var header = new TvHeader
-	                     {
-		                     MagicValueData = MagicValue,
-		                     Width = imageData.Width,
-		                     Height = imageData.Height
-	                     };
+            // First, we'll need to set up our header metadata.
+            var header = new TvHeader
+            {
+                MagicValueData = MagicValue,
+                Width = imageData.Width,
+                Height = imageData.Height
+            };
 
-			// Write the metadata to the stream.
-	        using (var writer = new GorgonBinaryWriter(stream, true))
-	        {
-		        writer.WriteValue(header);
+            // Write the metadata to the stream.
+            using (var writer = new GorgonBinaryWriter(stream, true))
+            {
+                writer.WriteValue(header);
 
-				// Now, we need to encode the image data as 1 byte for every other color component per pixel. 
-				// In essence, we'll be writing one channel as a byte and moving to the next pixel. 
-				// Get the pointer to our image buffer.
-			    //IGorgonPointer imagePtr = imageData.ImageData;
+                // Now, we need to encode the image data as 1 byte for every other color component per pixel. 
+                // In essence, we'll be writing one channel as a byte and moving to the next pixel. 
+                // Get the pointer to our image buffer.
+                //IGorgonPointer imagePtr = imageData.ImageData;
 
-			    // For each scan line in the image we'll encode the data as described above.
-			    for (int y = 0; y < imageData.Height; ++y)
-			    {
-					// Ensure that we move to the next line by the row pitch and not the amount of pixels.
-					// Some images put padding in for alignment reasons which can throw off the data offsets.
-					// Also, the width is not suitable as a pixel is often more than 1 byte.
-					int pointerPos = (y * imageData.Buffers[0].PitchInformation.RowPitch);
+                // For each scan line in the image we'll encode the data as described above.
+                for (int y = 0; y < imageData.Height; ++y)
+                {
+                    // Ensure that we move to the next line by the row pitch and not the amount of pixels.
+                    // Some images put padding in for alignment reasons which can throw off the data offsets.
+                    // Also, the width is not suitable as a pixel is often more than 1 byte.
+                    int pointerPos = (y * imageData.Buffers[0].PitchInformation.RowPitch);
 
-				    // Loop through the scan line until we're at its end.
-				    for (int x = 0; x < imageData.Width; ++x)
-				    {
-					    // We're assuming our image data is 4 bytes/pixel, but in real world scenarios this is dependent upon 
-					    // the format of the data.
-					    uint pixel = imageData.ImageData.ReadAs<uint>(pointerPos);
-					    pointerPos += sizeof(uint);
+                    // Loop through the scan line until we're at its end.
+                    for (int x = 0; x < imageData.Width; ++x)
+                    {
+                        // We're assuming our image data is 4 bytes/pixel, but in real world scenarios this is dependent upon 
+                        // the format of the data.
+                        uint pixel = imageData.ImageData.ReadAs<uint>(pointerPos);
+                        pointerPos += sizeof(uint);
 
-					    // Get the alpha channel for this pixel.
-					    byte alpha = (byte)((pixel >> 24) & 0xff);
+                        // Get the alpha channel for this pixel.
+                        byte alpha = (byte)((pixel >> 24) & 0xff);
 
-					    // Since we encode 1 byte per color component for each pixel, we need to bump up the bit shift
-					    // by 8 bits.  Once we get above 24 bits we'll start over since we're only working with 2 bytes 
-					    // per pixel in the destination.
+                        // Since we encode 1 byte per color component for each pixel, we need to bump up the bit shift
+                        // by 8 bits.  Once we get above 24 bits we'll start over since we're only working with 2 bytes 
+                        // per pixel in the destination.
 
-					    // We determine how many bits to shift the pixel based on horizontal positioning.
-					    // We assume that the image is based on 4 bytes/pixel.  In most cases this value should be 
-					    // determined by dividing the row pitch by the image width.
+                        // We determine how many bits to shift the pixel based on horizontal positioning.
+                        // We assume that the image is based on 4 bytes/pixel.  In most cases this value should be 
+                        // determined by dividing the row pitch by the image width.
 
-					    // Get the color component for the pixel.
-					    byte color = (byte)((pixel >> (8 * (x % 3))) & 0xff);
+                        // Get the color component for the pixel.
+                        byte color = (byte)((pixel >> (8 * (x % 3))) & 0xff);
 
-					    // Write it to the scanline.
-					    // We're encoding a pixel as a single color component with its alpha channel
-					    // value into an unsigned 16 bit number.
-						writer.Write((ushort)((color << 8) | alpha));
-				    }
-		        }
-	        }
+                        // Write it to the scanline.
+                        // We're encoding a pixel as a single color component with its alpha channel
+                        // value into an unsigned 16 bit number.
+                        writer.Write((ushort)((color << 8) | alpha));
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -369,8 +369,8 @@ namespace Gorgon.Graphics.Example
             try
             {
                 // Using the GorgonBinaryReader, we can pull in the data we need.
-	            reader = new GorgonBinaryReader(stream, true);
-                
+                reader = new GorgonBinaryReader(stream, true);
+
                 // Retrieve our magic number.
                 TvHeader header = reader.ReadValue<TvHeader>();
 
@@ -379,35 +379,35 @@ namespace Gorgon.Graphics.Example
             }
             finally
             {
-	            reader?.Dispose();
+                reader?.Dispose();
 
-	            // Restore the stream to its original placement.
+                // Restore the stream to its original placement.
                 stream.Position = position;
             }
         }
 
 
-	    /// <summary>
-	    /// Function to read the meta data for image data within a stream.
-	    /// </summary>
-	    /// <param name="stream">The stream containing the metadata to read.</param>
-	    /// <returns>
-	    /// The image meta data as a <see cref="IGorgonImageInfo"/> value.
-	    /// </returns>
-	    /// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.
-	    /// <para>-or-</para>
-	    /// <para>Thrown if the file is corrupt or can't be read by the codec.</para>
-	    /// </exception>
-	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
-	    /// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
-	    /// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
-	    /// <remarks>
-	    /// <para>
-	    /// When overloading this method, the implementor should remember to reset the stream position back to the original position when they are done reading the data.  Failure to do so 
-	    /// may cause undesirable results.
-	    /// </para> 
-	    /// </remarks>
-	    public override IGorgonImageInfo GetMetaData(Stream stream)
+        /// <summary>
+        /// Function to read the meta data for image data within a stream.
+        /// </summary>
+        /// <param name="stream">The stream containing the metadata to read.</param>
+        /// <returns>
+        /// The image meta data as a <see cref="IGorgonImageInfo"/> value.
+        /// </returns>
+        /// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.
+        /// <para>-or-</para>
+        /// <para>Thrown if the file is corrupt or can't be read by the codec.</para>
+        /// </exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
+        /// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
+        /// <remarks>
+        /// <para>
+        /// When overloading this method, the implementor should remember to reset the stream position back to the original position when they are done reading the data.  Failure to do so 
+        /// may cause undesirable results.
+        /// </para> 
+        /// </remarks>
+        public override IGorgonImageInfo GetMetaData(Stream stream)
         {
             if (stream == null)
             {

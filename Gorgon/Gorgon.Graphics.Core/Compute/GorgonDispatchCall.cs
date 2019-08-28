@@ -91,10 +91,10 @@ namespace Gorgon.Graphics.Core
             D3DState.VertexBuffers = new GorgonVertexBufferBindings();
             D3DState.StreamOutBindings = new GorgonStreamOutBindings();
             D3DState.PipelineState = new GorgonPipelineState
-                                     {
-                                         RasterState = GorgonRasterState.Default,
-                                         DepthStencilState = GorgonDepthStencilState.Default
-                                     };
+            {
+                RasterState = GorgonRasterState.Default,
+                DepthStencilState = GorgonDepthStencilState.Default
+            };
             D3DState.PsConstantBuffers = D3DState.VsConstantBuffers =
                                                D3DState.GsConstantBuffers =
                                                    D3DState.DsConstantBuffers = D3DState.HsConstantBuffers = new GorgonConstantBuffers();

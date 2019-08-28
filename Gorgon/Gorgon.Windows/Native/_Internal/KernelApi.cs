@@ -58,52 +58,52 @@ namespace Gorgon.Native
         ShutDown = 6
     }
 
-	/// <summary>
-	/// Native windows kernal API functionality.
-	/// </summary>
-	[SuppressUnmanagedCodeSecurity]
-	internal static class KernelApi
-	{
+    /// <summary>
+    /// Native windows kernal API functionality.
+    /// </summary>
+    [SuppressUnmanagedCodeSecurity]
+    internal static class KernelApi
+    {
         #region Constants.
-	    /// <summary>
-	    /// Standard output handle.
-	    /// </summary>
-	    public const int StdOutputHandle = -11;
+        /// <summary>
+        /// Standard output handle.
+        /// </summary>
+        public const int StdOutputHandle = -11;
         #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to return the number of bytes of installed physical RAM.
-		/// </summary>
-		public static long TotalPhysicalRAM
-		{
-			get
-			{
-				var memory = new MEMORYSTATUSEX
-				{
-					dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX))
-				};
+        #region Properties.
+        /// <summary>
+        /// Property to return the number of bytes of installed physical RAM.
+        /// </summary>
+        public static long TotalPhysicalRAM
+        {
+            get
+            {
+                var memory = new MEMORYSTATUSEX
+                {
+                    dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX))
+                };
 
                 return GlobalMemoryStatusEx(ref memory) ? memory.ullTotalPhysical : -1;
             }
         }
 
-		/// <summary>
-		/// Property to return the number of bytes of free available RAM.
-		/// </summary>
-		public static long AvailablePhysicalRAM
-		{
-			get
-			{
-				var memory = new MEMORYSTATUSEX
-				{
-					dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX))
-				};
+        /// <summary>
+        /// Property to return the number of bytes of free available RAM.
+        /// </summary>
+        public static long AvailablePhysicalRAM
+        {
+            get
+            {
+                var memory = new MEMORYSTATUSEX
+                {
+                    dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX))
+                };
 
                 return GlobalMemoryStatusEx(ref memory) ? memory.ullAvailablePhysical : -1;
             }
         }
-		#endregion
+        #endregion
 
         #region Delegates.
         /// <summary>
@@ -111,52 +111,52 @@ namespace Gorgon.Native
         /// </summary>
         /// <param name="dwControlType">The type of event.</param>
         /// <returns><b>true</b> if the event is handled, <b>false</b> if not.</returns>
-	    public delegate bool ConsoleCloseHandler(ConsoleCloseSignal dwControlType);
+        public delegate bool ConsoleCloseHandler(ConsoleCloseSignal dwControlType);
         #endregion
 
-		#region Methods.
+        #region Methods.
         /// <summary>
         /// Function to retrieve the standard handle.
         /// </summary>
         /// <param name="nStdHandle">The standard handle.</param>
         /// <returns></returns>
-	    [DllImport("kernel32.dll")]
-	    public static extern IntPtr GetStdHandle(int nStdHandle);
+        [DllImport("kernel32.dll")]
+        public static extern IntPtr GetStdHandle(int nStdHandle);
 
-	    /// <summary>
-	    /// 
-	    /// </summary>
-	    /// <param name="lpFileName"></param>
-	    /// <param name="dwDesiredAccess"></param>
-	    /// <param name="dwShareMode"></param>
-	    /// <param name="lpSecurityAttributes"></param>
-	    /// <param name="dwCreationDisposition"></param>
-	    /// <param name="dwFlagsAndAttributes"></param>
-	    /// <param name="hTemplateFile"></param>
-	    /// <returns></returns>
-	    [DllImport("kernel32.dll",
-	        EntryPoint = "CreateFileW",
-	        SetLastError = true,
-	        CharSet = CharSet.Unicode,
-	        CallingConvention = CallingConvention.StdCall)]
-	    public static extern IntPtr CreateFileW(
-	        string lpFileName,
-	        uint dwDesiredAccess,
-	        uint dwShareMode,
-	        IntPtr lpSecurityAttributes,
-	        uint dwCreationDisposition,
-	        uint dwFlagsAndAttributes,
-	        IntPtr hTemplateFile);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="lpFileName"></param>
+        /// <param name="dwDesiredAccess"></param>
+        /// <param name="dwShareMode"></param>
+        /// <param name="lpSecurityAttributes"></param>
+        /// <param name="dwCreationDisposition"></param>
+        /// <param name="dwFlagsAndAttributes"></param>
+        /// <param name="hTemplateFile"></param>
+        /// <returns></returns>
+        [DllImport("kernel32.dll",
+            EntryPoint = "CreateFileW",
+            SetLastError = true,
+            CharSet = CharSet.Unicode,
+            CallingConvention = CallingConvention.StdCall)]
+        public static extern IntPtr CreateFileW(
+            string lpFileName,
+            uint dwDesiredAccess,
+            uint dwShareMode,
+            IntPtr lpSecurityAttributes,
+            uint dwCreationDisposition,
+            uint dwFlagsAndAttributes,
+            IntPtr hTemplateFile);
 
-	    /// <summary>
-	    /// 
-	    /// </summary>
-	    /// <param name="handle"></param>
-	    /// <param name="mode"></param>
-	    /// <returns></returns>
-	    [DllImport("kernel32.dll", SetLastError = true)]
-	    [return: MarshalAs(UnmanagedType.Bool)]
-	    public static extern bool SetConsoleMode(IntPtr handle, uint mode);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="handle"></param>
+        /// <param name="mode"></param>
+        /// <returns></returns>
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetConsoleMode(IntPtr handle, uint mode);
 
         /// <summary>
         /// 
@@ -166,16 +166,16 @@ namespace Gorgon.Native
         /// <returns></returns>
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-	    public static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint mode);
+        public static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint mode);
 
-	    /// <summary>
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="nStdHandle"></param>
         /// <param name="handle"></param>
-	    [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
-	    public static extern bool SetStdHandle(int nStdHandle, IntPtr handle);
+        public static extern bool SetStdHandle(int nStdHandle, IntPtr handle);
 
         /// <summary>
 	    /// Function to set up a console control handler to intercept console close events.
@@ -184,52 +184,52 @@ namespace Gorgon.Native
         /// <param name="add"><b>true</b> to add the handler, <b>false</b> to remove it.</param>
         /// <returns><b>true</b> if the function succeeds, <b>false</b> if not.</returns>
 	    [return: MarshalAs(UnmanagedType.Bool)]
-	    [DllImport("kernel32.dll")]
-	    public static extern bool SetConsoleCtrlHandler(ConsoleCloseHandler handler, [MarshalAs(UnmanagedType.Bool)] bool add);
+        [DllImport("kernel32.dll")]
+        public static extern bool SetConsoleCtrlHandler(ConsoleCloseHandler handler, [MarshalAs(UnmanagedType.Bool)] bool add);
 
-	    /// <summary>
+        /// <summary>
         /// Function to allocate a console window.
         /// </summary>
         /// <returns><b>true</b> if successful, <b>false</b> if not.</returns>
         [return: MarshalAs(UnmanagedType.Bool)]
-	    [DllImport("kernel32.dll")]
-	    public static extern bool AllocConsole();
+        [DllImport("kernel32.dll")]
+        public static extern bool AllocConsole();
 
         /// <summary>
         /// Function to free an allocated console window.
         /// </summary>
         /// <returns>Non zero if successful, zero if failed.</returns>
 	    [DllImport("kernel32.dll")]
-	    public static extern int FreeConsole();
+        public static extern int FreeConsole();
 
-		/// <summary>
-		/// Function to return the amount of memory available on the machine.
-		/// </summary>
-		/// <param name="stat">Memory status data.</param>
-		/// <returns><b>true</b> if successful, <b>false</b> if not.</returns>
-		[DllImport("kernel32.dll")]
-		[return: MarshalAs(UnmanagedType.Bool)]
-		private static extern bool GlobalMemoryStatusEx(ref MEMORYSTATUSEX stat);
+        /// <summary>
+        /// Function to return the amount of memory available on the machine.
+        /// </summary>
+        /// <param name="stat">Memory status data.</param>
+        /// <returns><b>true</b> if successful, <b>false</b> if not.</returns>
+        [DllImport("kernel32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool GlobalMemoryStatusEx(ref MEMORYSTATUSEX stat);
 
-		/// <summary>
-		/// Function to return the frequency of the high precision timer.
-		/// </summary>
-		/// <remarks>See the MSDN documentation for a detailed description.</remarks>
-		/// <param name="PerformanceFrequency">Frequency of timer.</param>
-		/// <returns><b>true</b> if system supports high precision timing, <b>false</b> if not.</returns>
-		[DllImport("kernel32", CharSet = CharSet.Auto)]
-		[return: MarshalAs(UnmanagedType.Bool)]
-		public static extern bool QueryPerformanceFrequency(out long PerformanceFrequency);
+        /// <summary>
+        /// Function to return the frequency of the high precision timer.
+        /// </summary>
+        /// <remarks>See the MSDN documentation for a detailed description.</remarks>
+        /// <param name="PerformanceFrequency">Frequency of timer.</param>
+        /// <returns><b>true</b> if system supports high precision timing, <b>false</b> if not.</returns>
+        [DllImport("kernel32", CharSet = CharSet.Auto)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool QueryPerformanceFrequency(out long PerformanceFrequency);
 
-		/// <summary>
-		/// Function to return the time from a high resolution timer.
-		/// </summary>
-		/// <remarks>See the MSDN documentation for a detailed description.</remarks>
-		/// <param name="PerformanceCount">Time from the timer.</param>
-		/// <returns><b>true</b> if system supports high precision timing, <b>false</b> if not.</returns>
-		[DllImport("kernel32", CharSet = CharSet.Auto)]
-		[return: MarshalAs(UnmanagedType.Bool)]
-		public static extern bool QueryPerformanceCounter(out long PerformanceCount);
+        /// <summary>
+        /// Function to return the time from a high resolution timer.
+        /// </summary>
+        /// <remarks>See the MSDN documentation for a detailed description.</remarks>
+        /// <param name="PerformanceCount">Time from the timer.</param>
+        /// <returns><b>true</b> if system supports high precision timing, <b>false</b> if not.</returns>
+        [DllImport("kernel32", CharSet = CharSet.Auto)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool QueryPerformanceCounter(out long PerformanceCount);
         #endregion
 
         #region Constructor.

@@ -28,27 +28,27 @@ using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts
 {
-	/// <summary>
-	/// Defines the rectangular regions for a glyph and its outline.
-	/// </summary>
-	internal class GlyphRegions
-	{
-		/// <summary>
-		/// Property to set or return the region that encompasses the character.
-		/// </summary>
-		public DX.Rectangle CharacterRegion
-		{
-			get;
-			set;
-		}
+    /// <summary>
+    /// Defines the rectangular regions for a glyph and its outline.
+    /// </summary>
+    internal class GlyphRegions
+    {
+        /// <summary>
+        /// Property to set or return the region that encompasses the character.
+        /// </summary>
+        public DX.Rectangle CharacterRegion
+        {
+            get;
+            set;
+        }
 
-		/// <summary>
-		/// Property to set or return the region that encompasses the character outline.
-		/// </summary>
-		public DX.Rectangle OutlineRegion
-		{
-			get;
-			set;
-		}
-	}
+        /// <summary>
+        /// Property to set or return the region that encompasses the character outline.
+        /// </summary>
+        public DX.Rectangle OutlineRegion
+        {
+            get;
+            set;
+        }
+    }
 }

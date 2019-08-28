@@ -66,7 +66,7 @@ namespace Gorgon.Renderers
         /// </summary>
         OutlinedGlyphs = 2
     }
-    
+
     /// <summary>
     /// A class that defines a sprite that is used to display text.
     /// </summary>
@@ -190,7 +190,7 @@ namespace Gorgon.Renderers
                 {
                     return;
                 }
-                
+
                 _layoutArea = value;
                 UpdateBounds();
                 Renderable.HasTransformChanges = true;
@@ -594,9 +594,9 @@ namespace Gorgon.Renderers
         /// </summary>
         private void UpdateBounds()
         {
-            DX.Size2F size = Renderable.Font.MeasureText(_formattedText.ToString(), 
-                                                         DrawMode != TextDrawMode.GlyphsOnly, 
-                                                         Renderable.TabSpaceCount, 
+            DX.Size2F size = Renderable.Font.MeasureText(_formattedText.ToString(),
+                                                         DrawMode != TextDrawMode.GlyphsOnly,
+                                                         Renderable.TabSpaceCount,
                                                          Renderable.LineSpaceMultiplier);
 
             Renderable.Bounds = new DX.RectangleF(Renderable.Bounds.Left, Renderable.Bounds.Top, size.Width, size.Height);

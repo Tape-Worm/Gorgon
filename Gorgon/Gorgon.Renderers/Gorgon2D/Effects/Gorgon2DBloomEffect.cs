@@ -27,11 +27,11 @@
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
-using DX = SharpDX;
-using Gorgon.Renderers.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
+using Gorgon.Renderers.Properties;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
@@ -127,7 +127,7 @@ namespace Gorgon.Renderers
         private GorgonPixelShader _filterShader;
         private Gorgon2DBatchState _filterBatchState;
         // The shader that performs down sampling.
-        private GorgonPixelShader _downSampleShader;        
+        private GorgonPixelShader _downSampleShader;
         private Gorgon2DBatchState _downSampleBatchState;
         // The shader that performs up sampling.
         private GorgonPixelShader _upSampleShader;
@@ -355,7 +355,7 @@ namespace Gorgon.Renderers
             {
                 Array.Resize(ref _sampleTargets, sampleIterations);
                 Array.Resize(ref _sampleTargetStates, sampleIterations);
-            }            
+            }
         }
 
         /// <summary>
@@ -366,7 +366,7 @@ namespace Gorgon.Renderers
             int w = _blurRtv.Width;
             int h = _blurRtv.Height;
 
-            GorgonTexture2DView src = _sceneSrv;            
+            GorgonTexture2DView src = _sceneSrv;
             for (int i = 0; i < _sampleTargets.Length; ++i)
             {
                 _targetInfo.Width = w;
@@ -416,7 +416,7 @@ namespace Gorgon.Renderers
         private void UpSample()
         {
             GorgonTexture2DView src = _sampleTargets[_sampleTargets.Length - 1].down.GetShaderResourceView();
-                        
+
             for (int i = _sampleTargets.Length - 2; i >= 0; --i)
             {
                 (GorgonRenderTarget2DView up, GorgonRenderTarget2DView _) = _sampleTargets[i];
@@ -429,7 +429,7 @@ namespace Gorgon.Renderers
                 Renderer.Begin(_sampleTargetStates[i]);
                 Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, up.Width, up.Height),
                     GorgonColor.White,
-                    src, 
+                    src,
                     new DX.RectangleF(0, 0, 1, 1),
                     textureSampler: GorgonSamplerState.Default);
                 Renderer.End();
@@ -449,7 +449,7 @@ namespace Gorgon.Renderers
 
             Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, outputSize.Width, outputSize.Height),
                 GorgonColor.White,
-                _sceneSrv, 
+                _sceneSrv,
                 new DX.RectangleF(0, 0, 1, 1),
                 textureSampler: GorgonSamplerState.Default);
         }
@@ -462,7 +462,7 @@ namespace Gorgon.Renderers
             if (!disposing)
             {
                 return;
-            }                        
+            }
 
             _textureSettingsBuffer?.Dispose();
             _settingsBuffer?.Dispose();
@@ -508,7 +508,7 @@ namespace Gorgon.Renderers
                                                                                     .ShaderResource(_blurSrv, 1)
                                                                                     .Shader(_finalPassShader)
                                                                                     .SamplerState(GorgonSamplerState.Default, 2)
-                                                                                    .ShaderResource(DirtTexture ?? EmptyTexture, 2)                                                                        
+                                                                                    .ShaderResource(DirtTexture ?? EmptyTexture, 2)
                                                                                     .ConstantBuffer(_settingsBuffer, 1)
                                                                                     .ConstantBuffer(_textureSettingsBuffer, 2))
                                                     .Build();

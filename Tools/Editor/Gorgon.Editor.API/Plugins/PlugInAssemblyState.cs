@@ -34,34 +34,34 @@ namespace Gorgon.Editor.PlugIns
     /// </summary>
     public class PlugInAssemblyState
     {
-		/// <summary>
+        /// <summary>
         /// Property to returnt he path to the plug in.
         /// </summary>
-		public string Path
+        public string Path
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return whether the assembly was loaded.
         /// </summary>
-		public bool IsAssemblyLoaded
+        public bool IsAssemblyLoaded
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return whether the assembly is a managed assembly or not.
         /// </summary>
-		public bool IsManaged
+        public bool IsManaged
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the reason why the assembly was not loaded.
         /// </summary>
-		public string LoadFailureReason
+        public string LoadFailureReason
         {
             get;
         }

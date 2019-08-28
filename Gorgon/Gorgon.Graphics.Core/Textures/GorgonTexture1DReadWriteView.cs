@@ -34,8 +34,8 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
-using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core
 {
@@ -124,7 +124,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return whether the size of the texture is a power of 2 or not.
         /// </summary>
-        bool IGorgonImageInfo.IsPowerOfTwo => ((Width == 0) || (Width & (Width - 1)) == 0); 
+        bool IGorgonImageInfo.IsPowerOfTwo => ((Width == 0) || (Width & (Width - 1)) == 0);
 
         /// <summary>
         /// Property to return the pixel format for an image.
@@ -179,7 +179,10 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the texture that is bound to this view.
         /// </summary>
-        public GorgonTexture1D Texture { get; private set; }
+        public GorgonTexture1D Texture
+        {
+            get; private set;
+        }
 
         /// <summary>
         /// Property to return the bounding range for the view.
@@ -224,28 +227,28 @@ namespace Gorgon.Graphics.Core
         private protected override D3D11.ResourceView OnCreateNativeView()
         {
             var desc = new D3D11.UnorderedAccessViewDescription1
-                       {
-                           Format = (Format)Format,
-                           Dimension = Texture.ArrayCount > 1
+            {
+                Format = (Format)Format,
+                Dimension = Texture.ArrayCount > 1
                                            ? D3D11.UnorderedAccessViewDimension.Texture1DArray
                                            : D3D11.UnorderedAccessViewDimension.Texture1D,
-                           Texture1DArray =
+                Texture1DArray =
                            {
                                MipSlice = MipSlice,
                                FirstArraySlice = ArrayCount,
                                ArraySize = ArrayIndex
                            }
-                       };
-            
+            };
+
             Graphics.Log.Print($"Creating D3D11 1D texture unordered access view for {Texture.Name}.", LoggingLevel.Verbose);
 
             try
             {
                 // Create our SRV.
                 Native = new D3D11.UnorderedAccessView1(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
-                             {
-                                 DebugName = $"'{Texture.Name}'_D3D11UnorderedAccessView1_1D"
-                             };
+                {
+                    DebugName = $"'{Texture.Name}'_D3D11UnorderedAccessView1_1D"
+                };
 
                 Graphics.Log.Print($"Unordered Access 1D View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Array Index: {ArrayIndex}, Array Count: {ArrayCount}",
                                    LoggingLevel.Verbose);
@@ -455,12 +458,12 @@ namespace Gorgon.Graphics.Core
             }
 
             var newInfo = new GorgonTexture1DInfo(info)
-                          {
-                              Usage = info.Usage == ResourceUsage.Staging ? ResourceUsage.Default : info.Usage,
-                              Binding = (((info.Binding & TextureBinding.ReadWriteView) != TextureBinding.ReadWriteView)
+            {
+                Usage = info.Usage == ResourceUsage.Staging ? ResourceUsage.Default : info.Usage,
+                Binding = (((info.Binding & TextureBinding.ReadWriteView) != TextureBinding.ReadWriteView)
                                              ? (info.Binding | TextureBinding.ReadWriteView)
                                              : info.Binding) & ~(TextureBinding.DepthStencil | TextureBinding.RenderTarget)
-                          };
+            };
 
             GorgonTexture1D texture = initialData == null
                                           ? new GorgonTexture1D(graphics, newInfo)
@@ -561,7 +564,7 @@ namespace Gorgon.Graphics.Core
             using (IGorgonImage image = codec.LoadFromStream(stream, size))
             {
                 GorgonTexture1D texture = image.ToTexture1D(graphics, options);
-                GorgonTexture1DReadWriteView view =  texture.GetReadWriteView();
+                GorgonTexture1DReadWriteView view = texture.GetReadWriteView();
                 view.OwnsResource = true;
                 return view;
             }

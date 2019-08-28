@@ -90,7 +90,7 @@ namespace Gorgon.Editor.Native
             /// </summary>
             FO_RENAME = 0x0004,
         }
-               
+
         /// <summary>
         /// SHFILEOPSTRUCT for SHFileOperation from COM
         /// </summary>

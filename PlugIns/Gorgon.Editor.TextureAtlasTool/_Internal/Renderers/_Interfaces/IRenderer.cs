@@ -33,14 +33,14 @@ namespace Gorgon.Editor.TextureAtlasTool
     /// The renderer used to draw the texture and sprites.
     /// </summary>
     internal interface IRenderer
-		: IDisposable, IDataContext<ITextureAtlas>
+        : IDisposable, IDataContext<ITextureAtlas>
     {
-		/// <summary>
+        /// <summary>
         /// Function to perform setup on the renderer.
         /// </summary>
         void Setup();
 
-		/// <summary>
+        /// <summary>
         /// Function to perform the rendering.
         /// </summary>
         void Render();

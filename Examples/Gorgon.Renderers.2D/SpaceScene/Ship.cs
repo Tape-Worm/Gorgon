@@ -29,13 +29,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DX = SharpDX;
+using System.Windows.Forms;
+using Gorgon.Animation;
 using Gorgon.Graphics;
 using Gorgon.Input;
-using System.Windows.Forms;
-using Gorgon.Timing;
 using Gorgon.Math;
-using Gorgon.Animation;
+using Gorgon.Timing;
+using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -126,7 +126,7 @@ namespace Gorgon.Examples
             get => _position;
             set
             {
-                _position = value;                
+                _position = value;
                 UpdateEntityPositions();
             }
         }
@@ -321,7 +321,7 @@ namespace Gorgon.Examples
 
             if (keys[Keys.Right] == KeyState.Down)
             {
-                Rotate(1);                
+                Rotate(1);
             }
 
             if (keys[Keys.Up] == KeyState.Down)

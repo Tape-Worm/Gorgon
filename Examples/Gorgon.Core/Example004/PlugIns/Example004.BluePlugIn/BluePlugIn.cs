@@ -26,12 +26,12 @@
 
 namespace Gorgon.Examples
 {
-	/// <summary>
-	/// Here's our main plug in entry point.
-	/// </summary>
-	internal class BluePlugIn
-		: TextColorPlugIn
-	{
+    /// <summary>
+    /// Here's our main plug in entry point.
+    /// </summary>
+    internal class BluePlugIn
+        : TextColorPlugIn
+    {
         #region Methods.
         /// <summary>
         /// Now we'll define the method to return our blue text color writer.
@@ -47,12 +47,12 @@ namespace Gorgon.Examples
         /// Initializes a new instance of the <see cref="BluePlugIn" /> class.
         /// </summary>
         public BluePlugIn()
-			: base("This plug in will print blue text.")
-		{
-			// Here we can pass a description of the plug in back to the application.
-			// This is handy when we want friendly names for the plug in.
-		}
-		#endregion
+            : base("This plug in will print blue text.")
+        {
+            // Here we can pass a description of the plug in back to the application.
+            // This is handy when we want friendly names for the plug in.
+        }
+        #endregion
 
-	}
+    }
 }

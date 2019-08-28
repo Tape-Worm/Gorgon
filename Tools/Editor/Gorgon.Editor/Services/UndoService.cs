@@ -87,7 +87,7 @@ namespace Gorgon.Editor.Services
                 _undoStack.Clear();
                 _undoIndex = -1;
             }
-            else 
+            else
             {
                 int lastIndex = _undoStack.Count - 1;
                 int diff = lastIndex - _undoIndex;
@@ -150,7 +150,7 @@ namespace Gorgon.Editor.Services
         public void Record<TU, TR>(string desc, Func<TU, CancellationToken, Task> undoAction, Func<TR, CancellationToken, Task> redoAction, TU undoArgs, TR redoArgs)
             where TU : class
             where TR : class
-        {            
+        {
             // Do not register if we're in the middle of an undo/redo operation.
             if (_undoStack.Any(item => item.IsExecuting))
             {

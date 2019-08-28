@@ -90,7 +90,7 @@ namespace Gorgon.Examples
             set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return the albedo color for the mesh.
         /// </summary>
         public GorgonColor Albedo

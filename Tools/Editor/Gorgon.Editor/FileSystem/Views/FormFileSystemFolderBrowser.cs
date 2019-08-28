@@ -40,8 +40,8 @@ namespace Gorgon.Editor.Views
     /// <summary>
     /// A folder browser for the project file system.
     /// </summary>
-    internal partial class FormFileSystemFolderBrowser 
-		: KryptonForm, IDataContext<IFileExplorerVm>
+    internal partial class FormFileSystemFolderBrowser
+        : KryptonForm, IDataContext<IFileExplorerVm>
     {
         #region Variables.
 
@@ -66,7 +66,7 @@ namespace Gorgon.Editor.Views
             private set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the currently selected directory.
         /// </summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -108,7 +108,7 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-			e.DeleteTask = DataContext.DeleteNodeCommand.ExecuteAsync(args);
+            e.DeleteTask = DataContext.DeleteNodeCommand.ExecuteAsync(args);
 
             await e.DeleteTask;
 
@@ -193,11 +193,11 @@ namespace Gorgon.Editor.Views
             {
                 return;
             }
-			
-			
+
+
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to restore the control back to its original state.
         /// </summary>
         private void ResetDataContext()
@@ -207,7 +207,7 @@ namespace Gorgon.Editor.Views
             FolderBrowser.AssignInitialDirectory(null);
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to initialize the control from its data context.
         /// </summary>
         /// <param name="dataContext">The current data context.</param>

@@ -31,17 +31,17 @@ using System.Threading;
 using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Drawing = System.Drawing;
-using DX = SharpDX;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging.Codecs;
+using Gorgon.IO;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
-using Gorgon.IO;
+using Drawing = System.Drawing;
+using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -210,7 +210,7 @@ namespace Gorgon.Examples
             renderer.ValidateObject(nameof(renderer));
 
             GorgonRenderTargetView currentRtv = renderer.Graphics.RenderTargets[0];
-            
+
             if ((currentRtv == null) || (_logo == null) || (_statsFont == null))
             {
                 return;
@@ -219,7 +219,7 @@ namespace Gorgon.Examples
             // We won't include these in the draw call count. 
             _statsText.Length = 0;
             _statsText.AppendFormat("Average FPS: {0:0.0}\nFrame Delta: {1:0.00#} seconds\nDraw Call Count: {2}", GorgonTiming.AverageFPS, GorgonTiming.Delta, renderer.Graphics.DrawCallCount);
-            
+
             DX.Size2F measure = _statsFont.MeasureText(_statsText.ToString(), true);
             var statsRegion = new DX.RectangleF(0, 0, currentRtv.Width, measure.Height + 4);
             var logoRegion = new DX.RectangleF(currentRtv.Width - _logo.Width - 5, currentRtv.Height - _logo.Height - 2, _logo.Width, _logo.Height);
@@ -273,25 +273,25 @@ namespace Gorgon.Examples
 
             _factory = new GorgonFontFactory(graphics);
             _statsFont = _factory.GetFont(new GorgonFontInfo("Segoe UI", 9, FontHeightMode.Points, "Segoe UI 9pt Bold Outlined")
-                                          {
-                                              AntiAliasingMode = FontAntiAliasMode.AntiAlias,
-                                              FontStyle = FontStyle.Bold,
-                                              OutlineColor1 = GorgonColor.Black,
-                                              OutlineColor2 = GorgonColor.Black,
-                                              OutlineSize = 2,
-                                              TextureWidth = 512,
-                                              TextureHeight = 256
-                                          });
+            {
+                AntiAliasingMode = FontAntiAliasMode.AntiAlias,
+                FontStyle = FontStyle.Bold,
+                OutlineColor1 = GorgonColor.Black,
+                OutlineColor2 = GorgonColor.Black,
+                OutlineSize = 2,
+                TextureWidth = 512,
+                TextureHeight = 256
+            });
 
             using (var stream = new MemoryStream(Resources.Gorgon_Logo_Small))
             {
                 var ddsCodec = new GorgonCodecDds();
                 _logo = GorgonTexture2DView.FromStream(graphics, stream, ddsCodec, options: new GorgonTexture2DLoadOptions
-                                                                                            {
-                                                                                                Name = "Gorgon Logo Texture",
-                                                                                                Binding = TextureBinding.ShaderResource,
-                                                                                                Usage = ResourceUsage.Immutable
-                                                                                            });
+                {
+                    Name = "Gorgon Logo Texture",
+                    Binding = TextureBinding.ShaderResource,
+                    Usage = ResourceUsage.Immutable
+                });
             }
         }
 
@@ -305,10 +305,10 @@ namespace Gorgon.Examples
         public static FormMain Initialize(DX.Size2 resolution, string appTitle, EventHandler formLoad = null)
         {
             _mainForm = new FormMain
-                        {
-                            Text = appTitle,
-                            ClientSize = new Drawing.Size(resolution.Width, resolution.Height)
-                        };
+            {
+                Text = appTitle,
+                ClientSize = new Drawing.Size(resolution.Width, resolution.Height)
+            };
 
             if (formLoad != null)
             {

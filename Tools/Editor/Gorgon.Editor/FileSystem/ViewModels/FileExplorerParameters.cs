@@ -82,8 +82,8 @@ namespace Gorgon.Editor.ViewModels
         public FileExplorerParameters(IFileSystemService fileSystemService, ISearchService<IFileExplorerNodeVm> fileSearch, IFileExplorerNodeVm rootNode, IProject project, ViewModelFactory viewModelFactory)
             : base(viewModelFactory)
         {
-            Project = project ?? throw new ArgumentNullException(nameof(project));            
-            FileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));            
+            Project = project ?? throw new ArgumentNullException(nameof(project));
+            FileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
             RootNode = rootNode ?? throw new ArgumentNullException(nameof(rootNode));
             FileSearch = fileSearch ?? throw new ArgumentNullException(nameof(fileSearch));
         }

@@ -28,20 +28,20 @@ using System;
 
 namespace Gorgon.Core
 {
-	/// <summary>
-	/// A type safe version of the <see cref="ICloneable"/> interface.
-	/// </summary>
-	/// <typeparam name="T">The type to clone.</typeparam>
-	/// <remarks>
-	/// The .NET framework provides us with a <see cref="ICloneable"/> interface for objects that can be cloned. However, it returns the cloned object as a <see cref="object"/> type. This can 
-	/// introduce boxing issues for value types that implement <c>ICloneable</c>. This interface will allow us to mitigate the boxing issues by providing a strongly typed cloning interface.
-	/// </remarks>
-	public interface IGorgonCloneable<out T>
-	{
-		/// <summary>
-		/// Function to clone an object.
-		/// </summary>
-		/// <returns>The cloned object.</returns>
-		T Clone();
-	}
+    /// <summary>
+    /// A type safe version of the <see cref="ICloneable"/> interface.
+    /// </summary>
+    /// <typeparam name="T">The type to clone.</typeparam>
+    /// <remarks>
+    /// The .NET framework provides us with a <see cref="ICloneable"/> interface for objects that can be cloned. However, it returns the cloned object as a <see cref="object"/> type. This can 
+    /// introduce boxing issues for value types that implement <c>ICloneable</c>. This interface will allow us to mitigate the boxing issues by providing a strongly typed cloning interface.
+    /// </remarks>
+    public interface IGorgonCloneable<out T>
+    {
+        /// <summary>
+        /// Function to clone an object.
+        /// </summary>
+        /// <returns>The cloned object.</returns>
+        T Clone();
+    }
 }

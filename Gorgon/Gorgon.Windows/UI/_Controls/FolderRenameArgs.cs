@@ -28,49 +28,49 @@ using System.ComponentModel;
 
 namespace Gorgon.UI
 {
-	/// <summary>
+    /// <summary>
     /// Event arguments for the <see cref="GorgonFolderBrowser.FolderRenaming"/> event.
     /// </summary>
     public class FolderRenameArgs
-		: CancelEventArgs
+        : CancelEventArgs
     {
         #region Properties.
-		/// <summary>
+        /// <summary>
         /// Property to return the path to the directory being renamed.
         /// </summary>
-		public string OldDirectoryPath
+        public string OldDirectoryPath
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the path to the new name for the directory.
         /// </summary>
-		public string NewDirectoryPath
+        public string NewDirectoryPath
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the old name.
         /// </summary>
-		public string OldName
+        public string OldName
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the new name.
         /// </summary>
-		public string NewName
+        public string NewName
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return whether this event has handled the renaming of the directory on our behalf.
         /// </summary>
-		public bool RenameHandled
+        public bool RenameHandled
         {
             get;
             set;
@@ -90,6 +90,6 @@ namespace Gorgon.UI
             OldName = oldName;
             NewName = newName;
         }
-		#endregion
+        #endregion
     }
 }

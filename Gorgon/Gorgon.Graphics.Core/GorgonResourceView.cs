@@ -112,7 +112,7 @@ namespace Gorgon.Graphics.Core
             {
                 return;
             }
-            
+
             if (resource != null)
             {
                 Log.Print($"Resource View '{resource.Name}': Releasing D3D11 resource view.", LoggingLevel.Simple);

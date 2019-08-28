@@ -54,7 +54,7 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Variables.
-		// The list of missing metadata links.
+        // The list of missing metadata links.
         private readonly List<string> _missingMetadataLinks = new List<string>();
         // The factory used to create view models.
         private ViewModelFactory _viewModelFactory;
@@ -73,7 +73,7 @@ namespace Gorgon.Editor.ViewModels
         // The application project manager.
         private IProjectManager _projectManager;
         // The content plugin service.
-        private IContentPlugInManagerService _contentPlugIns;        
+        private IContentPlugInManagerService _contentPlugIns;
         // The currently active content.
         private IEditorContent _currentContent;
         // The window layout XML.
@@ -84,13 +84,13 @@ namespace Gorgon.Editor.ViewModels
         private IContentPreviewVm _contentPreviewer;
         // The file manager used to manage content through content plug ins.
         private IContentFileManager _contentFileManager;
-		// The list of tools available to the application.
+        // The list of tools available to the application.
         private IToolPlugInService _toolPlugIns;
-		// The list of tool buttons.
+        // The list of tool buttons.
         private Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> _toolButtons = new Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
         // The event triggered when the project metadata is being saved.
         private Task _saveEvent;
-		// The cancel token for the save event task.
+        // The cancel token for the save event task.
         private CancellationTokenSource _cancelSource;
         #endregion
 
@@ -176,7 +176,7 @@ namespace Gorgon.Editor.ViewModels
                     _currentContent.WaitPanelActivated -= FileExplorer_WaitPanelActivated;
                     _currentContent.WaitPanelDeactivated -= FileExplorer_WaitPanelDeactivated;
                     _currentContent.ProgressUpdated -= FileExplorer_ProgressUpdated;
-                    _currentContent.ProgressDeactivated -= FileExplorer_ProgressDeactivated;                    
+                    _currentContent.ProgressDeactivated -= FileExplorer_ProgressDeactivated;
                 }
 
                 OnPropertyChanging();
@@ -191,7 +191,7 @@ namespace Gorgon.Editor.ViewModels
                     _currentContent.WaitPanelDeactivated += FileExplorer_WaitPanelDeactivated;
                     _currentContent.ProgressUpdated += FileExplorer_ProgressUpdated;
                     _currentContent.ProgressDeactivated += FileExplorer_ProgressDeactivated;
-                    _currentContent.CloseContent += CurrentContent_CloseContent;                    
+                    _currentContent.CloseContent += CurrentContent_CloseContent;
                     _currentContent.File.DependenciesUpdated += ContentFile_DependenciesUpdated;
                 }
 
@@ -416,7 +416,7 @@ namespace Gorgon.Editor.ViewModels
                     NotifyPropertyChanging(nameof(CommandContext));
                     break;
             }
-        }		
+        }
 
         /// <summary>Handles the PropertyChanged event of the CurrentContent control.</summary>
         /// <param name="sender">The source of the event.</param>
@@ -466,7 +466,7 @@ namespace Gorgon.Editor.ViewModels
             FileExplorer.WaitPanelDeactivated += FileExplorer_WaitPanelDeactivated;
             FileExplorer.ProgressUpdated += FileExplorer_ProgressUpdated;
             FileExplorer.ProgressDeactivated += FileExplorer_ProgressDeactivated;
-            FileExplorer.FileSystemChanged += FileExplorer_FileSystemChanged;            
+            FileExplorer.FileSystemChanged += FileExplorer_FileSystemChanged;
         }
 
         /// <summary>
@@ -491,7 +491,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 return;
             }
-            
+
             FileExplorer.ProgressUpdated -= FileExplorer_ProgressUpdated;
             FileExplorer.ProgressDeactivated -= FileExplorer_ProgressDeactivated;
             FileExplorer.WaitPanelActivated -= FileExplorer_WaitPanelActivated;
@@ -611,7 +611,7 @@ namespace Gorgon.Editor.ViewModels
                     file = (IContentFile)fileNode;
                 }
 
-				// If we're on a dependency node, then go to the actual node that we're working on.
+                // If we're on a dependency node, then go to the actual node that we're working on.
                 if (_fileExplorer.SelectedNode != fileNode)
                 {
                     dirNode.IsExpanded = true;
@@ -641,15 +641,15 @@ namespace Gorgon.Editor.ViewModels
 
                 // Close the current content. It should be saved at this point.
                 if (CurrentContent != null)
-                {                    
+                {
                     CurrentContent.OnUnload();
-                    CurrentContent = null;                    
+                    CurrentContent = null;
                 }
 
                 ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_OPENING, file.Name));
 
                 // Create a content object.                
-                IEditorContent content = await file.ContentPlugIn.OpenContentAsync(file, _contentFileManager, _projectData, new UndoService(Log)); 
+                IEditorContent content = await file.ContentPlugIn.OpenContentAsync(file, _contentFileManager, _projectData, new UndoService(Log));
 
                 if (content == null)
                 {
@@ -660,7 +660,7 @@ namespace Gorgon.Editor.ViewModels
                 RefreshFilePreview(file);
 
                 // Load the content.
-                file.IsOpen = true;                
+                file.IsOpen = true;
                 CurrentContent = content;
             }
             catch (Exception ex)
@@ -683,7 +683,7 @@ namespace Gorgon.Editor.ViewModels
             try
             {
                 // When we update the dependencies on content, we need to persist those changes to the file system as soon as possible.
-                await SaveProjectMetadataAsync();                
+                await SaveProjectMetadataAsync();
             }
             catch (Exception ex)
             {
@@ -709,10 +709,10 @@ namespace Gorgon.Editor.ViewModels
             _projectManager = injectionParameters.ProjectManager ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.ProjectManager), nameof(injectionParameters));
             _projectData = injectionParameters.Project ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.Project), nameof(injectionParameters));
             _messageService = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.MessageDisplay), nameof(injectionParameters));
-            _busyService = injectionParameters.BusyService ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.BusyService), nameof(injectionParameters));            
+            _busyService = injectionParameters.BusyService ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.BusyService), nameof(injectionParameters));
             _contentPlugIns = injectionParameters.ContentPlugIns ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.ContentPlugIns), nameof(injectionParameters));
 
-			// Get the tool plug ins.
+            // Get the tool plug ins.
             _toolPlugIns = _viewModelFactory.ToolPlugIns;
 
             if (_projectData.ProjectWorkSpace == null)
@@ -720,7 +720,7 @@ namespace Gorgon.Editor.ViewModels
                 _projectTitle = Resources.GOREDIT_NEW_PROJECT;
             }
             else
-            {                
+            {
                 _projectTitle = _projectData.ProjectWorkSpace.Name;
             }
 
@@ -761,7 +761,7 @@ namespace Gorgon.Editor.ViewModels
             if (plugin == null)
             {
                 throw new ArgumentNullException(nameof(plugin));
-            }                                   
+            }
 
             IFileExplorerNodeVm parentNode = _fileExplorer.SelectedNode ?? _fileExplorer.RootNode;
             Stream contentStream = null;
@@ -784,7 +784,7 @@ namespace Gorgon.Editor.ViewModels
                             if (CurrentContent.SaveContentCommand.CanExecute(SaveReason.ContentShutdown))
                             {
                                 await CurrentContent.SaveContentCommand.ExecuteAsync(SaveReason.ContentShutdown);
-                            }                                 
+                            }
                             break;
                     }
 
@@ -863,7 +863,7 @@ namespace Gorgon.Editor.ViewModels
         {
             if (_saveEvent != null)
             {
-				// Try to cancel the previous operation.
+                // Try to cancel the previous operation.
                 if (_cancelSource != null)
                 {
                     _cancelSource.Cancel();
@@ -881,19 +881,19 @@ namespace Gorgon.Editor.ViewModels
             // We have to reset the dependency metadata prior to rebuilding it.  Otherwise we may end up with duplicated dependencies and such.
             foreach (KeyValuePair<string, IFileExplorerNodeVm> node in nodes.Where(item => item.Value.Metadata != null))
             {
-				// Get rid of any dead links.
+                // Get rid of any dead links.
                 _missingMetadataLinks.Clear();
                 foreach (KeyValuePair<string, string> parentDep in node.Value.Metadata.DependsOn)
                 {
-					// If the node in question doesn't even exist in the file system, then drop it.
+                    // If the node in question doesn't even exist in the file system, then drop it.
                     if (!nodes.TryGetValue(parentDep.Value, out IFileExplorerNodeVm parentDepNode))
                     {
                         _missingMetadataLinks.Add(parentDep.Key);
                         continue;
                     }
 
-					// If it exists, but the actual parent node link doesn't have any record of this node as a dependency, then 
-					// drop it, otherwise continue on.
+                    // If it exists, but the actual parent node link doesn't have any record of this node as a dependency, then 
+                    // drop it, otherwise continue on.
                     if (parentDepNode.Dependencies.Any(item => string.Equals(item.FullPath, node.Key, StringComparison.OrdinalIgnoreCase)))
                     {
                         continue;
@@ -902,7 +902,7 @@ namespace Gorgon.Editor.ViewModels
                     _missingMetadataLinks.Add(parentDep.Key);
                 }
 
-				// We have to do this outside of here because we can't iterate and delete at the same time.
+                // We have to do this outside of here because we can't iterate and delete at the same time.
                 for (int i = 0; i < _missingMetadataLinks.Count; ++i)
                 {
                     node.Value.Metadata.DependsOn.Remove(_missingMetadataLinks[i]);
@@ -921,7 +921,7 @@ namespace Gorgon.Editor.ViewModels
 
             _cancelSource = new CancellationTokenSource();
 
-			// Async disabled for now, objects are not staying linked.
+            // Async disabled for now, objects are not staying linked.
 
             // This is the slowest part of this operation, so we'll push it into the background.
             //_saveEvent = Task.Run(() => _projectManager.PersistMetadata(_projectData, _cancelSource.Token), _cancelSource.Token);
@@ -972,7 +972,7 @@ namespace Gorgon.Editor.ViewModels
                 // Ensure the project is locked from outside interference (Gorgon editor instances only).
                 _projectManager.LockProject(_projectData);
 
-                AssignEvents();                
+                AssignEvents();
             }
             catch (Exception ex)
             {

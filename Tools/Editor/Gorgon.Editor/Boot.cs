@@ -27,28 +27,28 @@
 using System;
 using System.Drawing;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Gorgon.PlugIns;
 using Gorgon.Diagnostics;
+using Gorgon.Editor.Converters;
+using Gorgon.Editor.FileSystem;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
+using Gorgon.Editor.UI.ViewModels;
 using Gorgon.Editor.ViewModels;
 using Gorgon.IO;
 using Gorgon.Math;
+using Gorgon.PlugIns;
 using Gorgon.UI;
 using Newtonsoft.Json;
 using DX = SharpDX;
 using Exception = System.Exception;
-using System.Linq;
-using Gorgon.Editor.Converters;
-using Gorgon.Editor.UI.ViewModels;
-using Gorgon.Editor.FileSystem;
-using System.Reflection;
 
 namespace Gorgon.Editor
 {
@@ -73,13 +73,13 @@ namespace Gorgon.Editor
         private GorgonMefPlugInCache _pluginCache;
         // The plugin service used to manage content plugins.
         private ContentPlugInService _contentPlugIns;
-		// The plugin service used to manage tool plugin.
+        // The plugin service used to manage tool plugin.
         private ToolPlugInService _toolPlugIns;
-		// The services that are common to the entire application.
+        // The services that are common to the entire application.
         private IViewModelInjection _commonServices;
-		// The folder browser for a file system.
+        // The folder browser for a file system.
         private IEditorFileSystemFolderBrowseService _folderBrowser;
-		// The path to the plug in folder.
+        // The path to the plug in folder.
         private DirectoryInfo _plugInLocation;
         #endregion
 
@@ -118,7 +118,7 @@ namespace Gorgon.Editor
 
             foreach (string path in paths)
             {
-				// This can happen if the requesting assembly is loaded using a byte array.
+                // This can happen if the requesting assembly is loaded using a byte array.
                 if (string.IsNullOrWhiteSpace(path))
                 {
                     continue;
@@ -209,7 +209,7 @@ namespace Gorgon.Editor
             var defaultSize = new Size(1280.Min(Screen.PrimaryScreen.WorkingArea.Width), 800.Min(Screen.PrimaryScreen.WorkingArea.Height));
             var defaultLocation = new Point((Screen.PrimaryScreen.WorkingArea.Width / 2) - (defaultSize.Width / 2) + Screen.PrimaryScreen.WorkingArea.X,
                                               (Screen.PrimaryScreen.WorkingArea.Height / 2) - (defaultSize.Height / 2) + Screen.PrimaryScreen.WorkingArea.Y);
-            
+
             EditorSettings CreateEditorSettings()
             {
                 return new EditorSettings
@@ -271,7 +271,7 @@ namespace Gorgon.Editor
             if ((string.IsNullOrWhiteSpace(result.LastProjectWorkingDirectory)) || (!Directory.Exists(result.LastProjectWorkingDirectory)))
             {
                 result.LastProjectWorkingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).FormatDirectory(Path.DirectorySeparatorChar);
-            }            
+            }
 
             // If we're not on one of the screens, then default to the main screen.
             if (result.WindowBounds != null)
@@ -451,7 +451,7 @@ namespace Gorgon.Editor
                 EditorCommonResources.LoadResources();
 
                 _folderBrowser = new FileSystemFolderBrowseService();
-                _commonServices = new ViewModelInjection(Program.Log, new WaitCursorBusyState(), new MessageBoxService());                
+                _commonServices = new ViewModelInjection(Program.Log, new WaitCursorBusyState(), new MessageBoxService());
                 _pluginCache = new GorgonMefPlugInCache(Program.Log);
                 _graphicsContext = GraphicsContext.Create(Program.Log);
 
@@ -459,31 +459,31 @@ namespace Gorgon.Editor
 
                 if (!_plugInLocation.Exists)
                 {
-					Program.Log.Print($"[ERROR] Plug in path '{_plugInLocation.FullName}' was not found.  No plug ins will be loaded.", LoggingLevel.Simple);
+                    Program.Log.Print($"[ERROR] Plug in path '{_plugInLocation.FullName}' was not found.  No plug ins will be loaded.", LoggingLevel.Simple);
                     GorgonDialogs.ErrorBox(null, Resources.GOREDIT_ERR_LOADING_PLUGINS);
                 }
-				
+
                 // Get any application settings we might have.
                 _settings = LoadSettings();
 
                 // Load our file system import/export plugins.
                 FileSystemProviders fileSystemProviders = LoadFileSystemPlugIns();
 
-				// Load our tool plug ins.
+                // Load our tool plug ins.
                 _toolPlugIns = LoadToolPlugIns();
 
                 // Load our content service plugins.
-                _contentPlugIns = LoadContentPlugIns();                
+                _contentPlugIns = LoadContentPlugIns();
 
                 // Create the project manager for the application
                 _projectManager = new ProjectManager(fileSystemProviders);
 
                 _mainForm = new FormMain
-                            {
-                                Location = new Point(_settings.WindowBounds.Value.X, _settings.WindowBounds.Value.Y),
-                                Size = new Size(_settings.WindowBounds.Value.Width, _settings.WindowBounds.Value.Height),
-                                WindowState = FormWindowState.Normal
-                            };
+                {
+                    Location = new Point(_settings.WindowBounds.Value.X, _settings.WindowBounds.Value.Y),
+                    Size = new Size(_settings.WindowBounds.Value.Width, _settings.WindowBounds.Value.Height),
+                    WindowState = FormWindowState.Normal
+                };
 
                 await HideSplashAsync();
 
@@ -492,9 +492,9 @@ namespace Gorgon.Editor
                 var factory = new ViewModelFactory(_settings,
                                                    fileSystemProviders,
                                                    _contentPlugIns,
-												   _toolPlugIns,
+                                                   _toolPlugIns,
                                                    _projectManager,
-												   _commonServices,
+                                                   _commonServices,
                                                    new ClipboardService(),
                                                    new DirectoryLocateService(),
                                                    new FileScanService(_contentPlugIns),
@@ -520,7 +520,7 @@ namespace Gorgon.Editor
             {
                 Cursor.Current = Cursors.Default;
             }
-        }        
+        }
         #endregion
     }
 }

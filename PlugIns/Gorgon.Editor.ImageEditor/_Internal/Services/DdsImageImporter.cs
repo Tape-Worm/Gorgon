@@ -43,7 +43,7 @@ namespace Gorgon.Editor.ImageEditor.Services
         // The log used for debug message logging.
         private readonly IGorgonLog _log;
         // The codec for the input file.
-        private readonly IGorgonImageCodec _codec;        
+        private readonly IGorgonImageCodec _codec;
         #endregion
 
         #region Properties.

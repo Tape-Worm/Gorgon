@@ -26,10 +26,10 @@
 
 using System;
 using System.ComponentModel;
+using System.Drawing;
+using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Graphics;
-using Gorgon.Editor.UI;
-using System.Drawing;
 using Gorgon.Math;
 
 namespace Gorgon.Editor.SpriteEditor
@@ -41,7 +41,7 @@ namespace Gorgon.Editor.SpriteEditor
         : EditorSubPanelCommon, IDataContext<ISpritePickMaskEditor>
     {
         #region Variables.
-		// The original mask value.
+        // The original mask value.
         private ClipMask _originalMask = ClipMask.Alpha;
         #endregion
 
@@ -70,8 +70,8 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-            if (((DataContext.ClipMaskType == ClipMask.Alpha) && (RadioAlpha.Checked)) 
-				|| ((DataContext.ClipMaskType == ClipMask.Color) && (RadioColorAlpha.Checked)))
+            if (((DataContext.ClipMaskType == ClipMask.Alpha) && (RadioAlpha.Checked))
+                || ((DataContext.ClipMaskType == ClipMask.Color) && (RadioColorAlpha.Checked)))
             {
                 return;
             }
@@ -162,7 +162,7 @@ namespace Gorgon.Editor.SpriteEditor
                 case nameof(ISpritePickMaskEditor.ClipMaskType):
                     RadioAlpha.Checked = DataContext.ClipMaskType == ClipMask.Alpha;
                     TableAlphaOnly.Visible = RadioAlpha.Checked;
-                    Picker.Visible = !RadioAlpha.Checked;					
+                    Picker.Visible = !RadioAlpha.Checked;
                     SliderAlpha.ValuePercentual = DataContext.ClipMaskValue.Alpha;
                     Picker.SelectedColor = DataContext.ClipMaskValue;
                     break;
@@ -174,7 +174,7 @@ namespace Gorgon.Editor.SpriteEditor
                     else
                     {
                         Picker.SelectedColor = DataContext.ClipMaskValue;
-                    }                    
+                    }
                     break;
             }
         }
@@ -209,7 +209,7 @@ namespace Gorgon.Editor.SpriteEditor
             Picker.Visible = !RadioAlpha.Checked;
             Picker.OriginalColor = Picker.SelectedColor = dataContext.ClipMaskValue;
             ColorShow.UpperColor = Color.FromArgb((int)(255 * dataContext.ClipMaskValue.Alpha), Color.White);
-            SliderAlpha.ValuePercentual = dataContext.ClipMaskValue.Alpha;            			
+            SliderAlpha.ValuePercentual = dataContext.ClipMaskValue.Alpha;
         }
 
         /// <summary>Function to submit the change.</summary>
@@ -277,7 +277,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Function to assign a data context to the view as a view model.</summary>
         /// <param name="dataContext">The data context to assign.</param>
         /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
-        public void SetDataContext(ISpritePickMaskEditor dataContext) 
+        public void SetDataContext(ISpritePickMaskEditor dataContext)
         {
             InitializeFromDataContext(dataContext);
 

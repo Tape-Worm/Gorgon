@@ -33,8 +33,8 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using SharpDX.DXGI;
-using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core
 {
@@ -217,16 +217,16 @@ namespace Gorgon.Graphics.Core
         private protected override D3D11.ResourceView OnCreateNativeView()
         {
             var desc = new D3D11.UnorderedAccessViewDescription1
-                                {
-                                    Format = (Format)Format,
-                                    Dimension = D3D11.UnorderedAccessViewDimension.Texture3D,
-                                    Texture3D =
+            {
+                Format = (Format)Format,
+                Dimension = D3D11.UnorderedAccessViewDimension.Texture3D,
+                Texture3D =
                                     {
                                         MipSlice = MipSlice,
                                         FirstWSlice = StartDepthSlice,
                                         WSize = DepthSliceCount
                                     }
-                                };
+            };
 
             Graphics.Log.Print($"Creating 3D texture unordered access view for {Texture.Name}.", LoggingLevel.Verbose);
 
@@ -234,9 +234,9 @@ namespace Gorgon.Graphics.Core
             {
                 // Create our SRV.
                 Native = new D3D11.UnorderedAccessView1(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
-                         {
-                             DebugName = $"'{Texture.Name}'_D3D11UnorderedAccessView1_3D"
-                         };
+                {
+                    DebugName = $"'{Texture.Name}'_D3D11UnorderedAccessView1_3D"
+                };
 
                 Graphics.Log.Print($"Unordered Access 3D View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Starting depth slice: {StartDepthSlice}, Depth slice count: {DepthSliceCount}",
                                    LoggingLevel.Verbose);
@@ -257,128 +257,128 @@ namespace Gorgon.Graphics.Core
             return Native;
         }
 
-		/// <summary>
-		/// Function to convert a texel coordinate into a pixel coordinate and a depth slice.
-		/// </summary>
-		/// <param name="texelCoordinates">The texel coordinates to convert.</param>
-		/// <param name="mipLevel">[Optional] The mip level to use.</param>
-		/// <returns>The pixel coordinates.</returns>
-		/// <remarks>
-		/// <para>
-		/// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> for this view, it will be constrained if it falls outside of that range.
-		/// Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first mip level
-		/// for the underlying <see cref="Texture"/> is used.
-		/// </para>
-		/// </remarks>
-		public (DX.Point, int) ToPixel(DX.Vector3 texelCoordinates, int? mipLevel = null)
-		{
-		    float width = Texture.Width;
-		    float height = Texture.Height;
+        /// <summary>
+        /// Function to convert a texel coordinate into a pixel coordinate and a depth slice.
+        /// </summary>
+        /// <param name="texelCoordinates">The texel coordinates to convert.</param>
+        /// <param name="mipLevel">[Optional] The mip level to use.</param>
+        /// <returns>The pixel coordinates.</returns>
+        /// <remarks>
+        /// <para>
+        /// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> for this view, it will be constrained if it falls outside of that range.
+        /// Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first mip level
+        /// for the underlying <see cref="Texture"/> is used.
+        /// </para>
+        /// </remarks>
+        public (DX.Point, int) ToPixel(DX.Vector3 texelCoordinates, int? mipLevel = null)
+        {
+            float width = Texture.Width;
+            float height = Texture.Height;
 
-		    if (mipLevel == null)
-		    {
-		        return (new DX.Point((int)(texelCoordinates.X * width), (int)(texelCoordinates.Y * height)), (int)(texelCoordinates.Z * DepthSliceCount));
-		    }
+            if (mipLevel == null)
+            {
+                return (new DX.Point((int)(texelCoordinates.X * width), (int)(texelCoordinates.Y * height)), (int)(texelCoordinates.Z * DepthSliceCount));
+            }
 
-		    width = GetMipWidth(mipLevel.Value);
-		    height = GetMipHeight(mipLevel.Value);
+            width = GetMipWidth(mipLevel.Value);
+            height = GetMipHeight(mipLevel.Value);
 
-		    return (new DX.Point((int)(texelCoordinates.X * width), (int)(texelCoordinates.Y * height)), (int)(texelCoordinates.Z * DepthSliceCount));
-		}
+            return (new DX.Point((int)(texelCoordinates.X * width), (int)(texelCoordinates.Y * height)), (int)(texelCoordinates.Z * DepthSliceCount));
+        }
 
-		/// <summary>
-		/// Function to convert a pixel coordinate into a texel coordinate.
-		/// </summary>
-		/// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
-		/// <param name="mipLevel">[Optional] The mip level to use.</param>
-		/// <param name="depthSlice">[Optional] The depth slice to use.</param>
-		/// <returns>The texel coordinates.</returns>
-		/// <remarks>
-		/// <para>
-		/// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> for this view, it will be constrained if it falls outside of that range.
-		/// Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first mip level
-		/// for the underlying <see cref="Texture"/> is used.
-		/// </para>
-		/// <para>
-		/// If specified, the <paramref name="depthSlice"/> only applies to the <see cref="StartDepthSlice"/> and <see cref="DepthSliceCount"/> for this view, it will be constrained if it falls outside of that
-		/// range. Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first depth slice
-		/// is used.
-		/// </para>
-		/// </remarks>
-		public DX.Vector3 ToTexel(DX.Point pixelCoordinates, int? mipLevel = null, int? depthSlice = null)
-		{
-		    float width = Texture.Width;
-		    float height = Texture.Height;
-		    float depth = depthSlice ?? 0;
+        /// <summary>
+        /// Function to convert a pixel coordinate into a texel coordinate.
+        /// </summary>
+        /// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
+        /// <param name="mipLevel">[Optional] The mip level to use.</param>
+        /// <param name="depthSlice">[Optional] The depth slice to use.</param>
+        /// <returns>The texel coordinates.</returns>
+        /// <remarks>
+        /// <para>
+        /// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> for this view, it will be constrained if it falls outside of that range.
+        /// Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first mip level
+        /// for the underlying <see cref="Texture"/> is used.
+        /// </para>
+        /// <para>
+        /// If specified, the <paramref name="depthSlice"/> only applies to the <see cref="StartDepthSlice"/> and <see cref="DepthSliceCount"/> for this view, it will be constrained if it falls outside of that
+        /// range. Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first depth slice
+        /// is used.
+        /// </para>
+        /// </remarks>
+        public DX.Vector3 ToTexel(DX.Point pixelCoordinates, int? mipLevel = null, int? depthSlice = null)
+        {
+            float width = Texture.Width;
+            float height = Texture.Height;
+            float depth = depthSlice ?? 0;
 
-		    depth = depth.Min(DepthSliceCount + StartDepthSlice).Max(StartDepthSlice);
+            depth = depth.Min(DepthSliceCount + StartDepthSlice).Max(StartDepthSlice);
 
-		    if (mipLevel == null)
-		    {
-		        return new DX.Vector3(pixelCoordinates.X / width, pixelCoordinates.Y / height, depth / DepthSliceCount);
-		    }
+            if (mipLevel == null)
+            {
+                return new DX.Vector3(pixelCoordinates.X / width, pixelCoordinates.Y / height, depth / DepthSliceCount);
+            }
 
-		    width = GetMipWidth(mipLevel.Value);
-		    height = GetMipHeight(mipLevel.Value);
+            width = GetMipWidth(mipLevel.Value);
+            height = GetMipHeight(mipLevel.Value);
 
-		    return new DX.Vector3(pixelCoordinates.X / width, pixelCoordinates.Y / height, depth / DepthSliceCount);
-		}
+            return new DX.Vector3(pixelCoordinates.X / width, pixelCoordinates.Y / height, depth / DepthSliceCount);
+        }
 
-		/// <summary>
-		/// Function to convert a texel size into a pixel size.
-		/// </summary>
-		/// <param name="texelCoordinates">The texel size to convert.</param>
-		/// <param name="mipLevel">[Optional] The mip level to use.</param>
-		/// <returns>The pixel size.</returns>
-		/// <remarks>
-		/// <para>
-		/// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> for this view, it will be constrained if it falls outside of that range.
-		/// Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first mip level
-		/// for the underlying <see cref="Texture"/> is used.
-		/// </para>
-		/// </remarks>
-		public DX.Size2 ToPixel(DX.Size2F texelCoordinates, int? mipLevel = null)
-		{
-		    float width = Texture.Width;
-		    float height = Texture.Height;
+        /// <summary>
+        /// Function to convert a texel size into a pixel size.
+        /// </summary>
+        /// <param name="texelCoordinates">The texel size to convert.</param>
+        /// <param name="mipLevel">[Optional] The mip level to use.</param>
+        /// <returns>The pixel size.</returns>
+        /// <remarks>
+        /// <para>
+        /// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> for this view, it will be constrained if it falls outside of that range.
+        /// Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first mip level
+        /// for the underlying <see cref="Texture"/> is used.
+        /// </para>
+        /// </remarks>
+        public DX.Size2 ToPixel(DX.Size2F texelCoordinates, int? mipLevel = null)
+        {
+            float width = Texture.Width;
+            float height = Texture.Height;
 
-		    if (mipLevel == null)
-		    {
-		        return new DX.Size2((int)(texelCoordinates.Width * width), (int)(texelCoordinates.Height * height));
-		    }
+            if (mipLevel == null)
+            {
+                return new DX.Size2((int)(texelCoordinates.Width * width), (int)(texelCoordinates.Height * height));
+            }
 
-		    width = GetMipWidth(mipLevel.Value);
-		    height = GetMipHeight(mipLevel.Value);
-		    return new DX.Size2((int)(texelCoordinates.Width * width), (int)(texelCoordinates.Height * height));
-		}
+            width = GetMipWidth(mipLevel.Value);
+            height = GetMipHeight(mipLevel.Value);
+            return new DX.Size2((int)(texelCoordinates.Width * width), (int)(texelCoordinates.Height * height));
+        }
 
-		/// <summary>
-		/// Function to convert a pixel size into a texel size.
-		/// </summary>
-		/// <param name="pixelCoordinates">The pixel size to convert.</param>
-		/// <param name="mipLevel">[Optional] The mip level to use.</param>
-		/// <returns>The texel size.</returns>
-		/// <remarks>
-		/// <para>
-		/// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> for this view, it will be constrained if it falls outside of that range.
-		/// Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first mip level
-		/// for the underlying <see cref="Texture"/> is used.
-		/// </para>
-		/// </remarks>
-		public DX.Size2F ToTexel(DX.Size2 pixelCoordinates, int? mipLevel = null)
-		{
-		    float width = Texture.Width;
-		    float height = Texture.Height;
+        /// <summary>
+        /// Function to convert a pixel size into a texel size.
+        /// </summary>
+        /// <param name="pixelCoordinates">The pixel size to convert.</param>
+        /// <param name="mipLevel">[Optional] The mip level to use.</param>
+        /// <returns>The texel size.</returns>
+        /// <remarks>
+        /// <para>
+        /// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> for this view, it will be constrained if it falls outside of that range.
+        /// Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first mip level
+        /// for the underlying <see cref="Texture"/> is used.
+        /// </para>
+        /// </remarks>
+        public DX.Size2F ToTexel(DX.Size2 pixelCoordinates, int? mipLevel = null)
+        {
+            float width = Texture.Width;
+            float height = Texture.Height;
 
-		    if (mipLevel == null)
-		    {
-		        return new DX.Size2F(pixelCoordinates.Width / width, pixelCoordinates.Height / height);
-		    }
+            if (mipLevel == null)
+            {
+                return new DX.Size2F(pixelCoordinates.Width / width, pixelCoordinates.Height / height);
+            }
 
-		    width = GetMipWidth(mipLevel.Value);
-		    height = GetMipHeight(mipLevel.Value);
-		    return new DX.Size2F(pixelCoordinates.Width / width, pixelCoordinates.Height / height);
-		}
+            width = GetMipWidth(mipLevel.Value);
+            height = GetMipHeight(mipLevel.Value);
+            return new DX.Size2F(pixelCoordinates.Width / width, pixelCoordinates.Height / height);
+        }
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -461,12 +461,12 @@ namespace Gorgon.Graphics.Core
             }
 
             var newInfo = new GorgonTexture3DInfo(info)
-                          {
-                              Usage = info.Usage == ResourceUsage.Staging ? ResourceUsage.Default : info.Usage,
-                              Binding = (((info.Binding & TextureBinding.ReadWriteView) != TextureBinding.ReadWriteView)
+            {
+                Usage = info.Usage == ResourceUsage.Staging ? ResourceUsage.Default : info.Usage,
+                Binding = (((info.Binding & TextureBinding.ReadWriteView) != TextureBinding.ReadWriteView)
                                              ? (info.Binding | TextureBinding.ReadWriteView)
                                              : info.Binding) & ~TextureBinding.DepthStencil // There's now way we can build a depth/stencil from this method.
-                          };
+            };
 
             if (initialData != null)
             {
@@ -491,7 +491,7 @@ namespace Gorgon.Graphics.Core
                                                                     new GorgonTextureLoadOptions
                                                                     {
                                                                         Usage = newInfo.Usage,
-                                                                        Binding = newInfo.Binding,                                                                        
+                                                                        Binding = newInfo.Binding,
                                                                         Name = newInfo.Name
                                                                     });
 

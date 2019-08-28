@@ -40,11 +40,11 @@ namespace Gorgon.Graphics.Core
     /// </para>
     /// </remarks>
     internal class VideoAdapterInfo
-		: IGorgonVideoAdapterInfo
-	{
-		#region Variables.
-		// The DXGI adapter description
-		private readonly AdapterDescription2 _adapterDesc;
+        : IGorgonVideoAdapterInfo
+    {
+        #region Variables.
+        // The DXGI adapter description
+        private readonly AdapterDescription2 _adapterDesc;
         #endregion
 
         #region Properties.
@@ -102,64 +102,64 @@ namespace Gorgon.Graphics.Core
         /// Property to return the name of the video adapter.
         /// </summary>
         public string Name
-		{
-			get;
-		}
+        {
+            get;
+        }
 
-	    /// <summary>
-	    /// Property to return the index of the video adapter within a list returned by <see cref="GorgonGraphics.EnumerateAdapters"/>.
-	    /// </summary>
-	    public int Index
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the index of the video adapter within a list returned by <see cref="GorgonGraphics.EnumerateAdapters"/>.
+        /// </summary>
+        public int Index
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the type of video adapter.
-		/// </summary>
-		public VideoDeviceType VideoDeviceType
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the type of video adapter.
+        /// </summary>
+        public VideoDeviceType VideoDeviceType
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the highest feature set that the hardware can support.
-		/// </summary>
-		public FeatureSet FeatureSet
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the highest feature set that the hardware can support.
+        /// </summary>
+        public FeatureSet FeatureSet
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the unique identifier for the device.
-		/// </summary>
-		public long Luid => _adapterDesc.Luid;
+        /// <summary>
+        /// Property to return the unique identifier for the device.
+        /// </summary>
+        public long Luid => _adapterDesc.Luid;
 
 
-		/// <summary>
-		/// Property to return the outputs on this device.
-		/// </summary>
-		/// <remarks>The outputs are typically monitors attached to the device.</remarks>
-		public GorgonVideoAdapterOutputList Outputs
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the outputs on this device.
+        /// </summary>
+        /// <remarks>The outputs are typically monitors attached to the device.</remarks>
+        public GorgonVideoAdapterOutputList Outputs
+        {
+            get;
+        }
 
-	    /// <summary>
-	    /// Property to return the amount of memory for the adapter, in bytes.
-	    /// </summary>
-	    public GorgonVideoAdapterMemory Memory
-	    {
-	        get;
-	    }
+        /// <summary>
+        /// Property to return the amount of memory for the adapter, in bytes.
+        /// </summary>
+        public GorgonVideoAdapterMemory Memory
+        {
+            get;
+        }
 
-	    /// <summary>
-	    /// Property to return the PCI bus information for the adapter.
-	    /// </summary>
-	    public GorgonVideoAdapterPciInfo PciInfo
-	    {
-	        get;
-	    }
+        /// <summary>
+        /// Property to return the PCI bus information for the adapter.
+        /// </summary>
+        public GorgonVideoAdapterPciInfo PciInfo
+        {
+            get;
+        }
         #endregion
 
         #region Constructor.
@@ -172,34 +172,34 @@ namespace Gorgon.Graphics.Core
         /// <param name="outputs">The list of outputs attached to the video adapter.</param>
         /// <param name="deviceType">The type of video adapter.</param>
         public VideoAdapterInfo(int index,
-		                       Adapter2 adapter,
-		                       FeatureSet featureSet,
-		                       Dictionary<string, VideoOutputInfo> outputs,
-		                       VideoDeviceType deviceType)
-		{
-			_adapterDesc = adapter.Description2;
-		    Memory = new GorgonVideoAdapterMemory(_adapterDesc.DedicatedSystemMemory, _adapterDesc.SharedSystemMemory, _adapterDesc.DedicatedVideoMemory);
+                               Adapter2 adapter,
+                               FeatureSet featureSet,
+                               Dictionary<string, VideoOutputInfo> outputs,
+                               VideoDeviceType deviceType)
+        {
+            _adapterDesc = adapter.Description2;
+            Memory = new GorgonVideoAdapterMemory(_adapterDesc.DedicatedSystemMemory, _adapterDesc.SharedSystemMemory, _adapterDesc.DedicatedVideoMemory);
             PciInfo = new GorgonVideoAdapterPciInfo(_adapterDesc.DeviceId, _adapterDesc.Revision, _adapterDesc.SubsystemId, _adapterDesc.VendorId);
 
-			// Ensure that any trailing nulls are removed. This is unlikely to happen with D3D 11.x, but if we ever jump up to 12, we have to 
-			// watch out for this as SharpDX does not strip the nulls.
-			Name = _adapterDesc.Description.Replace("\0", string.Empty);
-			Index = index;
-			VideoDeviceType = deviceType;
+            // Ensure that any trailing nulls are removed. This is unlikely to happen with D3D 11.x, but if we ever jump up to 12, we have to 
+            // watch out for this as SharpDX does not strip the nulls.
+            Name = _adapterDesc.Description.Replace("\0", string.Empty);
+            Index = index;
+            VideoDeviceType = deviceType;
 
             // Put a reference to the adapter on the output.
             // This will be handy for backtracking later.  Also it allows us to validate the output so that we are certain it's applied on the correct 
             // video adapter, allowin mixing & matching will likely end in tears.
             var finalOutputs = new Dictionary<string, IGorgonVideoOutputInfo>(StringComparer.OrdinalIgnoreCase);
-		    foreach (KeyValuePair<string, VideoOutputInfo> output in outputs)
-		    {
-		        output.Value.Adapter = this;
-		        finalOutputs[output.Key] = output.Value;
-		    }
+            foreach (KeyValuePair<string, VideoOutputInfo> output in outputs)
+            {
+                output.Value.Adapter = this;
+                finalOutputs[output.Key] = output.Value;
+            }
 
             Outputs = new GorgonVideoAdapterOutputList(finalOutputs);
-			FeatureSet = featureSet;
-		}
-		#endregion
-	}
+            FeatureSet = featureSet;
+        }
+        #endregion
+    }
 }

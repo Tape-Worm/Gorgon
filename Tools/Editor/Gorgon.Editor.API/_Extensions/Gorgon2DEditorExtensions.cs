@@ -274,7 +274,7 @@ namespace Gorgon.IO
             {
                 throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_NOT_SPRITE, path));
             }
-                
+
             if (!fileMetadata.Attributes.TryGetValue("SpriteCodec", out string codecTypeName))
             {
                 throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_UNSUPPORTED_CODEC, string.Empty));

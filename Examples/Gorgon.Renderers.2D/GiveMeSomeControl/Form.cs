@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using Gorgon.Animation;
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
@@ -38,6 +37,7 @@ using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers;
 using Gorgon.UI;
+using DX = SharpDX;
 using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
 
 namespace Gorgon.Examples
@@ -45,7 +45,7 @@ namespace Gorgon.Examples
     /// <summary>
     /// Main application form.
     /// </summary>
-    public partial class Form 
+    public partial class Form
         : System.Windows.Forms.Form
     {
         #region Variables.
@@ -193,16 +193,18 @@ namespace Gorgon.Examples
                                                          });
 
             _torusLeft = new GorgonSprite
-                     {
-                         Anchor = new DX.Vector2(0.5f, 0.5f), Size = new DX.Size2F(64, 64),
-                         TextureSampler = GorgonSamplerState.PointFiltering
-                     };
+            {
+                Anchor = new DX.Vector2(0.5f, 0.5f),
+                Size = new DX.Size2F(64, 64),
+                TextureSampler = GorgonSamplerState.PointFiltering
+            };
             _torusRight = new GorgonSprite
-                          {
-                              Anchor = new DX.Vector2(0.5f, 0.5f), Size = new DX.Size2F(64, 64),
-                              TextureSampler = GorgonSamplerState.PointFiltering
-                          };
-            
+            {
+                Anchor = new DX.Vector2(0.5f, 0.5f),
+                Size = new DX.Size2F(64, 64),
+                TextureSampler = GorgonSamplerState.PointFiltering
+            };
+
             BuildAnimation();
 
             GorgonExample.LoadResources(_graphics);
@@ -271,7 +273,7 @@ namespace Gorgon.Examples
             }
 
             _renderer.End();
-            
+
             GorgonExample.DrawStatsAndLogo(_renderer);
 
             _leftPanel.Present(1);
@@ -289,7 +291,7 @@ namespace Gorgon.Examples
             else
             {
                 _torusAnim.Speed = TrackSpeed.Value / 5.0f;
-                _controllerRight.Update();    
+                _controllerRight.Update();
             }
 
             return true;

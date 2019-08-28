@@ -32,18 +32,18 @@ using Gorgon.Graphics;
 
 namespace Gorgon.Editor.ExtractSpriteTool
 {
-	/// <summary>
+    /// <summary>
     /// A color picker dialog.
     /// </summary>
-    internal partial class FormColorPicker 
-		: KryptonForm
+    internal partial class FormColorPicker
+        : KryptonForm
     {
         #region Properties.
-		/// <summary>
+        /// <summary>
         /// Property to set or return the original color.
         /// </summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-		public GorgonColor OriginalColor
+        public GorgonColor OriginalColor
         {
             get => Picker.OriginalColor;
             set => Picker.OriginalColor = value;

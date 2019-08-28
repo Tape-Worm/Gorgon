@@ -74,7 +74,7 @@ namespace Gorgon.Editor.Metadata
             get;
             private set;
         } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        
+
         /// <summary>
         /// Property to return the content plugin metadata associated with this project item.
         /// </summary>
@@ -113,7 +113,7 @@ namespace Gorgon.Editor.Metadata
             {
                 throw new ArgumentNullException(nameof(metadata));
             }
-                        
+
             _contentMetadata = metadata.ContentMetadata;
             PlugInName = metadata.PlugInName;
 

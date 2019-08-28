@@ -39,10 +39,10 @@ namespace Gorgon.Examples
         : IDisposable
     {
         #region Variables.
-		// Graphics interface.
+        // Graphics interface.
         private DrawingGraphics _graphics;
-		// List if brushes to use.
-	    private readonly SolidBrush[] _brushes;
+        // List if brushes to use.
+        private readonly SolidBrush[] _brushes;
         #endregion
 
         #region Properties.
@@ -67,7 +67,7 @@ namespace Gorgon.Examples
                 _graphics.Dispose();
                 _graphics = null;
             }
-            
+
             var newBuffer = new Bitmap(newSize.Width, newSize.Height, PixelFormat.Format32bppArgb);
             _graphics = DrawingGraphics.FromImage(newBuffer);
 
@@ -90,7 +90,7 @@ namespace Gorgon.Examples
         public void SprayPoint(Point point)
         {
             var randomArea = new Point(GorgonRandom.RandomInt32(-10, 10), GorgonRandom.RandomInt32(-10, 10));
-	        _graphics.FillEllipse(_brushes[GorgonRandom.RandomInt32(0, _brushes.Length - 1)], new Rectangle(point.X + randomArea.X, point.Y + randomArea.Y, 10, 10));
+            _graphics.FillEllipse(_brushes[GorgonRandom.RandomInt32(0, _brushes.Length - 1)], new Rectangle(point.X + randomArea.X, point.Y + randomArea.Y, 10, 10));
         }
         #endregion
 
@@ -104,12 +104,12 @@ namespace Gorgon.Examples
             Surface = new Bitmap(size.Width, size.Height, PixelFormat.Format32bppArgb);
             _graphics = DrawingGraphics.FromImage(Surface);
 
-			_brushes = new SolidBrush[64];
+            _brushes = new SolidBrush[64];
 
-	        for (int i = 0; i < _brushes.Length; ++i)
-	        {
-				_brushes[i] = new SolidBrush(Color.FromArgb(GorgonRandom.RandomInt32(0, 255), GorgonRandom.RandomInt32(0, 255), GorgonRandom.RandomInt32(0, 255)));
-	        }
+            for (int i = 0; i < _brushes.Length; ++i)
+            {
+                _brushes[i] = new SolidBrush(Color.FromArgb(GorgonRandom.RandomInt32(0, 255), GorgonRandom.RandomInt32(0, 255), GorgonRandom.RandomInt32(0, 255)));
+            }
         }
         #endregion
 
@@ -119,13 +119,13 @@ namespace Gorgon.Examples
         /// </summary>
         public void Dispose()
         {
-	        foreach (SolidBrush brush in _brushes)
-	        {
-		        brush.Dispose();
-	        }
+            foreach (SolidBrush brush in _brushes)
+            {
+                brush.Dispose();
+            }
 
             Surface?.Dispose();
-			_graphics?.Dispose();
+            _graphics?.Dispose();
             GC.SuppressFinalize(this);
         }
         #endregion

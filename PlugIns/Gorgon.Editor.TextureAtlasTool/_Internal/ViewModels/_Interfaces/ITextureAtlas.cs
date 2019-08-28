@@ -24,10 +24,10 @@
 // 
 #endregion
 
-using DX = SharpDX;
+using System.ComponentModel;
 using Gorgon.Editor.UI;
 using Gorgon.Renderers.Services;
-using System.ComponentModel;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.TextureAtlasTool
 {
@@ -35,7 +35,7 @@ namespace Gorgon.Editor.TextureAtlasTool
     /// The view model for the main UI.
     /// </summary>
     internal interface ITextureAtlas
-		: IViewModel
+        : IViewModel
     {
         /// <summary>
         /// Property to return the atlas after it's been generated.
@@ -78,10 +78,10 @@ namespace Gorgon.Editor.TextureAtlasTool
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the sprite file management interface.
         /// </summary>
-		ISpriteFiles SpriteFiles
+        ISpriteFiles SpriteFiles
         {
             get;
         }
@@ -94,36 +94,36 @@ namespace Gorgon.Editor.TextureAtlasTool
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return the maximum size for the atlas texture.
         /// </summary>
-		DX.Size2 MaxTextureSize
+        DX.Size2 MaxTextureSize
         {
             get;
             set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return the maximum number of array indices for the atlas texture.
         /// </summary>
-		int MaxArrayCount
+        int MaxArrayCount
         {
             get;
             set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the path for the output files.
         /// </summary>
-		string OutputPath
+        string OutputPath
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the base atlas texture name.
         /// </summary>
-		string BaseTextureName
+        string BaseTextureName
         {
             get;
             set;
@@ -138,34 +138,34 @@ namespace Gorgon.Editor.TextureAtlasTool
             set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the folder selection command.
         /// </summary>
-		IEditorCommand<object> SelectFolderCommand
+        IEditorCommand<object> SelectFolderCommand
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the command used to calculate best fit sizes.
         /// </summary>
-		IEditorCommand<object> CalculateSizesCommand
+        IEditorCommand<object> CalculateSizesCommand
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the command used to show the sprite file manager.
         /// </summary>
-		IEditorCommand<object> LoadSpritesCommand
+        IEditorCommand<object> LoadSpritesCommand
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the command used to generate the atlas.
         /// </summary>
-		IEditorCommand<object> GenerateCommand
+        IEditorCommand<object> GenerateCommand
         {
             get;
         }

@@ -29,70 +29,70 @@ using System.Windows.Forms;
 
 namespace Gorgon.UI
 {
-	/// <summary>
-	/// Dialog for confirmation + plus to all option.
-	/// </summary>
-	internal partial class ConfirmationDialogEx 
-		: ConfirmationDialog
-	{
-		#region Variables.
+    /// <summary>
+    /// Dialog for confirmation + plus to all option.
+    /// </summary>
+    internal partial class ConfirmationDialogEx
+        : ConfirmationDialog
+    {
+        #region Variables.
 
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing"></see> event.
-		/// </summary>
-		/// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs"></see> that contains the event data.</param>
-		protected override void OnFormClosing(FormClosingEventArgs e)
-		{
-			base.OnFormClosing(e);
+        #region Methods.
+        /// <summary>
+        /// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing"></see> event.
+        /// </summary>
+        /// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs"></see> that contains the event data.</param>
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
 
-			// Apply to all to result.
-		    if ((checkToAll.Checked) && (ConfirmationResult != ConfirmationResult.Cancel))
-		    {
-		        ConfirmationResult |= ConfirmationResult.ToAll;
-		    }
-		}
+            // Apply to all to result.
+            if ((checkToAll.Checked) && (ConfirmationResult != ConfirmationResult.Cancel))
+            {
+                ConfirmationResult |= ConfirmationResult.ToAll;
+            }
+        }
 
-		/// <summary>
-		/// Form load event.
-		/// </summary>
-		/// <param name="e">Event arguments.</param>
-		protected override void OnLoad(EventArgs e)
-		{
-		    MessageHeight -= checkToAll.Height;
+        /// <summary>
+        /// Form load event.
+        /// </summary>
+        /// <param name="e">Event arguments.</param>
+        protected override void OnLoad(EventArgs e)
+        {
+            MessageHeight -= checkToAll.Height;
 
-			base.OnLoad(e);
-		}
+            base.OnLoad(e);
+        }
 
-		/// <summary>
-		/// Function to perform the actual drawing of the dialog.
-		/// </summary>
-		/// <param name="g">Graphics object to use.</param>
-		protected override void DrawDialog(System.Drawing.Graphics g)
-		{
-		    // Get size.
-			float maxTextHeight = AdjustSize(g, checkToAll.Height);
+        /// <summary>
+        /// Function to perform the actual drawing of the dialog.
+        /// </summary>
+        /// <param name="g">Graphics object to use.</param>
+        protected override void DrawDialog(System.Drawing.Graphics g)
+        {
+            // Get size.
+            float maxTextHeight = AdjustSize(g, checkToAll.Height);
 
-			// Adjust buttons.
-			if (ShowCancel)
-			{
-				buttonCancel.Left = ClientSize.Width - buttonCancel.Width - 8;
-				buttonNo.Left = buttonCancel.Left - buttonNo.Width - 8;
-				buttonOK.Left = buttonNo.Left - buttonOK.Width - 8;
-			}
-			else
-			{
-				buttonNo.Left = ClientSize.Width - buttonNo.Width - 8;
-				buttonOK.Left = buttonNo.Left - buttonOK.Width - 8;
-			}
+            // Adjust buttons.
+            if (ShowCancel)
+            {
+                buttonCancel.Left = ClientSize.Width - buttonCancel.Width - 8;
+                buttonNo.Left = buttonCancel.Left - buttonNo.Width - 8;
+                buttonOK.Left = buttonNo.Left - buttonOK.Width - 8;
+            }
+            else
+            {
+                buttonNo.Left = ClientSize.Width - buttonNo.Width - 8;
+                buttonOK.Left = buttonNo.Left - buttonOK.Width - 8;
+            }
 
-			buttonNo.Top = buttonCancel.Top = buttonOK.Top = ClientSize.Height - buttonOK.Height - 4;
+            buttonNo.Top = buttonCancel.Top = buttonOK.Top = ClientSize.Height - buttonOK.Height - 4;
             checkToAll.Top = buttonOK.Top + ((buttonOK.Height / 2) - (checkToAll.Height / 2));
 
-            DrawMessage(g, maxTextHeight);			
-		}
+            DrawMessage(g, maxTextHeight);
+        }
         #endregion
 
         #region Constructor/Destructor.

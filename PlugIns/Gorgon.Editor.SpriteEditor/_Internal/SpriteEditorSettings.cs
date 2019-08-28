@@ -32,7 +32,7 @@ using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
-	/// <summary>
+    /// <summary>
     /// The settings for the sprite importer plug in.
     /// </summary>
     internal class SpriteImportSettings

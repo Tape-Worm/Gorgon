@@ -33,7 +33,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
     /// </summary>
     internal interface IColorPickerService
     {
-		/// <summary>
+        /// <summary>
         /// Function to retrieve a color.
         /// </summary>
         /// <param name="originalColor">The original color being changed.</param>

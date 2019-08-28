@@ -27,13 +27,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
 using Gorgon.UI;
-using Gorgon.Editor.PlugIns;
 
 namespace Gorgon.Editor.Services
 {
@@ -122,7 +122,7 @@ namespace Gorgon.Editor.Services
         private string GetWriterDialogFilterString(IReadOnlyList<(string desc, FileWriterPlugIn writer, IReadOnlyList<GorgonFileExtension> extensions)> extensions)
         {
             var result = new StringBuilder();
-            var filter = new StringBuilder();            
+            var filter = new StringBuilder();
 
             foreach ((string desc, FileWriterPlugIn _, IReadOnlyList<GorgonFileExtension> extensions) item in extensions)
             {
@@ -231,12 +231,12 @@ namespace Gorgon.Editor.Services
             {
                 initialDirectory = new DirectoryInfo(Settings.LastOpenSavePath);
             }
-                        
+
             if (!initialDirectory.Exists)
             {
                 initialDirectory = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
-            }            
-                        
+            }
+
             if (CurrentWriter != null)
             {
                 FindCurrentWriterExtensionIndex(extensions);
@@ -250,7 +250,7 @@ namespace Gorgon.Editor.Services
             return new SaveFileDialog
             {
                 Title = string.IsNullOrWhiteSpace(DialogTitle) ? Resources.GOREDIT_TEXT_SAVE_EDITOR_FILE : DialogTitle,
-                FileName = string.IsNullOrWhiteSpace(InitialFilePath) ? string.Empty : InitialFilePath,            
+                FileName = string.IsNullOrWhiteSpace(InitialFilePath) ? string.Empty : InitialFilePath,
                 ValidateNames = true,
                 SupportMultiDottedExtensions = true,
                 AutoUpgradeEnabled = true,

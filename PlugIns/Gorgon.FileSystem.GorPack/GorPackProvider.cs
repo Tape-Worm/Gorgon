@@ -43,123 +43,123 @@ namespace Gorgon.IO.GorPack
     /// The BZip2 compressed pack files are written by an older (1.x) version of Gorgon.  This provider will enable the new file system interface to be able to read these files.
     /// </remarks>
     internal class GorPackProvider
-		: GorgonFileSystemProvider
-	{
-		#region Constants.
-		/// <summary>
-		/// The pack file header.
-		/// </summary>
-		public const string GorPackHeader = "GORPACK1.SharpZip.BZ2";
-		#endregion
+        : GorgonFileSystemProvider
+    {
+        #region Constants.
+        /// <summary>
+        /// The pack file header.
+        /// </summary>
+        public const string GorPackHeader = "GORPACK1.SharpZip.BZ2";
+        #endregion
 
         #region Methods.
         /// <summary>
-		/// Function to decompress a data block.
-		/// </summary>
-		/// <param name="data">Data to decompress.</param>
-		/// <returns>The uncompressed data.</returns>
-		private static byte[] Decompress(byte[] data)
-		{
-			using (var sourceStream = new MemoryStream(data))
-			{
-				using (var decompressedStream = new MemoryStream())
-				{			
-					BZip2.Decompress(sourceStream, decompressedStream, true);
-					return decompressedStream.ToArray();
-				}
-			}
-		}
+        /// Function to decompress a data block.
+        /// </summary>
+        /// <param name="data">Data to decompress.</param>
+        /// <returns>The uncompressed data.</returns>
+        private static byte[] Decompress(byte[] data)
+        {
+            using (var sourceStream = new MemoryStream(data))
+            {
+                using (var decompressedStream = new MemoryStream())
+                {
+                    BZip2.Decompress(sourceStream, decompressedStream, true);
+                    return decompressedStream.ToArray();
+                }
+            }
+        }
 
-		/// <summary>
-		/// Function to enumerate the available directories stored in the packed file.
-		/// </summary>
-		/// <param name="index">The XML file containing the index of files and directories.</param>
-		/// <param name="mountPoint">The mount point to map into.</param>
-		/// <returns>A read only list of directory paths mapped to the virtual file system.</returns>
-		private static IReadOnlyList<string> EnumerateDirectories(XDocument index, IGorgonVirtualDirectory mountPoint)
-		{
-			var result = new List<string>();
-			IEnumerable<XElement> directories = index.Descendants("Path");
+        /// <summary>
+        /// Function to enumerate the available directories stored in the packed file.
+        /// </summary>
+        /// <param name="index">The XML file containing the index of files and directories.</param>
+        /// <param name="mountPoint">The mount point to map into.</param>
+        /// <returns>A read only list of directory paths mapped to the virtual file system.</returns>
+        private static IReadOnlyList<string> EnumerateDirectories(XDocument index, IGorgonVirtualDirectory mountPoint)
+        {
+            var result = new List<string>();
+            IEnumerable<XElement> directories = index.Descendants("Path");
 
-			foreach (XElement directoryNode in directories)
-			{
-				XAttribute pathAttrib = directoryNode.Attribute("FullPath");
+            foreach (XElement directoryNode in directories)
+            {
+                XAttribute pathAttrib = directoryNode.Attribute("FullPath");
 
-				if (string.IsNullOrWhiteSpace(pathAttrib?.Value))
-				{
-					throw new FileLoadException(Resources.GORFS_GORPACK_ERR_FILEINDEX_CORRUPT);
-				}
+                if (string.IsNullOrWhiteSpace(pathAttrib?.Value))
+                {
+                    throw new FileLoadException(Resources.GORFS_GORPACK_ERR_FILEINDEX_CORRUPT);
+                }
 
-				// Add the directory.
-				result.Add((mountPoint.FullPath + pathAttrib.Value).FormatDirectory('/'));
-			}
+                // Add the directory.
+                result.Add((mountPoint.FullPath + pathAttrib.Value).FormatDirectory('/'));
+            }
 
-			return result;
-		}
+            return result;
+        }
 
-		/// <summary>
-		/// Function to enumerate the available files stored in the packed file.
-		/// </summary>
-		/// <param name="index">The XML file containing the index of files and directories.</param>
-		/// <param name="offset">The offset into the physical file.</param>
-		/// <param name="physicalLocation">Physical location of the packed file.</param>
-		/// <param name="mountPoint">The mount point to map into.</param>
-		/// <returns>A read only list of <see cref="IGorgonPhysicalFileInfo"/> objects mapped to the virtual file system.</returns>
-		private static IReadOnlyList<IGorgonPhysicalFileInfo> EnumerateFiles(XDocument index, long offset, string physicalLocation, IGorgonVirtualDirectory mountPoint)
-		{
-			IEnumerable<XElement> files = index.Descendants("File");
-			var result = new List<IGorgonPhysicalFileInfo>();
+        /// <summary>
+        /// Function to enumerate the available files stored in the packed file.
+        /// </summary>
+        /// <param name="index">The XML file containing the index of files and directories.</param>
+        /// <param name="offset">The offset into the physical file.</param>
+        /// <param name="physicalLocation">Physical location of the packed file.</param>
+        /// <param name="mountPoint">The mount point to map into.</param>
+        /// <returns>A read only list of <see cref="IGorgonPhysicalFileInfo"/> objects mapped to the virtual file system.</returns>
+        private static IReadOnlyList<IGorgonPhysicalFileInfo> EnumerateFiles(XDocument index, long offset, string physicalLocation, IGorgonVirtualDirectory mountPoint)
+        {
+            IEnumerable<XElement> files = index.Descendants("File");
+            var result = new List<IGorgonPhysicalFileInfo>();
 
-			foreach (XElement file in files)
-			{
-				XElement fileNameNode = file.Element("Filename");
-				XElement fileExtensionNode = file.Element("Extension");
-				XElement fileOffsetNode = file.Element("Offset");
-				XElement fileCompressedSizeNode = file.Element("CompressedSize");
-				XElement fileSizeNode = file.Element("Size");
-				XElement fileDateNode = file.Element("FileDate");
-				XElement fileLastModNode = file.Element("LastModDate");
-				string parentDirectoryPath = file.Parent?.Attribute("FullPath")?.Value;
-				
-				// We need these nodes.
-				if ((fileNameNode == null) || (fileOffsetNode == null)
-					|| (fileSizeNode == null) || (fileDateNode == null)
-					|| ((string.IsNullOrWhiteSpace(fileNameNode.Value)) && (string.IsNullOrWhiteSpace(fileExtensionNode.Value)))
-					|| (string.IsNullOrWhiteSpace(fileDateNode.Value))
-					|| (string.IsNullOrWhiteSpace(parentDirectoryPath)))
-				{
-					throw new FileLoadException(Resources.GORFS_GORPACK_ERR_FILEINDEX_CORRUPT);
-				}
+            foreach (XElement file in files)
+            {
+                XElement fileNameNode = file.Element("Filename");
+                XElement fileExtensionNode = file.Element("Extension");
+                XElement fileOffsetNode = file.Element("Offset");
+                XElement fileCompressedSizeNode = file.Element("CompressedSize");
+                XElement fileSizeNode = file.Element("Size");
+                XElement fileDateNode = file.Element("FileDate");
+                XElement fileLastModNode = file.Element("LastModDate");
+                string parentDirectoryPath = file.Parent?.Attribute("FullPath")?.Value;
 
-				parentDirectoryPath = (mountPoint.FullPath + parentDirectoryPath).FormatDirectory('/');
+                // We need these nodes.
+                if ((fileNameNode == null) || (fileOffsetNode == null)
+                    || (fileSizeNode == null) || (fileDateNode == null)
+                    || ((string.IsNullOrWhiteSpace(fileNameNode.Value)) && (string.IsNullOrWhiteSpace(fileExtensionNode.Value)))
+                    || (string.IsNullOrWhiteSpace(fileDateNode.Value))
+                    || (string.IsNullOrWhiteSpace(parentDirectoryPath)))
+                {
+                    throw new FileLoadException(Resources.GORFS_GORPACK_ERR_FILEINDEX_CORRUPT);
+                }
 
-				string fileName = fileNameNode.Value;
-				long? compressedSize = null;
+                parentDirectoryPath = (mountPoint.FullPath + parentDirectoryPath).FormatDirectory('/');
 
-				// If we don't have a creation date, then don't allow the file to be processed.
-				if (!DateTime.TryParse(fileDateNode.Value, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime fileDate))
-				{
-					throw new FileLoadException(Resources.GORFS_GORPACK_ERR_FILEINDEX_CORRUPT);
-				}
+                string fileName = fileNameNode.Value;
+                long? compressedSize = null;
 
-				if ((fileLastModNode == null) || (!DateTime.TryParse(fileLastModNode.Value, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime lastModDate)))
-				{
-					lastModDate = fileDate;
-				}
+                // If we don't have a creation date, then don't allow the file to be processed.
+                if (!DateTime.TryParse(fileDateNode.Value, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime fileDate))
+                {
+                    throw new FileLoadException(Resources.GORFS_GORPACK_ERR_FILEINDEX_CORRUPT);
+                }
 
-				if (!long.TryParse(fileOffsetNode.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out long fileOffset))
-				{
-					throw new FileLoadException(Resources.GORFS_GORPACK_ERR_FILEINDEX_CORRUPT);
-				}
+                if ((fileLastModNode == null) || (!DateTime.TryParse(fileLastModNode.Value, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime lastModDate)))
+                {
+                    lastModDate = fileDate;
+                }
 
-				fileOffset += offset;
+                if (!long.TryParse(fileOffsetNode.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out long fileOffset))
+                {
+                    throw new FileLoadException(Resources.GORFS_GORPACK_ERR_FILEINDEX_CORRUPT);
+                }
 
-				if (!long.TryParse(fileSizeNode.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out long fileSize))
-				{
-					throw new FileLoadException(Resources.GORFS_GORPACK_ERR_FILEINDEX_CORRUPT);
-				}
+                fileOffset += offset;
 
-				string fileExtension = fileExtensionNode.Value ?? string.Empty;
+                if (!long.TryParse(fileSizeNode.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out long fileSize))
+                {
+                    throw new FileLoadException(Resources.GORFS_GORPACK_ERR_FILEINDEX_CORRUPT);
+                }
+
+                string fileExtension = fileExtensionNode.Value ?? string.Empty;
 
                 if (!string.IsNullOrWhiteSpace(fileName))
                 {
@@ -170,58 +170,58 @@ namespace Gorgon.IO.GorPack
                     fileName = fileExtension;
                 }
 
-				// If the file is compressed, then add it to a special list.
-				if (fileCompressedSizeNode != null)
-				{
+                // If the file is compressed, then add it to a special list.
+                if (fileCompressedSizeNode != null)
+                {
 
-					if (!long.TryParse(fileCompressedSizeNode.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out long compressed))
-					{
-						throw new FileLoadException(Resources.GORFS_GORPACK_ERR_FILEINDEX_CORRUPT);
-					}
+                    if (!long.TryParse(fileCompressedSizeNode.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out long compressed))
+                    {
+                        throw new FileLoadException(Resources.GORFS_GORPACK_ERR_FILEINDEX_CORRUPT);
+                    }
 
-					if (compressed > 0)
-					{
-						compressedSize = compressed;
-					}
-				}
+                    if (compressed > 0)
+                    {
+                        compressedSize = compressed;
+                    }
+                }
 
-				result.Add(new GorPackPhysicalFileInfo(physicalLocation + "::/" + parentDirectoryPath + fileName,
-				                                       fileName,
-				                                       fileDate,
-				                                       lastModDate,
-				                                       fileOffset,
-				                                       fileSize,
-				                                       parentDirectoryPath + fileName,
-				                                       compressedSize));
-			}
+                result.Add(new GorPackPhysicalFileInfo(physicalLocation + "::/" + parentDirectoryPath + fileName,
+                                                       fileName,
+                                                       fileDate,
+                                                       lastModDate,
+                                                       fileOffset,
+                                                       fileSize,
+                                                       parentDirectoryPath + fileName,
+                                                       compressedSize));
+            }
 
-			return result;
-		}
+            return result;
+        }
 
-		/// <summary>
-		/// Function to enumerate the files and directories from a physical location and map it to a virtual location.
-		/// </summary>
-		/// <param name="physicalLocation">The physical location containing files and directories to enumerate.</param>
-		/// <param name="mountPoint">A <see cref="IGorgonVirtualDirectory"/> that the directories and files from the physical file system will be mounted into.</param>		
-		/// <returns>A <see cref="GorgonPhysicalFileSystemData"/> object containing information about the directories and files contained within the physical file system.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalLocation"/>, or the <paramref name="mountPoint"/> parameters are <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalLocation"/> parameter is empty.</exception>
-		/// <remarks>
-		/// <para>
-		/// This will return a <see cref="GorgonPhysicalFileSystemData"/> representing the paths to directories and <see cref="IGorgonPhysicalFileInfo"/> objects under the virtual file system. Each file 
-		/// system file and directory is mapped from its <paramref name="physicalLocation"/> on the physical file system to a <paramref name="mountPoint"/> on the virtual file system. For example, if the 
-		/// mount point is set to <c>/MyMount/</c>, and the physical location of a file is <c>c:\SourceFileSystem\MyDirectory\MyTextFile.txt</c>, then the returned value should be 
-		/// <c>/MyMount/MyDirectory/MyTextFile.txt</c>.
-		/// </para>
-		/// <para>
-		/// Implementors of a <see cref="GorgonFileSystemProvider"/> plug in can override this method to read the list of files from another type of file system, like a Zip file.
-		/// </para>
-		/// <para>
-		/// Implementors of a <see cref="GorgonFileSystemProvider"/> should override this method to read the list of directories and files from another type of file system, like a Zip file. 
-		/// The default functionality will only enumerate directories and files from the operating system file system.
-		/// </para>
-		/// </remarks>
-		protected override GorgonPhysicalFileSystemData OnEnumerate(string physicalLocation, IGorgonVirtualDirectory mountPoint)
+        /// <summary>
+        /// Function to enumerate the files and directories from a physical location and map it to a virtual location.
+        /// </summary>
+        /// <param name="physicalLocation">The physical location containing files and directories to enumerate.</param>
+        /// <param name="mountPoint">A <see cref="IGorgonVirtualDirectory"/> that the directories and files from the physical file system will be mounted into.</param>		
+        /// <returns>A <see cref="GorgonPhysicalFileSystemData"/> object containing information about the directories and files contained within the physical file system.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalLocation"/>, or the <paramref name="mountPoint"/> parameters are <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalLocation"/> parameter is empty.</exception>
+        /// <remarks>
+        /// <para>
+        /// This will return a <see cref="GorgonPhysicalFileSystemData"/> representing the paths to directories and <see cref="IGorgonPhysicalFileInfo"/> objects under the virtual file system. Each file 
+        /// system file and directory is mapped from its <paramref name="physicalLocation"/> on the physical file system to a <paramref name="mountPoint"/> on the virtual file system. For example, if the 
+        /// mount point is set to <c>/MyMount/</c>, and the physical location of a file is <c>c:\SourceFileSystem\MyDirectory\MyTextFile.txt</c>, then the returned value should be 
+        /// <c>/MyMount/MyDirectory/MyTextFile.txt</c>.
+        /// </para>
+        /// <para>
+        /// Implementors of a <see cref="GorgonFileSystemProvider"/> plug in can override this method to read the list of files from another type of file system, like a Zip file.
+        /// </para>
+        /// <para>
+        /// Implementors of a <see cref="GorgonFileSystemProvider"/> should override this method to read the list of directories and files from another type of file system, like a Zip file. 
+        /// The default functionality will only enumerate directories and files from the operating system file system.
+        /// </para>
+        /// </remarks>
+        protected override GorgonPhysicalFileSystemData OnEnumerate(string physicalLocation, IGorgonVirtualDirectory mountPoint)
         {
             using (var reader = new GorgonBinaryReader(File.Open(physicalLocation, FileMode.Open, FileAccess.Read, FileShare.Read)))
             {
@@ -232,10 +232,10 @@ namespace Gorgon.IO.GorPack
 
                 byte[] indexData = Decompress(reader.ReadBytes(indexLength));
                 string xmlData = Encoding.UTF8.GetString(indexData);
-	            var index = XDocument.Parse(xmlData, LoadOptions.None);
+                var index = XDocument.Parse(xmlData, LoadOptions.None);
 
-	            return new GorgonPhysicalFileSystemData(EnumerateDirectories(index, mountPoint),
-	                                                    EnumerateFiles(index, reader.BaseStream.Position, physicalLocation, mountPoint));
+                return new GorgonPhysicalFileSystemData(EnumerateDirectories(index, mountPoint),
+                                                        EnumerateFiles(index, reader.BaseStream.Position, physicalLocation, mountPoint));
             }
         }
 
@@ -283,23 +283,23 @@ namespace Gorgon.IO.GorPack
         /// </para>
         /// </remarks>
         protected override bool OnCanReadFile(string physicalPath)
-		{
-			string header;
+        {
+            string header;
 
-			using (var reader = new GorgonBinaryReader(File.Open(physicalPath, FileMode.Open, FileAccess.Read, FileShare.Read)))
-			{
-				// If the length of the stream is less or equal to the header size, it's unlikely that we can read this file.
-				if (reader.BaseStream.Length <= GorPackHeader.Length)
-				{
-					return false;
-				}
+            using (var reader = new GorgonBinaryReader(File.Open(physicalPath, FileMode.Open, FileAccess.Read, FileShare.Read)))
+            {
+                // If the length of the stream is less or equal to the header size, it's unlikely that we can read this file.
+                if (reader.BaseStream.Length <= GorPackHeader.Length)
+                {
+                    return false;
+                }
 
-			    reader.ReadByte();
-				header = new string(reader.ReadChars(GorPackHeader.Length));
-			}
+                reader.ReadByte();
+                header = new string(reader.ReadChars(GorPackHeader.Length));
+            }
 
-			return (string.Equals(header, GorPackHeader));
-		}
+            return (string.Equals(header, GorPackHeader));
+        }
         #endregion
 
         #region Constructor/Destructor.

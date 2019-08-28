@@ -31,31 +31,31 @@ using D3D = SharpDX.Direct3D;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// A macro for a shader.
-	/// </summary>
-	public readonly struct GorgonShaderMacro
-		: IGorgonNamedObject, IEquatable<GorgonShaderMacro>
-	{
-		/// <summary>
-		/// The Direct 3D shader macro wrapped by this type.
-		/// </summary>
-		internal readonly D3D.ShaderMacro D3DShaderMacro;
+    /// <summary>
+    /// A macro for a shader.
+    /// </summary>
+    public readonly struct GorgonShaderMacro
+        : IGorgonNamedObject, IEquatable<GorgonShaderMacro>
+    {
+        /// <summary>
+        /// The Direct 3D shader macro wrapped by this type.
+        /// </summary>
+        internal readonly D3D.ShaderMacro D3DShaderMacro;
 
-		/// <summary>
-		/// Property to return the name of the macro.
-		/// </summary>
-		public string Name => D3DShaderMacro.Name;
+        /// <summary>
+        /// Property to return the name of the macro.
+        /// </summary>
+        public string Name => D3DShaderMacro.Name;
 
-		/// <summary>
-		/// Property to return the value for the macro.
-		/// </summary>
-		public object Value => D3DShaderMacro.Definition;
+        /// <summary>
+        /// Property to return the value for the macro.
+        /// </summary>
+        public object Value => D3DShaderMacro.Definition;
 
-		/// <summary>
-		/// Property to return the name of the named object.
-		/// </summary>
-		string IGorgonNamedObject.Name => Name;
+        /// <summary>
+        /// Property to return the name of the named object.
+        /// </summary>
+        string IGorgonNamedObject.Name => Name;
 
         /// <summary>
         /// Returns a <see cref="string" /> that represents this instance.
@@ -123,18 +123,18 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
         public GorgonShaderMacro(string name, string value = null)
-		{
-			if (name == null)
-			{
-				throw new ArgumentNullException(nameof(name));
-			}
+        {
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
 
-			if (name.Length == 0)
-			{
-				throw new ArgumentEmptyException(nameof(name));
-			}
+            if (name.Length == 0)
+            {
+                throw new ArgumentEmptyException(nameof(name));
+            }
 
-			D3DShaderMacro = new D3D.ShaderMacro(name, value);
-		}
-	}
+            D3DShaderMacro = new D3D.ShaderMacro(name, value);
+        }
+    }
 }

@@ -26,26 +26,26 @@
 
 namespace Gorgon.Diagnostics
 {
-	/// <summary>
-	/// Provides logging functionality for an application.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This object will send logging information to a logging data source. This could be a text file, XML document, a database, etc... 
-	/// </para>
-	/// <para>
-	/// This interface is meant to handle logging for log objects that are thread safe.
-	/// </para>
-	/// </remarks>
-	public interface IGorgonThreadedLog
-		: IGorgonLog
-	{
-		/// <summary>
-		/// Property to return the ID of the thread that created the log object.
-		/// </summary>
-		int ThreadID
-		{
-			get;
-		}
-	}
+    /// <summary>
+    /// Provides logging functionality for an application.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This object will send logging information to a logging data source. This could be a text file, XML document, a database, etc... 
+    /// </para>
+    /// <para>
+    /// This interface is meant to handle logging for log objects that are thread safe.
+    /// </para>
+    /// </remarks>
+    public interface IGorgonThreadedLog
+        : IGorgonLog
+    {
+        /// <summary>
+        /// Property to return the ID of the thread that created the log object.
+        /// </summary>
+        int ThreadID
+        {
+            get;
+        }
+    }
 }

@@ -31,30 +31,30 @@ using Gorgon.UI;
 
 namespace Gorgon.Examples
 {
-	/// <summary>
-	/// Main application.
-	/// </summary>
-	static class Program
-	{
+    /// <summary>
+    /// Main application.
+    /// </summary>
+    static class Program
+    {
         #region Methods.
-		/// <summary>
-		/// The main entry point for the application.
-		/// </summary>
-		[STAThread]
-		static void Main()
-		{
-			try
-			{
-				Application.EnableVisualStyles();
-				Application.SetCompatibleTextRenderingDefault(false);
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        static void Main()
+        {
+            try
+            {
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
 
                 GorgonApplication.Run(new Form());
-			}
-			catch (Exception ex)
-			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), GorgonApplication.Log);
-			}
-		}
-		#endregion
-	}
+            }
+            catch (Exception ex)
+            {
+                ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), GorgonApplication.Log);
+            }
+        }
+        #endregion
+    }
 }

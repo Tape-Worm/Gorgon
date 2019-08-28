@@ -194,7 +194,7 @@ namespace Gorgon.Editor.PlugIns
             CommonServices.Log.Print($"Initializing {Name}...", LoggingLevel.Simple);
 
             ContentPlugInService = pluginService ?? throw new ArgumentNullException(nameof(pluginService));
-            GraphicsContext = graphicsContext ?? throw new ArgumentNullException(nameof(graphicsContext));            
+            GraphicsContext = graphicsContext ?? throw new ArgumentNullException(nameof(graphicsContext));
 
             OnInitialize();
         }

@@ -47,7 +47,7 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
         /// <summary>
         /// Property to return the list of processed files.
         /// </summary>
-        public List<(XElement node, FileInfo file )> CompressedFiles
+        public List<(XElement node, FileInfo file)> CompressedFiles
         {
             get;
         } = new List<(XElement node, FileInfo file)>();

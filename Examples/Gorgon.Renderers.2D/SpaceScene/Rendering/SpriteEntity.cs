@@ -29,26 +29,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DX = SharpDX;
-using Gorgon.Renderers;
-using Gorgon.Graphics;
 using Gorgon.Animation;
 using Gorgon.Core;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
-	/// <summary>
+    /// <summary>
     /// An entity for a sprite layer.
     /// </summary>
     public class SpriteEntity
-		: GorgonNamedObject
+        : GorgonNamedObject
     {
         #region Properties.
-		/// <summary>
+        /// <summary>
         /// Property to set or return the sprite attached to this entity.
         /// </summary>
-		public GorgonSprite Sprite
+        public GorgonSprite Sprite
         {
             get;
             set;
@@ -87,10 +87,10 @@ namespace Gorgon.Examples
             set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return the rotation of the entity.
         /// </summary>
-		public float Rotation
+        public float Rotation
         {
             get;
             set;
@@ -114,28 +114,28 @@ namespace Gorgon.Examples
             set;
         } = GorgonColor.White;
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return whether the sprite is lit by deferred lighting.
         /// </summary>
-		public bool IsLit
+        public bool IsLit
         {
             get;
             set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return the animation for the sprite.
         /// </summary>
-		public IGorgonAnimation Animation
+        public IGorgonAnimation Animation
         {
             get;
             set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return the blending state to apply.
         /// </summary>
-		public GorgonBlendState BlendState
+        public GorgonBlendState BlendState
         {
             get;
             set;
@@ -155,7 +155,7 @@ namespace Gorgon.Examples
         /// <summary>Initializes a new instance of the <see cref="SpriteEntity"/> class.</summary>
         /// <param name="name">The name of this object.</param>
         public SpriteEntity(string name)
-			: base(name)
+            : base(name)
         {
         }
         #endregion

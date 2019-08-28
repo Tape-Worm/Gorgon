@@ -26,11 +26,11 @@
 
 namespace Gorgon.UI
 {
-	/// <summary>
-	/// Values for aligning.
-	/// </summary>
-	public enum Alignment
-	{
+    /// <summary>
+    /// Values for aligning.
+    /// </summary>
+    public enum Alignment
+    {
         /// <summary>
         /// No alignment.
         /// </summary>
@@ -39,37 +39,37 @@ namespace Gorgon.UI
         /// Upper left corner.
         /// </summary>
         UpperLeft = 1,
-		/// <summary>
-		/// Vertically centered, and left aligned.
-		/// </summary>
-		CenterLeft = 2,
-		/// <summary>
-		/// Lower left corner.
-		/// </summary>
-		LowerLeft = 3,
-		/// <summary>
-		/// Centered horizontally, aligned to the top.
-		/// </summary>
-		UpperCenter = 4,
-		/// <summary>
-		/// Centered vertically and horizontally.
-		/// </summary>
-		Center = 5,
-		/// <summary>
-		/// Centered horizontally, aligned to the bottom.
-		/// </summary>
-		LowerCenter = 6,
-		/// <summary>
-		/// Upper right corner.
-		/// </summary>
-		UpperRight = 7,
-		/// <summary>
-		/// Vertically centered, aligned to the right.
-		/// </summary>
-		CenterRight = 8,
-		/// <summary>
-		/// Lower right corner.
-		/// </summary>
-		LowerRight = 9        
-	}
+        /// <summary>
+        /// Vertically centered, and left aligned.
+        /// </summary>
+        CenterLeft = 2,
+        /// <summary>
+        /// Lower left corner.
+        /// </summary>
+        LowerLeft = 3,
+        /// <summary>
+        /// Centered horizontally, aligned to the top.
+        /// </summary>
+        UpperCenter = 4,
+        /// <summary>
+        /// Centered vertically and horizontally.
+        /// </summary>
+        Center = 5,
+        /// <summary>
+        /// Centered horizontally, aligned to the bottom.
+        /// </summary>
+        LowerCenter = 6,
+        /// <summary>
+        /// Upper right corner.
+        /// </summary>
+        UpperRight = 7,
+        /// <summary>
+        /// Vertically centered, aligned to the right.
+        /// </summary>
+        CenterRight = 8,
+        /// <summary>
+        /// Lower right corner.
+        /// </summary>
+        LowerRight = 9
+    }
 }

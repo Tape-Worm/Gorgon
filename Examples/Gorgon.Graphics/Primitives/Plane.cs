@@ -69,14 +69,14 @@ namespace Gorgon.Examples
                     DX.Vector3.TransformCoordinate(ref vertexPos, ref _orientation, out vertexPos);
 
                     buffer[offset++] = new Vertex3D
-                                       {
-                                           Position =
+                    {
+                        Position =
                                                new DX.Vector4(vertexPos,
                                                               1.0f),
-                                           Normal = vertexNormal,
-                                           UV = new DX.Vector2((x * (textureCoordinates.Width / columns)) + textureCoordinates.X,
+                        Normal = vertexNormal,
+                        UV = new DX.Vector2((x * (textureCoordinates.Width / columns)) + textureCoordinates.X,
                                                                (1.0f - (y * (textureCoordinates.Height / rows))) + textureCoordinates.Y)
-                                       };
+                    };
                 }
             }
         }

@@ -78,7 +78,7 @@ namespace Gorgon.Renderers
             transMat.M43 = depth;
 
             DX.Matrix.Multiply(ref anchorMat, ref scaleMat, out DX.Matrix tempMat);
-            DX.Matrix.Multiply(ref tempMat, ref  rotMat, out DX.Matrix tempMat2);
+            DX.Matrix.Multiply(ref tempMat, ref rotMat, out DX.Matrix tempMat2);
             DX.Matrix.Multiply(ref tempMat2, ref transMat, out worldMatrix);
         }
 

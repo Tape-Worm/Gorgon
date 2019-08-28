@@ -29,17 +29,17 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using DX = SharpDX;
+using Gorgon.Animation;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Editor.Rendering;
+using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using Gorgon.Animation;
-using Gorgon.Editor.UI;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor
 {

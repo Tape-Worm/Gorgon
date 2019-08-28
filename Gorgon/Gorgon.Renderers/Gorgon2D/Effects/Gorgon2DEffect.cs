@@ -90,7 +90,7 @@ namespace Gorgon.Renderers
         /// </summary>
         All = RenderTargets | DepthStencil | Viewports
     }
-    
+
     /// <summary>
     /// A base class used to implement special effects for 2D rendering.
     /// </summary>
@@ -261,8 +261,8 @@ namespace Gorgon.Renderers
 
             OnBeforeRender(output, camera, outputSizeChanged);
 
-            if ((blendStateOverride == _blendStateOverride) 
-                && (depthStencilStateOverride == _depthStencilStateOverride) 
+            if ((blendStateOverride == _blendStateOverride)
+                && (depthStencilStateOverride == _depthStencilStateOverride)
                 && (rasterStateOverride == _rasterStateOverride))
             {
                 return false;
@@ -364,7 +364,7 @@ namespace Gorgon.Renderers
         protected virtual void OnAfterRenderPass(int passIndex, GorgonRenderTargetView output)
         {
         }
-       
+
         /// <summary>
         /// Function called to render a single effect pass.
         /// </summary>
@@ -518,7 +518,7 @@ namespace Gorgon.Renderers
                                      GorgonSamplerState samplerStateOverride = null)
         {
             texture.ValidateObject(nameof(texture));
-            
+
             if (destinationRegion == null)
             {
                 destinationRegion = new DX.RectangleF(0, 0, outputSize.Width, outputSize.Height);
@@ -611,7 +611,7 @@ namespace Gorgon.Renderers
             // Restore our states.
             bool resetDepthStencil = (((RecordedStates & RecordedState.DepthStencil) == RecordedState.DepthStencil)
                                       && ((state & RecordedState.DepthStencil) == RecordedState.DepthStencil));
-            
+
             if (((RecordedStates & RecordedState.RenderTargets) == RecordedState.RenderTargets)
                 && ((state & RecordedState.RenderTargets) == RecordedState.RenderTargets))
             {
@@ -622,14 +622,15 @@ namespace Gorgon.Renderers
                 {
                     RecordedStates &= ~RecordedState.DepthStencil;
                 }
-            } else if (((RecordedStates & RecordedState.DepthStencil) == RecordedState.DepthStencil)
-                       && ((state & RecordedState.DepthStencil) == RecordedState.DepthStencil))
+            }
+            else if (((RecordedStates & RecordedState.DepthStencil) == RecordedState.DepthStencil)
+                     && ((state & RecordedState.DepthStencil) == RecordedState.DepthStencil))
             {
                 Graphics.SetDepthStencil(RecordedDepthStencil);
                 RecordedStates &= ~RecordedState.DepthStencil;
             }
 
-            if (((RecordedStates & RecordedState.Viewports) != RecordedState.Viewports) 
+            if (((RecordedStates & RecordedState.Viewports) != RecordedState.Viewports)
                 || ((state & RecordedState.Viewports) != RecordedState.Viewports))
             {
                 return;

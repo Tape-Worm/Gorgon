@@ -33,7 +33,7 @@ namespace Gorgon.Editor.PlugIns
     /// <summary>
     /// A plug in that was disabled for a reason.
     /// </summary>
-    internal class DisabledPlugIn 
+    internal class DisabledPlugIn
         : IDisabledPlugIn
     {
         /// <summary>

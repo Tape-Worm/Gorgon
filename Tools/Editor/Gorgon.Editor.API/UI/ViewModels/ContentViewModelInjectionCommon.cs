@@ -39,7 +39,7 @@ namespace Gorgon.Editor.UI
         /// <summary>Property to return the content file.</summary>
         public IContentFile File
         {
-            get;            
+            get;
         }
 
         /// <summary>Initializes a new instance of the ContentViewModelInjectionCommon class.</summary>
@@ -47,6 +47,6 @@ namespace Gorgon.Editor.UI
         /// <param name="commonServices">The common services for the application.</param>
         /// <exception cref="ArgumentNullException">Thrown any of the parameters are <b>null</b></exception>
         public ContentViewModelInjectionCommon(IContentFile file, IViewModelInjection commonServices)
-			: base(commonServices) => File = file ?? throw new ArgumentNullException(nameof(file));
+            : base(commonServices) => File = file ?? throw new ArgumentNullException(nameof(file));
     }
 }

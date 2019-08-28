@@ -35,7 +35,7 @@ namespace Gorgon.Editor.UI.Views
     /// <summary>
     /// The base user control for editor UI panes.
     /// </summary> 
-    public partial class EditorBaseControl 
+    public partial class EditorBaseControl
         : UserControl
     {
         #region Variables.
@@ -93,7 +93,7 @@ namespace Gorgon.Editor.UI.Views
             using (var backBrush = new SolidBrush(backColor))
             {
                 e.Graphics.FillRectangle(backBrush, e.ClipRectangle);
-            }            
+            }
         }
 
         /// <summary>

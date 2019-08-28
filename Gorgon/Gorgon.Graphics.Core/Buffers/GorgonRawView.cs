@@ -159,22 +159,22 @@ namespace Gorgon.Graphics.Core
             }
 
             var desc = new D3D11.ShaderResourceViewDescription1
-                                                        {
-                                                            Format = (Format)format,
-                                                            Dimension = ShaderResourceViewDimension.ExtendedBuffer,
-                                                            BufferEx = new D3D11.ShaderResourceViewDescription.ExtendedBufferResource
-                                                                       {
-                                                                           FirstElement = StartElement,
-                                                                           ElementCount = ElementCount,
-                                                                           Flags = D3D11.ShaderResourceViewExtendedBufferFlags.Raw
-                                                                       }
-                                                        };
+            {
+                Format = (Format)format,
+                Dimension = ShaderResourceViewDimension.ExtendedBuffer,
+                BufferEx = new D3D11.ShaderResourceViewDescription.ExtendedBufferResource
+                {
+                    FirstElement = StartElement,
+                    ElementCount = ElementCount,
+                    Flags = D3D11.ShaderResourceViewExtendedBufferFlags.Raw
+                }
+            };
 
             // Create our SRV.
             Native = new D3D11.ShaderResourceView1(Buffer.Graphics.D3DDevice, Buffer.D3DResource, desc)
-                     {
-                         DebugName = $"'{Buffer.Name}'_D3D11ShaderResourceView1_Raw"
-                     };
+            {
+                DebugName = $"'{Buffer.Name}'_D3D11ShaderResourceView1_Raw"
+            };
 
             Graphics.Log.Print($"Shader Resource Raw Buffer View '{Buffer.Name}': {Buffer.ResourceType} -> Start: {StartElement}, Count: {ElementCount}, Element Size: {ElementSize}, ElementType(Format): {ElementType}({format})",
                                LoggingLevel.Verbose);

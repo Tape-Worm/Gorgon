@@ -68,9 +68,9 @@ namespace Gorgon.Renderers
         public BatchRenderableStateEqualityComparer RenderableStateComparer
         {
             get;
-        }= new BatchRenderableStateEqualityComparer();
+        } = new BatchRenderableStateEqualityComparer();
         #endregion
-        
+
         #region Methods.
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.

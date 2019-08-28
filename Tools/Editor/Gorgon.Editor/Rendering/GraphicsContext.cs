@@ -138,7 +138,7 @@ namespace Gorgon.Editor.Rendering
                 {
                     swap.Dispose();
                 }
-                
+
                 if (_swapChainLeases.ContainsKey(name))
                 {
                     _swapChainLeases.Remove(name);

@@ -34,120 +34,120 @@ using Gorgon.Native;
 
 namespace Gorgon.Input
 {
-	/// <summary>
-	/// Raw Input functionality for keyboards, mice and human interface devices.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This enables use of the <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms645536(v=vs.85).aspx">Raw Input</a> functionality provided by windows. 
-	/// </para>
-	/// <para>
-	/// This object will allow for enumeration of multiple keyboard, mouse and human interface devices attached to the system and will allow an application to register these types of devices for use with the 
-	/// application.  
-	/// </para>
-	/// <para>
-	/// The <see cref="GorgonRawInput"/> object will also coordinate <c>WM_INPUT</c> messages and forward Raw Input data to an appropriate raw input device. This is done to allow multiple devices of the same 
-	/// type (e.g. multiple mice) to be used individually.
-	/// </para>
-	/// </remarks>
-	/// <example>
-	/// The following code shows how to create a mouse device and register it with the <see cref="GorgonRawInput"/> object for use in an application:
-	/// <code language="csharp">
-	/// <![CDATA[
-	/// private GorgonRawMouse _mouse;
-	/// private GorgonRawInput _rawInput;
-	/// 
-	/// private void CreateRawMouse(Control yourMainApplicationWindow)
-	/// {
-	///    // The 'yourMainApplicationWindow' is the primary window used by your application.
-	///    _rawInput = new GorgonRawInput(yourMainApplicationWindow);
-	/// 
-	///    _mouse = new GorgonRawMouse();
-	/// 
-	///    _rawInput.RegisterDevice(_mouse);
-	/// 
-	///	   // Configure your mouse object for events here...
-	/// }
-	/// 
-	/// private void ApplicationShutDown()
-	/// {
-	///		// The device should be unregistered as soon as it's no longer needed.
-	///     _rawInput.UnregisterDevice(_mouse);
-	/// 
-	///		// Always dispose this object, otherwise message hooks may still persist and cause issues.
-	///     _rawInput.Dispose();
-	/// }
-	/// ]]>
-	/// </code>
-	/// </example>
-	public class GorgonRawInput
-		: IGorgonRawInput
-	{
-		#region Variables.
-		// Our message used to route raw input messages.
-		private RawInputMessageFilter _filter;
-		// The logger used for debugging.
-		private readonly IGorgonLog _log;
-		// Synchronization lock for threads.
-		private readonly object _syncLock = new object();
-		// The list of registered devices.
-		private readonly Dictionary<DeviceKey, IGorgonRawInputDevice> _devices;
-		// The window that is receiving raw input events.
-		private readonly IntPtr _applicationWindow;
-		// Flag to indicate whether the native window hook is used, or Application.AddFilter is used.
-		private readonly bool _useNativeHook;
+    /// <summary>
+    /// Raw Input functionality for keyboards, mice and human interface devices.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This enables use of the <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms645536(v=vs.85).aspx">Raw Input</a> functionality provided by windows. 
+    /// </para>
+    /// <para>
+    /// This object will allow for enumeration of multiple keyboard, mouse and human interface devices attached to the system and will allow an application to register these types of devices for use with the 
+    /// application.  
+    /// </para>
+    /// <para>
+    /// The <see cref="GorgonRawInput"/> object will also coordinate <c>WM_INPUT</c> messages and forward Raw Input data to an appropriate raw input device. This is done to allow multiple devices of the same 
+    /// type (e.g. multiple mice) to be used individually.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// The following code shows how to create a mouse device and register it with the <see cref="GorgonRawInput"/> object for use in an application:
+    /// <code language="csharp">
+    /// <![CDATA[
+    /// private GorgonRawMouse _mouse;
+    /// private GorgonRawInput _rawInput;
+    /// 
+    /// private void CreateRawMouse(Control yourMainApplicationWindow)
+    /// {
+    ///    // The 'yourMainApplicationWindow' is the primary window used by your application.
+    ///    _rawInput = new GorgonRawInput(yourMainApplicationWindow);
+    /// 
+    ///    _mouse = new GorgonRawMouse();
+    /// 
+    ///    _rawInput.RegisterDevice(_mouse);
+    /// 
+    ///	   // Configure your mouse object for events here...
+    /// }
+    /// 
+    /// private void ApplicationShutDown()
+    /// {
+    ///		// The device should be unregistered as soon as it's no longer needed.
+    ///     _rawInput.UnregisterDevice(_mouse);
+    /// 
+    ///		// Always dispose this object, otherwise message hooks may still persist and cause issues.
+    ///     _rawInput.Dispose();
+    /// }
+    /// ]]>
+    /// </code>
+    /// </example>
+    public class GorgonRawInput
+        : IGorgonRawInput
+    {
+        #region Variables.
+        // Our message used to route raw input messages.
+        private RawInputMessageFilter _filter;
+        // The logger used for debugging.
+        private readonly IGorgonLog _log;
+        // Synchronization lock for threads.
+        private readonly object _syncLock = new object();
+        // The list of registered devices.
+        private readonly Dictionary<DeviceKey, IGorgonRawInputDevice> _devices;
+        // The window that is receiving raw input events.
+        private readonly IntPtr _applicationWindow;
+        // Flag to indicate whether the native window hook is used, or Application.AddFilter is used.
+        private readonly bool _useNativeHook;
         // The list of human interface devices registered on the system.
-	    private readonly Dictionary<DeviceKey, IRawInputDeviceData<GorgonRawHIDData>> _hids = new Dictionary<DeviceKey, IRawInputDeviceData<GorgonRawHIDData>>();
+        private readonly Dictionary<DeviceKey, IRawInputDeviceData<GorgonRawHIDData>> _hids = new Dictionary<DeviceKey, IRawInputDeviceData<GorgonRawHIDData>>();
         // The list of keyboard devices registered on the system.
-	    private readonly Dictionary<DeviceKey, IRawInputDeviceData<GorgonRawKeyboardData>> _keyboardDevices = new Dictionary<DeviceKey, IRawInputDeviceData<GorgonRawKeyboardData>>();
+        private readonly Dictionary<DeviceKey, IRawInputDeviceData<GorgonRawKeyboardData>> _keyboardDevices = new Dictionary<DeviceKey, IRawInputDeviceData<GorgonRawKeyboardData>>();
         // The list of pointing devices registered on the system.
-	    private readonly Dictionary<DeviceKey, IRawInputDeviceData<GorgonRawMouseData>> _mouseDevices = new Dictionary<DeviceKey, IRawInputDeviceData<GorgonRawMouseData>>();
-		#endregion
+        private readonly Dictionary<DeviceKey, IRawInputDeviceData<GorgonRawMouseData>> _mouseDevices = new Dictionary<DeviceKey, IRawInputDeviceData<GorgonRawMouseData>>();
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to unhook raw input from the application.
-		/// </summary>
-		private void UnhookRawInput()
-		{
-			foreach (HIDUsage type in _devices.Values.Select(item => item.DeviceUsage).Distinct())
-			{
-				RawInputApi.UnregisterRawInputDevice(type);
-			}
-		}
+        #region Methods.
+        /// <summary>
+        /// Function to unhook raw input from the application.
+        /// </summary>
+        private void UnhookRawInput()
+        {
+            foreach (HIDUsage type in _devices.Values.Select(item => item.DeviceUsage).Distinct())
+            {
+                RawInputApi.UnregisterRawInputDevice(type);
+            }
+        }
 
-		/// <summary>
-		/// Function to retrieve the device name.
-		/// </summary>
-		/// <param name="device">Raw input device to gather information from.</param>
-		/// <returns>A device name structure.</returns>
-		private T GetDeviceInfo<T>(ref RAWINPUTDEVICELIST device)
-			where T : class, IGorgonRawInputDeviceInfo
-		{
-			RID_DEVICE_INFO deviceInfo = RawInputApi.GetDeviceInfo(ref device);
+        /// <summary>
+        /// Function to retrieve the device name.
+        /// </summary>
+        /// <param name="device">Raw input device to gather information from.</param>
+        /// <returns>A device name structure.</returns>
+        private T GetDeviceInfo<T>(ref RAWINPUTDEVICELIST device)
+            where T : class, IGorgonRawInputDeviceInfo
+        {
+            RID_DEVICE_INFO deviceInfo = RawInputApi.GetDeviceInfo(ref device);
 
-			string deviceName = RawInputApi.GetDeviceName(ref device);
+            string deviceName = RawInputApi.GetDeviceName(ref device);
 
-			if (string.IsNullOrWhiteSpace(deviceName))
-			{
-				return null;
-			}
+            if (string.IsNullOrWhiteSpace(deviceName))
+            {
+                return null;
+            }
 
-			string className = RawInputDeviceRegistryInfo.GetDeviceClass(deviceName, _log);
-			string deviceDescription = RawInputDeviceRegistryInfo.GetDeviceDescription(deviceName, _log);
+            string className = RawInputDeviceRegistryInfo.GetDeviceClass(deviceName, _log);
+            string deviceDescription = RawInputDeviceRegistryInfo.GetDeviceDescription(deviceName, _log);
 
-			switch (deviceInfo.dwType)
-			{
-				case RawInputType.Keyboard:
-					return new RawKeyboardInfo(device.Device, deviceName, className, deviceDescription, deviceInfo.keyboard) as T;
-				case RawInputType.Mouse:
-					return new RawMouseInfo(device.Device, deviceName, className, deviceDescription, deviceInfo.mouse) as T;
-				case RawInputType.HID:
-					return new GorgonRawHIDInfo(device.Device, deviceName, className, deviceDescription, deviceInfo.hid) as T;
-				default:
-					return null;
-			}
-		}
+            switch (deviceInfo.dwType)
+            {
+                case RawInputType.Keyboard:
+                    return new RawKeyboardInfo(device.Device, deviceName, className, deviceDescription, deviceInfo.keyboard) as T;
+                case RawInputType.Mouse:
+                    return new RawMouseInfo(device.Device, deviceName, className, deviceDescription, deviceInfo.mouse) as T;
+                case RawInputType.HID:
+                    return new GorgonRawHIDInfo(device.Device, deviceName, className, deviceDescription, deviceInfo.hid) as T;
+                default:
+                    return null;
+            }
+        }
 
         /// <summary>
         /// Function to register the device with the raw input provider.
@@ -170,315 +170,315 @@ namespace Gorgon.Input
         /// </para>
         /// </remarks>
         public void RegisterDevice(IGorgonRawInputDevice device, GorgonRawInputSettings? settings = null)
-		{
-			IntPtr targetHandle = IntPtr.Zero;
+        {
+            IntPtr targetHandle = IntPtr.Zero;
 
-			if (device == null)
-			{
-				throw new ArgumentNullException(nameof(device));
-			}
+            if (device == null)
+            {
+                throw new ArgumentNullException(nameof(device));
+            }
 
-			if (settings == null)
-			{
-				settings = new GorgonRawInputSettings();
-			}
+            if (settings == null)
+            {
+                settings = new GorgonRawInputSettings();
+            }
 
-			lock (_syncLock)
-			{
-				// If we've not set up the filter yet, then add it to the window now.
-				if (_filter == null)
-				{
-				    _filter = new RawInputMessageFilter(_keyboardDevices, _mouseDevices, _hids,_applicationWindow , _useNativeHook);
-				}
+            lock (_syncLock)
+            {
+                // If we've not set up the filter yet, then add it to the window now.
+                if (_filter == null)
+                {
+                    _filter = new RawInputMessageFilter(_keyboardDevices, _mouseDevices, _hids, _applicationWindow, _useNativeHook);
+                }
 
-				var key = new DeviceKey
-				          {
-					          DeviceType = device.DeviceType,
-					          DeviceHandle = device.Handle
-				          };
+                var key = new DeviceKey
+                {
+                    DeviceType = device.DeviceType,
+                    DeviceHandle = device.Handle
+                };
 
-				if (_devices.ContainsKey(key))
-				{
-					return;
-				}
+                if (_devices.ContainsKey(key))
+                {
+                    return;
+                }
 
-			    switch (device.DeviceType)
-			    {
+                switch (device.DeviceType)
+                {
                     case RawInputType.Keyboard:
                         _keyboardDevices.Add(key, (IRawInputDeviceData<GorgonRawKeyboardData>)device);
                         break;
                     case RawInputType.Mouse:
                         _mouseDevices.Add(key, (IRawInputDeviceData<GorgonRawMouseData>)device);
                         break;
-			        case RawInputType.HID:
+                    case RawInputType.HID:
                         _hids.Add(key, (IRawInputDeviceData<GorgonRawHIDData>)device);
-			            break;
+                        break;
                     default:
                         throw new ArgumentException(string.Format(Resources.GORINP_RAW_ERR_UNKNOWN_DEVICE_TYPE, device.DeviceType), nameof(device));
-			    }
+                }
 
-				_devices.Add(key, device);
+                _devices.Add(key, device);
 
-				// Get the current device registration properties.
-				RAWINPUTDEVICE? deviceReg = RawInputApi.GetDeviceRegistration(device.DeviceUsage);
-				if (deviceReg != null)
-				{
-					// Remove the device before updating it.
-					UnregisterDevice(device);
-				}
-				
-				// If we omit the target window, and specify background messages, we'll use the application window instead.
-				// This is because Raw Input requires that background devices have a window target.
-				if ((settings.Value.TargetWindow.IsNull) && (settings.Value.AllowBackground))
-				{
-				    unsafe
-				    {
-				        settings = new GorgonRawInputSettings
-				                   {
-				                       TargetWindow = new GorgonReadOnlyPointer((void *)_applicationWindow, IntPtr.Size),
-				                       AllowBackground = true
-				                   };
-				    }
-				}
+                // Get the current device registration properties.
+                RAWINPUTDEVICE? deviceReg = RawInputApi.GetDeviceRegistration(device.DeviceUsage);
+                if (deviceReg != null)
+                {
+                    // Remove the device before updating it.
+                    UnregisterDevice(device);
+                }
 
-				RawInputDeviceFlags flags = RawInputDeviceFlags.None;
-				
-				if (settings.Value.AllowBackground)
-				{
-					flags |= RawInputDeviceFlags.InputSink;
-				}
+                // If we omit the target window, and specify background messages, we'll use the application window instead.
+                // This is because Raw Input requires that background devices have a window target.
+                if ((settings.Value.TargetWindow.IsNull) && (settings.Value.AllowBackground))
+                {
+                    unsafe
+                    {
+                        settings = new GorgonRawInputSettings
+                        {
+                            TargetWindow = new GorgonReadOnlyPointer((void*)_applicationWindow, IntPtr.Size),
+                            AllowBackground = true
+                        };
+                    }
+                }
 
-				RawInputApi.RegisterRawInputDevice(device.DeviceUsage, targetHandle, flags);
-			}
-		}
+                RawInputDeviceFlags flags = RawInputDeviceFlags.None;
 
-		/// <summary>
-		/// Function to unregister the device from the raw input provider.
-		/// </summary>
-		/// <param name="device">The device to unregister from the raw input provider.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="device"/> parameter is <b>null</b>.</exception>
-		/// <remarks>
-		/// This will unregister a previously registered <see cref="IGorgonRawInputDevice"/>. When the last device of a specific type (e.g. a mouse, keyboard, etc...) is unregistered, then the 
-		/// Raw Input messages for that device type will also be unregistered and the application will no longer receive messages from that type of device.
-		/// </remarks>
-		public void UnregisterDevice(IGorgonRawInputDevice device)
-		{
-			if (device == null)
-			{
-				throw new ArgumentNullException(nameof(device));
-			}
+                if (settings.Value.AllowBackground)
+                {
+                    flags |= RawInputDeviceFlags.InputSink;
+                }
 
-			lock (_syncLock)
-			{
-				var key = new DeviceKey
-				          {
-					          DeviceType = device.DeviceType,
-					          DeviceHandle = device.Handle
-				          };
+                RawInputApi.RegisterRawInputDevice(device.DeviceUsage, targetHandle, flags);
+            }
+        }
 
-			    switch (device.DeviceType)
-			    {
-			        case RawInputType.Keyboard:
-			            _keyboardDevices.Remove(key);
-			            break;
-			        case RawInputType.Mouse:
-			            _mouseDevices.Remove(key);
-			            break;
-			        case RawInputType.HID:
-			            _hids.Remove(key);
-			            break;
-			        default:
-			            throw new ArgumentException(string.Format(Resources.GORINP_RAW_ERR_UNKNOWN_DEVICE_TYPE, device.DeviceType), nameof(device));
-			    }
+        /// <summary>
+        /// Function to unregister the device from the raw input provider.
+        /// </summary>
+        /// <param name="device">The device to unregister from the raw input provider.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="device"/> parameter is <b>null</b>.</exception>
+        /// <remarks>
+        /// This will unregister a previously registered <see cref="IGorgonRawInputDevice"/>. When the last device of a specific type (e.g. a mouse, keyboard, etc...) is unregistered, then the 
+        /// Raw Input messages for that device type will also be unregistered and the application will no longer receive messages from that type of device.
+        /// </remarks>
+        public void UnregisterDevice(IGorgonRawInputDevice device)
+        {
+            if (device == null)
+            {
+                throw new ArgumentNullException(nameof(device));
+            }
 
-				if (!_devices.ContainsKey(key))
-				{
-					return;
-				}
+            lock (_syncLock)
+            {
+                var key = new DeviceKey
+                {
+                    DeviceType = device.DeviceType,
+                    DeviceHandle = device.Handle
+                };
 
-				_devices.Remove(key);
-                
-				// If all devices of this type have been unregistered, unregister with raw input as well.
-				if ((_devices.Count(item => item.Value.DeviceType == device.DeviceType) == 0)
-					&& (RawInputApi.GetDeviceRegistration(device.DeviceUsage) != null))
-				{
-					RawInputApi.UnregisterRawInputDevice(device.DeviceUsage);
-				}
+                switch (device.DeviceType)
+                {
+                    case RawInputType.Keyboard:
+                        _keyboardDevices.Remove(key);
+                        break;
+                    case RawInputType.Mouse:
+                        _mouseDevices.Remove(key);
+                        break;
+                    case RawInputType.HID:
+                        _hids.Remove(key);
+                        break;
+                    default:
+                        throw new ArgumentException(string.Format(Resources.GORINP_RAW_ERR_UNKNOWN_DEVICE_TYPE, device.DeviceType), nameof(device));
+                }
 
-				// If we have no more registered devices, then uninstall the filter.
-				if (_devices.Count != 0)
-				{
-					return;
-				}
+                if (!_devices.ContainsKey(key))
+                {
+                    return;
+                }
 
-				_filter?.Dispose();
-				_filter = null;
-			}
-		}
+                _devices.Remove(key);
 
-		/// <summary>
-		/// Function to retrieve a list of mice.
-		/// </summary>
-		/// <returns>A read only list containing information about each mouse.</returns>
-		public IReadOnlyList<IGorgonMouseInfo> EnumerateMice()
-		{
-			RAWINPUTDEVICELIST[] devices = RawInputApi.EnumerateRawInputDevices(RawInputType.Mouse);
-			var result = new List<RawMouseInfo>();
+                // If all devices of this type have been unregistered, unregister with raw input as well.
+                if ((_devices.Count(item => item.Value.DeviceType == device.DeviceType) == 0)
+                    && (RawInputApi.GetDeviceRegistration(device.DeviceUsage) != null))
+                {
+                    RawInputApi.UnregisterRawInputDevice(device.DeviceUsage);
+                }
 
-			for (int i = 0; i < devices.Length; i++)
-			{
-				RawMouseInfo info = GetDeviceInfo<RawMouseInfo>(ref devices[i]);
+                // If we have no more registered devices, then uninstall the filter.
+                if (_devices.Count != 0)
+                {
+                    return;
+                }
 
-				if (info == null)
-				{
-					_log.Print("WARNING: Could not retrieve the class and device name.  Skipping this device.", LoggingLevel.Verbose);
-					continue;
-				}
+                _filter?.Dispose();
+                _filter = null;
+            }
+        }
 
-				_log.Print("Found mouse: '{0}' on HID path {1}, class {2}.", LoggingLevel.Verbose, info.Description, info.HIDPath, info.DeviceClass);
+        /// <summary>
+        /// Function to retrieve a list of mice.
+        /// </summary>
+        /// <returns>A read only list containing information about each mouse.</returns>
+        public IReadOnlyList<IGorgonMouseInfo> EnumerateMice()
+        {
+            RAWINPUTDEVICELIST[] devices = RawInputApi.EnumerateRawInputDevices(RawInputType.Mouse);
+            var result = new List<RawMouseInfo>();
 
-				result.Add(info);
-			}
+            for (int i = 0; i < devices.Length; i++)
+            {
+                RawMouseInfo info = GetDeviceInfo<RawMouseInfo>(ref devices[i]);
 
-			return result;
-		}
+                if (info == null)
+                {
+                    _log.Print("WARNING: Could not retrieve the class and device name.  Skipping this device.", LoggingLevel.Verbose);
+                    continue;
+                }
 
-		/// <summary>
-		/// Function to retrieve a list of keyboards.
-		/// </summary>
-		/// <returns>A read only list containing information about each keyboard.</returns>
-		public IReadOnlyList<IGorgonKeyboardInfo> EnumerateKeyboards()
-		{
-			RAWINPUTDEVICELIST[] devices = RawInputApi.EnumerateRawInputDevices(RawInputType.Keyboard);
-			var result = new List<RawKeyboardInfo>();
+                _log.Print("Found mouse: '{0}' on HID path {1}, class {2}.", LoggingLevel.Verbose, info.Description, info.HIDPath, info.DeviceClass);
 
-			for (int i = 0; i < devices.Length; i++)
-			{
-				RawKeyboardInfo info = GetDeviceInfo<RawKeyboardInfo>(ref devices[i]);
+                result.Add(info);
+            }
 
-				if (info == null)
-				{
-					_log.Print("WARNING: Could not retrieve the class and device name.  Skipping this device.", LoggingLevel.Verbose);
-					continue;
-				}
+            return result;
+        }
 
-				_log.Print("Found keyboard: '{0}' on HID path {1}, class {2}.", LoggingLevel.Verbose, info.Description, info.HIDPath, info.DeviceClass);
+        /// <summary>
+        /// Function to retrieve a list of keyboards.
+        /// </summary>
+        /// <returns>A read only list containing information about each keyboard.</returns>
+        public IReadOnlyList<IGorgonKeyboardInfo> EnumerateKeyboards()
+        {
+            RAWINPUTDEVICELIST[] devices = RawInputApi.EnumerateRawInputDevices(RawInputType.Keyboard);
+            var result = new List<RawKeyboardInfo>();
 
-				result.Add(info);
-			}
+            for (int i = 0; i < devices.Length; i++)
+            {
+                RawKeyboardInfo info = GetDeviceInfo<RawKeyboardInfo>(ref devices[i]);
 
-			return result;
-		}
+                if (info == null)
+                {
+                    _log.Print("WARNING: Could not retrieve the class and device name.  Skipping this device.", LoggingLevel.Verbose);
+                    continue;
+                }
 
-		/// <summary>
-		/// Function to retrieve a list of human interface devices (HID).
-		/// </summary>
-		/// <returns>A read only list containing information about each human interface device.</returns>
-		public IReadOnlyList<GorgonRawHIDInfo> EnumerateHumanInterfaceDevices()
-		{
-			RAWINPUTDEVICELIST[] devices = RawInputApi.EnumerateRawInputDevices(RawInputType.HID);
-			var result = new List<GorgonRawHIDInfo>();
+                _log.Print("Found keyboard: '{0}' on HID path {1}, class {2}.", LoggingLevel.Verbose, info.Description, info.HIDPath, info.DeviceClass);
 
-			for (int i = 0; i < devices.Length; i++)
-			{
-				GorgonRawHIDInfo info = GetDeviceInfo<GorgonRawHIDInfo>(ref devices[i]);
+                result.Add(info);
+            }
 
-				if (info == null)
-				{
-					_log.Print("WARNING: Could not retrieve the class and device name.  Skipping this device.", LoggingLevel.Verbose);
-					continue;
-				}
+            return result;
+        }
 
-				_log.Print("Found human interface device: '{0}' on HID path {1}, class {2}.", LoggingLevel.Verbose, info.Description, info.HIDPath, info.DeviceClass);
+        /// <summary>
+        /// Function to retrieve a list of human interface devices (HID).
+        /// </summary>
+        /// <returns>A read only list containing information about each human interface device.</returns>
+        public IReadOnlyList<GorgonRawHIDInfo> EnumerateHumanInterfaceDevices()
+        {
+            RAWINPUTDEVICELIST[] devices = RawInputApi.EnumerateRawInputDevices(RawInputType.HID);
+            var result = new List<GorgonRawHIDInfo>();
 
-				result.Add(info);
-			}
+            for (int i = 0; i < devices.Length; i++)
+            {
+                GorgonRawHIDInfo info = GetDeviceInfo<GorgonRawHIDInfo>(ref devices[i]);
 
-			return result;
-		}
+                if (info == null)
+                {
+                    _log.Print("WARNING: Could not retrieve the class and device name.  Skipping this device.", LoggingLevel.Verbose);
+                    continue;
+                }
 
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose()
-		{
-			// Multiple threads should -not- call dispose.
-			lock (_syncLock)
-			{
-				UnhookRawInput();
+                _log.Print("Found human interface device: '{0}' on HID path {1}, class {2}.", LoggingLevel.Verbose, info.Description, info.HIDPath, info.DeviceClass);
+
+                result.Add(info);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            // Multiple threads should -not- call dispose.
+            lock (_syncLock)
+            {
+                UnhookRawInput();
 
                 _mouseDevices.Clear();
                 _keyboardDevices.Clear();
                 _hids.Clear();
 
-				_devices.Clear();
-				_filter?.Dispose();
-				_filter = null;
-			}
+                _devices.Clear();
+                _filter?.Dispose();
+                _filter = null;
+            }
 
-			GC.SuppressFinalize(this);
-		}
-		#endregion
+            GC.SuppressFinalize(this);
+        }
+        #endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRawInput"/> class.
-		/// </summary>
-		/// <param name="applicationWindow">The main application window.</param>
-		/// <param name="log">[Optional] The logger used for debugging.</param>
-		/// <exception cref="ArgumentNullException">thrown when the <paramref name="applicationWindow"/> is set to <b>null</b>.</exception>
-		/// <remarks>
-		/// <para>
-		/// This constructor will only allow Windows Forms controls as the main application window. For other window types, use the overloaded constructor.
-		/// </para>
-		/// <para>
-		/// The <paramref name="applicationWindow"/> parameter is required in order to set up the application to receive <c>WM_INPUT</c> messages. Ideally, this window should be the primary application window.
-		/// </para>
-		/// </remarks>
-		public GorgonRawInput(Control applicationWindow, IGorgonLog log = null)
-		{
-		    _log = log ?? GorgonLog.NullLog;
-		    _applicationWindow = applicationWindow?.Handle ?? throw new ArgumentNullException(nameof(applicationWindow));
-		    _devices = new Dictionary<DeviceKey, IGorgonRawInputDevice>();
-		}
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonRawInput"/> class.
+        /// </summary>
+        /// <param name="applicationWindow">The main application window.</param>
+        /// <param name="log">[Optional] The logger used for debugging.</param>
+        /// <exception cref="ArgumentNullException">thrown when the <paramref name="applicationWindow"/> is set to <b>null</b>.</exception>
+        /// <remarks>
+        /// <para>
+        /// This constructor will only allow Windows Forms controls as the main application window. For other window types, use the overloaded constructor.
+        /// </para>
+        /// <para>
+        /// The <paramref name="applicationWindow"/> parameter is required in order to set up the application to receive <c>WM_INPUT</c> messages. Ideally, this window should be the primary application window.
+        /// </para>
+        /// </remarks>
+        public GorgonRawInput(Control applicationWindow, IGorgonLog log = null)
+        {
+            _log = log ?? GorgonLog.NullLog;
+            _applicationWindow = applicationWindow?.Handle ?? throw new ArgumentNullException(nameof(applicationWindow));
+            _devices = new Dictionary<DeviceKey, IGorgonRawInputDevice>();
+        }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRawInput"/> class.
-		/// </summary>
-		/// <param name="windowHandle">The handle to the main application window.</param>
-		/// <param name="log">[Optional] The logger used for debugging.</param>
-		/// <exception cref="ArgumentNullException">thrown when the <paramref name="windowHandle"/> is set to <see cref="IntPtr.Zero"/>.</exception>
-		/// <remarks>
-		/// <para>
-		/// This constructor will allow any window handle to use a <see cref="GorgonRawInput"/> object. This allows WPF and other windowing systems to work with raw input. 
-		/// </para>
-		/// <para>
-		/// The <paramref name="windowHandle"/> parameter is required in order to set up the application to receive <c>WM_INPUT</c> messages. Ideally, this window should be the primary application window.
-		/// </para>
-		/// </remarks>
-		public GorgonRawInput(GorgonReadOnlyPointer windowHandle, IGorgonLog log = null)
-		{
-			if (windowHandle.IsNull)
-			{
-				throw new ArgumentNullException(nameof(windowHandle));
-			}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonRawInput"/> class.
+        /// </summary>
+        /// <param name="windowHandle">The handle to the main application window.</param>
+        /// <param name="log">[Optional] The logger used for debugging.</param>
+        /// <exception cref="ArgumentNullException">thrown when the <paramref name="windowHandle"/> is set to <see cref="IntPtr.Zero"/>.</exception>
+        /// <remarks>
+        /// <para>
+        /// This constructor will allow any window handle to use a <see cref="GorgonRawInput"/> object. This allows WPF and other windowing systems to work with raw input. 
+        /// </para>
+        /// <para>
+        /// The <paramref name="windowHandle"/> parameter is required in order to set up the application to receive <c>WM_INPUT</c> messages. Ideally, this window should be the primary application window.
+        /// </para>
+        /// </remarks>
+        public GorgonRawInput(GorgonReadOnlyPointer windowHandle, IGorgonLog log = null)
+        {
+            if (windowHandle.IsNull)
+            {
+                throw new ArgumentNullException(nameof(windowHandle));
+            }
 
-			_log = log ?? GorgonLog.NullLog;
-		    unsafe
-		    {
-		        _applicationWindow = new IntPtr((void*)windowHandle);
-		    }
-		    _devices = new Dictionary<DeviceKey, IGorgonRawInputDevice>();
-			_useNativeHook = true;
-		}
+            _log = log ?? GorgonLog.NullLog;
+            unsafe
+            {
+                _applicationWindow = new IntPtr((void*)windowHandle);
+            }
+            _devices = new Dictionary<DeviceKey, IGorgonRawInputDevice>();
+            _useNativeHook = true;
+        }
 
-		/// <summary>
-		/// Finalizes an instance of the <see cref="GorgonRawInput" /> class.
-		/// </summary>
-		~GorgonRawInput()
-		{
-			UnhookRawInput();
-		}
-		#endregion
-	}
+        /// <summary>
+        /// Finalizes an instance of the <see cref="GorgonRawInput" /> class.
+        /// </summary>
+        ~GorgonRawInput()
+        {
+            UnhookRawInput();
+        }
+        #endregion
+    }
 }

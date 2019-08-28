@@ -30,8 +30,8 @@ using XI = SharpDX.XInput;
 namespace Gorgon.Input.XInput
 {
     internal class ButtonFlagsEqualityComparer
-		: IEqualityComparer<XI.GamepadButtonFlags>
-	{
+        : IEqualityComparer<XI.GamepadButtonFlags>
+    {
         /// <summary>
         /// Equalses the specified x.
         /// </summary>

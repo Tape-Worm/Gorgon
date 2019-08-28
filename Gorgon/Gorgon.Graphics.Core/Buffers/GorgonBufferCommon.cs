@@ -33,8 +33,8 @@ using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
-using DX =SharpDX;
 using D3D11 = SharpDX.Direct3D11;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core
 {
@@ -139,7 +139,7 @@ namespace Gorgon.Graphics.Core
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_NON_STAGING_NEEDS_BINDING, usage));
             }
-            
+
             switch (usage)
             {
                 case ResourceUsage.Dynamic:
@@ -190,7 +190,7 @@ namespace Gorgon.Graphics.Core
                     result = D3D11.CpuAccessFlags.Read | D3D11.CpuAccessFlags.Write;
                     break;
                 case ResourceUsage.Default:
-                    if ((binding != D3D11.BindFlags.ShaderResource) 
+                    if ((binding != D3D11.BindFlags.ShaderResource)
                         && (binding != D3D11.BindFlags.UnorderedAccess)
                         && (binding != (D3D11.BindFlags.ShaderResource | D3D11.BindFlags.UnorderedAccess)))
                     {
@@ -200,7 +200,7 @@ namespace Gorgon.Graphics.Core
                     result = requestDefaultUsageReadAccess ? D3D11.CpuAccessFlags.Read : D3D11.CpuAccessFlags.None;
                     break;
             }
-            
+
             return result;
         }
 
@@ -374,12 +374,12 @@ namespace Gorgon.Graphics.Core
                 if (copyMode != CopyMode.None)
                 {
                     region = new D3D11.ResourceRegion
-                             {
-                                 Left = destOffset,
-                                 Right = destOffset + count,
-                                 Back = 1,
-                                 Bottom = 1
-                             };
+                    {
+                        Left = destOffset,
+                        Right = destOffset + count,
+                        Back = 1,
+                        Bottom = 1
+                    };
                 }
 
                 Graphics.D3DDeviceContext.UpdateSubresource1(Native,
@@ -522,8 +522,8 @@ namespace Gorgon.Graphics.Core
             where T : unmanaged
         {
             data.ValidateObject(nameof(data));
-            
-            if (data.Length == 0) 
+
+            if (data.Length == 0)
             {
                 return;
             }
@@ -536,7 +536,7 @@ namespace Gorgon.Graphics.Core
             int typeSize = Unsafe.SizeOf<T>();
 
 #if DEBUG            
-            ValidateGetSetData(sourceIndex * typeSize, copyMode == CopyMode.None ? 0 :  destOffset, count.Value * typeSize, data.Length * typeSize, SizeInBytes);
+            ValidateGetSetData(sourceIndex * typeSize, copyMode == CopyMode.None ? 0 : destOffset, count.Value * typeSize, data.Length * typeSize, SizeInBytes);
 #endif
 
             unsafe
@@ -656,14 +656,14 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="GorgonReadOnlyPointer"/>
         public void SetData(GorgonReadOnlyPointer data, int sourceOffset = 0, int size = 0, int destOffset = 0, CopyMode copyMode = CopyMode.None)
         {
-            #if DEBUG
+#if DEBUG
             if (data.IsNull)
             {
                 throw new ArgumentNullException(nameof(data));
             }
-            #endif
-            
-            if (data.SizeInBytes == 0) 
+#endif
+
+            if (data.SizeInBytes == 0)
             {
                 return;
             }
@@ -674,11 +674,11 @@ namespace Gorgon.Graphics.Core
             }
 
 #if DEBUG            
-            ValidateGetSetData(sourceOffset, copyMode == CopyMode.None ? 0 :  destOffset, size, data.SizeInBytes, SizeInBytes);
+            ValidateGetSetData(sourceOffset, copyMode == CopyMode.None ? 0 : destOffset, size, data.SizeInBytes, SizeInBytes);
 #endif
             unsafe
             {
-                SetDataPtr((byte *)data, sizeof(byte), data.SizeInBytes, destOffset, size, Usage != ResourceUsage.Default, copyMode);
+                SetDataPtr((byte*)data, sizeof(byte), data.SizeInBytes, destOffset, size, Usage != ResourceUsage.Default, copyMode);
             }
         }
 
@@ -793,8 +793,8 @@ namespace Gorgon.Graphics.Core
             where T : unmanaged
         {
             data.ValidateObject(nameof(data));
-            
-            if (data.SizeInBytes == 0) 
+
+            if (data.SizeInBytes == 0)
             {
                 return;
             }
@@ -807,19 +807,19 @@ namespace Gorgon.Graphics.Core
             int typeSize = Unsafe.SizeOf<T>();
 
 #if DEBUG            
-            ValidateGetSetData(sourceIndex * typeSize, copyMode == CopyMode.None ? 0 :  destOffset, count.Value * typeSize, data.SizeInBytes, SizeInBytes);
+            ValidateGetSetData(sourceIndex * typeSize, copyMode == CopyMode.None ? 0 : destOffset, count.Value * typeSize, data.SizeInBytes, SizeInBytes);
 #endif
 
             unsafe
             {
-                fixed(T* dataPtr = &data[sourceIndex])
+                fixed (T* dataPtr = &data[sourceIndex])
                 {
                     SetDataPtr(dataPtr, typeSize, data.Length, destOffset, count.Value, Usage != ResourceUsage.Default, copyMode);
                 }
             }
         }
 
-	    /// <summary>
+        /// <summary>
         /// Function to write a single value into the buffer.
         /// </summary>
         /// <typeparam name="T">The type of value, must be an unmanaged value type.</typeparam>
@@ -895,14 +895,14 @@ namespace Gorgon.Graphics.Core
         /// ]]>
         /// </code>
         /// </example>
-	    public void SetData<T>(ref T value, int destOffset = 0, CopyMode copyMode = CopyMode.None)
+        public void SetData<T>(ref T value, int destOffset = 0, CopyMode copyMode = CopyMode.None)
             where T : unmanaged
         {
             // Actual byte offset in the buffer.
             int typeSize = Unsafe.SizeOf<T>();
 
 #if DEBUG            
-            ValidateGetSetData(0, copyMode == CopyMode.None ? 0 :  destOffset, typeSize, typeSize, SizeInBytes);
+            ValidateGetSetData(0, copyMode == CopyMode.None ? 0 : destOffset, typeSize, typeSize, SizeInBytes);
 #endif
 
             unsafe
@@ -1025,7 +1025,7 @@ namespace Gorgon.Graphics.Core
                 size = SizeInBytes - sourceOffset;
             }
 
-            int arraySize = (int)(((float)size.Value)/ typeSize).FastFloor();
+            int arraySize = (int)(((float)size.Value) / typeSize).FastFloor();
 
 #if DEBUG            
             ValidateGetSetData(sourceOffset, 0, size.Value, SizeInBytes, size.Value);
@@ -1163,14 +1163,14 @@ namespace Gorgon.Graphics.Core
             {
                 size = SizeInBytes - sourceOffset;
             }
-            
-#if DEBUG            
+
+#if DEBUG
             ValidateGetSetData(sourceOffset, destIndex * typeSize, size.Value, SizeInBytes, destination.SizeInBytes);
 #endif
 
             unsafe
             {
-                fixed(T* destPtr = &destination[destIndex])
+                fixed (T* destPtr = &destination[destIndex])
                 {
                     GetDataPtr(destPtr, sourceOffset, size.Value);
                 }
@@ -1294,21 +1294,21 @@ namespace Gorgon.Graphics.Core
             {
                 size = SizeInBytes - sourceOffset;
             }
-            
-#if DEBUG            
+
+#if DEBUG
             ValidateGetSetData(sourceOffset, destIndex * typeSize, size.Value, SizeInBytes, destination.Length * typeSize);
 #endif
 
             unsafe
             {
-                fixed(T* destPtr = &destination[destIndex])
+                fixed (T* destPtr = &destination[destIndex])
                 {
                     GetDataPtr(destPtr, sourceOffset, size.Value);
                 }
             }
         }
 
-	    /// <summary>
+        /// <summary>
         /// Function to read a single value from the buffer.
         /// </summary>
         /// <typeparam name="T">The type of value, must be an unmanaged value type.</typeparam>
@@ -1398,20 +1398,20 @@ namespace Gorgon.Graphics.Core
         /// ]]>
         /// </code>
         /// </example>
-	    public void GetData<T>(out T value, int sourceOffset = 0)
+        public void GetData<T>(out T value, int sourceOffset = 0)
             where T : unmanaged
         {
             // Actual byte offset in the buffer.
             int typeSize = Unsafe.SizeOf<T>();
-           
-#if DEBUG            
+
+#if DEBUG
             ValidateGetSetData(sourceOffset, 0, typeSize, SizeInBytes, typeSize);
 #endif
             value = default;
 
             unsafe
             {
-                fixed(T* valuePtr = &value)
+                fixed (T* valuePtr = &value)
                 {
                     GetDataPtr(valuePtr, sourceOffset, 1);
                 }
@@ -1456,7 +1456,7 @@ namespace Gorgon.Graphics.Core
         {
             destinationBuffer.ValidateObject(nameof(destinationBuffer));
 
-            
+
 #if DEBUG
             if (destinationBuffer.Native.Description.Usage == D3D11.ResourceUsage.Immutable)
             {
@@ -1523,7 +1523,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <returns>The staging buffer to retrieve.</returns>
         protected abstract GorgonBufferCommon GetStagingInternal();
-        
+
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
@@ -1553,7 +1553,7 @@ namespace Gorgon.Graphics.Core
                     view.Value.Dispose();
                 }
             }
-            
+
             Log.Print($"'{Name}': Destroying D3D11 Buffer.", LoggingLevel.Simple);
             Native = null;
             base.Dispose();

@@ -34,10 +34,10 @@ namespace Gorgon.Editor.ImageEditor
     /// </summary>
     internal class ImageEditorServices
     {
-		/// <summary>
+        /// <summary>
         /// Property to return the application common services.
         /// </summary>
-		public IViewModelInjection CommonServices
+        public IViewModelInjection CommonServices
         {
             get;
             set;

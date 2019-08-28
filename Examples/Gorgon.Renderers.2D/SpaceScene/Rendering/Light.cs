@@ -29,19 +29,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DX = SharpDX;
 using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
-	/// <summary>
+    /// <summary>
     /// Represents a light source in the application.
     /// </summary>
     /// <remarks>
     /// We wrap up the light object so we can filter out which layer gets lit.  Lights are applied to a scene, so whether a layer or layers get lit is up to the developer.
     /// </remarks>
     internal class Light
-		: Gorgon2DLight
+        : Gorgon2DLight
     {
         /// <summary>
         /// Property to return the list of layers that this light is applied to.
@@ -51,10 +51,10 @@ namespace Gorgon.Examples
             get;
         } = new HashSet<Layer>();
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return the local position for the light before transformation in layer space.
         /// </summary>
-		public DX.Vector3 LocalLightPosition
+        public DX.Vector3 LocalLightPosition
         {
             get;
             set;

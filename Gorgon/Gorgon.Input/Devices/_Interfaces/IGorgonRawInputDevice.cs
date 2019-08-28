@@ -29,55 +29,55 @@ using Gorgon.Native;
 
 namespace Gorgon.Input
 {
-	/// <summary>
-	/// The type device that is transmitting raw input data.
-	/// </summary>
-	public enum RawInputType
-	{
-		/// <summary>
-		/// Mouse input.
-		/// </summary>
-		Mouse = 0,
-		/// <summary>
-		/// Keyboard input.
-		/// </summary>
-		Keyboard = 1,
-		/// <summary>
-		/// Human Interface Device.
-		/// </summary>
-		HID = 2
-	}
+    /// <summary>
+    /// The type device that is transmitting raw input data.
+    /// </summary>
+    public enum RawInputType
+    {
+        /// <summary>
+        /// Mouse input.
+        /// </summary>
+        Mouse = 0,
+        /// <summary>
+        /// Keyboard input.
+        /// </summary>
+        Keyboard = 1,
+        /// <summary>
+        /// Human Interface Device.
+        /// </summary>
+        HID = 2
+    }
 
-	/// <summary>
-	/// A common interface for all raw input devices.
-	/// </summary>
-	/// <remarks>
-	/// This interface is not meant to be used within an application and should only be used internally by Gorgon.
-	/// </remarks>
-	public interface IGorgonRawInputDevice
-	{
-		/// <summary>
-		/// Property to return the handle for the device.
-		/// </summary>
-		IntPtr Handle
-		{
-			get;
-		}
+    /// <summary>
+    /// A common interface for all raw input devices.
+    /// </summary>
+    /// <remarks>
+    /// This interface is not meant to be used within an application and should only be used internally by Gorgon.
+    /// </remarks>
+    public interface IGorgonRawInputDevice
+    {
+        /// <summary>
+        /// Property to return the handle for the device.
+        /// </summary>
+        IntPtr Handle
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the type of device.
-		/// </summary>
-		RawInputType DeviceType
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the type of device.
+        /// </summary>
+        RawInputType DeviceType
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the HID usage code for this device.
-		/// </summary>
-		HIDUsage DeviceUsage
-		{
-			get;
-		}
-	}
+        /// <summary>
+        /// Property to return the HID usage code for this device.
+        /// </summary>
+        HIDUsage DeviceUsage
+        {
+            get;
+        }
+    }
 }

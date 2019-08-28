@@ -37,17 +37,17 @@ namespace Gorgon.Graphics.Example
     public class TvImageCodecPlugIn
         : GorgonImageCodecPlugIn
     {
-		#region Properties.
-	    /// <summary>
-	    /// Property to return the names of the available codecs for this plug in.
-	    /// </summary>
-	    /// <remarks>
-	    /// This returns a <see cref="IReadOnlyDictionary{TKey,TValue}"/> containing the name of the plug in as its key, and an optional friendly description as its value.
-	    /// </remarks>
-	    public override IReadOnlyList<GorgonImageCodecDescription> Codecs
-	    {
-		    get;
-	    }
+        #region Properties.
+        /// <summary>
+        /// Property to return the names of the available codecs for this plug in.
+        /// </summary>
+        /// <remarks>
+        /// This returns a <see cref="IReadOnlyDictionary{TKey,TValue}"/> containing the name of the plug in as its key, and an optional friendly description as its value.
+        /// </remarks>
+        public override IReadOnlyList<GorgonImageCodecDescription> Codecs
+        {
+            get;
+        }
         #endregion
 
         #region Methods.

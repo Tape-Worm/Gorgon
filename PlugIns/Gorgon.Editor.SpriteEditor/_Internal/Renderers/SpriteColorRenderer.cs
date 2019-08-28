@@ -27,32 +27,32 @@
 using System;
 using System.ComponentModel;
 using System.Windows.Forms;
-using DX = SharpDX;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
-using Gorgon.Graphics;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
-	/// <summary>
+    /// <summary>
     /// The renderer used when updating a sprites colors.
     /// </summary>
     internal class SpriteColorRenderer
-		: SingleSpriteRenderer
+        : SingleSpriteRenderer
     {
         #region Variables.
-		// The handles for corner selection.
+        // The handles for corner selection.
         private readonly DX.RectangleF[] _handles = new DX.RectangleF[5];
-		// The handles that are selected.
+        // The handles that are selected.
         private readonly bool[] _selected = new bool[4];
-		// The currently active handle.
+        // The currently active handle.
         private int _activeHandleIndex = -1;
-		// Working color set.
+        // Working color set.
         private readonly GorgonColor[] _colors = new GorgonColor[4];
         #endregion
 
         #region Methods.
-		/// <summary>
+        /// <summary>
         /// Function to set the selected colors.
         /// </summary>
         private void SetSelectedColors()
@@ -163,7 +163,7 @@ namespace Gorgon.Editor.SpriteEditor
             if (e.Button != MouseButtons.Right)
             {
                 return;
-            }            
+            }
 
             for (int i = 0; i < _selected.Length; ++i)
             {
@@ -192,7 +192,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
 
             DX.Rectangle spriteRect = SpriteContent.Texture.ToPixel(SpriteContent.TextureCoordinates);
-            DX.RectangleF screenRect = ToClient(spriteRect.ToRectangleF());			
+            DX.RectangleF screenRect = ToClient(spriteRect.ToRectangleF());
 
             _handles[0] = new DX.RectangleF(screenRect.Left - 8, screenRect.Top - 8, 8, 8);
             _handles[1] = new DX.RectangleF(screenRect.Right, screenRect.Top - 8, 8, 8);
@@ -318,7 +318,7 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 _colors[i] = SpriteContent.VertexColors[i];
             }
-						
+
             SpriteContent.ColorEditor.OriginalSpriteColor = _colors;
             SpriteContent.ColorEditor.SpriteColor = _colors;
             SpriteContent.ColorEditor.SelectedVertices = _selected;
@@ -334,7 +334,7 @@ namespace Gorgon.Editor.SpriteEditor
             SwapChain.Window.MouseMove -= Window_MouseMove;
             SwapChain.Window.MouseUp -= Window_MouseUp;
 
-            base.OnUnload(); 
+            base.OnUnload();
         }
         #endregion
 
@@ -349,6 +349,6 @@ namespace Gorgon.Editor.SpriteEditor
             : base(sprite, graphics, swapChain, renderer, initialZoom)
         {
         }
-		#endregion
+        #endregion
     }
 }

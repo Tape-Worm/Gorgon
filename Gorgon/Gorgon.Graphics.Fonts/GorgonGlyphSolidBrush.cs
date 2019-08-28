@@ -29,35 +29,35 @@ using Gorgon.IO;
 
 namespace Gorgon.Graphics.Fonts
 {
-	/// <summary>
-	/// A brush used to draw glyphs using a solid fill color.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This is the default brush type used when no brush is specified when creating font glyphs.
-	/// </para>
-	/// </remarks>
-	/// <seealso cref="GorgonGlyphTextureBrush"/>
-	/// <seealso cref="GorgonGlyphHatchBrush"/>
-	/// <seealso cref="GorgonGlyphLinearGradientBrush"/>
-	/// <seealso cref="GorgonGlyphPathGradientBrush"/>
-	public class GorgonGlyphSolidBrush
-		: GorgonGlyphBrush
-	{
-		#region Properties.
-		/// <summary>
-		/// Property to return the type of brush.
-		/// </summary>
-		public override GlyphBrushType BrushType => GlyphBrushType.Solid;
+    /// <summary>
+    /// A brush used to draw glyphs using a solid fill color.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This is the default brush type used when no brush is specified when creating font glyphs.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonGlyphTextureBrush"/>
+    /// <seealso cref="GorgonGlyphHatchBrush"/>
+    /// <seealso cref="GorgonGlyphLinearGradientBrush"/>
+    /// <seealso cref="GorgonGlyphPathGradientBrush"/>
+    public class GorgonGlyphSolidBrush
+        : GorgonGlyphBrush
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to return the type of brush.
+        /// </summary>
+        public override GlyphBrushType BrushType => GlyphBrushType.Solid;
 
-		/// <summary>
-		/// Property to set or return the color for the brush.
-		/// </summary>
-		public GorgonColor Color
-		{
-			get;
-			set;
-		}
+        /// <summary>
+        /// Property to set or return the color for the brush.
+        /// </summary>
+        public GorgonColor Color
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Methods.

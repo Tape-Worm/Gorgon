@@ -83,7 +83,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             get;
         }
-        
+
         /// <summary>
         /// Property to set or return the current texture array index to use.
         /// </summary>
@@ -108,7 +108,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             get;
         }
-        
+
         /// <summary>
         /// Property to return the currently active cursor.
         /// </summary>
@@ -191,7 +191,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Function to unload all required resources for the renderer.
         /// </summary>
-        void Unload();        
+        void Unload();
         #endregion
     }
 }

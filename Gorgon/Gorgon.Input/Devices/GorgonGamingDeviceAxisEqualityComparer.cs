@@ -28,12 +28,12 @@ using System.Collections.Generic;
 
 namespace Gorgon.Input
 {
-	/// <summary>
-	/// An equality comparer for the <see cref="GamingDeviceAxis"/> enumeration.
-	/// </summary>
-	public class GorgonGamingDeviceAxisEqualityComparer
-		: IEqualityComparer<GamingDeviceAxis>
-	{
+    /// <summary>
+    /// An equality comparer for the <see cref="GamingDeviceAxis"/> enumeration.
+    /// </summary>
+    public class GorgonGamingDeviceAxisEqualityComparer
+        : IEqualityComparer<GamingDeviceAxis>
+    {
         /// <summary>
         /// Determines whether the specified objects are equal.
         /// </summary>

@@ -29,8 +29,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Drawing = System.Drawing;
-using DX =SharpDX;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
@@ -42,6 +40,8 @@ using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
+using Drawing = System.Drawing;
+using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -108,7 +108,7 @@ namespace Gorgon.Examples
             _glowIndex = GorgonRandom.RandomInt32(fontWithOutlineIndex + 1, fontWithOutlineIndex + 5);
             int fontWithGradient = GorgonRandom.RandomInt32(_glowIndex + 1, _glowIndex + 5);
             int fontWithTexture = GorgonRandom.RandomInt32(fontWithGradient + 1, fontWithGradient + 5).Min(_fontFamilies.Count - 1);
-            
+
             var pngCodec = new GorgonCodecPng();
             using (IGorgonImage texture = pngCodec.LoadFromFile(Path.Combine(GorgonExample.GetResourcePath(@"Textures\Fonts\").FullName, "Gradient.png")))
             {
@@ -149,11 +149,11 @@ namespace Gorgon.Examples
                     {
                         fontName = $"{fontFamily} 32px Gradient{(isExternal ? " External TTF" : string.Empty)}";
                         brush = new GorgonGlyphLinearGradientBrush
-                                {
-                                    StartColor = GorgonColor.White,
-                                    EndColor = GorgonColor.Black,
-                                    Angle = 45.0f
-                                };
+                        {
+                            StartColor = GorgonColor.White,
+                            EndColor = GorgonColor.Black,
+                            Angle = 45.0f
+                        };
                     }
                     else if (i == fontWithTexture)
                     {
@@ -171,14 +171,14 @@ namespace Gorgon.Examples
                                                       30.25f,
                                                       name:
                                                       fontName)
-                                   {
-                                       AntiAliasingMode = FontAntiAliasMode.AntiAlias,
-                                       OutlineSize = outlineSize,
-                                       OutlineColor1 = outlineColor1,
-                                       OutlineColor2 = outlineColor2,
-                                       UsePremultipliedTextures = false,
-                                       Brush = brush
-                                   };
+                    {
+                        AntiAliasingMode = FontAntiAliasMode.AntiAlias,
+                        OutlineSize = outlineSize,
+                        OutlineColor1 = outlineColor1,
+                        OutlineColor2 = outlineColor2,
+                        UsePremultipliedTextures = false,
+                        Brush = brush
+                    };
 
                     _font.Add(GorgonExample.Fonts.GetFont(fontInfo));
 
@@ -201,7 +201,7 @@ namespace Gorgon.Examples
             FileInfo[] files = dirInfo.GetFiles("*.ttf", SearchOption.TopDirectoryOnly);
 
             var fontFamilies = new List<Drawing.FontFamily>();
-                
+
             // Load all external true type fonts for this example.
             // This takes a while...
             foreach (FileInfo file in files)
@@ -213,7 +213,7 @@ namespace Gorgon.Examples
             }
 
             window.UpdateStatus(null);
-                
+
             fontFamilies.AddRange(Drawing.FontFamily.Families);
 
             return fontFamilies;
@@ -238,7 +238,7 @@ namespace Gorgon.Examples
             var position = new DX.Vector2((int)((_screen.Width / 2.0f) - (textSize.Width / 2.0f)).Max(4.0f), (int)((_screen.Height / 2.0f) - (textSize.Height / 2.0f)).Max(100));
             _text.Font = currentFont;
             _text.Position = position;
-            
+
             // If we have glow on, then draw the glow outline in a separate pass.
             if (_glowIndex == _fontIndex)
             {
@@ -359,7 +359,7 @@ namespace Gorgon.Examples
                     throw new GorgonException(GorgonResult.CannotCreate,
                                               "Gorgon requires at least a Direct3D 11.4 capable video device.\nThere is no suitable device installed on the system.");
                 }
-                
+
                 // Find the best video device.
                 _graphics = new GorgonGraphics(videoDevices.OrderByDescending(item => item.FeatureSet).First());
 
@@ -386,9 +386,9 @@ namespace Gorgon.Examples
 
                 // Build our text sprite.
                 _text = new GorgonTextSprite(GorgonExample.Fonts.DefaultFont, Resources.Lorem_Ipsum)
-                        {
-                            LineSpace = 0
-                        };
+                {
+                    LineSpace = 0
+                };
 
                 return window;
             }

@@ -25,24 +25,24 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using DX = SharpDX;
-using Gorgon.Editor.UI.Views;
-using Gorgon.Editor.UI;
-using Gorgon.Graphics.Core;
 using Gorgon.Editor.Rendering;
-using Gorgon.Math;
 using Gorgon.Editor.Services;
-using Gorgon.Graphics;
 using Gorgon.Editor.SpriteEditor.Properties;
-using Gorgon.Timing;
-using System.Collections.Generic;
-using Gorgon.Renderers;
-using System.IO;
+using Gorgon.Editor.UI;
+using Gorgon.Editor.UI.Views;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
+using Gorgon.Math;
+using Gorgon.Renderers;
+using Gorgon.Timing;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -61,7 +61,7 @@ namespace Gorgon.Editor.SpriteEditor
         private DX.Vector2 _oldScroll;
         // The rectangle clipping service used to capture sprite data.
         private IRectClipperService _clipperService;
-		// The service used to edit the sprite vertices.
+        // The service used to edit the sprite vertices.
         private ISpriteVertexEditService _vertexEditService;
         // The picking service used to capture sprite data.
         private IPickClipperService _pickService;
@@ -118,7 +118,7 @@ namespace Gorgon.Editor.SpriteEditor
             int arrayIndex = DataContext.ArrayIndex;
 
             if (DataContext.CurrentTool != SpriteEditTool.None)
-            {				
+            {
                 arrayIndex = _currentRenderer.TextureArrayIndex;
             }
 
@@ -303,7 +303,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             ChangeZoomLevel(ZoomLevels.ToWindow);
             ScrollHorizontal.Value = ScrollVertical.Value = 0;
-            UpdateRenderer(_ribbonForm.ZoomScaling, DX.Vector2.Zero, _currentRenderer.InitialTextureAlpha);            
+            UpdateRenderer(_ribbonForm.ZoomScaling, DX.Vector2.Zero, _currentRenderer.InitialTextureAlpha);
         }
 
         /// <summary>Handles the ValueChanged event of the ScrollHorizontal control.</summary>
@@ -377,11 +377,11 @@ namespace Gorgon.Editor.SpriteEditor
 
                 if (e.Delta < 0)
                 {
-                    newScale = _ribbonForm.ZoomScaling.GetPrevNearest();                        
+                    newScale = _ribbonForm.ZoomScaling.GetPrevNearest();
                 }
                 else if (e.Delta > 0)
                 {
-                    newScale = _ribbonForm.ZoomScaling.GetNextNearest();                    
+                    newScale = _ribbonForm.ZoomScaling.GetNextNearest();
                 }
 
                 ChangeZoomLevel(newScale);
@@ -391,7 +391,7 @@ namespace Gorgon.Editor.SpriteEditor
                 mousePos.Y -= textureSizeHalf.Height;
                 mousePos.X /= textureSizeHalf.Width;
                 mousePos.Y /= textureSizeHalf.Height;
-                                
+
                 UpdateRenderer(_ribbonForm.ZoomScaling, mousePos, _currentRenderer.InitialTextureAlpha);
                 return;
             }
@@ -417,9 +417,9 @@ namespace Gorgon.Editor.SpriteEditor
                 {
                     ScrollVertical.Value = (ScrollVertical.Value + ScrollVertical.SmallChange).Min(ScrollVertical.Maximum - ScrollVertical.LargeChange);
                 }
-            }            
+            }
         }
-        
+
         /// <summary>Handles the MouseMove event of the PanelRenderWindow control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
@@ -429,7 +429,7 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 return;
             }
-            
+
             if (((ModifierKeys & Keys.Control) != Keys.Control) || (!_isDragging) || (DataContext.Texture == null) || ((DataContext.CurrentPanel != null) && (DataContext.CurrentPanel.IsModal)))
             {
                 _isDragging = false;
@@ -438,12 +438,12 @@ namespace Gorgon.Editor.SpriteEditor
 
             var pos = new DX.Vector2(e.X, e.Y);
             var imageSize = new DX.Size2F(DataContext.Texture.Width * _currentRenderer.ZoomScaleValue, DataContext.Texture.Height * _currentRenderer.ZoomScaleValue);
-            var scale = new DX.Vector2(imageSize.Width / DataContext.Texture.Width, imageSize.Height / DataContext.Texture.Height);            
+            var scale = new DX.Vector2(imageSize.Width / DataContext.Texture.Width, imageSize.Height / DataContext.Texture.Height);
             var scaledPos = new DX.Vector2((int)(pos.X / scale.X), (int)(pos.Y / scale.Y));
 
             DX.Vector2.Subtract(ref _dragStart, ref scaledPos, out DX.Vector2 dragDelta);
 
-            float hScrollAmount =  ScrollHorizontal.Value + dragDelta.X;
+            float hScrollAmount = ScrollHorizontal.Value + dragDelta.X;
             float vScrollAmount = ScrollVertical.Value + dragDelta.Y;
 
             if (ScrollHorizontal.Enabled)
@@ -462,9 +462,9 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Handles the MouseDown event of the PanelRenderWindow control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-        private void PanelRenderWindow_MouseDown(object sender, MouseEventArgs e) 
+        private void PanelRenderWindow_MouseDown(object sender, MouseEventArgs e)
         {
-            if (DataContext == null) 
+            if (DataContext == null)
             {
                 return;
             }
@@ -550,13 +550,13 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         /// <returns><b>true</b> to continue rendering, <b>false</b> to stop.</returns>
         private bool Idle()
-        {           
+        {
             // Update every 2nd frame (if we're frame limited on the presentation).
             if (_uiRefreshTimer.Milliseconds > 120)
             {
                 UpdateSpriteDimensionsPanel(DataContext);
                 _uiRefreshTimer.Reset();
-            }           
+            }
 
             _currentRenderer?.Render();
 
@@ -583,7 +583,7 @@ namespace Gorgon.Editor.SpriteEditor
                 ScrollVertical.Enabled = false;
                 return;
             }
-                        
+
             var delta = new DX.Vector2((region.Width - clientSize.Width).Max(0), (region.Height - clientSize.Height).Max(0));
 
             if (delta.X > 0)
@@ -628,7 +628,7 @@ namespace Gorgon.Editor.SpriteEditor
                 ResetDataContext();
                 return;
             }
-                        
+
             UpdateArrayPanel(dataContext);
             UpdateSpriteDimensionsPanel(dataContext);
         }
@@ -676,7 +676,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
 
             LabelArrayIndexDetails.Text = $"{arrayIndex + 1}/{dataContext.Texture?.Texture.ArrayCount ?? 0}";
-        }        
+        }
 
         /// <summary>
         /// Function to change the current zoom level along with the associated scaling factor.
@@ -687,9 +687,9 @@ namespace Gorgon.Editor.SpriteEditor
             if (DataContext?.Texture == null)
             {
                 _ribbonForm.ZoomLevel = ZoomLevels.ToWindow;
-                _ribbonForm.ZoomScaling = 1.0f;                
+                _ribbonForm.ZoomScaling = 1.0f;
                 return;
-            }            
+            }
 
             _ribbonForm.ZoomLevel = zoomLevel;
 
@@ -699,8 +699,8 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-            _ribbonForm.ZoomScaling = zoomLevel == ZoomLevels.ToWindow ? CalcZoomToSize(new DX.Size2F(DataContext.Texture.Width, DataContext.Texture.Height), 
-																						new DX.Size2F(RenderControl.ClientSize.Width, RenderControl.ClientSize.Height)) : zoomLevel.GetScale();
+            _ribbonForm.ZoomScaling = zoomLevel == ZoomLevels.ToWindow ? CalcZoomToSize(new DX.Size2F(DataContext.Texture.Width, DataContext.Texture.Height),
+                                                                                        new DX.Size2F(RenderControl.ClientSize.Width, RenderControl.ClientSize.Height)) : zoomLevel.GetScale();
         }
 
 
@@ -718,9 +718,9 @@ namespace Gorgon.Editor.SpriteEditor
                 _oldZoomLevel = _ribbonForm.ZoomLevel;
             }
 
-            ChangeZoomLevel(ZoomLevels.Custom);			
+            ChangeZoomLevel(ZoomLevels.Custom);
             _ribbonForm.ZoomScaling = CalcZoomToSize(new DX.Size2F(DataContext.Size.Width + (DataContext.Size.Width * 0.05f), DataContext.Size.Height + (DataContext.Size.Height * 0.05f)),
-													 new DX.Size2F(RenderControl.ClientSize.Width, RenderControl.ClientSize.Height));
+                                                     new DX.Size2F(RenderControl.ClientSize.Width, RenderControl.ClientSize.Height));
 
             float scaledTextureWidth = DataContext.Texture.Width * _ribbonForm.ZoomScaling;
             float spriteLeft = DataContext.TextureCoordinates.Left * scaledTextureWidth;
@@ -762,7 +762,7 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 _renderers.TryGetValue(panelID, out newRenderer);
             }
-            
+
             if (newRenderer == null)
             {
                 if (!_renderers.TryGetValue(dataContext.CurrentTool.ToString(), out newRenderer))
@@ -781,7 +781,7 @@ namespace Gorgon.Editor.SpriteEditor
             _disableScrolling = false;
 
             if (_currentRenderer != null)
-            {                
+            {
                 _ribbonForm.ZoomScaling = _currentRenderer.ZoomScaleValue;
                 scroll = _currentRenderer.ScrollOffset;
 
@@ -803,7 +803,7 @@ namespace Gorgon.Editor.SpriteEditor
             // If we don't have a panel, and no tool is set, then default to the default renderer.
             if ((panelID == null) && (dataContext.CurrentTool == SpriteEditTool.None))
             {
-                textureAlpha = _currentRenderer?.TextureAlpha ?? 0.5f;                
+                textureAlpha = _currentRenderer?.TextureAlpha ?? 0.5f;
                 bool animate = !newRenderer.InitialTextureAlpha.EqualsEpsilon(textureAlpha);
 
                 // If we were at a custom zoom level, then reset back to the original zoom level and scroll values.
@@ -811,7 +811,7 @@ namespace Gorgon.Editor.SpriteEditor
                 {
                     SetRenderer(newRenderer, _ribbonForm.ZoomScaling, scroll, textureAlpha, false);
                     ChangeZoomLevel(_oldZoomLevel);
-                    scroll = _oldScroll;                    
+                    scroll = _oldScroll;
                     animate = true;
                 }
                 else if (animate)
@@ -826,7 +826,7 @@ namespace Gorgon.Editor.SpriteEditor
             // If we have a tool selected, then use the renderer for the tool.
             if (dataContext.CurrentTool != SpriteEditTool.None)
             {
-                textureAlpha = _currentRenderer?.TextureAlpha ?? 0.5f;                
+                textureAlpha = _currentRenderer?.TextureAlpha ?? 0.5f;
                 SetRenderer(newRenderer, _ribbonForm.ZoomScaling, scroll, textureAlpha, false);
                 UpdateRenderer(_ribbonForm.ZoomScaling, scroll, newRenderer.InitialTextureAlpha, !textureAlpha.EqualsEpsilon(newRenderer.InitialTextureAlpha));
                 return;
@@ -866,7 +866,7 @@ namespace Gorgon.Editor.SpriteEditor
                     RenderControl.Cursor = Cursor.Current = Cursors.Default;
                     ValidateControls();
                     break;
-            }            
+            }
         }
 
         /// <summary>Function called when a property is changed on the data context.</summary>
@@ -880,7 +880,7 @@ namespace Gorgon.Editor.SpriteEditor
                 case nameof(ISpriteContent.ImageData):
                     SwitchRenderer(DataContext);
 
-                    ButtonCenter.PerformClick();                    
+                    ButtonCenter.PerformClick();
 
                     RenderControl.Cursor = _currentRenderer.CurrentCursor;
 
@@ -895,7 +895,7 @@ namespace Gorgon.Editor.SpriteEditor
                     break;
                 case nameof(ISpriteContent.ArrayIndex):
                     _currentRenderer.TextureArrayIndex = DataContext.ArrayIndex;
-                    UpdateArrayPanel(DataContext);                    
+                    UpdateArrayPanel(DataContext);
                     break;
                 case nameof(ISpriteContent.CurrentPanel):
                     if (DataContext.CurrentPanel != null)
@@ -906,9 +906,9 @@ namespace Gorgon.Editor.SpriteEditor
                         AddControlToPanelHost(panel);
                         DataContext.ColorEditor.IsActive = true;
                     }
-                    
+
                     SwitchRenderer(DataContext);
-                    break;                
+                    break;
             }
 
             ValidateControls();
@@ -931,7 +931,7 @@ namespace Gorgon.Editor.SpriteEditor
                 ChangeZoomLevel(ZoomLevels.ToWindow);
             }
             else
-            {                
+            {
                 string panelID = DataContext.CurrentPanel?.GetType().FullName;
 
                 if (!string.IsNullOrWhiteSpace(panelID))
@@ -991,7 +991,7 @@ namespace Gorgon.Editor.SpriteEditor
                 Texture = _anchorTexture,
                 Size = new DX.Size2F(_anchorTexture.Width, _anchorTexture.Height),
                 // Place the hotspot on rope hole at the top of the handle.
-                Anchor = new DX.Vector2(0.5f, 0.125f)                
+                Anchor = new DX.Vector2(0.5f, 0.125f)
             });
 
             ChangeZoomLevel(ZoomLevels.ToWindow);
@@ -1011,7 +1011,7 @@ namespace Gorgon.Editor.SpriteEditor
                 renderer.ScrollUpdated += Renderer_ScrollUpdated;
             }
 
-            SwitchRenderer(DataContext);            
+            SwitchRenderer(DataContext);
         }
 
         /// <summary>Handles the ScrollUpdated event of the Renderer control.</summary>
@@ -1041,7 +1041,7 @@ namespace Gorgon.Editor.SpriteEditor
                     ScrollHorizontal.Value = offsetX.Max(ScrollHorizontal.Minimum).Min(ScrollHorizontal.Maximum - ScrollHorizontal.LargeChange);
                 }
 
-                if (ScrollVertical.Value == offsetY) 
+                if (ScrollVertical.Value == offsetY)
                 {
                     return;
                 }
@@ -1133,7 +1133,7 @@ namespace Gorgon.Editor.SpriteEditor
             if ((manualInput?.DataContext == null) || (!manualInput.Visible))
             {
                 return;
-            }           
+            }
 
             manualInput.ResizeEnd -= ManualInput_ResizeEnd;
             try
@@ -1167,7 +1167,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="windowSize">The size of the window.</param>
         /// <returns>The scaling factor to apply.</returns>
         private float CalcZoomToSize(DX.Size2F size, DX.Size2F windowSize)
-        {            
+        {
             var scaling = new DX.Vector2(windowSize.Width / size.Width, windowSize.Height / size.Height);
 
             return scaling.X.Min(scaling.Y);
@@ -1192,12 +1192,12 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Function to assign a data context to the view as a view model.</summary>
         /// <param name="dataContext">The data context to assign.</param>
         /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
-        public void SetDataContext(ISpriteContent dataContext)            
+        public void SetDataContext(ISpriteContent dataContext)
         {
             base.SetDataContext(dataContext);
 
             InitializeFromDataContext(dataContext);
-            _ribbonForm.SetDataContext(dataContext);            
+            _ribbonForm.SetDataContext(dataContext);
             _manualRectEditor.SetDataContext(dataContext?.ManualRectangleEditor);
             _manualVertexEditor.SetDataContext(dataContext?.ManualVertexEditor);
             SpriteColorSelector.SetDataContext(dataContext?.ColorEditor);
@@ -1232,7 +1232,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             _ribbonForm = new FormRibbon();
             _ribbonForm.ImageZoomed += RibbonForm_ImageZoomed;
-            Ribbon = _ribbonForm.RibbonSpriteContent;           
+            Ribbon = _ribbonForm.RibbonSpriteContent;
 
             PanelRenderWindow.MouseWheel += PanelRenderWindow_MouseWheel;
 
@@ -1250,7 +1250,7 @@ namespace Gorgon.Editor.SpriteEditor
             RegisterChildPanel(typeof(SpriteAnchorEdit).FullName, SpriteAnchorSelector);
             RegisterChildPanel(typeof(ISpritePickMaskEditor).FullName, SpritePickMaskColor);
             RegisterChildPanel(typeof(SpriteWrappingEditor).FullName, SpriteWrapping);
-        }        
+        }
         #endregion
     }
 }

@@ -29,22 +29,22 @@ using Gorgon.Graphics.Imaging.Properties;
 
 namespace Gorgon.Graphics.Imaging.Codecs
 {
-	/// <summary>
-	/// A name and description for an image codec within a <see cref="GorgonImageCodecPlugIn"/>.
-	/// </summary>
-	public struct GorgonImageCodecDescription
-		: IEquatable<GorgonImageCodecDescription>
-	{
+    /// <summary>
+    /// A name and description for an image codec within a <see cref="GorgonImageCodecPlugIn"/>.
+    /// </summary>
+    public struct GorgonImageCodecDescription
+        : IEquatable<GorgonImageCodecDescription>
+    {
         #region Variables.
         /// <summary>
         /// The name of the codec.  This will be the same as its fully qualified type name of the codec (e.g. <c>Gorgon.Graphics.Imaging.Codecs.</c><see cref="GorgonCodecPng"/>).
         /// </summary>
         public readonly string Name;
 
-		/// <summary>
-		/// A friendly description used for display.
-		/// </summary>
-		public string Description;
+        /// <summary>
+        /// A friendly description used for display.
+        /// </summary>
+        public string Description;
         #endregion
 
         #region Methods.
@@ -100,15 +100,15 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// </summary>
         /// <param name="type">The type of codec object.</param>
         public GorgonImageCodecDescription(Type type)
-		{
-			if (type == null)
-			{
-				throw new ArgumentNullException(nameof(type));	
-			}
+        {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
 
-			Name = type.FullName;
-			Description = string.Empty;
-		}
-		#endregion
-	}
+            Name = type.FullName;
+            Description = string.Empty;
+        }
+        #endregion
+    }
 }

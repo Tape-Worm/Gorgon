@@ -40,7 +40,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         public IFileExplorerNodeVm Source
         {
-            get;            
+            get;
         }
 
         /// <summary>

@@ -80,12 +80,12 @@ namespace Gorgon.IO
 
                 switch (propName)
                 {
-                        case "TIME":
-                            time = (float)(reader.ReadAsDecimal() ?? 0);
-                            break;
-                        case "ARGB":
-                            argb = reader.ReadAsInt32() ?? 0;
-                            break;
+                    case "TIME":
+                        time = (float)(reader.ReadAsDecimal() ?? 0);
+                        break;
+                    case "ARGB":
+                        argb = reader.ReadAsInt32() ?? 0;
+                        break;
                 }
             }
 

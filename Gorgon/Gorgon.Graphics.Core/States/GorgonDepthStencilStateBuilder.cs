@@ -198,7 +198,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>The fluent builder interface.</returns>
         public GorgonDepthStencilStateBuilder DepthWriteEnabled()
         {
-            WorkingState.IsDepthWriteEnabled= true;
+            WorkingState.IsDepthWriteEnabled = true;
             return this;
         }
 

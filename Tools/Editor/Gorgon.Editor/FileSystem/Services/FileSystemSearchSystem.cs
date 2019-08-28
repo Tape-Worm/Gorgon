@@ -205,7 +205,7 @@ namespace Gorgon.Editor.Services
             {
                 return Array.Empty<IFileExplorerNodeVm>();
             }
-            
+
             // Extract any keyword that might be embedded in the start of the search text.
             (string keyword, string keywordValue, string updatedSearchText) = ParseSearchString(searchText);
 
@@ -215,7 +215,7 @@ namespace Gorgon.Editor.Services
                 searchText = updatedSearchText;
             }
 
-            (SearchMode mode, string modeSearchText) = ExtractSearchMode(searchText);            
+            (SearchMode mode, string modeSearchText) = ExtractSearchMode(searchText);
 
             // Test code for search:
             var searchResults = new List<IFileExplorerNodeVm>();
@@ -237,7 +237,7 @@ namespace Gorgon.Editor.Services
                     case SearchMode.OnlyWord when string.Equals(node.Name, modeSearchText, StringComparison.CurrentCultureIgnoreCase):
                     case SearchMode.StartsWith when node.Name.StartsWith(modeSearchText, StringComparison.CurrentCultureIgnoreCase):
                     case SearchMode.EndsWith when node.Name.EndsWith(modeSearchText, StringComparison.CurrentCultureIgnoreCase):
-                    case SearchMode.Contains when (node.Name.IndexOf(modeSearchText, StringComparison.CurrentCultureIgnoreCase) != -1):                        
+                    case SearchMode.Contains when (node.Name.IndexOf(modeSearchText, StringComparison.CurrentCultureIgnoreCase) != -1):
                     case SearchMode.All:
                         searchResults.Add(node);
                         break;

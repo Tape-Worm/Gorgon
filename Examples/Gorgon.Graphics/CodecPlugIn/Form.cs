@@ -46,153 +46,153 @@ namespace CodecPlugIn
     /// </summary>
     public partial class Form : System.Windows.Forms.Form
     {
-		#region Variables.
+        #region Variables.
         // The cache that holds plugin information.
         private GorgonMefPlugInCache _pluginCache;
-		// The main graphics interface.
-		private GorgonGraphics _graphics;
-		// The swap chain to use.
-	    private GorgonSwapChain _swap;
-		// Image to display, loaded from our plug in.
-		private GorgonTexture2DView _texture;
-		// The image in system memory.
-	    private IGorgonImage _image;
-		// Our custom codec loaded from the plug in.
-		private IGorgonImageCodec _customCodec;
+        // The main graphics interface.
+        private GorgonGraphics _graphics;
+        // The swap chain to use.
+        private GorgonSwapChain _swap;
+        // Image to display, loaded from our plug in.
+        private GorgonTexture2DView _texture;
+        // The image in system memory.
+        private IGorgonImage _image;
+        // Our custom codec loaded from the plug in.
+        private IGorgonImageCodec _customCodec;
         #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function called during idle time.
-		/// </summary>
-		/// <returns><b>true</b> to continue execution, <b>false</b> to stop.</returns>
-		private bool Idle()
-		{
-			_swap.RenderTargetView.Clear(GorgonColor.White);
+        #region Methods.
+        /// <summary>
+        /// Function called during idle time.
+        /// </summary>
+        /// <returns><b>true</b> to continue execution, <b>false</b> to stop.</returns>
+        private bool Idle()
+        {
+            _swap.RenderTargetView.Clear(GorgonColor.White);
 
-			var windowSize = new DX.Size2F(ClientSize.Width, ClientSize.Height);
-			var imageSize = new DX.Size2F(_texture.Width, _texture.Height);
+            var windowSize = new DX.Size2F(ClientSize.Width, ClientSize.Height);
+            var imageSize = new DX.Size2F(_texture.Width, _texture.Height);
 
-			// Calculate the scale between the images.
-			var scale = new DX.Size2F(windowSize.Width / imageSize.Width, windowSize.Height / imageSize.Height);
+            // Calculate the scale between the images.
+            var scale = new DX.Size2F(windowSize.Width / imageSize.Width, windowSize.Height / imageSize.Height);
 
-			// Only scale on a single axis if we don't have a 1:1 aspect ratio.
-			if (scale.Height > scale.Width)
-			{
-				scale.Height = scale.Width;
-			}
-			else
-			{
-				scale.Width = scale.Height;
-			}
+            // Only scale on a single axis if we don't have a 1:1 aspect ratio.
+            if (scale.Height > scale.Width)
+            {
+                scale.Height = scale.Width;
+            }
+            else
+            {
+                scale.Width = scale.Height;
+            }
 
-			// Scale the image.
-			var size = new DX.Size2((int)(scale.Width * imageSize.Width), (int)(scale.Height * imageSize.Height));
+            // Scale the image.
+            var size = new DX.Size2((int)(scale.Width * imageSize.Width), (int)(scale.Height * imageSize.Height));
 
-			// Find the position.
-			var bounds = new DX.Rectangle((int)((windowSize.Width / 2) - (size.Width / 2)), (int)((windowSize.Height / 2) - (size.Height / 2)), size.Width, size.Height);
+            // Find the position.
+            var bounds = new DX.Rectangle((int)((windowSize.Width / 2) - (size.Width / 2)), (int)((windowSize.Height / 2) - (size.Height / 2)), size.Width, size.Height);
 
             _graphics.DrawTexture(_texture, bounds);
 
             GorgonExample.BlitLogo(_graphics);
 
-			_swap.Present(1);
+            _swap.Present(1);
 
-			return true;
-		}
+            return true;
+        }
 
-		/// <summary>
-		/// Function to load our useless image codec plug in.
-		/// </summary>
-		/// <returns><b>true</b> if successful, <b>false</b> if not.</returns>
-	    private bool LoadCodec()
-		{
-			const string pluginName = "Gorgon.Graphics.Example.TvImageCodecPlugIn";
+        /// <summary>
+        /// Function to load our useless image codec plug in.
+        /// </summary>
+        /// <returns><b>true</b> if successful, <b>false</b> if not.</returns>
+        private bool LoadCodec()
+        {
+            const string pluginName = "Gorgon.Graphics.Example.TvImageCodecPlugIn";
 
-			_pluginCache = new GorgonMefPlugInCache(GorgonApplication.Log);
-			
-			// Load our plug in.
-			_pluginCache.LoadPlugInAssemblies(GorgonApplication.StartupPath.FullName, "TVImageCodec.dll");
+            _pluginCache = new GorgonMefPlugInCache(GorgonApplication.Log);
 
-			// Activate the plugin service.
-			IGorgonPlugInService pluginService = new GorgonMefPlugInService(_pluginCache);
+            // Load our plug in.
+            _pluginCache.LoadPlugInAssemblies(GorgonApplication.StartupPath.FullName, "TVImageCodec.dll");
 
-			// Find the plugin.
-		    GorgonImageCodecPlugIn plugIn = pluginService.GetPlugIn<GorgonImageCodecPlugIn>(pluginName);
+            // Activate the plugin service.
+            IGorgonPlugInService pluginService = new GorgonMefPlugInService(_pluginCache);
 
-			if ((plugIn == null) || (plugIn.Codecs.Count == 0))
-			{
-				return false;
-			}
+            // Find the plugin.
+            GorgonImageCodecPlugIn plugIn = pluginService.GetPlugIn<GorgonImageCodecPlugIn>(pluginName);
 
-			// Normally you would enumerate the plug ins, but in this case we know there's only one.
-			_customCodec = plugIn.CreateCodec(plugIn.Codecs[0].Name);
+            if ((plugIn == null) || (plugIn.Codecs.Count == 0))
+            {
+                return false;
+            }
 
-			return _customCodec != null;
-		}
+            // Normally you would enumerate the plug ins, but in this case we know there's only one.
+            _customCodec = plugIn.CreateCodec(plugIn.Codecs[0].Name);
 
-		/// <summary>
-		/// Function to convert the image to use our custom codec.
-		/// </summary>
-		private void ConvertImage()
-		{
-			// The path to our image file for our custom codec.
-			string tempPath = Path.ChangeExtension(Path.GetTempPath().FormatDirectory(Path.DirectorySeparatorChar) + Path.GetRandomFileName(), "tvImage");
+            return _customCodec != null;
+        }
 
-			try
-			{
-				// Save the current texture using our useless new custom codec.
-				_customCodec.SaveToFile(_image.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm), tempPath);
-				_image.Dispose();
-				_texture?.Dispose();
+        /// <summary>
+        /// Function to convert the image to use our custom codec.
+        /// </summary>
+        private void ConvertImage()
+        {
+            // The path to our image file for our custom codec.
+            string tempPath = Path.ChangeExtension(Path.GetTempPath().FormatDirectory(Path.DirectorySeparatorChar) + Path.GetRandomFileName(), "tvImage");
 
-				_image = _customCodec.LoadFromFile(tempPath);
-				
-				_texture = _image.ToTexture2D(_graphics, new GorgonTexture2DLoadOptions
-				                                         {
-                                                             Name = "Converted Texture"
-				                                         }).GetShaderResourceView();
-				
-			}
-			catch
-			{
-				// Clean up the new texture should we have an exception (this shouldn't happen, better safe than sorry).
-				_image?.Dispose();
-				throw;
-			}
-			finally
-			{
-				try
-				{
-					File.Delete(tempPath);
-				}
-				// ReSharper disable once EmptyGeneralCatchClause
-				catch
-				{
-					// Intentionally left blank.
-					// If we can't clean up the temp file, then it's no big deal right now.
-				}
-			}
-	    }
+            try
+            {
+                // Save the current texture using our useless new custom codec.
+                _customCodec.SaveToFile(_image.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm), tempPath);
+                _image.Dispose();
+                _texture?.Dispose();
 
-		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.
-		/// </summary>
-		/// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs" /> that contains the event data.</param>
-		protected override void OnFormClosing(FormClosingEventArgs e)
-	    {
-		    base.OnFormClosing(e);
-			
+                _image = _customCodec.LoadFromFile(tempPath);
+
+                _texture = _image.ToTexture2D(_graphics, new GorgonTexture2DLoadOptions
+                {
+                    Name = "Converted Texture"
+                }).GetShaderResourceView();
+
+            }
+            catch
+            {
+                // Clean up the new texture should we have an exception (this shouldn't happen, better safe than sorry).
+                _image?.Dispose();
+                throw;
+            }
+            finally
+            {
+                try
+                {
+                    File.Delete(tempPath);
+                }
+                // ReSharper disable once EmptyGeneralCatchClause
+                catch
+                {
+                    // Intentionally left blank.
+                    // If we can't clean up the temp file, then it's no big deal right now.
+                }
+            }
+        }
+
+        /// <summary>
+        /// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.
+        /// </summary>
+        /// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs" /> that contains the event data.</param>
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+
             GorgonExample.UnloadResources();
 
             _pluginCache?.Dispose();
-			_texture?.Dispose();
-			_swap?.Dispose();
-			_graphics?.Dispose();
-		    _image?.Dispose();
-	    }
+            _texture?.Dispose();
+            _swap?.Dispose();
+            _graphics?.Dispose();
+            _image?.Dispose();
+        }
 
-	    /// <summary>
+        /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
         /// </summary>
         /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
@@ -206,13 +206,13 @@ namespace CodecPlugIn
             {
                 GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
 
-				// Load the custom codec.
-				if (!LoadCodec())
-				{
-					GorgonDialogs.ErrorBox(this, "Unable to load the image codec plug in.");
-					GorgonApplication.Quit();
-					return;
-				}
+                // Load the custom codec.
+                if (!LoadCodec())
+                {
+                    GorgonDialogs.ErrorBox(this, "Unable to load the image codec plug in.");
+                    GorgonApplication.Quit();
+                    return;
+                }
 
 
                 // Set up the graphics interface.
@@ -228,27 +228,27 @@ namespace CodecPlugIn
 
                 _graphics = new GorgonGraphics(deviceList[0]);
 
-	            _swap = new GorgonSwapChain(_graphics,
-	                                        this,
-	                                        new GorgonSwapChainInfo("Codec PlugIn SwapChain")
-	                                        {
-		                                        Width = ClientSize.Width,
-		                                        Height = ClientSize.Height,
-		                                        Format = BufferFormat.R8G8B8A8_UNorm
-	                                        });
+                _swap = new GorgonSwapChain(_graphics,
+                                            this,
+                                            new GorgonSwapChainInfo("Codec PlugIn SwapChain")
+                                            {
+                                                Width = ClientSize.Width,
+                                                Height = ClientSize.Height,
+                                                Format = BufferFormat.R8G8B8A8_UNorm
+                                            });
 
                 _graphics.SetRenderTarget(_swap.RenderTargetView);
 
-				// Load the image to use as a texture.
-	            IGorgonImageCodec png = new GorgonCodecPng();
-				_image = png.LoadFromFile(Path.Combine(GorgonExample.GetResourcePath(@"Textures\CodecPlugIn\").FullName, "SourceTexture.png"));
+                // Load the image to use as a texture.
+                IGorgonImageCodec png = new GorgonCodecPng();
+                _image = png.LoadFromFile(Path.Combine(GorgonExample.GetResourcePath(@"Textures\CodecPlugIn\").FullName, "SourceTexture.png"));
 
                 GorgonExample.LoadResources(_graphics);
 
-				ConvertImage();
+                ConvertImage();
 
-				GorgonApplication.IdleMethod = Idle;
-			}
+                GorgonApplication.IdleMethod = Idle;
+            }
             catch (Exception ex)
             {
                 GorgonExample.HandleException(ex);

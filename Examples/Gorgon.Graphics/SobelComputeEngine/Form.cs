@@ -28,10 +28,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Example;
-using Gorgon.Examples.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.UI;
@@ -51,7 +51,7 @@ namespace Gorgon.Examples
     /// We begin this example by setting up 
     /// </para>
     /// </remarks>
-    public partial class Form 
+    public partial class Form
         : System.Windows.Forms.Form
     {
         #region Variables.
@@ -172,9 +172,9 @@ namespace Gorgon.Examples
 
                 var png = new GorgonCodecPng();
                 using (var tempTexture = new GorgonTexture2D(_graphics, new GorgonTexture2DInfo(_outputTexture)
-                                                                                    {
-                                                                                        Format = BufferFormat.R8G8B8A8_UNorm
-                                                                                    }))
+                {
+                    Format = BufferFormat.R8G8B8A8_UNorm
+                }))
                 {
 
                     _outputTexture.CopyTo(tempTexture);

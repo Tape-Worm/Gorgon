@@ -40,7 +40,7 @@ namespace Gorgon.Editor.UI.Controls
         #region Variables.
         // Flag to indicate that this entry is visible.
         private bool _visible = true;
-		// Flag to indicate that the entry is selected.
+        // Flag to indicate that the entry is selected.
         private bool _isExpanded = true;
         #endregion
 
@@ -53,10 +53,10 @@ namespace Gorgon.Editor.UI.Controls
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the files for the directory.
         /// </summary>
-		public IReadOnlyList<ContentFileExplorerFileEntry> Files
+        public IReadOnlyList<ContentFileExplorerFileEntry> Files
         {
             get;
         }

@@ -288,7 +288,7 @@ namespace Gorgon.Editor.ImageEditor.Native
             int size = 0;
             int hresult = AssocQueryString(AssociationFlags.DontRemapCLSID | AssociationFlags.RemapRunDLL, AssociationStringType.Executable, filePath, null, null, ref size);
 
-			// WARNING: That shitty fucking photo UWP app steals the registration of some image files.  When this happens, we can't get the path info.  UWP is ABSOLUTE GARBAGE.
+            // WARNING: That shitty fucking photo UWP app steals the registration of some image files.  When this happens, we can't get the path info.  UWP is ABSOLUTE GARBAGE.
             if ((size <= 0) || (hresult != 1))
             {
                 return string.Empty;

@@ -48,7 +48,7 @@ namespace Gorgon.Editor.UI
         {
             get;
         }
-        
+
         /// <summary>
         /// Property to return the command used to cancel the operation.
         /// </summary>

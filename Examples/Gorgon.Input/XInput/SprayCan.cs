@@ -32,319 +32,319 @@ using Gorgon.Timing;
 
 namespace Gorgon.Examples
 {
-	/// <summary>
-	/// The spray can effect state object.
-	/// </summary>
-	internal class SprayCan
-	{
-		#region Variables.
-		private float _time;					// Current time.
-		private float _maxTime;				    // Maximum time.
-		private bool _isActive;				    // Flag to indicate that the spray is active.
-		private float _activeStartTime;		    // Time at which the spray became active.
-		private float _alpha;				    // Current alpha.
-		private float _maxAlpha;				// Maximum alpha.
-		private float _vibAmount;			    // Vibration amount.
-		private float _vibMax;				    // Maximum vibration.
-		private float _sprayAmount;			    // Spray amount.
-		private float _sprayMax;				// Maximum spray amount.			
-		#endregion
+    /// <summary>
+    /// The spray can effect state object.
+    /// </summary>
+    internal class SprayCan
+    {
+        #region Variables.
+        private float _time;                    // Current time.
+        private float _maxTime;                 // Maximum time.
+        private bool _isActive;                 // Flag to indicate that the spray is active.
+        private float _activeStartTime;         // Time at which the spray became active.
+        private float _alpha;                   // Current alpha.
+        private float _maxAlpha;                // Maximum alpha.
+        private float _vibAmount;               // Vibration amount.
+        private float _vibMax;                  // Maximum vibration.
+        private float _sprayAmount;             // Spray amount.
+        private float _sprayMax;                // Maximum spray amount.			
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to return the point size for the spray.
-		/// </summary>
-		public float SprayPointSize
-		{
-			get;
-			private set;
-		}
+        #region Properties.
+        /// <summary>
+        /// Property to return the point size for the spray.
+        /// </summary>
+        public float SprayPointSize
+        {
+            get;
+            private set;
+        }
 
-		/// <summary>
-		/// Property to return whether the spray needs to be reset.
-		/// </summary>
-		public bool NeedReset
-		{
-			get;
-			private set;
-		}
+        /// <summary>
+        /// Property to return whether the spray needs to be reset.
+        /// </summary>
+        public bool NeedReset
+        {
+            get;
+            private set;
+        }
 
-		/// <summary>
-		/// Property to return the index of the controller.
-		/// </summary>
-		public int Index
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the index of the controller.
+        /// </summary>
+        public int Index
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the joystick that owns this spray.
-		/// </summary>
-		public IGorgonGamingDevice Controller
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the joystick that owns this spray.
+        /// </summary>
+        public IGorgonGamingDevice Controller
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to set or return the origin of the spray.
-		/// </summary>
-		public PointF Origin
-		{
-			get;
-			set;
-		}
+        /// <summary>
+        /// Property to set or return the origin of the spray.
+        /// </summary>
+        public PointF Origin
+        {
+            get;
+            set;
+        }
 
-		/// <summary>
-		/// Property to return the color of the spray effect.
-		/// </summary>
-		public Color SprayColor
-		{
-			get
-			{
-				int colorValue = (int)(((uint)0xFF << (Index * 8)) | ((uint)SprayAlpha << 24));
+        /// <summary>
+        /// Property to return the color of the spray effect.
+        /// </summary>
+        public Color SprayColor
+        {
+            get
+            {
+                int colorValue = (int)(((uint)0xFF << (Index * 8)) | ((uint)SprayAlpha << 24));
 
-				return Color.FromArgb(colorValue);
-			}
-		}
+                return Color.FromArgb(colorValue);
+            }
+        }
 
-		/// <summary>
-		/// Property to set or return whether the spray is active.
-		/// </summary>
-		public bool IsActive
-		{
-			get => _isActive;
-			set
-			{
-				if ((_alpha <= 0.0f) || (_maxTime <= 0.0f))
-				{
-					_alpha = 0.0f;
-					_maxAlpha = 0.0f;
-					_time = 0.0f;
-					_maxTime = 0.0f;
-					_vibAmount = 0.0f;
-					_vibMax = 0.0f;
-					_sprayAmount = 0.0f;
-					_sprayMax = 0.0f;
-					_isActive = false;
-				}
-				else
-				{
-					_isActive = value;
-					NeedReset = false;
-					_activeStartTime = GorgonTiming.SecondsSinceStart;
-				}
+        /// <summary>
+        /// Property to set or return whether the spray is active.
+        /// </summary>
+        public bool IsActive
+        {
+            get => _isActive;
+            set
+            {
+                if ((_alpha <= 0.0f) || (_maxTime <= 0.0f))
+                {
+                    _alpha = 0.0f;
+                    _maxAlpha = 0.0f;
+                    _time = 0.0f;
+                    _maxTime = 0.0f;
+                    _vibAmount = 0.0f;
+                    _vibMax = 0.0f;
+                    _sprayAmount = 0.0f;
+                    _sprayMax = 0.0f;
+                    _isActive = false;
+                }
+                else
+                {
+                    _isActive = value;
+                    NeedReset = false;
+                    _activeStartTime = GorgonTiming.SecondsSinceStart;
+                }
 
-				SprayPointSize = 0.0f;
-				
-				if (!_isActive)
-				{
-					StopVibration();
-				}
-			}
-		}
+                SprayPointSize = 0.0f;
 
-		/// <summary>
-		/// Property to set or return the current spray position.
-		/// </summary>
-		public PointF Position
-		{
-			get;
-			set;
-		}
+                if (!_isActive)
+                {
+                    StopVibration();
+                }
+            }
+        }
 
-		/// <summary>
-		/// Property to set or return the amount to spray.
-		/// </summary>
-		public float Amount
-		{
-			get => _sprayAmount;
-		    set
-			{
-				if (value <= 0.0f)
-				{
-					IsActive = false;
-				}
-				else
-				{
-					_sprayAmount = value;
-					_sprayMax = _sprayAmount;
-				}
-			}
-		}
+        /// <summary>
+        /// Property to set or return the current spray position.
+        /// </summary>
+        public PointF Position
+        {
+            get;
+            set;
+        }
 
-		/// <summary>
-		/// Property to set or return the time the spray should live.
-		/// </summary>
-		public float Time
-		{
-			get => _time;
-			set
-			{
-				if (value <= 0.0f)
-				{
-					value = 0.0f;
-					IsActive = false;
-				}
+        /// <summary>
+        /// Property to set or return the amount to spray.
+        /// </summary>
+        public float Amount
+        {
+            get => _sprayAmount;
+            set
+            {
+                if (value <= 0.0f)
+                {
+                    IsActive = false;
+                }
+                else
+                {
+                    _sprayAmount = value;
+                    _sprayMax = _sprayAmount;
+                }
+            }
+        }
 
-				_time = value;
-				_maxTime = _time;
-			}
-		}
+        /// <summary>
+        /// Property to set or return the time the spray should live.
+        /// </summary>
+        public float Time
+        {
+            get => _time;
+            set
+            {
+                if (value <= 0.0f)
+                {
+                    value = 0.0f;
+                    IsActive = false;
+                }
 
-		/// <summary>
-		/// Property to set or return the amount to vibrate the controller during the spray.
-		/// </summary>
-		public float VibrationAmount
-		{
-			get => _vibAmount;
-			set
-			{
-				if (value <= 0.0f)
-				{
-					_vibAmount = 0.0f;
-					return;
-				}
+                _time = value;
+                _maxTime = _time;
+            }
+        }
 
-				_vibAmount = value;
-				_vibMax = value;
-			}
-		}
+        /// <summary>
+        /// Property to set or return the amount to vibrate the controller during the spray.
+        /// </summary>
+        public float VibrationAmount
+        {
+            get => _vibAmount;
+            set
+            {
+                if (value <= 0.0f)
+                {
+                    _vibAmount = 0.0f;
+                    return;
+                }
 
-		/// <summary>
-		/// Property to set or return the alpha amount for the spray.
-		/// </summary>
-		public float SprayAlpha
-		{
-			get => _alpha;
-			set
-			{
-				if (value <= 0.0f)
-				{
-					IsActive = false;
-					value = 0.0f;
-				}
+                _vibAmount = value;
+                _vibMax = value;
+            }
+        }
 
-				_alpha = value;
-				_maxAlpha = _alpha;
-			}
-		}
-		#endregion
+        /// <summary>
+        /// Property to set or return the alpha amount for the spray.
+        /// </summary>
+        public float SprayAlpha
+        {
+            get => _alpha;
+            set
+            {
+                if (value <= 0.0f)
+                {
+                    IsActive = false;
+                    value = 0.0f;
+                }
 
-		#region Methods.
-		/// <summary>
-		/// Function to update the sprayer.
-		/// </summary>
-		public void Update()
-		{
-			float throttleValue = Controller.Axis[GamingDeviceAxis.RightTrigger].Value;
-		    float appTime = GorgonTiming.SecondsSinceStart - _activeStartTime;
+                _alpha = value;
+                _maxAlpha = _alpha;
+            }
+        }
+        #endregion
 
-			// Get unit time.
-			float unitTime = appTime / _maxTime;
+        #region Methods.
+        /// <summary>
+        /// Function to update the sprayer.
+        /// </summary>
+        public void Update()
+        {
+            float throttleValue = Controller.Axis[GamingDeviceAxis.RightTrigger].Value;
+            float appTime = GorgonTiming.SecondsSinceStart - _activeStartTime;
 
-			// Vibrate our controller.
-			Controller.Vibrate(1, (int)_vibAmount);
+            // Get unit time.
+            float unitTime = appTime / _maxTime;
 
-			// Get the spray vector in a -1 .. 1 range.
-			var sprayVector = new PointF(Controller.Axis[GamingDeviceAxis.RightStickX].Value - Controller.Info.AxisInfo[GamingDeviceAxis.RightStickX].Range.Minimum,
-										Controller.Axis[GamingDeviceAxis.RightStickY].Value - Controller.Info.AxisInfo[GamingDeviceAxis.RightStickY].Range.Minimum);
+            // Vibrate our controller.
+            Controller.Vibrate(1, (int)_vibAmount);
 
-			sprayVector = new PointF(((sprayVector.X / (Controller.Info.AxisInfo[GamingDeviceAxis.RightStickX].Range.Range + 1)) * 2.0f) - 1.0f,
-									 -(((sprayVector.Y / (Controller.Info.AxisInfo[GamingDeviceAxis.RightStickY].Range.Range + 1)) * 2.0f) - 1.0f));
+            // Get the spray vector in a -1 .. 1 range.
+            var sprayVector = new PointF(Controller.Axis[GamingDeviceAxis.RightStickX].Value - Controller.Info.AxisInfo[GamingDeviceAxis.RightStickX].Range.Minimum,
+                                        Controller.Axis[GamingDeviceAxis.RightStickY].Value - Controller.Info.AxisInfo[GamingDeviceAxis.RightStickY].Range.Minimum);
 
-			// Calculate angle without magnitude.
-			var sprayVectorDelta = new PointF(sprayVector.X, sprayVector.Y);
-			float sprayAngle = 0.0f;
+            sprayVector = new PointF(((sprayVector.X / (Controller.Info.AxisInfo[GamingDeviceAxis.RightStickX].Range.Range + 1)) * 2.0f) - 1.0f,
+                                     -(((sprayVector.Y / (Controller.Info.AxisInfo[GamingDeviceAxis.RightStickY].Range.Range + 1)) * 2.0f) - 1.0f));
 
-			// Ensure that we get the correct angle.
-			if (sprayVectorDelta.Y.EqualsEpsilon(0.0f))
-			{
-				if (sprayVectorDelta.X < 0.0f)
-				{
-					sprayAngle = (-90.0f).ToRadians();
-				}
-				else if (sprayVectorDelta.X > 0.0f)
-				{
-					sprayAngle = (90.0f).ToRadians();
-				}
-			}
-			else
-			{
-				sprayAngle = (sprayVectorDelta.Y).ATan(sprayVectorDelta.X) + (-45.0f).ToRadians();
-			}
+            // Calculate angle without magnitude.
+            var sprayVectorDelta = new PointF(sprayVector.X, sprayVector.Y);
+            float sprayAngle = 0.0f;
 
-			// Get sine and cosine for the angle.
-			float sin = sprayAngle.Sin();
-			float cos = sprayAngle.Cos();
+            // Ensure that we get the correct angle.
+            if (sprayVectorDelta.Y.EqualsEpsilon(0.0f))
+            {
+                if (sprayVectorDelta.X < 0.0f)
+                {
+                    sprayAngle = (-90.0f).ToRadians();
+                }
+                else if (sprayVectorDelta.X > 0.0f)
+                {
+                    sprayAngle = (90.0f).ToRadians();
+                }
+            }
+            else
+            {
+                sprayAngle = (sprayVectorDelta.Y).ATan(sprayVectorDelta.X) + (-45.0f).ToRadians();
+            }
 
-			// Decrease spray time.
-			_time = _maxTime - appTime;
+            // Get sine and cosine for the angle.
+            float sin = sprayAngle.Sin();
+            float cos = sprayAngle.Cos();
 
-			// If we're out of time, then leave.
-			if (_time <= 0.0f)
-			{
-				IsActive = false;
-				NeedReset = true;
-				return;
-			}
+            // Decrease spray time.
+            _time = _maxTime - appTime;
 
-			// Decrease alpha over time.
-			_alpha = _maxAlpha - (_maxAlpha * unitTime);
-			if (_alpha < 0.0f)
-			{
-				_alpha = 0.0f;
-			}
+            // If we're out of time, then leave.
+            if (_time <= 0.0f)
+            {
+                IsActive = false;
+                NeedReset = true;
+                return;
+            }
 
-			// Decrease vibration over time.
-			_vibAmount = _vibMax - (_vibMax * unitTime);
-			if (_vibAmount < 0.0f)
-			{
-				_vibAmount = 0.0f;
-			}
+            // Decrease alpha over time.
+            _alpha = _maxAlpha - (_maxAlpha * unitTime);
+            if (_alpha < 0.0f)
+            {
+                _alpha = 0.0f;
+            }
 
-			// Decrease the amount over time and by throttle pressure.
-		    _sprayAmount = _sprayMax * unitTime;
+            // Decrease vibration over time.
+            _vibAmount = _vibMax - (_vibMax * unitTime);
+            if (_vibAmount < 0.0f)
+            {
+                _vibAmount = 0.0f;
+            }
 
-			SprayPointSize = (unitTime * 30.0f) + 10.0f;
+            // Decrease the amount over time and by throttle pressure.
+            _sprayAmount = _sprayMax * unitTime;
 
-			// Scale the vector.
-			sprayVector = new PointF(_sprayAmount * (cos - sin), _sprayAmount * (sin + cos));
+            SprayPointSize = (unitTime * 30.0f) + 10.0f;
 
-			// Update the spray position.
-			var jitter = new PointF(GorgonRandom.RandomSingle(-_sprayAmount / _sprayMax * throttleValue / 10.0f, _sprayAmount / _sprayMax * throttleValue / 10.0f),
-										GorgonRandom.RandomSingle(-_sprayAmount / _sprayMax * throttleValue / 10.0f, _sprayAmount / _sprayMax * throttleValue / 10.0f));
-			Position = new PointF(Origin.X + sprayVector.X + jitter.X, Origin.Y + sprayVector.Y + jitter.Y);
-		}
+            // Scale the vector.
+            sprayVector = new PointF(_sprayAmount * (cos - sin), _sprayAmount * (sin + cos));
 
-		/// <summary>
-		/// Function to force vibration to stop.
-		/// </summary>
-		public void StopVibration()
-		{
-			if (Controller.IsConnected)
-			{
-				Controller.Vibrate(1, 0);
-			}
-		}
-		#endregion
+            // Update the spray position.
+            var jitter = new PointF(GorgonRandom.RandomSingle(-_sprayAmount / _sprayMax * throttleValue / 10.0f, _sprayAmount / _sprayMax * throttleValue / 10.0f),
+                                        GorgonRandom.RandomSingle(-_sprayAmount / _sprayMax * throttleValue / 10.0f, _sprayAmount / _sprayMax * throttleValue / 10.0f));
+            Position = new PointF(Origin.X + sprayVector.X + jitter.X, Origin.Y + sprayVector.Y + jitter.Y);
+        }
 
-		#region Constructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="SprayCan" /> struct.
-		/// </summary>
-		/// <param name="controller">The joystick that owns this spray.</param>
-		/// <param name="controllerIndex">Index of the controller.</param>
-		public SprayCan(IGorgonGamingDevice controller, int controllerIndex)
-		{
-			Index = controllerIndex;
-			Controller = controller;
-			Position = PointF.Empty;
-			Amount = 0.0f;
-			Time = 0.0f;
-			VibrationAmount = 0.0f;
-			SprayAlpha = 255.0f;
-			IsActive = false;
-		}
-		#endregion
-	}
+        /// <summary>
+        /// Function to force vibration to stop.
+        /// </summary>
+        public void StopVibration()
+        {
+            if (Controller.IsConnected)
+            {
+                Controller.Vibrate(1, 0);
+            }
+        }
+        #endregion
+
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SprayCan" /> struct.
+        /// </summary>
+        /// <param name="controller">The joystick that owns this spray.</param>
+        /// <param name="controllerIndex">Index of the controller.</param>
+        public SprayCan(IGorgonGamingDevice controller, int controllerIndex)
+        {
+            Index = controllerIndex;
+            Controller = controller;
+            Position = PointF.Empty;
+            Amount = 0.0f;
+            Time = 0.0f;
+            VibrationAmount = 0.0f;
+            SprayAlpha = 255.0f;
+            IsActive = false;
+        }
+        #endregion
+    }
 }

@@ -45,22 +45,22 @@ namespace Gorgon.Editor.ImageEditor
         : ViewModelBase<SettingsParameters>, ISettings
     {
         #region Variables.
-		// The busy state service.
+        // The busy state service.
         private IBusyStateService _busyService;
-		// The message display service.
+        // The message display service.
         private IMessageDisplayService _messageDisplay;
-		// The underlying settings for the plug in.
+        // The underlying settings for the plug in.
         private ImageEditorSettings _settings;
-		// The plug in service used to manage content and content importer plug ins.
+        // The plug in service used to manage content and content importer plug ins.
         private IContentPlugInService _pluginService;
-		// The registry for image codecs.
+        // The registry for image codecs.
         private ICodecRegistry _codecs;
-		// The dialog used to open a codec assembly.
+        // The dialog used to open a codec assembly.
         private IFileDialogService _openCodecDialog;
         #endregion
 
         #region Properties.
-		/// <summary>
+        /// <summary>
         /// Property to return the ID for this panel.
         /// </summary>
         public Guid ID
@@ -160,7 +160,7 @@ namespace Gorgon.Editor.ImageEditor
             }
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to write out the settings.
         /// </summary>
         private void DoWriteSettings()
@@ -182,7 +182,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <returns><b>true</b> if the plug in assemblies can be removed, <b>false</b> if not.</returns>
         private bool CanUnloadPlugInAssemblies() => SelectedCodecs.Count > 0;
 
-		/// <summary>
+        /// <summary>
         /// Function to unload the selected plug in assemblies.
         /// </summary>
         private void DoUnloadPlugInAssemblies()
@@ -241,7 +241,7 @@ namespace Gorgon.Editor.ImageEditor
             }
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to load in a plug in assembly.
         /// </summary>
         private void DoLoadPlugInAssembly()
@@ -262,7 +262,7 @@ namespace Gorgon.Editor.ImageEditor
                 string path = _openCodecDialog.GetFilename();
 
                 if ((string.IsNullOrWhiteSpace(path)) || (!File.Exists(path)))
-                {					
+                {
                     return;
                 }
 
@@ -296,7 +296,7 @@ namespace Gorgon.Editor.ImageEditor
 
                 _settings.LastCodecPlugInPath = Path.GetDirectoryName(path).FormatDirectory(Path.DirectorySeparatorChar);
 
-				// Store the settings now.
+                // Store the settings now.
                 DoWriteSettings();
             }
             catch (Exception ex)
@@ -345,7 +345,7 @@ namespace Gorgon.Editor.ImageEditor
         public override void OnLoad()
         {
             base.OnLoad();
-			
+
             CodecPlugInPaths.CollectionChanged += CodecPlugInPaths_CollectionChanged;
         }
 
@@ -354,7 +354,7 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         public override void OnUnload()
         {
-            CodecPlugInPaths.CollectionChanged -= CodecPlugInPaths_CollectionChanged;            
+            CodecPlugInPaths.CollectionChanged -= CodecPlugInPaths_CollectionChanged;
 
             base.OnUnload();
         }

@@ -27,12 +27,12 @@
 using System;
 using System.IO;
 using System.Linq;
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.IO
 {
@@ -91,7 +91,7 @@ namespace Gorgon.IO
             string textureName = reader.ReadString();
             textureRegion = DX.RectangleF.Empty;
             textureArrayIndex = 0;
-            
+
             if (string.IsNullOrWhiteSpace(textureName))
             {
                 return overrideTexture;
@@ -99,7 +99,7 @@ namespace Gorgon.IO
 
             reader.ReadValue(out textureRegion);
             reader.ReadValue(out textureArrayIndex);
-            
+
             reader.ReadValue(out int textureWidth);
             reader.ReadValue(out int textureHeight);
             reader.ReadValue(out BufferFormat textureFormat);
@@ -155,7 +155,7 @@ namespace Gorgon.IO
                 binReader = reader.OpenChunk(SpriteData);
                 sprite.Size = binReader.ReadValue<DX.Size2F>();
                 sprite.Anchor = binReader.ReadValue<DX.Vector2>();
-                
+
                 // If we do not have alpha test information, then skip writing its data.
                 if (binReader.ReadBoolean())
                 {
@@ -172,13 +172,13 @@ namespace Gorgon.IO
                 sprite.CornerColors.UpperRight = binReader.ReadValue<GorgonColor>();
                 sprite.CornerColors.LowerLeft = binReader.ReadValue<GorgonColor>();
                 sprite.CornerColors.LowerRight = binReader.ReadValue<GorgonColor>();
-                
+
                 reader.CloseChunk();
 
                 if (reader.Chunks.Contains(TextureData))
                 {
                     binReader = reader.OpenChunk(TextureData);
-                    sprite.Texture = LoadTexture(binReader, overrideTexture, out DX.RectangleF  textureCoordinates, out int textureArrayIndex);
+                    sprite.Texture = LoadTexture(binReader, overrideTexture, out DX.RectangleF textureCoordinates, out int textureArrayIndex);
                     sprite.TextureRegion = textureCoordinates;
                     sprite.TextureArrayIndex = textureArrayIndex;
                     reader.CloseChunk();
@@ -239,7 +239,7 @@ namespace Gorgon.IO
                 writer.CloseChunk();
 
                 binWriter = writer.OpenChunk(SpriteData);
-                
+
                 binWriter.WriteValue(sprite.Size);
                 binWriter.WriteValue(sprite.Anchor);
 
@@ -260,7 +260,7 @@ namespace Gorgon.IO
                 binWriter.WriteValue(sprite.CornerColors.UpperRight);
                 binWriter.WriteValue(sprite.CornerColors.LowerLeft);
                 binWriter.WriteValue(sprite.CornerColors.LowerRight);
-                
+
                 writer.CloseChunk();
 
                 // We have no texture data, so don't bother writing out that chunk.
@@ -348,7 +348,7 @@ namespace Gorgon.IO
                     return false;
                 }
 
-                reader = new GorgonChunkFileReader(stream, new [] { CurrentFileHeader });
+                reader = new GorgonChunkFileReader(stream, new[] { CurrentFileHeader });
                 reader.Open();
                 return IsReadableChunkFile(reader);
             }
@@ -374,7 +374,7 @@ namespace Gorgon.IO
 
             try
             {
-                reader = new GorgonChunkFileReader(stream, new [] { CurrentFileHeader });
+                reader = new GorgonChunkFileReader(stream, new[] { CurrentFileHeader });
                 reader.Open();
                 if (!IsReadableChunkFile(reader))
                 {
@@ -410,7 +410,7 @@ namespace Gorgon.IO
         public GorgonV3SpriteBinaryCodec(Gorgon2D renderer)
             : base(renderer, Resources.GOR2DIO_V3_BIN_CODEC, Resources.GOR2DIO_V3_BIN_CODEC_DESCRIPTION)
         {
-            
+
         }
         #endregion
     }

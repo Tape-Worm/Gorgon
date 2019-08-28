@@ -101,7 +101,7 @@ namespace Gorgon.Examples
         [StructLayout(LayoutKind.Sequential, Pack = 16, Size = 32)]
         private struct Material
         {
-			/// <summary>
+            /// <summary>
             /// The albdeo color.
             /// </summary>
             public DX.Vector4 Albedo;
@@ -269,7 +269,7 @@ namespace Gorgon.Examples
                         .ConstantBuffer(ShaderType.Pixel, _cameraBuffer)
                         .ConstantBuffer(ShaderType.Pixel, _lightBuffer, 1)
                         .ConstantBuffer(ShaderType.Pixel, _materialBuffer, 2);
-                                                       
+
             ref readonly (int Start, int Count) textures = ref mesh.Material.Textures.GetDirtyItems();
 
             for (int i = textures.Start; i < textures.Start + textures.Count; ++i)
@@ -346,13 +346,13 @@ namespace Gorgon.Examples
             for (int i = dirtyLights.Start; i < end; ++i)
             {
                 _lightData[i] = new LightData
-                                {
-                                    SpecularPower = Lights[i].SpecularPower,
-                                    Attenuation = Lights[i].Attenuation,
-                                    LightColor = Lights[i].LightColor,
-                                    LightPosition = Lights[i].LightPosition,
-                                    SpecularColor = Lights[i].SpecularColor
-                                };
+                {
+                    SpecularPower = Lights[i].SpecularPower,
+                    Attenuation = Lights[i].Attenuation,
+                    LightColor = Lights[i].LightColor,
+                    LightPosition = Lights[i].LightPosition,
+                    SpecularColor = Lights[i].SpecularColor
+                };
 
                 Lights[i].IsDirty = false;
             }
@@ -404,25 +404,25 @@ namespace Gorgon.Examples
 
             // Initialize the constant buffers.
             var emptyViewProjection = new ViewProjectionData
-                                      {
-                                          Projection = DX.Matrix.Identity,
-                                          View = DX.Matrix.Identity,
-                                          ViewProjection = DX.Matrix.Identity
-                                      };
+            {
+                Projection = DX.Matrix.Identity,
+                View = DX.Matrix.Identity,
+                ViewProjection = DX.Matrix.Identity
+            };
             DX.Matrix emptyWorld = DX.Matrix.Identity;
 
             var emptyCamera = new CameraData
-                              {
-                                  CameraLookAt = new DX.Vector3(0, 0, -1.0f),
-                                  CameraUp = new DX.Vector3(0, 1, 0),
-                                  CameraPosition = DX.Vector3.Zero
-                              };
+            {
+                CameraLookAt = new DX.Vector3(0, 0, -1.0f),
+                CameraUp = new DX.Vector3(0, 1, 0),
+                CameraPosition = DX.Vector3.Zero
+            };
 
             var emptyMaterial = new Material
-                                {
-                                    SpecularPower = 1.0f,
-                                    UVOffset = DX.Vector2.Zero
-                                };
+            {
+                SpecularPower = 1.0f,
+                UVOffset = DX.Vector2.Zero
+            };
 
             _viewProjectionBuffer.Buffer.SetData(ref emptyViewProjection);
             _worldBuffer.Buffer.SetData(ref emptyWorld);
@@ -436,11 +436,11 @@ namespace Gorgon.Examples
         private void UpdateMaterials(MeshMaterial material)
         {
             var materialData = new Material
-                                    {
-										Albedo = material.Albedo,
-                                        UVOffset = material.TextureOffset,
-                                        SpecularPower = material.SpecularPower
-                                    };
+            {
+                Albedo = material.Albedo,
+                UVOffset = material.TextureOffset,
+                SpecularPower = material.SpecularPower
+            };
             _materialBuffer.Buffer.SetData(ref materialData);
         }
 
@@ -462,20 +462,20 @@ namespace Gorgon.Examples
                 if (Camera.IsViewDirty)
                 {
                     var camData = new CameraData
-                                  {
-                                      CameraLookAt = Camera.LookAt,
-                                      CameraPosition = Camera.EyePosition,
-                                      CameraUp = Camera.Up
-                                  };
+                    {
+                        CameraLookAt = Camera.LookAt,
+                        CameraPosition = Camera.EyePosition,
+                        CameraUp = Camera.Up
+                    };
                     _cameraBuffer.Buffer.SetData(ref camData);
                 }
 
                 var viewProjData = new ViewProjectionData
-                                   {
-                                       Projection = Camera.GetProjectionMatrix(),
-                                       View = Camera.GetViewMatrix(),
-                                       ViewProjection = Camera.GetViewProjectionMatrix()
-                                   };
+                {
+                    Projection = Camera.GetProjectionMatrix(),
+                    View = Camera.GetViewMatrix(),
+                    ViewProjection = Camera.GetViewProjectionMatrix()
+                };
                 _viewProjectionBuffer.Buffer.SetData(ref viewProjData);
             }
 

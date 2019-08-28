@@ -28,9 +28,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gorgon.Animation;
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
@@ -39,7 +39,7 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.UI;
-using System.Threading.Tasks;
+using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -87,7 +87,7 @@ namespace Gorgon.Examples
         private static void MakeAn80sMusicVideo()
         {
             var animBuilder = new GorgonAnimationBuilder();
-            
+
             animBuilder.PositionInterpolationMode(TrackInterpolationMode.Spline)
                        .ScaleInterpolationMode(TrackInterpolationMode.Spline)
                        .RotationInterpolationMode(TrackInterpolationMode.Spline)
@@ -211,24 +211,24 @@ namespace Gorgon.Examples
                                               });
 
                 _target = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(_screen.RenderTargetView, "Video Target")
-                                                                                 {
-                                                                                     Binding = TextureBinding.ShaderResource
-                                                                                 });
+                {
+                    Binding = TextureBinding.ShaderResource
+                });
                 _targetView = _target.GetShaderResourceView();
                 _target.Clear(GorgonColor.CornFlowerBlue);
-                
+
                 // Load our textures.
                 var gif = new GorgonCodecGif(decodingOptions: new GorgonGifDecodingOptions
-                                                              {
-                                                                  ReadAllFrames = true
-                                                              });
+                {
+                    ReadAllFrames = true
+                });
 
                 // Find out how long to display each frame for.
                 // We'll also convert it to milliseconds since GIF stores the delays as 1/100th of a second.
                 _frameDelays = gif.GetFrameDelays(Path.Combine(GorgonExample.GetResourcePath(@"\Textures\Animation\").FullName, "metal.gif"))
                                   .Select(item => item / 100.0f).ToArray();
 
-                _metal = GorgonTexture2DView.FromFile(_graphics, 
+                _metal = GorgonTexture2DView.FromFile(_graphics,
                                                       Path.Combine(GorgonExample.GetResourcePath(@"\Textures\Animation\").FullName, "metal.gif"),
                                                       gif,
                                                       new GorgonTexture2DLoadOptions
@@ -251,11 +251,11 @@ namespace Gorgon.Examples
 
                 _renderer = new Gorgon2D(_graphics);
                 _animatedSprite = new GorgonSprite
-                                  {
-                                      Position = new DX.Vector2(_screen.Width / 2, _screen.Height / 2),
-                                      Size = new DX.Size2F(_metal.Width, _metal.Height),
-                                      Anchor = new DX.Vector2(0.5f, 0.5f)
-                                  };
+                {
+                    Position = new DX.Vector2(_screen.Width / 2, _screen.Height / 2),
+                    Size = new DX.Size2F(_metal.Width, _metal.Height),
+                    Anchor = new DX.Vector2(0.5f, 0.5f)
+                };
 
                 MakeAn80sMusicVideo();
 
@@ -267,7 +267,7 @@ namespace Gorgon.Examples
                                                        .DestinationBlend(alpha: Blend.DestinationAlpha)
                                                        .Build())
                                            .Build();
-                
+
                 return window;
             }
             finally
@@ -283,7 +283,7 @@ namespace Gorgon.Examples
         {
             if (_audioTask != null)
             {
-                await _audioTask;                
+                await _audioTask;
             }
 
             _audioTask = _mp3Player.PlayMp3Async(Path.Combine(GorgonExample.ResourceBaseDirectory.FullName, "AnimationExample.xwma"));
@@ -312,7 +312,7 @@ namespace Gorgon.Examples
             _renderer.Begin(_targetBatchState);
             _renderer.DrawSprite(_animatedSprite);
             _renderer.End();
-            
+
             _graphics.SetRenderTarget(_screen.RenderTargetView);
             _renderer.Begin();
             _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _screen.Width, _screen.Height),

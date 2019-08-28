@@ -25,9 +25,9 @@
 #endregion
 
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using System.ComponentModel;
 
 namespace Gorgon.UI
 {
@@ -46,7 +46,7 @@ namespace Gorgon.UI
         // Text for the cue.
         private string _cueText = string.Empty;
         // Font used to draw the cue.
-        private Font _cueFont;                              
+        private Font _cueFont;
         #endregion
 
         #region Properties.

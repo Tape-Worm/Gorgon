@@ -52,15 +52,15 @@ namespace Gorgon.Editor.Services
         private readonly Dictionary<string, ToolPlugIn> _plugins = new Dictionary<string, ToolPlugIn>(StringComparer.OrdinalIgnoreCase);
         // The list of disabled tool plug ins.
         private readonly Dictionary<string, IDisabledPlugIn> _disabled = new Dictionary<string, IDisabledPlugIn>(StringComparer.OrdinalIgnoreCase);
-		// The list of ribbon buttons for all tools.
+        // The list of ribbon buttons for all tools.
         //private Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> _ribbonButtons = new Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
         // The application graphics context for passing to tool plug ins.
         private readonly IGraphicsContext _graphicsContext;
-		// Common application services.
+        // Common application services.
         private readonly IViewModelInjection _commonServices;
         // The directory that contains the settings for the plug ins.
         private readonly DirectoryInfo _settingsDir;
-		// The file system folder browser.
+        // The file system folder browser.
         private readonly IFileSystemFolderBrowseService _folderBrowser;
         #endregion
 
@@ -109,7 +109,7 @@ namespace Gorgon.Editor.Services
         {
             foreach (KeyValuePair<string, ToolPlugIn> plugin in _plugins)
             {
-                plugin.Value.Shutdown();				
+                plugin.Value.Shutdown();
             }
 
             _plugins.Clear();
@@ -146,7 +146,7 @@ namespace Gorgon.Editor.Services
                 }
             }
 
-            IGorgonPlugInService plugins = new GorgonMefPlugInService(pluginCache);            
+            IGorgonPlugInService plugins = new GorgonMefPlugInService(pluginCache);
             IReadOnlyList<ToolPlugIn> pluginList = plugins.GetPlugIns<ToolPlugIn>();
 
             foreach (ToolPlugIn plugin in pluginList)
@@ -158,7 +158,7 @@ namespace Gorgon.Editor.Services
                     plugin.Initialize(this, _graphicsContext, _folderBrowser);
 
                     // Check to see if this plug in can continue.
-                    IReadOnlyList<string> validation = plugin.IsPlugInAvailable();                    
+                    IReadOnlyList<string> validation = plugin.IsPlugInAvailable();
 
                     if (validation.Count > 0)
                     {
@@ -178,7 +178,7 @@ namespace Gorgon.Editor.Services
                         continue;
                     }
 
-                    AddToolPlugIn(plugin);                    
+                    AddToolPlugIn(plugin);
                 }
                 catch (Exception ex)
                 {

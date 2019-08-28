@@ -39,9 +39,9 @@ using Gorgon.Math;
 using Gorgon.Native;
 using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
-using DX = SharpDX;
 using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core
 {
@@ -209,34 +209,34 @@ namespace Gorgon.Graphics.Core
         // We do a lot of copying between our draw call data to keep it immutable, but this thing will store references
         // directly (for a tiny performance gain, hopefully).
         private readonly D3DState _lastState = new D3DState
-                                               {
-                                                   CsReadWriteViews = new GorgonReadWriteViewBindings(),
-                                                   PsSamplers = new GorgonSamplerStates(),
-                                                   VsSrvs = new GorgonShaderResourceViews(),
-                                                   CsConstantBuffers = new GorgonConstantBuffers(),
-                                                   CsSamplers = new GorgonSamplerStates(),
-                                                   CsSrvs = new GorgonShaderResourceViews(),
-                                                   DsConstantBuffers = new GorgonConstantBuffers(),
-                                                   DsSamplers = new GorgonSamplerStates(),
-                                                   DsSrvs = new GorgonShaderResourceViews(),
-                                                   GsConstantBuffers = new GorgonConstantBuffers(),
-                                                   GsSamplers = new GorgonSamplerStates(),
-                                                   GsSrvs = new GorgonShaderResourceViews(),
-                                                   HsConstantBuffers = new GorgonConstantBuffers(),
-                                                   HsSamplers = new GorgonSamplerStates(),
-                                                   HsSrvs = new GorgonShaderResourceViews(),
-                                                   PsConstantBuffers = new GorgonConstantBuffers(),
-                                                   PsSrvs = new GorgonShaderResourceViews(),
-                                                   ReadWriteViews = new GorgonReadWriteViewBindings(),
-                                                   StreamOutBindings = new GorgonStreamOutBindings(),
-                                                   VertexBuffers = new GorgonVertexBufferBindings(),
-                                                   VsConstantBuffers = new GorgonConstantBuffers(),
-                                                   VsSamplers = new GorgonSamplerStates(),
-                                                   PipelineState = new GorgonPipelineState
-                                                                   {
-                                                                       PrimitiveType = PrimitiveType.None
-                                                                   }
-                                               };
+        {
+            CsReadWriteViews = new GorgonReadWriteViewBindings(),
+            PsSamplers = new GorgonSamplerStates(),
+            VsSrvs = new GorgonShaderResourceViews(),
+            CsConstantBuffers = new GorgonConstantBuffers(),
+            CsSamplers = new GorgonSamplerStates(),
+            CsSrvs = new GorgonShaderResourceViews(),
+            DsConstantBuffers = new GorgonConstantBuffers(),
+            DsSamplers = new GorgonSamplerStates(),
+            DsSrvs = new GorgonShaderResourceViews(),
+            GsConstantBuffers = new GorgonConstantBuffers(),
+            GsSamplers = new GorgonSamplerStates(),
+            GsSrvs = new GorgonShaderResourceViews(),
+            HsConstantBuffers = new GorgonConstantBuffers(),
+            HsSamplers = new GorgonSamplerStates(),
+            HsSrvs = new GorgonShaderResourceViews(),
+            PsConstantBuffers = new GorgonConstantBuffers(),
+            PsSrvs = new GorgonShaderResourceViews(),
+            ReadWriteViews = new GorgonReadWriteViewBindings(),
+            StreamOutBindings = new GorgonStreamOutBindings(),
+            VertexBuffers = new GorgonVertexBufferBindings(),
+            VsConstantBuffers = new GorgonConstantBuffers(),
+            VsSamplers = new GorgonSamplerStates(),
+            PipelineState = new GorgonPipelineState
+            {
+                PrimitiveType = PrimitiveType.None
+            }
+        };
 
         // A cache for holding vertex bindings.
         private D3D11.VertexBufferBinding[] _vertexBindingCache = new D3D11.VertexBufferBinding[1];
@@ -268,7 +268,7 @@ namespace Gorgon.Graphics.Core
         // The texture blitter used to draw 2D textures to the render target.
         private Lazy<TextureBlitter> _textureBlitter;
 
-		// A factory for creating temporary render targets.
+        // A factory for creating temporary render targets.
         private RenderTargetFactory _rtvFactory;
         #endregion
 
@@ -455,7 +455,7 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Methods.
-		/// <summary>
+        /// <summary>
         /// Function to initialize the cache for some common render target views.
         /// </summary>
         private void InitializeCachedTempRtvs()
@@ -469,12 +469,12 @@ namespace Gorgon.Graphics.Core
             {
                 GorgonRenderTarget2DView rtv = _rtvFactory.Rent(new GorgonTexture2DInfo($"Gorgon_RtvCommon_{w}x{h}_{BufferFormat.R8G8B8A8_UInt}")
                 {
-					ArrayCount = 1,
-					Binding = TextureBinding.ShaderResource | TextureBinding.RenderTarget,
-					Usage = ResourceUsage.Default,
-					Format = BufferFormat.R8G8B8A8_UInt,
-					Width = w,
-					Height = h
+                    ArrayCount = 1,
+                    Binding = TextureBinding.ShaderResource | TextureBinding.RenderTarget,
+                    Usage = ResourceUsage.Default,
+                    Format = BufferFormat.R8G8B8A8_UInt,
+                    Width = w,
+                    Height = h
                 });
 
                 totalSize += rtv.Texture.SizeInBytes;
@@ -1127,7 +1127,7 @@ namespace Gorgon.Graphics.Core
             for (int i = soStart; i < soCount + soStart; ++i)
             {
                 GorgonGraphicsResource so = bindings[i].Buffer;
-                
+
                 if (so == null)
                 {
                     continue;
@@ -1137,7 +1137,7 @@ namespace Gorgon.Graphics.Core
                 {
                     D3DDeviceContext.StreamOutput.SetTarget(null, i);
                     _lastState.StreamOutBindings.ResetAt(i);
-                    
+
                     D3DDeviceContext.InputAssembler.SetIndexBuffer(null, Format.Unknown, 0);
                 }
 
@@ -1266,7 +1266,7 @@ namespace Gorgon.Graphics.Core
                         default:
                             throw new Exception(@"This should not happen.  But we cannot find an appropriate shader stage.");
                     }
-                    
+
                     if (lastSrvs != null)
                     {
                         (int srvStart, int srvCount) = lastSrvs.GetDirtyItems(true);
@@ -1317,7 +1317,7 @@ namespace Gorgon.Graphics.Core
                         {
                             continue;
                         }
-                        
+
                         D3DDeviceContext.OutputMerger.SetUnorderedAccessView(j, null, -1);
                         lastUavs.ResetAt(j);
                     }
@@ -1337,7 +1337,7 @@ namespace Gorgon.Graphics.Core
             {
                 return;
             }
-                
+
             for (int i = startIndex; i < startIndex + count; ++i)
             {
                 GorgonGraphicsResource uav = uavs[i].ReadWriteView?.Resource;
@@ -1391,7 +1391,7 @@ namespace Gorgon.Graphics.Core
             for (int i = startIndex; i < startIndex + count; ++i)
             {
                 GorgonGraphicsResource srv = newSrvs[i]?.Resource;
-                
+
                 if (srv == null)
                 {
                     continue;
@@ -1415,7 +1415,7 @@ namespace Gorgon.Graphics.Core
 
                     throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_INPUT_BOUND_AS_RTV, rtv.Name));
                 }
-                
+
                 // Scan for both the Compute Shader and general UAVs and disconnect if there's a match.
                 for (int rw = 0; rw < 2; ++rw)
                 {
@@ -1436,7 +1436,7 @@ namespace Gorgon.Graphics.Core
                         {
                             continue;
                         }
-                        
+
                         uavs.ResetAt(i);
 
                         // Unbind from the unordered access views if we have the SRV already mapped as an output.
@@ -1676,7 +1676,7 @@ namespace Gorgon.Graphics.Core
             // Determine the largest range to copy.
             int end = destEnd.Max(srcEnd).Min(destList.Length).Min(srcList.Length);
             int start = destStart.Min(srcStart).Min(destList.Length - 1).Min(srcList.Length - 1).Max(0);
-            
+
             for (int i = start; i < end; ++i)
             {
                 destList[i] = srcList[i];
@@ -1705,7 +1705,7 @@ namespace Gorgon.Graphics.Core
             // Determine the largest range to copy.
             int end = destEnd.Max(srcEnd).Min(destList.Length).Min(srcList.Length);
             int start = destStart.Min(srcStart).Min(destList.Length - 1).Min(srcList.Length - 1).Max(0);
-            
+
             for (int i = start; i < end; ++i)
             {
                 destList[i] = srcList[i];
@@ -1772,7 +1772,7 @@ namespace Gorgon.Graphics.Core
                 changes |= DrawCallChanges.IndexBuffer;
                 _lastState.IndexBuffer = currentState.IndexBuffer;
             }
-            
+
             changes = GetResourceChanges(_lastState.VertexBuffers, DrawCallChanges.VertexBuffers, changes);
             changes = GetResourceChanges(_lastState.StreamOutBindings, DrawCallChanges.StreamOutBuffers, changes);
 
@@ -1855,7 +1855,7 @@ namespace Gorgon.Graphics.Core
             CheckUavsForRtvSrvHazards(currentState.ReadWriteViews);
             MergeResourceList<GorgonReadWriteViewBindings, GorgonReadWriteViewBinding>(_lastState.ReadWriteViews, currentState.ReadWriteViews);
             changes = GetResourceChanges(_lastState.ReadWriteViews, DrawCallChanges.Uavs, changes);
-            
+
             // Check compute shader resources if we have or had a compute shader assigned.
             if (_lastState.ComputeShader != currentState.ComputeShader)
             {
@@ -1868,7 +1868,7 @@ namespace Gorgon.Graphics.Core
             {
                 return changes;
             }
-            
+
             CheckSrvsForRtvUavHazards(currentState.CsSrvs);
             CheckUavsForRtvSrvHazards(currentState.CsReadWriteViews);
 
@@ -1939,10 +1939,10 @@ namespace Gorgon.Graphics.Core
                     resultAdapter = adapter.QueryInterface<Adapter4>();
 
                     using (var device = new D3D11.Device(resultAdapter, flags, requestedFeatureLevel)
-                                                 {
-                                                     DebugName =
+                    {
+                        DebugName =
                                                          $"'{adapterInfo.Name}' D3D11.4 {(adapterInfo.VideoDeviceType == VideoDeviceType.Software ? "Software Adapter" : "Adapter")}"
-                                                 })
+                    })
                     {
                         resultDevice = device.QueryInterface<D3D11.Device5>();
 
@@ -2302,9 +2302,9 @@ namespace Gorgon.Graphics.Core
 
                 // We didn't find what we wanted, so create a new one.
                 var resultState = new GorgonSamplerState(newState)
-                                  {
-                                      ID = _cachedSamplers.Count
-                                  };
+                {
+                    ID = _cachedSamplers.Count
+                };
                 resultState.BuildD3D11SamplerState(D3DDevice);
                 _cachedSamplers.Add(resultState);
 
@@ -2585,7 +2585,7 @@ namespace Gorgon.Graphics.Core
 
             _renderTargets[0] = renderTarget;
             Array.Clear(_renderTargets, 1, _renderTargets.Length - 1);
-            
+
             CheckRtvsForSrvUavHazards(_renderTargets, 1, depthStencil);
 
             DX.ViewportF viewport = default;
@@ -2674,7 +2674,7 @@ namespace Gorgon.Graphics.Core
             int rtvCount = renderTargets.Length.Min(_renderTargets.Length);
             _isTargetUpdated = (false, depthStencil != DepthStencilView);
             for (int i = 0; i < rtvCount; ++i)
-            {				
+            {
                 if (_renderTargets[i] == renderTargets[i])
                 {
                     continue;
@@ -3285,7 +3285,7 @@ namespace Gorgon.Graphics.Core
             FormatSupport = EnumerateFormatSupport(_d3DDevice);
 
             InitializeCachedSamplers();
-            
+
             _textureBlitter = new Lazy<TextureBlitter>(() =>
                                                        {
                                                            var blitter = new TextureBlitter(this);

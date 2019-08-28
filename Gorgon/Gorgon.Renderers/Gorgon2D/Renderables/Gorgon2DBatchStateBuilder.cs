@@ -162,13 +162,13 @@ namespace Gorgon.Renderers
         public Gorgon2DBatchState Build()
         {
             var result = new Gorgon2DBatchState
-                         {
-                             PixelShaderState = _worker.PixelShaderState,
-                             VertexShaderState = _worker.VertexShaderState,
-                             BlendState = _worker.BlendState,
-                             DepthStencilState = _worker.DepthStencilState,
-                             RasterState = _worker.RasterState
-                         };
+            {
+                PixelShaderState = _worker.PixelShaderState,
+                VertexShaderState = _worker.VertexShaderState,
+                BlendState = _worker.BlendState,
+                DepthStencilState = _worker.DepthStencilState,
+                RasterState = _worker.RasterState
+            };
 
             return result;
         }

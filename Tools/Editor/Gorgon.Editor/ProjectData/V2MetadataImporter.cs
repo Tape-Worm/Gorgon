@@ -76,7 +76,7 @@ namespace Gorgon.Editor.ProjectData
 
             foreach (XElement fileNode in fileNodes)
             {
-                string filePath = fileNode.Attribute(FilePathAttr)?.Value;                
+                string filePath = fileNode.Attribute(FilePathAttr)?.Value;
 
                 if (string.IsNullOrWhiteSpace(filePath))
                 {
@@ -107,7 +107,7 @@ namespace Gorgon.Editor.ProjectData
             if (project == null)
             {
                 throw new ArgumentNullException(nameof(project));
-            }                       
+            }
 
             if (!_file.Exists)
             {
@@ -125,7 +125,7 @@ namespace Gorgon.Editor.ProjectData
                 Program.Log.Print("No root node found.  Not a v2 Gorgon Editor metadata file.", LoggingLevel.Verbose);
                 return;
             }
-                        
+
             GetFiles(project.ProjectItems, rootNode);
 
             try

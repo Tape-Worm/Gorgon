@@ -25,25 +25,25 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Drawing;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using DX = SharpDX;
+using ComponentFactory.Krypton.Ribbon;
 using ComponentFactory.Krypton.Toolkit;
+using Gorgon.Editor.Content;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
+using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.ViewModels;
 using Gorgon.Editor.Views;
 using Gorgon.Timing;
-using Gorgon.Editor.Rendering;
-using System.Threading.Tasks;
-using ComponentFactory.Krypton.Ribbon;
-using System.Linq;
-using Gorgon.Editor.Content;
-using System.Collections.Generic;
-using Gorgon.Editor.PlugIns;
-using System.Collections.Specialized;
+using DX = SharpDX;
 
 namespace Gorgon.Editor
 {
@@ -87,13 +87,13 @@ namespace Gorgon.Editor
         private CloseStates _closeFlag;
         // The ribbon merger for the main ribbon.
         private readonly IRibbonMerger _ribbonMerger;
-		// The currently selected tab prior to showing a context tab.
+        // The currently selected tab prior to showing a context tab.
         private KryptonRibbonTab _prevTabBeforeContext;
-		// The list of groups on the tools tab.
+        // The list of groups on the tools tab.
         private readonly Dictionary<string, KryptonRibbonGroup> _toolGroups = new Dictionary<string, KryptonRibbonGroup>(StringComparer.OrdinalIgnoreCase);
-		// The list of line groups for the tools tab.
+        // The list of line groups for the tools tab.
         private readonly List<KryptonRibbonGroupLines> _toolLines = new List<KryptonRibbonGroupLines>();
-		// The list of triple groups for the tools tab.
+        // The list of triple groups for the tools tab.
         private readonly List<KryptonRibbonGroupTriple> _toolTriples = new List<KryptonRibbonGroupTriple>();
         // The list of buttons for the tools tab.
         private readonly Dictionary<KryptonRibbonGroupButton, KryptonRibbonGroup> _toolGroupButtons = new Dictionary<KryptonRibbonGroupButton, KryptonRibbonGroup>();
@@ -125,7 +125,7 @@ namespace Gorgon.Editor
         #endregion
 
         #region Methods.
-		/// <summary>
+        /// <summary>
         /// Function to release all tool ribbon items.
         /// </summary>
         private void ReleaseToolRibbonItems()
@@ -164,7 +164,7 @@ namespace Gorgon.Editor
             _toolButtons.Clear();
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to update the list of buttons, and groups on the tools tab.
         /// </summary>
         /// <param name="buttons">The buttons to display on the ribbon.</param>
@@ -190,12 +190,12 @@ namespace Gorgon.Editor
                         TextLine1 = buttonItem.Key,
                         AllowCollapsed = false,
                         KeyTipGroup = buttonItem.Key.Substring(0),
-                        DialogBoxLauncher = false						
+                        DialogBoxLauncher = false
                     };
 
                     _toolGroups[buttonItem.Key] = ribGroup;
                 }
-				
+
                 KryptonRibbonGroupTriple triple = null;
                 KryptonRibbonGroupLines lines = null;
 
@@ -214,7 +214,7 @@ namespace Gorgon.Editor
                         ribGroup.Items.Add(sep);
                     }
 
-					// Figure out which subgroup type to create.
+                    // Figure out which subgroup type to create.
                     if ((triple == null) && (lines == null))
                     {
                         if (button.IsSmall)
@@ -256,7 +256,7 @@ namespace Gorgon.Editor
                         Enabled = false,
                         Tag = button.Name,
                         ImageLarge = button.LargeIcon,
-                        ImageSmall = button.SmallIcon						
+                        ImageSmall = button.SmallIcon
                     };
 
                     if (!string.IsNullOrWhiteSpace(button.Description))
@@ -278,7 +278,7 @@ namespace Gorgon.Editor
                     else if (lines != null)
                     {
                         lines.Items.Add(newButton);
-                    }                    
+                    }
                 }
             }
 
@@ -289,7 +289,7 @@ namespace Gorgon.Editor
             }
 
             RibbonMain.SuspendLayout();
-            RibbonTabEditorTools.Groups.Clear();            
+            RibbonTabEditorTools.Groups.Clear();
 
             foreach (KryptonRibbonGroup ribbonGroup in _toolGroups.Values)
             {
@@ -354,15 +354,15 @@ namespace Gorgon.Editor
         private void PanelProject_RibbonAdded(object sender, ContentRibbonEventArgs e)
         {
             KryptonRibbonTab firstTab = null;
-                        
+
             RibbonMain.SuspendLayout();
 
             if ((e.Ribbon != null) && (e.Ribbon.RibbonTabs.Count > 0))
             {
                 firstTab = e.Ribbon.RibbonTabs[0];
             }
-            
-            _ribbonMerger.Merge(e.Ribbon);            
+
+            _ribbonMerger.Merge(e.Ribbon);
 
             // Default to the first tab on the joined ribbon.
             if (firstTab != null)
@@ -389,7 +389,7 @@ namespace Gorgon.Editor
             {
                 IFileExplorerVm fileExplorer = DataContext?.CurrentProject?.FileExplorer;
 
-                if ((fileExplorer?.ExportNodeToCommand == null) 
+                if ((fileExplorer?.ExportNodeToCommand == null)
                     || (!fileExplorer.ExportNodeToCommand.CanExecute(fileExplorer.SelectedNode ?? fileExplorer.RootNode)))
                 {
                     return;
@@ -409,7 +409,7 @@ namespace Gorgon.Editor
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void ButtonImport_Click(object sender, EventArgs e)
-        {            
+        {
             try
             {
                 await PanelProject.FileExplorer.ImportFilesAsync();
@@ -441,7 +441,7 @@ namespace Gorgon.Editor
             finally
             {
                 ValidateRibbonButtons();
-            }            
+            }
         }
 
         /// <summary>Handles the OpenClicked event of the Stage control.</summary>
@@ -543,7 +543,7 @@ namespace Gorgon.Editor
             await DataContext.SavePackFileCommand.ExecuteAsync(args);
 
             NavigateToProjectView(DataContext);
-        }        
+        }
 
         /// <summary>
         /// Handles the AppButtonMenuOpening event of the RibbonMain control.
@@ -581,7 +581,7 @@ namespace Gorgon.Editor
 
             ButtonExpand.Enabled = (fileExplorer.SelectedNode != null) && (fileExplorer.SelectedNode.Children.Count > 0);
             ButtonCollapse.Enabled = (fileExplorer.SelectedNode != null) && (fileExplorer.SelectedNode.Children.Count > 0);
-                        
+
             ButtonFileSystemDelete.Visible = fileExplorer.SelectedNode != null;
             ButtonFileSystemDelete.Enabled = (fileExplorer.DeleteNodeCommand != null)
                                             && (fileExplorer.DeleteNodeCommand.CanExecute(null));
@@ -597,7 +597,7 @@ namespace Gorgon.Editor
             ButtonFileSystemCut.Enabled = _clipboardContext?.CanCut() ?? false;
             ButtonFileSystemPaste.Enabled = _clipboardContext?.CanPaste() ?? false;
 
-            GroupCreate.Visible = SepCreate.Visible = (DataContext.CreateContentCommand != null) 
+            GroupCreate.Visible = SepCreate.Visible = (DataContext.CreateContentCommand != null)
                                                         && (DataContext.CreateContentCommand.CanExecute(null));
 
             foreach (IToolPlugInRibbonButton button in project.ToolButtons.SelectMany(item => item.Value))
@@ -740,7 +740,7 @@ namespace Gorgon.Editor
                     DataContext_ProgressDeactivated(this, EventArgs.Empty);
                 }
 
-                _progressTimer = GorgonTimerQpc.SupportsQpc() ? (IGorgonTimer)new GorgonTimerQpc() : new GorgonTimerMultimedia();                
+                _progressTimer = GorgonTimerQpc.SupportsQpc() ? (IGorgonTimer)new GorgonTimerQpc() : new GorgonTimerMultimedia();
                 ProgressScreen.OperationCancelled += ProgressScreen_OperationCancelled;
                 ProgressScreen.MeterStyle = e.IsMarquee ? ProgressBarStyle.Marquee : ProgressBarStyle.Continuous;
                 ProgressScreen.Visible = true;
@@ -824,7 +824,7 @@ namespace Gorgon.Editor
 
                     ValidateRibbonButtons();
                     break;
-            }            
+            }
         }
 
         /// <summary>Handles the PropertyChanging event of the CurrentProject control.</summary>
@@ -858,7 +858,7 @@ namespace Gorgon.Editor
                         if (_prevTabBeforeContext != null)
                         {
                             RibbonMain.SelectedTab = _prevTabBeforeContext;
-                        }                       
+                        }
                     }
                     else
                     {
@@ -955,7 +955,7 @@ namespace Gorgon.Editor
         private void AddNewIcons(IEnumerable<IContentPlugInMetadata> metadata)
         {
             if (metadata == null)
-            {                
+            {
                 return;
             }
 
@@ -976,12 +976,12 @@ namespace Gorgon.Editor
                 };
                 menuItem.Click += NewItem_Click;
 
-                MenuCreate.Items.Add(menuItem);                
+                MenuCreate.Items.Add(menuItem);
             }
 
             ValidateRibbonButtons();
         }
-        
+
         /// <summary>
         /// Function to update the icons used for the "new" buttons.
         /// </summary>
@@ -1142,7 +1142,7 @@ namespace Gorgon.Editor
         {
             try
             {
-                PanelProject.FileExplorer.CreateDirectory();                
+                PanelProject.FileExplorer.CreateDirectory();
             }
             finally
             {
@@ -1286,10 +1286,10 @@ namespace Gorgon.Editor
             {
                 return;
             }
-            
+
             DataContext.OnLoad();
 
-            Stage.CanOpen = (DataContext.OpenPackFileCommand != null) && (DataContext.OpenPackFileCommand.CanExecute(null));            
+            Stage.CanOpen = (DataContext.OpenPackFileCommand != null) && (DataContext.OpenPackFileCommand.CanExecute(null));
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.</summary>
@@ -1369,7 +1369,7 @@ namespace Gorgon.Editor
                 UnassignEvents();
 
                 // Assign the data context to the new view.
-                Stage.NewProject.SetDataContext(dataContext.NewProject);                
+                Stage.NewProject.SetDataContext(dataContext.NewProject);
                 Stage.Recent.SetDataContext(dataContext.RecentFiles);
                 Stage.SettingsPanel.SetDataContext(dataContext.SettingsViewModel);
                 Stage.IsStartup = true;
@@ -1381,7 +1381,7 @@ namespace Gorgon.Editor
                 {
                     return;
                 }
-                                
+
                 if (DataContext.CurrentProject != null)
                 {
                     DataContext.CurrentProject.PropertyChanging += CurrentProject_PropertyChanging;
@@ -1421,7 +1421,7 @@ namespace Gorgon.Editor
                 _ribbonMerger = new RibbonMerger(RibbonMain);
             }
 
-            _syncContext = SynchronizationContext.Current;            
+            _syncContext = SynchronizationContext.Current;
             RibbonMain.AllowFormIntegrate = false;
             PanelProject.MainRibbon = RibbonMain;
         }

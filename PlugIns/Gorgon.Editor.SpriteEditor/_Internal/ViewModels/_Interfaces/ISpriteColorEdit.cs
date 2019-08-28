@@ -36,10 +36,10 @@ namespace Gorgon.Editor.SpriteEditor
     internal interface ISpriteColorEdit
         : IHostedPanelViewModel
     {
-		/// <summary>
+        /// <summary>
         /// Property to set or return the selected vertex.
         /// </summary>
-		IReadOnlyList<bool> SelectedVertices
+        IReadOnlyList<bool> SelectedVertices
         {
             get;
             set;
@@ -63,10 +63,10 @@ namespace Gorgon.Editor.SpriteEditor
             set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return the currently selected color for an individual vertex.
         /// </summary>
-		GorgonColor SelectedColor
+        GorgonColor SelectedColor
         {
             get;
             set;

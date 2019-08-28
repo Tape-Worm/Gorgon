@@ -28,33 +28,33 @@ using Gorgon.Native;
 
 namespace Gorgon.Input
 {
-	/// <summary>
-	/// A representation of the Raw Input data received from <c>WM_INPUT</c>.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This is a Gorgon friendly representation of the data received from the <c>WM_INPUT</c> window message. The data from Raw Input is parsed and placed in an instance of this type and sent to the 
-	/// appropriate <see cref="GorgonRawKeyboard"/> device object to be turned into state for that device. 
-	/// </para>
-	/// <para>
-	/// This type is not intended for use by applications.
-	/// </para>
-	/// </remarks>
-	public struct GorgonRawHIDData
-	{
-		/// <summary>
-		/// A pointer to the device data received from Raw Input.
-		/// </summary>
-		public GorgonReadOnlyPointer HidData;
+    /// <summary>
+    /// A representation of the Raw Input data received from <c>WM_INPUT</c>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This is a Gorgon friendly representation of the data received from the <c>WM_INPUT</c> window message. The data from Raw Input is parsed and placed in an instance of this type and sent to the 
+    /// appropriate <see cref="GorgonRawKeyboard"/> device object to be turned into state for that device. 
+    /// </para>
+    /// <para>
+    /// This type is not intended for use by applications.
+    /// </para>
+    /// </remarks>
+    public struct GorgonRawHIDData
+    {
+        /// <summary>
+        /// A pointer to the device data received from Raw Input.
+        /// </summary>
+        public GorgonReadOnlyPointer HidData;
 
-		/// <summary>
-		/// The number of HID inputs contained within the data.
-		/// </summary>
-		public int ItemCount;
+        /// <summary>
+        /// The number of HID inputs contained within the data.
+        /// </summary>
+        public int ItemCount;
 
-		/// <summary>
-		/// The size of an individual HID input within the <see cref="HidData"/>.
-		/// </summary>
-		public int HIDDataSize;
-	}
+        /// <summary>
+        /// The size of an individual HID input within the <see cref="HidData"/>.
+        /// </summary>
+        public int HIDDataSize;
+    }
 }

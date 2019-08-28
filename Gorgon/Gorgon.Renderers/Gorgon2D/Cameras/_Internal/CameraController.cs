@@ -26,8 +26,8 @@
 
 using System;
 using System.Threading;
-using DX = SharpDX;
 using Gorgon.Graphics.Core;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
@@ -92,7 +92,7 @@ namespace Gorgon.Renderers
             DX.Matrix.Multiply(ref view, ref projection, out _viewProjectionMatrix);
 
             CameraBuffer.Buffer.SetData(ref _viewProjectionMatrix);
-            
+
             _current = camera;
         }
 

@@ -33,22 +33,22 @@ using Gorgon.Math;
 
 namespace Gorgon.Examples
 {
-	/// <summary>
-	/// Entry point class.
-	/// </summary>
-	/// <remarks>
-	/// This example showcases the enhancements brought by the new GorgonBinaryReader and GorgonBinaryWriter objects.
-	/// 
-	/// These objects provide extended functionality for the standard .NET BinaryReader/Writer classes so that generic types can be read and/or written, and raw memory (unsafe and ref managed pointers) can be 
-	/// also be read and/or written.
-	/// </remarks>
-	internal static class Program
-	{
+    /// <summary>
+    /// Entry point class.
+    /// </summary>
+    /// <remarks>
+    /// This example showcases the enhancements brought by the new GorgonBinaryReader and GorgonBinaryWriter objects.
+    /// 
+    /// These objects provide extended functionality for the standard .NET BinaryReader/Writer classes so that generic types can be read and/or written, and raw memory (unsafe and ref managed pointers) can be 
+    /// also be read and/or written.
+    /// </remarks>
+    internal static class Program
+    {
         /// <summary>
         /// Test data that we can use to read/write to and from the stream.
         /// </summary>
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-	    private struct SomeTestData
+        private struct SomeTestData
         {
             /// <summary>
             /// Value 1
@@ -64,192 +64,192 @@ namespace Gorgon.Examples
             public short Value3;
         }
 
-	    /// <summary>
-	    /// Function to write the contents pointed at by an unsafe pointer to a stream using the GorgonBinaryWriter and reading it back again using the GorgonBinaryReader.
-	    /// </summary>
-	    /// <param name="stream">The stream that will receive the data.</param>
-	    private static unsafe void WritePointer(MemoryStream stream)
-	    {
-	        stream.Position = 0;
-	        var writer = new GorgonBinaryWriter(stream, true);
-	        var reader = new GorgonBinaryReader(stream, true);
+        /// <summary>
+        /// Function to write the contents pointed at by an unsafe pointer to a stream using the GorgonBinaryWriter and reading it back again using the GorgonBinaryReader.
+        /// </summary>
+        /// <param name="stream">The stream that will receive the data.</param>
+        private static unsafe void WritePointer(MemoryStream stream)
+        {
+            stream.Position = 0;
+            var writer = new GorgonBinaryWriter(stream, true);
+            var reader = new GorgonBinaryReader(stream, true);
 
-	        try
-	        {
-	            var data = new SomeTestData
-	                       {
-	                           Value1 = 1,
-	                           Value2 = 2.1,
-	                           Value3 = 3
-	                       };
+            try
+            {
+                var data = new SomeTestData
+                {
+                    Value1 = 1,
+                    Value2 = 2.1,
+                    Value3 = 3
+                };
 
-	            Console.ForegroundColor = ConsoleColor.Cyan;
-	            Console.WriteLine("Writing/Reading pointer to memory into a memory stream.");
-	            Console.ForegroundColor = ConsoleColor.White;
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("Writing/Reading pointer to memory into a memory stream.");
+                Console.ForegroundColor = ConsoleColor.White;
 
-	            writer.Write(&data, Unsafe.SizeOf<SomeTestData>());
+                writer.Write(&data, Unsafe.SizeOf<SomeTestData>());
 
-	            stream.Position = 0;
+                stream.Position = 0;
 
-	            SomeTestData readData = default;
-	            reader.Read(&readData, Unsafe.SizeOf<SomeTestData>());
+                SomeTestData readData = default;
+                reader.Read(&readData, Unsafe.SizeOf<SomeTestData>());
 
-	            Console.WriteLine($"int32 Value1 = 1: {readData.Value1 == 1}");
-	            Console.WriteLine($"double Value2 = 2.1: {readData.Value2.EqualsEpsilon(2.1)}");
-	            Console.WriteLine($"int16 Value3 = 3: {readData.Value3 == 3}");
+                Console.WriteLine($"int32 Value1 = 1: {readData.Value1 == 1}");
+                Console.WriteLine($"double Value2 = 2.1: {readData.Value2.EqualsEpsilon(2.1)}");
+                Console.WriteLine($"int16 Value3 = 3: {readData.Value3 == 3}");
 
-	            stream.Position = 0;
-	        }
-	        finally
-	        {
+                stream.Position = 0;
+            }
+            finally
+            {
                 writer.Dispose();
                 reader.Dispose();
-	        }
-	    }
+            }
+        }
 
         /// <summary>
         /// Function to write the contents of a value type to a stream using the GorgonBinaryWriter and reading it back again using the GorgonBinaryReader.
         /// </summary>
         /// <param name="stream">The stream that will receive the data.</param>
 	    private static void WriteByRefValueType(MemoryStream stream)
-	    {
-	        stream.Position = 0;
-	        var writer = new GorgonBinaryWriter(stream, true);
-	        var reader = new GorgonBinaryReader(stream, true);
+        {
+            stream.Position = 0;
+            var writer = new GorgonBinaryWriter(stream, true);
+            var reader = new GorgonBinaryReader(stream, true);
 
-	        try
-	        {
-	            var data = new SomeTestData
-	                       {
-	                           Value1 = 1234,
-	                           Value2 = 3.1459,
-	                           Value3 = 42
-	                       };
+            try
+            {
+                var data = new SomeTestData
+                {
+                    Value1 = 1234,
+                    Value2 = 3.1459,
+                    Value3 = 42
+                };
 
-	            Console.ForegroundColor = ConsoleColor.Cyan;
-	            Console.WriteLine("Writing/Reading a value type to a memory stream.");
-	            Console.ForegroundColor = ConsoleColor.White;
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("Writing/Reading a value type to a memory stream.");
+                Console.ForegroundColor = ConsoleColor.White;
 
-	            writer.WriteValue(ref data);
+                writer.WriteValue(ref data);
 
-	            stream.Position = 0;
+                stream.Position = 0;
 
-	            reader.ReadValue(out SomeTestData readData);
+                reader.ReadValue(out SomeTestData readData);
 
-	            Console.WriteLine($"int32 Value1 = 1234: {readData.Value1 == 1234}");
-	            Console.WriteLine($"double Value2 = 3.1459: {readData.Value2.EqualsEpsilon(3.1459)}");
-	            Console.WriteLine($"int16 Value3 = 42: {readData.Value3 == 42}");
+                Console.WriteLine($"int32 Value1 = 1234: {readData.Value1 == 1234}");
+                Console.WriteLine($"double Value2 = 3.1459: {readData.Value2.EqualsEpsilon(3.1459)}");
+                Console.WriteLine($"int16 Value3 = 42: {readData.Value3 == 42}");
 
-	            stream.Position = 0;
-	        }
-	        finally
-	        {
+                stream.Position = 0;
+            }
+            finally
+            {
                 writer.Dispose();
                 reader.Dispose();
-	        }
-	    }
+            }
+        }
 
-	    /// <summary>
-	    /// Function to write an array of value types to a stream using the GorgonBinaryWriter and reading it back again using the GorgonBinaryReader.
-	    /// </summary>
-	    /// <param name="stream">The stream that will receive the data.</param>
-	    private static void WriteArrayValues(MemoryStream stream)
-	    {
-	        stream.Position = 0;
+        /// <summary>
+        /// Function to write an array of value types to a stream using the GorgonBinaryWriter and reading it back again using the GorgonBinaryReader.
+        /// </summary>
+        /// <param name="stream">The stream that will receive the data.</param>
+        private static void WriteArrayValues(MemoryStream stream)
+        {
+            stream.Position = 0;
 
-	        var writer = new GorgonBinaryWriter(stream, true);
-	        var reader = new GorgonBinaryReader(stream, true);
+            var writer = new GorgonBinaryWriter(stream, true);
+            var reader = new GorgonBinaryReader(stream, true);
 
-	        try
-	        {
-	            var expected = new SomeTestData[3];
+            try
+            {
+                var expected = new SomeTestData[3];
 
-	            for (int i = 1; i < 4; ++i)
-	            {
-	                expected[i - 1] = new SomeTestData
-	                                  {
-	                                      Value1 = i,
-	                                      Value2 = System.Math.PI * i,
-	                                      Value3 = (short)(i & 2)
-	                                  };
-	            }
+                for (int i = 1; i < 4; ++i)
+                {
+                    expected[i - 1] = new SomeTestData
+                    {
+                        Value1 = i,
+                        Value2 = System.Math.PI * i,
+                        Value3 = (short)(i & 2)
+                    };
+                }
 
-	            Console.ForegroundColor = ConsoleColor.Cyan;
-	            Console.WriteLine("Writing/Reading an array of value types to a memory stream.");
-	            Console.ForegroundColor = ConsoleColor.White;
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("Writing/Reading an array of value types to a memory stream.");
+                Console.ForegroundColor = ConsoleColor.White;
 
-	            writer.WriteRange(expected);
+                writer.WriteRange(expected);
 
-	            stream.Position = 0;
+                stream.Position = 0;
 
-	            var actual = new SomeTestData[4];
-	            reader.ReadRange(actual, 1);
+                var actual = new SomeTestData[4];
+                reader.ReadRange(actual, 1);
 
-	            for (int i = 1; i < 4; ++i)
-	            {
-	                Console.ForegroundColor = ConsoleColor.Yellow;
+                for (int i = 1; i < 4; ++i)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.Write($"[{i - 1}] ");
-	                Console.ForegroundColor = ConsoleColor.White;
-	                Console.WriteLine($"int32 Value1 = {expected[i - 1].Value1}: {actual[i].Value1 == expected[i - 1].Value1}");
-	                Console.ForegroundColor = ConsoleColor.Yellow;
-	                Console.Write($"[{i - 1}] ");
-	                Console.ForegroundColor = ConsoleColor.White;
-	                Console.WriteLine($"double Value2 = {expected[i - 1].Value2:0.00000}: {actual[i].Value2.EqualsEpsilon(expected[i - 1].Value2)}");
-	                Console.ForegroundColor = ConsoleColor.Yellow;
-	                Console.Write($"[{i - 1}] ");
-	                Console.ForegroundColor = ConsoleColor.White;
-	                Console.WriteLine($"int16 Value3 = {expected[i - 1].Value3}: {actual[i].Value3 == expected[i - 1].Value3}");
-	            }
-                
-	            stream.Position = 0;
-	        }
-	        finally
-	        {
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine($"int32 Value1 = {expected[i - 1].Value1}: {actual[i].Value1 == expected[i - 1].Value1}");
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.Write($"[{i - 1}] ");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine($"double Value2 = {expected[i - 1].Value2:0.00000}: {actual[i].Value2.EqualsEpsilon(expected[i - 1].Value2)}");
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.Write($"[{i - 1}] ");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine($"int16 Value3 = {expected[i - 1].Value3}: {actual[i].Value3 == expected[i - 1].Value3}");
+                }
+
+                stream.Position = 0;
+            }
+            finally
+            {
                 writer.Dispose();
                 reader.Dispose();
-	        }
-	    }
+            }
+        }
 
-		/// <summary>
-		/// The main entry point for the application.
-		/// </summary>
-		[STAThread]
-		private static void Main()
-		{
-		    var stream = new MemoryStream();
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        private static void Main()
+        {
+            var stream = new MemoryStream();
 
-		    try
-		    {
-		        Console.Title = "Gorgon Example #5 - Binary reader/write enhancements.";
-		        Console.ForegroundColor = ConsoleColor.White;
-		        Console.WriteLine("This example showcases the enhancements brought by the new GorgonBinaryReader and GorgonBinaryWriter objects.");
-		        Console.WriteLine();
-		        Console.WriteLine("These objects provide extended functionality for the standard .NET BinaryReader/Writer classes so that generic types ");
+            try
+            {
+                Console.Title = "Gorgon Example #5 - Binary reader/write enhancements.";
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine("This example showcases the enhancements brought by the new GorgonBinaryReader and GorgonBinaryWriter objects.");
+                Console.WriteLine();
+                Console.WriteLine("These objects provide extended functionality for the standard .NET BinaryReader/Writer classes so that generic types ");
                 Console.WriteLine("can be read and/or written, and raw memory (unsafe and ref managed pointers) can be also be read and/or written.");
-		        Console.WriteLine();
+                Console.WriteLine();
 
                 WriteByRefValueType(stream);
-		        WritePointer(stream);
+                WritePointer(stream);
                 WriteArrayValues(stream);
 
                 Console.ResetColor();
-		    }
-		    catch (Exception ex)
-		    {
-		        Console.ForegroundColor = ConsoleColor.Red;
-		        Console.WriteLine($"There was an error:\n{ex.Message}\n\nStack Trace:\n{ex.StackTrace}");
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"There was an error:\n{ex.Message}\n\nStack Trace:\n{ex.StackTrace}");
                 Console.ResetColor();
-		    }
-		    finally
-		    {
+            }
+            finally
+            {
                 stream.Dispose();
-		        
-		        Console.ResetColor();
-		        Console.WriteLine();
-		        Console.WriteLine("Press any key.");
 
-		        Console.ReadKey();
-		    }
-		}
-	}
+                Console.ResetColor();
+                Console.WriteLine();
+                Console.WriteLine("Press any key.");
+
+                Console.ReadKey();
+            }
+        }
+    }
 }

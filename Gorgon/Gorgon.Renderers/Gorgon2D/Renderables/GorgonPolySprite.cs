@@ -28,12 +28,12 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using Newtonsoft.Json;
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
+using Newtonsoft.Json;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
@@ -50,10 +50,10 @@ namespace Gorgon.Renderers
         // The renderable data for this sprite.
         // It is exposed as an internal variable (which goes against C# best practices) for performance reasons (property accesses add up over time).
         internal PolySpriteRenderable Renderable = new PolySpriteRenderable
-                                                   {
-                                                       WorldMatrix = DX.Matrix.Identity,
-                                                       TextureTransform = new DX.Vector4(0, 0, 1, 1)
-                                                   };
+        {
+            WorldMatrix = DX.Matrix.Identity,
+            TextureTransform = new DX.Vector4(0, 0, 1, 1)
+        };
         #endregion
 
         #region Properties.
@@ -76,9 +76,9 @@ namespace Gorgon.Renderers
         /// Property to return whether or not the sprite has had its position, size, texture information, or object space vertices updated since it was last drawn.
         /// </summary>
         [JsonIgnore]
-        public bool IsUpdated => Renderable.HasTextureChanges 
-                                 || Renderable.HasTransformChanges 
-                                 || Renderable.HasVertexChanges 
+        public bool IsUpdated => Renderable.HasTextureChanges
+                                 || Renderable.HasTransformChanges
+                                 || Renderable.HasVertexChanges
                                  || Renderable.HasVertexColorChanges;
 
         /// <summary>
@@ -193,7 +193,7 @@ namespace Gorgon.Renderers
             {
                 ref DX.RectangleF bounds = ref Renderable.Bounds;
 
-                if ((bounds.Left == value.Left) 
+                if ((bounds.Left == value.Left)
                     && (bounds.Right == value.Right)
                     && (bounds.Top == value.Top)
                     && (bounds.Bottom == value.Bottom))

@@ -27,7 +27,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using DX = SharpDX;
 using Gorgon.Collections;
 using Gorgon.Collections.Specialized;
 using Gorgon.Core;
@@ -35,6 +34,7 @@ using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
@@ -600,17 +600,17 @@ namespace Gorgon.Renderers
             if (_effects.TryGetValue(name, out int prevIndex))
             {
                 _effectList[prevIndex] = new Gorgon2DCompositionPass(name)
-                                         {
-                                             RenderMethod = renderMethod
-                                         };
+                {
+                    RenderMethod = renderMethod
+                };
             }
             else
             {
                 _effects[name] = _effectList.Count;
                 _effectList.Add(new Gorgon2DCompositionPass(name)
-                                {
-                                    RenderMethod = renderMethod
-                                });
+                {
+                    RenderMethod = renderMethod
+                });
             }
 
             return this;

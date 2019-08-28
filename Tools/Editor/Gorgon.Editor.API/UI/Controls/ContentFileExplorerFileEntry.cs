@@ -39,7 +39,7 @@ namespace Gorgon.Editor.UI.Controls
         #region Variables.
         // Flag to indicate that this entry is visible.
         private bool _visible = true;
-		// Flag to indicate that the entry is selected.
+        // Flag to indicate that the entry is selected.
         private bool _isSelected;
         #endregion
 

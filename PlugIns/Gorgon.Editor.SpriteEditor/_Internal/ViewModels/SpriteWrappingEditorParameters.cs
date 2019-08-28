@@ -33,12 +33,12 @@ namespace Gorgon.Editor.SpriteEditor
     /// Parameters for the <see cref="ISpriteWrappingEditor"/> view model.
     /// </summary>
     internal class SpriteWrappingEditorParameters
-		: ViewModelInjection
+        : ViewModelInjection
     {
-		/// <summary>
+        /// <summary>
         /// Property to return the builder used to create samplers.
         /// </summary>
-		public ISamplerBuildService SamplerStateBuilder
+        public ISamplerBuildService SamplerStateBuilder
         {
             get;
         }
@@ -48,6 +48,6 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="commonServices">Common application services.</param>
         /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
         public SpriteWrappingEditorParameters(ISamplerBuildService builder, IViewModelInjection commonServices)
-			: base(commonServices) => SamplerStateBuilder = builder ?? throw new ArgumentNullException(nameof(builder));
+            : base(commonServices) => SamplerStateBuilder = builder ?? throw new ArgumentNullException(nameof(builder));
     }
 }

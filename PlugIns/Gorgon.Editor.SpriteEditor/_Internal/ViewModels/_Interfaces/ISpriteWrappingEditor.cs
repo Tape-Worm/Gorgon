@@ -34,41 +34,41 @@ namespace Gorgon.Editor.SpriteEditor
     /// The view model for the wrapping editor panel.
     /// </summary>
     internal interface ISpriteWrappingEditor
-		: IHostedPanelViewModel
+        : IHostedPanelViewModel
     {
         #region Properties.
-		/// <summary>
+        /// <summary>
         /// Property to set or return the current horizontal wrapping state.
         /// </summary>
-		TextureWrap HorizontalWrapping
+        TextureWrap HorizontalWrapping
         {
             get;
             set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return the current vertical wrapping state.
         /// </summary>
-		TextureWrap VerticalWrapping
+        TextureWrap VerticalWrapping
         {
             get;
             set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return the original border color.
         /// </summary>
-		GorgonColor OriginalBorderColor
+        GorgonColor OriginalBorderColor
         {
             get;
             set;
         }
 
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return the current border color.
         /// </summary>
-		GorgonColor BorderColor
+        GorgonColor BorderColor
         {
             get;
             set;
@@ -76,7 +76,7 @@ namespace Gorgon.Editor.SpriteEditor
         #endregion
 
         #region Methods.
-		/// <summary>
+        /// <summary>
         /// Function to retrieve the sampler state specified by the settings on this view model.
         /// </summary>
         /// <param name="filter">The current texture filter.</param>

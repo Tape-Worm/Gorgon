@@ -39,35 +39,35 @@ namespace Gorgon.Examples
         : IDisposable
     {
         #region Variables.
-		// Flag to indicate that the object was disposed.
+        // Flag to indicate that the object was disposed.
         private bool _disposed;
-		// Buffered graphics context.
+        // Buffered graphics context.
         private BufferedGraphicsContext _graphicsContext;
-		// Buffered graphics page.
+        // Buffered graphics page.
         private BufferedGraphics _buffer;
-		// Image to use for double buffering our mouse.
+        // Image to use for double buffering our mouse.
         private Image _mouseImage;
-		// Graphics interface for the mouse double buffer image.
+        // Graphics interface for the mouse double buffer image.
         private DrawingGraphics _imageGraphics;
-		// GDI+ graphics interface.
+        // GDI+ graphics interface.
         private DrawingGraphics _graphics;
-		// Color to clear the surface with.
-	    private readonly Color _clearColor; 
+        // Color to clear the surface with.
+        private readonly Color _clearColor;
         #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to set or return the cursor hot spot.
-		/// </summary>
-		public Point Hotspot
-		{
-			get;
-			set;
-		}
-		#endregion
+        #region Properties.
+        /// <summary>
+        /// Property to set or return the cursor hot spot.
+        /// </summary>
+        public Point Hotspot
+        {
+            get;
+            set;
+        }
+        #endregion
 
-		#region Methods.
-		/// <summary>
+        #region Methods.
+        /// <summary>
         /// Function to clean up any objects that are allocating memory.
         /// </summary>
         private void CleanUp()
@@ -96,13 +96,13 @@ namespace Gorgon.Examples
                 _imageGraphics = null;
             }
 
-			if (_mouseImage == null)
-			{
-				return;
-			}
+            if (_mouseImage == null)
+            {
+                return;
+            }
 
-			_mouseImage.Dispose();
-			_mouseImage = null;
+            _mouseImage.Dispose();
+            _mouseImage = null;
         }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace Gorgon.Examples
         {
             var displayControl = (Control)sender;
             System.Windows.Forms.Form ownerForm = displayControl.FindForm();
-            
+
             CleanUp();
 
             if ((ownerForm != null) && (ownerForm.WindowState != FormWindowState.Minimized))
@@ -168,7 +168,7 @@ namespace Gorgon.Examples
             CreateDoubleBufferSurface(displayControl);
 
             _clearColor = displayControl.BackColor;
-            displayControl.Resize += displayControl_Resize;            
+            displayControl.Resize += displayControl_Resize;
         }
         #endregion
 
@@ -179,17 +179,17 @@ namespace Gorgon.Examples
         /// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
         private void Dispose(bool disposing)
         {
-	        if (_disposed)
-	        {
-		        return;
-	        }
+            if (_disposed)
+            {
+                return;
+            }
 
-	        if (disposing)
-	        {
-		        CleanUp();
-	        }
+            if (disposing)
+            {
+                CleanUp();
+            }
 
-	        _disposed = true;
+            _disposed = true;
         }
 
         /// <summary>

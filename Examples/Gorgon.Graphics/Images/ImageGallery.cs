@@ -106,10 +106,10 @@ namespace Gorgon.Graphics.Example
         {
             // Create the image at the original size.
             var sourceImage = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8G8B8A8_UNorm)
-                                              {
-                                                  Width = 320,
-                                                  Height = 240
-                                              });
+            {
+                Width = 320,
+                Height = 240
+            });
 
             // Draw something pretty...
             float width = sourceImage.Width;
@@ -132,7 +132,7 @@ namespace Gorgon.Graphics.Example
                     // a new value to it. 
                     //
                     // Do note that the position is a byte address, and not an int address (i.e. position = 1 is 1 byte, not 1 int).
-                    ref int pixel = ref  sourceImage.Buffers[0].Data.ReadAs<int>(position);
+                    ref int pixel = ref sourceImage.Buffers[0].Data.ReadAs<int>(position);
                     pixel = color.ToARGB();
 
                     // We could easily do this as well (although this could be considered less readable):
@@ -163,9 +163,9 @@ namespace Gorgon.Graphics.Example
             // Note here that we're passing in codec specific options into the codec.
             // In this case, we're telling the codec to read all the frames from the animated GIF.
             var gifCodec = new GorgonCodecGif(decodingOptions: new GorgonGifDecodingOptions
-                                                               {
-                                                                   ReadAllFrames = true
-                                                               });
+            {
+                ReadAllFrames = true
+            });
             _images[3] = gifCodec.LoadFromFile(path);
 
             // The GIF animation frames are stored in an image array, so in order to access them we need to index through 
@@ -237,7 +237,7 @@ namespace Gorgon.Graphics.Example
             var gifFileInfo = new FileInfo(Path.Combine(imageDirectory.FullName, "rain.gif"));
             var pngFileInfo = new FileInfo(Path.Combine(imageDirectory.FullName, "skull.png"));
             var bmpFileInfo = new FileInfo(Path.Combine(imageDirectory.FullName, "nebula1.bmp"));
-            
+
             // Load each image and resize to the requested width & height.
             // Here we see how to use an image codec to read image data from a file.
             IGorgonImageCodec codec = new GorgonCodecDds();

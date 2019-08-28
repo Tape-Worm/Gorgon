@@ -26,15 +26,15 @@
 
 namespace Gorgon.Editor.ExtractSpriteTool
 {
-	/// <summary>
+    /// <summary>
     /// Arguments for the <see cref="IExtract.SaveSpritesCommand"/>.
     /// </summary>
     internal class SaveSpritesArgs
     {
-		/// <summary>
+        /// <summary>
         /// Property to set or return whether the operation should be cancelled or not.
         /// </summary>
-		public bool Cancel
+        public bool Cancel
         {
             get;
             set;

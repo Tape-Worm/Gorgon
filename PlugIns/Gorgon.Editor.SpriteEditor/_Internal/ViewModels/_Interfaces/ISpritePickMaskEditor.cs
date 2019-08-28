@@ -24,8 +24,8 @@
 // 
 #endregion
 
-using Gorgon.Graphics;
 using Gorgon.Editor.UI;
+using Gorgon.Graphics;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -33,7 +33,7 @@ namespace Gorgon.Editor.SpriteEditor
     /// The view model used to manipulate the settings for the plug in.
     /// </summary>
     internal interface ISpritePickMaskEditor
-		: IHostedPanelViewModel
+        : IHostedPanelViewModel
     {
         /// <summary>
         /// Property to set or return the type of masking to perform when picking a sprite using the <see cref="SpriteEditTool.SpritePick"/> tool.

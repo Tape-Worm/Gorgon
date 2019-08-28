@@ -25,27 +25,27 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
-using DX = SharpDX;
-using Gorgon.Editor.UI.Views;
-using Gorgon.Graphics.Imaging;
-using Gorgon.Graphics.Core;
-using Gorgon.Editor.Rendering;
-using System.Diagnostics;
-using Gorgon.Math;
-using Gorgon.Editor.UI;
-using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Editor.ImageEditor.Properties;
-using System.Collections.Generic;
+using Gorgon.Editor.ImageEditor.ViewModels;
+using Gorgon.Editor.Rendering;
+using Gorgon.Editor.UI;
+using Gorgon.Editor.UI.Views;
+using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Imaging;
+using Gorgon.Math;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor
 {
     /// <summary>
     /// The main view for the image editor.
     /// </summary>
-    internal partial class ImageEditorView 
+    internal partial class ImageEditorView
         : ContentBaseControl, IDataContext<IImageContent>
     {
         #region Variables.        
@@ -151,7 +151,7 @@ namespace Gorgon.Editor.ImageEditor
 
             LabelMipDetails.Visible = LabelMipLevel.Visible = ButtonPrevMip.Visible = ButtonNextMip.Visible = DataContext.MipCount > 1;
             LabelArrayIndexDetails.Visible = LabelArrayIndex.Visible = ButtonPrevArrayIndex.Visible = ButtonNextArrayIndex.Visible = DataContext.ArrayCount > 1;
-            LabelDepthSliceDetails.Visible = LabelDepthSlice.Visible = ButtonPrevDepthSlice.Visible = ButtonNextDepthSlice.Visible = DataContext.ImageType == ImageType.Image3D;                        
+            LabelDepthSliceDetails.Visible = LabelDepthSlice.Visible = ButtonPrevDepthSlice.Visible = ButtonNextDepthSlice.Visible = DataContext.ImageType == ImageType.Image3D;
 
             ButtonNextMip.Enabled = DataContext.CurrentMipLevel < DataContext.MipCount - 1;
             ButtonPrevMip.Enabled = DataContext.CurrentMipLevel > 0;
@@ -253,7 +253,7 @@ namespace Gorgon.Editor.ImageEditor
             IExplorerFilesDragData result = new ExplorerFilesDragData(dragData);
 
             if (!DataContext.CanDrop(result))
-            {                
+            {
                 return null;
             }
 
@@ -327,7 +327,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Function called when a property is changed on the data context.</summary>
         /// <param name="e">The event parameters.</param>
         /// <remarks>Implementors should override this method in order to handle a property change notification from their data context.</remarks>
-        protected override void OnPropertyChanged(PropertyChangedEventArgs e) 
+        protected override void OnPropertyChanged(PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
             {
@@ -338,7 +338,7 @@ namespace Gorgon.Editor.ImageEditor
                     }
 
                     Control panel = GetRegisteredPanel<Control>(DataContext.CurrentPanel.GetType().FullName);
-                    
+
                     if (Controls.Contains(panel))
                     {
                         Controls.Remove(panel);
@@ -387,15 +387,15 @@ namespace Gorgon.Editor.ImageEditor
                     }
 
                     _textureViewer?.UpdateTexture(null);
-                    _textureViewer = _viewers[DataContext.ImageType];                    
+                    _textureViewer = _viewers[DataContext.ImageType];
                     _textureViewer.UpdateTexture(DataContext);
-                    break;                
+                    break;
                 default:
                     if (_textureViewer == null)
                     {
                         _textureViewer = _viewers[DataContext.ImageType];
                     }
-                                        
+
                     _textureViewer.UpdateTexture(DataContext);
                     UpdateMipDetails(DataContext);
                     break;
@@ -621,7 +621,7 @@ namespace Gorgon.Editor.ImageEditor
                 return;
             }
 
-            ScrollVertical.Value = (ScrollVertical.Value - (e.Delta.Sign() * ScrollVertical.LargeChange)).Min(ScrollVertical.Maximum - ScrollVertical.LargeChange).Max(ScrollVertical.Minimum);            
+            ScrollVertical.Value = (ScrollVertical.Value - (e.Delta.Sign() * ScrollVertical.LargeChange)).Min(ScrollVertical.Maximum - ScrollVertical.LargeChange).Max(ScrollVertical.Minimum);
         }
 
         /// <summary>
@@ -665,12 +665,12 @@ namespace Gorgon.Editor.ImageEditor
             _viewers[ImageType.ImageCube].CreateResources(_background);
             _viewers[ImageType.Image3D] = new Texture3DViewer(context, swapChain, ScrollHorizontal, ScrollVertical);
             _viewers[ImageType.Image3D].CreateResources(_background);
-                        
+
             if (DataContext?.ImageType == null)
             {
                 ValidateControls();
                 return;
-            }            
+            }
 
             _textureViewer = _viewers[DataContext.ImageType];
             _textureViewer.UpdateTexture(DataContext);
@@ -696,7 +696,7 @@ namespace Gorgon.Editor.ImageEditor
             }
 
             _background?.Dispose();
-            _background = null;            
+            _background = null;
         }
 
         /// <summary>Raises the <a href="http://msdn.microsoft.com/en-us/library/system.windows.forms.usercontrol.load.aspx" target="_blank">Load</a> event.</summary>
@@ -749,7 +749,7 @@ namespace Gorgon.Editor.ImageEditor
             InitializeFromDataContext(dataContext);
 
             DataContext = dataContext;
-        }        
+        }
         #endregion
 
         #region Constructor/Finalizer.

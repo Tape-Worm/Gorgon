@@ -243,7 +243,7 @@ namespace Gorgon.Editor.ImageEditor
             }
 
             // We absolutely need to have an extension, or else the texconv tool will not work.
-            if ((codec.CodecCommonExtensions.Count > 0) 
+            if ((codec.CodecCommonExtensions.Count > 0)
                 && (!string.Equals(Path.GetExtension(name), codec.CodecCommonExtensions[0], StringComparison.OrdinalIgnoreCase)))
             {
                 _log.Print("Adding extension to working file or else external tools may not be able to read it.", LoggingLevel.Verbose);
@@ -429,13 +429,13 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="scratchArea">The file system writer used to write to the temporary area.</param>
         /// <param name="bcCompressor">The block compressor used to block (de)compress image data.</param>
         /// <param name="log">The logging interface to use.</param>
-        public ImageIOService(IGorgonImageCodec defaultCodec, 
+        public ImageIOService(IGorgonImageCodec defaultCodec,
             ICodecRegistry installedCodecs,
             IExportImageDialogService exportDialog,
             IImportImageDialogService importDialog,
             IBusyStateService busyService,
-            IGorgonFileSystemWriter<Stream> scratchArea, 
-            TexConvCompressor bcCompressor, 
+            IGorgonFileSystemWriter<Stream> scratchArea,
+            TexConvCompressor bcCompressor,
             IGorgonLog log)
         {
             _exportDialog = exportDialog;

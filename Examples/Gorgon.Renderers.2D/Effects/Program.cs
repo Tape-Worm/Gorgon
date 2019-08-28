@@ -141,7 +141,7 @@ namespace Gorgon.Examples
             _postTarget1.Clear(GorgonColor.Black);
 
             DX.Vector2 textureSize = _background.Texture.ToTexel(new DX.Vector2(_postTarget1.Width, _postTarget1.Height));
-            
+
             // Blit the background texture.
             _graphics.SetRenderTarget(_postTarget1);
             _renderer.Begin();
@@ -181,7 +181,8 @@ namespace Gorgon.Examples
             if (blurRadiusUpdate > 997000)
             {
                 _gaussBlur.BlurRadius = (_gaussBlur.BlurRadius + 1).Min(_gaussBlur.MaximumBlurRadius / 2);
-            } else if (blurRadiusUpdate < 3000)
+            }
+            else if (blurRadiusUpdate < 3000)
             {
                 _gaussBlur.BlurRadius = (_gaussBlur.BlurRadius - 1).Max(1);
             }
@@ -204,7 +205,7 @@ namespace Gorgon.Examples
             DX.Vector2 offset = DX.Vector2.Zero;
             if (GorgonRandom.RandomInt32(0, 100) > 95)
             {
-               offset = new DX.Vector2(GorgonRandom.RandomSingle(-2.0f, 2.0f), GorgonRandom.RandomSingle(-1.5f, 1.5f));
+                offset = new DX.Vector2(GorgonRandom.RandomSingle(-2.0f, 2.0f), GorgonRandom.RandomSingle(-1.5f, 1.5f));
             }
 
             _oldFilm.Render((_, __, size) =>
@@ -217,7 +218,7 @@ namespace Gorgon.Examples
             // Send to our screen.
             _screen.RenderTargetView.Clear(GorgonColor.Black);
             _graphics.SetRenderTarget(_screen.RenderTargetView);
-            
+
             _renderer.Begin(Gorgon2DBatchState.NoBlend);
             if (GorgonRandom.RandomInt32(0, 100) < 2)
             {
@@ -268,7 +269,7 @@ namespace Gorgon.Examples
             {
                 _randomOffset = new DX.Vector2(_randomOffset.Value.X, _randomOffset.Value.Y - _postTarget1.Height);
             }
-           
+
             if (_randomOffset.Value.X < 0)
             {
                 _randomOffset = new DX.Vector2(0, _randomOffset.Value.Y);
@@ -302,11 +303,11 @@ namespace Gorgon.Examples
         private static void BuildRenderTargets()
         {
             _postTarget1 = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo("Post process render target #1")
-                                                                                       {
-                                                                                           Width = _screen.Width,
-                                                                                           Height = _screen.Height,
-                                                                                           Format = _screen.Format
-                                                                                       });
+            {
+                Width = _screen.Width,
+                Height = _screen.Height,
+                Format = _screen.Format
+            });
             _postView1 = _postTarget1.GetShaderResourceView();
 
             _postTarget2 = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(_postTarget1, "Post process render target #2"));
@@ -356,22 +357,22 @@ namespace Gorgon.Examples
 
                 // Create the displacement effect used for the "cloaking" effect.
                 _displacement = new Gorgon2DDisplacementEffect(_renderer)
-                                {
-                                    Strength = 0
-                                };
+                {
+                    Strength = 0
+                };
 
                 // Create the old film effect for that old timey look.
                 _oldFilm = new Gorgon2DOldFilmEffect(_renderer)
-                           {
-                               ScrollSpeed = 0.05f
-                           };
+                {
+                    ScrollSpeed = 0.05f
+                };
 
                 // Create the gaussian blur effect for that "soft" look.
                 _gaussBlur = new Gorgon2DGaussBlurEffect(_renderer, 9)
-                             {
-                                 BlurRenderTargetsSize = new DX.Size2(_screen.Width / 2, _screen.Height / 2),
-                                 BlurRadius = 1
-                             };
+                {
+                    BlurRenderTargetsSize = new DX.Size2(_screen.Width / 2, _screen.Height / 2),
+                    BlurRadius = 1
+                };
                 // The higher # of taps on the blur shader will introduce a stutter on first render, so precache its setup data.
                 _gaussBlur.Precache();
 
@@ -391,16 +392,17 @@ namespace Gorgon.Examples
                                                                  new GorgonCodecPng(),
                                                                  new GorgonTexture2DLoadOptions
                                                                  {
-                                                                     Usage = ResourceUsage.Immutable, Binding = TextureBinding.ShaderResource
+                                                                     Usage = ResourceUsage.Immutable,
+                                                                     Binding = TextureBinding.ShaderResource
                                                                  });
                 _shipSprite = new GorgonSprite
-                              {
-                                  Texture = _spaceShipTexture,
-                                  TextureRegion = new DX.RectangleF(0, 0, 1, 1),
-                                  Anchor = new DX.Vector2(0.5f, 0.5f),
-                                  Position = new DX.Vector2(_screen.Width / 2.0f, _screen.Height / 2.0f),
-                                  Size = new DX.Size2F(_spaceShipTexture.Width, _spaceShipTexture.Height)
-                              };
+                {
+                    Texture = _spaceShipTexture,
+                    TextureRegion = new DX.RectangleF(0, 0, 1, 1),
+                    Anchor = new DX.Vector2(0.5f, 0.5f),
+                    Position = new DX.Vector2(_screen.Width / 2.0f, _screen.Height / 2.0f),
+                    Size = new DX.Size2F(_spaceShipTexture.Width, _spaceShipTexture.Height)
+                };
 
                 BuildRenderTargets();
                 InitializeBackgroundTexturePositioning();

@@ -27,9 +27,9 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using Gorgon.Editor.ProjectData;
-using System.IO;
 using Gorgon.Editor.UI.Controls;
 
 namespace Gorgon.Editor.UI
@@ -37,7 +37,7 @@ namespace Gorgon.Editor.UI
     /// <summary>
     /// A button for the <see cref="RecentFilesControl"/>
     /// </summary>
-    internal partial class RecentItemButton 
+    internal partial class RecentItemButton
         : UserControl
     {
         #region Variables.
@@ -120,7 +120,7 @@ namespace Gorgon.Editor.UI
             if (e.Button == MouseButtons.Left)
             {
                 OnClick(EventArgs.Empty);
-            }            
+            }
         }
 
         /// <summary>Handles the Click event of the ButtonDelete control.</summary>
@@ -154,7 +154,7 @@ namespace Gorgon.Editor.UI
         {
             if (_recentItem == null)
             {
-                LabelTitle.Text = 
+                LabelTitle.Text =
                 LabelPath.Text =
                 LabelDateTime.Text = string.Empty;
                 return;

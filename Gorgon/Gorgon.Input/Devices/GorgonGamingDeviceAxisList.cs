@@ -32,66 +32,66 @@ using Gorgon.Input.Properties;
 
 namespace Gorgon.Input
 {
-	/// <summary>
-	/// A list of axis data values for a gaming device.
-	/// </summary>
-	/// <typeparam name="T">The type of axis data to store in this collection. This type must implement <see cref="IGorgonGamingDeviceAxis"/>.</typeparam>
-	public sealed class GorgonGamingDeviceAxisList<T>
-		: IEnumerable<T>
-		where T : IGorgonGamingDeviceAxis
-	{
-		#region Variables.
-		// The list of available axes.
-		private readonly List<GamingDeviceAxis> _axisList = new List<GamingDeviceAxis>();
-		// The list of information about each axis.
-		private readonly Dictionary<GamingDeviceAxis, T> _infoList = new Dictionary<GamingDeviceAxis, T>(new GorgonGamingDeviceAxisEqualityComparer());
-		#endregion
+    /// <summary>
+    /// A list of axis data values for a gaming device.
+    /// </summary>
+    /// <typeparam name="T">The type of axis data to store in this collection. This type must implement <see cref="IGorgonGamingDeviceAxis"/>.</typeparam>
+    public sealed class GorgonGamingDeviceAxisList<T>
+        : IEnumerable<T>
+        where T : IGorgonGamingDeviceAxis
+    {
+        #region Variables.
+        // The list of available axes.
+        private readonly List<GamingDeviceAxis> _axisList = new List<GamingDeviceAxis>();
+        // The list of information about each axis.
+        private readonly Dictionary<GamingDeviceAxis, T> _infoList = new Dictionary<GamingDeviceAxis, T>(new GorgonGamingDeviceAxisEqualityComparer());
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to return the number of axes on the gaming device.
-		/// </summary>
-		public int Count => _axisList.Count;
+        #region Properties.
+        /// <summary>
+        /// Property to return the number of axes on the gaming device.
+        /// </summary>
+        public int Count => _axisList.Count;
 
-		/// <summary>
-		/// Property to return the range for the specified <see cref="GamingDeviceAxis"/>.
-		/// </summary>
-		public T this[GamingDeviceAxis axis] => _infoList[axis];
+        /// <summary>
+        /// Property to return the range for the specified <see cref="GamingDeviceAxis"/>.
+        /// </summary>
+        public T this[GamingDeviceAxis axis] => _infoList[axis];
 
-		/// <summary>
-		/// Gets the <see cref="GorgonGamingDeviceAxisInfo"/> at the specified index in the axis list.
-		/// </summary>
-		public T this[int index]
-		{
-			get
-			{
+        /// <summary>
+        /// Gets the <see cref="GorgonGamingDeviceAxisInfo"/> at the specified index in the axis list.
+        /// </summary>
+        public T this[int index]
+        {
+            get
+            {
 #if DEBUG
-				if ((index < 0) || (index >= _axisList.Count))
-				{
-					throw new ArgumentOutOfRangeException(nameof(index), Resources.GORINP_ERR_JOYSTICK_AXES_INVALID);
-				}
+                if ((index < 0) || (index >= _axisList.Count))
+                {
+                    throw new ArgumentOutOfRangeException(nameof(index), Resources.GORINP_ERR_JOYSTICK_AXES_INVALID);
+                }
 #endif
-				return _infoList[_axisList[index]];
-			}
-		}
-		#endregion
+                return _infoList[_axisList[index]];
+            }
+        }
+        #endregion
 
-		#region Methods.
+        #region Methods.
 
-		/// <summary>
-		/// Function to add an axis to the list.
-		/// </summary>
-		/// <param name="axisData">The data to add for the axis.</param>
-		internal void Add(T axisData)
-		{
-			if (_infoList.ContainsKey(axisData.Axis))
-			{
-				return;
-			}
+        /// <summary>
+        /// Function to add an axis to the list.
+        /// </summary>
+        /// <param name="axisData">The data to add for the axis.</param>
+        internal void Add(T axisData)
+        {
+            if (_infoList.ContainsKey(axisData.Axis))
+            {
+                return;
+            }
 
-			_axisList.Add(axisData.Axis);
-			_infoList[axisData.Axis] = axisData;
-		}
+            _axisList.Add(axisData.Axis);
+            _infoList[axisData.Axis] = axisData;
+        }
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
@@ -138,12 +138,12 @@ namespace Gorgon.Input
         /// </summary>
         /// <param name="data">A list of items to add to the collection.</param>
         public GorgonGamingDeviceAxisList(IEnumerable<T> data)
-		{
-			foreach (T item in data)
-			{
-				Add(item);
-			}
-		}
-		#endregion
-	}
+        {
+            foreach (T item in data)
+            {
+                Add(item);
+            }
+        }
+        #endregion
+    }
 }

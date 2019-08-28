@@ -26,17 +26,17 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using DX = SharpDX;
-using Gorgon.Renderers;
+using Gorgon.Editor.Content;
+using Gorgon.Editor.ExtractSpriteTool.Properties;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
-using Gorgon.Graphics;
-using Gorgon.Editor.Content;
 using Gorgon.IO;
-using System.IO;
-using Gorgon.Editor.ExtractSpriteTool.Properties;
+using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.ExtractSpriteTool
 {
@@ -47,13 +47,13 @@ namespace Gorgon.Editor.ExtractSpriteTool
         : IExtractorService
     {
         #region Variables.
-		// The renderer for preparing a compatible texture.
+        // The renderer for preparing a compatible texture.
         private readonly Gorgon2D _renderer;
-		// The graphics interface.
+        // The graphics interface.
         private readonly GorgonGraphics _graphics;
-		// The file manager used to write the content files.
+        // The file manager used to write the content files.
         private readonly IContentFileManager _fileManager;
-		// The default sprite codec.
+        // The default sprite codec.
         private readonly IGorgonSpriteCodec _defaultCodec;
         #endregion
 
@@ -62,7 +62,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         #endregion
 
         #region Methods.
-		/// <summary>
+        /// <summary>
         /// Function to detect if a sprite has no pixel data.
         /// </summary>
         /// <param name="bounds">The bounds of the sprite on the texture.</param>
@@ -75,10 +75,10 @@ namespace Gorgon.Editor.ExtractSpriteTool
             int color = skipMask.ToABGR();
 
             for (int y = bounds.Y; y < bounds.Bottom; ++y)
-            {				
+            {
                 for (int x = bounds.X; x < bounds.Right; ++x)
                 {
-					// The last byte of the pixel should be the alpha (we force conversion to R8G8B8A8).
+                    // The last byte of the pixel should be the alpha (we force conversion to R8G8B8A8).
                     int value = imageData.Data.ReadAs<int>((y * imageData.PitchInformation.RowPitch) + (x * pixelSize));
                     if (color != value)
                     {
@@ -236,12 +236,12 @@ namespace Gorgon.Editor.ExtractSpriteTool
 
                         result.Add(new GorgonSprite
                         {
-							TextureArrayIndex = array + data.StartArrayIndex,
+                            TextureArrayIndex = array + data.StartArrayIndex,
                             Texture = data.Texture,
                             Anchor = DX.Vector2.Zero,
                             Size = new DX.Size2F(data.CellSize.Width, data.CellSize.Height),
                             TextureRegion = data.Texture.ToTexel(spriteRect),
-							TextureSampler = GorgonSamplerState.PointFiltering
+                            TextureSampler = GorgonSamplerState.PointFiltering
                         });
 
                         progressCallback?.Invoke(new ProgressData(count++, data.SpriteCount));
@@ -286,7 +286,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
                     {
                         filePath = $"{path}{fileName} ({spriteIndex++}){(string.IsNullOrWhiteSpace(extension) ? string.Empty : extension)}";
                     }
-					
+
                     IContentFile outputFile = _fileManager.WriteFile(filePath, stream =>
                     {
                         _defaultCodec.Save(sprite, stream);

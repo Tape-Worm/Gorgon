@@ -76,5 +76,5 @@ namespace Gorgon.Graphics.Core
             get;
             set;
         }
-   }
+    }
 }

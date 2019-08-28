@@ -53,7 +53,7 @@ namespace Gorgon.Editor.PlugIns
     /// </para>
     /// </remarks>
     public abstract class ToolPlugIn
-		: EditorPlugIn
+        : EditorPlugIn
     {
         #region Variables.
         // Flag to indicate that the plugin is initialized.
@@ -61,10 +61,10 @@ namespace Gorgon.Editor.PlugIns
         #endregion
 
         #region Properties.
-		/// <summary>
+        /// <summary>
         /// Property to return the plug in service used to manage tool plug ins.
         /// </summary>
-		protected IToolPlugInService ToolPlugInService
+        protected IToolPlugInService ToolPlugInService
         {
             get;
             private set;
@@ -79,10 +79,10 @@ namespace Gorgon.Editor.PlugIns
             private set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the folder browser used to browse the project file system folder structure.
         /// </summary>
-		protected IFileSystemFolderBrowseService FolderBrowser
+        protected IFileSystemFolderBrowseService FolderBrowser
         {
             get;
             private set;
@@ -131,7 +131,7 @@ namespace Gorgon.Editor.PlugIns
         {
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to retrieve the ribbon button for the tool.
         /// </summary>
         /// <param name="fileManager">The project file manager.</param>
@@ -224,7 +224,7 @@ namespace Gorgon.Editor.PlugIns
             ToolPlugInService = pluginService ?? throw new ArgumentNullException(nameof(pluginService));
 
             CommonServices.Log.Print($"Initializing {Name}...", LoggingLevel.Simple);
-			
+
             GraphicsContext = graphicsContext ?? throw new ArgumentNullException(nameof(graphicsContext));
             FolderBrowser = folderBrowser ?? throw new ArgumentNullException(nameof(folderBrowser));
 
@@ -236,11 +236,11 @@ namespace Gorgon.Editor.PlugIns
         /// <summary>Initializes a new instance of the <see cref="ToolPlugIn"/> class.</summary>
         /// <param name="description">Optional description of the plugin.</param>
         protected ToolPlugIn(string description)
-			: base(description)
+            : base(description)
         {
 
         }
-		#endregion
+        #endregion
 
     }
 }

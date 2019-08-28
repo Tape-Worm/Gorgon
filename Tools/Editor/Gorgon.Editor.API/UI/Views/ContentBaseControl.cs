@@ -29,22 +29,22 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using Gorgon.Editor.Rendering;
-using Gorgon.Graphics.Core;
-using Gorgon.UI;
-using ComponentFactory.Krypton.Toolkit;
 using ComponentFactory.Krypton.Ribbon;
-using Gorgon.Graphics.Imaging;
-using Gorgon.Graphics.Imaging.GdiPlus;
+using ComponentFactory.Krypton.Toolkit;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
+using Gorgon.Editor.Rendering;
+using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Imaging;
+using Gorgon.Graphics.Imaging.GdiPlus;
+using Gorgon.UI;
 
 namespace Gorgon.Editor.UI.Views
 {
     /// <summary>
     /// The base control used to render content.
     /// </summary>
-    public partial class ContentBaseControl 
+    public partial class ContentBaseControl
         : EditorBaseControl, IRendererControl
     {
         #region Variables.
@@ -106,11 +106,11 @@ namespace Gorgon.Editor.UI.Views
         /// If this value is set to <b>null</b>, then no swap chain will be created and the <see cref="SwapChain"/> property will be set to <b>null</b>.
         /// </para>
         /// </remarks>
-        [Browsable(true), 
+        [Browsable(true),
             DefaultValue(null),
-            EditorBrowsable(EditorBrowsableState.Always), 
-            Category("Rendering"), 
-            Description("Sets or returns the custom control to use for rendering output."), 
+            EditorBrowsable(EditorBrowsableState.Always),
+            Category("Rendering"),
+            Description("Sets or returns the custom control to use for rendering output."),
             DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public Control RenderControl
         {
@@ -612,7 +612,7 @@ namespace Gorgon.Editor.UI.Views
 
             // Walk the hierarchy to see if we've descended from the specified type.
             while (baseType != null)
-            {                
+            {
                 if (_panelViews.TryGetValue(baseType.FullName, out result))
                 {
                     return (T)result;
@@ -773,7 +773,7 @@ namespace Gorgon.Editor.UI.Views
             if ((context != null) && (RenderControl != null))
             {
                 swapChain = context.LeaseSwapPresenter(RenderControl);
-            }            
+            }
 
             OnSetupGraphics(context, swapChain);
             GraphicsContext = context;

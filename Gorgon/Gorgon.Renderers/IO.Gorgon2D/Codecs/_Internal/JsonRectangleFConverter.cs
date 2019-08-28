@@ -86,24 +86,26 @@ namespace Gorgon.IO
             }
 
             var r = (float)(reader.ReadAsDouble() ?? 0);
-                
+
             if (!reader.Read())
             {
                 return new DX.RectangleF
-                       {
-                           Left = l, Top = t, Right = r
-                       };
+                {
+                    Left = l,
+                    Top = t,
+                    Right = r
+                };
             }
 
             var b = (float)(reader.ReadAsDouble() ?? 0);
 
             var result = new DX.RectangleF
-                         {
-                             Left = l,
-                             Top = t,
-                             Right = r,
-                             Bottom = b
-                         };
+            {
+                Left = l,
+                Top = t,
+                Right = r,
+                Bottom = b
+            };
             reader.Read();
 
             return result;

@@ -49,42 +49,42 @@ namespace Gorgon.Graphics.Core
         UnorderedAccess = BufferBinding.ReadWrite
     }
 
-	/// <summary>
-	/// Provides the necessary information required to set up a vertex buffer.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This provides an immutable view of the vertex buffer information so that it cannot be modified after the buffer is created.
-	/// </para>
-	/// </remarks>
-	public interface IGorgonVertexBufferInfo 
+    /// <summary>
+    /// Provides the necessary information required to set up a vertex buffer.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This provides an immutable view of the vertex buffer information so that it cannot be modified after the buffer is created.
+    /// </para>
+    /// </remarks>
+    public interface IGorgonVertexBufferInfo
         : IGorgonNamedObject
-	{
-		/// <summary>
-		/// Property to return the intended usage for binding to the GPU.
-		/// </summary>
-		ResourceUsage Usage
-		{
-			get;
-		}
+    {
+        /// <summary>
+        /// Property to return the intended usage for binding to the GPU.
+        /// </summary>
+        ResourceUsage Usage
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the size of the buffer, in bytes.
-		/// </summary>
-		/// <remarks>
-		/// This value should be larger than 0, or else an exception will be thrown when the buffer is created.
-		/// </remarks>
-		int SizeInBytes
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the size of the buffer, in bytes.
+        /// </summary>
+        /// <remarks>
+        /// This value should be larger than 0, or else an exception will be thrown when the buffer is created.
+        /// </remarks>
+        int SizeInBytes
+        {
+            get;
+        }
 
         /// <summary>
         /// Property to return the binding used to bind this buffer to the GPU.
         /// </summary>
 	    VertexIndexBufferBinding Binding
-	    {
-	        get;
-	    }
-	}
+        {
+            get;
+        }
+    }
 }

@@ -29,12 +29,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DX = SharpDX;
 using Gorgon.Graphics;
-using Gorgon.Input;
-using Gorgon.Timing;
-using Gorgon.Math;
 using Gorgon.Graphics.Core;
+using Gorgon.Input;
+using Gorgon.Math;
+using Gorgon.Timing;
+using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -81,7 +81,7 @@ namespace Gorgon.Examples
             get => _position;
             set
             {
-                _position = value;                
+                _position = value;
                 UpdateEntityPositions();
             }
         }
@@ -110,11 +110,11 @@ namespace Gorgon.Examples
             // We'll need our sprite entities for this object so we can update their position and rotation.
             _ship = _layer.GetSpriteByName("BigShip");
             _shipIllum = _layer.GetSpriteByName("BigShip_Illum");
-            
+
             _ship.Visible = true;
             _shipIllum.Visible = true;
             _ship.Scale = 4;
-            _shipIllum.Scale = 4;            
+            _shipIllum.Scale = 4;
             UpdateEntityPositions();
         }
         #endregion

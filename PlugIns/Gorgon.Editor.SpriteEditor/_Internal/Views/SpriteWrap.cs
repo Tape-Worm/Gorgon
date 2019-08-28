@@ -26,12 +26,12 @@
 
 using System;
 using System.ComponentModel;
+using System.Linq;
+using System.Windows.Forms;
+using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Graphics;
-using Gorgon.Editor.UI;
 using Gorgon.Graphics.Core;
-using System.Windows.Forms;
-using System.Linq;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -154,12 +154,12 @@ namespace Gorgon.Editor.SpriteEditor
             ValidateOk();
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to update the color picker visibility.
         /// </summary>
         private void UpdateColorPickerState() => LabelBorderColor.Visible = Picker.Visible = (RadioHBorder.Checked) || (RadioVBorder.Checked);
 
-		/// <summary>
+        /// <summary>
         /// Function to set the radio button check states based on the data context.
         /// </summary>
         /// <param name="dataContext">The current data context.</param>
@@ -258,7 +258,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Function to assign a data context to the view as a view model.</summary>
         /// <param name="dataContext">The data context to assign.</param>
         /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
-        public void SetDataContext(ISpriteWrappingEditor dataContext) 
+        public void SetDataContext(ISpriteWrappingEditor dataContext)
         {
             InitializeFromDataContext(dataContext);
 

@@ -28,82 +28,82 @@ using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts.Codecs
 {
-	/// <summary>
-	/// Information about the BmFont.
-	/// </summary>
-	internal class BmFontInfo
-		: GorgonFontInfo
-	{
-		#region Properties.
-		/// <summary>
-		/// Property to set or return the line height.
-		/// </summary>
-		public float LineHeight
-		{
-			get;
-			set;
-		}
+    /// <summary>
+    /// Information about the BmFont.
+    /// </summary>
+    internal class BmFontInfo
+        : GorgonFontInfo
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to set or return the line height.
+        /// </summary>
+        public float LineHeight
+        {
+            get;
+            set;
+        }
 
-		/// <summary>
-		/// Property to set or return the list of font texture paths.
-		/// </summary>
-		public string[] FontTextures
-		{
-			get;
-			set;
-		} 
+        /// <summary>
+        /// Property to set or return the list of font texture paths.
+        /// </summary>
+        public string[] FontTextures
+        {
+            get;
+            set;
+        }
 
-		/// <summary>
-		/// Property to return the list of glyph rectangles.
-		/// </summary>
-		public IDictionary<char, DX.Rectangle> GlyphRects
-		{
-			get;
-		} = new Dictionary<char, DX.Rectangle>();
+        /// <summary>
+        /// Property to return the list of glyph rectangles.
+        /// </summary>
+        public IDictionary<char, DX.Rectangle> GlyphRects
+        {
+            get;
+        } = new Dictionary<char, DX.Rectangle>();
 
-		/// <summary>
-		/// Property to return the list of character advances.
-		/// </summary>
-		public IDictionary<char, int> CharacterAdvances
-		{
-			get;
-		} = new Dictionary<char, int>();
+        /// <summary>
+        /// Property to return the list of character advances.
+        /// </summary>
+        public IDictionary<char, int> CharacterAdvances
+        {
+            get;
+        } = new Dictionary<char, int>();
 
-		/// <summary>
-		/// Property to return the list of glyph texture index relationships.
-		/// </summary>
-		public IDictionary<char, int> GlyphTextureIndices
-		{
-			get;
-		} = new Dictionary<char, int>();
+        /// <summary>
+        /// Property to return the list of glyph texture index relationships.
+        /// </summary>
+        public IDictionary<char, int> GlyphTextureIndices
+        {
+            get;
+        } = new Dictionary<char, int>();
 
-		/// <summary>
-		/// Property to return the list of offsets for the glyphs.
-		/// </summary>
-		public IDictionary<char, DX.Point> GlyphOffsets
-		{
-			get;
-		} = new Dictionary<char, DX.Point>();
+        /// <summary>
+        /// Property to return the list of offsets for the glyphs.
+        /// </summary>
+        public IDictionary<char, DX.Point> GlyphOffsets
+        {
+            get;
+        } = new Dictionary<char, DX.Point>();
 
-		/// <summary>
-		/// Property to return the list of kerning pairs for the glyphs.
-		/// </summary>
-		public IDictionary<GorgonKerningPair, int> KerningPairs
-		{
-			get;
-		} = new Dictionary<GorgonKerningPair, int>();
-		#endregion
+        /// <summary>
+        /// Property to return the list of kerning pairs for the glyphs.
+        /// </summary>
+        public IDictionary<GorgonKerningPair, int> KerningPairs
+        {
+            get;
+        } = new Dictionary<GorgonKerningPair, int>();
+        #endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="BmFontInfo"/> class.
-		/// </summary>
-		/// <param name="fontFamily">The font family.</param>
-		/// <param name="size">The size of the font, in pixels.</param>
-		public BmFontInfo(string fontFamily, float size)
-			: base(fontFamily, size)
-		{
-		}
-		#endregion
-	}
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BmFontInfo"/> class.
+        /// </summary>
+        /// <param name="fontFamily">The font family.</param>
+        /// <param name="size">The size of the font, in pixels.</param>
+        public BmFontInfo(string fontFamily, float size)
+            : base(fontFamily, size)
+        {
+        }
+        #endregion
+    }
 }

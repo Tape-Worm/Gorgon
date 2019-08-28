@@ -54,10 +54,10 @@ namespace Gorgon.Editor.PlugIns
         #endregion
 
         #region Properties.
-		/// <summary>
+        /// <summary>
         /// Property to return the plug in service used to manage content plug ins.
         /// </summary>
-		protected IContentPlugInService ContentPlugInService
+        protected IContentPlugInService ContentPlugInService
         {
             get;
             private set;
@@ -219,7 +219,7 @@ namespace Gorgon.Editor.PlugIns
         {
             // First try to ensure the generated name is available.
             int count = 0;
-            generatedName = generatedName?.FormatFileName() ?? string.Empty;            
+            generatedName = generatedName?.FormatFileName() ?? string.Empty;
 
             if (!string.IsNullOrWhiteSpace(generatedName))
             {
@@ -231,7 +231,7 @@ namespace Gorgon.Editor.PlugIns
                 }
 
                 generatedName = baseName;
-            }            
+            }
 
             do
             {
@@ -258,7 +258,7 @@ namespace Gorgon.Editor.PlugIns
 
                 return (name, data);
             }
-            while (true);            
+            while (true);
         }
 
         /// <summary>
@@ -288,7 +288,7 @@ namespace Gorgon.Editor.PlugIns
                 throw new ArgumentNullException(nameof(project));
             }
 
-            IGorgonFileSystemWriter<Stream> scratchWriter = GetScratchArea(project.TempDirectory);            
+            IGorgonFileSystemWriter<Stream> scratchWriter = GetScratchArea(project.TempDirectory);
 
             IEditorContent content = await OnOpenContentAsync(file, fileManager, scratchWriter, undoService);
 
@@ -354,7 +354,7 @@ namespace Gorgon.Editor.PlugIns
         /// <param name="description">Optional description of the plugin.</param>
         protected ContentPlugIn(string description)
             : base(description)
-        {            
+        {
         }
         #endregion
     }

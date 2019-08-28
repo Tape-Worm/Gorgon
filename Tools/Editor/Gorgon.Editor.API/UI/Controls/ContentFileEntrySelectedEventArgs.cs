@@ -32,7 +32,7 @@ namespace Gorgon.Editor.UI.Controls
     /// Event arguments for content file selection or unselection.
     /// </summary>
     public class ContentFileEntrySelectedEventArgs
-		: EventArgs
+        : EventArgs
     {
         /// <summary>
         /// Property to set or return the file entry that was selected or unselected.

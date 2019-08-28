@@ -33,32 +33,32 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using SharpDX.DXGI;
-using DX = SharpDX;
 using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// A shader view for textures.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This is a texture shader view to allow a <see cref="GorgonTexture2D"/> to be bound to the GPU pipeline as a shader resource.
-	/// </para>
-	/// <para>
-	/// Use a resource view to allow a shader access to the contents of a resource (or sub resource).  When the resource is created with a typeless format, this will allow the resource to be cast to any 
-	/// format within the same group.	
-	/// </para>
-	/// </remarks>
-	public sealed class GorgonTexture2DView
-		: GorgonShaderResourceView, IGorgonTexture2DInfo, IGorgonImageInfo
+    /// <summary>
+    /// A shader view for textures.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This is a texture shader view to allow a <see cref="GorgonTexture2D"/> to be bound to the GPU pipeline as a shader resource.
+    /// </para>
+    /// <para>
+    /// Use a resource view to allow a shader access to the contents of a resource (or sub resource).  When the resource is created with a typeless format, this will allow the resource to be cast to any 
+    /// format within the same group.	
+    /// </para>
+    /// </remarks>
+    public sealed class GorgonTexture2DView
+        : GorgonShaderResourceView, IGorgonTexture2DInfo, IGorgonImageInfo
     {
         #region Properties.
         /// <summary>
         /// Property to return the type of image data.
         /// </summary>
-        ImageType IGorgonImageInfo.ImageType => IsCubeMap ? ImageType.ImageCube : ImageType.Image2D ;
+        ImageType IGorgonImageInfo.ImageType => IsCubeMap ? ImageType.ImageCube : ImageType.Image2D;
 
         /// <summary>
         /// Property to return the depth of an image, in pixels.
@@ -134,41 +134,41 @@ namespace Gorgon.Graphics.Core
         /// If the texture is multisampled, then this value will be set to 0.
         /// </remarks>
         public int MipSlice
-		{
-			get;
-		    private set;
-		}
+        {
+            get;
+            private set;
+        }
 
-		/// <summary>
-		/// Property to return the number of mip maps in the resource to view.
-		/// </summary> 
-		/// <remarks>
-		/// If the texture is multisampled, then this value will be set to 1.
-		/// </remarks>
-		public int MipCount
-		{
-			get;
-		    private set;
-		}
+        /// <summary>
+        /// Property to return the number of mip maps in the resource to view.
+        /// </summary> 
+        /// <remarks>
+        /// If the texture is multisampled, then this value will be set to 1.
+        /// </remarks>
+        public int MipCount
+        {
+            get;
+            private set;
+        }
 
-		/// <summary>
-		/// Property to return the first array index to use in the view.
-		/// </summary>
-		public int ArrayIndex
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the first array index to use in the view.
+        /// </summary>
+        public int ArrayIndex
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the number of array indices to use in the view.
-		/// </summary>
-		/// <remarks>
-		/// If the texture is a 2D texture cube, then this value will be a multiple of 6.
-		/// </remarks>
-		public int ArrayCount
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the number of array indices to use in the view.
+        /// </summary>
+        /// <remarks>
+        /// If the texture is a 2D texture cube, then this value will be a multiple of 6.
+        /// </remarks>
+        public int ArrayCount
+        {
+            get;
+        }
 
         /// <summary>
         /// Property to return whether the texture is a texture cube or not.
@@ -178,7 +178,10 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the texture that is bound to this view.
         /// </summary>
-        public GorgonTexture2D Texture { get; private set; }
+        public GorgonTexture2D Texture
+        {
+            get; private set;
+        }
 
         /// <summary>
         /// Property to return the bounding rectangle for the view.
@@ -229,123 +232,123 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Methods.
-		/// <summary>
-		/// Function to retrieve the view description for a 2D texture.
-		/// </summary>
-		/// <returns>The shader view description.</returns>
-		private D3D11.ShaderResourceViewDescription1 GetDesc2D()
-		{
-			bool isMultisampled = ((Texture.MultisampleInfo.Count > 1)
-			                       || (Texture.MultisampleInfo.Quality > 0));
-
-			if (!isMultisampled)
-			{
-				return new D3D11.ShaderResourceViewDescription1
-				       {
-					       Format = (Format)Format,
-					       Dimension = Texture.ArrayCount > 1
-						                   ? D3D.ShaderResourceViewDimension.Texture2DArray
-						                   : D3D.ShaderResourceViewDimension.Texture2D,
-					       Texture2DArray =
-					       {
-						       MipLevels = MipCount,
-						       MostDetailedMip = MipSlice,
-						       FirstArraySlice = ArrayIndex,
-						       ArraySize = ArrayCount,
-                               PlaneSlice = 0
-					       }
-				       };
-			}
-
-		    MipSlice = 0;
-		    MipCount = 1;
-
-			return new D3D11.ShaderResourceViewDescription1
-			       {
-				       Format = (Format)Format,
-				       Dimension = Texture.ArrayCount > 1
-					                   ? D3D.ShaderResourceViewDimension.Texture2DMultisampledArray
-					                   : D3D.ShaderResourceViewDimension.Texture2DMultisampled,
-				       Texture2DMSArray =
-				       {
-					       ArraySize = ArrayCount,
-					       FirstArraySlice = ArrayIndex
-				       }
-			       };
-		}
-
-		/// <summary>
-        /// Function to retrieve the view description for a 2D texture cube.
+        /// <summary>
+        /// Function to retrieve the view description for a 2D texture.
         /// </summary>
-	    private D3D11.ShaderResourceViewDescription1 GetDesc2DCube()
-	    {
+        /// <returns>The shader view description.</returns>
+        private D3D11.ShaderResourceViewDescription1 GetDesc2D()
+        {
             bool isMultisampled = ((Texture.MultisampleInfo.Count > 1)
                                    || (Texture.MultisampleInfo.Quality > 0));
 
-	        if (isMultisampled)
-	        {
+            if (!isMultisampled)
+            {
+                return new D3D11.ShaderResourceViewDescription1
+                {
+                    Format = (Format)Format,
+                    Dimension = Texture.ArrayCount > 1
+                                           ? D3D.ShaderResourceViewDimension.Texture2DArray
+                                           : D3D.ShaderResourceViewDimension.Texture2D,
+                    Texture2DArray =
+                           {
+                               MipLevels = MipCount,
+                               MostDetailedMip = MipSlice,
+                               FirstArraySlice = ArrayIndex,
+                               ArraySize = ArrayCount,
+                               PlaneSlice = 0
+                           }
+                };
+            }
+
+            MipSlice = 0;
+            MipCount = 1;
+
+            return new D3D11.ShaderResourceViewDescription1
+            {
+                Format = (Format)Format,
+                Dimension = Texture.ArrayCount > 1
+                                       ? D3D.ShaderResourceViewDimension.Texture2DMultisampledArray
+                                       : D3D.ShaderResourceViewDimension.Texture2DMultisampled,
+                Texture2DMSArray =
+                       {
+                           ArraySize = ArrayCount,
+                           FirstArraySlice = ArrayIndex
+                       }
+            };
+        }
+
+        /// <summary>
+        /// Function to retrieve the view description for a 2D texture cube.
+        /// </summary>
+        private D3D11.ShaderResourceViewDescription1 GetDesc2DCube()
+        {
+            bool isMultisampled = ((Texture.MultisampleInfo.Count > 1)
+                                   || (Texture.MultisampleInfo.Quality > 0));
+
+            if (isMultisampled)
+            {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_MULTISAMPLE_CUBE);
             }
 
             if ((ArrayCount % 6) != 0)
-			{
-				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_VIEW_CUBE_ARRAY_SIZE_INVALID);
-			}
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_VIEW_CUBE_ARRAY_SIZE_INVALID);
+            }
 
-			int cubeArrayCount = ArrayCount / 6;
+            int cubeArrayCount = ArrayCount / 6;
 
-			return new D3D11.ShaderResourceViewDescription1
-			       {
-				       Format = (Format)Format,
-				       Dimension =
-					       cubeArrayCount > 1
-						       ? D3D.ShaderResourceViewDimension.TextureCubeArray
-						       : D3D.ShaderResourceViewDimension.TextureCube,
-				       TextureCubeArray =
-				       {
-					       CubeCount = cubeArrayCount,
-					       First2DArrayFace = ArrayIndex,
-					       MipLevels = MipCount,
-					       MostDetailedMip = MipSlice
-				       }
-			       };
-	    }
+            return new D3D11.ShaderResourceViewDescription1
+            {
+                Format = (Format)Format,
+                Dimension =
+                           cubeArrayCount > 1
+                               ? D3D.ShaderResourceViewDimension.TextureCubeArray
+                               : D3D.ShaderResourceViewDimension.TextureCube,
+                TextureCubeArray =
+                       {
+                           CubeCount = cubeArrayCount,
+                           First2DArrayFace = ArrayIndex,
+                           MipLevels = MipCount,
+                           MostDetailedMip = MipSlice
+                       }
+            };
+        }
 
-		/// <summary>
-		/// Function to initialize the shader resource view.
-		/// </summary>
-		/// <returns>The view that was created.</returns>
-		private protected override D3D11.ResourceView OnCreateNativeView()
-		{
-			D3D11.ShaderResourceViewDescription1 desc = IsCubeMap ? GetDesc2DCube() : GetDesc2D();
+        /// <summary>
+        /// Function to initialize the shader resource view.
+        /// </summary>
+        /// <returns>The view that was created.</returns>
+        private protected override D3D11.ResourceView OnCreateNativeView()
+        {
+            D3D11.ShaderResourceViewDescription1 desc = IsCubeMap ? GetDesc2DCube() : GetDesc2D();
 
-		    try
-		    {
-		        Graphics.Log.Print($"Creating D3D11 2D texture shader resource view for {Texture.Name}.", LoggingLevel.Simple);
+            try
+            {
+                Graphics.Log.Print($"Creating D3D11 2D texture shader resource view for {Texture.Name}.", LoggingLevel.Simple);
 
-		        // Create our SRV.
-		        Native = new D3D11.ShaderResourceView1(Texture.Graphics.D3DDevice, Texture.D3DResource, desc)
-		                 {
-		                     DebugName = $"'{Texture.Name}'_D3D11ShaderResourceView1_2D"
-		                 };
+                // Create our SRV.
+                Native = new D3D11.ShaderResourceView1(Texture.Graphics.D3DDevice, Texture.D3DResource, desc)
+                {
+                    DebugName = $"'{Texture.Name}'_D3D11ShaderResourceView1_2D"
+                };
 
                 Graphics.Log.Print($"Shader Resource View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Array Index: {ArrayIndex}, Array Count: {ArrayCount}, Cube Map: {IsCubeMap}", LoggingLevel.Verbose);
-		    }
-		    catch (DX.SharpDXException sDXEx)
-		    {
-		        if ((uint)sDXEx.ResultCode.Code == 0x80070057)
-		        {
-		            throw new GorgonException(GorgonResult.CannotCreate,
-		                                      string.Format(Resources.GORGFX_ERR_VIEW_CANNOT_CAST_FORMAT,
-		                                                    Texture.Format,
-		                                                    Format));
-		        }
-				
-		        throw;
-		    }
+            }
+            catch (DX.SharpDXException sDXEx)
+            {
+                if ((uint)sDXEx.ResultCode.Code == 0x80070057)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate,
+                                              string.Format(Resources.GORGFX_ERR_VIEW_CANNOT_CAST_FORMAT,
+                                                            Texture.Format,
+                                                            Format));
+                }
 
-		    return Native;
-		}
+                throw;
+            }
+
+            return Native;
+        }
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -704,12 +707,12 @@ namespace Gorgon.Graphics.Core
             }
 
             var newInfo = new GorgonTexture2DInfo(info)
-                          {
-                              Usage = info.Usage == ResourceUsage.Staging ? ResourceUsage.Default : info.Usage,
-                              Binding = (info.Binding & TextureBinding.ShaderResource) != TextureBinding.ShaderResource
+            {
+                Usage = info.Usage == ResourceUsage.Staging ? ResourceUsage.Default : info.Usage,
+                Binding = (info.Binding & TextureBinding.ShaderResource) != TextureBinding.ShaderResource
                                             ? (info.Binding | TextureBinding.ShaderResource)
                                             : info.Binding
-                          };
+            };
 
             GorgonTexture2D texture = initialData == null
                                           ? new GorgonTexture2D(graphics, newInfo)
@@ -812,7 +815,7 @@ namespace Gorgon.Graphics.Core
             using (IGorgonImage image = codec.LoadFromStream(stream, size))
             {
                 GorgonTexture2D texture = image.ToTexture2D(graphics, options);
-                GorgonTexture2DView view =  texture.GetShaderResourceView();
+                GorgonTexture2DView view = texture.GetShaderResourceView();
                 view.OwnsResource = true;
                 return view;
             }
@@ -887,12 +890,12 @@ namespace Gorgon.Graphics.Core
                 if (options == null)
                 {
                     options = new GorgonTexture2DLoadOptions
-                              {
-                                  Name = Path.GetFileNameWithoutExtension(filePath),
-                                  Usage = ResourceUsage.Default,
-                                  Binding = TextureBinding.ShaderResource,
-                                  IsTextureCube = image.ImageType == ImageType.ImageCube
-                              };
+                    {
+                        Name = Path.GetFileNameWithoutExtension(filePath),
+                        Usage = ResourceUsage.Default,
+                        Binding = TextureBinding.ShaderResource,
+                        IsTextureCube = image.ImageType == ImageType.ImageCube
+                    };
                 }
                 GorgonTexture2D texture = image.ToTexture2D(graphics, options);
                 GorgonTexture2DView view = texture.GetShaderResourceView();
@@ -900,9 +903,9 @@ namespace Gorgon.Graphics.Core
                 return view;
             }
         }
-		#endregion
+        #endregion
 
-		#region Constructor/Destructor.
+        #region Constructor/Destructor.
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonTexture2DView"/> class.
         /// </summary>
@@ -933,5 +936,5 @@ namespace Gorgon.Graphics.Core
             ArrayCount = arrayCount;
         }
         #endregion
-	}
+    }
 }

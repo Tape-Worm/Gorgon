@@ -25,14 +25,14 @@
 #endregion
 
 using System.Windows.Forms;
-using DX = SharpDX;
 using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Editor.Rendering;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Renderers;
-using Gorgon.Graphics;
-using Gorgon.Graphics.Fonts;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -99,7 +99,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="height">The height of the texture.</param>
         /// <returns>A new rectangle containing the size and location of the scaled image.</returns>
         protected override DX.RectangleF OnScaleImageToClientArea(int width, int height) => base.OnScaleImageToClientArea(width * 4, height * 3);
-            
+
 
         /// <summary>Function to scale the image to the window.</summary>
         /// <param name="width">The width of the texture.</param>
@@ -138,7 +138,7 @@ namespace Gorgon.Editor.ImageEditor
         protected override void OnDrawTexture(Gorgon2D renderer, IImageContent image, Gorgon2DBatchState batchState)
         {
             renderer.End();
-            
+
             float imageWidth = TextureBounds.Width / 4;
             float imageHeight = TextureBounds.Height / 3;
 
@@ -148,9 +148,9 @@ namespace Gorgon.Editor.ImageEditor
             float imageX = centerCanvasX - imageWidth;
             float imageY = centerCanvasY - (imageHeight / 2.0f);
 
-            var bounds = new DX.RectangleF(imageX, 
-                imageY, 
-                imageWidth, 
+            var bounds = new DX.RectangleF(imageX,
+                imageY,
+                imageWidth,
                 imageHeight);
 
             int cubeGroup = image.CurrentArrayIndex / 6;

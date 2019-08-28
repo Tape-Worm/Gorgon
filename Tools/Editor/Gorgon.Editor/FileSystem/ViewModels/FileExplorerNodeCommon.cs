@@ -67,7 +67,7 @@ namespace Gorgon.Editor.ViewModels
         protected IProject Project
         {
             get;
-            private set;                
+            private set;
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
         }
-        
+
         /// <summary>Property to set or return whether the node is open for editing.</summary>
         public abstract bool IsOpen
         {
@@ -347,7 +347,7 @@ namespace Gorgon.Editor.ViewModels
 
             while (parent.Parent != null)
             {
-                parent = parent.Parent;                
+                parent = parent.Parent;
             }
 
             return parent;
@@ -502,7 +502,7 @@ namespace Gorgon.Editor.ViewModels
             Parent = copy.Parent;
             FileSystemService = copy.FileSystemService;
             ViewModelFactory = copy.ViewModelFactory;
-            IsChanged = copy.IsChanged;            
+            IsChanged = copy.IsChanged;
         }
 
         /// <summary>

@@ -56,7 +56,7 @@ namespace Gorgon.Editor.ViewModels
             get;
             set;
         }
-                
+
         /// <summary>
         /// Property to return the action used to show progress for the copy operation.
         /// </summary>

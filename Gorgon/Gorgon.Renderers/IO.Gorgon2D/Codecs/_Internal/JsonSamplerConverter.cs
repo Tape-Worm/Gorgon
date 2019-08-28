@@ -127,7 +127,7 @@ namespace Gorgon.IO
             {
                 return null;
             }
-            
+
             GorgonColor? borderColor = null;
             Comparison? compareFunction = null;
             SampleFilter? filter = null;
@@ -138,7 +138,7 @@ namespace Gorgon.IO
             TextureWrap? wrapU = null;
             TextureWrap? wrapV = null;
             TextureWrap? wrapW = null;
-            
+
             var builder = new GorgonSamplerStateBuilder(_graphics);
 
             while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))

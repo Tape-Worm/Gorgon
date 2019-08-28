@@ -107,7 +107,7 @@ namespace Gorgon.Editor.ViewModels
             else
             {
                 _directoryInfo?.Refresh();
-            }            
+            }
 
             // Refresh all child nodes.
             foreach (IFileExplorerNodeVm node in Children.Traverse(n => n.Children))
@@ -161,7 +161,7 @@ namespace Gorgon.Editor.ViewModels
         public override async Task DeleteNodeAsync(Action<IFileExplorerNodeVm> onDeleted = null, CancellationToken? cancelToken = null)
         {
             IFileExplorerNodeVm rootNode = GetRoot();
-            
+
             // Callback used to notify for delete progress.
             void ProgressUpdate(FileSystemInfo info)
             {
@@ -173,7 +173,7 @@ namespace Gorgon.Editor.ViewModels
                     deletedNode = this;
                 }
                 else
-                {                    
+                {
                     deletedNode = Children.Traverse(n => n.Children)
                                           .FirstOrDefault(item => string.Equals(path, item.FullPath, StringComparison.OrdinalIgnoreCase));
                 }
@@ -240,7 +240,7 @@ namespace Gorgon.Editor.ViewModels
             finally
             {
                 NotifyPropertyChanged(nameof(Name));
-            }            
+            }
         }
 
         /// <summary>Function to copy the file node into another node.</summary>
@@ -271,7 +271,7 @@ namespace Gorgon.Editor.ViewModels
             IFileExplorerNodeVm result = null;
             long bytesTotal = copyNodeData.TotalSize ?? GetSizeInBytes();
             // Define a write buffer here so we don't create a new one for each file copied.
-            byte[] writeBuffer = new byte[81920]; 
+            byte[] writeBuffer = new byte[81920];
 
             try
             {
@@ -338,7 +338,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 // If we screw up, then undo our change.
                 destDir.Refresh();
-                if ((destDir.Exists) 
+                if ((destDir.Exists)
                     && (!copyNodeData.Destination.Children.Any(item => string.Equals(item.PhysicalPath, destDir.FullName.FormatDirectory(Path.DirectorySeparatorChar), StringComparison.OrdinalIgnoreCase))))
                 {
                     destDir.Delete(true);
@@ -396,7 +396,7 @@ namespace Gorgon.Editor.ViewModels
             else
             {
                 dupeNode.Refresh();
-            }            
+            }
 
             return dupeNode ?? this;
         }
@@ -411,7 +411,7 @@ namespace Gorgon.Editor.ViewModels
         /// </para>
         /// </remarks>
         public override long GetSizeInBytes() => Children.Count == 0 ? 0 : Children.Traverse(n => n.Children).Sum(n => n.GetSizeInBytes());
-        
+
         /// <summary>
         /// Function to export the contents of this node to the physical file system.
         /// </summary>
@@ -441,7 +441,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 newPath = exportNodeData.Destination.FullName;
             }
-            
+
             var destDir = new DirectoryInfo(newPath);
             long bytesTotal = exportNodeData.TotalSize ?? GetSizeInBytes();
             // Define a write buffer here so we don't create a new one for each file copied.

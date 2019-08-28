@@ -32,82 +32,82 @@ using System.Xml.Linq;
 
 namespace Gorgon.Core
 {
-	/// <summary>
-	/// Extension methods to provide formatting on the <see cref="string"/> type and additional functionality for the <see cref="StringBuilder"/> type.
-	/// </summary>
-	public static class GorgonStringFormattingExtension
-	{
-	    /// <summary>
-	    /// Function to break a string into an array of strings based on the newline control characters present in the text.
-	    /// </summary>
-	    /// <param name="renderText">The text to evaluate.</param>
-	    /// <param name="buffer">The array of strings representing a single line per newline control character.</param>
-	    public static void GetLines(this StringBuilder renderText, ref string[] buffer)
-	    {
-	        int lineCount = 0;
+    /// <summary>
+    /// Extension methods to provide formatting on the <see cref="string"/> type and additional functionality for the <see cref="StringBuilder"/> type.
+    /// </summary>
+    public static class GorgonStringFormattingExtension
+    {
+        /// <summary>
+        /// Function to break a string into an array of strings based on the newline control characters present in the text.
+        /// </summary>
+        /// <param name="renderText">The text to evaluate.</param>
+        /// <param name="buffer">The array of strings representing a single line per newline control character.</param>
+        public static void GetLines(this StringBuilder renderText, ref string[] buffer)
+        {
+            int lineCount = 0;
 
-	        if (renderText.Length == 0)
-	        {
-	            buffer = Array.Empty<string>();
-	            return;
-	        }
+            if (renderText.Length == 0)
+            {
+                buffer = Array.Empty<string>();
+                return;
+            }
 
-	        int startChar = 0;
-	        int charCount = 0;
+            int startChar = 0;
+            int charCount = 0;
 
             // Find out how many lines we have.
-	        for (int i = 0; i < renderText.Length; ++i)
-	        {
-	            char character = renderText[i];
+            for (int i = 0; i < renderText.Length; ++i)
+            {
+                char character = renderText[i];
 
-	            if (character == '\n')
-	            {
-	                ++lineCount;
-	            }
-	        }
+                if (character == '\n')
+                {
+                    ++lineCount;
+                }
+            }
 
             // We'll always have at least 1 line.
-	        ++lineCount;
-            
-	        if ((buffer == null) || (buffer.Length != lineCount))
-	        {
+            ++lineCount;
+
+            if ((buffer == null) || (buffer.Length != lineCount))
+            {
                 buffer = new string[lineCount];
-	        }
+            }
 
-	        int line = 0;
-	        for (int i = 0; i < renderText.Length; ++i)
-	        {
-	            char character = renderText[i];
+            int line = 0;
+            for (int i = 0; i < renderText.Length; ++i)
+            {
+                char character = renderText[i];
 
-	            if (character != '\n')
-	            {
-	                ++charCount;
+                if (character != '\n')
+                {
+                    ++charCount;
                     continue;
-	            }
+                }
 
-	            if (charCount == 0)
-	            {
-	                buffer[line] = "\n";
-	                ++startChar;
-	            }
-	            else
-	            {
-	                buffer[line] = renderText.ToString(startChar, charCount);
-	                startChar += charCount + 1;
-	            }
+                if (charCount == 0)
+                {
+                    buffer[line] = "\n";
+                    ++startChar;
+                }
+                else
+                {
+                    buffer[line] = renderText.ToString(startChar, charCount);
+                    startChar += charCount + 1;
+                }
 
-	            ++line;
-	            charCount = 0;
-	        }
+                ++line;
+                charCount = 0;
+            }
 
-	        if (line == lineCount)
-	        {
-	            return;
-	        }
+            if (line == lineCount)
+            {
+                return;
+            }
 
             // Get last line.
-	        buffer[line] = renderText.ToString(startChar, charCount);
-	    }
+            buffer[line] = renderText.ToString(startChar, charCount);
+        }
 
         /// <summary>
         /// Function to break a string into an array of strings based on the newline control characters present in the text.
@@ -124,48 +124,48 @@ namespace Gorgon.Core
         /// <returns>The index of the character, or -1 if not found.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <b>null</b>.</exception>
         public static int IndexOf(this StringBuilder theString, char character)
-		{
-			if (theString == null)
-			{
-				throw new ArgumentNullException(nameof(theString));
-			}
+        {
+            if (theString == null)
+            {
+                throw new ArgumentNullException(nameof(theString));
+            }
 
-			if (theString.Length < 1)
-			{
-				return -1;
-			}
+            if (theString.Length < 1)
+            {
+                return -1;
+            }
 
-			for (int i = 0; i < theString.Length; i++)
-			{
-				if (theString[i] == character)
-				{
-					return i;
-				}
-			}
+            for (int i = 0; i < theString.Length; i++)
+            {
+                if (theString[i] == character)
+                {
+                    return i;
+                }
+            }
 
-			return -1;
-		}
+            return -1;
+        }
 
-		/// <summary>
-		/// Function to find the index of a character in a <see cref="StringBuilder"/>.
-		/// </summary>
-		/// <param name="theString">The string to search.</param>
-		/// <param name="characters">Characters to search for.</param>
-		/// <param name="startIndex">[Optional] The index to start searching from.</param>
-		/// <param name="comparison">[Optional] One of the enumeration values that specifies the rules for the search.</param>
-		/// <returns>The index of the character, or -1 if not found.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <b>null</b>.</exception>
-		public static int IndexOf(this StringBuilder theString, string characters, int startIndex = 0, StringComparison comparison = StringComparison.InvariantCulture)
-		{
-			if (theString == null)
-			{
-				throw new ArgumentNullException(nameof(theString));
-			}
+        /// <summary>
+        /// Function to find the index of a character in a <see cref="StringBuilder"/>.
+        /// </summary>
+        /// <param name="theString">The string to search.</param>
+        /// <param name="characters">Characters to search for.</param>
+        /// <param name="startIndex">[Optional] The index to start searching from.</param>
+        /// <param name="comparison">[Optional] One of the enumeration values that specifies the rules for the search.</param>
+        /// <returns>The index of the character, or -1 if not found.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <b>null</b>.</exception>
+        public static int IndexOf(this StringBuilder theString, string characters, int startIndex = 0, StringComparison comparison = StringComparison.InvariantCulture)
+        {
+            if (theString == null)
+            {
+                throw new ArgumentNullException(nameof(theString));
+            }
 
-			if (theString.Length < 1)
-			{
-				return -1;
-			}
+            if (theString.Length < 1)
+            {
+                return -1;
+            }
 
             return string.IsNullOrWhiteSpace(characters)
                 ? -1
@@ -180,52 +180,52 @@ namespace Gorgon.Core
         /// <returns>The index of the character, or -1 if not found.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <b>null</b>.</exception>
         public static int LastIndexOf(this StringBuilder theString, char character)
-		{
-			if (theString == null)
-			{
-				throw new ArgumentNullException(nameof(theString));
-			}
+        {
+            if (theString == null)
+            {
+                throw new ArgumentNullException(nameof(theString));
+            }
 
-			if (theString.Length < 1)
-			{
-				return -1;
-			}
+            if (theString.Length < 1)
+            {
+                return -1;
+            }
 
-			for (int i = theString.Length - 1; i >= 0; i--)
-			{
-				if (theString[i] == character)
-				{
-					return i;
-				}
-			}
+            for (int i = theString.Length - 1; i >= 0; i--)
+            {
+                if (theString[i] == character)
+                {
+                    return i;
+                }
+            }
 
-			return -1;
-		}
+            return -1;
+        }
 
-		/// <summary>
-		/// Function to find the last index of a character in a <see cref="StringBuilder"/>.
-		/// </summary>
-		/// <param name="theString">The string to search.</param>
-		/// <param name="characters">Characters to search for.</param>
-		/// <param name="comparison">[Optional] One of the enumeration values that specifies the rules for the search.</param>
-		/// <returns>The index of the character, or -1 if not found.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <b>null</b>.</exception>
-		public static int LastIndexOf(this StringBuilder theString, string characters, StringComparison comparison = StringComparison.InvariantCulture)
-		{
-			if (theString == null)
-			{
-				throw new ArgumentNullException(nameof(theString));
-			}
+        /// <summary>
+        /// Function to find the last index of a character in a <see cref="StringBuilder"/>.
+        /// </summary>
+        /// <param name="theString">The string to search.</param>
+        /// <param name="characters">Characters to search for.</param>
+        /// <param name="comparison">[Optional] One of the enumeration values that specifies the rules for the search.</param>
+        /// <returns>The index of the character, or -1 if not found.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <b>null</b>.</exception>
+        public static int LastIndexOf(this StringBuilder theString, string characters, StringComparison comparison = StringComparison.InvariantCulture)
+        {
+            if (theString == null)
+            {
+                throw new ArgumentNullException(nameof(theString));
+            }
 
-			if (theString.Length < 1)
-			{
-				return -1;
-			}
+            if (theString.Length < 1)
+            {
+                return -1;
+            }
 
-			if (string.IsNullOrWhiteSpace(characters))
-			{
-				return -1;
-			}
+            if (string.IsNullOrWhiteSpace(characters))
+            {
+                return -1;
+            }
 
             return characters.Length > theString.Length ? -1 : theString.ToString().LastIndexOf(characters, comparison);
         }
@@ -239,21 +239,21 @@ namespace Gorgon.Core
         /// This method addresses a shortcoming of the Linq-to-XML <see cref="XDocument"/>.<see cref="XNode.ToString()"/> method. The original method leaves out the declaration element when converted to a string.
         /// </remarks>
         public static string ToStringWithDeclaration(this XDocument document)
-		{
-			if (document == null)
-			{
-				throw new ArgumentNullException(nameof(document));
-			}
+        {
+            if (document == null)
+            {
+                throw new ArgumentNullException(nameof(document));
+            }
 
-			var serializedXML = new StringBuilder();
+            var serializedXML = new StringBuilder();
 
-			using (TextWriter writer = new StringWriter(serializedXML))
-			{
-				document.Save(writer);
-			}
+            using (TextWriter writer = new StringWriter(serializedXML))
+            {
+                document.Save(writer);
+            }
 
-			return serializedXML.ToString();
-		}
+            return serializedXML.ToString();
+        }
 
         /// <summary>
         /// Function to shorten a string and prefix an ellipses to the <see cref="string"/>.
@@ -422,22 +422,22 @@ namespace Gorgon.Core
             return result;
         }
 
-		/// <summary>
-		/// Function to return the length of a <see cref="string"/>, in bytes, with the specified <see cref="Encoding"/>.
-		/// </summary>
-		/// <param name="value">The string to measure.</param>
-		/// <param name="includeLength"><b>true</b> to include the number of bytes for the encoded length, <b>false</b> to exclude.</param>
-		/// <param name="encoding">[Optional] The encoding for the string.</param>
-		/// <returns>The length of the string, in bytes.</returns>
-		/// <remarks>
-		/// <para>
-		/// If the <paramref name="includeLength"/> parameter is <b>true</b>, then the return value will also include the number of 7-bit bytes required to encode the length of the string.
-		/// </para>
-		/// <para>
-		/// If the <paramref name="encoding"/> parameter is <b>null</b>, then UTF-8 encoding will be used.
-		/// </para>
-		/// </remarks>
-		public static int GetByteCount(this string value, bool includeLength, Encoding encoding = null)
+        /// <summary>
+        /// Function to return the length of a <see cref="string"/>, in bytes, with the specified <see cref="Encoding"/>.
+        /// </summary>
+        /// <param name="value">The string to measure.</param>
+        /// <param name="includeLength"><b>true</b> to include the number of bytes for the encoded length, <b>false</b> to exclude.</param>
+        /// <param name="encoding">[Optional] The encoding for the string.</param>
+        /// <returns>The length of the string, in bytes.</returns>
+        /// <remarks>
+        /// <para>
+        /// If the <paramref name="includeLength"/> parameter is <b>true</b>, then the return value will also include the number of 7-bit bytes required to encode the length of the string.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="encoding"/> parameter is <b>null</b>, then UTF-8 encoding will be used.
+        /// </para>
+        /// </remarks>
+        public static int GetByteCount(this string value, bool includeLength, Encoding encoding = null)
         {
             if (string.IsNullOrEmpty(value))
             {
@@ -452,20 +452,20 @@ namespace Gorgon.Core
             int size = encoding.GetByteCount(value);
             int result = size;
 
-	        if (!includeLength)
-	        {
-		        return result;
-	        }
+            if (!includeLength)
+            {
+                return result;
+            }
 
-	        result++;
+            result++;
 
-	        while (size >= 0x80)
-	        {
-		        size >>= 7;
-		        result++;
-	        }
+            while (size >= 0x80)
+            {
+                size >>= 7;
+                result++;
+            }
 
-	        return result;
+            return result;
         }
 
         /// <summary>
@@ -475,20 +475,20 @@ namespace Gorgon.Core
         /// <returns><b>true</b> if the string is composed of whitespace, or is empty. <b>false</b> if not.</returns>
         /// <exception cref="ArgumentNullException">Thrown if the <paramref name="value"/> parameter is <b>null</b>.</exception>
 	    public static bool IsWhiteSpaceOrEmpty(this string value)
-	    {
-	        if (value == null)
-	        {
+        {
+            if (value == null)
+            {
                 throw new ArgumentNullException(nameof(value));
-	        }
+            }
 
-	        for (int i = 0; i < value.Length; ++i)
-	        {
-	            if (!char.IsWhiteSpace(value[i]))
-	            {
-	                return false;
-	            }
-	        }
-	        return true;
-	    }
-	}
+            for (int i = 0; i < value.Length; ++i)
+            {
+                if (!char.IsWhiteSpace(value[i]))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
 }

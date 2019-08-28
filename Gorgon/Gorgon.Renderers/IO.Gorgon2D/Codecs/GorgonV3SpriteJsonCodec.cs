@@ -71,9 +71,9 @@ namespace Gorgon.IO
         {
             var reader = new StreamReader(stream, Encoding.UTF8, true, 1024, true);
             var jsonReader = new JsonTextReader(reader)
-                             {
-                                 CloseInput = true
-                             };
+            {
+                CloseInput = true
+            };
             return jsonReader;
         }
 
@@ -115,7 +115,7 @@ namespace Gorgon.IO
                     return false;
                 }
 
-                return (Version.TryParse(reader.Value.ToString(), out Version version)) 
+                return (Version.TryParse(reader.Value.ToString(), out Version version))
                        && (version.Equals(Version));
             }
 
@@ -166,7 +166,7 @@ namespace Gorgon.IO
             byte[] fileBuffer = null;
 
             try
-            {                
+            {
                 pos = stream.Position;
 
                 if (stream.Length < 4)
@@ -273,9 +273,9 @@ namespace Gorgon.IO
 
             // Set up serialization so we can convert our more complicated structures.
             var serializer = new JsonSerializer
-                             {
-                                 CheckAdditionalContent = false
-                             };
+            {
+                CheckAdditionalContent = false
+            };
 
             serializer.Converters.Add(new JsonVector2Converter());
             serializer.Converters.Add(new JsonVector3Converter());
@@ -314,7 +314,7 @@ namespace Gorgon.IO
         public GorgonV3SpriteJsonCodec(Gorgon2D renderer)
             : base(renderer, Resources.GOR2DIO_V3_JSON_CODEC, Resources.GOR2DIO_V3_JSON_CODEC_DESCRIPTION)
         {
-            
+
         }
         #endregion
     }

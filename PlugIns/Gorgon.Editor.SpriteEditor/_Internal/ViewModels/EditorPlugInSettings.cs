@@ -24,9 +24,9 @@
 // 
 #endregion
 
-using DX = SharpDX;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -109,13 +109,13 @@ namespace Gorgon.Editor.SpriteEditor
             get => _settings.ManualVertexEditorBounds;
             set
             {
-                if (_settings.ManualVertexEditorBounds== value)
+                if (_settings.ManualVertexEditorBounds == value)
                 {
                     return;
                 }
 
                 OnPropertyChanging();
-                _settings.ManualVertexEditorBounds= value;
+                _settings.ManualVertexEditorBounds = value;
                 OnPropertyChanged();
             }
         }

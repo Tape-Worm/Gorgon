@@ -30,29 +30,29 @@ using Gorgon.Core;
 
 namespace Gorgon.IO
 {
-	/// <summary>
-	/// Progress information passed to a calling application via the <see cref="IGorgonFileSystemWriter{T}.CopyFromAsync"/> method.
-	/// </summary>
-	/// <remarks>
-	/// This information only includes file copy information. The directory that the file is copied from is stored in the <see cref="File"/> value and can be obtained from there.
-	/// </remarks>
-	public readonly struct GorgonWriterCopyProgress
+    /// <summary>
+    /// Progress information passed to a calling application via the <see cref="IGorgonFileSystemWriter{T}.CopyFromAsync"/> method.
+    /// </summary>
+    /// <remarks>
+    /// This information only includes file copy information. The directory that the file is copied from is stored in the <see cref="File"/> value and can be obtained from there.
+    /// </remarks>
+    public readonly struct GorgonWriterCopyProgress
         : IEquatable<GorgonWriterCopyProgress>
-	{
+    {
         #region Variables.
         /// <summary>
         /// The current file being copied.
         /// </summary>
         [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "Yes, it is immutable")]
-		public readonly IGorgonVirtualFile File;
-		/// <summary>
-		/// The total number of files being copied.
-		/// </summary>
-		public readonly int TotalFiles;
-		/// <summary>
-		/// The total number of directories being copied.
-		/// </summary>
-		public readonly int TotalDirectories;
+        public readonly IGorgonVirtualFile File;
+        /// <summary>
+        /// The total number of files being copied.
+        /// </summary>
+        public readonly int TotalFiles;
+        /// <summary>
+        /// The total number of directories being copied.
+        /// </summary>
+        public readonly int TotalDirectories;
         /// <summary>
         /// The number of files copied at this point.
         /// </summary>
@@ -110,12 +110,12 @@ namespace Gorgon.IO
         /// <param name="totalFiles">The total number of files.</param>
         /// <param name="totalDirectories">The total number of directories.</param>
         public GorgonWriterCopyProgress(IGorgonVirtualFile file, int filesCopied, int totalFiles, int totalDirectories)
-		{
-			File = file;
-			FilesCopied = filesCopied;
-			TotalFiles = totalFiles;
-			TotalDirectories = totalDirectories;
-		}
+        {
+            File = file;
+            FilesCopied = filesCopied;
+            TotalFiles = totalFiles;
+            TotalDirectories = totalDirectories;
+        }
         #endregion
     }
 }

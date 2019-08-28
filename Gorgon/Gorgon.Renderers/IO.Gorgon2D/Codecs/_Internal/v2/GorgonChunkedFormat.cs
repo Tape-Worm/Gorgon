@@ -32,20 +32,20 @@ using Gorgon.IO.Properties;
 
 namespace GorgonLibrary.IO
 {
-	/// <summary>
-	/// The access mode for the file chunking object.
-	/// </summary>
-	internal enum ChunkAccessMode
-	{
-		/// <summary>
-		/// Chunk object is in read only mode.
-		/// </summary>
-		Read = 0,
-		/// <summary>
-		/// Chunk object is in write only mode.
-		/// </summary>
-		Write = 1
-	}
+    /// <summary>
+    /// The access mode for the file chunking object.
+    /// </summary>
+    internal enum ChunkAccessMode
+    {
+        /// <summary>
+        /// Chunk object is in read only mode.
+        /// </summary>
+        Read = 0,
+        /// <summary>
+        /// Chunk object is in write only mode.
+        /// </summary>
+        Write = 1
+    }
 
     /// <summary>
     /// Reads/writes Gorgon chunked formatted data.
@@ -66,10 +66,10 @@ namespace GorgonLibrary.IO
 
         #region Variables.
         private bool _disposed;                                                 // Flag to indicate that the object was disposed.
-		private ulong _currentChunk;											// Our current chunk.
-		private long _chunkStart;												// The start of the current chunk.
-		private long _chunkEnd;													// The end of the current chunk.
-		private uint _chunkSize;												// Size of the chunk.
+        private ulong _currentChunk;                                            // Our current chunk.
+        private long _chunkStart;                                               // The start of the current chunk.
+        private long _chunkEnd;                                                 // The end of the current chunk.
+        private uint _chunkSize;												// Size of the chunk.
         #endregion
 
         #region Properties.
@@ -82,55 +82,55 @@ namespace GorgonLibrary.IO
             set;
         }
 
-		/// <summary>
-		/// Property to return the writer for our stream.
-		/// </summary>
-		protected GorgonBinaryWriter Writer
-		{
-			get;
-			private set;
-		}
+        /// <summary>
+        /// Property to return the writer for our stream.
+        /// </summary>
+        protected GorgonBinaryWriter Writer
+        {
+            get;
+            private set;
+        }
 
-		/// <summary>
-		/// Property to return the reade for our stream.
-		/// </summary>
-		protected GorgonBinaryReader Reader
-		{
-			get;
-			private set;
-		}
+        /// <summary>
+        /// Property to return the reade for our stream.
+        /// </summary>
+        protected GorgonBinaryReader Reader
+        {
+            get;
+            private set;
+        }
 
-		/// <summary>
-		/// Property to return the current mode for the chunking object.
-		/// </summary>
-		public ChunkAccessMode ChunkAccessMode
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the current mode for the chunking object.
+        /// </summary>
+        public ChunkAccessMode ChunkAccessMode
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the underlying stream for the chunking object.
-		/// </summary>
-	    public Stream BaseStream => ChunkAccessMode == ChunkAccessMode.Write ? Writer.BaseStream : Reader.BaseStream;
+        /// <summary>
+        /// Property to return the underlying stream for the chunking object.
+        /// </summary>
+        public Stream BaseStream => ChunkAccessMode == ChunkAccessMode.Write ? Writer.BaseStream : Reader.BaseStream;
         #endregion
 
         #region Methods.
-		/// <summary>
-		/// Function to validate the access mode.
-		/// </summary>
-		/// <param name="isWrite">TRUE if writing, FALSE if not.</param>
-		protected void ValidateAccess(bool isWrite)
-		{
-			if ((isWrite) && (Writer == null))
-			{
-				throw new IOException(Resources.GOR2DIO_ERR_STREAM_IS_READ_ONLY);
-			}
+        /// <summary>
+        /// Function to validate the access mode.
+        /// </summary>
+        /// <param name="isWrite">TRUE if writing, FALSE if not.</param>
+        protected void ValidateAccess(bool isWrite)
+        {
+            if ((isWrite) && (Writer == null))
+            {
+                throw new IOException(Resources.GOR2DIO_ERR_STREAM_IS_READ_ONLY);
+            }
 
-			if ((!isWrite) && (Reader == null))
-			{
+            if ((!isWrite) && (Reader == null))
+            {
                 throw new IOException(Resources.GOR2DIO_ERR_STREAM_IS_WRITE_ONLY);
-			}
-		}
+            }
+        }
 
         /// <summary>
         /// Function to convert a chunk name into a code.
@@ -162,11 +162,11 @@ namespace GorgonLibrary.IO
         /// then only the first 8 characters will be used.</para>
         /// </remarks>
         public void Begin(string chunkName)
-		{
-			if (chunkName == null)
-			{
-				throw new ArgumentNullException(nameof(chunkName));
-			}
+        {
+            if (chunkName == null)
+            {
+                throw new ArgumentNullException(nameof(chunkName));
+            }
 
             chunkName = chunkName.Trim();
 
@@ -178,83 +178,83 @@ namespace GorgonLibrary.IO
                 return;
             }
 
-			if (_currentChunk != 0) 
-			{
-				End();
-			}
-            
-			_currentChunk = newChunkID;
+            if (_currentChunk != 0)
+            {
+                End();
+            }
 
-			if (ChunkAccessMode == ChunkAccessMode.Write)
-			{
-				// Write out the chunk ID.
-				Writer.Write(_currentChunk);
+            _currentChunk = newChunkID;
 
-				// Write out the size value now, we'll come back to it later.
-				Writer.Write((uint)0);
+            if (ChunkAccessMode == ChunkAccessMode.Write)
+            {
+                // Write out the chunk ID.
+                Writer.Write(_currentChunk);
 
-				// Record the current position in the stream.
-				_chunkStart = Writer.BaseStream.Position;
-			}
-			else
-			{
-				// Get the current chunk.
-				ulong chunkHeader = Reader.ReadUInt64();
+                // Write out the size value now, we'll come back to it later.
+                Writer.Write((uint)0);
 
-				if (chunkHeader != _currentChunk)
-				{
-				    throw new InvalidDataException($"Invalid chunk code: {_currentChunk.FormatHex()}  Expected: {chunkHeader.FormatHex()}");
-				}
+                // Record the current position in the stream.
+                _chunkStart = Writer.BaseStream.Position;
+            }
+            else
+            {
+                // Get the current chunk.
+                ulong chunkHeader = Reader.ReadUInt64();
 
-				// Read the size of this chunk.
-				_chunkSize = Reader.ReadUInt32();
-								
-				_chunkStart = Reader.BaseStream.Position;
-				_chunkEnd += _chunkSize + _chunkStart;
-			}
-		}
+                if (chunkHeader != _currentChunk)
+                {
+                    throw new InvalidDataException($"Invalid chunk code: {_currentChunk.FormatHex()}  Expected: {chunkHeader.FormatHex()}");
+                }
+
+                // Read the size of this chunk.
+                _chunkSize = Reader.ReadUInt32();
+
+                _chunkStart = Reader.BaseStream.Position;
+                _chunkEnd += _chunkSize + _chunkStart;
+            }
+        }
 
         /// <summary>
         /// Function to end the chunk stream.
         /// </summary>
         /// <exception cref="IOException">Thrown when the stream cannot seek and reading has prematurely ended before getting the end of the chunk.</exception>
         public void End()
-		{
-			// We don't have a chunk being processed right now, so leave.
-			if (_currentChunk == 0)
-			{
-				return;
-			}
+        {
+            // We don't have a chunk being processed right now, so leave.
+            if (_currentChunk == 0)
+            {
+                return;
+            }
 
-			// Record the end of the chunk.			
+            // Record the end of the chunk.			
 
-			if (ChunkAccessMode == ChunkAccessMode.Write)
-			{
-				_chunkEnd = Writer.BaseStream.Position;
-				_chunkSize = (uint)(_chunkEnd - _chunkStart);
-				Writer.BaseStream.Position = _chunkStart - sizeof(uint);
-				Writer.Write(_chunkSize);
-				Writer.BaseStream.Position = _chunkEnd;
-			}
-			else
-			{
-				_chunkEnd = Reader.BaseStream.Position;
-				// If we end the read prematurely, then just skip to the next chunk.
-				long skipAmount = _chunkEnd - (_chunkStart + _chunkSize);
+            if (ChunkAccessMode == ChunkAccessMode.Write)
+            {
+                _chunkEnd = Writer.BaseStream.Position;
+                _chunkSize = (uint)(_chunkEnd - _chunkStart);
+                Writer.BaseStream.Position = _chunkStart - sizeof(uint);
+                Writer.Write(_chunkSize);
+                Writer.BaseStream.Position = _chunkEnd;
+            }
+            else
+            {
+                _chunkEnd = Reader.BaseStream.Position;
+                // If we end the read prematurely, then just skip to the next chunk.
+                long skipAmount = _chunkEnd - (_chunkStart + _chunkSize);
 
-				// Skip ahead.
-				if (skipAmount > 0)
-				{
-					Reader.BaseStream.Seek(skipAmount, SeekOrigin.Current);
-				}
-			}
+                // Skip ahead.
+                if (skipAmount > 0)
+                {
+                    Reader.BaseStream.Seek(skipAmount, SeekOrigin.Current);
+                }
+            }
 
-			// Reset the chunk status.
-			_currentChunk = 0;
-			_chunkStart = 0;
-			_chunkSize = 0;
-			_chunkEnd = 0;
-		}
+            // Reset the chunk status.
+            _currentChunk = 0;
+            _chunkStart = 0;
+            _chunkSize = 0;
+            _chunkEnd = 0;
+        }
 
         /// <summary>
         /// Function to skip the specified number of bytes in the stream.
@@ -287,37 +287,37 @@ namespace GorgonLibrary.IO
         /// <para>Thrown if the stream can't perform seek operations.</para>
         /// </exception>
         protected GorgonChunkedFormat(Stream stream, ChunkAccessMode accessMode)
-        {		
-			if (stream == null)
-			{
-				throw new ArgumentNullException(nameof(stream));
-			}
+        {
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
 
-			ChunkAccessMode = accessMode;
+            ChunkAccessMode = accessMode;
 
             if (!stream.CanSeek)
             {
                 throw new ArgumentException(Resources.GOR2DIO_ERR_STREAM_UNSEEKABLE, nameof(stream));
             }
 
-			if (accessMode == ChunkAccessMode.Write)
-			{
-				if (!stream.CanWrite)
-				{
-					throw new ArgumentException(Resources.GOR2DIO_ERR_STREAM_IS_READ_ONLY, nameof(accessMode));
-				}
+            if (accessMode == ChunkAccessMode.Write)
+            {
+                if (!stream.CanWrite)
+                {
+                    throw new ArgumentException(Resources.GOR2DIO_ERR_STREAM_IS_READ_ONLY, nameof(accessMode));
+                }
 
-				Writer = new GorgonBinaryWriter(stream, true);
-			}
-			else
-			{
-				if (!stream.CanRead)
-				{
-					throw new ArgumentException(Resources.GOR2DIO_ERR_STREAM_IS_WRITE_ONLY, nameof(accessMode));
-				}
+                Writer = new GorgonBinaryWriter(stream, true);
+            }
+            else
+            {
+                if (!stream.CanRead)
+                {
+                    throw new ArgumentException(Resources.GOR2DIO_ERR_STREAM_IS_WRITE_ONLY, nameof(accessMode));
+                }
 
-				Reader = new GorgonBinaryReader(stream, true);
-			}
+                Reader = new GorgonBinaryReader(stream, true);
+            }
         }
         #endregion
 
@@ -328,21 +328,21 @@ namespace GorgonLibrary.IO
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-	        if (_disposed)
-	        {
-		        return;
-	        }
+            if (_disposed)
+            {
+                return;
+            }
 
-	        if (disposing)
-	        {
-	            Reader?.Dispose();
+            if (disposing)
+            {
+                Reader?.Dispose();
 
-	            Writer?.Dispose();
-	        }
+                Writer?.Dispose();
+            }
 
-	        Writer = null;
-	        Reader = null;
-	        _disposed = true;
+            Writer = null;
+            Reader = null;
+            _disposed = true;
         }
 
         /// <summary>

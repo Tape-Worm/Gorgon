@@ -24,9 +24,9 @@
 // 
 #endregion
 
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
@@ -45,10 +45,10 @@ namespace Gorgon.Renderers
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return whether the projection changed or not.
         /// </summary>
-		bool ProjectionChanged
+        bool ProjectionChanged
         {
             get;
         }
@@ -69,50 +69,50 @@ namespace Gorgon.Renderers
             get;
         }
 
-		/// <summary>
-		/// Property to set or return the projection view dimensions for the camera.
-		/// </summary>
-		DX.Size2F ViewDimensions
-		{
-		    get;
-		    set;
-		}
+        /// <summary>
+        /// Property to set or return the projection view dimensions for the camera.
+        /// </summary>
+        DX.Size2F ViewDimensions
+        {
+            get;
+            set;
+        }
 
-		/// <summary>
-		/// Property to set or return the minimum depth for the camera.
-		/// </summary>
-		float MinimumDepth
-		{
-		    get;
-		    set;
-		}
+        /// <summary>
+        /// Property to set or return the minimum depth for the camera.
+        /// </summary>
+        float MinimumDepth
+        {
+            get;
+            set;
+        }
 
-		/// <summary>
-		/// Property to set or return the maximum depth for the camera.
-		/// </summary>
-		float MaximumDepth
-		{
-			get;
-		    set;
-		}
+        /// <summary>
+        /// Property to set or return the maximum depth for the camera.
+        /// </summary>
+        float MaximumDepth
+        {
+            get;
+            set;
+        }
 
-	    /// <summary>
-	    /// Property to set or return a flag to indicate that the renderer should automatically update this camera when the render target size changes.
-	    /// </summary>
-	    /// <remarks>
-	    /// <para>
-	    /// When this flag is set to <b>true</b>, the renderer will automatically update the <see cref="ViewDimensions"/> for this camera when the current render target is resized (typically in response
-	    /// to a window resize event). However, this is not always desirable, and when set to <b>false</b>, the camera <see cref="ViewDimensions"/> will not be resized.
-	    /// </para>
-	    /// <para>
-	    /// If this value is set to <b>false</b>, then it is the responsibility of the developer to update the camera manually when required.
-	    /// </para>
-	    /// </remarks>
-	    bool AllowUpdateOnResize
-	    {
-	        get;
-	        set;
-	    }
+        /// <summary>
+        /// Property to set or return a flag to indicate that the renderer should automatically update this camera when the render target size changes.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// When this flag is set to <b>true</b>, the renderer will automatically update the <see cref="ViewDimensions"/> for this camera when the current render target is resized (typically in response
+        /// to a window resize event). However, this is not always desirable, and when set to <b>false</b>, the camera <see cref="ViewDimensions"/> will not be resized.
+        /// </para>
+        /// <para>
+        /// If this value is set to <b>false</b>, then it is the responsibility of the developer to update the camera manually when required.
+        /// </para>
+        /// </remarks>
+        bool AllowUpdateOnResize
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Property to return the width of the first render target in <see cref="GorgonGraphics.RenderTargets"/>.
@@ -130,34 +130,34 @@ namespace Gorgon.Renderers
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return the position of the camera.
         /// </summary>
-		DX.Vector3 Position
+        DX.Vector3 Position
         {
             get;
             set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the viewable region for the camera.
         /// </summary>
         /// <remarks>
         /// This represents the boundaries of viewable space for the camera using its coordinate system. The upper left of the region corresponds with the upper left of the active render target at minimum 
         /// Z depth, and the lower right of the region corresponds with the lower right of the active render target at minimum Z depth.
         /// </remarks>
-		DX.RectangleF ViewableRegion
+        DX.RectangleF ViewableRegion
         {
             get;
         }
 
-		/// <summary>
-		/// Property to return the 2D renderer assigned to this camera.
-		/// </summary>
-		Gorgon2D Renderer
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the 2D renderer assigned to this camera.
+        /// </summary>
+        Gorgon2D Renderer
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
@@ -206,16 +206,16 @@ namespace Gorgon.Renderers
         /// <b>true</b>, then both the camera position, rotation and zoom will be taken into account when projecting.  If it is set to <b>false</b> only the projection will 
         /// be used to convert the position.  This means if the camera is moved or moving, then the converted screen point will not reflect that.</remarks>
         void Unproject(ref DX.Vector3 worldSpacePosition, out DX.Vector3 result, bool includeViewTransform = true);
-        
+
         /// <summary>
-	    /// Function to project a screen position into camera space.
-	    /// </summary>
-	    /// <param name="screenPosition">3D Position on the screen.</param>
-	    /// <param name="includeViewTransform">[Optional] <b>true</b> to include the view transformation in the projection calculations, <b>false</b> to only use the projection.</param>
-	    /// <returns>The projected 3D position of the screen.</returns>
-	    /// <remarks>Use this to convert a position in screen space into the camera view/projection space.  If the <paramref name="includeViewTransform"/> is set to 
-	    /// <b>true</b>, then both the camera position, rotation and zoom will be taken into account when projecting.  If it is set to <b>false</b> only the projection will 
-	    /// be used to convert the position.  This means if the camera is moved or moving, then the converted screen point will not reflect that.</remarks>
+        /// Function to project a screen position into camera space.
+        /// </summary>
+        /// <param name="screenPosition">3D Position on the screen.</param>
+        /// <param name="includeViewTransform">[Optional] <b>true</b> to include the view transformation in the projection calculations, <b>false</b> to only use the projection.</param>
+        /// <returns>The projected 3D position of the screen.</returns>
+        /// <remarks>Use this to convert a position in screen space into the camera view/projection space.  If the <paramref name="includeViewTransform"/> is set to 
+        /// <b>true</b>, then both the camera position, rotation and zoom will be taken into account when projecting.  If it is set to <b>false</b> only the projection will 
+        /// be used to convert the position.  This means if the camera is moved or moving, then the converted screen point will not reflect that.</remarks>
         DX.Vector3 Project(DX.Vector3 screenPosition, bool includeViewTransform = true);
 
         /// <summary>

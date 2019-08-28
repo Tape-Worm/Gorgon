@@ -35,88 +35,88 @@ using Gorgon.PlugIns;
 
 namespace Gorgon.IO.Providers
 {
-	/// <summary>
-	/// An implementation of the <see cref="IGorgonFileSystemProvider"/> that acts similar to a ram disk.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// File system providers provide access to a physical file system, and provides the communications necessary to read data from that physical file system. When used in conjunction with the <see cref="IGorgonFileSystem"/> 
-	/// object, a provider enables access to multiple types of physical file systems so they seamlessly appear to be from a single file system. The underlying system has no idea if the file is a standard 
-	/// file system file, or a file inside of a zip archive.  
-	/// </para>
-	/// <para>
-	/// <note type="important">
-	/// <para>
-	/// As the documentation states, providers can read data from a file system. However, no mechanism is available to write to a file system through a provider. This is by design. The <see cref="IGorgonFileSystemWriter{T}"/> 
-	/// type allows writing to a file system via a predefined area in a physical file system. 
-	/// </para>
-	/// </note>
-	/// </para>
-	/// <para>
-	/// When this type is implemented, it can be made to read any type of file system, including those that store their contents in a packed file format (e.g. Zip). And since this type inherits from <see cref="GorgonPlugIn"/>, 
-	/// the file system provider can be loaded dynamically through Gorgon's plug in system.
-	/// </para>
-	/// <para>
-	/// Some providers may not use a physical location on the operating system file system. In such cases, implementors of a <see cref="IGorgonFileSystemProvider"/> must provide a prefix for a physical location 
-	/// (e.g. <c>Mount("::\\Prefix\DirectoryName", "/");</c>, <c>Mount("::\\Prefix", "/")</c>, or whatever else the provider chooses). This prefix is specific to the provider and should be made available via 
-	/// the <see cref="Prefix"/> property. The prefix must <u>always</u> begin with the characters <c>::\\</c>. Otherwise, the <see cref="IGorgonFileSystem"/> will not know how to parse the physical location.
-	/// </para>
-	/// <para>
-	/// This implementation uses a dictionary of <see cref="MemoryStream"/> objects to hold file data. When mounting using this provider, call <see cref="IGorgonFileSystem.Mount"/> with the 
-	/// <c>physicalLocation</c> parameter set to: <c>::\\Memory</c>.
-	/// </para>
-	/// <para>
-	/// The streams used to hold the file system data are local to this object. Because of this, creating multiple instances of this provider will create multiple physical file systems. 
-	/// </para>
-	/// <para>
-	/// Because this provider stores file data in memory, it is not recommended for use with a large amount of file data.
-	/// </para>
-	/// </remarks>
-	public class GorgonFileSystemRamDiskProvider
-		: GorgonPlugIn, IGorgonFileSystemProvider
-	{
-		#region Properties.
-		/// <summary>
-		/// Property to return the list of files in the physical file system.
-		/// </summary>
-		internal RamDiskFileSystem FileData
-		{
-			get;
-		}
+    /// <summary>
+    /// An implementation of the <see cref="IGorgonFileSystemProvider"/> that acts similar to a ram disk.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// File system providers provide access to a physical file system, and provides the communications necessary to read data from that physical file system. When used in conjunction with the <see cref="IGorgonFileSystem"/> 
+    /// object, a provider enables access to multiple types of physical file systems so they seamlessly appear to be from a single file system. The underlying system has no idea if the file is a standard 
+    /// file system file, or a file inside of a zip archive.  
+    /// </para>
+    /// <para>
+    /// <note type="important">
+    /// <para>
+    /// As the documentation states, providers can read data from a file system. However, no mechanism is available to write to a file system through a provider. This is by design. The <see cref="IGorgonFileSystemWriter{T}"/> 
+    /// type allows writing to a file system via a predefined area in a physical file system. 
+    /// </para>
+    /// </note>
+    /// </para>
+    /// <para>
+    /// When this type is implemented, it can be made to read any type of file system, including those that store their contents in a packed file format (e.g. Zip). And since this type inherits from <see cref="GorgonPlugIn"/>, 
+    /// the file system provider can be loaded dynamically through Gorgon's plug in system.
+    /// </para>
+    /// <para>
+    /// Some providers may not use a physical location on the operating system file system. In such cases, implementors of a <see cref="IGorgonFileSystemProvider"/> must provide a prefix for a physical location 
+    /// (e.g. <c>Mount("::\\Prefix\DirectoryName", "/");</c>, <c>Mount("::\\Prefix", "/")</c>, or whatever else the provider chooses). This prefix is specific to the provider and should be made available via 
+    /// the <see cref="Prefix"/> property. The prefix must <u>always</u> begin with the characters <c>::\\</c>. Otherwise, the <see cref="IGorgonFileSystem"/> will not know how to parse the physical location.
+    /// </para>
+    /// <para>
+    /// This implementation uses a dictionary of <see cref="MemoryStream"/> objects to hold file data. When mounting using this provider, call <see cref="IGorgonFileSystem.Mount"/> with the 
+    /// <c>physicalLocation</c> parameter set to: <c>::\\Memory</c>.
+    /// </para>
+    /// <para>
+    /// The streams used to hold the file system data are local to this object. Because of this, creating multiple instances of this provider will create multiple physical file systems. 
+    /// </para>
+    /// <para>
+    /// Because this provider stores file data in memory, it is not recommended for use with a large amount of file data.
+    /// </para>
+    /// </remarks>
+    public class GorgonFileSystemRamDiskProvider
+        : GorgonPlugIn, IGorgonFileSystemProvider
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to return the list of files in the physical file system.
+        /// </summary>
+        internal RamDiskFileSystem FileData
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the provider specific prefix for a physical location.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// Some providers may not use a physical location on the operating system file system. In such cases, implementors of a <see cref="IGorgonFileSystemProvider"/> must provide a prefix for a physical 
-		/// location (e.g. <c>Mount("::\\Prefix\DirectoryName", "/");</c>, <c>Mount("::\\Prefix", "/")</c>, or whatever else the provider chooses). 
-		/// </para>
-		/// <para>
-		/// This value must <u>always</u> begin with the characters <c>::\\</c>. Otherwise, the <see cref="IGorgonFileSystem"/> will not know how to parse the physical location.
-		/// </para>
-		/// <para>
-		/// <note type="important">
-		/// <para>
-		/// If the provider accesses a physical file system directory or file for its information, then this value should always return <see cref="string.Empty"/> or <b>null</b>.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public string Prefix => @"::\\Memory";
+        /// <summary>
+        /// Property to return the provider specific prefix for a physical location.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Some providers may not use a physical location on the operating system file system. In such cases, implementors of a <see cref="IGorgonFileSystemProvider"/> must provide a prefix for a physical 
+        /// location (e.g. <c>Mount("::\\Prefix\DirectoryName", "/");</c>, <c>Mount("::\\Prefix", "/")</c>, or whatever else the provider chooses). 
+        /// </para>
+        /// <para>
+        /// This value must <u>always</u> begin with the characters <c>::\\</c>. Otherwise, the <see cref="IGorgonFileSystem"/> will not know how to parse the physical location.
+        /// </para>
+        /// <para>
+        /// <note type="important">
+        /// <para>
+        /// If the provider accesses a physical file system directory or file for its information, then this value should always return <see cref="string.Empty"/> or <b>null</b>.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public string Prefix => @"::\\Memory";
 
-		/// <summary>
-		/// Property to return a list of preferred file extensions (if applicable).
-		/// </summary>
-		/// <remarks>
-		/// Implementors of a <see cref="GorgonFileSystemProvider"/> that reads from a packed file should supply a list of well known file name extensions wrapped in <see cref="GorgonFileExtension"/> objects for 
-		/// that physical file system type. This list can then be then used in an application to filter the types of files to open with a <see cref="IGorgonFileSystem"/>. If the file system reads directories on 
-		/// the native file system, then this collection should remain empty.
-		/// </remarks>
-		public IGorgonNamedObjectReadOnlyDictionary<GorgonFileExtension> PreferredExtensions
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return a list of preferred file extensions (if applicable).
+        /// </summary>
+        /// <remarks>
+        /// Implementors of a <see cref="GorgonFileSystemProvider"/> that reads from a packed file should supply a list of well known file name extensions wrapped in <see cref="GorgonFileExtension"/> objects for 
+        /// that physical file system type. This list can then be then used in an application to filter the types of files to open with a <see cref="IGorgonFileSystem"/>. If the file system reads directories on 
+        /// the native file system, then this collection should remain empty.
+        /// </remarks>
+        public IGorgonNamedObjectReadOnlyDictionary<GorgonFileExtension> PreferredExtensions
+        {
+            get;
+        }
 
         /// <summary>Property to return the path to the provider assembly (if applicable).</summary>
         public string ProviderPath => PlugInPath ?? string.Empty;
@@ -198,26 +198,26 @@ namespace Gorgon.IO.Providers
         /// </para>
         /// </remarks>
         public Stream OpenFileStream(IGorgonVirtualFile file)
-		{
-			if (file == null)
-			{
-				throw new ArgumentNullException(nameof(file));
-			}
-			
-			return OnOpenFileStream(file);
-		}
-		#endregion
+        {
+            if (file == null)
+            {
+                throw new ArgumentNullException(nameof(file));
+            }
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonFileSystemRamDiskProvider"/> class.
-		/// </summary>
-		public GorgonFileSystemRamDiskProvider()
-			: base(Resources.GORFS_RAMDISK_FS_DESC)
-		{
-			PreferredExtensions = new GorgonNamedObjectDictionary<GorgonFileExtension>();
-			FileData = new RamDiskFileSystem();
-		}
-		#endregion
-	}
+            return OnOpenFileStream(file);
+        }
+        #endregion
+
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonFileSystemRamDiskProvider"/> class.
+        /// </summary>
+        public GorgonFileSystemRamDiskProvider()
+            : base(Resources.GORFS_RAMDISK_FS_DESC)
+        {
+            PreferredExtensions = new GorgonNamedObjectDictionary<GorgonFileExtension>();
+            FileData = new RamDiskFileSystem();
+        }
+        #endregion
+    }
 }

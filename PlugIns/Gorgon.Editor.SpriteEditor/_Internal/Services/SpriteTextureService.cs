@@ -27,7 +27,6 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Rendering;
@@ -37,6 +36,7 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -142,14 +142,15 @@ namespace Gorgon.Editor.SpriteEditor
                 || (imageData.Format == BufferFormat.R8G8B8A8_UNorm_SRgb))
             {
                 return imageData;
-            }                       
+            }
 
             if ((imageData.FormatInfo.IsSRgb)
                 && (imageData.CanConvertToFormat(BufferFormat.R8G8B8A8_UNorm_SRgb)))
             {
                 await Task.Run(() => imageData.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm_SRgb));
                 return imageData;
-            } else if (imageData.CanConvertToFormat(BufferFormat.R8G8B8A8_UNorm))
+            }
+            else if (imageData.CanConvertToFormat(BufferFormat.R8G8B8A8_UNorm))
             {
                 await Task.Run(() => imageData.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm));
                 return imageData;
@@ -181,16 +182,16 @@ namespace Gorgon.Editor.SpriteEditor
                 IContentFile imageFile = _fileManager.GetFile(dependency);
 
                 if (!IsContentImage(imageFile))
-                {                    
+                {
                     return (null, null);
-                }                    
+                }
 
                 using (Stream stream = imageFile.OpenRead())
                 {
                     return !_codec.IsReadable(stream) ? ((IGorgonImage, IContentFile imageFile))(null, null) : (_codec.LoadFromStream(stream), imageFile);
                 }
             });
-            
+
             if ((imageData == null) || (file == null))
             {
                 return (null, null);
@@ -199,12 +200,12 @@ namespace Gorgon.Editor.SpriteEditor
             try
             {
                 return (GorgonTexture2DView.CreateTexture(_graphics, new GorgonTexture2DInfo(file.Path)
-                    {
-                        Binding = TextureBinding.ShaderResource,
-                        Usage = ResourceUsage.Default,
-						Width = imageData.Width,
-						Height = imageData.Height
-                    }, imageData), file);
+                {
+                    Binding = TextureBinding.ShaderResource,
+                    Usage = ResourceUsage.Default,
+                    Width = imageData.Width,
+                    Height = imageData.Height
+                }, imageData), file);
             }
             finally
             {
@@ -245,8 +246,8 @@ namespace Gorgon.Editor.SpriteEditor
                 {
                     Binding = TextureBinding.ShaderResource,
                     Usage = ResourceUsage.Default,
-					Width = imageData.Width,
-					Height = imageData.Height
+                    Width = imageData.Width,
+                    Height = imageData.Height
                 }, imageData);
             }
             finally

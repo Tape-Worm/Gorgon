@@ -29,12 +29,12 @@ using System.Windows.Forms;
 
 namespace Gorgon.Input
 {
-	/// <summary>
-	/// An equality comparer for the <see cref="Keys"/> enumeration.
-	/// </summary>
-	internal class GorgonKeysEqualityComparer
-		: IEqualityComparer<Keys>
-	{
+    /// <summary>
+    /// An equality comparer for the <see cref="Keys"/> enumeration.
+    /// </summary>
+    internal class GorgonKeysEqualityComparer
+        : IEqualityComparer<Keys>
+    {
         #region IEqualityComparer<Keys> Members
         /// <summary>
         /// Determines whether the specified objects are equal.

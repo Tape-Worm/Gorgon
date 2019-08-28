@@ -28,13 +28,13 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
 using GorgonLibrary.IO;
+using DX = SharpDX;
 
 namespace Gorgon.IO
 {
@@ -279,21 +279,21 @@ namespace Gorgon.IO
 		/// <param name="imageAddress">Image addressing values.</param>
 		/// <returns>Texture addressing values.</returns>
 		private static TextureWrap ConvertV2TextureWrapToTextureAddress(int imageAddress)
-		{
-    		switch (imageAddress)
-			{
-				case 1:
-					return TextureWrap.Wrap;
-				case 2:
-					return TextureWrap.Mirror;
-				case 5:
-					return TextureWrap.MirrorOnce;
-				case 4:
-					return TextureWrap.Border;
-				default:
-					return TextureWrap.Clamp;
-			}
-		}
+        {
+            switch (imageAddress)
+            {
+                case 1:
+                    return TextureWrap.Wrap;
+                case 2:
+                    return TextureWrap.Mirror;
+                case 5:
+                    return TextureWrap.MirrorOnce;
+                case 4:
+                    return TextureWrap.Border;
+                default:
+                    return TextureWrap.Clamp;
+            }
+        }
 
         /// <summary>
         /// Function to build a sampler state from the information provided by the sprite data.
@@ -305,25 +305,25 @@ namespace Gorgon.IO
         /// <param name="vWrap">Vertical wrapping mode.</param>
         /// <returns>The sampler state.</returns>
 	    private static GorgonSamplerState CreateSamplerState(GorgonGraphics graphics, SampleFilter filter, GorgonColor borderColor, TextureWrap hWrap, TextureWrap vWrap)
-	    {
+        {
             var builder = new GorgonSamplerStateBuilder(graphics);
 
-	        switch (filter)
-	        {
-	            case SampleFilter.MinMagMipLinear when (hWrap == TextureWrap.Clamp) && (vWrap == TextureWrap.Clamp) && (borderColor == GorgonColor.White):
-	                return null;
-	            case SampleFilter.MinMagMipPoint when (hWrap == TextureWrap.Clamp) && (vWrap == TextureWrap.Clamp) && (borderColor == GorgonColor.White):
-	                return GorgonSamplerState.PointFiltering;
-	            case SampleFilter.MinMagMipLinear when (hWrap == TextureWrap.Wrap) && (vWrap == TextureWrap.Wrap) && (borderColor == GorgonColor.White):
-	                return GorgonSamplerState.Wrapping;
-	            case SampleFilter.MinMagMipPoint when (hWrap == TextureWrap.Wrap) && (vWrap == TextureWrap.Wrap) && (borderColor == GorgonColor.White):
-	                return GorgonSamplerState.PointFilteringWrapping;
-	            default:
-	                return builder.Wrapping(hWrap, vWrap, borderColor: borderColor)
-	                              .Filter(filter)
-	                              .Build();
-	        }
-	    }
+            switch (filter)
+            {
+                case SampleFilter.MinMagMipLinear when (hWrap == TextureWrap.Clamp) && (vWrap == TextureWrap.Clamp) && (borderColor == GorgonColor.White):
+                    return null;
+                case SampleFilter.MinMagMipPoint when (hWrap == TextureWrap.Clamp) && (vWrap == TextureWrap.Clamp) && (borderColor == GorgonColor.White):
+                    return GorgonSamplerState.PointFiltering;
+                case SampleFilter.MinMagMipLinear when (hWrap == TextureWrap.Wrap) && (vWrap == TextureWrap.Wrap) && (borderColor == GorgonColor.White):
+                    return GorgonSamplerState.Wrapping;
+                case SampleFilter.MinMagMipPoint when (hWrap == TextureWrap.Wrap) && (vWrap == TextureWrap.Wrap) && (borderColor == GorgonColor.White):
+                    return GorgonSamplerState.PointFilteringWrapping;
+                default:
+                    return builder.Wrapping(hWrap, vWrap, borderColor: borderColor)
+                                  .Filter(filter)
+                                  .Build();
+            }
+        }
 
         /// <summary>
         /// Function to load a version 1.x Gorgon sprite.
@@ -333,59 +333,59 @@ namespace Gorgon.IO
         /// <param name="overrideTexture">The texture to assign to the sprite instead of the texture associated with the name stored in the file.</param>
         /// <returns>The sprite from the stream data.</returns>
         private static GorgonSprite LoadSprite(GorgonGraphics graphics, GorgonChunkReader reader, GorgonTexture2DView overrideTexture)
-		{
+        {
             var sprite = new GorgonSprite();
 
-		    if (!reader.HasChunk(FileHeader))
-		    {
+            if (!reader.HasChunk(FileHeader))
+            {
                 throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_INVALID_HEADER);
-		    }
+            }
 
             reader.Begin(FileHeader);
             reader.Begin(SpriteDataChunk);
 
-		    sprite.Anchor = reader.Read<DX.Vector2>();
-		    sprite.Size = reader.Read<DX.Size2F>();
-		    sprite.Anchor = new DX.Vector2(sprite.Anchor.X / sprite.Size.Width, sprite.Anchor.Y / sprite.Size.Height);
+            sprite.Anchor = reader.Read<DX.Vector2>();
+            sprite.Size = reader.Read<DX.Size2F>();
+            sprite.Anchor = new DX.Vector2(sprite.Anchor.X / sprite.Size.Width, sprite.Anchor.Y / sprite.Size.Height);
 
-		    sprite.HorizontalFlip = reader.ReadBoolean();
-		    sprite.VerticalFlip = reader.ReadBoolean();
+            sprite.HorizontalFlip = reader.ReadBoolean();
+            sprite.VerticalFlip = reader.ReadBoolean();
 
-		    // Read vertex colors.
-		    sprite.CornerColors.UpperLeft = reader.Read<GorgonColor>();
-		    sprite.CornerColors.UpperRight = reader.Read<GorgonColor>();
-		    sprite.CornerColors.LowerLeft = reader.Read<GorgonColor>();
-		    sprite.CornerColors.LowerRight = reader.Read<GorgonColor>();
+            // Read vertex colors.
+            sprite.CornerColors.UpperLeft = reader.Read<GorgonColor>();
+            sprite.CornerColors.UpperRight = reader.Read<GorgonColor>();
+            sprite.CornerColors.LowerLeft = reader.Read<GorgonColor>();
+            sprite.CornerColors.LowerRight = reader.Read<GorgonColor>();
 
-			// Write vertex offsets.
+            // Write vertex offsets.
             sprite.CornerOffsets.UpperLeft = new DX.Vector3(reader.Read<DX.Vector2>(), 0);
-		    sprite.CornerOffsets.UpperRight = new DX.Vector3(reader.Read<DX.Vector2>(), 0);
-		    sprite.CornerOffsets.LowerLeft = new DX.Vector3(reader.Read<DX.Vector2>(), 0);
-		    sprite.CornerOffsets.LowerRight = new DX.Vector3(reader.Read<DX.Vector2>(), 0);
-            
+            sprite.CornerOffsets.UpperRight = new DX.Vector3(reader.Read<DX.Vector2>(), 0);
+            sprite.CornerOffsets.LowerLeft = new DX.Vector3(reader.Read<DX.Vector2>(), 0);
+            sprite.CornerOffsets.LowerRight = new DX.Vector3(reader.Read<DX.Vector2>(), 0);
+
             reader.End();
-            
-		    // Read rendering information.
+
+            // Read rendering information.
             reader.Begin(RenderDataChunk);
 
             // Culling mode is not per-sprite anymore.
             reader.SkipBytes(Unsafe.SizeOf<CullingMode>());
-		    sprite.AlphaTest = reader.Read<GorgonRangeF>();
+            sprite.AlphaTest = reader.Read<GorgonRangeF>();
 
-		    // Blending values are not per-sprite anymore.
-		    // Depth/stencil values are not per-sprite anymore.
+            // Blending values are not per-sprite anymore.
+            // Depth/stencil values are not per-sprite anymore.
             reader.SkipBytes(91);
             reader.End();
 
-			// Read texture information.
-			reader.Begin(TextureDataChunk);
+            // Read texture information.
+            reader.Begin(TextureDataChunk);
             GorgonColor borderColor = reader.Read<GorgonColor>();
 
             TextureWrap hWrap = ConvertV2TextureWrapToTextureAddress(reader.Read<int>());
             TextureWrap vWrap = ConvertV2TextureWrapToTextureAddress(reader.Read<int>());
             SampleFilter filter = ConvertV2TextureFilterToFilter(reader.Read<TextureFilter>());
-		    string textureName = reader.ReadString();
-		    GorgonTexture2DView textureView;
+            string textureName = reader.ReadString();
+            GorgonTexture2DView textureView;
 
             // Bind the texture (if we have one bound to this sprite) if it's already loaded, otherwise defer it.
             if ((!string.IsNullOrEmpty(textureName)) && (overrideTexture == null))
@@ -410,22 +410,22 @@ namespace Gorgon.IO
             sprite.TextureRegion = reader.ReadRectangleF();
 
             if (textureView != null)
-		    {
-		        // V2 used black transparent by default, so convert it to our default so we can keep from creating unnecessary states.
-		        if (borderColor == GorgonColor.BlackTransparent)
-		        {
-		            borderColor = GorgonColor.White;
-		        }
-		        
-		        sprite.Texture = textureView;
-		        sprite.TextureSampler = CreateSamplerState(graphics, filter, borderColor, hWrap, vWrap);
-		    }
+            {
+                // V2 used black transparent by default, so convert it to our default so we can keep from creating unnecessary states.
+                if (borderColor == GorgonColor.BlackTransparent)
+                {
+                    borderColor = GorgonColor.White;
+                }
 
-		    reader.End();
+                sprite.Texture = textureView;
+                sprite.TextureSampler = CreateSamplerState(graphics, filter, borderColor, hWrap, vWrap);
+            }
+
+            reader.End();
             reader.End();
 
-		    return sprite;
-		}
+            return sprite;
+        }
 
         /// <summary>
         /// Function to determine if the data in a stream is readable by this codec.

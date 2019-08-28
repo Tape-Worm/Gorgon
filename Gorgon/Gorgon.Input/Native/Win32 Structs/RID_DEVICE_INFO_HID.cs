@@ -29,36 +29,36 @@ using System.Runtime.InteropServices;
 // ReSharper disable InconsistentNaming
 namespace Gorgon.Native
 {
-	/// <summary>
-	/// HID device info.
-	/// </summary>
-	[StructLayout(LayoutKind.Sequential)]
-	internal struct RID_DEVICE_INFO_HID
-	{
-		/// <summary>
-		/// Vendor
-		/// </summary>
-		[MarshalAs(UnmanagedType.U4)]
-		public int dwVendorId;
-		/// <summary>
-		/// Product
-		/// </summary>
-		[MarshalAs(UnmanagedType.U4)]
-		public int dwProductId;
-		/// <summary>
-		/// Version
-		/// </summary>
-		[MarshalAs(UnmanagedType.U4)]
-		public int dwVersionNumber;
-		/// <summary>
-		/// Usage page.
-		/// </summary>
-		[MarshalAs(UnmanagedType.U2)]
-		public ushort usUsagePage;
-		/// <summary>
-		/// Usage flag.
-		/// </summary>
-		[MarshalAs(UnmanagedType.U2)]
-		public ushort usUsage;
-	}
+    /// <summary>
+    /// HID device info.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct RID_DEVICE_INFO_HID
+    {
+        /// <summary>
+        /// Vendor
+        /// </summary>
+        [MarshalAs(UnmanagedType.U4)]
+        public int dwVendorId;
+        /// <summary>
+        /// Product
+        /// </summary>
+        [MarshalAs(UnmanagedType.U4)]
+        public int dwProductId;
+        /// <summary>
+        /// Version
+        /// </summary>
+        [MarshalAs(UnmanagedType.U4)]
+        public int dwVersionNumber;
+        /// <summary>
+        /// Usage page.
+        /// </summary>
+        [MarshalAs(UnmanagedType.U2)]
+        public ushort usUsagePage;
+        /// <summary>
+        /// Usage flag.
+        /// </summary>
+        [MarshalAs(UnmanagedType.U2)]
+        public ushort usUsage;
+    }
 }

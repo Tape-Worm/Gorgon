@@ -25,42 +25,42 @@
 #endregion
 
 using System;
-using Newtonsoft.Json;
 using Gorgon.Core;
+using Newtonsoft.Json;
 
 namespace Gorgon.Animation
 {
-	/// <summary>
-	/// An animation key frame.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// A key frame represents a value for an object property at a given time. 
-	/// </para>
-	/// <para>
+    /// <summary>
+    /// An animation key frame.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A key frame represents a value for an object property at a given time. 
+    /// </para>
+    /// <para>
     /// The track that the key frame is on is used to interpolate the value between key frames. This method makes it so that only a few keyframes are required for an animation rather then setting a value
     /// for every time index.
     /// </para>
-	/// </remarks>
-	/// <seealso cref="IGorgonTrack{T}"/>
-	public interface IGorgonKeyFrame
+    /// </remarks>
+    /// <seealso cref="IGorgonTrack{T}"/>
+    public interface IGorgonKeyFrame
         : IGorgonCloneable<IGorgonKeyFrame>
-	{
-		/// <summary>
-		/// Property to return the time at which the key frame is stored.
-		/// </summary>
-		float Time
-		{
-			get;
-		}
+    {
+        /// <summary>
+        /// Property to return the time at which the key frame is stored.
+        /// </summary>
+        float Time
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the type of data for this key frame.
-		/// </summary>
-		[JsonIgnore]
-		Type DataType
-		{
-			get;
-		}
-	}
+        /// <summary>
+        /// Property to return the type of data for this key frame.
+        /// </summary>
+        [JsonIgnore]
+        Type DataType
+        {
+            get;
+        }
+    }
 }

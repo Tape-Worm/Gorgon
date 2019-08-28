@@ -45,18 +45,18 @@ namespace Gorgon.Editor.TextureAtlasTool
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the atlas generation service.
         /// </summary>
-		public IGorgonTextureAtlasService AtlasGenerator
+        public IGorgonTextureAtlasService AtlasGenerator
         {
             get;
         }
-		
-		/// <summary>
+
+        /// <summary>
         /// Property to return the sprite file manager.
         /// </summary>
-		public ISpriteFiles SpriteFiles
+        public ISpriteFiles SpriteFiles
         {
             get;
         }
@@ -67,7 +67,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         public TextureAtlasSettings Settings
         {
             get;
-        }           
+        }
 
         /// <summary>
         /// Property to return the file I/O service.
@@ -76,7 +76,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         {
             get;
         }
-        
+
         /// <summary>Initializes a new instance of the <see cref="TextureAtlasParameters"/> class.</summary>
         /// <param name="settings">The settings for the plug in.</param>
         /// <param name="spriteFiles">The sprite file manager.</param>

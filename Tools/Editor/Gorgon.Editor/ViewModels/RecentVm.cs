@@ -24,19 +24,19 @@
 // 
 #endregion
 
-using System.Linq;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using Gorgon.Editor.UI;
-using Gorgon.Editor.ProjectData;
-using System;
-using Gorgon.Editor.Services;
-using Gorgon.Editor.Properties;
-using System.Threading.Tasks;
 using System.IO;
-using Gorgon.Editor.Native;
+using System.Linq;
+using System.Threading.Tasks;
 using Gorgon.Core;
+using Gorgon.Editor.Native;
+using Gorgon.Editor.ProjectData;
+using Gorgon.Editor.Properties;
+using Gorgon.Editor.Services;
+using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -184,7 +184,7 @@ namespace Gorgon.Editor.ViewModels
         {
             _recentItems = injectionParameters.Settings?.RecentFiles ?? throw new ArgumentMissingException(nameof(RecentVmParameters.Settings), nameof(injectionParameters));
             _messageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(RecentVmParameters.MessageDisplay), nameof(injectionParameters));
-            
+
             // Only capture up to 150 items.
             Files = new ObservableCollection<RecentItem>(_recentItems.OrderByDescending(item => item.LastUsedDate).Take(150));
 

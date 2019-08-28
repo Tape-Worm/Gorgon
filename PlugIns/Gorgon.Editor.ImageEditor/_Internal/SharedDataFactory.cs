@@ -34,29 +34,29 @@ using Gorgon.PlugIns;
 
 namespace Gorgon.Editor.ImageEditor
 {
-	/// <summary>
+    /// <summary>
     /// A factory used to build data that is shared between the importer and image editor plugins.
     /// </summary>
     internal static class SharedDataFactory
     {
         #region Variables.
-		// A weak reference to the common services in the application.
+        // A weak reference to the common services in the application.
         private static WeakReference<IViewModelInjection> _commonServices;
-		// The service used to handling content plug ins.
+        // The service used to handling content plug ins.
         private static WeakReference<IContentPlugInService> _plugInService;
         // The service used to handling content plug ins.
-		// We will keep this alive and undisposed since it's meant to live for the lifetime of the application.
+        // We will keep this alive and undisposed since it's meant to live for the lifetime of the application.
         private static readonly Lazy<GorgonMefPlugInCache> _plugInCache;
         // The factory that creates/loads the settings.
         private static readonly Lazy<ImageEditorSettings> _settingsFactory;
-		// The factory that creates/loads the codec registry.
+        // The factory that creates/loads the codec registry.
         private static readonly Lazy<ICodecRegistry> _codecRegistryFactory;
         // The factory that creates/loads the settings view model.
         private static readonly Lazy<ISettings> _settingsViewModelFactory;
         #endregion
 
         #region Methods.
-		/// <summary>
+        /// <summary>
         /// Function to retrieve the common plug in cache.
         /// </summary>
         /// <returns>The plug in cache.</returns>
@@ -70,7 +70,7 @@ namespace Gorgon.Editor.ImageEditor
             return new GorgonMefPlugInCache(commonServices.Log);
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to load the settings for the image editor/importer.
         /// </summary>
         /// <returns>The settings for both plug ins.</returns>
@@ -89,32 +89,32 @@ namespace Gorgon.Editor.ImageEditor
             }
 
             return settings;
-        }		
+        }
 
-		/// <summary>
+        /// <summary>
         /// Function to retrieve the codec registry and load the initial codecs from the settings.
         /// </summary>
         /// <returns>The codec registry.</returns>
-        private static ICodecRegistry GetCodecRegistry() 
+        private static ICodecRegistry GetCodecRegistry()
         {
             if (!_commonServices.TryGetTarget(out IViewModelInjection commonServices))
             {
                 throw new GorgonException(GorgonResult.CannotCreate);
             }
 
-            var result =  new CodecRegistry(_plugInCache.Value, commonServices.Log);
+            var result = new CodecRegistry(_plugInCache.Value, commonServices.Log);
             result.LoadFromSettings(_settingsFactory.Value);
             return result;
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to retrieve the settings view model.
         /// </summary>
         /// <returns>The settings view model.</returns>
         private static ISettings GetSettingsViewModel()
         {
             if ((!_commonServices.TryGetTarget(out IViewModelInjection commonServices))
-				|| (!_plugInService.TryGetTarget(out IContentPlugInService plugInService)))
+                || (!_plugInService.TryGetTarget(out IContentPlugInService plugInService)))
             {
                 throw new GorgonException(GorgonResult.CannotCreate);
             }
@@ -153,6 +153,6 @@ namespace Gorgon.Editor.ImageEditor
             _codecRegistryFactory = new Lazy<ICodecRegistry>(GetCodecRegistry, LazyThreadSafetyMode.ExecutionAndPublication);
             _settingsViewModelFactory = new Lazy<ISettings>(GetSettingsViewModel, LazyThreadSafetyMode.ExecutionAndPublication);
         }
-		#endregion
+        #endregion
     }
 }

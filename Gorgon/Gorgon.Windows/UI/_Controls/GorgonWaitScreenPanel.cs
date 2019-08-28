@@ -60,7 +60,7 @@ namespace Gorgon.UI
         }
 
         /// <summary>Gets or sets the foreground color of wait message box.</summary>
-        [Browsable(true), 
+        [Browsable(true),
         Category("Appearance"),
         Description("Sets the foreground color for the text in the wait message box"),
         DefaultValue(typeof(Color), "Black"),
@@ -72,7 +72,7 @@ namespace Gorgon.UI
         }
 
         /// <summary>Gets or sets the foreground color of wait message box.</summary>
-        [Browsable(true), 
+        [Browsable(true),
          Category("Appearance"),
          Description("Sets the foreground color for the title text in the wait message box"),
          DefaultValue(typeof(Color), "DimGray"),
@@ -168,7 +168,7 @@ namespace Gorgon.UI
                     _messagePanel.PanelWait.RowStyles[0].SizeType = SizeType.AutoSize;
                     _messagePanel.PanelWait.ColumnStyles[1].SizeType = SizeType.AutoSize;
                 }
-                
+
                 Invalidate();
             }
         }
@@ -281,19 +281,19 @@ namespace Gorgon.UI
         public GorgonWaitScreenPanel()
         {
             _messagePanel = new WaitMessagePanel
-                            {
-                                BackColor = Color.White,
-                                BorderStyle = BorderStyle.FixedSingle,
-                                Visible = true,
-                                LabelWaitMessage =
+            {
+                BackColor = Color.White,
+                BorderStyle = BorderStyle.FixedSingle,
+                Visible = true,
+                LabelWaitMessage =
                                 {
                                     Text = Resources.GOR_TEXT_WAIT_MESSAGE
                                 },
-                                LabelWaitTitle =
+                LabelWaitTitle =
                                 {
                                     Text = Resources.GOR_TEXT_WAIT_TITLE
                                 }
-                            };
+            };
 
             Controls.Add(_messagePanel);
         }

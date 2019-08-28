@@ -26,21 +26,21 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DX = SharpDX;
-using Gorgon.Editor.UI;
-using Gorgon.Graphics.Core;
-using Gorgon.Math;
-using Gorgon.Editor.Services;
-using Gorgon.Editor.ExtractSpriteTool.Properties;
-using Gorgon.Renderers;
-using System.Threading;
-using Gorgon.Graphics.Imaging;
-using Gorgon.Graphics;
-using Gorgon.Editor.Content;
 using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Gorgon.Diagnostics;
+using Gorgon.Editor.Content;
+using Gorgon.Editor.ExtractSpriteTool.Properties;
+using Gorgon.Editor.Services;
+using Gorgon.Editor.UI;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Imaging;
+using Gorgon.Math;
+using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.ExtractSpriteTool
 {
@@ -51,37 +51,37 @@ namespace Gorgon.Editor.ExtractSpriteTool
         : ViewModelBase<ExtractParameters>, IExtract
     {
         #region Variables.
-		// The data used to extract sprites.
+        // The data used to extract sprites.
         private SpriteExtractionData _extractData;
-		// The plug in settings.
+        // The plug in settings.
         private ExtractSpriteToolSettings _settings;
-		// The currently active task.
+        // The currently active task.
         private Task _currentTask;
-		// The task for generating sprites.
+        // The task for generating sprites.
         private Task _spriteGenTask;
-		// The message display service.
-		private IMessageDisplayService _messageDisplay;
-		// The progress data for the extraction task.
+        // The message display service.
+        private IMessageDisplayService _messageDisplay;
+        // The progress data for the extraction task.
         private ProgressData _extractProgressData;
-		// The list of extracted sprites.
+        // The list of extracted sprites.
         private IReadOnlyList<GorgonSprite> _extractedSprites;
-		// The service used to build the sprites.
+        // The service used to build the sprites.
         private IExtractorService _extractor;
-		// The cancellation token source for cancelling tasks.
+        // The cancellation token source for cancelling tasks.
         private CancellationTokenSource _cancelSource;
-		// The busy state service.
+        // The busy state service.
         private IBusyStateService _busyService;
-		// Color picker service.
+        // Color picker service.
         private IColorPickerService _colorPicker;
-		// The project file system folder browser.
+        // The project file system folder browser.
         private IFileSystemFolderBrowseService _folderBrowser;
         // The file for the sprite texture.
         private IContentFile _textureFile;
-		// Flag to indicate that we are in sprite preview.
+        // Flag to indicate that we are in sprite preview.
         private bool _inSpritePreview;
-		// The current sprite index for the sprite preview.
+        // The current sprite index for the sprite preview.
         private int _spriteIndex;
-		// The current preview array index.
+        // The current preview array index.
         private int _arrayIndex;
         #endregion
 
@@ -254,7 +254,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <summary>
         /// Property to return the maximum array indices in the texture for previewing.
         /// </summary>
-        public int PreviewArrayCount => _extractData.Texture.Texture.ArrayCount;        
+        public int PreviewArrayCount => _extractData.Texture.Texture.ArrayCount;
 
         /// <summary>
         /// Property to return the current array index being previewed.
@@ -300,7 +300,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
 
                 OnPropertyChanging();
                 _extractData.ArrayCount = value;
-                OnPropertyChanged();                
+                OnPropertyChanged();
             }
         }
 
@@ -506,7 +506,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// Function to perform the generation of the sprites from the grid data.
         /// </summary>
         private async void DoGenerateSpritesAsync()
-        {			
+        {
             void UpdateProgress(ProgressData progress) => _extractProgressData = progress;
 
             IGorgonImage imageData = null;
@@ -525,11 +525,11 @@ namespace Gorgon.Editor.ExtractSpriteTool
                 {
                     return;
                 }
-                
+
                 SpriteGenerationTask = spriteGenTask = Task.Run(() => _extractor.ExtractSprites(_extractData, imageData, UpdateProgress, _cancelSource.Token), _cancelSource.Token);
                 IReadOnlyList<GorgonSprite> sprites = await spriteGenTask;
 
-				// The user cancelled if we have no sprites.
+                // The user cancelled if we have no sprites.
                 if (sprites.Count == 0)
                 {
                     return;
@@ -558,7 +558,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
             }
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to determine if the skip masking color can be set.
         /// </summary>
         /// <returns><b>true</b> if the masking color can be set, <b>false</b> if not.</returns>
@@ -641,7 +641,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <returns><b>true</b> if the index can be decremented, <b>false</b> if not.</returns>
         private bool CanPrevSprite() => (_extractedSprites != null) && (_extractedSprites.Count > 0) && (InSpritePreview) && (_spriteIndex > 0);
 
-		/// <summary>
+        /// <summary>
         /// Function to decrement the current preview sprite index.
         /// </summary>
         private void DoPrevSprite()
@@ -719,13 +719,13 @@ namespace Gorgon.Editor.ExtractSpriteTool
             }
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to determine if the preview array index can be sent to the array start.
         /// </summary>
         /// <returns><b>true</b> if the value can be copied, <b>false</b> if not.</returns>
         private bool CanSendToArrayStart() => HasArray;
 
-		/// <summary>
+        /// <summary>
         /// Function to send the current preview array index value into the starting array range index.
         /// </summary>
         private void DoSendToArrayStart()
@@ -762,7 +762,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
                 _extractData.GridOffset = new DX.Point(0, _extractData.GridOffset.Y);
             }
 
-            if (_extractData.GridOffset .Y > _extractData.Texture.Height - _extractData.CellSize.Height)
+            if (_extractData.GridOffset.Y > _extractData.Texture.Height - _extractData.CellSize.Height)
             {
                 _extractData.GridOffset = new DX.Point(_extractData.GridOffset.X, 0);
             }

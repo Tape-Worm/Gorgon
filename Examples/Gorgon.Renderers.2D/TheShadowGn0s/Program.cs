@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using Gorgon.Core;
-using DX = SharpDX;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -38,6 +37,7 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Renderers;
 using Gorgon.UI;
+using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -108,7 +108,7 @@ ESC - Quit.";
 
             _layer1Target.Clear(GorgonColor.BlackTransparent);
             _graphics.SetRenderTarget(_layer1Target);
-            
+
             _renderer.Begin(_rtvBlendState);
 
             // Background sprites should be smaller.
@@ -125,7 +125,7 @@ ESC - Quit.";
                                           new DX.RectangleF(0,
                                                             0,
                                                             (float)_screen.Width / _backgroundTexture.Width,
-                                                            (float)_screen.Height /_backgroundTexture.Height),
+                                                            (float)_screen.Height / _backgroundTexture.Height),
                                           textureSampler: GorgonSamplerState.PointFilteringWrapping);
             _renderer.DrawSprite(shadowSprite);
             _renderer.DrawSprite(_bgSprite);
@@ -155,7 +155,7 @@ ESC - Quit.";
             {
                 return;
             }
-            
+
             // Otherwise, run the blur effect on the layer multiple times.
             // 
             // Note: In this example, we are blurring many times each frame. This is incredibly inefficient. In a real application we 
@@ -266,16 +266,16 @@ ESC - Quit.";
                 {
                     throw new GorgonException(GorgonResult.CannotCreate, "This example requires a Direct3D 11.4 capable video card.\nThe application will now close.");
                 }
-                
+
                 _graphics = new GorgonGraphics(adapters[0], log: GorgonApplication.Log);
 
                 // Create our "screen".
                 _screen = new GorgonSwapChain(_graphics, window, new GorgonSwapChainInfo("TheShadowGn0s Screen Swap chain")
-                                                                 {
-                                                                     Width = Settings.Default.Resolution.Width,
-                                                                     Height = Settings.Default.Resolution.Height,
-                                                                     Format = BufferFormat.R8G8B8A8_UNorm
-                                                                 });
+                {
+                    Width = Settings.Default.Resolution.Width,
+                    Height = Settings.Default.Resolution.Height,
+                    Format = BufferFormat.R8G8B8A8_UNorm
+                });
 
                 BuildRenderTargets(new DX.Size2(_screen.Width, _screen.Height));
 
@@ -310,9 +310,9 @@ ESC - Quit.";
                 _sprite2 = spriteCodec.FromFile(Path.Combine(GorgonExample.GetResourcePath(@"Sprites\TheShadowGn0s\").FullName, "Mother2c.gorSprite"));
 
                 _gaussBlur = new Gorgon2DGaussBlurEffect(_renderer, 9)
-                             {
-                                 BlurRenderTargetsSize = new DX.Size2(_screen.Width / 2, _screen.Height / 2)
-                             };
+                {
+                    BlurRenderTargetsSize = new DX.Size2(_screen.Width / 2, _screen.Height / 2)
+                };
 
                 var shadowBuilder = new ShadowBuilder(_renderer, _gaussBlur, _sprite1, _sprite2);
                 (GorgonSprite[] shadowSprites, GorgonTexture2DView shadowTexture) = shadowBuilder.Build();

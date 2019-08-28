@@ -29,23 +29,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DX = SharpDX;
-using Gorgon.Renderers;
 using Gorgon.Graphics.Core;
+using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
-	/// <summary>
+    /// <summary>
     /// This will represent a 2D layer that renders our background stars.
     /// </summary>
     internal class BgStarLayer
-		: Layer2D
+        : Layer2D
     {
         #region Properties.
-		/// <summary>
+        /// <summary>
         /// Property to set or return the texture used to draw the stars on the background.
         /// </summary>
-		public GorgonTexture2DView StarsTexture
+        public GorgonTexture2DView StarsTexture
         {
             get;
             set;
@@ -58,7 +58,7 @@ namespace Gorgon.Examples
         {
             // Since this layer doesn't move, there's nothing to really update.
         }
-		
+
         /// <summary>Function used to render data into the layer.</summary>
         public override void Render()
         {
@@ -74,10 +74,10 @@ namespace Gorgon.Examples
         /// <summary>Initializes a new instance of the <see cref="BgStarLayer"/> class.</summary>
         /// <param name="renderer">The 2D renderer for the application.</param>
         public BgStarLayer(Gorgon2D renderer)
-			: base(renderer)
+            : base(renderer)
         {
 
         }
-		#endregion
+        #endregion
     }
 }

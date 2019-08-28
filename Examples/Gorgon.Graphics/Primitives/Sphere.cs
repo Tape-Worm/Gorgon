@@ -106,11 +106,11 @@ namespace Gorgon.Examples
                     textureDelta.Y += textureCoordinates.Y;
 
                     vertexData[vertexOffset++] = new Vertex3D
-                                                 {
-                                                     Position = new DX.Vector4(position, 1.0f),
-                                                     UV = textureDelta,
-                                                     Normal = normal
-                                                 };
+                    {
+                        Position = new DX.Vector4(position, 1.0f),
+                        UV = textureDelta,
+                        Normal = normal
+                    };
 
                     // Add the indices and skip the last ring.
                     if (ring == ringCount)

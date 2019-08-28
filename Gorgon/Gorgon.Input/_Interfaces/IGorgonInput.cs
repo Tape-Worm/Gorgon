@@ -28,24 +28,24 @@ using System.Collections.Generic;
 
 namespace Gorgon.Input
 {
-	/// <summary>
-	/// Defines functionality for an input system that supports keyboards and mice.
-	/// </summary>
-	/// <remarks>
-	/// This object will allow for enumeration of keyboards and mice attached to the system and will allow an application to register these types of devices for use with the application.  
-	/// </remarks>
-	public interface IGorgonInput
-	{
-		/// <summary>
-		/// Function to retrieve a list of mice.
-		/// </summary>
-		/// <returns>A read only list containing information about each mouse.</returns>
-		IReadOnlyList<IGorgonMouseInfo> EnumerateMice();
+    /// <summary>
+    /// Defines functionality for an input system that supports keyboards and mice.
+    /// </summary>
+    /// <remarks>
+    /// This object will allow for enumeration of keyboards and mice attached to the system and will allow an application to register these types of devices for use with the application.  
+    /// </remarks>
+    public interface IGorgonInput
+    {
+        /// <summary>
+        /// Function to retrieve a list of mice.
+        /// </summary>
+        /// <returns>A read only list containing information about each mouse.</returns>
+        IReadOnlyList<IGorgonMouseInfo> EnumerateMice();
 
-		/// <summary>
-		/// Function to retrieve a list of keyboards.
-		/// </summary>
-		/// <returns>A read only list containing information about each keyboard.</returns>
-		IReadOnlyList<IGorgonKeyboardInfo> EnumerateKeyboards();
-	}
+        /// <summary>
+        /// Function to retrieve a list of keyboards.
+        /// </summary>
+        /// <returns>A read only list containing information about each keyboard.</returns>
+        IReadOnlyList<IGorgonKeyboardInfo> EnumerateKeyboards();
+    }
 }

@@ -27,16 +27,16 @@
 using System;
 using System.ComponentModel;
 using ComponentFactory.Krypton.Toolkit;
-using DX = SharpDX;
 using Gorgon.Editor.UI;
 using Gorgon.UI;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
     /// <summary>
     /// Provides an interface to allow manual update of a sprite's vertex corners.
     /// </summary>
-    internal partial class FormManualVertexEdit 
+    internal partial class FormManualVertexEdit
         : KryptonForm, IDataContext<IManualVertexEditor>, IManualInputControl
     {
         #region Variables.

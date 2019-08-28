@@ -31,13 +31,13 @@ using DX = SharpDX;
 
 namespace Gorgon.Editor.ExtractSpriteTool
 {
-	/// <summary>
+    /// <summary>
     /// Data used to extract sprites from a texture.
     /// </summary>
     internal class SpriteExtractionData
     {
         #region Variables.
-		// A weak reference to the texture so we don't hang onto it for eternity.
+        // A weak reference to the texture so we don't hang onto it for eternity.
         private WeakReference<GorgonTexture2DView> _textureRef;
         #endregion
 

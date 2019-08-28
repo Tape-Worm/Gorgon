@@ -47,7 +47,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         IGorgonImage ImageData
         {
             get;
-        }        
+        }
 
         /// <summary>
         /// Property to return whether mip maps are supported for the current format.
@@ -235,7 +235,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             get;
         }
-        
+
         /// <summary>
         /// Property to return the command used to show the mip map generation settings.
         /// </summary>

@@ -31,18 +31,18 @@ using Gorgon.Graphics;
 
 namespace Gorgon.Renderers
 {
-	/// <summary>
-	/// Defines the colors for each corner of a rectangle.
-	/// </summary>
-	public class GorgonRectangleColors
+    /// <summary>
+    /// Defines the colors for each corner of a rectangle.
+    /// </summary>
+    public class GorgonRectangleColors
         : IReadOnlyList<GorgonColor>
-	{
-		#region Variables.
+    {
+        #region Variables.
         // The renderable that owns this object.
-	    private readonly BatchRenderable _renderable;
-		#endregion 
+        private readonly BatchRenderable _renderable;
+        #endregion
 
-		#region Properties.
+        #region Properties.
         /// <summary>
         /// Property to set or return the corner color by index.
         /// </summary>
@@ -73,13 +73,13 @@ namespace Gorgon.Renderers
                 switch (index)
                 {
                     case 0:
-                        UpperLeft = value;                        
+                        UpperLeft = value;
                         return;
                     case 1:
                         UpperRight = value;
                         return;
                     case 2:
-                        LowerRight = value;                        
+                        LowerRight = value;
                         return;
                     case 3:
                         LowerLeft = value;
@@ -90,77 +90,77 @@ namespace Gorgon.Renderers
             }
         }
 
-		/// <summary>
-		/// Property to set or return the color of the upper left corner.
-		/// </summary>
-		public GorgonColor UpperLeft
-		{
-			get => _renderable.UpperLeftColor;
-			set
-			{
-				if (GorgonColor.Equals(in value, in _renderable.UpperLeftColor))
-				{
-					return;
-				}
+        /// <summary>
+        /// Property to set or return the color of the upper left corner.
+        /// </summary>
+        public GorgonColor UpperLeft
+        {
+            get => _renderable.UpperLeftColor;
+            set
+            {
+                if (GorgonColor.Equals(in value, in _renderable.UpperLeftColor))
+                {
+                    return;
+                }
 
-				_renderable.UpperLeftColor = value;
-				_renderable.HasVertexColorChanges = true;
-			}
-		}
+                _renderable.UpperLeftColor = value;
+                _renderable.HasVertexColorChanges = true;
+            }
+        }
 
-		/// <summary>
-		/// Property to set or return the color of the upper right corner.
-		/// </summary>
-		public GorgonColor UpperRight
-		{
-			get => _renderable.UpperRightColor;
-			set
-			{
-				if (GorgonColor.Equals(in value, in _renderable.UpperRightColor))
-				{
-					return;
-				}
+        /// <summary>
+        /// Property to set or return the color of the upper right corner.
+        /// </summary>
+        public GorgonColor UpperRight
+        {
+            get => _renderable.UpperRightColor;
+            set
+            {
+                if (GorgonColor.Equals(in value, in _renderable.UpperRightColor))
+                {
+                    return;
+                }
 
-			    _renderable.UpperRightColor = value;
-			    _renderable.HasVertexColorChanges = true;
-			}
-		}
+                _renderable.UpperRightColor = value;
+                _renderable.HasVertexColorChanges = true;
+            }
+        }
 
-		/// <summary>
-		/// Property to set or return the color of the lower left corner.
-		/// </summary>
-		public GorgonColor LowerLeft
-		{
-			get => _renderable.LowerLeftColor;
-			set
-			{
-				if (GorgonColor.Equals(in value, in _renderable.LowerLeftColor))
-				{
-					return;
-				}
+        /// <summary>
+        /// Property to set or return the color of the lower left corner.
+        /// </summary>
+        public GorgonColor LowerLeft
+        {
+            get => _renderable.LowerLeftColor;
+            set
+            {
+                if (GorgonColor.Equals(in value, in _renderable.LowerLeftColor))
+                {
+                    return;
+                }
 
-				_renderable.LowerLeftColor = value;
-				_renderable.HasVertexColorChanges = true;
-			}
-		}
+                _renderable.LowerLeftColor = value;
+                _renderable.HasVertexColorChanges = true;
+            }
+        }
 
-		/// <summary>
-		/// Property to set or return the color of the lower right corner.
-		/// </summary>
-		public GorgonColor LowerRight
-		{
-			get => _renderable.LowerRightColor;
-			set
-			{
-				if (GorgonColor.Equals(in value, in _renderable.LowerRightColor))
-				{
-					return;
-				}
+        /// <summary>
+        /// Property to set or return the color of the lower right corner.
+        /// </summary>
+        public GorgonColor LowerRight
+        {
+            get => _renderable.LowerRightColor;
+            set
+            {
+                if (GorgonColor.Equals(in value, in _renderable.LowerRightColor))
+                {
+                    return;
+                }
 
-			    _renderable.LowerRightColor = value;
-				_renderable.HasVertexColorChanges = true;
-			}
-		}
+                _renderable.LowerRightColor = value;
+                _renderable.HasVertexColorChanges = true;
+            }
+        }
 
         /// <summary>Gets the number of elements in the collection.</summary>
         public int Count => 4;
@@ -172,36 +172,36 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="color">The color to assign.</param>
         public void SetAll(in GorgonColor color)
-		{
-		    if ((_renderable.LowerLeftColor.Equals(in color))
-		        && (_renderable.LowerRightColor.Equals(in color))
-		        && (_renderable.UpperLeftColor.Equals(in color))
-		        && (_renderable.UpperRightColor.Equals(in color)))
-		    {
-		        return;
-		    }
+        {
+            if ((_renderable.LowerLeftColor.Equals(in color))
+                && (_renderable.LowerRightColor.Equals(in color))
+                && (_renderable.UpperLeftColor.Equals(in color))
+                && (_renderable.UpperRightColor.Equals(in color)))
+            {
+                return;
+            }
 
-		    _renderable.LowerLeftColor = _renderable.LowerRightColor = _renderable.UpperRightColor = _renderable.UpperLeftColor = color;
-		    _renderable.HasVertexColorChanges = true;
-		}
+            _renderable.LowerLeftColor = _renderable.LowerRightColor = _renderable.UpperRightColor = _renderable.UpperLeftColor = color;
+            _renderable.HasVertexColorChanges = true;
+        }
 
-		/// <summary>
-		/// Function to copy the colors into the specified destination.
-		/// </summary>
-		/// <param name="destination">The destination that will receive the copy of the colors.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/> parameter is <b>null</b>.</exception>
-		public void CopyTo(GorgonRectangleColors destination)
-		{
-			if (destination == null)
-			{
-				throw new ArgumentNullException(nameof(destination));
-			}
+        /// <summary>
+        /// Function to copy the colors into the specified destination.
+        /// </summary>
+        /// <param name="destination">The destination that will receive the copy of the colors.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/> parameter is <b>null</b>.</exception>
+        public void CopyTo(GorgonRectangleColors destination)
+        {
+            if (destination == null)
+            {
+                throw new ArgumentNullException(nameof(destination));
+            }
 
-			destination.LowerLeft = LowerLeft;
-			destination.LowerRight = LowerRight;
-			destination.UpperRight = UpperRight;
-			destination.UpperLeft = UpperLeft;
-		}
+            destination.LowerLeft = LowerLeft;
+            destination.LowerRight = LowerRight;
+            destination.UpperRight = UpperRight;
+            destination.UpperLeft = UpperLeft;
+        }
 
         /// <summary>Returns an enumerator that iterates through the collection.</summary>
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
@@ -233,8 +233,8 @@ namespace Gorgon.Renderers
         internal GorgonRectangleColors(GorgonColor defaultColor, BatchRenderable renderable)
         {
             _renderable = renderable;
-			SetAll(defaultColor);
-		}
-		#endregion
-	}
+            SetAll(defaultColor);
+        }
+        #endregion
+    }
 }

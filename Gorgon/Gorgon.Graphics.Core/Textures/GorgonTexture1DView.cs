@@ -33,26 +33,26 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using SharpDX.DXGI;
-using DX = SharpDX;
 using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// A shader view for textures.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This is a texture shader view to allow a <see cref="GorgonTexture1D"/> to be bound to the GPU pipeline as a shader resource.
-	/// </para>
-	/// <para>
-	/// Use a resource view to allow a shader access to the contents of a resource (or sub resource).  When the resource is created with a typeless format, this will allow the resource to be cast to any 
-	/// format within the same group.	
-	/// </para>
-	/// </remarks>
-	public sealed class GorgonTexture1DView
-		: GorgonShaderResourceView, IGorgonTexture1DInfo, IGorgonImageInfo
+    /// <summary>
+    /// A shader view for textures.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This is a texture shader view to allow a <see cref="GorgonTexture1D"/> to be bound to the GPU pipeline as a shader resource.
+    /// </para>
+    /// <para>
+    /// Use a resource view to allow a shader access to the contents of a resource (or sub resource).  When the resource is created with a typeless format, this will allow the resource to be cast to any 
+    /// format within the same group.	
+    /// </para>
+    /// </remarks>
+    public sealed class GorgonTexture1DView
+        : GorgonShaderResourceView, IGorgonTexture1DInfo, IGorgonImageInfo
     {
         #region Properties.
         /// <summary>
@@ -108,7 +108,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return whether the size of the texture is a power of 2 or not.
         /// </summary>
-        bool IGorgonImageInfo.IsPowerOfTwo => ((Width == 0) || (Width & (Width - 1)) == 0); 
+        bool IGorgonImageInfo.IsPowerOfTwo => ((Width == 0) || (Width & (Width - 1)) == 0);
 
         /// <summary>
         /// Property to return the pixel format for an image.
@@ -140,38 +140,41 @@ namespace Gorgon.Graphics.Core
         /// Property to return the index of the first mip map in the resource to view.
         /// </summary>
         public int MipSlice
-		{
-			get;
-		}
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the number of mip maps in the resource to view.
-		/// </summary> 
-		public int MipCount
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the number of mip maps in the resource to view.
+        /// </summary> 
+        public int MipCount
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the first array index to use in the view.
-		/// </summary>
-		public int ArrayIndex
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the first array index to use in the view.
+        /// </summary>
+        public int ArrayIndex
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the number of array indices to use in the view.
-		/// </summary>
-		public int ArrayCount
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the number of array indices to use in the view.
+        /// </summary>
+        public int ArrayCount
+        {
+            get;
+        }
 
         /// <summary>
         /// Property to return the texture that is bound to this view.
         /// </summary>
-        public GorgonTexture1D Texture { get; private set; }
+        public GorgonTexture1D Texture
+        {
+            get; private set;
+        }
 
         /// <summary>
         /// Property to return the bounding range for the view.
@@ -214,49 +217,49 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <returns>The view that was created.</returns>
         private protected override D3D11.ResourceView OnCreateNativeView()
-		{
-		    var desc = new D3D11.ShaderResourceViewDescription1
-		               {
-		                   Format = (Format)Format,
-		                   Dimension = Texture.ArrayCount > 1
-		                                   ? D3D.ShaderResourceViewDimension.Texture1DArray
-		                                   : D3D.ShaderResourceViewDimension.Texture1D,
-		                   Texture1DArray =
-		                   {
-		                       MipLevels = MipCount,
-		                       MostDetailedMip = MipSlice,
-		                       FirstArraySlice = ArrayIndex,
-		                       ArraySize = ArrayCount
-		                   }
-		               };
+        {
+            var desc = new D3D11.ShaderResourceViewDescription1
+            {
+                Format = (Format)Format,
+                Dimension = Texture.ArrayCount > 1
+                                           ? D3D.ShaderResourceViewDimension.Texture1DArray
+                                           : D3D.ShaderResourceViewDimension.Texture1D,
+                Texture1DArray =
+                           {
+                               MipLevels = MipCount,
+                               MostDetailedMip = MipSlice,
+                               FirstArraySlice = ArrayIndex,
+                               ArraySize = ArrayCount
+                           }
+            };
 
-			try
-			{
-			    Graphics.Log.Print($"Creating D3D11 1D texture shader resource view for {Texture.Name}.", LoggingLevel.Simple);
+            try
+            {
+                Graphics.Log.Print($"Creating D3D11 1D texture shader resource view for {Texture.Name}.", LoggingLevel.Simple);
 
-				// Create our SRV.
-			    Native = new D3D11.ShaderResourceView1(Texture.Graphics.D3DDevice, Texture.D3DResource, desc)
-			                 {
-			                     DebugName = $"'{Texture.Name}'_D3D11ShaderResourceView1_1D"
-			                 };
+                // Create our SRV.
+                Native = new D3D11.ShaderResourceView1(Texture.Graphics.D3DDevice, Texture.D3DResource, desc)
+                {
+                    DebugName = $"'{Texture.Name}'_D3D11ShaderResourceView1_1D"
+                };
 
-			    Graphics.Log.Print($"Shader Resource View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Array Index: {ArrayIndex}, Array Count: {ArrayCount}", LoggingLevel.Verbose);
-			}
-			catch (DX.SharpDXException sDXEx)
-			{
-				if ((uint)sDXEx.ResultCode.Code == 0x80070057)
-				{
-					throw new GorgonException(GorgonResult.CannotCreate,
-											  string.Format(Resources.GORGFX_ERR_VIEW_CANNOT_CAST_FORMAT,
-															Texture.Format,
-															Format));
-				}
-				
-				throw;
-			}
+                Graphics.Log.Print($"Shader Resource View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Array Index: {ArrayIndex}, Array Count: {ArrayCount}", LoggingLevel.Verbose);
+            }
+            catch (DX.SharpDXException sDXEx)
+            {
+                if ((uint)sDXEx.ResultCode.Code == 0x80070057)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate,
+                                              string.Format(Resources.GORGFX_ERR_VIEW_CANNOT_CAST_FORMAT,
+                                                            Texture.Format,
+                                                            Format));
+                }
 
-		    return Native;
-		}
+                throw;
+            }
+
+            return Native;
+        }
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -410,12 +413,12 @@ namespace Gorgon.Graphics.Core
             }
 
             var newInfo = new GorgonTexture1DInfo(info)
-                          {
-                              Usage = info.Usage == ResourceUsage.Staging ? ResourceUsage.Default : info.Usage,
-                              Binding = ((info.Binding & TextureBinding.ShaderResource) != TextureBinding.ShaderResource
+            {
+                Usage = info.Usage == ResourceUsage.Staging ? ResourceUsage.Default : info.Usage,
+                Binding = ((info.Binding & TextureBinding.ShaderResource) != TextureBinding.ShaderResource
                                             ? (info.Binding | TextureBinding.ShaderResource)
                                             : info.Binding) & ~(TextureBinding.DepthStencil | TextureBinding.RenderTarget)
-                          };
+            };
 
             if (initialData != null)
             {
@@ -529,7 +532,7 @@ namespace Gorgon.Graphics.Core
             using (IGorgonImage image = codec.LoadFromStream(stream, size))
             {
                 GorgonTexture1D texture = image.ToTexture1D(graphics, options);
-                GorgonTexture1DView view =  texture.GetShaderResourceView();
+                GorgonTexture1DView view = texture.GetShaderResourceView();
                 view.OwnsResource = true;
                 return view;
             }

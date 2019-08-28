@@ -107,10 +107,10 @@ namespace Gorgon.Editor.TextureAtlasTool
                 return;
             }
 
-            LabelArray.Text = string.Format(Resources.GORTAG_TEXT_ARRAY_TEXTURE_COUNT, 
-                                            dataContext.PreviewArrayIndex + 1, 
-                                            texture.ArrayCount, 
-                                            dataContext.PreviewTextureIndex + 1, 
+            LabelArray.Text = string.Format(Resources.GORTAG_TEXT_ARRAY_TEXTURE_COUNT,
+                                            dataContext.PreviewArrayIndex + 1,
+                                            texture.ArrayCount,
+                                            dataContext.PreviewTextureIndex + 1,
                                             dataContext.Atlas.Textures.Count);
         }
 
@@ -227,7 +227,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 
             DataContext.MaxArrayCount = (int)NumericArrayIndex.Value;
         }
-        
+
         /// <summary>Handles the ValueChanged event of the NumericPadding control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -240,7 +240,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 
             DataContext.Padding = (int)NumericPadding.Value;
         }
-        
+
         /// <summary>Handles the Click event of the ButtonOk control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -401,7 +401,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         private void ResetDataContext()
         {
             ShowFileSelector();
-            LabelSpriteCount.Text = Resources.GORTAG_TEXT_NO_SPRITES;            
+            LabelSpriteCount.Text = Resources.GORTAG_TEXT_NO_SPRITES;
             NumericTextureHeight.Value = NumericTextureWidth.Value = NumericTextureWidth.Minimum;
             NumericArrayIndex.Value = NumericArrayIndex.Minimum;
             TextBaseTextureName.Text = TextOutputFolder.Text = string.Empty;
@@ -422,7 +422,7 @@ namespace Gorgon.Editor.TextureAtlasTool
             }
 
             LabelSpriteCount.Text = string.Format(dataContext.LoadedSpriteCount == 0 ? Resources.GORTAG_TEXT_NO_SPRITES : Resources.GORTAG_TEXT_SPRITE_COUNT, dataContext.LoadedSpriteCount);
-            UpdateLabelArrayText(dataContext);            
+            UpdateLabelArrayText(dataContext);
             TextOutputFolder.Text = dataContext.OutputPath;
             TextBaseTextureName.Text = dataContext.BaseTextureName;
             NumericTextureWidth.Value = dataContext.MaxTextureSize.Width.Min((int)NumericTextureWidth.Maximum).Max((int)NumericTextureWidth.Minimum);

@@ -129,22 +129,22 @@ namespace Gorgon.Graphics.Core
             Graphics.Log.Print($"Creating D3D11 structured buffer shader resource view for {Buffer.Name}.", LoggingLevel.Simple);
 
             var desc = new D3D11.ShaderResourceViewDescription1
-                       {
-                           Format = Format.Unknown,
-                           Dimension = ShaderResourceViewDimension.ExtendedBuffer,
-                           BufferEx = new D3D11.ShaderResourceViewDescription.ExtendedBufferResource
-                                      {
-                                          FirstElement = StartElement,
-                                          ElementCount = ElementCount,
-                                          Flags = D3D11.ShaderResourceViewExtendedBufferFlags.None
-                                      }
-                       };
+            {
+                Format = Format.Unknown,
+                Dimension = ShaderResourceViewDimension.ExtendedBuffer,
+                BufferEx = new D3D11.ShaderResourceViewDescription.ExtendedBufferResource
+                {
+                    FirstElement = StartElement,
+                    ElementCount = ElementCount,
+                    Flags = D3D11.ShaderResourceViewExtendedBufferFlags.None
+                }
+            };
 
             // Create our SRV.
             Native = new D3D11.ShaderResourceView1(Buffer.Graphics.D3DDevice, Buffer.D3DResource, desc)
-                     {
-                         DebugName = $"'{Buffer.Name}'_D3D11ShaderResourceView1_Structured"
-                     };
+            {
+                DebugName = $"'{Buffer.Name}'_D3D11ShaderResourceView1_Structured"
+            };
 
             Graphics.Log.Print($"Shader Resource Structured Buffer View '{Buffer.Name}': {Buffer.ResourceType} -> Start: {StartElement}, Count: {ElementCount}, Element Size: {ElementSize}",
                                LoggingLevel.Verbose);

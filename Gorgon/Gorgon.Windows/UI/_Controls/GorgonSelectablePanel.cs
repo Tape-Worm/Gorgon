@@ -33,32 +33,32 @@ using Gorgon.Windows.Properties;
 
 namespace Gorgon.UI
 {
-	/// <summary>
-	/// A <see cref="Panel"/> that can receive keyboard focus.
-	/// </summary>
-	[ToolboxItem(true), ToolboxBitmap(typeof(GorgonSelectablePanel), "Resources.GorgonSelectablePanel.bmp")]
-	public class GorgonSelectablePanel
-		: Panel
-	{
-		#region Enums.
-		/// <summary>
-		/// Types of messages that passed to a window.
-		/// </summary>
-		/// <remarks>See the MSDN documentation for more detail.</remarks>
-		private enum WindowMessages
-		{
-			LeftButtonDown = 0x0201,
-			RightButtonDown = 0x0204,
-			MiddleButtonDown = 0x0207,
-			MouseWheel = 0x020A
-		}
-		#endregion
+    /// <summary>
+    /// A <see cref="Panel"/> that can receive keyboard focus.
+    /// </summary>
+    [ToolboxItem(true), ToolboxBitmap(typeof(GorgonSelectablePanel), "Resources.GorgonSelectablePanel.bmp")]
+    public class GorgonSelectablePanel
+        : Panel
+    {
+        #region Enums.
+        /// <summary>
+        /// Types of messages that passed to a window.
+        /// </summary>
+        /// <remarks>See the MSDN documentation for more detail.</remarks>
+        private enum WindowMessages
+        {
+            LeftButtonDown = 0x0201,
+            RightButtonDown = 0x0204,
+            MiddleButtonDown = 0x0207,
+            MouseWheel = 0x020A
+        }
+        #endregion
 
-		#region Variables.
-		// Show focus flag.
-		private bool _showFocus = true;
-		// Flag to indicate that the panel is resizing.
-		private bool _resizing;
+        #region Variables.
+        // Show focus flag.
+        private bool _showFocus = true;
+        // Flag to indicate that the panel is resizing.
+        private bool _resizing;
         #endregion
 
         #region Events.
@@ -81,30 +81,30 @@ namespace Gorgon.UI
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   </PermissionSet>
         [Browsable(true), LocalDescription(typeof(Resources), nameof(Resources.PROP_TABSTOP_DESC)), LocalCategory(typeof(Resources), nameof(Resources.PROP_CATEGORY_DESIGN)), DefaultValue(true)]
-		public new bool TabStop
-		{
-			get => base.TabStop;
-			set => base.TabStop = value;
-		}
+        public new bool TabStop
+        {
+            get => base.TabStop;
+            set => base.TabStop = value;
+        }
 
-		/// <summary>
-		/// Property to set or return whether to show the focus rectangle when the control is focused.
-		/// </summary>
-		[Browsable(true), LocalDescription(typeof(Resources), nameof(Resources.PROP_TABSTOP_DESC)), LocalCategory(typeof(Resources), nameof(Resources.PROP_CATEGORY_APPEARANCE)), DefaultValue(true)]
-		public bool ShowFocus
-		{
-			get => _showFocus;
-			set
-			{
-				if (_showFocus == value)
-				{
-					return;
-				}
+        /// <summary>
+        /// Property to set or return whether to show the focus rectangle when the control is focused.
+        /// </summary>
+        [Browsable(true), LocalDescription(typeof(Resources), nameof(Resources.PROP_TABSTOP_DESC)), LocalCategory(typeof(Resources), nameof(Resources.PROP_CATEGORY_APPEARANCE)), DefaultValue(true)]
+        public bool ShowFocus
+        {
+            get => _showFocus;
+            set
+            {
+                if (_showFocus == value)
+                {
+                    return;
+                }
 
-				_showFocus = value;
-				Invalidate();
-			}
-		}
+                _showFocus = value;
+                Invalidate();
+            }
+        }
         #endregion
 
         #region Methods.        
@@ -123,97 +123,97 @@ namespace Gorgon.UI
         /// </summary>
         /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
         protected override void OnEnter(EventArgs e)
-		{
-			Invalidate();
-			base.OnEnter(e);
-		}
+        {
+            Invalidate();
+            base.OnEnter(e);
+        }
 
-		/// <summary>
-		/// Raises the <see cref="Control.Leave" /> event.
-		/// </summary>
-		/// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
-		protected override void OnLeave(EventArgs e)
-		{
-			Invalidate();
-			base.OnLeave(e);
-		}
+        /// <summary>
+        /// Raises the <see cref="Control.Leave" /> event.
+        /// </summary>
+        /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+        protected override void OnLeave(EventArgs e)
+        {
+            Invalidate();
+            base.OnLeave(e);
+        }
 
-		/// <summary>
-		/// Handles the <see cref="Control.Resize" /> event.
-		/// </summary>
-		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		protected override void OnResize(EventArgs e)
-		{
-			try
-			{
-				_resizing = true;
-				Invalidate();
-				base.OnResize(e);
-			}
-			finally
-			{
-				_resizing = false;
-			}
-		}
+        /// <summary>
+        /// Handles the <see cref="Control.Resize" /> event.
+        /// </summary>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        protected override void OnResize(EventArgs e)
+        {
+            try
+            {
+                _resizing = true;
+                Invalidate();
+                base.OnResize(e);
+            }
+            finally
+            {
+                _resizing = false;
+            }
+        }
 
-		/// <summary>
-		/// Raises the <see cref="Control.Paint" /> event.
-		/// </summary>
-		/// <param name="e">A <see cref="T:System.Windows.Forms.PaintEventArgs" /> that contains the event data.</param>
-		protected override void OnPaint(PaintEventArgs e)
-		{
-			base.OnPaint(e);
+        /// <summary>
+        /// Raises the <see cref="Control.Paint" /> event.
+        /// </summary>
+        /// <param name="e">A <see cref="T:System.Windows.Forms.PaintEventArgs" /> that contains the event data.</param>
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
 
-			if (((!Focused) && (!_resizing)) || (!ShowFocus))
-			{
-				return;
-			}
+            if (((!Focused) && (!_resizing)) || (!ShowFocus))
+            {
+                return;
+            }
 
-			Rectangle newRect = ClientRectangle;
-			newRect.Inflate(-2, -2);
-			ControlPaint.DrawFocusRectangle(e.Graphics, newRect);
-		}
+            Rectangle newRect = ClientRectangle;
+            newRect.Inflate(-2, -2);
+            ControlPaint.DrawFocusRectangle(e.Graphics, newRect);
+        }
 
-	    /// <summary>
-	    /// Function to process window messages.
+        /// <summary>
+        /// Function to process window messages.
         /// </summary>
         /// <param name="m">The Windows <see cref="T:System.Windows.Forms.Message" /> to process.</param>
-	    protected override void WndProc(ref Message m)
-	    {
-		    var message = (WindowMessages)m.Msg;
+        protected override void WndProc(ref Message m)
+        {
+            var message = (WindowMessages)m.Msg;
 
-		    switch (message)
-		    {
-				case WindowMessages.LeftButtonDown:
-				case WindowMessages.RightButtonDown:
-				case WindowMessages.MiddleButtonDown:
-				    if (!Focused)
-				    {
-					    Focus();
-				    }
+            switch (message)
+            {
+                case WindowMessages.LeftButtonDown:
+                case WindowMessages.RightButtonDown:
+                case WindowMessages.MiddleButtonDown:
+                    if (!Focused)
+                    {
+                        Focus();
+                    }
 
-				    break;
-		    }
+                    break;
+            }
 
             // Turn off mouse wheel scrolling if auto scroll is on.
-	        if ((message == WindowMessages.MouseWheel) && (AutoScroll) && (AutoScrollMinSize.Height > 0))
-	        {
-	            return;
-	        }
+            if ((message == WindowMessages.MouseWheel) && (AutoScroll) && (AutoScrollMinSize.Height > 0))
+            {
+                return;
+            }
 
-	        base.WndProc(ref m);
-	    }
-	    #endregion
+            base.WndProc(ref m);
+        }
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonSelectablePanel"/> class.
-		/// </summary>
-		public GorgonSelectablePanel()
-		{
-			SetStyle(ControlStyles.Selectable, true);
-			TabStop = true;
-		}
-		#endregion
-	}
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonSelectablePanel"/> class.
+        /// </summary>
+        public GorgonSelectablePanel()
+        {
+            SetStyle(ControlStyles.Selectable, true);
+            TabStop = true;
+        }
+        #endregion
+    }
 }

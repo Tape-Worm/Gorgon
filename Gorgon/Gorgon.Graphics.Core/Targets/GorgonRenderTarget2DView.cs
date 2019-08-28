@@ -32,8 +32,8 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
-using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core
 {
@@ -53,9 +53,9 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="GorgonTexture2D"/>
     /// <seealso cref="GorgonTexture3D"/>
     public sealed class GorgonRenderTarget2DView
-		: GorgonRenderTargetView, IGorgonTexture2DInfo, IGorgonImageInfo
+        : GorgonRenderTargetView, IGorgonTexture2DInfo, IGorgonImageInfo
     {
-		#region Variables.
+        #region Variables.
         // Clear rectangles.
         private RawRectangle[] _clearRects;
         #endregion
@@ -73,7 +73,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the type of image data.
         /// </summary>
-        ImageType IGorgonImageInfo.ImageType => IsCubeMap ? ImageType.ImageCube : ImageType.Image2D ;
+        ImageType IGorgonImageInfo.ImageType => IsCubeMap ? ImageType.ImageCube : ImageType.Image2D;
 
         /// <summary>
         /// Property to return the depth of an image, in pixels.
@@ -303,9 +303,9 @@ namespace Gorgon.Graphics.Core
                                LoggingLevel.Verbose);
 
             Native = new D3D11.RenderTargetView1(Texture.Graphics.D3DDevice, Texture.D3DResource, desc)
-                     {
-                         DebugName = $"'{Texture.Name}'_D3D11RenderTargetView1_2D"
-                     };
+            {
+                DebugName = $"'{Texture.Name}'_D3D11RenderTargetView1_2D"
+            };
 
             return Native;
         }
@@ -431,31 +431,31 @@ namespace Gorgon.Graphics.Core
         /// </para>
 		/// </remarks>
         public void Clear(GorgonColor color, DX.Rectangle[] rectangles)
-		{
-		    if ((rectangles == null) || (rectangles.Length == 0))
-		    {
+        {
+            if ((rectangles == null) || (rectangles.Length == 0))
+            {
                 Clear(color);
-		        return;
-		    }
+                return;
+            }
 
-		    if ((_clearRects == null) || (_clearRects.Length < rectangles.Length))
-		    {
+            if ((_clearRects == null) || (_clearRects.Length < rectangles.Length))
+            {
                 _clearRects = new RawRectangle[rectangles.Length];
-		    }
+            }
 
-		    for (int i = 0; i < rectangles.Length; ++i)
-		    {
-		        _clearRects[i] = rectangles[i];
-		    }
+            for (int i = 0; i < rectangles.Length; ++i)
+            {
+                _clearRects[i] = rectangles[i];
+            }
 
-		    Texture.Graphics.D3DDeviceContext.ClearView(Native, color.ToRawColor4(), _clearRects, rectangles.Length);
-		}
+            Texture.Graphics.D3DDeviceContext.ClearView(Native, color.ToRawColor4(), _clearRects, rectangles.Length);
+        }
 
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public override void Dispose()
-		{
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public override void Dispose()
+        {
             if (OwnerFactory != null)
             {
                 OwnerFactory.Return(this);
@@ -464,7 +464,7 @@ namespace Gorgon.Graphics.Core
 
             Texture = null;
             base.Dispose();
-		}
+        }
 
         /// <summary>
         /// Function to create a new render target that is bindable to the GPU.
@@ -512,10 +512,10 @@ namespace Gorgon.Graphics.Core
             }
 
             var newInfo = new GorgonTexture2DInfo(info)
-                          {
-                              Usage = ResourceUsage.Default,
-                              Binding = binding
-                          };
+            {
+                Usage = ResourceUsage.Default,
+                Binding = binding
+            };
 
             var texture = new GorgonTexture2D(graphics, newInfo);
             GorgonRenderTarget2DView result = texture.GetRenderTargetView(arrayIndex: arrayIndex, arrayCount: arrayCount ?? 1);

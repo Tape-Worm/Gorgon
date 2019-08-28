@@ -151,7 +151,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 
                     NotifyPropertyChanged(nameof(SelectedFiles));
                     break;
-            }            
+            }
         }
 
         /// <summary>

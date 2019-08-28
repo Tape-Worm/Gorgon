@@ -79,7 +79,7 @@ namespace Gorgon.Editor.Services
         private readonly DirectoryInfo _settingsDir;
         // The application graphics context for passing to content plug ins.
         private readonly IGraphicsContext _graphicsContext;
-		// The message display service.
+        // The message display service.
         private readonly IViewModelInjection _commonServices;
         // The file system folder browser.
         private readonly IFileSystemFolderBrowseService _folderBrowser;
@@ -90,7 +90,7 @@ namespace Gorgon.Editor.Services
         /// <value>The plugins.</value>
         public IReadOnlyDictionary<string, ContentPlugIn> PlugIns => _plugins;
 
-		/// <summary>
+        /// <summary>
         /// Property to return the list of content importer plug ins loaded into the application.
         /// </summary>
         public IReadOnlyDictionary<string, ContentImportPlugIn> Importers => _importers;
@@ -119,14 +119,14 @@ namespace Gorgon.Editor.Services
                 return (null, MetadataPlugInState.NotFound);
             }
 
-            #pragma warning disable IDE0046 // Convert to conditional expression
+#pragma warning disable IDE0046 // Convert to conditional expression
             if (!PlugIns.TryGetValue(metadata.PlugInName, out ContentPlugIn plugin))
             {
                 return (null, MetadataPlugInState.NotFound);
             }
 
             return (plugin, MetadataPlugInState.Assigned);
-            #pragma warning restore IDE0046 // Convert to conditional expression
+#pragma warning restore IDE0046 // Convert to conditional expression
         }
 
         /// <summary>
@@ -270,7 +270,7 @@ namespace Gorgon.Editor.Services
                 throw new GorgonException(GorgonResult.CannotRead);
             }
 
-            contentFile.Metadata.ContentMetadata = plugin;            
+            contentFile.Metadata.ContentMetadata = plugin;
             contentFile.RefreshMetadata();
         }
 
@@ -447,7 +447,7 @@ namespace Gorgon.Editor.Services
                     plugin.Initialize(this, _graphicsContext, _folderBrowser);
 
                     // Check to see if this plug in can continue.
-                    IReadOnlyList<string> validation = plugin.IsPlugInAvailable();                    
+                    IReadOnlyList<string> validation = plugin.IsPlugInAvailable();
 
                     if (validation.Count > 0)
                     {
@@ -466,8 +466,8 @@ namespace Gorgon.Editor.Services
                         plugins.Unload(plugin.Name);
                         continue;
                     }
-                                        
-                    AddContentPlugIn(plugin);                    
+
+                    AddContentPlugIn(plugin);
                 }
                 catch (Exception ex)
                 {

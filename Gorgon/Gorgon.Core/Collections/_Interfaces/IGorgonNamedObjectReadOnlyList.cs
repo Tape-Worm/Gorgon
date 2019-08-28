@@ -29,66 +29,66 @@ using Gorgon.Core;
 
 namespace Gorgon.Collections
 {
-	/// <summary>
-	/// A generic interface for a read only list of named objects that can be indexed by name and numeric index.
-	/// </summary>
-	/// <typeparam name="T">The type of object stored in the collection. Must implement the <see cref="IGorgonNamedObject"/> interface.</typeparam>
-	public interface IGorgonNamedObjectReadOnlyList<T>
-		: IReadOnlyList<T>
-		where T : IGorgonNamedObject
-	{
-		#region Properties.
-		/// <summary>
-		/// Property to return whether the keys are case sensitive.
-		/// </summary>
-		bool KeysAreCaseSensitive
-		{
-			get;
-		}
+    /// <summary>
+    /// A generic interface for a read only list of named objects that can be indexed by name and numeric index.
+    /// </summary>
+    /// <typeparam name="T">The type of object stored in the collection. Must implement the <see cref="IGorgonNamedObject"/> interface.</typeparam>
+    public interface IGorgonNamedObjectReadOnlyList<T>
+        : IReadOnlyList<T>
+        where T : IGorgonNamedObject
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to return whether the keys are case sensitive.
+        /// </summary>
+        bool KeysAreCaseSensitive
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return an item in this list by its name.
-		/// </summary>
-		T this[string name]
-		{
-			get;
-		}
-		#endregion
+        /// <summary>
+        /// Property to return an item in this list by its name.
+        /// </summary>
+        T this[string name]
+        {
+            get;
+        }
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Function to return whether an item with the specified name exists in this collection.
-		/// </summary>
-		/// <param name="name">Name of the item to find.</param>
-		/// <returns><b>true</b> if found, <b>false</b> if not.</returns>
-		bool Contains(string name);
+        #region Properties.
+        /// <summary>
+        /// Function to return whether an item with the specified name exists in this collection.
+        /// </summary>
+        /// <param name="name">Name of the item to find.</param>
+        /// <returns><b>true</b> if found, <b>false</b> if not.</returns>
+        bool Contains(string name);
 
-		/// <summary>
-		/// Determines the index of a specific item in the list.
-		/// </summary>
-		/// <param name="name">Name of the item to find.</param>
-		/// <returns>
-		/// The index of <paramref name="name"/> if found in the list; otherwise, -1.
-		/// </returns>
-		int IndexOf(string name);
+        /// <summary>
+        /// Determines the index of a specific item in the list.
+        /// </summary>
+        /// <param name="name">Name of the item to find.</param>
+        /// <returns>
+        /// The index of <paramref name="name"/> if found in the list; otherwise, -1.
+        /// </returns>
+        int IndexOf(string name);
 
-		/// <summary>
-		/// Determines the index of a specific item in the list.
-		/// </summary>
-		/// <param name="item">The object to locate in the list.</param>
-		/// <returns>
-		/// The index of <paramref name="item"/> if found in the list; otherwise, -1.
-		/// </returns>
-		int IndexOf(T item);
+        /// <summary>
+        /// Determines the index of a specific item in the list.
+        /// </summary>
+        /// <param name="item">The object to locate in the list.</param>
+        /// <returns>
+        /// The index of <paramref name="item"/> if found in the list; otherwise, -1.
+        /// </returns>
+        int IndexOf(T item);
 
-		/// <summary>
-		/// Determines whether the list contains a specific value.
-		/// </summary>
-		/// <param name="item">The object to locate in the list.</param>
-		/// <returns>
-		/// true if <paramref name="item"/> is found in the list; otherwise, false.
-		/// </returns>
-		bool Contains(T item);
-		#endregion
-	}
+        /// <summary>
+        /// Determines whether the list contains a specific value.
+        /// </summary>
+        /// <param name="item">The object to locate in the list.</param>
+        /// <returns>
+        /// true if <paramref name="item"/> is found in the list; otherwise, false.
+        /// </returns>
+        bool Contains(T item);
+        #endregion
+    }
 }

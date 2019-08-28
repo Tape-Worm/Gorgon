@@ -62,7 +62,7 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
         }
-        
+
         /// <summary>
         /// Property to return the list of search results for a filtered node list.
         /// </summary>
@@ -184,14 +184,14 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="cancelToken">The token used to cancel the operation.</param>
         Task RunImportersAsync(CancellationToken cancelToken);
 
-		/// <summary>
+        /// <summary>
         /// Function to locate a node by its path.
         /// </summary>
         /// <param name="path">The path to the node.</param>
         /// <returns>The node, if found. <b>null</b>, if not.</returns>
         IFileExplorerNodeVm FindNode(string path);
 
-		/// <summary>
+        /// <summary>
         /// Function to retrieve the list of nodes as a flattened list.
         /// </summary>
         /// <returns>A dictionary of the nodes in the file system, flattened and indexed by full path.</returns>

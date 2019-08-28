@@ -37,19 +37,19 @@ namespace Gorgon.Graphics.Core
     /// This provides an immutable view of the constant buffer information so that it cannot be modified after the buffer is created.
     /// </para>
     /// </remarks>
-    public interface IGorgonConstantBufferInfo 
+    public interface IGorgonConstantBufferInfo
         : IGorgonNamedObject
-	{
-		/// <summary>
-		/// Property to return the intended usage flags for this texture.
-		/// </summary>
-		/// <remarks>
-		/// This value is defaulted to <see cref="ResourceUsage.Default"/>.
-		/// </remarks>
-		ResourceUsage Usage
-		{
-			get;
-		}
+    {
+        /// <summary>
+        /// Property to return the intended usage flags for this texture.
+        /// </summary>
+        /// <remarks>
+        /// This value is defaulted to <see cref="ResourceUsage.Default"/>.
+        /// </remarks>
+        ResourceUsage Usage
+        {
+            get;
+        }
 
         /// <summary>
         /// Property to return the number of bytes to allocate for the buffer.
@@ -67,8 +67,8 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </remarks>
         int SizeInBytes
-		{
-			get;
-		}
-	}
+        {
+            get;
+        }
+    }
 }

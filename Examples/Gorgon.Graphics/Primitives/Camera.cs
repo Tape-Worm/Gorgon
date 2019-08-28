@@ -29,10 +29,10 @@ using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
-	/// <summary>
-	/// The world/view/projection matrix.
-	/// </summary>
-	internal class Camera
+    /// <summary>
+    /// The world/view/projection matrix.
+    /// </summary>
+    internal class Camera
     {
         #region Variables.
         // The eye position.
@@ -341,7 +341,7 @@ namespace Gorgon.Examples
             {
                 return ref _projectionMatrix;
             }
-            
+
             float aspect = (float)_viewWidth / _viewHeight;
             DX.Matrix.PerspectiveFovLH(_fov.ToRadians(), aspect, _nearZ, _farZ, out _projectionMatrix);
 
@@ -349,20 +349,20 @@ namespace Gorgon.Examples
 
             return ref _projectionMatrix;
         }
-		#endregion
+        #endregion
 
-		#region Constructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Camera"/> class.
-		/// </summary>
-		public Camera()
-		{
-		    _lookAt = new DX.Vector3(0, 0, -1.0f);
-		    _up = new DX.Vector3(0, 1, 0);
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Camera"/> class.
+        /// </summary>
+        public Camera()
+        {
+            _lookAt = new DX.Vector3(0, 0, -1.0f);
+            _up = new DX.Vector3(0, 1, 0);
             _isDirty = true;
-		    _isProjectionDirty = true;
-		    _isCombinedDirty = true;
-		}
-		#endregion
-	}
+            _isProjectionDirty = true;
+            _isCombinedDirty = true;
+        }
+        #endregion
+    }
 }

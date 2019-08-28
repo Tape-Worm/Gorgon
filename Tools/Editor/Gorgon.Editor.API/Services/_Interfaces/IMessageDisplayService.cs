@@ -41,7 +41,7 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// User canceled.
         /// </summary>
-        Cancel =1,
+        Cancel = 1,
         /// <summary>
         /// User confirmed.
         /// </summary>

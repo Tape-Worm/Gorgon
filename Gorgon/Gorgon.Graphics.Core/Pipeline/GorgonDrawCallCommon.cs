@@ -74,7 +74,7 @@ namespace Gorgon.Graphics.Core
         /// This is derived from the <see cref="VertexBufferBindings"/> passed to the call.
         /// </remarks>
         public GorgonInputLayout InputLayout => D3DState.VertexBuffers.InputLayout;
-        
+
         /// <summary>
         /// Property to return the resources for the pixel shader.
         /// </summary>

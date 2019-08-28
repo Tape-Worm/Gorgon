@@ -45,7 +45,7 @@ namespace Gorgon.Examples
         #region Variables.
         // Animation controller for the entity.
         private readonly List<MeshAnimationController> _animController;
-		// The world position of this entity.
+        // The world position of this entity.
         private DX.Vector3 _position;
         #endregion
 
@@ -96,7 +96,7 @@ namespace Gorgon.Examples
                     mesh.Rotation = Rotation;
                 }
 
-                mesh.Position = new DX.Vector3(_position.X, _position.Y, depth);				
+                mesh.Position = new DX.Vector3(_position.X, _position.Y, depth);
                 mesh.Rotation = Rotation;
 
                 if ((animation != null) && (controller.State != AnimationState.Playing))
@@ -107,7 +107,7 @@ namespace Gorgon.Examples
                 controller.Update();
                 // Increase the depth of the mesh so that we 
                 depth -= 0.02f;
-            }            
+            }
         }
         #endregion
 

@@ -29,32 +29,32 @@ using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ViewModels
 {
-	/// <summary>
+    /// <summary>
     /// The plug in list category for the settings.
     /// </summary>
     internal interface ISettingsPlugInsList
-		: ISettingsCategoryViewModel
+        : ISettingsCategoryViewModel
     {
-		/// <summary>
+        /// <summary>
         /// Property to return the plug ins.
         /// </summary>
-		ObservableCollection<ISettingsPlugInListItem> PlugIns
+        ObservableCollection<ISettingsPlugInListItem> PlugIns
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the currently selected plug in.
         /// </summary>
-		ISettingsPlugInListItem Current
+        ISettingsPlugInListItem Current
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the command to execute for selecting plug ins.
         /// </summary>
-		IEditorCommand<int> SelectPlugInCommand
+        IEditorCommand<int> SelectPlugInCommand
         {
             get;
         }

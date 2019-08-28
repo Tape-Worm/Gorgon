@@ -33,44 +33,44 @@ using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// A list of <see cref="GorgonVertexBufferBinding"/> values.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// A <see cref="GorgonVertexBufferBinding"/> is used to bind a vertex buffer to the GPU pipeline so that it may be used for rendering.
-	/// </para>
-	/// </remarks>
-	public sealed class GorgonVertexBufferBindings
+    /// <summary>
+    /// A list of <see cref="GorgonVertexBufferBinding"/> values.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A <see cref="GorgonVertexBufferBinding"/> is used to bind a vertex buffer to the GPU pipeline so that it may be used for rendering.
+    /// </para>
+    /// </remarks>
+    public sealed class GorgonVertexBufferBindings
         : GorgonArray<GorgonVertexBufferBinding>
-	{
-		#region Constants.
-		/// <summary>
-		/// The maximum number of vertex buffers allow to be bound at the same time.
-		/// </summary>
-		public const int MaximumVertexBufferCount = D3D11.InputAssemblerStage.VertexInputResourceSlotCount;
-		#endregion
+    {
+        #region Constants.
+        /// <summary>
+        /// The maximum number of vertex buffers allow to be bound at the same time.
+        /// </summary>
+        public const int MaximumVertexBufferCount = D3D11.InputAssemblerStage.VertexInputResourceSlotCount;
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to return the native items wrapped by this list.
-		/// </summary>
-		internal D3D11.VertexBufferBinding[] Native
-		{
-		    get;
-	    }
+        #region Properties.
+        /// <summary>
+        /// Property to return the native items wrapped by this list.
+        /// </summary>
+        internal D3D11.VertexBufferBinding[] Native
+        {
+            get;
+        }
 
-	    /// <summary>
-		/// Property to return the input layout assigned to the buffer bindings.
-		/// </summary>
-		/// <remarks>
-		/// The input layout defines how the vertex data is arranged within the vertex buffers.
-		/// </remarks>
-		public GorgonInputLayout InputLayout
-		{
-			get;
-	        internal set;
-	    }
+        /// <summary>
+        /// Property to return the input layout assigned to the buffer bindings.
+        /// </summary>
+        /// <remarks>
+        /// The input layout defines how the vertex data is arranged within the vertex buffers.
+        /// </remarks>
+        public GorgonInputLayout InputLayout
+        {
+            get;
+            internal set;
+        }
         #endregion
 
         #region Methods.
@@ -103,23 +103,23 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// </remarks>
         internal int IndexOf(GorgonGraphicsResource buffer)
-	    {
+        {
             (int start, int count) = GetDirtyItems(true);
-            
-	        for (int i = 0; i < count; ++i)
-	        {
-	            GorgonVertexBufferBinding binding = BackingArray[i + start];
 
-	            if (binding.VertexBuffer != buffer)
-	            {
-	                continue;
-	            }
+            for (int i = 0; i < count; ++i)
+            {
+                GorgonVertexBufferBinding binding = BackingArray[i + start];
 
-	            return i + start;
-	        }
+                if (binding.VertexBuffer != buffer)
+                {
+                    continue;
+                }
 
-	        return -1;
-	    }
+                return i + start;
+            }
+
+            return -1;
+        }
         #endregion
 
         #region Constructor
@@ -136,20 +136,20 @@ namespace Gorgon.Graphics.Core
         /// <param name="bindings">[Optional] A list of vertex buffers to apply.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="inputLayout"/> parameter is <b>null</b>.</exception>
         public GorgonVertexBufferBindings(GorgonInputLayout inputLayout, IReadOnlyList<GorgonVertexBufferBinding> bindings = null)
-	        : this()
-	    {
-	        InputLayout = inputLayout ?? throw new ArgumentNullException(nameof(inputLayout));
-	        
-	        if (bindings == null)
-	        {
-	            return;
-	        }
+            : this()
+        {
+            InputLayout = inputLayout ?? throw new ArgumentNullException(nameof(inputLayout));
+
+            if (bindings == null)
+            {
+                return;
+            }
 
             for (int i = 0; i < bindings.Count.Min(MaximumVertexBufferCount); ++i)
             {
                 this[i] = bindings[i];
             }
-	    }
-		#endregion
-	}
+        }
+        #endregion
+    }
 }

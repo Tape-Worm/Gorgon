@@ -28,12 +28,12 @@ using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using DX = SharpDX;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Timing;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -211,7 +211,7 @@ namespace Gorgon.Editor.ImageEditor
             };
             _volumeRayParams.SetData(ref volParams);
 
-            var scaleFactor = new DX.Vector4(1.0f, 1.0f, 1.0f / (maxSize / size.Z), 1.0f);            
+            var scaleFactor = new DX.Vector4(1.0f, 1.0f, 1.0f / (maxSize / size.Z), 1.0f);
             _volumeScaleFactor.SetData(ref scaleFactor);
 
             RebuildVolumeData();
@@ -269,7 +269,7 @@ namespace Gorgon.Editor.ImageEditor
             {
                 SizeInBytes = DX.Vector4.SizeInBytes
             });
-            
+
             // Our camera is never changing, so we only need to define it here.
             DX.Matrix.Translation(0, 0, 1.5f, out _view);
             ResizeRenderRegion();
@@ -346,7 +346,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="swapChain">The swap chain for presenting the data.</param>
         public VolumeRenderer(GorgonGraphics graphics, GorgonSwapChain swapChain)
         {
-            _graphics = graphics;            
+            _graphics = graphics;
             _swapChain = swapChain;
         }
         #endregion

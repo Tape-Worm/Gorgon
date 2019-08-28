@@ -34,97 +34,97 @@ using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
-	/// <summary>
-	/// An effect that displaces the pixels on an image using the pixels from another image for weighting.
-	/// </summary>
-	public class Gorgon2DDisplacementEffect
-		: Gorgon2DEffect
-	{
+    /// <summary>
+    /// An effect that displaces the pixels on an image using the pixels from another image for weighting.
+    /// </summary>
+    public class Gorgon2DDisplacementEffect
+        : Gorgon2DEffect
+    {
         #region Variables.
         // The shader used for displacement.
         private GorgonPixelShader _displacementShader;
-	    private Gorgon2DShaderState<GorgonPixelShader> _displacementState;
-	    // The displacement render target.
-		private GorgonRenderTarget2DView _displacementTarget;
+        private Gorgon2DShaderState<GorgonPixelShader> _displacementState;
+        // The displacement render target.
+        private GorgonRenderTarget2DView _displacementTarget;
         // The displacement texture view.
-	    private GorgonTexture2DView _displacementView;
+        private GorgonTexture2DView _displacementView;
         // The constant buffer for displacement settings.
-		private GorgonConstantBufferView _displacementSettingsBuffer;				
-	    // Flag to indicate that the parameters have been updated.
-		private bool _isUpdated = true;											
-	    // Strength of the displacement map.
-		private float _displacementStrength = 0.25f;
+        private GorgonConstantBufferView _displacementSettingsBuffer;
+        // Flag to indicate that the parameters have been updated.
+        private bool _isUpdated = true;
+        // Strength of the displacement map.
+        private float _displacementStrength = 0.25f;
         // The batch state.
-	    private Gorgon2DBatchState _batchState;
-		#endregion
+        private Gorgon2DBatchState _batchState;
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to set or return the strength of the displacement map.
-		/// </summary>
-		public float Strength
-		{
-			get => _displacementStrength;
-		    set
-			{
-				if (value < 0.0f)
-				{
-					value = 0.0f;
-				}
-				
-				// ReSharper disable once CompareOfFloatsByEqualityOperator
-				if (_displacementStrength == value)
-				{
-					return;
-				}
+        #region Properties.
+        /// <summary>
+        /// Property to set or return the strength of the displacement map.
+        /// </summary>
+        public float Strength
+        {
+            get => _displacementStrength;
+            set
+            {
+                if (value < 0.0f)
+                {
+                    value = 0.0f;
+                }
 
-				_displacementStrength = value;
-				_isUpdated = true;
-			}
-		}
-		#endregion
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
+                if (_displacementStrength == value)
+                {
+                    return;
+                }
 
-		#region Methods.
-		/// <summary>
-		/// Function to update the displacement map render target.
-		/// </summary>
-		/// <param name="output">The final output render target.</param>
-		private void UpdateDisplacementMap(GorgonRenderTargetView output)
-		{
+                _displacementStrength = value;
+                _isUpdated = true;
+            }
+        }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to update the displacement map render target.
+        /// </summary>
+        /// <param name="output">The final output render target.</param>
+        private void UpdateDisplacementMap(GorgonRenderTargetView output)
+        {
             _displacementView?.Dispose();
-			_displacementTarget?.Dispose();
-			_displacementTarget = null;
-		    _displacementView = null;
+            _displacementTarget?.Dispose();
+            _displacementTarget = null;
+            _displacementView = null;
 
 #if DEBUG
-		    if (!Graphics.FormatSupport[output.Format].IsRenderTargetFormat)
-		    {
-		        throw new GorgonException(GorgonResult.CannotWrite,
-		                                  string.Format(Resources.GOR2D_ERR_EFFECT_DISPLACEMENT_UNSUPPORTED_FORMAT, output.Format));
-		    }
+            if (!Graphics.FormatSupport[output.Format].IsRenderTargetFormat)
+            {
+                throw new GorgonException(GorgonResult.CannotWrite,
+                                          string.Format(Resources.GOR2D_ERR_EFFECT_DISPLACEMENT_UNSUPPORTED_FORMAT, output.Format));
+            }
 #endif
 
-		    _displacementTarget = GorgonRenderTarget2DView.CreateRenderTarget(Graphics,
-		                                                                      new GorgonTexture2DInfo("Effect.Displacement.RT")
-		                                                                      {
-		                                                                          Width = output.Width,
-		                                                                          Height = output.Height,
-		                                                                          Format = output.Format,
-		                                                                          Binding = TextureBinding.ShaderResource
-		                                                                      });
-		    _displacementView = _displacementTarget.GetShaderResourceView();
+            _displacementTarget = GorgonRenderTarget2DView.CreateRenderTarget(Graphics,
+                                                                              new GorgonTexture2DInfo("Effect.Displacement.RT")
+                                                                              {
+                                                                                  Width = output.Width,
+                                                                                  Height = output.Height,
+                                                                                  Format = output.Format,
+                                                                                  Binding = TextureBinding.ShaderResource
+                                                                              });
+            _displacementView = _displacementTarget.GetShaderResourceView();
 
             // We store this in the 1st slot so we can read back from it when necessary.
-		    _displacementState = PixelShaderBuilder
-		                          .ShaderResource(_displacementView, 1)
-		                          .Build();
+            _displacementState = PixelShaderBuilder
+                                  .ShaderResource(_displacementView, 1)
+                                  .Build();
 
-		    _batchState = BatchStateBuilder
-		                  .PixelShaderState(_displacementState)
-		                  .Build();
+            _batchState = BatchStateBuilder
+                          .PixelShaderState(_displacementState)
+                          .Build();
 
-			_isUpdated = true;
-		}
+            _isUpdated = true;
+        }
 
         /// <summary>
         /// Function called when the effect is being initialized.
@@ -144,9 +144,9 @@ namespace Gorgon.Renderers
 
             _displacementShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderDisplacementDecoder");
             _displacementState = PixelShaderBuilder
-	                              .Shader(_displacementShader)
-	                              .ConstantBuffer(_displacementSettingsBuffer, 1)
-	                              .Build();
+                                  .Shader(_displacementShader)
+                                  .ConstantBuffer(_displacementSettingsBuffer, 1)
+                                  .Build();
 
             _batchState = BatchStateBuilder
                           .PixelShaderState(_displacementState)
@@ -154,16 +154,16 @@ namespace Gorgon.Renderers
                           .Build();
         }
 
-	    /// <summary>
-		/// Function to free any resources allocated by the effect.
-		/// </summary>
-		public void FreeResources()
-	    {
-	        GorgonTexture2DView view = Interlocked.Exchange(ref _displacementView, null);
-	        GorgonRenderTarget2DView rtv = Interlocked.Exchange(ref _displacementTarget, null);
+        /// <summary>
+        /// Function to free any resources allocated by the effect.
+        /// </summary>
+        public void FreeResources()
+        {
+            GorgonTexture2DView view = Interlocked.Exchange(ref _displacementView, null);
+            GorgonRenderTarget2DView rtv = Interlocked.Exchange(ref _displacementTarget, null);
             view?.Dispose();
             rtv?.Dispose();
-	    }
+        }
 
         /// <summary>
         /// Function called prior to rendering.
@@ -178,21 +178,21 @@ namespace Gorgon.Renderers
         /// </para>
         /// </remarks>
         protected override void OnBeforeRender(GorgonRenderTargetView output, IGorgon2DCamera camera, bool sizeChanged)
-		{
-		    if ((_displacementView == null) || (sizeChanged))
-		    {
-		        UpdateDisplacementMap(output);
-		    }
+        {
+            if ((_displacementView == null) || (sizeChanged))
+            {
+                UpdateDisplacementMap(output);
+            }
 
-		    if (!_isUpdated)
-			{
-				return;
-			}
+            if (!_isUpdated)
+            {
+                return;
+            }
 
-			var settings = new DX.Vector4(1.0f / output.Width, 1.0f / output.Height, _displacementStrength * 100, 0);
-			_displacementSettingsBuffer.Buffer.SetData(ref settings);
-			_isUpdated = false;
-		}
+            var settings = new DX.Vector4(1.0f / output.Width, 1.0f / output.Height, _displacementStrength * 100, 0);
+            _displacementSettingsBuffer.Buffer.SetData(ref settings);
+            _isUpdated = false;
+        }
 
         /// <summary>
         /// Function called prior to rendering a pass.
@@ -208,25 +208,25 @@ namespace Gorgon.Renderers
         /// </remarks>
         /// <seealso cref="PassContinuationState"/>
         protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, IGorgon2DCamera camera)
-	    {
-			if (_displacementTarget == null)
-			{
-				return PassContinuationState.Stop;
-			}
+        {
+            if (_displacementTarget == null)
+            {
+                return PassContinuationState.Stop;
+            }
 
-	        switch (passIndex)
-	        {
-	            case 0:
+            switch (passIndex)
+            {
+                case 0:
                     _displacementTarget.Clear(GorgonColor.BlackTransparent);
                     Graphics.SetRenderTarget(_displacementTarget, Graphics.DepthStencilView);
-	                break;
+                    break;
                 case 1:
                     Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
                     break;
-	        }
+            }
 
-			return PassContinuationState.Continue;
-		}
+            return PassContinuationState.Continue;
+        }
 
         /// <summary>
         /// Function called to render a single effect pass.
@@ -254,20 +254,20 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
-		{
-		    if (!disposing)
-		    {
-		        return;
-		    }
+        {
+            if (!disposing)
+            {
+                return;
+            }
 
             FreeResources();
 
-		    GorgonConstantBufferView displacementBuffer = Interlocked.Exchange(ref _displacementSettingsBuffer, null);
-		    GorgonPixelShader shader = Interlocked.Exchange(ref _displacementShader, null);
+            GorgonConstantBufferView displacementBuffer = Interlocked.Exchange(ref _displacementSettingsBuffer, null);
+            GorgonPixelShader shader = Interlocked.Exchange(ref _displacementShader, null);
 
             displacementBuffer?.Dispose();
-		    shader?.Dispose();
-		}
+            shader?.Dispose();
+        }
         #endregion
 
         #region Constructor/Destructor.

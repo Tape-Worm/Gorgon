@@ -27,11 +27,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.IO
 {
@@ -227,7 +227,7 @@ namespace Gorgon.IO
             {
                 byteCount = (int)stream.Length;
             }
-            
+
             if ((stream.Position + byteCount.Value) > stream.Length)
             {
                 throw new EndOfStreamException();
@@ -417,7 +417,7 @@ namespace Gorgon.IO
             {
                 throw new ArgumentEmptyException(nameof(name));
             }
-            
+
             FileExtensions = new[]
                              {
                                  new GorgonFileExtension(".gorPSprite", Resources.GOR2DIO_POLYSPRITE_FILE_EXTENSION_DESC)

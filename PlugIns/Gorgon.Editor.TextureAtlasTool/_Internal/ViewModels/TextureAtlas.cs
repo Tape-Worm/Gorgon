@@ -26,22 +26,22 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using DX = SharpDX;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.TextureAtlasTool.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
-using Gorgon.IO;
-using Gorgon.Renderers;
-using Gorgon.Renderers.Services;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using System.Diagnostics;
+using Gorgon.IO;
 using Gorgon.Math;
-using System.ComponentModel;
+using Gorgon.Renderers;
+using Gorgon.Renderers.Services;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.TextureAtlasTool
 {
@@ -222,7 +222,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         {
             get;
         }
-        
+
         /// <summary>
         /// Property to return the command used to commit the atlas data back to the file system.
         /// </summary>
@@ -453,7 +453,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// </summary>
         private void DoGenerate()
         {
-            GorgonTextureAtlas atlas = null;            
+            GorgonTextureAtlas atlas = null;
             _busyService.SetBusy();
 
             void UnloadAtlasTextures()
@@ -503,8 +503,8 @@ namespace Gorgon.Editor.TextureAtlasTool
                 _atlasGen.ArrayCount = _settings.MaxArrayCount;
                 _atlasGen.TextureSize = _settings.MaxTextureSize;
                 _atlasGen.BaseTextureName = $"{_settings.LastOutputDir}{_baseTextureName.FormatFileName()}";
-                                
-                IReadOnlyDictionary<GorgonSprite, (int textureIndex, DX.Rectangle region, int arrayIndex)> regions = _atlasGen.GetSpriteRegions(_sprites.Values);                
+
+                IReadOnlyDictionary<GorgonSprite, (int textureIndex, DX.Rectangle region, int arrayIndex)> regions = _atlasGen.GetSpriteRegions(_sprites.Values);
 
                 if ((regions == null) || (regions.Count == 0))
                 {

@@ -25,12 +25,12 @@
 #endregion
 
 using System;
-using System.Threading.Tasks;
 using System.Drawing;
-using Gorgon.Editor.Content;
-using Gorgon.Graphics.Imaging;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
+using Gorgon.Editor.Content;
+using Gorgon.Graphics.Imaging;
 
 namespace Gorgon.Editor.PlugIns
 {

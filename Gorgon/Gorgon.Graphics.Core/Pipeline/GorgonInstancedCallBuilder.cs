@@ -163,7 +163,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonInstancedCallBuilder"/> class.
         /// </summary>
-        public GorgonInstancedCallBuilder()  
+        public GorgonInstancedCallBuilder()
             : base(new GorgonInstancedCall())
         {
 

@@ -29,26 +29,26 @@ using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// Base class for shader resource views.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This base class is used to define shader resource views for strongly typed resources like textures and buffers.
-	/// </para>
-	/// </remarks>
-	public abstract class GorgonShaderResourceView
-		: GorgonResourceView, IEquatable<GorgonShaderResourceView>
-	{
-		#region Properties.
-	    /// <summary>
-	    /// Property to return the native Direct 3D 11 view.
-	    /// </summary>
-	    internal D3D11.ShaderResourceView1 Native
-		{
-			get;
-			set;
-		}
+    /// <summary>
+    /// Base class for shader resource views.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This base class is used to define shader resource views for strongly typed resources like textures and buffers.
+    /// </para>
+    /// </remarks>
+    public abstract class GorgonShaderResourceView
+        : GorgonResourceView, IEquatable<GorgonShaderResourceView>
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to return the native Direct 3D 11 view.
+        /// </summary>
+        internal D3D11.ShaderResourceView1 Native
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Methods.
@@ -56,10 +56,10 @@ namespace Gorgon.Graphics.Core
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public override void Dispose()
-		{
-		    Native = null;
+        {
+            Native = null;
             base.Dispose();
-		}
+        }
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -92,8 +92,8 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="resource"/> parameter is <b>null</b>.</exception>
         protected GorgonShaderResourceView(GorgonGraphicsResource resource)
             : base(resource)
-		{
-		}
-		#endregion
-	}
+        {
+        }
+        #endregion
+    }
 }

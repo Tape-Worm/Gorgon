@@ -25,13 +25,13 @@
 #endregion
 
 using System.Linq;
-using DX = SharpDX;
 using Gorgon.Editor.Rendering;
+using Gorgon.Editor.TextureAtlasTool.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Renderers;
 using Gorgon.Math;
-using Gorgon.Editor.TextureAtlasTool.Properties;
+using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.TextureAtlasTool
 {
@@ -42,17 +42,17 @@ namespace Gorgon.Editor.TextureAtlasTool
         : IRenderer
     {
         #region Variables.
-		// The graphics interface for the application.
+        // The graphics interface for the application.
         private readonly GorgonGraphics _graphics;
-		// The 2D renderer for the application.
+        // The 2D renderer for the application.
         private readonly Gorgon2D _renderer;
-		// The swap chain used to render onto the window.
+        // The swap chain used to render onto the window.
         private readonly GorgonSwapChain _swapChain;
-		// Background texture.
+        // Background texture.
         private GorgonTexture2DView _bgTexture;
-		// The camera for viewing the scene.
+        // The camera for viewing the scene.
         private IGorgon2DCamera _camera;
-		// The sprite used to display the texture.
+        // The sprite used to display the texture.
         private GorgonSprite _textureSprite;
         #endregion
 
@@ -66,24 +66,24 @@ namespace Gorgon.Editor.TextureAtlasTool
         #endregion
 
         #region Methods.
-		/// <summary>
+        /// <summary>
         /// Function to initialize the render data from the data context.
         /// </summary>
         /// <param name="dataContext">The current data context.</param>
         private void InitializeFromDataContext(ITextureAtlas dataContext)
         {
             if (dataContext?.Atlas == null)
-            {                
+            {
                 _textureSprite = new GorgonSprite();
                 return;
             }
 
             _textureSprite = new GorgonSprite
             {
-				Texture = dataContext.Atlas.Textures[0],
-				TextureRegion = new DX.RectangleF(0, 0, 1, 1),
-				Size = new DX.Size2F(dataContext.Atlas.Textures[0].Width, dataContext.Atlas.Textures[0].Height),				
-				TextureSampler = GorgonSamplerState.PointFiltering
+                Texture = dataContext.Atlas.Textures[0],
+                TextureRegion = new DX.RectangleF(0, 0, 1, 1),
+                Size = new DX.Size2F(dataContext.Atlas.Textures[0].Width, dataContext.Atlas.Textures[0].Height),
+                TextureSampler = GorgonSamplerState.PointFiltering
             };
         }
 
@@ -140,7 +140,7 @@ namespace Gorgon.Editor.TextureAtlasTool
             }
 
             GorgonTexture2DView texture = _textureSprite.Texture = DataContext.Atlas.Textures[DataContext.PreviewTextureIndex]; // Change to use index.
-            
+
             float scale = CalcZoomToSize(new DX.Size2F(texture.Width + 8, texture.Height + 8), new DX.Size2F(_swapChain.Width, _swapChain.Height));
             _textureSprite.Size = new DX.Size2F(scale * texture.Width, scale * texture.Height).Truncate();
             _textureSprite.Position = new DX.Vector2(-_textureSprite.Size.Width * 0.5f, -_textureSprite.Size.Height * 0.5f).Truncate();
@@ -164,8 +164,8 @@ namespace Gorgon.Editor.TextureAtlasTool
             {
                 Binding = TextureBinding.ShaderResource,
                 Usage = ResourceUsage.Immutable,
-				Width = EditorCommonResources.CheckerBoardPatternImage.Width,
-				Height = EditorCommonResources.CheckerBoardPatternImage.Height
+                Width = EditorCommonResources.CheckerBoardPatternImage.Width,
+                Height = EditorCommonResources.CheckerBoardPatternImage.Height
             }, EditorCommonResources.CheckerBoardPatternImage);
 
             _camera = new Gorgon2DOrthoCamera(_renderer, new DX.Size2F(_swapChain.Width, _swapChain.Height))

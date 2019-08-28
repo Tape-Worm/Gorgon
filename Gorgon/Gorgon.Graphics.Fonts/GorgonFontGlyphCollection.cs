@@ -32,25 +32,25 @@ using Gorgon.Graphics.Core;
 
 namespace Gorgon.Graphics.Fonts
 {
-	/// <summary>
-	/// A collection of glyphs for a <see cref="GorgonFont"/>.
-	/// </summary>
-	public sealed class GorgonGlyphCollection
-		: IReadOnlyList<GorgonGlyph>
-	{
-		#region Variables.
-		// The list of glyphs.
-		private readonly SortedList<char, GorgonGlyph> _list;
-		#endregion
+    /// <summary>
+    /// A collection of glyphs for a <see cref="GorgonFont"/>.
+    /// </summary>
+    public sealed class GorgonGlyphCollection
+        : IReadOnlyList<GorgonGlyph>
+    {
+        #region Variables.
+        // The list of glyphs.
+        private readonly SortedList<char, GorgonGlyph> _list;
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
-		/// </summary>
-		/// <returns>
-		/// The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
-		///   </returns>
-		public int Count => _list.Count;
+        #region Properties.
+        /// <summary>
+        /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+        /// </summary>
+        /// <returns>
+        /// The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+        ///   </returns>
+        public int Count => _list.Count;
 
         /// <summary>
         /// Gets the element at the specified index.
@@ -58,14 +58,14 @@ namespace Gorgon.Graphics.Fonts
         /// <exception cref="NotSupportedException">Thrown when an attempt to set this property is made.</exception>
         public GorgonGlyph this[int index] => _list.Values[index];
 
-		/// <summary>
-		/// Property to set or return a glyph in the collection by its character representation.
-		/// </summary>
-		public GorgonGlyph this[char character]
-		{
-			get => _list[character];
-			internal set => _list[character] = value;
-		}
+        /// <summary>
+        /// Property to set or return a glyph in the collection by its character representation.
+        /// </summary>
+        public GorgonGlyph this[char character]
+        {
+            get => _list[character];
+            internal set => _list[character] = value;
+        }
         #endregion
 
         #region Methods.
@@ -89,47 +89,47 @@ namespace Gorgon.Graphics.Fonts
         /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
         /// </returns>
         public IEnumerator<GorgonGlyph> GetEnumerator()
-		{
-			// ReSharper disable LoopCanBeConvertedToQuery
-			foreach (KeyValuePair<char, GorgonGlyph> item in _list)
-			{
-				yield return item.Value;
-			}
-			// ReSharper restore LoopCanBeConvertedToQuery
-		}
+        {
+            // ReSharper disable LoopCanBeConvertedToQuery
+            foreach (KeyValuePair<char, GorgonGlyph> item in _list)
+            {
+                yield return item.Value;
+            }
+            // ReSharper restore LoopCanBeConvertedToQuery
+        }
 
-		/// <summary>
-		/// Returns an enumerator that iterates through a collection.
-		/// </summary>
-		/// <returns>
-		/// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
-		/// </returns>
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			// ReSharper disable once LoopCanBeConvertedToQuery
-			foreach (KeyValuePair<char, GorgonGlyph> item in _list)
-			{
-				yield return item.Value;
-			}
-		}
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+        /// </returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            // ReSharper disable once LoopCanBeConvertedToQuery
+            foreach (KeyValuePair<char, GorgonGlyph> item in _list)
+            {
+                yield return item.Value;
+            }
+        }
 
-		/// <summary>
-		/// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1"/> contains a specific value.
-		/// </summary>
-		/// <param name="glyph">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
-		/// <returns>
-		/// true if <paramref name="glyph"/> is found in the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false.
-		/// </returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="glyph"/> parameter is <b>null</b>.</exception>
-		public bool Contains(GorgonGlyph glyph)
-		{
-			if (glyph == null)
-			{
-				throw new ArgumentNullException(nameof(glyph));
-			}
+        /// <summary>
+        /// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1"/> contains a specific value.
+        /// </summary>
+        /// <param name="glyph">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
+        /// <returns>
+        /// true if <paramref name="glyph"/> is found in the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="glyph"/> parameter is <b>null</b>.</exception>
+        public bool Contains(GorgonGlyph glyph)
+        {
+            if (glyph == null)
+            {
+                throw new ArgumentNullException(nameof(glyph));
+            }
 
-			return _list.ContainsValue(glyph);
-		}
+            return _list.ContainsValue(glyph);
+        }
 
         /// <summary>
         /// Function to return whether the character exists in this collection.
@@ -152,14 +152,14 @@ namespace Gorgon.Graphics.Fonts
         /// <returns>The index of the glyph if found, -1 if not.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="glyph"/> parameter is <b>null</b>.</exception>
         public int IndexOf(GorgonGlyph glyph)
-		{
-			if (glyph == null)
-			{
-				throw new ArgumentNullException(nameof(glyph));
-			}
+        {
+            if (glyph == null)
+            {
+                throw new ArgumentNullException(nameof(glyph));
+            }
 
-			return _list.IndexOfValue(glyph);
-		}
+            return _list.IndexOfValue(glyph);
+        }
 
         /// <summary>
         /// Function to attempt to retrieve a glyph from the list.
@@ -179,28 +179,28 @@ namespace Gorgon.Graphics.Fonts
         /// </para>
         /// </remarks>
         public IReadOnlyDictionary<GorgonTexture2D, IReadOnlyList<GorgonGlyph>> GetGlyphsByTexture()
-		{
-			IEnumerable<IGrouping<GorgonTexture2D, GorgonGlyph>> groupedGlyphs = from glyph in this
-			                    where glyph.TextureView != null
-			                    group glyph by glyph.TextureView.Texture;
+        {
+            IEnumerable<IGrouping<GorgonTexture2D, GorgonGlyph>> groupedGlyphs = from glyph in this
+                                                                                 where glyph.TextureView != null
+                                                                                 group glyph by glyph.TextureView.Texture;
 
-			return groupedGlyphs.ToDictionary(k => k.Key, v => (IReadOnlyList<GorgonGlyph>)v.ToArray());
-		}
-		#endregion
+            return groupedGlyphs.ToDictionary(k => k.Key, v => (IReadOnlyList<GorgonGlyph>)v.ToArray());
+        }
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonGlyphCollection"/> class.
-		/// </summary>
-		/// <param name="glyphs">The glyphs to import into this collection.</param>
-		internal GorgonGlyphCollection(IEnumerable<GorgonGlyph> glyphs)
-			: this()
-		{
-			foreach (GorgonGlyph glyph in glyphs)
-			{
-				_list[glyph.Character] = glyph;
-			}
-		}
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonGlyphCollection"/> class.
+        /// </summary>
+        /// <param name="glyphs">The glyphs to import into this collection.</param>
+        internal GorgonGlyphCollection(IEnumerable<GorgonGlyph> glyphs)
+            : this()
+        {
+            foreach (GorgonGlyph glyph in glyphs)
+            {
+                _list[glyph.Character] = glyph;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonGlyphCollection"/> class.

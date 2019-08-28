@@ -29,129 +29,129 @@ using System.Runtime.CompilerServices;
 
 namespace Gorgon.Math
 {
-	/// <summary>
-	/// Fluent extensions for mathematical operations on various numeric types.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This provides a fluent interface to numeric types (e.g. <see cref="float"/>, <see cref="double"/>, <see cref="int"/>, etc...) that will expose common mathematical functions without relying on 
-	/// methods from <see cref="System.Math"/>. This makes it easy to chain together several functions to retrieve a result, for example:
-	/// </para>
-	/// <code language="csharp">
-	/// int myValueTooBig = 150;
-	/// int myValueTooSmall = 5;
-	/// 
-	/// // Ensure the value does not exceed 100, but is greater than 10.
-	/// Console.WriteLine("{0}, {1}", myValueTooBig.Min(100).Max(10), myValueTooSmall.Min(100).Max(10));  
-	///
-	/// // Outputs: 100, 10
-	/// </code>
-	/// <para>
-	/// Other mathematical functions are included, such as <see cref="O:Gorgon.Math.GorgonMathExtensions.Sin">Sine</see>, <see cref="O:Gorgon.Math.GorgonMathExtensions.Cos">Cosine</see>, <see cref="O:Gorgon.Math.GorgonMathExtensions.Tan">Tangent</see>, etc... 
-	/// </para>
-	/// </remarks>
-	public static class GorgonMathExtensions
-	{
-		#region Constants.
-		// Constant containing the value used to convert degrees to radians.
-		private const float DegConvert = ((float)System.Math.PI / 180.0f);
-		// Constant containing the value used to convert radians to degrees.
-		private const float RadConvert = (180.0f / (float)System.Math.PI);		
+    /// <summary>
+    /// Fluent extensions for mathematical operations on various numeric types.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This provides a fluent interface to numeric types (e.g. <see cref="float"/>, <see cref="double"/>, <see cref="int"/>, etc...) that will expose common mathematical functions without relying on 
+    /// methods from <see cref="System.Math"/>. This makes it easy to chain together several functions to retrieve a result, for example:
+    /// </para>
+    /// <code language="csharp">
+    /// int myValueTooBig = 150;
+    /// int myValueTooSmall = 5;
+    /// 
+    /// // Ensure the value does not exceed 100, but is greater than 10.
+    /// Console.WriteLine("{0}, {1}", myValueTooBig.Min(100).Max(10), myValueTooSmall.Min(100).Max(10));  
+    ///
+    /// // Outputs: 100, 10
+    /// </code>
+    /// <para>
+    /// Other mathematical functions are included, such as <see cref="O:Gorgon.Math.GorgonMathExtensions.Sin">Sine</see>, <see cref="O:Gorgon.Math.GorgonMathExtensions.Cos">Cosine</see>, <see cref="O:Gorgon.Math.GorgonMathExtensions.Tan">Tangent</see>, etc... 
+    /// </para>
+    /// </remarks>
+    public static class GorgonMathExtensions
+    {
+        #region Constants.
+        // Constant containing the value used to convert degrees to radians.
+        private const float DegConvert = ((float)System.Math.PI / 180.0f);
+        // Constant containing the value used to convert radians to degrees.
+        private const float RadConvert = (180.0f / (float)System.Math.PI);
 
-		/// <summary>
-		/// Constant value for &#x03C0;.
-		/// </summary>
-		public const float PI = 3.141593f;
-		#endregion
+        /// <summary>
+        /// Constant value for &#x03C0;.
+        /// </summary>
+        public const float PI = 3.141593f;
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to perform an approximation of a sine calculation.
-		/// </summary>
-		/// <param name="rads">The angle, in radians.</param>
-		/// <returns>The sine value for the angle.</returns>
-		/// <remarks>
-		/// <para>
-		/// This method will produce an approximation of the value returned by <see cref="Sin(float)"/>. Because this is an approximation, this method should not be used when accuracy is important. 
-		/// </para>
-		/// <para>
-		/// This version of the sine function has better performance than the <see cref="Sin(float)"/> method, and as such, should be used in performance intensive situations.
-		/// </para>
-		/// <para>
-		/// This code was adapted from the <a href="http://www.gamedev.net" target="_blank">GameDev.Net</a> post by L.Spiro found here: 
-		/// <a href="http://www.gamedev.net/topic/681723-faster-sin-and-cos/" target="_blank">http://www.gamedev.net/topic/681723-faster-sin-and-cos/</a>.
-		/// </para>
-		/// </remarks>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static float FastSin(this float rads)
-		{
-			int i32I = (int)(rads * 0.31830988618379067153776752674503f);  // 1 / PI.
-			rads = (rads - ((i32I) * 3.1415926535897932384626433832795f));
+        #region Methods.
+        /// <summary>
+        /// Function to perform an approximation of a sine calculation.
+        /// </summary>
+        /// <param name="rads">The angle, in radians.</param>
+        /// <returns>The sine value for the angle.</returns>
+        /// <remarks>
+        /// <para>
+        /// This method will produce an approximation of the value returned by <see cref="Sin(float)"/>. Because this is an approximation, this method should not be used when accuracy is important. 
+        /// </para>
+        /// <para>
+        /// This version of the sine function has better performance than the <see cref="Sin(float)"/> method, and as such, should be used in performance intensive situations.
+        /// </para>
+        /// <para>
+        /// This code was adapted from the <a href="http://www.gamedev.net" target="_blank">GameDev.Net</a> post by L.Spiro found here: 
+        /// <a href="http://www.gamedev.net/topic/681723-faster-sin-and-cos/" target="_blank">http://www.gamedev.net/topic/681723-faster-sin-and-cos/</a>.
+        /// </para>
+        /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float FastSin(this float rads)
+        {
+            int i32I = (int)(rads * 0.31830988618379067153776752674503f);  // 1 / PI.
+            rads = (rads - ((i32I) * 3.1415926535897932384626433832795f));
 
-			float fX2 = rads * rads;
+            float fX2 = rads * rads;
 
-			return ((i32I & 1) == 1)
-				       ? -rads * ((float)(1.00000000000000000000e+00) +
-				                  (fX2 * ((float)(-1.66666671633720397949e-01) +
-				                         (fX2 * ((float)(8.33333376795053482056e-03) +
-				                                (fX2 * ((float)(-1.98412497411482036114e-04) +
-				                                       (fX2 * ((float)(2.75565571428160183132e-06) +
-				                                              (fX2 * ((float)(-2.50368472620721149724e-08) +
-				                                                     (fX2 * ((float)(1.58849267073435385100e-10) +
-				                                                            (fX2 * (float)(-6.58925550841432672300e-13)))))))))))))))
-				       : rads * ((float)(1.00000000000000000000e+00) +
-				                 (fX2 * ((float)(-1.66666671633720397949e-01) +
-				                        (fX2 * ((float)(8.33333376795053482056e-03) +
-				                               (fX2 * ((float)(-1.98412497411482036114e-04) +
-				                                      (fX2 * ((float)(2.75565571428160183132e-06) +
-				                                             (fX2 * ((float)(-2.50368472620721149724e-08) +
-				                                                    (fX2 * ((float)(1.58849267073435385100e-10) +
-				                                                           (fX2 * (float)(-6.58925550841432672300e-13)))))))))))))));
-		}
+            return ((i32I & 1) == 1)
+                       ? -rads * ((float)(1.00000000000000000000e+00) +
+                                  (fX2 * ((float)(-1.66666671633720397949e-01) +
+                                         (fX2 * ((float)(8.33333376795053482056e-03) +
+                                                (fX2 * ((float)(-1.98412497411482036114e-04) +
+                                                       (fX2 * ((float)(2.75565571428160183132e-06) +
+                                                              (fX2 * ((float)(-2.50368472620721149724e-08) +
+                                                                     (fX2 * ((float)(1.58849267073435385100e-10) +
+                                                                            (fX2 * (float)(-6.58925550841432672300e-13)))))))))))))))
+                       : rads * ((float)(1.00000000000000000000e+00) +
+                                 (fX2 * ((float)(-1.66666671633720397949e-01) +
+                                        (fX2 * ((float)(8.33333376795053482056e-03) +
+                                               (fX2 * ((float)(-1.98412497411482036114e-04) +
+                                                      (fX2 * ((float)(2.75565571428160183132e-06) +
+                                                             (fX2 * ((float)(-2.50368472620721149724e-08) +
+                                                                    (fX2 * ((float)(1.58849267073435385100e-10) +
+                                                                           (fX2 * (float)(-6.58925550841432672300e-13)))))))))))))));
+        }
 
-		/// <summary>
-		/// Function to perform an approximation of a cosine calculation.
-		/// </summary>
-		/// <param name="rads">The angle, in radians.</param>
-		/// <returns>The cosine value for the angle.</returns>
-		/// <remarks>
-		/// <para>
-		/// This method will produce an approximation of the value returned by <see cref="Cos(float)"/>. Because this is an approximation, this method should not be used when accuracy is important. 
-		/// </para>
-		/// <para>
-		/// This version of the cosine function has better performance than the <see cref="Cos(float)"/> method, and as such, should be used in performance intensive situations.
-		/// </para>
-		/// <para>
-		/// This code was adapted from the <a href="http://www.gamedev.net" target="_blank">GameDev.Net</a> post by L.Spiro found here: 
-		/// <a href="http://www.gamedev.net/topic/681723-faster-sin-and-cos/" target="_blank">http://www.gamedev.net/topic/681723-faster-sin-and-cos/</a>.
-		/// </para>
-		/// </remarks>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static float FastCos(this float rads)
-		{
-			int i32I = (int)(rads * 0.31830988618379067153776752674503f);  // 1 / PI.
-			rads = (rads - ((i32I) * 3.1415926535897932384626433832795f));
+        /// <summary>
+        /// Function to perform an approximation of a cosine calculation.
+        /// </summary>
+        /// <param name="rads">The angle, in radians.</param>
+        /// <returns>The cosine value for the angle.</returns>
+        /// <remarks>
+        /// <para>
+        /// This method will produce an approximation of the value returned by <see cref="Cos(float)"/>. Because this is an approximation, this method should not be used when accuracy is important. 
+        /// </para>
+        /// <para>
+        /// This version of the cosine function has better performance than the <see cref="Cos(float)"/> method, and as such, should be used in performance intensive situations.
+        /// </para>
+        /// <para>
+        /// This code was adapted from the <a href="http://www.gamedev.net" target="_blank">GameDev.Net</a> post by L.Spiro found here: 
+        /// <a href="http://www.gamedev.net/topic/681723-faster-sin-and-cos/" target="_blank">http://www.gamedev.net/topic/681723-faster-sin-and-cos/</a>.
+        /// </para>
+        /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float FastCos(this float rads)
+        {
+            int i32I = (int)(rads * 0.31830988618379067153776752674503f);  // 1 / PI.
+            rads = (rads - ((i32I) * 3.1415926535897932384626433832795f));
 
-			float fX2 = rads * rads;
+            float fX2 = rads * rads;
 
-			return ((i32I & 1) == 1)
-				       ? -(float)(1.00000000000000000000e+00) -
-				         (fX2 * ((float)(-5.00000000000000000000e-01) +
-				                (fX2 * ((float)(4.16666641831398010254e-02) +
-				                       (fX2 * ((float)(-1.38888671062886714935e-03) +
-				                              (fX2 * ((float)(2.48006890615215525031e-05) +
-				                                     (fX2 * ((float)(-2.75369927749125054106e-07) +
-				                                            (fX2 * ((float)(2.06207229069832465029e-09) +
-				                                                   (fX2 * (float)(-9.77507137733812925262e-12))))))))))))))
-				       : (float)(1.00000000000000000000e+00) +
-				         (fX2 * ((float)(-5.00000000000000000000e-01) +
-				                (fX2 * ((float)(4.16666641831398010254e-02) +
-				                       (fX2 * ((float)(-1.38888671062886714935e-03) +
-				                              (fX2 * ((float)(2.48006890615215525031e-05) +
-				                                     (fX2 * ((float)(-2.75369927749125054106e-07) +
-				                                            (fX2 * ((float)(2.06207229069832465029e-09) +
-				                                                   (fX2 * (float)(-9.77507137733812925262e-12))))))))))))));
-		}
+            return ((i32I & 1) == 1)
+                       ? -(float)(1.00000000000000000000e+00) -
+                         (fX2 * ((float)(-5.00000000000000000000e-01) +
+                                (fX2 * ((float)(4.16666641831398010254e-02) +
+                                       (fX2 * ((float)(-1.38888671062886714935e-03) +
+                                              (fX2 * ((float)(2.48006890615215525031e-05) +
+                                                     (fX2 * ((float)(-2.75369927749125054106e-07) +
+                                                            (fX2 * ((float)(2.06207229069832465029e-09) +
+                                                                   (fX2 * (float)(-9.77507137733812925262e-12))))))))))))))
+                       : (float)(1.00000000000000000000e+00) +
+                         (fX2 * ((float)(-5.00000000000000000000e-01) +
+                                (fX2 * ((float)(4.16666641831398010254e-02) +
+                                       (fX2 * ((float)(-1.38888671062886714935e-03) +
+                                              (fX2 * ((float)(2.48006890615215525031e-05) +
+                                                     (fX2 * ((float)(-2.75369927749125054106e-07) +
+                                                            (fX2 * ((float)(2.06207229069832465029e-09) +
+                                                                   (fX2 * (float)(-9.77507137733812925262e-12))))))))))))));
+        }
 
         /// <summary>
         /// Function to return the maximum value between two <see cref="byte"/> values.
@@ -759,203 +759,161 @@ namespace Gorgon.Math
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float FastFloor(this float value)
         {
-	        int result = (int)value;
+            int result = (int)value;
 
             return (value < result) ? result - 1 : result;
         }
 
-	    /// <summary>
-	    /// Function to return the largest integer less than or equal to the specified <see cref="float"/> value.
-	    /// </summary>
-	    /// <param name="value">The value to find the floor for.</param>
-	    /// <returns>The largest integer less than or equal to <paramref name="value"/>.</returns>
-	    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-	    public static float FastFloor(this double value)
-	    {
-	        int result = (int)value;
-
-	        return (value < result) ? result - 1 : result;
-	    }
-
-		/// <summary>
-		/// Function to return the largest integer greater than or equal to the specified <see cref="float"/> value.
-		/// </summary>
-		/// <param name="value">The value to find the ceiling for.</param>
-		/// <returns>The largest integer greater than or equal to <paramref name="value"/>.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static float FastCeiling(this float value)
+        /// <summary>
+        /// Function to return the largest integer less than or equal to the specified <see cref="float"/> value.
+        /// </summary>
+        /// <param name="value">The value to find the floor for.</param>
+        /// <returns>The largest integer less than or equal to <paramref name="value"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float FastFloor(this double value)
         {
-	        int result = (int)value;
+            int result = (int)value;
 
-	        return (value > result) ? result + 1 : result;
+            return (value < result) ? result - 1 : result;
         }
 
-	    /// <summary>
-	    /// Function to return the largest integer greater than or equal to the specified <see cref="double"/> value.
-	    /// </summary>
-	    /// <param name="value">The value to find the ceiling for.</param>
-	    /// <returns>The largest integer greater than or equal to <paramref name="value"/>.</returns>
-	    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-	    public static float FastCeiling(this double value)
-	    {
-	        int result = (int)value;
+        /// <summary>
+        /// Function to return the largest integer greater than or equal to the specified <see cref="float"/> value.
+        /// </summary>
+        /// <param name="value">The value to find the ceiling for.</param>
+        /// <returns>The largest integer greater than or equal to <paramref name="value"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float FastCeiling(this float value)
+        {
+            int result = (int)value;
 
-	        return (value > result) ? result + 1 : result;
-	    }
+            return (value > result) ? result + 1 : result;
+        }
 
-		/// <summary>
-		/// Function to return the sign of an <see cref="int"/> value.
-		/// </summary>
-		/// <param name="value">The value to evaluate.</param>
-		/// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int Sign(this int value)
-		{
-			if (value == 0)
-			{
-				return 0;
-			}
+        /// <summary>
+        /// Function to return the largest integer greater than or equal to the specified <see cref="double"/> value.
+        /// </summary>
+        /// <param name="value">The value to find the ceiling for.</param>
+        /// <returns>The largest integer greater than or equal to <paramref name="value"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float FastCeiling(this double value)
+        {
+            int result = (int)value;
 
-			return value < 0 ? -1 : 1;
-		}
+            return (value > result) ? result + 1 : result;
+        }
 
-		/// <summary>
-		/// Function to return the sign of a <see cref="long"/> value.
-		/// </summary>
-		/// <param name="value">The value to evaluate.</param>
-		/// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int Sign(this long value)
-		{
-			if (value == 0)
-			{
-				return 0;
-			}
+        /// <summary>
+        /// Function to return the sign of an <see cref="int"/> value.
+        /// </summary>
+        /// <param name="value">The value to evaluate.</param>
+        /// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int Sign(this int value)
+        {
+            if (value == 0)
+            {
+                return 0;
+            }
 
-			return value < 0 ? -1 : 1;
-		}
+            return value < 0 ? -1 : 1;
+        }
 
-		/// <summary>
-		/// Function to return the sign of a <see cref="sbyte"/> value.
-		/// </summary>
-		/// <param name="value">The value to evaluate.</param>
-		/// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int Sign(this sbyte value)
-		{
-			if (value == 0)
-			{
-				return 0;
-			}
+        /// <summary>
+        /// Function to return the sign of a <see cref="long"/> value.
+        /// </summary>
+        /// <param name="value">The value to evaluate.</param>
+        /// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int Sign(this long value)
+        {
+            if (value == 0)
+            {
+                return 0;
+            }
 
-			return value < 0 ? -1 : 1;
-		}
+            return value < 0 ? -1 : 1;
+        }
 
-		/// <summary>
-		/// Function to return the sign of a <see cref="short"/> value.
-		/// </summary>
-		/// <param name="value">The value to evaluate.</param>
-		/// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int Sign(this short value)
-		{
-			if (value == 0)
-			{
-				return 0;
-			}
+        /// <summary>
+        /// Function to return the sign of a <see cref="sbyte"/> value.
+        /// </summary>
+        /// <param name="value">The value to evaluate.</param>
+        /// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int Sign(this sbyte value)
+        {
+            if (value == 0)
+            {
+                return 0;
+            }
 
-			return value < 0 ? -1 : 1;
-		}
+            return value < 0 ? -1 : 1;
+        }
 
-		/// <summary>
-		/// Function to return the sign of a <see cref="decimal"/> value.
-		/// </summary>
-		/// <param name="value">The value to evaluate.</param>
-		/// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int Sign(this decimal value)
-		{
-			if (value == 0)
-			{
-				return 0;
-			}
+        /// <summary>
+        /// Function to return the sign of a <see cref="short"/> value.
+        /// </summary>
+        /// <param name="value">The value to evaluate.</param>
+        /// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int Sign(this short value)
+        {
+            if (value == 0)
+            {
+                return 0;
+            }
 
-			return value < 0 ? -1 : 1;
-		}
+            return value < 0 ? -1 : 1;
+        }
 
-		/// <summary>
-		/// Function to return the sign of a <see cref="float"/> value.
-		/// </summary>
-		/// <param name="value">The value to evaluate.</param>
-		/// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int Sign(this float value)
-		{
-			if (value.EqualsEpsilon(0))
-			{
-				return 0;
-			}
+        /// <summary>
+        /// Function to return the sign of a <see cref="decimal"/> value.
+        /// </summary>
+        /// <param name="value">The value to evaluate.</param>
+        /// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int Sign(this decimal value)
+        {
+            if (value == 0)
+            {
+                return 0;
+            }
 
-			return value < 0 ? -1 : 1;
-		}
+            return value < 0 ? -1 : 1;
+        }
 
-		/// <summary>
-		/// Function to return the sign of a <see cref="double"/> value.
-		/// </summary>
-		/// <param name="value">The value to evaluate.</param>
-		/// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int Sign(this double value)
-		{
-			if (value.EqualsEpsilon(0))
-			{
-				return 0;
-			}
+        /// <summary>
+        /// Function to return the sign of a <see cref="float"/> value.
+        /// </summary>
+        /// <param name="value">The value to evaluate.</param>
+        /// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int Sign(this float value)
+        {
+            if (value.EqualsEpsilon(0))
+            {
+                return 0;
+            }
 
-			return value < 0 ? -1 : 1;
-		}
+            return value < 0 ? -1 : 1;
+        }
 
-	    /// <summary>
-	    /// Function to clamp a value to the range specified by the minimum and maximum value.
-	    /// </summary>
-	    /// <param name="value">The value to clamp.</param>
-	    /// <param name="minValue">The minimum value.</param>
-	    /// <param name="maxValue">The maximum value.</param>
-	    /// <returns>The clamped value.</returns>
-	    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-	    public static byte Clamp(this byte value, byte minValue, byte maxValue)
-	    {
-	        value = value.Min(maxValue);
-	        return value.Max(minValue);
-	    }
+        /// <summary>
+        /// Function to return the sign of a <see cref="double"/> value.
+        /// </summary>
+        /// <param name="value">The value to evaluate.</param>
+        /// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int Sign(this double value)
+        {
+            if (value.EqualsEpsilon(0))
+            {
+                return 0;
+            }
 
-	    /// <summary>
-	    /// Function to clamp a value to the range specified by the minimum and maximum value.
-	    /// </summary>
-	    /// <param name="value">The value to clamp.</param>
-	    /// <param name="minValue">The minimum value.</param>
-	    /// <param name="maxValue">The maximum value.</param>
-	    /// <returns>The clamped value.</returns>
-	    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-	    public static short Clamp(this short value, short minValue, short maxValue)
-	    {
-	        value = value.Min(maxValue);
-	        return value.Max(minValue);
-	    }
-
-	    /// <summary>
-	    /// Function to clamp a value to the range specified by the minimum and maximum value.
-	    /// </summary>
-	    /// <param name="value">The value to clamp.</param>
-	    /// <param name="minValue">The minimum value.</param>
-	    /// <param name="maxValue">The maximum value.</param>
-	    /// <returns>The clamped value.</returns>
-	    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-	    public static ushort Clamp(this ushort value, ushort minValue, ushort maxValue)
-	    {
-	        value = value.Min(maxValue);
-	        return value.Max(minValue);
-	    }
+            return value < 0 ? -1 : 1;
+        }
 
         /// <summary>
         /// Function to clamp a value to the range specified by the minimum and maximum value.
@@ -965,95 +923,137 @@ namespace Gorgon.Math
         /// <param name="maxValue">The maximum value.</param>
         /// <returns>The clamped value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-	    public static int Clamp(this int value, int minValue, int maxValue)
+        public static byte Clamp(this byte value, byte minValue, byte maxValue)
         {
             value = value.Min(maxValue);
             return value.Max(minValue);
         }
 
-	    /// <summary>
-	    /// Function to clamp a value to the range specified by the minimum and maximum value.
-	    /// </summary>
-	    /// <param name="value">The value to clamp.</param>
-	    /// <param name="minValue">The minimum value.</param>
-	    /// <param name="maxValue">The maximum value.</param>
-	    /// <returns>The clamped value.</returns>
-	    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-	    public static uint Clamp(this uint value, uint minValue, uint maxValue)
-	    {
-	        value = value.Min(maxValue);
-	        return value.Max(minValue);
-	    }
+        /// <summary>
+        /// Function to clamp a value to the range specified by the minimum and maximum value.
+        /// </summary>
+        /// <param name="value">The value to clamp.</param>
+        /// <param name="minValue">The minimum value.</param>
+        /// <param name="maxValue">The maximum value.</param>
+        /// <returns>The clamped value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static short Clamp(this short value, short minValue, short maxValue)
+        {
+            value = value.Min(maxValue);
+            return value.Max(minValue);
+        }
 
-	    /// <summary>
-	    /// Function to clamp a value to the range specified by the minimum and maximum value.
-	    /// </summary>
-	    /// <param name="value">The value to clamp.</param>
-	    /// <param name="minValue">The minimum value.</param>
-	    /// <param name="maxValue">The maximum value.</param>
-	    /// <returns>The clamped value.</returns>
-	    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-	    public static long Clamp(this long value, long minValue, long maxValue)
-	    {
-	        value = value.Min(maxValue);
-	        return value.Max(minValue);
-	    }
+        /// <summary>
+        /// Function to clamp a value to the range specified by the minimum and maximum value.
+        /// </summary>
+        /// <param name="value">The value to clamp.</param>
+        /// <param name="minValue">The minimum value.</param>
+        /// <param name="maxValue">The maximum value.</param>
+        /// <returns>The clamped value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ushort Clamp(this ushort value, ushort minValue, ushort maxValue)
+        {
+            value = value.Min(maxValue);
+            return value.Max(minValue);
+        }
 
-	    /// <summary>
-	    /// Function to clamp a value to the range specified by the minimum and maximum value.
-	    /// </summary>
-	    /// <param name="value">The value to clamp.</param>
-	    /// <param name="minValue">The minimum value.</param>
-	    /// <param name="maxValue">The maximum value.</param>
-	    /// <returns>The clamped value.</returns>
-	    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-	    public static ulong Clamp(this ulong value, ulong minValue, ulong maxValue)
-	    {
-	        value = value.Min(maxValue);
-	        return value.Max(minValue);
-	    }
+        /// <summary>
+        /// Function to clamp a value to the range specified by the minimum and maximum value.
+        /// </summary>
+        /// <param name="value">The value to clamp.</param>
+        /// <param name="minValue">The minimum value.</param>
+        /// <param name="maxValue">The maximum value.</param>
+        /// <returns>The clamped value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int Clamp(this int value, int minValue, int maxValue)
+        {
+            value = value.Min(maxValue);
+            return value.Max(minValue);
+        }
 
-	    /// <summary>
-	    /// Function to clamp a value to the range specified by the minimum and maximum value.
-	    /// </summary>
-	    /// <param name="value">The value to clamp.</param>
-	    /// <param name="minValue">The minimum value.</param>
-	    /// <param name="maxValue">The maximum value.</param>
-	    /// <returns>The clamped value.</returns>
-	    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-	    public static float Clamp(this float value, float minValue, float maxValue)
-	    {
-	        value = value.Min(maxValue);
-	        return value.Max(minValue);
-	    }
+        /// <summary>
+        /// Function to clamp a value to the range specified by the minimum and maximum value.
+        /// </summary>
+        /// <param name="value">The value to clamp.</param>
+        /// <param name="minValue">The minimum value.</param>
+        /// <param name="maxValue">The maximum value.</param>
+        /// <returns>The clamped value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static uint Clamp(this uint value, uint minValue, uint maxValue)
+        {
+            value = value.Min(maxValue);
+            return value.Max(minValue);
+        }
 
-	    /// <summary>
-	    /// Function to clamp a value to the range specified by the minimum and maximum value.
-	    /// </summary>
-	    /// <param name="value">The value to clamp.</param>
-	    /// <param name="minValue">The minimum value.</param>
-	    /// <param name="maxValue">The maximum value.</param>
-	    /// <returns>The clamped value.</returns>
-	    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-	    public static double Clamp(this double value, double minValue, double maxValue)
-	    {
-	        value = value.Min(maxValue);
-	        return value.Max(minValue);
-	    }
+        /// <summary>
+        /// Function to clamp a value to the range specified by the minimum and maximum value.
+        /// </summary>
+        /// <param name="value">The value to clamp.</param>
+        /// <param name="minValue">The minimum value.</param>
+        /// <param name="maxValue">The maximum value.</param>
+        /// <returns>The clamped value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long Clamp(this long value, long minValue, long maxValue)
+        {
+            value = value.Min(maxValue);
+            return value.Max(minValue);
+        }
 
-	    /// <summary>
-	    /// Function to clamp a value to the range specified by the minimum and maximum value.
-	    /// </summary>
-	    /// <param name="value">The value to clamp.</param>
-	    /// <param name="minValue">The minimum value.</param>
-	    /// <param name="maxValue">The maximum value.</param>
-	    /// <returns>The clamped value.</returns>
-	    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-	    public static decimal Clamp(this decimal value, decimal minValue, decimal maxValue)
-	    {
-	        value = value.Min(maxValue);
-	        return value.Max(minValue);
-	    }
-		#endregion
-	}
+        /// <summary>
+        /// Function to clamp a value to the range specified by the minimum and maximum value.
+        /// </summary>
+        /// <param name="value">The value to clamp.</param>
+        /// <param name="minValue">The minimum value.</param>
+        /// <param name="maxValue">The maximum value.</param>
+        /// <returns>The clamped value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ulong Clamp(this ulong value, ulong minValue, ulong maxValue)
+        {
+            value = value.Min(maxValue);
+            return value.Max(minValue);
+        }
+
+        /// <summary>
+        /// Function to clamp a value to the range specified by the minimum and maximum value.
+        /// </summary>
+        /// <param name="value">The value to clamp.</param>
+        /// <param name="minValue">The minimum value.</param>
+        /// <param name="maxValue">The maximum value.</param>
+        /// <returns>The clamped value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Clamp(this float value, float minValue, float maxValue)
+        {
+            value = value.Min(maxValue);
+            return value.Max(minValue);
+        }
+
+        /// <summary>
+        /// Function to clamp a value to the range specified by the minimum and maximum value.
+        /// </summary>
+        /// <param name="value">The value to clamp.</param>
+        /// <param name="minValue">The minimum value.</param>
+        /// <param name="maxValue">The maximum value.</param>
+        /// <returns>The clamped value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static double Clamp(this double value, double minValue, double maxValue)
+        {
+            value = value.Min(maxValue);
+            return value.Max(minValue);
+        }
+
+        /// <summary>
+        /// Function to clamp a value to the range specified by the minimum and maximum value.
+        /// </summary>
+        /// <param name="value">The value to clamp.</param>
+        /// <param name="minValue">The minimum value.</param>
+        /// <param name="maxValue">The maximum value.</param>
+        /// <returns>The clamped value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static decimal Clamp(this decimal value, decimal minValue, decimal maxValue)
+        {
+            value = value.Min(maxValue);
+            return value.Max(minValue);
+        }
+        #endregion
+    }
 }

@@ -53,10 +53,10 @@ namespace Gorgon.Editor.PlugIns
             set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the function to determine if the button can be clicked.
         /// </summary>
-		public Func<bool> CanExecute
+        public Func<bool> CanExecute
         {
             get;
             set;

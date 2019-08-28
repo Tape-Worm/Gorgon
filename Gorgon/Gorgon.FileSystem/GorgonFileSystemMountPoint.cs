@@ -32,31 +32,31 @@ using Gorgon.IO.Providers;
 
 namespace Gorgon.IO
 {
-	/// <summary>
-	/// A mount point for the virtual file system.
-	/// </summary>
-	public readonly struct GorgonFileSystemMountPoint
-		: IGorgonEquatableByRef<GorgonFileSystemMountPoint>
-	{
-		#region Variables.
-		/// <summary>
-		/// Flag to indicate whether the mount point is a fake mount point or not (i.e. it has no real physical location).
-		/// </summary>
-		internal readonly bool IsFakeMount;
+    /// <summary>
+    /// A mount point for the virtual file system.
+    /// </summary>
+    public readonly struct GorgonFileSystemMountPoint
+        : IGorgonEquatableByRef<GorgonFileSystemMountPoint>
+    {
+        #region Variables.
+        /// <summary>
+        /// Flag to indicate whether the mount point is a fake mount point or not (i.e. it has no real physical location).
+        /// </summary>
+        internal readonly bool IsFakeMount;
 
-		/// <summary>
-		/// The provider for this mount point.
-		/// </summary>
-		[SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "Nothing can change this object outside of the API.")]
-		public readonly IGorgonFileSystemProvider Provider;
-		/// <summary>
-		/// The physical location of the mount point.
-		/// </summary>
-		public readonly string PhysicalPath;
-		/// <summary>
-		/// The virtual location of the mount point.
-		/// </summary>
-		public readonly string MountLocation;
+        /// <summary>
+        /// The provider for this mount point.
+        /// </summary>
+        [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "Nothing can change this object outside of the API.")]
+        public readonly IGorgonFileSystemProvider Provider;
+        /// <summary>
+        /// The physical location of the mount point.
+        /// </summary>
+        public readonly string PhysicalPath;
+        /// <summary>
+        /// The virtual location of the mount point.
+        /// </summary>
+        public readonly string MountLocation;
         #endregion
 
         #region Methods.
@@ -110,14 +110,14 @@ namespace Gorgon.IO
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
         public override int GetHashCode()
-		{
+        {
 #pragma warning disable IDE0046 // Convert to conditional expression
             if ((Provider == null) || (PhysicalPath == null) || (MountLocation == null))
             {
-				return 0;
-			}
+                return 0;
+            }
 
-			return 281.GenerateHash(Provider).GenerateHash(PhysicalPath).GenerateHash(MountLocation);
+            return 281.GenerateHash(Provider).GenerateHash(PhysicalPath).GenerateHash(MountLocation);
 #pragma warning restore IDE0046 // Convert to conditional expression
         }
 
@@ -149,32 +149,32 @@ namespace Gorgon.IO
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalPath"/>, <paramref name="provider"/>, or <paramref name="mountLocation"/> parameters are <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalPath"/>, or the <paramref name="mountLocation"/> parameter is empty.</exception>
         internal GorgonFileSystemMountPoint(IGorgonFileSystemProvider provider, string physicalPath, string mountLocation, bool isFakeMountPoint = false)
-		{
-			if (physicalPath == null)
-			{
-				throw new ArgumentNullException(nameof(physicalPath));
-			}
+        {
+            if (physicalPath == null)
+            {
+                throw new ArgumentNullException(nameof(physicalPath));
+            }
 
-			if (mountLocation == null)
-			{
-				throw new ArgumentNullException(nameof(mountLocation));
-			}
+            if (mountLocation == null)
+            {
+                throw new ArgumentNullException(nameof(mountLocation));
+            }
 
-			if (string.IsNullOrWhiteSpace(physicalPath))
-			{
-				throw new ArgumentEmptyException(nameof(physicalPath));
-			}
+            if (string.IsNullOrWhiteSpace(physicalPath))
+            {
+                throw new ArgumentEmptyException(nameof(physicalPath));
+            }
 
-			if (string.IsNullOrWhiteSpace(mountLocation))
-			{
-				throw new ArgumentEmptyException(nameof(mountLocation));
-			}
+            if (string.IsNullOrWhiteSpace(mountLocation))
+            {
+                throw new ArgumentEmptyException(nameof(mountLocation));
+            }
 
-			Provider = provider ?? throw new ArgumentNullException(nameof(provider));
-			PhysicalPath = physicalPath;
-			MountLocation = mountLocation;
-			IsFakeMount = isFakeMountPoint;
-		}
-		#endregion
+            Provider = provider ?? throw new ArgumentNullException(nameof(provider));
+            PhysicalPath = physicalPath;
+            MountLocation = mountLocation;
+            IsFakeMount = isFakeMountPoint;
+        }
+        #endregion
     }
 }

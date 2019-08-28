@@ -118,13 +118,13 @@ namespace Gorgon.Editor.ImageEditor
 
             FileFilter = fileFilter.ToString();
             DialogTitle = Resources.GORIMG_CAPTION_IMPORT_IMAGE;
-            InitialDirectory = GetLastImportExportPath();                                    
+            InitialDirectory = GetLastImportExportPath();
         }
 
         /// <summary>Function to retrieve a single file name.</summary>
         /// <returns>The selected file path, or <b>null</b> if cancelled.</returns>
         public override string GetFilename()
-        {            
+        {
             ConfigureDialog();
             string filePath = base.GetFilename();
 

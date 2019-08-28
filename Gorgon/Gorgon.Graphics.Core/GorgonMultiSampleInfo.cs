@@ -33,61 +33,61 @@ using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// Values to define the number and quality of multisampling.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// Setting the <see cref="Count"/> and <see cref="Quality"/> values to 1 and 0 respectively, will disable multisampling.
-	/// </para>
-	/// <para>
-	/// If multisample anti-aliasing is being used, all bound render targets and depth buffers must have the same sample counts and quality levels.
-	/// </para>
-	/// </remarks>
-	public readonly struct GorgonMultisampleInfo
-		: IEquatable<GorgonMultisampleInfo>
-	{
-		#region Variables.
+    /// <summary>
+    /// Values to define the number and quality of multisampling.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Setting the <see cref="Count"/> and <see cref="Quality"/> values to 1 and 0 respectively, will disable multisampling.
+    /// </para>
+    /// <para>
+    /// If multisample anti-aliasing is being used, all bound render targets and depth buffers must have the same sample counts and quality levels.
+    /// </para>
+    /// </remarks>
+    public readonly struct GorgonMultisampleInfo
+        : IEquatable<GorgonMultisampleInfo>
+    {
+        #region Variables.
         /// <summary>
         /// The default multisampling value.
         /// </summary>
         public static readonly GorgonMultisampleInfo NoMultiSampling = new GorgonMultisampleInfo(1, 0);
 
-		/// <summary>
-		/// A quality level for standard multisample quality.
-		/// </summary>
-		/// <remarks>
-		/// This value is always supported in Gorgon because it can only use Direct 3D 10 or better devices, and these devices are required to implement this pattern.
-		/// </remarks>
-		public static readonly int StandardMultisamplePatternQuality = unchecked((int)0xffffffff);
+        /// <summary>
+        /// A quality level for standard multisample quality.
+        /// </summary>
+        /// <remarks>
+        /// This value is always supported in Gorgon because it can only use Direct 3D 10 or better devices, and these devices are required to implement this pattern.
+        /// </remarks>
+        public static readonly int StandardMultisamplePatternQuality = unchecked((int)0xffffffff);
 
-		/// <summary>
-		/// A pattern where all of the samples are located at the pixel center.
-		/// </summary>
-		public static readonly int CenteredMultisamplePatternQuality = unchecked((int)0xfffffffe);
+        /// <summary>
+        /// A pattern where all of the samples are located at the pixel center.
+        /// </summary>
+        public static readonly int CenteredMultisamplePatternQuality = unchecked((int)0xfffffffe);
 
         /// <summary>
         /// The number of samples per pixel.
         /// </summary>
 		public readonly int Count;
 
-		/// <summary>
-		/// The quality for a sample.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// There is a performance penalty for setting this value to higher levels.
-		/// </para>
-		/// <para>
-		/// <note type="warning">
-		/// <para>
-		/// This value must be 0 or less than/equal to the quality returned by <see cref="IGorgonFormatSupportInfo.MaxMultisampleCountQuality"/>.  Failure to do so will cause an exception for objects that use this 
-		/// type.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public readonly int Quality;
+        /// <summary>
+        /// The quality for a sample.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// There is a performance penalty for setting this value to higher levels.
+        /// </para>
+        /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// This value must be 0 or less than/equal to the quality returned by <see cref="IGorgonFormatSupportInfo.MaxMultisampleCountQuality"/>.  Failure to do so will cause an exception for objects that use this 
+        /// type.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public readonly int Quality;
         #endregion
 
         #region Methods.
@@ -154,21 +154,21 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="sampleDesc">The DXGI sample description.</param>
         internal GorgonMultisampleInfo(SampleDescription sampleDesc)
-		{
-			Count = sampleDesc.Count.Max(1).Min(D3D11.Device.MultisampleCountMaximum);
-			Quality = sampleDesc.Quality;
-		}
+        {
+            Count = sampleDesc.Count.Max(1).Min(D3D11.Device.MultisampleCountMaximum);
+            Quality = sampleDesc.Quality;
+        }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonMultisampleInfo"/> struct.
-		/// </summary>
-		/// <param name="count">The number of samples per pixel.</param>
-		/// <param name="quality">Image quality.</param>
-		public GorgonMultisampleInfo(int count, int quality)
-		{
-		    Count = count.Min(D3D11.Device.MultisampleCountMaximum).Max(1);
-			Quality = quality;
-		}
-		#endregion
-	}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonMultisampleInfo"/> struct.
+        /// </summary>
+        /// <param name="count">The number of samples per pixel.</param>
+        /// <param name="quality">Image quality.</param>
+        public GorgonMultisampleInfo(int count, int quality)
+        {
+            Count = count.Min(D3D11.Device.MultisampleCountMaximum).Max(1);
+            Quality = quality;
+        }
+        #endregion
+    }
 }

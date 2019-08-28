@@ -53,9 +53,9 @@ namespace Gorgon.Renderers
         /// Property to return whether or not the sprite has had its position, size, texture information, or object space vertices updated since it was last drawn.
         /// </summary>
         [JsonIgnore]
-        public bool IsUpdated => Renderable.HasTextureChanges 
-                                 || Renderable.HasTransformChanges 
-                                 || Renderable.HasVertexChanges 
+        public bool IsUpdated => Renderable.HasTextureChanges
+                                 || Renderable.HasTransformChanges
+                                 || Renderable.HasVertexChanges
                                  || Renderable.HasVertexColorChanges;
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace Gorgon.Renderers
             {
                 ref DX.RectangleF bounds = ref Renderable.Bounds;
 
-                if ((bounds.Left == value.Left) 
+                if ((bounds.Left == value.Left)
                     && (bounds.Right == value.Right)
                     && (bounds.Top == value.Top)
                     && (bounds.Bottom == value.Bottom))
@@ -442,12 +442,12 @@ namespace Gorgon.Renderers
             Bounds = clone.Bounds;
             Color = clone.Color;
             Depth = clone.Depth;
-            HorizontalFlip = clone.HorizontalFlip;            
+            HorizontalFlip = clone.HorizontalFlip;
             Scale = clone.Scale;
             Texture = clone.Texture;
             TextureArrayIndex = clone.TextureArrayIndex;
             TextureRegion = clone.TextureRegion;
-            TextureSampler = clone.TextureSampler;            
+            TextureSampler = clone.TextureSampler;
             VerticalFlip = clone.VerticalFlip;
 
             CornerOffsets.UpperLeft = clone.CornerOffsets.UpperLeft;

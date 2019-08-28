@@ -34,141 +34,141 @@ using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts
 {
-	/// <summary>
-	/// A brush used to draw glyphs using a linear gradient value.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This allows glyphs to be drawn using multiple colors that fade into one another.
-	/// </para>
-	/// </remarks>
-	/// <seealso cref="GorgonGlyphSolidBrush"/>
-	/// <seealso cref="GorgonGlyphHatchBrush"/>
-	/// <seealso cref="GorgonGlyphPathGradientBrush"/>
-	/// <seealso cref="GorgonGlyphTextureBrush"/>
-	public class GorgonGlyphLinearGradientBrush
-		: GorgonGlyphBrush
-	{
-		#region Properties.
-		/// <summary>
-		/// Property to set or return the region for the gradient.
-		/// </summary>
-		internal DX.Rectangle GradientRegion
-		{
-			get;
-			set;
-		}
+    /// <summary>
+    /// A brush used to draw glyphs using a linear gradient value.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This allows glyphs to be drawn using multiple colors that fade into one another.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonGlyphSolidBrush"/>
+    /// <seealso cref="GorgonGlyphHatchBrush"/>
+    /// <seealso cref="GorgonGlyphPathGradientBrush"/>
+    /// <seealso cref="GorgonGlyphTextureBrush"/>
+    public class GorgonGlyphLinearGradientBrush
+        : GorgonGlyphBrush
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to set or return the region for the gradient.
+        /// </summary>
+        internal DX.Rectangle GradientRegion
+        {
+            get;
+            set;
+        }
 
-		/// <summary>
-		/// Property to return the type of brush.
-		/// </summary>
-		public override GlyphBrushType BrushType => GlyphBrushType.LinearGradient;
+        /// <summary>
+        /// Property to return the type of brush.
+        /// </summary>
+        public override GlyphBrushType BrushType => GlyphBrushType.LinearGradient;
 
-		/// <summary>
-		/// Property to set or return the starting color to use for the gradient.
-		/// </summary>
-		public GorgonColor StartColor
-		{
-			get
-			{
-				// ReSharper disable once InvertIf
-				if (Interpolation.Count == 0)
-				{
-					Interpolation.Add(new GorgonGlyphBrushInterpolator(0, GorgonColor.Black));
-					Interpolation.Add(new GorgonGlyphBrushInterpolator(0, GorgonColor.White));
-				}
+        /// <summary>
+        /// Property to set or return the starting color to use for the gradient.
+        /// </summary>
+        public GorgonColor StartColor
+        {
+            get
+            {
+                // ReSharper disable once InvertIf
+                if (Interpolation.Count == 0)
+                {
+                    Interpolation.Add(new GorgonGlyphBrushInterpolator(0, GorgonColor.Black));
+                    Interpolation.Add(new GorgonGlyphBrushInterpolator(0, GorgonColor.White));
+                }
 
-				return Interpolation[0].Color;
-			}
-			set
-			{
-				var newValue = new GorgonGlyphBrushInterpolator(0, value);
+                return Interpolation[0].Color;
+            }
+            set
+            {
+                var newValue = new GorgonGlyphBrushInterpolator(0, value);
 
-				if (Interpolation.Count == 0)
-				{
-					Interpolation.Add(newValue);
-					Interpolation.Add(new GorgonGlyphBrushInterpolator(1, GorgonColor.White));
-				}
-				else
-				{
-					Interpolation[0] = newValue;
-				}
-			}
-		}
+                if (Interpolation.Count == 0)
+                {
+                    Interpolation.Add(newValue);
+                    Interpolation.Add(new GorgonGlyphBrushInterpolator(1, GorgonColor.White));
+                }
+                else
+                {
+                    Interpolation[0] = newValue;
+                }
+            }
+        }
 
-		/// <summary>
-		/// Property to set or return the ending color to use for the gradient.
-		/// </summary>
-		public GorgonColor EndColor
-		{
-			get
-			{
-				switch (Interpolation.Count)
-				{
-				    case 0:
-				        Interpolation.Add(new GorgonGlyphBrushInterpolator(0, GorgonColor.Black));
-				        break;
-				    case 1:
-				        Interpolation.Add(new GorgonGlyphBrushInterpolator(1, GorgonColor.White));
-				        break;
-				}
+        /// <summary>
+        /// Property to set or return the ending color to use for the gradient.
+        /// </summary>
+        public GorgonColor EndColor
+        {
+            get
+            {
+                switch (Interpolation.Count)
+                {
+                    case 0:
+                        Interpolation.Add(new GorgonGlyphBrushInterpolator(0, GorgonColor.Black));
+                        break;
+                    case 1:
+                        Interpolation.Add(new GorgonGlyphBrushInterpolator(1, GorgonColor.White));
+                        break;
+                }
 
-			    return Interpolation[Interpolation.Count - 1].Color;
-			}
-			set
-			{
-				var newValue = new GorgonGlyphBrushInterpolator(1, value);
+                return Interpolation[Interpolation.Count - 1].Color;
+            }
+            set
+            {
+                var newValue = new GorgonGlyphBrushInterpolator(1, value);
 
-				switch (Interpolation.Count)
-				{
-					case 0:
-						Interpolation.Add(new GorgonGlyphBrushInterpolator(0, GorgonColor.Black));
-						Interpolation.Add(newValue);
-						break;
-					case 1:
-						Interpolation.Add(newValue);
-						break;
-					default:
-						Interpolation[Interpolation.Count - 1] = newValue;
-						break;
-				}
-			}
-		}
+                switch (Interpolation.Count)
+                {
+                    case 0:
+                        Interpolation.Add(new GorgonGlyphBrushInterpolator(0, GorgonColor.Black));
+                        Interpolation.Add(newValue);
+                        break;
+                    case 1:
+                        Interpolation.Add(newValue);
+                        break;
+                    default:
+                        Interpolation[Interpolation.Count - 1] = newValue;
+                        break;
+                }
+            }
+        }
 
-		/// <summary>
-		/// Property to set or return the angle, in degrees, for the gradient.
-		/// </summary>
-		public float Angle
-		{
-			get;
-			set;
-		}
+        /// <summary>
+        /// Property to set or return the angle, in degrees, for the gradient.
+        /// </summary>
+        public float Angle
+        {
+            get;
+            set;
+        }
 
-		/// <summary>
-		/// Property to set or return whether to scale the angle.
-		/// </summary>
-		public bool ScaleAngle
-		{
-			get;
-			set;
-		}
+        /// <summary>
+        /// Property to set or return whether to scale the angle.
+        /// </summary>
+        public bool ScaleAngle
+        {
+            get;
+            set;
+        }
 
-		/// <summary>
-		/// Property to set or return whether to enable or disable gamma correction.
-		/// </summary>
-		public bool GammaCorrection
-		{
-			get;
-			set;
-		}
+        /// <summary>
+        /// Property to set or return whether to enable or disable gamma correction.
+        /// </summary>
+        public bool GammaCorrection
+        {
+            get;
+            set;
+        }
 
-		/// <summary>
-		/// Property to return the interpolation colors for the gradient.
-		/// </summary>
-		public IList<GorgonGlyphBrushInterpolator> Interpolation
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the interpolation colors for the gradient.
+        /// </summary>
+        public IList<GorgonGlyphBrushInterpolator> Interpolation
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
@@ -217,28 +217,28 @@ namespace Gorgon.Graphics.Fonts
         /// The GDI+ brush type for this object.
         /// </returns>
         internal override Brush ToGDIBrush()
-		{
-			var result = new LinearGradientBrush(new Rectangle(GradientRegion.X, GradientRegion.Y, GradientRegion.Width, GradientRegion.Height),
-			                                     StartColor,
-			                                     EndColor,
-			                                     Angle,
-			                                     ScaleAngle)
-			             {
-				             GammaCorrection = GammaCorrection
-			             };
+        {
+            var result = new LinearGradientBrush(new Rectangle(GradientRegion.X, GradientRegion.Y, GradientRegion.Width, GradientRegion.Height),
+                                                 StartColor,
+                                                 EndColor,
+                                                 Angle,
+                                                 ScaleAngle)
+            {
+                GammaCorrection = GammaCorrection
+            };
 
-			var interpolationColors = new ColorBlend(Interpolation.Count);
+            var interpolationColors = new ColorBlend(Interpolation.Count);
 
-			for (int i = 0; i < Interpolation.Count; i++)
-			{
-				interpolationColors.Colors[i] = Interpolation[i].Color;
-				interpolationColors.Positions[i] = Interpolation[i].Weight;
-			}
+            for (int i = 0; i < Interpolation.Count; i++)
+            {
+                interpolationColors.Colors[i] = Interpolation[i].Color;
+                interpolationColors.Positions[i] = Interpolation[i].Weight;
+            }
 
-			result.InterpolationColors = interpolationColors;
+            result.InterpolationColors = interpolationColors;
 
-			return result;
-		}
+            return result;
+        }
 
         /// <summary>Function to clone an object.</summary>
         /// <returns>The cloned object.</returns>

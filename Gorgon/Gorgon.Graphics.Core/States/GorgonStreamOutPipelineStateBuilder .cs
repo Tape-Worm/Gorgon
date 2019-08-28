@@ -63,9 +63,9 @@ namespace Gorgon.Graphics.Core
         #region Variables.
         // The working state.
         private readonly GorgonStreamOutPipelineState _workState = new GorgonStreamOutPipelineState(new GorgonPipelineState
-                                                                                                    {
-                                                                                                        PrimitiveType = Core.PrimitiveType.TriangleList
-                                                                                                    });
+        {
+            PrimitiveType = Core.PrimitiveType.TriangleList
+        });
         #endregion
 
         #region Properties.
@@ -245,7 +245,7 @@ namespace Gorgon.Graphics.Core
             _workState.PipelineState.IsIndependentBlendingEnabled = pipeState.IsIndependentBlendingEnabled;
             _workState.PipelineState.IsAlphaToCoverageEnabled = pipeState.IsAlphaToCoverageEnabled;
             pipeState.PipelineState.RwBlendStates.CopyTo(_workState.PipelineState.RwBlendStates);
-            
+
             return this;
         }
 
@@ -274,7 +274,7 @@ namespace Gorgon.Graphics.Core
         public GorgonStreamOutPipelineStateBuilder(GorgonGraphics graphics)
         {
             Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
-            
+
             _workState.PipelineState.RasterState = GorgonRasterState.Default;
             _workState.PipelineState.RwBlendStates[0] = GorgonBlendState.Default;
             _workState.PipelineState.DepthStencilState = GorgonDepthStencilState.Default;

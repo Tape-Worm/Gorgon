@@ -31,11 +31,11 @@ using Gorgon.Properties;
 
 namespace Gorgon.Core
 {
-	/// <summary>
-	/// Extension methods to provide formatting on numeric values for memory and hexadecimal values.
-	/// </summary>
-	public static class GorgonNumericFormattingExtension
-	{
+    /// <summary>
+    /// Extension methods to provide formatting on numeric values for memory and hexadecimal values.
+    /// </summary>
+    public static class GorgonNumericFormattingExtension
+    {
         #region Methods.
         /// <summary>
         /// FUnction to return a string formatted to the current culture.
@@ -44,8 +44,8 @@ namespace Gorgon.Core
         /// <param name="sizeType">Size value to use.</param>
         /// <param name="requireDecimal">[Optional] <b>true</b> if the value should have a decimal place always appear, or <b>false</b> if not.</param>
         /// <returns>The string formatted to the current UI culture.</returns>
-        private static string GetCultureString(double value, string sizeType, bool requireDecimal = true) => 
-			string.Format(CultureInfo.CurrentCulture, requireDecimal ? "{0:0.0#} {1}" : "{0:0.#} {1}", value, sizeType);
+        private static string GetCultureString(double value, string sizeType, bool requireDecimal = true) =>
+            string.Format(CultureInfo.CurrentCulture, requireDecimal ? "{0:0.0#} {1}" : "{0:0.#} {1}", value, sizeType);
 
         /// <summary>
         /// Function to return a formatted string containing the memory amount.
@@ -82,114 +82,114 @@ namespace Gorgon.Core
         /// </code>
         /// </remarks>
         public static string FormatMemory(this short amount)
-		{
-		    double scale = amount.Abs() / 1024.0;
+        {
+            double scale = amount.Abs() / 1024.0;
 
-		    return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES, false);
-		}
+            return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES, false);
+        }
 
-		/// <summary>
-		/// Function to return a formatted string containing the memory amount.
-		/// </summary>
-		/// <param name="amount">Amount of memory in bytes to format.</param>
-		/// <returns>A string containing the formatted amount of memory.</returns>
-		/// <remarks>
-		/// This will produce a string value with the number of bytes suffixed with the word 'bytes' if less than 1023, or the number of kilobytes suffixed with the abbreviation 'KB' if the value is above 1023.
-		/// <code language="csharp">
-		/// ushort bytes = 999;
-		/// ushort kilobytes = 2048;
-		/// 
-		/// Console.WriteLine(bytes.FormatMemory());
-		/// Console.WriteLine(kilobytes.FormatMemory());
-		/// 
-		/// // Produces: "128 bytes" and "2.0 KB".
-		/// </code>
-		/// <para>
-		/// If the value cannot be represented with a string suffix, then the number of bytes will be displayed as default.
-		/// </para>
-		/// </remarks>
-		public static string FormatMemory(this ushort amount)
-		{
-		    double scale = amount / 1024.0;
-			
-		    return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES, false);
-		}
+        /// <summary>
+        /// Function to return a formatted string containing the memory amount.
+        /// </summary>
+        /// <param name="amount">Amount of memory in bytes to format.</param>
+        /// <returns>A string containing the formatted amount of memory.</returns>
+        /// <remarks>
+        /// This will produce a string value with the number of bytes suffixed with the word 'bytes' if less than 1023, or the number of kilobytes suffixed with the abbreviation 'KB' if the value is above 1023.
+        /// <code language="csharp">
+        /// ushort bytes = 999;
+        /// ushort kilobytes = 2048;
+        /// 
+        /// Console.WriteLine(bytes.FormatMemory());
+        /// Console.WriteLine(kilobytes.FormatMemory());
+        /// 
+        /// // Produces: "128 bytes" and "2.0 KB".
+        /// </code>
+        /// <para>
+        /// If the value cannot be represented with a string suffix, then the number of bytes will be displayed as default.
+        /// </para>
+        /// </remarks>
+        public static string FormatMemory(this ushort amount)
+        {
+            double scale = amount / 1024.0;
 
-		/// <summary>
-		/// Function to return a formatted string containing the memory amount.
-		/// </summary>
-		/// <param name="amount">Amount of memory in bytes to format.</param>
-		/// <returns>A string containing the formatted amount of memory.</returns>
-		/// <remarks>
-		/// This will produce a string value with the number of bytes suffixed with the word 'bytes' if less than 1023, the number of kilobytes suffixed with the abbreviation 'KB' if the value is 
-		/// within the range of 1024 to 1048575, the number of megabytes suffixed with the abbreviation MB if the value is within the range of 1048576 to 1073741823, or the number of gigabytes 
-		/// with the suffix of 'GB' if the value is greater than 1073741823.
-		/// <code language="csharp">
-		/// int bytes = 999;
-		/// int kilobytes = 2048;
-		/// int megabytes = 3145728;
-		/// int gigabytes = int.MaxValue;
-		/// 
-		/// Console.WriteLine(bytes.FormatMemory());
-		/// Console.WriteLine(kilobytes.FormatMemory());
-		/// Console.WriteLine(megabytes.FormatMemory());
-		/// Console.WriteLine(gigabytes.FormatMemory());
-		/// 
-		/// // Produces: "128 bytes", "2.0 KB", "3.0 MB", and "2 GB".
-		/// </code>
-		/// <para>
-		/// If the value cannot be represented with a string suffix, then the number of bytes will be displayed as default.
-		/// </para>
-		/// </remarks>
-		public static string FormatMemory(this int amount)
-		{
-		    double scale = amount.Abs() / 1073741824.0;
+            return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES, false);
+        }
 
-		    if (scale >= 1.0)
-		    {
+        /// <summary>
+        /// Function to return a formatted string containing the memory amount.
+        /// </summary>
+        /// <param name="amount">Amount of memory in bytes to format.</param>
+        /// <returns>A string containing the formatted amount of memory.</returns>
+        /// <remarks>
+        /// This will produce a string value with the number of bytes suffixed with the word 'bytes' if less than 1023, the number of kilobytes suffixed with the abbreviation 'KB' if the value is 
+        /// within the range of 1024 to 1048575, the number of megabytes suffixed with the abbreviation MB if the value is within the range of 1048576 to 1073741823, or the number of gigabytes 
+        /// with the suffix of 'GB' if the value is greater than 1073741823.
+        /// <code language="csharp">
+        /// int bytes = 999;
+        /// int kilobytes = 2048;
+        /// int megabytes = 3145728;
+        /// int gigabytes = int.MaxValue;
+        /// 
+        /// Console.WriteLine(bytes.FormatMemory());
+        /// Console.WriteLine(kilobytes.FormatMemory());
+        /// Console.WriteLine(megabytes.FormatMemory());
+        /// Console.WriteLine(gigabytes.FormatMemory());
+        /// 
+        /// // Produces: "128 bytes", "2.0 KB", "3.0 MB", and "2 GB".
+        /// </code>
+        /// <para>
+        /// If the value cannot be represented with a string suffix, then the number of bytes will be displayed as default.
+        /// </para>
+        /// </remarks>
+        public static string FormatMemory(this int amount)
+        {
+            double scale = amount.Abs() / 1073741824.0;
+
+            if (scale >= 1.0)
+            {
                 return GetCultureString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_GB);
-		    }
+            }
 
-		    scale = amount / 1048576.0;
+            scale = amount / 1048576.0;
 
-		    if (scale >= 1.0)
-		    {
+            if (scale >= 1.0)
+            {
                 return GetCultureString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_MB);
-		    }
+            }
 
-		    scale = amount / 1024.0;
+            scale = amount / 1024.0;
 
-		    return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES, false);
-		}
+            return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES, false);
+        }
 
-		/// <summary>
-		/// Function to return a formatted string containing the memory amount.
-		/// </summary>
-		/// <param name="amount">Amount of memory in bytes to format.</param>
-		/// <returns>A string containing the formatted amount of memory.</returns>
-		/// <remarks>
-		/// This will produce a string value with the number of bytes suffixed with the word 'bytes' if less than 1023, the number of kilobytes suffixed with the abbreviation 'KB' if the value is 
-		/// within the range of 1024 to 1048575, the number of megabytes suffixed with the abbreviation MB if the value is within the range of 1048576 to 1073741823, or the number of gigabytes 
-		/// with the suffix of 'GB' if the value is greater than 1073741823.
-		/// <code language="csharp">
-		/// uint bytes = 999;
-		/// uint kilobytes = 2048;
-		/// uint megabytes = 3145728;
-		/// uint gigabytes = 3221225472;
-		/// 
-		/// Console.WriteLine(bytes.FormatMemory());
-		/// Console.WriteLine(kilobytes.FormatMemory());
-		/// Console.WriteLine(megabytes.FormatMemory());
-		/// Console.WriteLine(gigabytes.FormatMemory());
-		/// 
-		/// // Produces: "128 bytes", "2.0 KB", "3.0 MB", and "3 GB".
-		/// </code>
-		/// <para>
-		/// If the value cannot be represented with a string suffix, then the number of bytes will be displayed as default.
-		/// </para>
-		/// </remarks>
-		public static string FormatMemory(this uint amount)
-		{
+        /// <summary>
+        /// Function to return a formatted string containing the memory amount.
+        /// </summary>
+        /// <param name="amount">Amount of memory in bytes to format.</param>
+        /// <returns>A string containing the formatted amount of memory.</returns>
+        /// <remarks>
+        /// This will produce a string value with the number of bytes suffixed with the word 'bytes' if less than 1023, the number of kilobytes suffixed with the abbreviation 'KB' if the value is 
+        /// within the range of 1024 to 1048575, the number of megabytes suffixed with the abbreviation MB if the value is within the range of 1048576 to 1073741823, or the number of gigabytes 
+        /// with the suffix of 'GB' if the value is greater than 1073741823.
+        /// <code language="csharp">
+        /// uint bytes = 999;
+        /// uint kilobytes = 2048;
+        /// uint megabytes = 3145728;
+        /// uint gigabytes = 3221225472;
+        /// 
+        /// Console.WriteLine(bytes.FormatMemory());
+        /// Console.WriteLine(kilobytes.FormatMemory());
+        /// Console.WriteLine(megabytes.FormatMemory());
+        /// Console.WriteLine(gigabytes.FormatMemory());
+        /// 
+        /// // Produces: "128 bytes", "2.0 KB", "3.0 MB", and "3 GB".
+        /// </code>
+        /// <para>
+        /// If the value cannot be represented with a string suffix, then the number of bytes will be displayed as default.
+        /// </para>
+        /// </remarks>
+        public static string FormatMemory(this uint amount)
+        {
             double scale = amount / 1073741824.0;
 
             if (scale >= 1.0)
@@ -206,152 +206,43 @@ namespace Gorgon.Core
 
             scale = amount / 1024.0;
 
-		    return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES, false);
-		}
+            return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES, false);
+        }
 
-		/// <summary>
-		/// Function to return a formatted string containing the memory amount.
-		/// </summary>
-		/// <param name="amount">Amount of memory in bytes to format.</param>
-		/// <returns>A string containing the formatted amount of memory.</returns>
-		/// <remarks>
-		/// This will produce a string value with the number of bytes suffixed with the word 'bytes' if less than 1023, the number of kilobytes suffixed with the abbreviation 'KB' if the value is 
-		/// within the range of 1024 to 1048575, the number of megabytes suffixed with the abbreviation MB if the value is within the range of 1048576 to 1073741823, the number of gigabytes 
-		/// with the suffix of 'GB' if the value is within the range of 1073741824 to 1099511627775, the number of terabytes with the suffix 'TB' if the value is within the range of 1099511627776 
-		/// to 1125899906842623, of the number of petabytes with the suffix 'PB' if the value is greater than 1125899906842623.
-		/// <code language="csharp">
-		/// long bytes = 999;
-		/// long kilobytes = 2048;
-		/// long megabytes = 3145728;
-		/// long gigabytes = 4294967296;
-		/// long terabytes = 5497558138880;
-		/// long petabytes = 6755399441055744;
-		/// 
-		/// Console.WriteLine(bytes.FormatMemory());
-		/// Console.WriteLine(kilobytes.FormatMemory());
-		/// Console.WriteLine(megabytes.FormatMemory());
-		/// Console.WriteLine(gigabytes.FormatMemory());
-		/// Console.WriteLine(terabytes.FormatMemory());
-		/// Console.WriteLine(petabytes.FormatMemory());
-		/// 
-		/// // Produces: "128 bytes", "2.0 KB", "3.0 MB", "4.0 GB", "5.0 TB", and "6.0 PB".
-		/// </code>
-		/// <para>
-		/// If the value cannot be represented with a string suffix, then the number of bytes will be displayed as default.
-		/// </para>
-		/// </remarks>
-		public static string FormatMemory(this long amount)
-		{
-		    double scale = amount.Abs() / 1125899906842624.0;
-
-		    if (scale >= 1.0)
-		    {
-                return GetCultureString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_PB);
-		    }
-
-		    scale = amount / 1099511627776.0;
-
-		    if (scale >= 1.0)
-		    {
-                return GetCultureString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_TB);
-		    }
-
-			scale = amount / 1073741824.0;
-
-		    if (scale >= 1.0)
-		    {
-                return GetCultureString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_GB);
-		    }
-
-		    scale = amount / 1048576.0;
-
-			if (scale >= 1.0)
-			{
-                return GetCultureString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_MB);
-			}
-
-			scale = amount / 1024.0;
-
-		    return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES, false);
-		}
-
-		/// <summary>
-		/// Function to return a formatted string containing the memory amount.
-		/// </summary>
-		/// <param name="amount">Amount of memory in bytes to format.</param>
-		/// <returns>A string containing the formatted amount of memory.</returns>
-		/// <remarks>
-		/// This will produce a string value with the number of bytes suffixed with the word 'bytes' if less than 1023, the number of kilobytes suffixed with the abbreviation 'KB' if the value is 
-		/// within the range of 1024 to 1048575, the number of megabytes suffixed with the abbreviation MB if the value is within the range of 1048576 to 1073741823, the number of gigabytes 
-		/// with the suffix of 'GB' if the value is within the range of 1073741824 to 1099511627775, the number of terabytes with the suffix 'TB' if the value is within the range of 1099511627776 
-		/// to 1125899906842623, of the number of petabytes with the suffix 'PB' if the value is greater than 1125899906842623.
-		/// <code language="csharp">
-		/// ulong bytes = 999;
-		/// ulong kilobytes = 2048;
-		/// ulong megabytes = 3145728;
-		/// ulong gigabytes = 4294967296;
-		/// ulong terabytes = 5497558138880;
-		/// ulong petabytes = 6755399441055744;
-		/// 
-		/// Console.WriteLine(bytes.FormatMemory());
-		/// Console.WriteLine(kilobytes.FormatMemory());
-		/// Console.WriteLine(megabytes.FormatMemory());
-		/// Console.WriteLine(gigabytes.FormatMemory());
-		/// Console.WriteLine(terabytes.FormatMemory());
-		/// Console.WriteLine(petabytes.FormatMemory());
-		/// 
-		/// // Produces: "128 bytes", "2.0 KB", "3.0 MB", "4.0 GB", "5.0 TB", and "6.0 PB".
-		/// </code>
-		/// <para>
-		/// If the value cannot be represented with a string suffix, then the number of bytes will be displayed as default.
-		/// </para>
-		/// </remarks>
-		public static string FormatMemory(this ulong amount)
-		{
-		    double scale = amount / 1125899906842624.0;
-
-		    if (scale >= 1.0)
-		    {
-                return GetCultureString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_PB);
-		    }
-
-		    scale = amount / 1099511627776.0;
-
-		    if (scale >= 1.0)
-		    {
-                return GetCultureString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_TB);
-		    }
-
-			scale = amount / 1073741824.0;
-
-		    if (scale >= 1.0)
-		    {
-                return GetCultureString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_GB);
-		    }
-
-		    scale = amount / 1048576.0;
-
-			if (scale >= 1.0)
-			{
-                return GetCultureString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_MB);
-			}
-
-			scale = amount / 1024.0;
-
-		    return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES, false);
-		}
-
-		/// <summary>
-		/// Function to return a formatted string containing the memory amount.
-		/// </summary>
-		/// <param name="amount">Amount of memory in bytes to format.</param>
-		/// <returns>A string containing the formatted amount of memory.</returns>
-		/// <remarks>
-		/// This overload is like the <see cref="FormatMemory(int)"/> method, only it will return the value with floating point formatting. e.g: "3.25 MB" instead of "3.0 MB"
-		/// </remarks>
-		public static string FormatMemory(this float amount)
-		{
-		    double scale = amount.Abs() / 1125899906842624.0;
+        /// <summary>
+        /// Function to return a formatted string containing the memory amount.
+        /// </summary>
+        /// <param name="amount">Amount of memory in bytes to format.</param>
+        /// <returns>A string containing the formatted amount of memory.</returns>
+        /// <remarks>
+        /// This will produce a string value with the number of bytes suffixed with the word 'bytes' if less than 1023, the number of kilobytes suffixed with the abbreviation 'KB' if the value is 
+        /// within the range of 1024 to 1048575, the number of megabytes suffixed with the abbreviation MB if the value is within the range of 1048576 to 1073741823, the number of gigabytes 
+        /// with the suffix of 'GB' if the value is within the range of 1073741824 to 1099511627775, the number of terabytes with the suffix 'TB' if the value is within the range of 1099511627776 
+        /// to 1125899906842623, of the number of petabytes with the suffix 'PB' if the value is greater than 1125899906842623.
+        /// <code language="csharp">
+        /// long bytes = 999;
+        /// long kilobytes = 2048;
+        /// long megabytes = 3145728;
+        /// long gigabytes = 4294967296;
+        /// long terabytes = 5497558138880;
+        /// long petabytes = 6755399441055744;
+        /// 
+        /// Console.WriteLine(bytes.FormatMemory());
+        /// Console.WriteLine(kilobytes.FormatMemory());
+        /// Console.WriteLine(megabytes.FormatMemory());
+        /// Console.WriteLine(gigabytes.FormatMemory());
+        /// Console.WriteLine(terabytes.FormatMemory());
+        /// Console.WriteLine(petabytes.FormatMemory());
+        /// 
+        /// // Produces: "128 bytes", "2.0 KB", "3.0 MB", "4.0 GB", "5.0 TB", and "6.0 PB".
+        /// </code>
+        /// <para>
+        /// If the value cannot be represented with a string suffix, then the number of bytes will be displayed as default.
+        /// </para>
+        /// </remarks>
+        public static string FormatMemory(this long amount)
+        {
+            double scale = amount.Abs() / 1125899906842624.0;
 
             if (scale >= 1.0)
             {
@@ -384,17 +275,126 @@ namespace Gorgon.Core
             return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES, false);
         }
 
-		/// <summary>
-		/// Function to return a formatted string containing the memory amount.
-		/// </summary>
-		/// <param name="amount">Amount of memory in bytes to format.</param>
-		/// <returns>A string containing the formatted amount of memory.</returns>
-		/// <remarks>
-		/// This overload is like the <see cref="FormatMemory(int)"/> method, only it will return the value with floating point formatting. e.g: "3.25 MB" instead of "3.0 MB"
-		/// </remarks>
-		public static string FormatMemory(this double amount)
-		{
-		    double scale = amount.Abs() / 1125899906842624.0;
+        /// <summary>
+        /// Function to return a formatted string containing the memory amount.
+        /// </summary>
+        /// <param name="amount">Amount of memory in bytes to format.</param>
+        /// <returns>A string containing the formatted amount of memory.</returns>
+        /// <remarks>
+        /// This will produce a string value with the number of bytes suffixed with the word 'bytes' if less than 1023, the number of kilobytes suffixed with the abbreviation 'KB' if the value is 
+        /// within the range of 1024 to 1048575, the number of megabytes suffixed with the abbreviation MB if the value is within the range of 1048576 to 1073741823, the number of gigabytes 
+        /// with the suffix of 'GB' if the value is within the range of 1073741824 to 1099511627775, the number of terabytes with the suffix 'TB' if the value is within the range of 1099511627776 
+        /// to 1125899906842623, of the number of petabytes with the suffix 'PB' if the value is greater than 1125899906842623.
+        /// <code language="csharp">
+        /// ulong bytes = 999;
+        /// ulong kilobytes = 2048;
+        /// ulong megabytes = 3145728;
+        /// ulong gigabytes = 4294967296;
+        /// ulong terabytes = 5497558138880;
+        /// ulong petabytes = 6755399441055744;
+        /// 
+        /// Console.WriteLine(bytes.FormatMemory());
+        /// Console.WriteLine(kilobytes.FormatMemory());
+        /// Console.WriteLine(megabytes.FormatMemory());
+        /// Console.WriteLine(gigabytes.FormatMemory());
+        /// Console.WriteLine(terabytes.FormatMemory());
+        /// Console.WriteLine(petabytes.FormatMemory());
+        /// 
+        /// // Produces: "128 bytes", "2.0 KB", "3.0 MB", "4.0 GB", "5.0 TB", and "6.0 PB".
+        /// </code>
+        /// <para>
+        /// If the value cannot be represented with a string suffix, then the number of bytes will be displayed as default.
+        /// </para>
+        /// </remarks>
+        public static string FormatMemory(this ulong amount)
+        {
+            double scale = amount / 1125899906842624.0;
+
+            if (scale >= 1.0)
+            {
+                return GetCultureString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_PB);
+            }
+
+            scale = amount / 1099511627776.0;
+
+            if (scale >= 1.0)
+            {
+                return GetCultureString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_TB);
+            }
+
+            scale = amount / 1073741824.0;
+
+            if (scale >= 1.0)
+            {
+                return GetCultureString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_GB);
+            }
+
+            scale = amount / 1048576.0;
+
+            if (scale >= 1.0)
+            {
+                return GetCultureString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_MB);
+            }
+
+            scale = amount / 1024.0;
+
+            return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES, false);
+        }
+
+        /// <summary>
+        /// Function to return a formatted string containing the memory amount.
+        /// </summary>
+        /// <param name="amount">Amount of memory in bytes to format.</param>
+        /// <returns>A string containing the formatted amount of memory.</returns>
+        /// <remarks>
+        /// This overload is like the <see cref="FormatMemory(int)"/> method, only it will return the value with floating point formatting. e.g: "3.25 MB" instead of "3.0 MB"
+        /// </remarks>
+        public static string FormatMemory(this float amount)
+        {
+            double scale = amount.Abs() / 1125899906842624.0;
+
+            if (scale >= 1.0)
+            {
+                return GetCultureString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_PB);
+            }
+
+            scale = amount / 1099511627776.0;
+
+            if (scale >= 1.0)
+            {
+                return GetCultureString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_TB);
+            }
+
+            scale = amount / 1073741824.0;
+
+            if (scale >= 1.0)
+            {
+                return GetCultureString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_GB);
+            }
+
+            scale = amount / 1048576.0;
+
+            if (scale >= 1.0)
+            {
+                return GetCultureString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_MB);
+            }
+
+            scale = amount / 1024.0;
+
+            return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES, false);
+        }
+
+        /// <summary>
+        /// Function to return a formatted string containing the memory amount.
+        /// </summary>
+        /// <param name="amount">Amount of memory in bytes to format.</param>
+        /// <returns>A string containing the formatted amount of memory.</returns>
+        /// <remarks>
+        /// This overload is like the <see cref="FormatMemory(int)"/> method, only it will return the value with floating point formatting. e.g: "3.25 MB" instead of "3.0 MB"
+        /// </remarks>
+        public static string FormatMemory(this double amount)
+        {
+            double scale = amount.Abs() / 1125899906842624.0;
 
             if (scale >= 1.0)
             {

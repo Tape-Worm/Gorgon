@@ -33,7 +33,7 @@ namespace Gorgon.Editor.Services
     /// <summary>
     /// Provides access to the various content specific plugins in the application.
     /// </summary>
-    public interface IContentPlugInService        
+    public interface IContentPlugInService
         : IDisabledPlugInService
     {
         #region Properties.

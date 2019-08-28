@@ -36,7 +36,7 @@ namespace Gorgon.Editor.TextureAtlasTool
     /// <summary>
     /// A dialog used for sprite selection.
     /// </summary>
-    internal partial class FormSpriteSelector 
+    internal partial class FormSpriteSelector
         : KryptonForm, IDataContext<ISpriteFiles>
     {
         #region Properties.

@@ -30,58 +30,58 @@ using Gorgon.Graphics.Imaging.Properties;
 
 namespace Gorgon.Graphics.Imaging
 {
-	/// <summary>
-	/// Information about the pitch layout for buffer data.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// The pitch layout indicates how data is organized within in a buffer. For most buffer types, this is simply the size of the buffer from 0 to <c>n - 1</c>. But for other buffer types, such as images 
-	/// then extra dimensions are used to define the layout of the data. 
-	/// </para>
-	/// <para>
-	/// In a 2D image, there is a width and a height. Or for a depth (3D) image, there is a width, height and depth. The number of bytes between each dimension must be used to determine where to start 
-	/// reading/writing data in the memory occupied by the image. 
-	/// </para>
-	/// <para>
-	/// In many cases, the "width" of an image is not necessarily the number of pixels across, it may also include extra padding information for alignment purposes. This information is returned in the 
-	/// <see cref="RowPitch"/> for the pitch layout. This value is typically the number of <c>pixels * bytes per pixel + padding bytes</c>. Like a 2D image, a depth (3D) image must use this information to 
-	/// determine where to start reading/writing data in the memory occupied by the image.
-	/// </para>
-	/// <para>
-	/// For depth (3D) images, there is a slice value. This indicates the total size of one element along the Z-axis and typically represents the <c>bytes in the width * height</c> of the image. The 
-	/// <see cref="SlicePitch"/> returns the total size of a single slice. The slice is calculated by <c>bytes in the width * height * slice index (z element)</c>). For a 2D image, this value represents just 
-	/// a single slice (i.e. <c>bytes in the width * height</c>).
-	/// </para>
-	/// </remarks>
-	public readonly struct GorgonPitchLayout
-		: IEquatable<GorgonPitchLayout>
-	{
-		#region Variables.
-		/// <summary>
-		/// The number of bytes per line of data.
-		/// </summary>
-		/// <remarks>
-		/// In an image, this indicates the number of bytes necessary for one row of pixel data, for other buffer types, this would indicate the size of the buffer, in bytes.
-		/// </remarks>
-		public readonly int RowPitch;
+    /// <summary>
+    /// Information about the pitch layout for buffer data.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The pitch layout indicates how data is organized within in a buffer. For most buffer types, this is simply the size of the buffer from 0 to <c>n - 1</c>. But for other buffer types, such as images 
+    /// then extra dimensions are used to define the layout of the data. 
+    /// </para>
+    /// <para>
+    /// In a 2D image, there is a width and a height. Or for a depth (3D) image, there is a width, height and depth. The number of bytes between each dimension must be used to determine where to start 
+    /// reading/writing data in the memory occupied by the image. 
+    /// </para>
+    /// <para>
+    /// In many cases, the "width" of an image is not necessarily the number of pixels across, it may also include extra padding information for alignment purposes. This information is returned in the 
+    /// <see cref="RowPitch"/> for the pitch layout. This value is typically the number of <c>pixels * bytes per pixel + padding bytes</c>. Like a 2D image, a depth (3D) image must use this information to 
+    /// determine where to start reading/writing data in the memory occupied by the image.
+    /// </para>
+    /// <para>
+    /// For depth (3D) images, there is a slice value. This indicates the total size of one element along the Z-axis and typically represents the <c>bytes in the width * height</c> of the image. The 
+    /// <see cref="SlicePitch"/> returns the total size of a single slice. The slice is calculated by <c>bytes in the width * height * slice index (z element)</c>). For a 2D image, this value represents just 
+    /// a single slice (i.e. <c>bytes in the width * height</c>).
+    /// </para>
+    /// </remarks>
+    public readonly struct GorgonPitchLayout
+        : IEquatable<GorgonPitchLayout>
+    {
+        #region Variables.
+        /// <summary>
+        /// The number of bytes per line of data.
+        /// </summary>
+        /// <remarks>
+        /// In an image, this indicates the number of bytes necessary for one row of pixel data, for other buffer types, this would indicate the size of the buffer, in bytes.
+        /// </remarks>
+        public readonly int RowPitch;
 
-		/// <summary>
-		/// The number of bytes per slice of data.
-		/// </summary>
-		/// <remarks>
-		/// For a 2D image, this value indicates the total size of the image, in bytes (typically <see cref="RowPitch"/> * height). In a depth image (3D), this indicates the size, in bytes, of a single slice 
-		/// along the Z-axis of the image. For other buffer types, this will be the same as the <see cref="RowPitch"/> value.
-		/// </remarks>
-		public readonly int SlicePitch;
+        /// <summary>
+        /// The number of bytes per slice of data.
+        /// </summary>
+        /// <remarks>
+        /// For a 2D image, this value indicates the total size of the image, in bytes (typically <see cref="RowPitch"/> * height). In a depth image (3D), this indicates the size, in bytes, of a single slice 
+        /// along the Z-axis of the image. For other buffer types, this will be the same as the <see cref="RowPitch"/> value.
+        /// </remarks>
+        public readonly int SlicePitch;
 
-		/// <summary>
-		/// The number of horizontal blocks in a compressed format.
-		/// </summary>
-		/// <remarks>
-		/// In the block compressed formats (e.g. <see cref="BufferFormat.BC3_UNorm"/>), the dimensions of the images are broken up into 4x4 blocks. This value indicates the total number of 4x4 blocks across 
-		/// the width of the image. For example, if an image has a width of 256 pixels, it would be 64 blocks in the horizontal direction.
-		/// </remarks>
-		public readonly int HorizontalBlockCount;
+        /// <summary>
+        /// The number of horizontal blocks in a compressed format.
+        /// </summary>
+        /// <remarks>
+        /// In the block compressed formats (e.g. <see cref="BufferFormat.BC3_UNorm"/>), the dimensions of the images are broken up into 4x4 blocks. This value indicates the total number of 4x4 blocks across 
+        /// the width of the image. For example, if an image has a width of 256 pixels, it would be 64 blocks in the horizontal direction.
+        /// </remarks>
+        public readonly int HorizontalBlockCount;
 
         /// <summary>
         /// The number of vertical blocks in a compressed format.
@@ -177,23 +177,23 @@ namespace Gorgon.Graphics.Imaging
         /// </para>
         /// </remarks>
         public GorgonPitchLayout(int rowPitch, int slicePitch, int horizontalBlockCount = 0, int verticalBlockCount = 0)
-		{
-			RowPitch = rowPitch;
-			SlicePitch = slicePitch;
+        {
+            RowPitch = rowPitch;
+            SlicePitch = slicePitch;
 
-			if ((verticalBlockCount <= 0) && (horizontalBlockCount > 0))
-			{
-				throw new ArgumentException(Resources.GORIMG_ERR_MISSING_BLOCK_COUNT, nameof(verticalBlockCount));
-			}
+            if ((verticalBlockCount <= 0) && (horizontalBlockCount > 0))
+            {
+                throw new ArgumentException(Resources.GORIMG_ERR_MISSING_BLOCK_COUNT, nameof(verticalBlockCount));
+            }
 
-			if ((horizontalBlockCount <= 0) && (verticalBlockCount > 0))
-			{
-				throw new ArgumentException(Resources.GORIMG_ERR_MISSING_BLOCK_COUNT, nameof(horizontalBlockCount));
-			}
+            if ((horizontalBlockCount <= 0) && (verticalBlockCount > 0))
+            {
+                throw new ArgumentException(Resources.GORIMG_ERR_MISSING_BLOCK_COUNT, nameof(horizontalBlockCount));
+            }
 
-			HorizontalBlockCount = horizontalBlockCount;
-			VerticalBlockCount = verticalBlockCount;
-		}
-		#endregion
-	}
+            HorizontalBlockCount = horizontalBlockCount;
+            VerticalBlockCount = verticalBlockCount;
+        }
+        #endregion
+    }
 }

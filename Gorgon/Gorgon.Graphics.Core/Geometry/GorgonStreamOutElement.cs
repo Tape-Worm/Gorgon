@@ -32,55 +32,55 @@ using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// A stream out element for a stream out buffer.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This defines a single element within a <see cref="GorgonStreamOutLayout"/>, and its relationship with other elements in that layout.
-	/// </para>
-	/// <para>
-	/// A <see cref="GorgonStreamOutLayout"/> will use an array of these items to define individual elements for a stream out slot.
-	/// </para>
-	/// </remarks>
-	public readonly struct GorgonStreamOutElement
-		: IGorgonNamedObject, IGorgonEquatableByRef<GorgonStreamOutElement>
-	{
-		#region Variables.
-		/// <summary>
-		/// The Direct 3D 11 Input Element that is wrapped by this type.
-		/// </summary>
-		internal readonly D3D11.StreamOutputElement NativeElement;
-		#endregion
-
-		#region Properties.
+    /// <summary>
+    /// A stream out element for a stream out buffer.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This defines a single element within a <see cref="GorgonStreamOutLayout"/>, and its relationship with other elements in that layout.
+    /// </para>
+    /// <para>
+    /// A <see cref="GorgonStreamOutLayout"/> will use an array of these items to define individual elements for a stream out slot.
+    /// </para>
+    /// </remarks>
+    public readonly struct GorgonStreamOutElement
+        : IGorgonNamedObject, IGorgonEquatableByRef<GorgonStreamOutElement>
+    {
+        #region Variables.
         /// <summary>
-		/// Property to return the name of this object.
-		/// </summary>
-		string IGorgonNamedObject.Name => Context;
+        /// The Direct 3D 11 Input Element that is wrapped by this type.
+        /// </summary>
+        internal readonly D3D11.StreamOutputElement NativeElement;
+        #endregion
+
+        #region Properties.
+        /// <summary>
+        /// Property to return the name of this object.
+        /// </summary>
+        string IGorgonNamedObject.Name => Context;
 
         /// <summary>
         /// Property to return the stream number to use.
         /// </summary>
 	    public int StreamIndex => NativeElement.Stream;
 
-		/// <summary>
-		/// Property to return the context of the element.
-		/// </summary>
-		/// <remarks>
-		/// This is a string value that corresponds to a shader semantic.  For example, to specify a normal, the user would set this to "Normal".  With the exception of the position element (which must be 
-		/// named "SV_Position"), these contexts can be any name as long as it maps to a corresponding vertex element in the shader.
-		/// </remarks>
-		public string Context => NativeElement.SemanticName;
+        /// <summary>
+        /// Property to return the context of the element.
+        /// </summary>
+        /// <remarks>
+        /// This is a string value that corresponds to a shader semantic.  For example, to specify a normal, the user would set this to "Normal".  With the exception of the position element (which must be 
+        /// named "SV_Position"), these contexts can be any name as long as it maps to a corresponding vertex element in the shader.
+        /// </remarks>
+        public string Context => NativeElement.SemanticName;
 
-		/// <summary>
-		/// Property to return The index of the context.
-		/// </summary>
-		/// <remarks>
-		/// This is used to differentiate between elements with the same <see cref="Context"/>. For example, to define a 2nd set of texture coordinates, use the same <see cref="Context"/> for the element 
-		/// and define this value as 1 in the constructor.
-		/// </remarks>
-		public int Index => NativeElement.SemanticIndex;
+        /// <summary>
+        /// Property to return The index of the context.
+        /// </summary>
+        /// <remarks>
+        /// This is used to differentiate between elements with the same <see cref="Context"/>. For example, to define a 2nd set of texture coordinates, use the same <see cref="Context"/> for the element 
+        /// and define this value as 1 in the constructor.
+        /// </remarks>
+        public int Index => NativeElement.SemanticIndex;
 
         /// <summary>
         /// Property to return the component of the entry to begin writing out to.
@@ -90,13 +90,13 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public byte StartComponent => NativeElement.StartComponent;
 
-	    /// <summary>
-	    /// Property to return the number of components of the entry to write out to.
-	    /// </summary>
-	    /// <remarks>
-	    /// Valid values are 1 to 4. 
-	    /// </remarks>
-	    public byte ComponentCount => NativeElement.ComponentCount;
+        /// <summary>
+        /// Property to return the number of components of the entry to write out to.
+        /// </summary>
+        /// <remarks>
+        /// Valid values are 1 to 4. 
+        /// </remarks>
+        public byte ComponentCount => NativeElement.ComponentCount;
 
         /// <summary>
         /// Property to return the associated stream output buffer that is bound to the pipeline
@@ -200,34 +200,34 @@ namespace Gorgon.Graphics.Core
         /// <para>Thrown when the <paramref name="count"/> parameter is less than 1 or greater than 4.</para>
         /// </exception>
         public GorgonStreamOutElement(string context, byte start, byte count, byte slot, int index = 0, int stream = 0)
-		{
-		    if (context == null)
-		    {
-		        throw new ArgumentNullException(nameof(context));
-		    }
+        {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
 
-		    if (string.IsNullOrWhiteSpace(context))
-		    {
-		        throw new ArgumentEmptyException(nameof(context));
-		    }
+            if (string.IsNullOrWhiteSpace(context))
+            {
+                throw new ArgumentEmptyException(nameof(context));
+            }
 
-		    if (start > 3)
-		    {
-		        throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_VALUE_OUT_OF_RANGE, start, 4));
-		    }
+            if (start > 3)
+            {
+                throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_VALUE_OUT_OF_RANGE, start, 4));
+            }
 
-		    if ((count > 4) || (count < 1))
-		    {
-		        throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_VALUE_OUT_OF_RANGE_COUNT, count, 4));
+            if ((count > 4) || (count < 1))
+            {
+                throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_VALUE_OUT_OF_RANGE_COUNT, count, 4));
             }
 
             if (slot > 3)
             {
-				throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_VALUE_OUT_OF_RANGE, slot, 4));
+                throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_VALUE_OUT_OF_RANGE, slot, 4));
             }
 
-		    NativeElement = new D3D11.StreamOutputElement(stream.Max(0), context, index, start, count, slot);
-		}
-		#endregion
-	}
+            NativeElement = new D3D11.StreamOutputElement(stream.Max(0), context, index, start, count, slot);
+        }
+        #endregion
+    }
 }

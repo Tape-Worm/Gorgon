@@ -30,7 +30,6 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Gorgon.Core;
-using DX = SharpDX;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -39,6 +38,7 @@ using Gorgon.IO;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
+using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -121,7 +121,7 @@ namespace Gorgon.Examples
 
             // Draw wireframe versions.
             _renderer.Begin(Gorgon2DBatchState.WireFrameNoCulling);
-            
+
             _normalSprite.Texture = null;
             _normalSprite.Angle = _angle2;
             _normalSprite.Position = new DX.Vector2(_screen.Width - (_screen.Width / 4.0f), _screen.Height - (_screen.Height / 4.0f));
@@ -149,12 +149,12 @@ namespace Gorgon.Examples
         {
             // Create the regular sprite first.
             _normalSprite = new GorgonSprite
-                            {
-                                Anchor = new DX.Vector2(0.5f, 0.5f),
-                                Size = new DX.Size2F(_texture.Width, _texture.Height),
-                                Texture = _texture,
-                                TextureRegion = new DX.RectangleF(0, 0, 1, 1)
-                            };
+            {
+                Anchor = new DX.Vector2(0.5f, 0.5f),
+                Size = new DX.Size2F(_texture.Width, _texture.Height),
+                Texture = _texture,
+                TextureRegion = new DX.RectangleF(0, 0, 1, 1)
+            };
 
             _polySprite = PolygonHullParser.ParsePolygonHullString(_renderer, Resources.PolygonHull);
         }
@@ -178,7 +178,7 @@ namespace Gorgon.Examples
                     throw new GorgonException(GorgonResult.CannotCreate,
                                               "Gorgon requires at least a Direct3D 11.4 capable video device.\nThere is no suitable device installed on the system.");
                 }
-                
+
                 // Find the best video device.
                 _graphics = new GorgonGraphics(videoDevices.OrderByDescending(item => item.FeatureSet).First());
 
@@ -202,13 +202,15 @@ namespace Gorgon.Examples
                                                         new GorgonCodecPng(),
                                                         new GorgonTexture2DLoadOptions
                                                         {
-                                                            Binding = TextureBinding.ShaderResource, Name = "Ship Texture", Usage = ResourceUsage.Immutable
+                                                            Binding = TextureBinding.ShaderResource,
+                                                            Name = "Ship Texture",
+                                                            Usage = ResourceUsage.Immutable
                                                         });
 
                 GorgonExample.LoadResources(_graphics);
 
                 CreateSprites();
-                
+
                 return window;
             }
             finally

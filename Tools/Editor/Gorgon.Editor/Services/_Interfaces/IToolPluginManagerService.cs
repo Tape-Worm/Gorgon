@@ -58,6 +58,6 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Function to clear all of the tool plugins.
         /// </summary>
-        void Clear();        
+        void Clear();
     }
 }

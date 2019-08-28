@@ -28,18 +28,18 @@ using System;
 
 namespace Gorgon.UI
 {
-	/// <summary>
-	/// Dialog for error messages.
-	/// </summary>
-	internal partial class ErrorDialog
-	{
-		#region Variables.
-		private int _lastWidth;                 // Last used width.
-		private string _errorDetails;			// Error details.
-		private int _detailHeight;				// Height for details panel.
-		#endregion
+    /// <summary>
+    /// Dialog for error messages.
+    /// </summary>
+    internal partial class ErrorDialog
+    {
+        #region Variables.
+        private int _lastWidth;                 // Last used width.
+        private string _errorDetails;           // Error details.
+        private int _detailHeight;              // Height for details panel.
+        #endregion
 
-		#region Properties.
+        #region Properties.
         /// <summary>
         /// Property to set or return whether to open the detail panel when the dialog is shown.
         /// </summary>
@@ -49,27 +49,27 @@ namespace Gorgon.UI
             set;
         }
 
-		/// <summary>
-		/// Property to return or set the details of the error.
-		/// </summary>
-		public string ErrorDetails
-		{
-			get => _errorDetails;
-			set
-			{
-				if (string.IsNullOrEmpty(value))
+        /// <summary>
+        /// Property to return or set the details of the error.
+        /// </summary>
+        public string ErrorDetails
+        {
+            get => _errorDetails;
+            set
+            {
+                if (string.IsNullOrEmpty(value))
                 {
                     value = string.Empty;
                 }
 
                 _errorDetails = value;
 
-				// Fix up line endings.				
-				errorDetails.Text = value.Replace("\n", Environment.NewLine);
-				
-				ValidateFunctions();
-			}
-		}
+                // Fix up line endings.				
+                errorDetails.Text = value.Replace("\n", Environment.NewLine);
+
+                ValidateFunctions();
+            }
+        }
         #endregion
 
         #region Methods.
@@ -79,23 +79,23 @@ namespace Gorgon.UI
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void detailsButton_Click(object sender, EventArgs e)
-		{
-			if (checkDetail.Checked)
-			{
-				_lastWidth = Width;
-			    Width = MessageWidth + ((Width - ClientSize.Width) * 2);
-				Height += _detailHeight;
-				errorDetails.Visible = true;
-			}
-			else
-			{
-				errorDetails.Visible = false;
-				Height -= _detailHeight;
-			    Width = _lastWidth;
-			}
-			Refresh();
-			Invalidate();
-		}
+        {
+            if (checkDetail.Checked)
+            {
+                _lastWidth = Width;
+                Width = MessageWidth + ((Width - ClientSize.Width) * 2);
+                Height += _detailHeight;
+                errorDetails.Visible = true;
+            }
+            else
+            {
+                errorDetails.Visible = false;
+                Height -= _detailHeight;
+                Width = _lastWidth;
+            }
+            Refresh();
+            Invalidate();
+        }
 
         /// <summary>
         /// OK button click event.
@@ -114,69 +114,69 @@ namespace Gorgon.UI
         /// </summary>
         /// <param name="e">An <see cref="T:System.EventArgs"></see> that contains the event data.</param>
         protected override void OnLoad(EventArgs e)
-		{
-			base.OnLoad(e);
+        {
+            base.OnLoad(e);
 
-			_detailHeight = errorDetails.Height + 10;
-		    MessageHeight -= _detailHeight;
+            _detailHeight = errorDetails.Height + 10;
+            MessageHeight -= _detailHeight;
 
-		    _lastWidth = Width;
-			buttonOK.Focus();
-			ValidateFunctions();
+            _lastWidth = Width;
+            buttonOK.Focus();
+            ValidateFunctions();
 
-		    if (!ShowDetailPanel)
-		    {
-			    return;
-		    }
+            if (!ShowDetailPanel)
+            {
+                return;
+            }
 
-		    checkDetail.Checked = ShowDetailPanel;
-		    detailsButton_Click(this, EventArgs.Empty);
-		}
+            checkDetail.Checked = ShowDetailPanel;
+            detailsButton_Click(this, EventArgs.Empty);
+        }
 
-		/// <summary>
-		/// Function to perform the actual drawing of the message.
-		/// </summary>
-		/// <param name="g">Graphics object to use.</param>
-		protected override void DrawDialog(System.Drawing.Graphics g)
-		{
-		    // Get size.
-			float maxTextHeight = AdjustSize(g,0);
+        /// <summary>
+        /// Function to perform the actual drawing of the message.
+        /// </summary>
+        /// <param name="g">Graphics object to use.</param>
+        protected override void DrawDialog(System.Drawing.Graphics g)
+        {
+            // Get size.
+            float maxTextHeight = AdjustSize(g, 0);
 
-			// Relocate buttons.
-			buttonOK.Left = ClientSize.Width - buttonOK.Width - checkDetail.Left;
+            // Relocate buttons.
+            buttonOK.Left = ClientSize.Width - buttonOK.Width - checkDetail.Left;
 
-			// Adjust for detail window.
-			if (checkDetail.Checked)
-			{
-				checkDetail.Top = errorDetails.Top - 6 - checkDetail.Height;
-				buttonOK.Top = errorDetails.Top - 6 - buttonOK.Height;
-			}
-			else
-			{
-				checkDetail.Top = ClientSize.Height - 6 - checkDetail.Height;
-				buttonOK.Top = ClientSize.Height - 6 - buttonOK.Height;
-			}
+            // Adjust for detail window.
+            if (checkDetail.Checked)
+            {
+                checkDetail.Top = errorDetails.Top - 6 - checkDetail.Height;
+                buttonOK.Top = errorDetails.Top - 6 - buttonOK.Height;
+            }
+            else
+            {
+                checkDetail.Top = ClientSize.Height - 6 - checkDetail.Height;
+                buttonOK.Top = ClientSize.Height - 6 - buttonOK.Height;
+            }
 
-			// Adjust the position of the details box.
-			errorDetails.Top = ClientSize.Height - 8 - errorDetails.Height;
-			errorDetails.Width = ClientSize.Width - (errorDetails.Left * 2);
+            // Adjust the position of the details box.
+            errorDetails.Top = ClientSize.Height - 8 - errorDetails.Height;
+            errorDetails.Width = ClientSize.Width - (errorDetails.Left * 2);
 
-			DrawMessage(g, maxTextHeight);
-		}
-		#endregion
+            DrawMessage(g, maxTextHeight);
+        }
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		public ErrorDialog()
-		{
-			// Initial height = 134.
-			// Expanded height = 334.
-			InitializeComponent();
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public ErrorDialog()
+        {
+            // Initial height = 134.
+            // Expanded height = 334.
+            InitializeComponent();
             ShowDetailPanel = false;
-			_errorDetails = "";
-		}
-		#endregion
-	}
+            _errorDetails = "";
+        }
+        #endregion
+    }
 }

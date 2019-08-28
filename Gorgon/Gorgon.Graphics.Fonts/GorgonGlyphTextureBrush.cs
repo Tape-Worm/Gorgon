@@ -42,28 +42,28 @@ namespace Gorgon.Graphics.Fonts
     /// Defines how to draw the <see cref="GorgonGlyphTextureBrush"/>, or <see cref="GorgonGlyphPathGradientBrush"/> if the paint area is larger than the texture region.
     /// </summary>
     public enum GlyphBrushWrapMode
-	{
-		/// <summary>
-		/// Tiles the texture if the painted area is larger than the texture size.
-		/// </summary>
-		Tile = WrapMode.Tile,
-		/// <summary>
-		/// Reverses the texture horizontally and tiles the texture.
-		/// </summary>
-		TileFlipX = WrapMode.TileFlipX,
-		/// <summary>
-		/// Reverses the texture vertically and tiles the texture.
-		/// </summary>
-		TileFlipY = WrapMode.TileFlipY,
-		/// <summary>
-		/// Reverses the texture horizontally and vertically and tiles the texture.
-		/// </summary>
-		TileFlipXandY = WrapMode.TileFlipXY,
-		/// <summary>
-		/// Clamps the texture to the size requested.
-		/// </summary>
-		Clamp = WrapMode.Clamp
-	}
+    {
+        /// <summary>
+        /// Tiles the texture if the painted area is larger than the texture size.
+        /// </summary>
+        Tile = WrapMode.Tile,
+        /// <summary>
+        /// Reverses the texture horizontally and tiles the texture.
+        /// </summary>
+        TileFlipX = WrapMode.TileFlipX,
+        /// <summary>
+        /// Reverses the texture vertically and tiles the texture.
+        /// </summary>
+        TileFlipY = WrapMode.TileFlipY,
+        /// <summary>
+        /// Reverses the texture horizontally and vertically and tiles the texture.
+        /// </summary>
+        TileFlipXandY = WrapMode.TileFlipXY,
+        /// <summary>
+        /// Clamps the texture to the size requested.
+        /// </summary>
+        Clamp = WrapMode.Clamp
+    }
 
     /// <summary>
     /// A brush used to draw glyphs using a texture.

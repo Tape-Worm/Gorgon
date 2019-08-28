@@ -31,12 +31,12 @@ using System.Linq;
 using System.Windows.Forms;
 using ComponentFactory.Krypton.Ribbon;
 using ComponentFactory.Krypton.Toolkit;
-using DX = SharpDX;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Editor.UI;
-using Gorgon.Math;
 using Gorgon.Graphics.Core;
+using Gorgon.Math;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -68,7 +68,7 @@ namespace Gorgon.Editor.SpriteEditor
         // The currently selected zoom level
         private ZoomLevels _zoomLevel = ZoomLevels.ToWindow;
         // The current scaling value applied for zooming.
-        private float _zoomScale = -1.0f;        
+        private float _zoomScale = -1.0f;
         #endregion
 
         #region Properties.
@@ -363,7 +363,7 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 return;
             }
-						
+
             DataContext.ManualRectangleEditor.ToggleFixedSizeCommand.Execute(size);
             ValidateButtons();
         }
@@ -523,7 +523,7 @@ namespace Gorgon.Editor.SpriteEditor
             DataContext.SpriteVertexOffsetCommand.Execute(null);
             ValidateButtons();
         }
-		
+
         /// <summary>Handles the Click event of the ButtonNewSprite control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -637,7 +637,7 @@ namespace Gorgon.Editor.SpriteEditor
             DataContext.ManualRectangleEditor.CancelCommand.Execute(null);
             ValidateButtons();
         }
-		
+
         /// <summary>Handles the Click event of the ButtonSpriteCornerOffsetApply control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -705,7 +705,7 @@ namespace Gorgon.Editor.SpriteEditor
                     }
                 }
             }
-            
+
             _toolButtons[SpriteEditTool.SpriteClip] = new WeakReference<KryptonRibbonGroupButton>(ButtonClipSprite);
             _toolButtons[SpriteEditTool.SpritePick] = new WeakReference<KryptonRibbonGroupButton>(ButtonPickSprite);
             _toolButtons[SpriteEditTool.CornerResize] = new WeakReference<KryptonRibbonGroupButton>(ButtonSpriteVertexOffsets);
@@ -826,9 +826,9 @@ namespace Gorgon.Editor.SpriteEditor
             if ((DataContext?.SetTextureFilteringCommand == null) || (!DataContext.SetTextureFilteringCommand.CanExecute(SampleFilter.MinMagMipLinear)))
             {
                 return;
-            }            
+            }
 
-            DataContext.SetTextureFilteringCommand.Execute(SampleFilter.MinMagMipLinear);            
+            DataContext.SetTextureFilteringCommand.Execute(SampleFilter.MinMagMipLinear);
             ValidateButtons();
         }
 
@@ -848,7 +848,7 @@ namespace Gorgon.Editor.SpriteEditor
             if ((DataContext?.SetTextureFilteringCommand == null) || (!DataContext.SetTextureFilteringCommand.CanExecute(SampleFilter.MinMagMipPoint)))
             {
                 return;
-            }			           
+            }
 
             DataContext.SetTextureFilteringCommand.Execute(SampleFilter.MinMagMipPoint);
             ValidateButtons();
@@ -956,11 +956,11 @@ namespace Gorgon.Editor.SpriteEditor
             ButtonSpriteCornerManualInput.Enabled = DataContext.ToggleManualVertexEditCommand?.CanExecute(-1) ?? false;
             ButtonSpriteCornerReset.Enabled = DataContext.ManualVertexEditor?.ResetOffsetCommand?.CanExecute(null) ?? false;
 
-            ButtonSpriteTextureFilter.Enabled = DataContext.SetTextureFilteringCommand?.CanExecute(MenuItemPixelated.Checked 
-				? SampleFilter.MinMagMipPoint 
-				: SampleFilter.MinPointMagMipLinear) ?? false;
+            ButtonSpriteTextureFilter.Enabled = DataContext.SetTextureFilteringCommand?.CanExecute(MenuItemPixelated.Checked
+                ? SampleFilter.MinMagMipPoint
+                : SampleFilter.MinPointMagMipLinear) ?? false;
             ButtonSpriteTextureWrap.Enabled = DataContext.ShowWrappingEditorCommand?.CanExecute(null) ?? false;
-			
+
             if (DataContext.ManualVertexEditor != null)
             {
                 ButtonSpriteCornerOffsetApply.Enabled = DataContext.ManualVertexEditor.ApplyCommand?.CanExecute(null) ?? false;
@@ -970,7 +970,7 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 return;
             }
-            
+
             ButtonPickMaskColor.Enabled = DataContext.ShowSpritePickMaskEditorCommand?.CanExecute(null) ?? false;
 
             ButtonSpriteClipApply.Enabled = DataContext.ManualRectangleEditor.ApplyCommand?.CanExecute(null) ?? false;

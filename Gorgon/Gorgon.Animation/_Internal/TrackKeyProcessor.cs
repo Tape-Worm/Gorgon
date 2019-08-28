@@ -24,10 +24,10 @@
 // 
 #endregion
 
-using DX = SharpDX;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
+using DX = SharpDX;
 
 namespace Gorgon.Animation
 {
@@ -45,34 +45,34 @@ namespace Gorgon.Animation
         /// <param name="result">The result value to apply to the vector3 object property.</param>
         /// <returns><b>true</b> if there's a value to update, <b>false</b> if not.</returns>
 	    public static bool TryUpdateVector3(float animationLength, IGorgonTrack<GorgonKeyVector3> track, float time, out DX.Vector3 result)
-	    {
-	        switch (track.KeyFrames.Count)
-	        {
-	            case 0:
-	                result = DX.Vector3.Zero;
-	                return false;
-	            case 1:
-	                result = track.KeyFrames[0].Value; 
-	                return true;
-	        }
+        {
+            switch (track.KeyFrames.Count)
+            {
+                case 0:
+                    result = DX.Vector3.Zero;
+                    return false;
+                case 1:
+                    result = track.KeyFrames[0].Value;
+                    return true;
+            }
 
-	        (GorgonKeyVector3 prev, GorgonKeyVector3 next, int prevKeyIndex, float deltaTime) = TweenKey.GetNearestKeys(track, time, animationLength);
+            (GorgonKeyVector3 prev, GorgonKeyVector3 next, int prevKeyIndex, float deltaTime) = TweenKey.GetNearestKeys(track, time, animationLength);
 
-	        switch (track.InterpolationMode)
-	        {
-	            case TrackInterpolationMode.Linear:
-	                DX.Vector3.Lerp(ref prev.Value, ref next.Value, deltaTime, out result);
-	                break;
-	            case TrackInterpolationMode.Spline:
-	                result = (DX.Vector3)track.SplineController.GetInterpolatedValue(prevKeyIndex, deltaTime);
-	                break;
-	            default:
-	                result = next.Value;
-	                break;
-	        }
+            switch (track.InterpolationMode)
+            {
+                case TrackInterpolationMode.Linear:
+                    DX.Vector3.Lerp(ref prev.Value, ref next.Value, deltaTime, out result);
+                    break;
+                case TrackInterpolationMode.Spline:
+                    result = (DX.Vector3)track.SplineController.GetInterpolatedValue(prevKeyIndex, deltaTime);
+                    break;
+                default:
+                    result = next.Value;
+                    break;
+            }
 
-	        return true;
-	    }
+            return true;
+        }
 
         /// <summary>
         /// Function to update the color of the object that the animation is being applied to.
@@ -90,7 +90,7 @@ namespace Gorgon.Animation
                     result = GorgonColor.BlackTransparent;
                     return false;
                 case 1:
-                    result = track.KeyFrames[0].Value; 
+                    result = track.KeyFrames[0].Value;
                     return true;
             }
 
@@ -128,7 +128,7 @@ namespace Gorgon.Animation
                     result = DX.RectangleF.Empty;
                     return false;
                 case 1:
-                    result = track.KeyFrames[0].Value; 
+                    result = track.KeyFrames[0].Value;
                     return true;
             }
 
@@ -180,8 +180,8 @@ namespace Gorgon.Animation
                     textureArrayIndex = texKey.TextureArrayIndex;
                     return true;
             }
-            
-            (GorgonKeyTexture2D prev, GorgonKeyTexture2D next,_,_) = TweenKey.GetNearestKeys(track, time, animationLength);
+
+            (GorgonKeyTexture2D prev, GorgonKeyTexture2D next, _, _) = TweenKey.GetNearestKeys(track, time, animationLength);
 
             GorgonKeyTexture2D correctKey = time.EqualsEpsilon(next.Time) ? next : prev;
 

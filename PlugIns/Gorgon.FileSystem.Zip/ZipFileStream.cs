@@ -31,174 +31,174 @@ using ICSharpCode.SharpZipLib.Zip;
 
 namespace Gorgon.IO.Zip
 {
-	/// <summary>
-	/// A stream used to read zip files.
-	/// </summary>
-	internal class ZipFileStream
-		: GorgonFileSystemStream 
-	{
-		#region Variables.
-		// Flag to inidcate that the object was disposed.
-		private bool _disposed;
-		private ZipInputStream _zipStream;		// Input stream for the zip file.
-		private long _position;					// Position in the stream.
-		private long _basePosition;				// Base position in the stream.
-		private long _length;					// File length.
-		#endregion
+    /// <summary>
+    /// A stream used to read zip files.
+    /// </summary>
+    internal class ZipFileStream
+        : GorgonFileSystemStream
+    {
+        #region Variables.
+        // Flag to inidcate that the object was disposed.
+        private bool _disposed;
+        private ZipInputStream _zipStream;      // Input stream for the zip file.
+        private long _position;                 // Position in the stream.
+        private long _basePosition;             // Base position in the stream.
+        private long _length;                   // File length.
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// When overridden in a derived class, gets a value indicating whether the current stream supports writing.
-		/// </summary>
-		/// <value></value>
-		/// <returns>true if the stream supports writing; otherwise, false.</returns>
-		public override bool CanWrite => false;
+        #region Properties.
+        /// <summary>
+        /// When overridden in a derived class, gets a value indicating whether the current stream supports writing.
+        /// </summary>
+        /// <value></value>
+        /// <returns>true if the stream supports writing; otherwise, false.</returns>
+        public override bool CanWrite => false;
 
-		/// <summary>
-		/// When overridden in a derived class, gets a value indicating whether the current stream supports reading.
-		/// </summary>
-		/// <value></value>
-		/// <returns>true if the stream supports reading; otherwise, false.</returns>
-		public override bool CanRead => true;
+        /// <summary>
+        /// When overridden in a derived class, gets a value indicating whether the current stream supports reading.
+        /// </summary>
+        /// <value></value>
+        /// <returns>true if the stream supports reading; otherwise, false.</returns>
+        public override bool CanRead => true;
 
-		/// <summary>
-		/// When overridden in a derived class, gets a value indicating whether the current stream supports seeking.
-		/// </summary>
-		/// <value></value>
-		/// <returns>true if the stream supports seeking; otherwise, false.</returns>
-		public override bool CanSeek => _zipStream.CanSeek;
+        /// <summary>
+        /// When overridden in a derived class, gets a value indicating whether the current stream supports seeking.
+        /// </summary>
+        /// <value></value>
+        /// <returns>true if the stream supports seeking; otherwise, false.</returns>
+        public override bool CanSeek => _zipStream.CanSeek;
 
-		/// <summary>
-		/// Gets a value that determines whether the current stream can time out.
-		/// </summary>
-		/// <value></value>
-		/// <returns>A value that determines whether the current stream can time out.</returns>
-		public override bool CanTimeout => _zipStream.CanTimeout;
+        /// <summary>
+        /// Gets a value that determines whether the current stream can time out.
+        /// </summary>
+        /// <value></value>
+        /// <returns>A value that determines whether the current stream can time out.</returns>
+        public override bool CanTimeout => _zipStream.CanTimeout;
 
-		/// <summary>
-		/// When overridden in a derived class, gets the length in bytes of the stream.
-		/// </summary>
-		/// <value></value>
-		/// <returns>A long value representing the length of the stream in bytes.</returns>
-		/// <exception cref="T:System.NotSupportedException">A class derived from Stream does not support seeking. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		public override long Length => _length;
+        /// <summary>
+        /// When overridden in a derived class, gets the length in bytes of the stream.
+        /// </summary>
+        /// <value></value>
+        /// <returns>A long value representing the length of the stream in bytes.</returns>
+        /// <exception cref="T:System.NotSupportedException">A class derived from Stream does not support seeking. </exception>
+        /// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        public override long Length => _length;
 
-		/// <summary>
-		/// When overridden in a derived class, gets or sets the position within the current stream.
-		/// </summary>
-		/// <value></value>
-		/// <returns>The current position within the stream.</returns>
-		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support seeking. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		public override long Position
-		{
-			get => _position;
-			set
-			{
-			    if (value < 0)
-			    {
-			        value = 0;
-			    }
-			    if (value >= Length)
-			    {
-			        value = Length;
-			    }
+        /// <summary>
+        /// When overridden in a derived class, gets or sets the position within the current stream.
+        /// </summary>
+        /// <value></value>
+        /// <returns>The current position within the stream.</returns>
+        /// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
+        /// <exception cref="T:System.NotSupportedException">The stream does not support seeking. </exception>
+        /// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        public override long Position
+        {
+            get => _position;
+            set
+            {
+                if (value < 0)
+                {
+                    value = 0;
+                }
+                if (value >= Length)
+                {
+                    value = Length;
+                }
 
-			    _position = value;
+                _position = value;
 
-				_zipStream.Position = _basePosition + _position;
-			}
-		}
+                _zipStream.Position = _basePosition + _position;
+            }
+        }
 
-		/// <summary>
-		/// Gets or sets a value, in miliseconds, that determines how long the stream will attempt to write before timing out.
-		/// </summary>
-		/// <value></value>
-		/// <returns>A value, in miliseconds, that determines how long the stream will attempt to write before timing out.</returns>
-		/// <exception cref="T:System.InvalidOperationException">The <see cref="P:System.IO.Stream.WriteTimeout"/> method always throws an <see cref="T:System.InvalidOperationException"/>. </exception>
-		public override int WriteTimeout
-		{
-			get => _zipStream.WriteTimeout;
-			set => _zipStream.WriteTimeout = value;
-		}
+        /// <summary>
+        /// Gets or sets a value, in miliseconds, that determines how long the stream will attempt to write before timing out.
+        /// </summary>
+        /// <value></value>
+        /// <returns>A value, in miliseconds, that determines how long the stream will attempt to write before timing out.</returns>
+        /// <exception cref="T:System.InvalidOperationException">The <see cref="P:System.IO.Stream.WriteTimeout"/> method always throws an <see cref="T:System.InvalidOperationException"/>. </exception>
+        public override int WriteTimeout
+        {
+            get => _zipStream.WriteTimeout;
+            set => _zipStream.WriteTimeout = value;
+        }
 
-		/// <summary>
-		/// Gets or sets a value, in miliseconds, that determines how long the stream will attempt to read before timing out.
-		/// </summary>
-		/// <value></value>
-		/// <returns>A value, in miliseconds, that determines how long the stream will attempt to read before timing out.</returns>
-		/// <exception cref="T:System.InvalidOperationException">The <see cref="P:System.IO.Stream.ReadTimeout"/> method always throws an <see cref="T:System.InvalidOperationException"/>. </exception>
-		public override int ReadTimeout
-		{
-			get => _zipStream.ReadTimeout;
-			set => _zipStream.ReadTimeout = value;
-		}
-		#endregion
+        /// <summary>
+        /// Gets or sets a value, in miliseconds, that determines how long the stream will attempt to read before timing out.
+        /// </summary>
+        /// <value></value>
+        /// <returns>A value, in miliseconds, that determines how long the stream will attempt to read before timing out.</returns>
+        /// <exception cref="T:System.InvalidOperationException">The <see cref="P:System.IO.Stream.ReadTimeout"/> method always throws an <see cref="T:System.InvalidOperationException"/>. </exception>
+        public override int ReadTimeout
+        {
+            get => _zipStream.ReadTimeout;
+            set => _zipStream.ReadTimeout = value;
+        }
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to get the zip entry stream.
-		/// </summary>
-		/// <param name="file">File in the zip file to read.</param>
-		/// <param name="stream">Stream to the zip file.</param>
-		private void GetZipEntryStream(IGorgonVirtualFile file, Stream stream)
-		{
-			ZipEntry entry;
-			
-			_zipStream = new ZipInputStream(stream);
-			
-			while ((entry = _zipStream.GetNextEntry()) != null)
-			{
-				if (!entry.IsFile)
-				{
-					continue;
-				}
+        #region Methods.
+        /// <summary>
+        /// Function to get the zip entry stream.
+        /// </summary>
+        /// <param name="file">File in the zip file to read.</param>
+        /// <param name="stream">Stream to the zip file.</param>
+        private void GetZipEntryStream(IGorgonVirtualFile file, Stream stream)
+        {
+            ZipEntry entry;
 
-				string newPath = entry.Name;
-				string filePath = file.PhysicalFile.FullPath.Substring(file.PhysicalFile.FullPath.LastIndexOf(':') + 1);
+            _zipStream = new ZipInputStream(stream);
 
-				if (!newPath.StartsWith("/", StringComparison.OrdinalIgnoreCase))
-				{
-					newPath = "/" + newPath;
-				}
+            while ((entry = _zipStream.GetNextEntry()) != null)
+            {
+                if (!entry.IsFile)
+                {
+                    continue;
+                }
 
-				if (!string.Equals(newPath, filePath, StringComparison.OrdinalIgnoreCase))
-				{
-					continue;
-				}
+                string newPath = entry.Name;
+                string filePath = file.PhysicalFile.FullPath.Substring(file.PhysicalFile.FullPath.LastIndexOf(':') + 1);
 
-				_length = _zipStream.Length;
-				_basePosition = _zipStream.Position;
-				return;
-			}
+                if (!newPath.StartsWith("/", StringComparison.OrdinalIgnoreCase))
+                {
+                    newPath = "/" + newPath;
+                }
 
-			_zipStream?.Dispose();
+                if (!string.Equals(newPath, filePath, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
 
-			throw new FileNotFoundException(string.Format(Resources.GORFS_ZIP_ERR_FILE_NOT_FOUND, file.PhysicalFile.FullPath));
-		}
+                _length = _zipStream.Length;
+                _basePosition = _zipStream.Position;
+                return;
+            }
 
-		/// <summary>
-		/// Releases the unmanaged resources used by the <see cref="T:System.IO.Stream"/> and optionally releases the managed resources.
-		/// </summary>
-		/// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-		protected override void Dispose(bool disposing)
-		{
-			if (_disposed)
-			{
-				return;
-			}
+            _zipStream?.Dispose();
 
-			if (disposing)
-			{
-				_zipStream.Dispose();
-			}
+            throw new FileNotFoundException(string.Format(Resources.GORFS_ZIP_ERR_FILE_NOT_FOUND, file.PhysicalFile.FullPath));
+        }
 
-			_disposed = true;
+        /// <summary>
+        /// Releases the unmanaged resources used by the <see cref="T:System.IO.Stream"/> and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
 
-			base.Dispose(disposing);
-		}
+            if (disposing)
+            {
+                _zipStream.Dispose();
+            }
+
+            _disposed = true;
+
+            base.Dispose(disposing);
+        }
 
         /// <summary>
         /// Begins an asynchronous write operation.
@@ -252,82 +252,82 @@ namespace Gorgon.IO.Zip
         /// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
         /// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
         public override int Read(byte[] buffer, int offset, int count)
-		{
+        {
             if (_position >= Length)
             {
                 return 0;
             }
 
             int actualCount = (int)(Length - Position);
-			int result = _zipStream.Read(buffer, offset, count > actualCount ? actualCount : count);
+            int result = _zipStream.Read(buffer, offset, count > actualCount ? actualCount : count);
 
-			_position += result;
-			return result;
-		}
+            _position += result;
+            return result;
+        }
 
-		/// <summary>
-		/// When overridden in a derived class, sets the position within the current stream.
-		/// </summary>
-		/// <param name="offset">A byte offset relative to the <paramref name="origin"/> parameter.</param>
-		/// <param name="origin">A value of type <see cref="T:System.IO.SeekOrigin"/> indicating the reference point used to obtain the new position.</param>
-		/// <returns>
-		/// The new position within the current stream.
-		/// </returns>
-		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support seeking, such as if the stream is constructed from a pipe or console output. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		public override long Seek(long offset, SeekOrigin origin)
-		{
-			switch (origin)
-			{
-				case SeekOrigin.Begin:
-					_position = offset;
-					break;
-				case SeekOrigin.Current:
-					_position += offset;
-					break;
-				case SeekOrigin.End:
-					_position = Length + offset;
-					break;
-			}
+        /// <summary>
+        /// When overridden in a derived class, sets the position within the current stream.
+        /// </summary>
+        /// <param name="offset">A byte offset relative to the <paramref name="origin"/> parameter.</param>
+        /// <param name="origin">A value of type <see cref="T:System.IO.SeekOrigin"/> indicating the reference point used to obtain the new position.</param>
+        /// <returns>
+        /// The new position within the current stream.
+        /// </returns>
+        /// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
+        /// <exception cref="T:System.NotSupportedException">The stream does not support seeking, such as if the stream is constructed from a pipe or console output. </exception>
+        /// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        public override long Seek(long offset, SeekOrigin origin)
+        {
+            switch (origin)
+            {
+                case SeekOrigin.Begin:
+                    _position = offset;
+                    break;
+                case SeekOrigin.Current:
+                    _position += offset;
+                    break;
+                case SeekOrigin.End:
+                    _position = Length + offset;
+                    break;
+            }
 
 
-		    if (_position > Length)
-		    {
-		        throw new EndOfStreamException(Resources.GORFS_ZIP_ERR_EOS);
-		    }
+            if (_position > Length)
+            {
+                throw new EndOfStreamException(Resources.GORFS_ZIP_ERR_EOS);
+            }
 
-		    if (_position < 0)
-		    {
-		        throw new EndOfStreamException(Resources.GORFS_ZIP_ERR_BOS);
-		    }
+            if (_position < 0)
+            {
+                throw new EndOfStreamException(Resources.GORFS_ZIP_ERR_BOS);
+            }
 
-		    _zipStream.Position = _position + _basePosition;
+            _zipStream.Position = _position + _basePosition;
 
-			return _position;
-		}
+            return _position;
+        }
 
-		/// <summary>
-		/// Reads a byte from the stream and advances the position within the stream by one byte, or returns -1 if at the end of the stream.
-		/// </summary>
-		/// <returns>
-		/// The unsigned byte cast to an Int32, or -1 if at the end of the stream.
-		/// </returns>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		public override int ReadByte()
-		{
+        /// <summary>
+        /// Reads a byte from the stream and advances the position within the stream by one byte, or returns -1 if at the end of the stream.
+        /// </summary>
+        /// <returns>
+        /// The unsigned byte cast to an Int32, or -1 if at the end of the stream.
+        /// </returns>
+        /// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
+        /// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        public override int ReadByte()
+        {
             if (_position >= Length)
             {
                 return -1;
             }
 
-			int result = _zipStream.ReadByte();
+            int result = _zipStream.ReadByte();
 
-			_position += result;
+            _position += result;
 
-			return result;
-		}
+            return result;
+        }
 
         /// <summary>
         /// When overridden in a derived class, sets the length of the current stream.

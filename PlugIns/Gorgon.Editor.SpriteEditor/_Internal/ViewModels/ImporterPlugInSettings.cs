@@ -44,22 +44,22 @@ namespace Gorgon.Editor.SpriteEditor
         : ViewModelBase<ImportPlugInSettingsParameters>, IImporterPlugInSettings
     {
         #region Variables.
-		// The backing store for the settings.
+        // The backing store for the settings.
         private SpriteImportSettings _settings;
 
-		// The service used to display messages to the user.
+        // The service used to display messages to the user.
         private IMessageDisplayService _messageDisplay;
 
-		// The service used to indicate that the application is busy.
+        // The service used to indicate that the application is busy.
         private IBusyStateService _busyService;
 
-		// The codecs for the plug in.
+        // The codecs for the plug in.
         private ICodecRegistry _codecs;
 
         // The dialog used to open a codec assembly.
         private IFileDialogService _openCodecDialog;
 
-		// The content plug in service.
+        // The content plug in service.
         private IContentPlugInService _plugInService;
         #endregion
 

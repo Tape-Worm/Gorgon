@@ -230,7 +230,7 @@ namespace Gorgon.Editor.ViewModels
 
                     if (thumbnailFile.Exists)
                     {
-                        thumbnailFile.Delete();                        
+                        thumbnailFile.Delete();
                     }
 
                     file.Metadata.Attributes.Remove(thumbnailName);
@@ -277,7 +277,7 @@ namespace Gorgon.Editor.ViewModels
             if (_contentFile != null)
             {
                 _contentFile.Renamed -= File_Renamed;
-            }            
+            }
             _fileExplorer.PropertyChanged -= FileExplorer_PropertyChanged;
             _fileExplorer.PropertyChanging -= FileExplorer_PropertyChanging;
             _cancelSource?.Dispose();

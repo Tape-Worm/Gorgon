@@ -50,7 +50,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the project manager for the application.
         /// </summary>
-        public IProjectManager ProjectManager => ViewModelFactory.ProjectManager;        
+        public IProjectManager ProjectManager => ViewModelFactory.ProjectManager;
 
         /// <summary>
         /// Property to return the settings for the application.
@@ -64,12 +64,12 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
         }
-        
+
         /// <summary>
         /// Property to return the application clipboard service to use.
         /// </summary>
         public IClipboardService ClipboardService => ViewModelFactory.Clipboard;
-		
+
         /// <summary>Property to return the logging interface for debug logging.</summary>
         public IGorgonLog Log => Program.Log;
 
@@ -85,6 +85,6 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="viewModelFactory">The view model factory for creating view models.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="viewModelFactory"/> parameter is <b>null</b>.</exception>
         public ViewModelCommonParameters(ViewModelFactory viewModelFactory) =>
-						ViewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));            
+                        ViewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
     }
 }

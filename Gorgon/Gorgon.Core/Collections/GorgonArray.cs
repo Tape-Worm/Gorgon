@@ -186,27 +186,27 @@ namespace Gorgon.Collections
         /// </para>
         /// </remarks>
         public ref readonly (int Start, int Count) GetDirtyItems(bool peek = false)
-		{
-		    int startSlot = -1;
-		    int count = 0;
+        {
+            int startSlot = -1;
+            int count = 0;
 
-		    if (_dirtyIndices == 0)
-		    {
-		        return ref _dirtyItems;
-		    }
+            if (_dirtyIndices == 0)
+            {
+                return ref _dirtyItems;
+            }
 
-		    int dirtyState = _dirtyIndices;
-		    int dirtyIndex = 0;
+            int dirtyState = _dirtyIndices;
+            int dirtyIndex = 0;
 
-		    for (int i = 0; dirtyState != 0 && i < BackingArray.Length; ++i)
-		    {
-		        int dirtyMask = 1 << i;
+            for (int i = 0; dirtyState != 0 && i < BackingArray.Length; ++i)
+            {
+                int dirtyMask = 1 << i;
 
-		        if ((dirtyState & dirtyMask) != dirtyMask)
-		        {
-		            if (startSlot > -1)
-		            {
-		                OnDirtyItemCleaned(dirtyIndex++);
+                if ((dirtyState & dirtyMask) != dirtyMask)
+                {
+                    if (startSlot > -1)
+                    {
+                        OnDirtyItemCleaned(dirtyIndex++);
 
                         // Our slots must not be contigious. So, increment the count. If we don't we'll end up 
                         // with an incorrect count for our range. For example, if slots 1,2 and 6 were changed, 
@@ -218,29 +218,29 @@ namespace Gorgon.Collections
                     }
 
                     continue;
-		        }
+                }
 
-		        if (startSlot == -1)
-		        {
-		            startSlot = i;
-		        }
+                if (startSlot == -1)
+                {
+                    startSlot = i;
+                }
 
                 OnDirtyItemAdded(dirtyIndex++, BackingArray[i]);
 
-		        ++count;
+                ++count;
 
-		        // Remove this bit.
-		        dirtyState &= ~dirtyMask;
-		    }
+                // Remove this bit.
+                dirtyState &= ~dirtyMask;
+            }
 
-		    if (!peek)
-		    {
-		        _dirtyIndices = dirtyState;
-		    }
+            if (!peek)
+            {
+                _dirtyIndices = dirtyState;
+            }
 
-		    _dirtyItems = (startSlot == -1 ? 0 : startSlot, count);
-		    return ref _dirtyItems;
-		}
+            _dirtyItems = (startSlot == -1 ? 0 : startSlot, count);
+            return ref _dirtyItems;
+        }
 
         /// <summary>
         /// Function to reset the value at the specified index, and remove it from the dirty range.
@@ -249,19 +249,19 @@ namespace Gorgon.Collections
         /// <exception cref="T:System.ArgumentOutOfRangeException">
         /// <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
 	    public void ResetAt(int index)
-	    {
-	        if ((index < 0) || (index >= BackingArray.Length))
-	        {
-	            throw new ArgumentOutOfRangeException();
-	        }
+        {
+            if ((index < 0) || (index >= BackingArray.Length))
+            {
+                throw new ArgumentOutOfRangeException();
+            }
 
-	        T oldValue = BackingArray[index];
-	        BackingArray[index] = default;
-	        _dirtyIndices &= ~(1 << index);
-	        _dirtyItems = (0, 0);
+            T oldValue = BackingArray[index];
+            BackingArray[index] = default;
+            _dirtyIndices &= ~(1 << index);
+            _dirtyItems = (0, 0);
 
             OnItemReset(index, oldValue);
-	    }
+        }
 
         /// <summary>Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.</summary>
         /// <param name="index">The zero-based index of the item to remove.</param>
@@ -339,56 +339,56 @@ namespace Gorgon.Collections
         /// <param name="destIndex">[Optional] The destination index in this array to start writing into.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="array" /> is null.</exception>
         public void CopyTo(GorgonArray<T> array, int destIndex = 0)
-		{
-			if (array == null)
-			{
-				throw new ArgumentNullException(nameof(array));
-			}
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
 
-			if (array == this)
-			{
-				return;
-			}
+            if (array == this)
+            {
+                return;
+            }
 
-			if (destIndex < 0)
-			{
-				destIndex = 0;
-			}
+            if (destIndex < 0)
+            {
+                destIndex = 0;
+            }
 
-			if (destIndex >= array.Length)
-			{
-				destIndex = array.Length - 1;
-			}
+            if (destIndex >= array.Length)
+            {
+                destIndex = array.Length - 1;
+            }
 
-			for (int j = destIndex, i = 0; j < array.Length && i < Length; ++i, ++j)
-			{
-				array[j] = this[i];
-			}
-		}
+            for (int j = destIndex, i = 0; j < array.Length && i < Length; ++i, ++j)
+            {
+                array[j] = this[i];
+            }
+        }
 
-		/// <summary>Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
-		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only. </exception>
-		public void Clear()
-		{
-		    OnClear();
+        /// <summary>Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+        /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only. </exception>
+        public void Clear()
+        {
+            OnClear();
 
-			Array.Clear(BackingArray, 0, BackingArray.Length);
-			
-			_dirtyIndices = 0;
-			_dirtyItems = (0, 0);
-		}
-		
-		/// <summary>Returns an enumerator that iterates through the collection.</summary>
-		/// <returns>An enumerator that can be used to iterate through the collection.</returns>
-		/// <filterpriority>1</filterpriority>
-		public IEnumerator<T> GetEnumerator()
-		{
-			// ReSharper disable once ForCanBeConvertedToForeach
-			for (int i = 0; i < BackingArray.Length; ++i)
-			{
-				yield return BackingArray[i];
-			}
-		}
+            Array.Clear(BackingArray, 0, BackingArray.Length);
+
+            _dirtyIndices = 0;
+            _dirtyItems = (0, 0);
+        }
+
+        /// <summary>Returns an enumerator that iterates through the collection.</summary>
+        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
+        /// <filterpriority>1</filterpriority>
+        public IEnumerator<T> GetEnumerator()
+        {
+            // ReSharper disable once ForCanBeConvertedToForeach
+            for (int i = 0; i < BackingArray.Length; ++i)
+            {
+                yield return BackingArray[i];
+            }
+        }
 
         /// <summary>Returns an enumerator that iterates through a collection.</summary>
         /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
@@ -435,12 +435,12 @@ namespace Gorgon.Collections
             return true;
         }
 
-	    /// <summary>
-	    /// Indicates whether the current object is equal to another object of the same type.
-	    /// </summary>
-	    /// <param name="other">An object to compare with this object.</param>
-	    /// <param name="offset">[Optional] The offset in this array to start comparing from.</param>
-	    /// <returns><see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <param name="offset">[Optional] The offset in this array to start comparing from.</param>
+        /// <returns><see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
         public bool DirtyEquals(IGorgonReadOnlyArray<T> other, int offset = 0)
         {
             if (other == null)
@@ -549,15 +549,15 @@ namespace Gorgon.Collections
         /// <param name="maxSize">The maximum size.</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="maxSize"/> is less than 1.</exception>
         public GorgonArray(int maxSize)
-		{
-		    if ((maxSize < 1) || (maxSize > 64))
-		    {
-		        throw new ArgumentOutOfRangeException(nameof(maxSize));
-		    }
+        {
+            if ((maxSize < 1) || (maxSize > 64))
+            {
+                throw new ArgumentOutOfRangeException(nameof(maxSize));
+            }
 
-			BackingArray = new T[maxSize];
-		    _dirtyItems = (0, 0);
-		}
-		#endregion
-	}
+            BackingArray = new T[maxSize];
+            _dirtyItems = (0, 0);
+        }
+        #endregion
+    }
 }

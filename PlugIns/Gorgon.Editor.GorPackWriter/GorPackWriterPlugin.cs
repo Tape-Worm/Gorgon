@@ -25,21 +25,21 @@
 #endregion
 
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Linq;
+using System.Threading.Tasks;
 using System.Xml.Linq;
+using Gorgon.Core;
 using Gorgon.Editor.GorPackWriter.Properties;
 using Gorgon.Editor.PlugIns;
 using Gorgon.IO;
 using Gorgon.Math;
-using Gorgon.Core;
-using System.Threading.Tasks;
-using System.Buffers;
 
 namespace Gorgon.Editor.GorPackWriterPlugIn
 {
@@ -48,7 +48,7 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
     /// </summary>
     internal class GorPackWriterPlugIn
         : FileWriterPlugIn
-	{
+    {
         #region Constants.
         // The header for the file.
         private const string FileHeader = "GORPACK1.SharpZip.BZ2";
@@ -75,9 +75,9 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
         /// </summary>
         /// <value>The capabilities.</value>
         public override WriterCapabilities Capabilities => WriterCapabilities.Compression;
-		#endregion
+        #endregion
 
-		#region Methods.
+        #region Methods.
         /// <summary>
         /// Function to create a new path node.
         /// </summary>
@@ -87,8 +87,8 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
         private static XElement CreatePathNode(DirectoryInfo root, DirectoryInfo directory)
         {
             string virtDirectoryName = directory.ToFileSystemPath(root, Path.DirectorySeparatorChar);
-            return new XElement("Path", 
-                                new XAttribute("Name", string.Equals(root.FullName, directory.FullName, StringComparison.OrdinalIgnoreCase) ? @"\" : directory.Name), 
+            return new XElement("Path",
+                                new XAttribute("Name", string.Equals(root.FullName, directory.FullName, StringComparison.OrdinalIgnoreCase) ? @"\" : directory.Name),
                                 new XAttribute("FullPath", virtDirectoryName));
         }
 
@@ -100,7 +100,7 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
         /// <param name="size">Size of the compressed file in the packed data.</param>
 		/// <param name="compressedSize">Compressed size of the file.</param>
         /// <returns>A new node element with the file information.</returns>
-        private static XElement CreateFileNode(FileInfo file, long position, long size, long compressedSize) => 
+        private static XElement CreateFileNode(FileInfo file, long position, long size, long compressedSize) =>
                                 new XElement("File",
                                 new XElement("Filename", Path.GetFileNameWithoutExtension(file.Name)),
                                 new XElement("Extension", file.Extension),
@@ -119,13 +119,13 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
         /// <param name="compressionRate">The value used to define how well to compress the data.</param>
         /// <param name="token">The token used to cancel the operation.</param>
         private void CompressData(Stream inStream, Stream outStream, byte[] writeBuffer, int compressionRate, CancellationToken token)
-		{
-			Debug.Assert(outStream != null, "outStream != null");
-            
+        {
+            Debug.Assert(outStream != null, "outStream != null");
+
             using (var bzStream = new Ionic.BZip2.ParallelBZip2OutputStream(outStream, compressionRate, true))
             {
                 long streamSize = inStream.Length;
-                
+
                 while (streamSize > 0)
                 {
                     if (token.IsCancellationRequested)
@@ -297,7 +297,7 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
                 // Just copy if we have no compression, or if the file is less than 4K - Not much sense to compress something so small.
                 if ((compressionRate == 0) || (file.Length <= 4096))
                 {
-                    
+
                     BlockCopyStream(fileStream, outputFile, writeBuffer, cancelToken);
                 }
                 else
@@ -314,17 +314,17 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
                 {
                     return null;
                 }
-                
+
                 // If our compression yields a file larger, or the same size as our original file, then just copy it as-is.
                 if (compressSize >= file.Length)
                 {
                     outputFile = result.Open(FileMode.Create, FileAccess.Write, FileShare.None);
                     fileStream = file.Open(FileMode.Open, FileAccess.Read, FileShare.Read);
-                    compressSize = 0;                    
+                    compressSize = 0;
                     BlockCopyStream(fileStream, outputFile, writeBuffer, cancelToken);
                 }
 
-                compressedSizeNode.Value = compressSize.ToString(CultureInfo.InvariantCulture);                
+                compressedSizeNode.Value = compressSize.ToString(CultureInfo.InvariantCulture);
             }
             finally
             {
@@ -422,7 +422,7 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
             }
 
             // The jobs to process.            
-            int maxJobCount = (Environment.ProcessorCount).Min(16).Max(1);            
+            int maxJobCount = (Environment.ProcessorCount).Min(16).Max(1);
             int fileCount = 0;
             int totalFileCount = fileNodes.Count;
             int filesPerJob = (int)((float)totalFileCount / maxJobCount).FastCeiling();
@@ -465,7 +465,7 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
 
                 return jobData;
             }
-                        
+
             // Build up the tasks for our jobs.
             while (fileNodes.Count > 0)
             {
@@ -475,14 +475,14 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
                 int length = filesPerJob.Min(fileNodes.Count);
                 for (int i = 0; i < length; ++i)
                 {
-                    jobData.Files.Add(fileNodes[i]);                        
+                    jobData.Files.Add(fileNodes[i]);
                 }
                 fileNodes.RemoveRange(0, length);
 
                 jobs.Add(Task.Run(() => Compressor(jobData), cancelToken));
             }
 
-            CompressJob[] finishedTasks = await Task.WhenAll(jobs);            
+            CompressJob[] finishedTasks = await Task.WhenAll(jobs);
 
             if ((finishedTasks.Length == 0) || (finishedTasks.Any(item => item == null)) || (cancelToken.IsCancellationRequested))
             {
@@ -574,7 +574,7 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
             var fatStream = new MemoryStream();
             var compressedFatStream = new MemoryStream();
 
-            _globalWriteBuffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);            
+            _globalWriteBuffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);
 
             try
             {
@@ -615,7 +615,7 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
                 writer = new GorgonBinaryWriter(outStream);
                 writer.Write(FileHeader);
                 writer.Write((int)compressedFatStream.Length);
-                                
+
                 compressedFatStream.Position = 0;
                 compressedFatStream.CopyToStream(outStream, (int)compressedFatStream.Length, _globalWriteBuffer);
 
@@ -625,12 +625,12 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
             finally
             {
                 ArrayPool<byte>.Shared.Return(_globalWriteBuffer, true);
-                    
+
                 compressedFatStream?.Dispose();
                 fatStream.Dispose();
                 outStream?.Dispose();
                 writer?.Dispose();
-                
+
                 inStream?.Dispose();
 
                 if (tempFile.Exists)
@@ -643,7 +643,7 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
                     tempFolderPath.Delete(true);
                 }
             }
-        }        
+        }
         #endregion
 
         #region Constructor/Destructor.
@@ -651,7 +651,7 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
         /// Initializes a new instance of the <see cref="GorPackWriterPlugIn"/> class.
         /// </summary>
         public GorPackWriterPlugIn()
-            : base(Resources.GORPKW_DESC, new[] { new GorgonFileExtension("gorPack", Resources.GORPKW_GORPACK_FILE_EXT_DESC) } )
+            : base(Resources.GORPKW_DESC, new[] { new GorgonFileExtension("gorPack", Resources.GORPKW_GORPACK_FILE_EXT_DESC) })
         {
         }
         #endregion

@@ -66,7 +66,7 @@ namespace Gorgon.Animation
         public TrackInterpolationMode InterpolationMode
         {
             get => _interpolationMode;
-            set 
+            set
             {
                 if ((SupportsInterpolation & value) != value)
                 {

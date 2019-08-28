@@ -25,11 +25,11 @@
 #endregion
 
 using System;
-using System.Threading.Tasks;
-using Xa = SharpDX.XAudio2;
-using Mm = SharpDX.Multimedia;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
+using Mm = SharpDX.Multimedia;
+using Xa = SharpDX.XAudio2;
 
 namespace Gorgon.Examples
 {
@@ -66,7 +66,7 @@ namespace Gorgon.Examples
             if (_tokenSource != null)
             {
                 _tokenSource.Cancel();
-            }            
+            }
 
             _currentPlayback?.Wait();
             _currentPlayback = null;
@@ -86,7 +86,7 @@ namespace Gorgon.Examples
 
             _tokenSource = new CancellationTokenSource();
             _currentPlayback = Task.Run(() =>
-                               {                                   
+                               {
                                    var stream = new Mm.SoundStream(File.Open(path, FileMode.Open, FileAccess.Read, FileShare.None));
                                    Mm.WaveFormat format = stream.Format;
                                    var buffer = new Xa.AudioBuffer

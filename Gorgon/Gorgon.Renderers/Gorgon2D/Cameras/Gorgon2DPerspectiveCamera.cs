@@ -48,21 +48,21 @@ namespace Gorgon.Renderers
     {
         #region Variables.
         // Position.
-        private DX.Vector3 _position = DX.Vector3.Zero;						
+        private DX.Vector3 _position = DX.Vector3.Zero;
         // Zoom.
-		private DX.Vector2 _zoom = new DX.Vector2(1);							
+        private DX.Vector2 _zoom = new DX.Vector2(1);
         // Anchor point.
-	    private DX.Vector2 _anchor = DX.Vector2.Zero;					
+        private DX.Vector2 _anchor = DX.Vector2.Zero;
         // View projection dimensions.
-        private DX.Size2F _viewDimensions;								
+        private DX.Size2F _viewDimensions;
         // Maximum depth.
-        private float _maxDepth;										
+        private float _maxDepth;
         // Minimum depth value.
-        private float _minDepth;						
+        private float _minDepth;
         // The raw projection matrix.
-        private DX.Matrix _projectionMatrix = DX.Matrix.Identity;					
+        private DX.Matrix _projectionMatrix = DX.Matrix.Identity;
         // The raw view matrix.
-        private DX.Matrix _viewMatrix = DX.Matrix.Identity;					
+        private DX.Matrix _viewMatrix = DX.Matrix.Identity;
         // Angle of rotation.
         private float _angle;
         #endregion
@@ -77,10 +77,10 @@ namespace Gorgon.Renderers
             private set;
         } = true;
 
-		/// <summary>
-		/// Property to return whether the projection changed or not.
-		/// </summary>
-		public bool ViewChanged
+        /// <summary>
+        /// Property to return whether the projection changed or not.
+        /// </summary>
+        public bool ViewChanged
         {
             get;
             private set;
@@ -104,7 +104,7 @@ namespace Gorgon.Renderers
             get => _angle;
             set
             {
-	            // ReSharper disable once CompareOfFloatsByEqualityOperator
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
                 if (_angle == value)
                 {
                     return;
@@ -133,23 +133,23 @@ namespace Gorgon.Renderers
             }
         }
 
-		/// <summary>
-		/// Property to set or return the camera zoom.
-		/// </summary>
-	    public DX.Vector2 Zoom
-	    {
-		    get => _zoom;
-		    set
-		    {
-			    if (value == _zoom)
-			    {
-				    return;
-			    }
+        /// <summary>
+        /// Property to set or return the camera zoom.
+        /// </summary>
+        public DX.Vector2 Zoom
+        {
+            get => _zoom;
+            set
+            {
+                if (value == _zoom)
+                {
+                    return;
+                }
 
-			    _zoom = value;
-			    ViewChanged = true;
-		    }
-	    }
+                _zoom = value;
+                ViewChanged = true;
+            }
+        }
 
         /// <summary>
         /// Property to set or return an anchor for rotation, scaling and positioning.
@@ -202,90 +202,90 @@ namespace Gorgon.Renderers
             }
         }
 
-		/// <summary>
-		/// Property to set or return the minimum depth for the camera.
-		/// </summary>
-		public float MinimumDepth
-		{
-			get => _minDepth;
-		    set
-			{
-			    if (_minDepth == value)
-			    {
-			        return;
-			    }
+        /// <summary>
+        /// Property to set or return the minimum depth for the camera.
+        /// </summary>
+        public float MinimumDepth
+        {
+            get => _minDepth;
+            set
+            {
+                if (_minDepth == value)
+                {
+                    return;
+                }
 
-				_minDepth = value;
-				ProjectionChanged = true;
-			}
-		}
+                _minDepth = value;
+                ProjectionChanged = true;
+            }
+        }
 
-		/// <summary>
-		/// Property to set or return the maximum depth for the camera.
-		/// </summary>
-		public float MaximumDepth
-		{
-			get => _maxDepth;
-		    set
-			{
-				if (value < 1.0f)
-				{
-					value = 1.0f;
-				}
+        /// <summary>
+        /// Property to set or return the maximum depth for the camera.
+        /// </summary>
+        public float MaximumDepth
+        {
+            get => _maxDepth;
+            set
+            {
+                if (value < 1.0f)
+                {
+                    value = 1.0f;
+                }
 
-			    if (_maxDepth == value)
-			    {
-			        return;
-			    }
+                if (_maxDepth == value)
+                {
+                    return;
+                }
 
-				_maxDepth = value;
-				ProjectionChanged = true;
-			}
-		}
+                _maxDepth = value;
+                ProjectionChanged = true;
+            }
+        }
 
-	    /// <summary>
-	    /// Property to set or return a flag to indicate that the renderer should automatically update this camera when the render target size changes.
-	    /// </summary>
-	    /// <remarks>
-	    /// <para>
-	    /// When this flag is set to <b>true</b>, the renderer will automatically update the <see cref="ViewDimensions"/> for this camera when the current render target is resized (typically in response
-	    /// to a window resize event). However, this is not always desirable, and when set to <b>false</b>, the camera <see cref="ViewDimensions"/> will not be resized.
-	    /// </para>
-	    /// <para>
-	    /// If this value is set to <b>false</b>, then it is the responsibility of the developer to update the camera manually when required.
-	    /// </para>
-	    /// </remarks>
-	    public bool AllowUpdateOnResize
-	    {
-	        get;
-	        set;
-	    } = true;
+        /// <summary>
+        /// Property to set or return a flag to indicate that the renderer should automatically update this camera when the render target size changes.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// When this flag is set to <b>true</b>, the renderer will automatically update the <see cref="ViewDimensions"/> for this camera when the current render target is resized (typically in response
+        /// to a window resize event). However, this is not always desirable, and when set to <b>false</b>, the camera <see cref="ViewDimensions"/> will not be resized.
+        /// </para>
+        /// <para>
+        /// If this value is set to <b>false</b>, then it is the responsibility of the developer to update the camera manually when required.
+        /// </para>
+        /// </remarks>
+        public bool AllowUpdateOnResize
+        {
+            get;
+            set;
+        } = true;
 
-	    /// <summary>
-	    /// Property to return the width of the current target.
-	    /// </summary>
-	    public int TargetWidth => Renderer.Graphics.RenderTargets[0]?.Width ?? 0;
+        /// <summary>
+        /// Property to return the width of the current target.
+        /// </summary>
+        public int TargetWidth => Renderer.Graphics.RenderTargets[0]?.Width ?? 0;
 
-	    /// <summary>
-	    /// Property to return the height of the current target.
-	    /// </summary>
-	    public int TargetHeight => Renderer.Graphics.RenderTargets[0]?.Height ?? 0;
+        /// <summary>
+        /// Property to return the height of the current target.
+        /// </summary>
+        public int TargetHeight => Renderer.Graphics.RenderTargets[0]?.Height ?? 0;
 
-		/// <summary>
-		/// Property to return the 2D renderer assigned to this camera.
-		/// </summary>
-		public Gorgon2D Renderer
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the 2D renderer assigned to this camera.
+        /// </summary>
+        public Gorgon2D Renderer
+        {
+            get;
+        }
 
-	    /// <summary>
-	    /// Property to return the name of this object.
-	    /// </summary>
-	    public string Name
-	    {
-	        get;
-	    }
+        /// <summary>
+        /// Property to return the name of this object.
+        /// </summary>
+        public string Name
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
@@ -296,28 +296,28 @@ namespace Gorgon.Renderers
         {
             DX.Matrix center = DX.Matrix.Identity;
 
-			// Scale it.
-	        // ReSharper disable CompareOfFloatsByEqualityOperator
-			if ((_zoom.X != 1.0f) || (_zoom.Y != 1.0f))
-			{
-				center.M11 = _zoom.X;
-				center.M22 = _zoom.Y;
-			}
+            // Scale it.
+            // ReSharper disable CompareOfFloatsByEqualityOperator
+            if ((_zoom.X != 1.0f) || (_zoom.Y != 1.0f))
+            {
+                center.M11 = _zoom.X;
+                center.M22 = _zoom.Y;
+            }
 
-			if (_angle != 0.0f)
-			{
-			    DX.Matrix.RotationZ(_angle.ToRadians(), out DX.Matrix rotation);
+            if (_angle != 0.0f)
+            {
+                DX.Matrix.RotationZ(_angle.ToRadians(), out DX.Matrix rotation);
                 // This is the inversion of the rotation matrix.
                 // We need to invert the matrix in order to apply the correct transformation to the world data.
                 rotation.Transpose();
-				DX.Matrix.Multiply(ref rotation, ref center, out center);
-			}
-			// ReSharper restore CompareOfFloatsByEqualityOperator
+                DX.Matrix.Multiply(ref rotation, ref center, out center);
+            }
+            // ReSharper restore CompareOfFloatsByEqualityOperator
 
             // Pass in the inversion of the positioning.
-			DX.Matrix.Translation(-_position.X, -_position.Y, -_position.Z, out DX.Matrix translation);
-			DX.Matrix.Multiply(ref translation, ref center, out _viewMatrix);
-		}
+            DX.Matrix.Translation(-_position.X, -_position.Y, -_position.Z, out DX.Matrix translation);
+            DX.Matrix.Multiply(ref translation, ref center, out _viewMatrix);
+        }
 
         /// <summary>
         /// Function to project a screen position into camera space.
@@ -553,7 +553,7 @@ namespace Gorgon.Renderers
             {
                 UpdateViewMatrix();
             }
-            
+
             view = _viewMatrix;
             ViewChanged = false;
         }
@@ -578,5 +578,5 @@ namespace Gorgon.Renderers
             MaximumDepth = maximumDepth.Max(1.0f);
         }
         #endregion
-	}
+    }
 }

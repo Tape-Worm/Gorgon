@@ -79,48 +79,48 @@ namespace Gorgon.IO.Providers
     /// ]]>
     /// </code>
     /// </example>
-    public sealed class GorgonFileSystemProviderFactory 
-		: IGorgonFileSystemProviderFactory
-	{
-		#region Variables.
-		// A plugin service where instances of the provider plugins can be found.
-		private readonly IGorgonPlugInService _pluginService;
-		// The application log file.
-		private readonly IGorgonLog _log;
-		#endregion
+    public sealed class GorgonFileSystemProviderFactory
+        : IGorgonFileSystemProviderFactory
+    {
+        #region Variables.
+        // A plugin service where instances of the provider plugins can be found.
+        private readonly IGorgonPlugInService _pluginService;
+        // The application log file.
+        private readonly IGorgonLog _log;
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to create a new file system provider.
-		/// </summary>
-		/// <param name="providerPlugInName">The fully qualified type name of the plugin that contains the file system provider.</param>
-		/// <returns>The new file system provider object, or if it was previously created, the previously created instance.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="providerPlugInName"/> is <b>null</b></exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="providerPlugInName"/> is empty.</exception>
-		/// <exception cref="GorgonException">Thrown when the plugin specified by the <paramref name="providerPlugInName"/> parameter was not found.</exception>
-		public GorgonFileSystemProvider CreateProvider(string providerPlugInName)
-		{
-			if (providerPlugInName == null)
-			{
-				throw new ArgumentNullException(nameof(providerPlugInName));
-			}
+        #region Methods.
+        /// <summary>
+        /// Function to create a new file system provider.
+        /// </summary>
+        /// <param name="providerPlugInName">The fully qualified type name of the plugin that contains the file system provider.</param>
+        /// <returns>The new file system provider object, or if it was previously created, the previously created instance.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="providerPlugInName"/> is <b>null</b></exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="providerPlugInName"/> is empty.</exception>
+        /// <exception cref="GorgonException">Thrown when the plugin specified by the <paramref name="providerPlugInName"/> parameter was not found.</exception>
+        public GorgonFileSystemProvider CreateProvider(string providerPlugInName)
+        {
+            if (providerPlugInName == null)
+            {
+                throw new ArgumentNullException(nameof(providerPlugInName));
+            }
 
-			if (string.IsNullOrWhiteSpace(providerPlugInName))
-			{
-				throw new ArgumentEmptyException(nameof(providerPlugInName));
-			}
+            if (string.IsNullOrWhiteSpace(providerPlugInName))
+            {
+                throw new ArgumentEmptyException(nameof(providerPlugInName));
+            }
 
-			_log.Print("Creating file system provider '{0}'.", LoggingLevel.Simple, providerPlugInName);
+            _log.Print("Creating file system provider '{0}'.", LoggingLevel.Simple, providerPlugInName);
 
-			GorgonFileSystemProvider plugin =  _pluginService.GetPlugIn<GorgonFileSystemProvider>(providerPlugInName);
+            GorgonFileSystemProvider plugin = _pluginService.GetPlugIn<GorgonFileSystemProvider>(providerPlugInName);
 
-			if (plugin == null)
-			{
-				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORFS_ERR_NO_PROVIDER_PLUGIN, providerPlugInName));
-			}
+            if (plugin == null)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORFS_ERR_NO_PROVIDER_PLUGIN, providerPlugInName));
+            }
 
-			return plugin;
-		}
+            return plugin;
+        }
 
         /// <summary>
         /// Function to retrieve all the file system providers from the available plugins in the plugin service.
@@ -147,10 +147,10 @@ namespace Gorgon.IO.Providers
         /// <param name="log">[Optional] The application log file.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginService"/> parameter is <b>null</b>.</exception>
         public GorgonFileSystemProviderFactory(IGorgonPlugInService pluginService, IGorgonLog log = null)
-		{
-		    _log = log ?? GorgonLog.NullLog;
-			_pluginService = pluginService ?? throw new ArgumentNullException(nameof(pluginService));
-		}
-		#endregion
-	}
+        {
+            _log = log ?? GorgonLog.NullLog;
+            _pluginService = pluginService ?? throw new ArgumentNullException(nameof(pluginService));
+        }
+        #endregion
+    }
 }

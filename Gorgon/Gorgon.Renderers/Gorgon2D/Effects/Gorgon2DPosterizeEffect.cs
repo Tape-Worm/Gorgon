@@ -33,137 +33,137 @@ using SharpDX;
 
 namespace Gorgon.Renderers
 {
-	/// <summary>
-	/// An effect that renders a posterized image.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This will perform a posterize operation, which will reduce the number of colors in the image.
-	/// </para>
-	/// </remarks>
-	public class Gorgon2DPosterizedEffect
-		: Gorgon2DEffect
-	{
-		#region Value Types.
-		/// <summary>
-		/// Settings for the effect shader.
-		/// </summary>
-		[StructLayout(LayoutKind.Sequential, Pack = 4)]
-		private struct Settings
-		{
-			private readonly int _posterizeAlpha;								// Flag to posterize the alpha channel.
+    /// <summary>
+    /// An effect that renders a posterized image.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This will perform a posterize operation, which will reduce the number of colors in the image.
+    /// </para>
+    /// </remarks>
+    public class Gorgon2DPosterizedEffect
+        : Gorgon2DEffect
+    {
+        #region Value Types.
+        /// <summary>
+        /// Settings for the effect shader.
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        private struct Settings
+        {
+            private readonly int _posterizeAlpha;                               // Flag to posterize the alpha channel.
 
-			/// <summary>
-			/// Exponent power for the posterization.
-			/// </summary>
-			public readonly float PosterizeExponent;
-			/// <summary>
-			/// Number of bits to reduce down to.
-			/// </summary>
-			public readonly int PosterizeBits;
-			
-			/// <summary>
-			/// Property to return whether to posterize the alpha channel.
-			/// </summary>
-			public bool PosterizeAlpha => _posterizeAlpha != 0;
+            /// <summary>
+            /// Exponent power for the posterization.
+            /// </summary>
+            public readonly float PosterizeExponent;
+            /// <summary>
+            /// Number of bits to reduce down to.
+            /// </summary>
+            public readonly int PosterizeBits;
 
-			/// <summary>
-			/// Initializes a new instance of the <see cref="Settings"/> struct.
-			/// </summary>
-			/// <param name="useAlpha">if set to <b>true</b> [use alpha].</param>
-			/// <param name="power">The power.</param>
-			/// <param name="bits">The bits.</param>
-			public Settings(bool useAlpha, float power, int bits)
-			{
-				_posterizeAlpha = Convert.ToInt32(useAlpha);
-				PosterizeExponent = power;
-				PosterizeBits = bits;
-			}
-		}
-		#endregion
+            /// <summary>
+            /// Property to return whether to posterize the alpha channel.
+            /// </summary>
+            public bool PosterizeAlpha => _posterizeAlpha != 0;
 
-		#region Variables.
-	    // Buffer for the posterize effect.
-		private GorgonConstantBufferView _posterizeBuffer;
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Settings"/> struct.
+            /// </summary>
+            /// <param name="useAlpha">if set to <b>true</b> [use alpha].</param>
+            /// <param name="power">The power.</param>
+            /// <param name="bits">The bits.</param>
+            public Settings(bool useAlpha, float power, int bits)
+            {
+                _posterizeAlpha = Convert.ToInt32(useAlpha);
+                PosterizeExponent = power;
+                PosterizeBits = bits;
+            }
+        }
+        #endregion
+
+        #region Variables.
+        // Buffer for the posterize effect.
+        private GorgonConstantBufferView _posterizeBuffer;
         // The shader used to render the effect.
         private GorgonPixelShader _posterizeShader;
-	    private Gorgon2DShaderState<GorgonPixelShader> _posterizeState;
+        private Gorgon2DShaderState<GorgonPixelShader> _posterizeState;
         // The renderer batch state.
-	    private Gorgon2DBatchState _batchState;
-	    // Settings for the effect shader.
-		private Settings _settings;									
-	    // Flag to indicate that the parameters have been updated.
-		private bool _isUpdated = true;								
-		#endregion
+        private Gorgon2DBatchState _batchState;
+        // Settings for the effect shader.
+        private Settings _settings;
+        // Flag to indicate that the parameters have been updated.
+        private bool _isUpdated = true;
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to set or return whether to posterize the alpha channel.
-		/// </summary>
-		public bool UseAlpha
-		{
-			get => _settings.PosterizeAlpha;
-		    set
-			{
-				if (_settings.PosterizeAlpha == value)
-				{
-					return;
-				}
+        #region Properties.
+        /// <summary>
+        /// Property to set or return whether to posterize the alpha channel.
+        /// </summary>
+        public bool UseAlpha
+        {
+            get => _settings.PosterizeAlpha;
+            set
+            {
+                if (_settings.PosterizeAlpha == value)
+                {
+                    return;
+                }
 
-				_settings = new Settings(value, _settings.PosterizeExponent, _settings.PosterizeBits);
-				_isUpdated = true;
-			}
-		}
+                _settings = new Settings(value, _settings.PosterizeExponent, _settings.PosterizeBits);
+                _isUpdated = true;
+            }
+        }
 
-	    /// <summary>
-	    /// Property to set or return the exponent power for the effect.
-	    /// </summary>
-	    public float Power
-	    {
-	        get => _settings.PosterizeExponent;
-	        set
-	        {
-	            // ReSharper disable once CompareOfFloatsByEqualityOperator
-	            if (_settings.PosterizeExponent == value)
-	            {
-	                return;
-	            }
+        /// <summary>
+        /// Property to set or return the exponent power for the effect.
+        /// </summary>
+        public float Power
+        {
+            get => _settings.PosterizeExponent;
+            set
+            {
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
+                if (_settings.PosterizeExponent == value)
+                {
+                    return;
+                }
 
-	            if (value < 1e-6f)
-	            {
-	                value = 1e-6f;
-	            }
+                if (value < 1e-6f)
+                {
+                    value = 1e-6f;
+                }
 
-	            _settings = new Settings(_settings.PosterizeAlpha, value, _settings.PosterizeBits);
-	            _isUpdated = true;
-	        }
-	    }
+                _settings = new Settings(_settings.PosterizeAlpha, value, _settings.PosterizeBits);
+                _isUpdated = true;
+            }
+        }
 
-		/// <summary>
-		/// Property to set or return the number of bits to reduce down to for the effect.
-		/// </summary>
-		public int Bits
-		{
-			get => _settings.PosterizeBits;
-		    set
-			{
-				if (_settings.PosterizeBits == value)
-				{
-					return;
-				}
+        /// <summary>
+        /// Property to set or return the number of bits to reduce down to for the effect.
+        /// </summary>
+        public int Bits
+        {
+            get => _settings.PosterizeBits;
+            set
+            {
+                if (_settings.PosterizeBits == value)
+                {
+                    return;
+                }
 
-				if (value < 1)
-				{
-					value = 1;
-				}
+                if (value < 1)
+                {
+                    value = 1;
+                }
 
-				_settings = new Settings(_settings.PosterizeAlpha, _settings.PosterizeExponent, value);
-				_isUpdated = true;
-			}
-		}
-		#endregion
+                _settings = new Settings(_settings.PosterizeAlpha, _settings.PosterizeExponent, value);
+                _isUpdated = true;
+            }
+        }
+        #endregion
 
-		#region Methods.
+        #region Methods.
         /// <summary>
         /// Function called when the effect is being initialized.
         /// </summary>
@@ -171,36 +171,36 @@ namespace Gorgon.Renderers
         /// Use this method to set up the effect upon its creation.  For example, this method could be used to create the required shaders for the effect.
         /// <para>When creating a custom effect, use this method to initialize the effect.  Do not put initialization code in the effect constructor.</para>
         /// </remarks>
-	    protected override void OnInitialize()
-	    {
-	        _posterizeBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _settings, "Gorgon 2D Posterize Effect Constant Buffer");
+        protected override void OnInitialize()
+        {
+            _posterizeBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _settings, "Gorgon 2D Posterize Effect Constant Buffer");
 
             _posterizeShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderPosterize");
             _posterizeState = PixelShaderBuilder
-	                  .ConstantBuffer(_posterizeBuffer, 1)
-	                  .Shader(_posterizeShader)
-	                  .Build();
+                      .ConstantBuffer(_posterizeBuffer, 1)
+                      .Shader(_posterizeShader)
+                      .Build();
 
-	        _batchState = BatchStateBuilder
-	                      .PixelShaderState(_posterizeState)
-	                      .Build();
-	    }
+            _batchState = BatchStateBuilder
+                          .PixelShaderState(_posterizeState)
+                          .Build();
+        }
 
-	    /// <summary>
-	    /// Function called to build a new (or return an existing) 2D batch state.
-	    /// </summary>
-	    /// <param name="passIndex">The index of the current rendering pass.</param>
-	    /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
-	    /// <returns>The 2D batch state.</returns>
-	    protected override Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged)
-	    {
-	        if (statesChanged)
-	        {
-	            _batchState = BatchStateBuilder.Build();
-	        }
+        /// <summary>
+        /// Function called to build a new (or return an existing) 2D batch state.
+        /// </summary>
+        /// <param name="passIndex">The index of the current rendering pass.</param>
+        /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
+        /// <returns>The 2D batch state.</returns>
+        protected override Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged)
+        {
+            if (statesChanged)
+            {
+                _batchState = BatchStateBuilder.Build();
+            }
 
-	        return _batchState;
-	    }
+            return _batchState;
+        }
 
         /// <summary>
         /// Function called prior to rendering.
@@ -215,20 +215,20 @@ namespace Gorgon.Renderers
         /// </para>
         /// </remarks>
         protected override void OnBeforeRender(GorgonRenderTargetView output, IGorgon2DCamera camera, bool sizeChanged)
-		{
-		    if (Graphics.RenderTargets[0] != output)
-		    {
+        {
+            if (Graphics.RenderTargets[0] != output)
+            {
                 Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
-		    }
+            }
 
-			if (!_isUpdated)
-			{
-			    return;
-			}
+            if (!_isUpdated)
+            {
+                return;
+            }
 
-		    _posterizeBuffer.Buffer.SetData(ref _settings);
-		    _isUpdated = false;
-		}
+            _posterizeBuffer.Buffer.SetData(ref _settings);
+            _isUpdated = false;
+        }
 
         /// <summary>
         /// Function called to render a single effect pass.
@@ -248,14 +248,14 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
-	    {
-	        GorgonConstantBufferView buffer = Interlocked.Exchange(ref _posterizeBuffer, null);
-	        GorgonPixelShader shader = Interlocked.Exchange(ref _posterizeShader, null);
+        {
+            GorgonConstantBufferView buffer = Interlocked.Exchange(ref _posterizeBuffer, null);
+            GorgonPixelShader shader = Interlocked.Exchange(ref _posterizeShader, null);
 
             buffer?.Dispose();
-	        shader?.Dispose();
-	    }
-	    #endregion
+            shader?.Dispose();
+        }
+        #endregion
 
         #region Constructor/Destructor.
         /// <summary>
@@ -263,11 +263,11 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="renderer">The renderer used to render this effect.</param>
         public Gorgon2DPosterizedEffect(Gorgon2D renderer)
-	        : base(renderer, Resources.GOR2D_EFFECT_POSTERIZE, Resources.GOR2D_EFFECT_POSTERIZE_DESC, 1)
-	    {
+            : base(renderer, Resources.GOR2D_EFFECT_POSTERIZE, Resources.GOR2D_EFFECT_POSTERIZE_DESC, 1)
+        {
             _settings = new Settings(false, 1.0f, 8);
             Macros.Add(new GorgonShaderMacro("POSTERIZE_EFFECT"));
-	    }
-	    #endregion
-	}
+        }
+        #endregion
+    }
 }

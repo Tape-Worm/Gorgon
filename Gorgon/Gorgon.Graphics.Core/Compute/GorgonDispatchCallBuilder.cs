@@ -231,7 +231,7 @@ namespace Gorgon.Graphics.Core
         {
             var final = new GorgonDispatchCall();
             final.Setup();
-            
+
             // Copy over the available constants.
             StateCopy.CopyConstantBuffers(final.D3DState.CsConstantBuffers, _worker.D3DState.CsConstantBuffers, 0);
 
@@ -274,7 +274,7 @@ namespace Gorgon.Graphics.Core
             {
                 return Clear();
             }
-            
+
             // Copy over the available constants.
             ConstantBuffers(dispatchCall.D3DState.CsConstantBuffers);
             SamplerStates(dispatchCall.D3DState.CsSamplers);

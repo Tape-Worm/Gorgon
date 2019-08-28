@@ -27,29 +27,29 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
+using Gorgon.Editor.Native;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.IO;
 using Gorgon.IO.Providers;
 using Gorgon.Math;
-using System.Diagnostics;
-using Gorgon.Editor.Native;
+using Newtonsoft.Json;
 
 namespace Gorgon.Editor.ProjectData
 {
     /// <summary>
     /// A project manager used to create, destroy, load and save a project.
     /// </summary>
-    internal class ProjectManager 
+    internal class ProjectManager
         : IProjectManager
     {
         #region Constants
@@ -96,7 +96,7 @@ namespace Gorgon.Editor.ProjectData
             tempDir.Create();
             fileSystemDir.Create();
             srcDir.Create();
-            
+
             tempDir.Refresh();
             fileSystemDir.Refresh();
             srcDir.Refresh();
@@ -124,7 +124,7 @@ namespace Gorgon.Editor.ProjectData
         private void Unlock(DirectoryInfo projectDir)
         {
             Stream lockStream = Interlocked.Exchange(ref _lockStream, null);
-                       
+
             if (lockStream != null)
             {
                 lockStream.Dispose();
@@ -179,7 +179,7 @@ namespace Gorgon.Editor.ProjectData
             if (!recycle)
             {
                 deleteDir.MoveTo(Path.Combine(deleteDir.Parent.FullName, Guid.NewGuid().ToString("N")));
-            }            
+            }
 
             // Attempt to delete multiple times if the directory is locked (explorer is a jerk sometimes).
             while (count < 4)
@@ -196,7 +196,7 @@ namespace Gorgon.Editor.ProjectData
                         Program.Log.Print($"Moving '{deleteDir.FullName}' to the recycle bin...", LoggingLevel.Intermediate);
                         Shell32.SendToRecycleBin(deleteDir.FullName, Shell32.FileOperationFlags.FOF_SILENT | Shell32.FileOperationFlags.FOF_NOCONFIRMATION | Shell32.FileOperationFlags.FOF_WANTNUKEWARNING);
                     }
-                    else                        
+                    else
                     {
                         Program.Log.Print($"Deleting '{deleteDir.FullName}'...", LoggingLevel.Intermediate);
                         deleteDir.Delete(true);
@@ -416,7 +416,7 @@ namespace Gorgon.Editor.ProjectData
                 return false;
             }
 
-            FileInfo file = null;            
+            FileInfo file = null;
 
             try
             {
@@ -432,7 +432,7 @@ namespace Gorgon.Editor.ProjectData
                 fileStream.Dispose();
 
                 file.Refresh();
-                
+
                 // If the file exists, but is not locked by the OS, then it's orphaned, and we can continue.
                 // Just clean up after ourselves before we do.
                 if (file.Exists)
@@ -466,7 +466,7 @@ namespace Gorgon.Editor.ProjectData
                 throw new ArgumentNullException(nameof(project));
             }
 
-            int count = 0;            
+            int count = 0;
 
             // Try multiple times if explorer is being a jerk.
             while (count < 3)
@@ -519,7 +519,7 @@ namespace Gorgon.Editor.ProjectData
             // If the workspace directory is already in place, then we need to delete the contents of it.
             if (workspace.Exists)
             {
-                PurgeStaleDirectories(workspace, true);      
+                PurgeStaleDirectories(workspace, true);
             }
 
             (DirectoryInfo projectWorkspace, DirectoryInfo projectFileSystem, DirectoryInfo projectTemp, DirectoryInfo projectSource) = SetupProjectFolders(workspace.FullName);
@@ -530,7 +530,7 @@ namespace Gorgon.Editor.ProjectData
 
             var result = new Project(projectWorkspace, projectTemp, projectFileSystem, projectSource);
 
-            BuildMetadataDatabase(result, metadataFile);            
+            BuildMetadataDatabase(result, metadataFile);
 
             return result;
         }
@@ -659,9 +659,9 @@ namespace Gorgon.Editor.ProjectData
             {
                 throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_PROJECT_NOT_FOUND, path.FullName));
             }
-                       
+
             IGorgonFileSystemProvider provider = Providers.GetBestReader(path);
-            
+
             if (provider == null)
             {
                 throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_NO_PROVIDER, path.Name));
@@ -754,7 +754,7 @@ namespace Gorgon.Editor.ProjectData
                 tempPath.Refresh();
 
                 Debug.Assert(tempPath.Exists, "Transaction file not found for metadata.");
-                
+
                 // When the metadata file is finalized, copy the transaction file over old one to replace (commit phase).
                 tempPath.CopyTo(Path.Combine(project.ProjectWorkSpace.FullName, CommonEditorConstants.EditorMetadataFileName), true);
             }

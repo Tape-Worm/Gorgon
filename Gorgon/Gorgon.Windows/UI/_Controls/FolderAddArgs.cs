@@ -32,37 +32,37 @@ namespace Gorgon.UI
     /// Event arguments for the <see cref="GorgonFolderBrowser.FolderAdding"/> event.
     /// </summary>
     public class FolderAddArgs
-		: CancelEventArgs
+        : CancelEventArgs
     {
         #region Properties.
-		/// <summary>
+        /// <summary>
         /// Property to return the path to the directory being created.
         /// </summary>
-		public string DirectoryPath
+        public string DirectoryPath
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the path to the parent directory.
         /// </summary>
-		public string ParentPath
+        public string ParentPath
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the name of the directory.
         /// </summary>
-		public string DirectoryName
+        public string DirectoryName
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return whether this event has handled the creation of the directory on our behalf.
         /// </summary>
-		public bool CreationHandled
+        public bool CreationHandled
         {
             get;
             set;
@@ -80,6 +80,6 @@ namespace Gorgon.UI
             DirectoryPath = newDirPath;
             DirectoryName = directoryName;
         }
-		#endregion
+        #endregion
     }
 }

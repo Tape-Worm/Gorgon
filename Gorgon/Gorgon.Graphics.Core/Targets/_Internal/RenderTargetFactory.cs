@@ -76,7 +76,7 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Properties.
-		/// <summary>
+        /// <summary>
         /// Property to return the number of render targets that are currently in flight.
         /// </summary>
         public int RentedCount => _rented.Count;
@@ -150,7 +150,7 @@ namespace Gorgon.Graphics.Core
                 target.OwnerFactory = null;
                 _renderTargets.Remove(target);
                 _expiryTime.Remove(target);
-                target.Dispose();                
+                target.Dispose();
             }
 
             _cleanupList.Clear();
@@ -208,7 +208,7 @@ namespace Gorgon.Graphics.Core
 
                     _renderTargets.Remove(rtv);
                     _expiryTime.Remove(rtv);
-                    _rented.Add(rtv);                    
+                    _rented.Add(rtv);
                     return rtv;
                 }
             }
@@ -223,7 +223,7 @@ namespace Gorgon.Graphics.Core
             _srvs.Add(newRtv.GetShaderResourceView());
             newRtv.OwnerFactory = this;
             _rented.Add(newRtv);
-            newRtv.Clear(GorgonColor.BlackTransparent);            
+            newRtv.Clear(GorgonColor.BlackTransparent);
             return newRtv;
         }
 
@@ -275,7 +275,7 @@ namespace Gorgon.Graphics.Core
 
             _rented.Clear();
             _srvs.Clear();
-            _renderTargets.Clear();            
+            _renderTargets.Clear();
         }
         #endregion
 
@@ -285,7 +285,7 @@ namespace Gorgon.Graphics.Core
         public RenderTargetFactory(GorgonGraphics graphics)
         {
             _graphics = graphics;
-            _expiryTimer = GorgonTimerQpc.SupportsQpc() ? (IGorgonTimer)new GorgonTimerQpc() : new GorgonTimerMultimedia();            
+            _expiryTimer = GorgonTimerQpc.SupportsQpc() ? (IGorgonTimer)new GorgonTimerQpc() : new GorgonTimerMultimedia();
         }
         #endregion
     }

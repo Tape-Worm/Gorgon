@@ -32,33 +32,33 @@ using Newtonsoft.Json;
 
 namespace Gorgon.Core
 {
-	#region Double
-	/// <summary>
-	/// A type that represents a range between two <see cref="double"/> values.
-	/// </summary>
-	/// <remarks>
-	/// This a means to determine the range between a minimum <see cref="double"/> value and a maximum <see cref="double"/> value. Use this object to determine if a value falls within a specific range of 
-	/// values.
-	/// </remarks>
+    #region Double
+    /// <summary>
+    /// A type that represents a range between two <see cref="double"/> values.
+    /// </summary>
+    /// <remarks>
+    /// This a means to determine the range between a minimum <see cref="double"/> value and a maximum <see cref="double"/> value. Use this object to determine if a value falls within a specific range of 
+    /// values.
+    /// </remarks>
     [StructLayout(LayoutKind.Sequential, Pack = 8)]
-	public readonly struct GorgonRangeD
-		: IGorgonEquatableByRef<GorgonRangeD>, IComparable<GorgonRangeD>
-	{
-		#region Variables.
-		/// <summary>
-		/// The minimum value in the range.
-		/// </summary>
-		public readonly double Minimum;
-		/// <summary>
-		/// The maximum value in the range.
-		/// </summary>
-		public readonly double Maximum;
+    public readonly struct GorgonRangeD
+        : IGorgonEquatableByRef<GorgonRangeD>, IComparable<GorgonRangeD>
+    {
+        #region Variables.
+        /// <summary>
+        /// The minimum value in the range.
+        /// </summary>
+        public readonly double Minimum;
+        /// <summary>
+        /// The maximum value in the range.
+        /// </summary>
+        public readonly double Maximum;
 
-		/// <summary>
-		/// An empty range value.
-		/// </summary>
-		public static readonly GorgonRangeD Empty = new GorgonRangeD(0.0, 0.0);
-		#endregion
+        /// <summary>
+        /// An empty range value.
+        /// </summary>
+        public static readonly GorgonRangeD Empty = new GorgonRangeD(0.0, 0.0);
+        #endregion
 
         #region Properties.
         /// <summary>
@@ -67,10 +67,10 @@ namespace Gorgon.Core
         [JsonIgnore]
         public bool IsEmpty => ((Maximum.EqualsEpsilon(0.0)) && (Minimum.EqualsEpsilon(0.0)));
 
-		/// <summary>
+        /// <summary>
         /// Property to return the range between the two values.
         /// </summary>
-		[JsonIgnore]
+        [JsonIgnore]
         public double Range => (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
         #endregion
 
@@ -89,98 +89,98 @@ namespace Gorgon.Core
         /// <param name="amount">The amount to shrink the <see cref="GorgonRangeD"/> by.</param>
         /// <param name="result">A new <see cref="GorgonRangeD"/> value, decreased in size by <paramref name="amount"/>.</param>
         public static void Shrink(in GorgonRangeD range, double amount, out GorgonRangeD result)
-		{
-			double min;
-			double max;
+        {
+            double min;
+            double max;
 
-			if (range.Minimum < range.Maximum)
-			{
-				min = range.Minimum + amount;
-				max = range.Maximum - amount;
-			}
-			else
-			{
-				min = range.Minimum - amount;
-				max = range.Maximum + amount;
-			}
+            if (range.Minimum < range.Maximum)
+            {
+                min = range.Minimum + amount;
+                max = range.Maximum - amount;
+            }
+            else
+            {
+                min = range.Minimum - amount;
+                max = range.Maximum + amount;
+            }
 
-			result = new GorgonRangeD(min, max);
-		}
+            result = new GorgonRangeD(min, max);
+        }
 
-		/// <summary>
-		/// Function to shrink a <see cref="GorgonRangeD"/> by a specific amount.
-		/// </summary>
-		/// <param name="range">A <see cref="GorgonRangeD"/> to shrink.</param>
-		/// <param name="amount">The amount to shrink the <see cref="GorgonRangeD"/> by.</param>
-		/// <returns>A new <see cref="GorgonRangeD"/> value, decreased in size by <paramref name="amount"/>.</returns>
-		public static GorgonRangeD Shrink(GorgonRangeD range, double amount)
-		{
-			double min;
-			double max;
+        /// <summary>
+        /// Function to shrink a <see cref="GorgonRangeD"/> by a specific amount.
+        /// </summary>
+        /// <param name="range">A <see cref="GorgonRangeD"/> to shrink.</param>
+        /// <param name="amount">The amount to shrink the <see cref="GorgonRangeD"/> by.</param>
+        /// <returns>A new <see cref="GorgonRangeD"/> value, decreased in size by <paramref name="amount"/>.</returns>
+        public static GorgonRangeD Shrink(GorgonRangeD range, double amount)
+        {
+            double min;
+            double max;
 
-			if (range.Minimum < range.Maximum)
-			{
-				min = range.Minimum + amount;
-				max = range.Maximum - amount;
-			}
-			else
-			{
-				min = range.Minimum - amount;
-				max = range.Maximum + amount;
-			}
+            if (range.Minimum < range.Maximum)
+            {
+                min = range.Minimum + amount;
+                max = range.Maximum - amount;
+            }
+            else
+            {
+                min = range.Minimum - amount;
+                max = range.Maximum + amount;
+            }
 
-			return new GorgonRangeD(min, max);
-		}
+            return new GorgonRangeD(min, max);
+        }
 
-		/// <summary>
-		/// Function to expand a <see cref="GorgonRangeD"/> by a specific amount.
-		/// </summary>
-		/// <param name="range">A <see cref="GorgonRangeD"/> to expand.</param>
-		/// <param name="amount">The amount to expand the <see cref="GorgonRangeD"/> by.</param>
-		/// <param name="result">A new <see cref="GorgonRangeD"/> value, increased in size by <paramref name="amount"/>.</param>
-		public static void Expand(in GorgonRangeD range, double amount, out GorgonRangeD result)
-		{
-			double min;
-			double max;
+        /// <summary>
+        /// Function to expand a <see cref="GorgonRangeD"/> by a specific amount.
+        /// </summary>
+        /// <param name="range">A <see cref="GorgonRangeD"/> to expand.</param>
+        /// <param name="amount">The amount to expand the <see cref="GorgonRangeD"/> by.</param>
+        /// <param name="result">A new <see cref="GorgonRangeD"/> value, increased in size by <paramref name="amount"/>.</param>
+        public static void Expand(in GorgonRangeD range, double amount, out GorgonRangeD result)
+        {
+            double min;
+            double max;
 
-			if (range.Minimum < range.Maximum)
-			{
-				min = range.Minimum - amount;
-				max = range.Maximum + amount;
-			}
-			else
-			{
-				min = range.Minimum + amount;
-				max = range.Maximum - amount;
-			}
+            if (range.Minimum < range.Maximum)
+            {
+                min = range.Minimum - amount;
+                max = range.Maximum + amount;
+            }
+            else
+            {
+                min = range.Minimum + amount;
+                max = range.Maximum - amount;
+            }
 
-			result = new GorgonRangeD(min, max);
-		}
+            result = new GorgonRangeD(min, max);
+        }
 
-		/// <summary>
-		/// Function to expand a <see cref="GorgonRangeD"/> by a specific amount.
-		/// </summary>
-		/// <param name="range">A <see cref="GorgonRangeD"/> to expand.</param>
-		/// <param name="amount">The amount to expand the <see cref="GorgonRangeD"/> by.</param>
-		/// <returns>A new <see cref="GorgonRangeD"/> value, increased in size by <paramref name="amount"/>.</returns>
-		public static GorgonRangeD Expand(GorgonRangeD range, double amount)
-		{
-			double min;
-			double max;
+        /// <summary>
+        /// Function to expand a <see cref="GorgonRangeD"/> by a specific amount.
+        /// </summary>
+        /// <param name="range">A <see cref="GorgonRangeD"/> to expand.</param>
+        /// <param name="amount">The amount to expand the <see cref="GorgonRangeD"/> by.</param>
+        /// <returns>A new <see cref="GorgonRangeD"/> value, increased in size by <paramref name="amount"/>.</returns>
+        public static GorgonRangeD Expand(GorgonRangeD range, double amount)
+        {
+            double min;
+            double max;
 
-			if (range.Minimum < range.Maximum)
-			{
-				min = range.Minimum - amount;
-				max = range.Maximum + amount;
-			}
-			else
-			{
-				min = range.Minimum + amount;
-				max = range.Maximum - amount;
-			}
+            if (range.Minimum < range.Maximum)
+            {
+                min = range.Minimum - amount;
+                max = range.Maximum + amount;
+            }
+            else
+            {
+                min = range.Minimum + amount;
+                max = range.Maximum - amount;
+            }
 
-			return new GorgonRangeD(min, max);
-		}
+            return new GorgonRangeD(min, max);
+        }
 
         /// <summary>
         /// Function to add two <see cref="GorgonRangeD"/> values together.
@@ -299,12 +299,12 @@ namespace Gorgon.Core
         public bool Equals(GorgonRangeD other) => (Minimum.EqualsEpsilon(other.Minimum)) && (Maximum.EqualsEpsilon(other.Maximum));
 
 
-	    /// <summary>
-	    /// Function to compare this instance with another.
-	    /// </summary>
-	    /// <param name="other">The other instance to use for comparison.</param>
-	    /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-	    public bool Equals(in GorgonRangeD other) => (Minimum.EqualsEpsilon(other.Minimum)) && (Maximum.EqualsEpsilon(other.Maximum));
+        /// <summary>
+        /// Function to compare this instance with another.
+        /// </summary>
+        /// <param name="other">The other instance to use for comparison.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+        public bool Equals(in GorgonRangeD other) => (Minimum.EqualsEpsilon(other.Minimum)) && (Maximum.EqualsEpsilon(other.Maximum));
 
         /// <summary>
         /// Compares the current object with another object of the same type.
@@ -362,70 +362,70 @@ namespace Gorgon.Core
         /// <param name="right">The right range.</param>
         /// <returns>The result of the operator.</returns>
         public static GorgonRangeD operator +(GorgonRangeD left, GorgonRangeD right)
-		{
-			Add(in left, in right, out GorgonRangeD result);
-			return result;
-		}
+        {
+            Add(in left, in right, out GorgonRangeD result);
+            return result;
+        }
 
-		/// <summary>
-		/// Implements the operator -.
-		/// </summary>
-		/// <param name="left">The left range.</param>
-		/// <param name="right">The right range.</param>
-		/// <returns>The result of the operator.</returns>
-		public static GorgonRangeD operator -(GorgonRangeD left, GorgonRangeD right)
-		{
-			Subtract(in left, in right, out GorgonRangeD result);
-			return result;
-		}
+        /// <summary>
+        /// Implements the operator -.
+        /// </summary>
+        /// <param name="left">The left range.</param>
+        /// <param name="right">The right range.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GorgonRangeD operator -(GorgonRangeD left, GorgonRangeD right)
+        {
+            Subtract(in left, in right, out GorgonRangeD result);
+            return result;
+        }
 
-		/// <summary>
-		/// Implements the operator *.
-		/// </summary>
-		/// <param name="left">The left range.</param>
-		/// <param name="right">The right range.</param>
-		/// <returns>The result of the operator.</returns>
-		public static GorgonRangeD operator *(GorgonRangeD left, GorgonRangeD right)
-		{
-			Multiply(in left, in right, out GorgonRangeD result);
-			return result;
-		}
+        /// <summary>
+        /// Implements the operator *.
+        /// </summary>
+        /// <param name="left">The left range.</param>
+        /// <param name="right">The right range.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GorgonRangeD operator *(GorgonRangeD left, GorgonRangeD right)
+        {
+            Multiply(in left, in right, out GorgonRangeD result);
+            return result;
+        }
 
-		/// <summary>
-		/// Implements the operator *.
-		/// </summary>
-		/// <param name="left">The left range.</param>
-		/// <param name="scalar">The right scalar value.</param>
-		/// <returns>The result of the operator.</returns>
-		public static GorgonRangeD operator *(GorgonRangeD left, double scalar)
-		{
-			Multiply(in left, scalar, out GorgonRangeD result);
-			return result;
-		}
+        /// <summary>
+        /// Implements the operator *.
+        /// </summary>
+        /// <param name="left">The left range.</param>
+        /// <param name="scalar">The right scalar value.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GorgonRangeD operator *(GorgonRangeD left, double scalar)
+        {
+            Multiply(in left, scalar, out GorgonRangeD result);
+            return result;
+        }
 
-		/// <summary>
-		/// Implements the operator *.
-		/// </summary>
-		/// <param name="scalar">The scalar value.</param>
-		/// <param name="right">The right scalar value.</param>
-		/// <returns>The result of the operator.</returns>
-		public static GorgonRangeD operator *(double scalar, GorgonRangeD right)
-		{
-			Multiply(in right, scalar, out GorgonRangeD result);
-			return result;
-		}
+        /// <summary>
+        /// Implements the operator *.
+        /// </summary>
+        /// <param name="scalar">The scalar value.</param>
+        /// <param name="right">The right scalar value.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GorgonRangeD operator *(double scalar, GorgonRangeD right)
+        {
+            Multiply(in right, scalar, out GorgonRangeD result);
+            return result;
+        }
 
-		/// <summary>
-		/// Implements the operator /.
-		/// </summary>
-		/// <param name="left">The left range.</param>
-		/// <param name="scalar">The right scalar value.</param>
-		/// <returns>The result of the operator.</returns>
-		public static GorgonRangeD operator /(GorgonRangeD left, double scalar)
-		{
-			Divide(in left, scalar, out GorgonRangeD result);
-			return result;
-		}
+        /// <summary>
+        /// Implements the operator /.
+        /// </summary>
+        /// <param name="left">The left range.</param>
+        /// <param name="scalar">The right scalar value.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GorgonRangeD operator /(GorgonRangeD left, double scalar)
+        {
+            Divide(in left, scalar, out GorgonRangeD result);
+            return result;
+        }
 
         /// <summary>
         /// Implements the operator >.
@@ -466,72 +466,72 @@ namespace Gorgon.Core
         /// </summary>
         /// <param name="minMax">The min max value to copy.</param>
         public GorgonRangeD(GorgonRangeD minMax)
-			: this(minMax.Minimum, minMax.Maximum)
-		{		
-		}
+            : this(minMax.Minimum, minMax.Maximum)
+        {
+        }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRangeD"/> struct.
-		/// </summary>
-		/// <param name="min">The minimum value.</param>
-		/// <param name="max">The maximum value.</param>
-		public GorgonRangeD(double min, double max)
-		{
-			if (min < max)
-			{
-				Minimum = min;
-				Maximum = max;
-			}
-			else
-			{
-				Maximum = min;
-				Minimum = max;
-			}
-		}
-		#endregion
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonRangeD"/> struct.
+        /// </summary>
+        /// <param name="min">The minimum value.</param>
+        /// <param name="max">The maximum value.</param>
+        public GorgonRangeD(double min, double max)
+        {
+            if (min < max)
+            {
+                Minimum = min;
+                Maximum = max;
+            }
+            else
+            {
+                Maximum = min;
+                Minimum = max;
+            }
+        }
+        #endregion
     }
-	#endregion
+    #endregion
 
-	#region Decimal
-	/// <summary>
-	/// A type that represents a range between two <see cref="decimal"/> values.
-	/// </summary>
-	/// <remarks>
-	/// This a means to determine the range between a minimum <see cref="decimal"/> value and a maximum <see cref="decimal"/> value. Use this object to determine if a value falls within a specific range of 
-	/// values.
-	/// </remarks>
-	[StructLayout(LayoutKind.Sequential, Pack = 4)]
-	public readonly struct GorgonRangeM
-		: IGorgonEquatableByRef<GorgonRangeM>, IComparable<GorgonRangeM>
-	{
-		#region Variables.
-		/// <summary>
-		/// The minimum value in the range.
-		/// </summary>
-		public readonly decimal Minimum;
-		/// <summary>
-		/// The maximum value in the range.
-		/// </summary>
-		public readonly decimal Maximum;
+    #region Decimal
+    /// <summary>
+    /// A type that represents a range between two <see cref="decimal"/> values.
+    /// </summary>
+    /// <remarks>
+    /// This a means to determine the range between a minimum <see cref="decimal"/> value and a maximum <see cref="decimal"/> value. Use this object to determine if a value falls within a specific range of 
+    /// values.
+    /// </remarks>
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    public readonly struct GorgonRangeM
+        : IGorgonEquatableByRef<GorgonRangeM>, IComparable<GorgonRangeM>
+    {
+        #region Variables.
+        /// <summary>
+        /// The minimum value in the range.
+        /// </summary>
+        public readonly decimal Minimum;
+        /// <summary>
+        /// The maximum value in the range.
+        /// </summary>
+        public readonly decimal Maximum;
 
-		/// <summary>
-		/// An empty range value.
-		/// </summary>
-		public static readonly GorgonRangeM Empty = new GorgonRangeM(0.0M, 0.0M);
-		#endregion
+        /// <summary>
+        /// An empty range value.
+        /// </summary>
+        public static readonly GorgonRangeM Empty = new GorgonRangeM(0.0M, 0.0M);
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to return whether the range is empty or not.
-		/// </summary>
-		[JsonIgnore]
-		public bool IsEmpty => Maximum == 0 && Minimum == 0;
+        #region Properties.
+        /// <summary>
+        /// Property to return whether the range is empty or not.
+        /// </summary>
+        [JsonIgnore]
+        public bool IsEmpty => Maximum == 0 && Minimum == 0;
 
-		/// <summary>
-		/// Property to return the range between the two values.
-		/// </summary>
-		[JsonIgnore]
-		public decimal Range => (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
+        /// <summary>
+        /// Property to return the range between the two values.
+        /// </summary>
+        [JsonIgnore]
+        public decimal Range => (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
         #endregion
 
         #region Methods.
@@ -549,98 +549,98 @@ namespace Gorgon.Core
         /// <param name="amount">The amount to shrink the <see cref="GorgonRangeM"/> by.</param>
         /// <param name="result">A new <see cref="GorgonRangeM"/> value, decreased in size by <paramref name="amount"/>.</param>
         public static void Shrink(in GorgonRangeM range, decimal amount, out GorgonRangeM result)
-		{
-			decimal min;
-			decimal max;
+        {
+            decimal min;
+            decimal max;
 
-			if (range.Minimum < range.Maximum)
-			{
-				min = range.Minimum + amount;
-				max = range.Maximum - amount;
-			}
-			else
-			{
-				min = range.Minimum - amount;
-				max = range.Maximum + amount;
-			}
+            if (range.Minimum < range.Maximum)
+            {
+                min = range.Minimum + amount;
+                max = range.Maximum - amount;
+            }
+            else
+            {
+                min = range.Minimum - amount;
+                max = range.Maximum + amount;
+            }
 
-			result = new GorgonRangeM(min, max);
-		}
+            result = new GorgonRangeM(min, max);
+        }
 
-		/// <summary>
-		/// Function to shrink a <see cref="GorgonRangeM"/> by a specific amount.
-		/// </summary>
-		/// <param name="range">A <see cref="GorgonRangeM"/> to shrink.</param>
-		/// <param name="amount">The amount to shrink the <see cref="GorgonRangeM"/> by.</param>
-		/// <returns>A new <see cref="GorgonRangeM"/> value, decreased in size by <paramref name="amount"/>.</returns>
-		public static GorgonRangeM Shrink(GorgonRangeM range, decimal amount)
-		{
-			decimal min;
-			decimal max;
+        /// <summary>
+        /// Function to shrink a <see cref="GorgonRangeM"/> by a specific amount.
+        /// </summary>
+        /// <param name="range">A <see cref="GorgonRangeM"/> to shrink.</param>
+        /// <param name="amount">The amount to shrink the <see cref="GorgonRangeM"/> by.</param>
+        /// <returns>A new <see cref="GorgonRangeM"/> value, decreased in size by <paramref name="amount"/>.</returns>
+        public static GorgonRangeM Shrink(GorgonRangeM range, decimal amount)
+        {
+            decimal min;
+            decimal max;
 
-			if (range.Minimum < range.Maximum)
-			{
-				min = range.Minimum + amount;
-				max = range.Maximum - amount;
-			}
-			else
-			{
-				min = range.Minimum - amount;
-				max = range.Maximum + amount;
-			}
+            if (range.Minimum < range.Maximum)
+            {
+                min = range.Minimum + amount;
+                max = range.Maximum - amount;
+            }
+            else
+            {
+                min = range.Minimum - amount;
+                max = range.Maximum + amount;
+            }
 
-			return new GorgonRangeM(min, max);
-		}
+            return new GorgonRangeM(min, max);
+        }
 
-		/// <summary>
-		/// Function to expand a <see cref="GorgonRangeM"/> by a specific amount.
-		/// </summary>
-		/// <param name="range">A <see cref="GorgonRangeM"/> to expand.</param>
-		/// <param name="amount">The amount to expand the <see cref="GorgonRangeM"/> by.</param>
-		/// <param name="result">A new <see cref="GorgonRangeM"/> value, increased in size by <paramref name="amount"/>.</param>
-		public static void Expand(in GorgonRangeM range, decimal amount, out GorgonRangeM result)
-		{
-			decimal min;
-			decimal max;
+        /// <summary>
+        /// Function to expand a <see cref="GorgonRangeM"/> by a specific amount.
+        /// </summary>
+        /// <param name="range">A <see cref="GorgonRangeM"/> to expand.</param>
+        /// <param name="amount">The amount to expand the <see cref="GorgonRangeM"/> by.</param>
+        /// <param name="result">A new <see cref="GorgonRangeM"/> value, increased in size by <paramref name="amount"/>.</param>
+        public static void Expand(in GorgonRangeM range, decimal amount, out GorgonRangeM result)
+        {
+            decimal min;
+            decimal max;
 
-			if (range.Minimum < range.Maximum)
-			{
-				min = range.Minimum - amount;
-				max = range.Maximum + amount;
-			}
-			else
-			{
-				min = range.Minimum + amount;
-				max = range.Maximum - amount;
-			}
+            if (range.Minimum < range.Maximum)
+            {
+                min = range.Minimum - amount;
+                max = range.Maximum + amount;
+            }
+            else
+            {
+                min = range.Minimum + amount;
+                max = range.Maximum - amount;
+            }
 
-			result = new GorgonRangeM(min, max);
-		}
+            result = new GorgonRangeM(min, max);
+        }
 
-		/// <summary>
-		/// Function to expand a <see cref="GorgonRangeM"/> by a specific amount.
-		/// </summary>
-		/// <param name="range">A <see cref="GorgonRangeM"/> to expand.</param>
-		/// <param name="amount">The amount to expand the <see cref="GorgonRangeM"/> by.</param>
-		/// <returns>A new <see cref="GorgonRangeM"/> value, increased in size by <paramref name="amount"/>.</returns>
-		public static GorgonRangeM Expand(GorgonRangeM range, decimal amount)
-		{
-			decimal min;
-			decimal max;
+        /// <summary>
+        /// Function to expand a <see cref="GorgonRangeM"/> by a specific amount.
+        /// </summary>
+        /// <param name="range">A <see cref="GorgonRangeM"/> to expand.</param>
+        /// <param name="amount">The amount to expand the <see cref="GorgonRangeM"/> by.</param>
+        /// <returns>A new <see cref="GorgonRangeM"/> value, increased in size by <paramref name="amount"/>.</returns>
+        public static GorgonRangeM Expand(GorgonRangeM range, decimal amount)
+        {
+            decimal min;
+            decimal max;
 
-			if (range.Minimum < range.Maximum)
-			{
-				min = range.Minimum - amount;
-				max = range.Maximum + amount;
-			}
-			else
-			{
-				min = range.Minimum + amount;
-				max = range.Maximum - amount;
-			}
+            if (range.Minimum < range.Maximum)
+            {
+                min = range.Minimum - amount;
+                max = range.Maximum + amount;
+            }
+            else
+            {
+                min = range.Minimum + amount;
+                max = range.Maximum - amount;
+            }
 
-			return new GorgonRangeM(min, max);
-		}
+            return new GorgonRangeM(min, max);
+        }
 
         /// <summary>
         /// Function to add two <see cref="GorgonRangeM"/> values together.
@@ -758,14 +758,14 @@ namespace Gorgon.Core
         /// <param name="other">An object to compare with this object.</param>
         public bool Equals(GorgonRangeM other) => Minimum == other.Minimum && Maximum == other.Maximum;
 
-	    /// <summary>
-	    /// Indicates whether the current object is equal to another object of the same type.
-	    /// </summary>
-	    /// <returns>
-	    /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
-	    /// </returns>
-	    /// <param name="other">An object to compare with this object.</param>
-	    public bool Equals(in GorgonRangeM other) => Minimum == other.Minimum && Maximum == other.Maximum;
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+        /// </returns>
+        /// <param name="other">An object to compare with this object.</param>
+        public bool Equals(in GorgonRangeM other) => Minimum == other.Minimum && Maximum == other.Maximum;
 
         /// <summary>
         /// Compares the current object with another object of the same type.
@@ -823,70 +823,70 @@ namespace Gorgon.Core
         /// <param name="right">The right range.</param>
         /// <returns>The result of the operator.</returns>
         public static GorgonRangeM operator +(GorgonRangeM left, GorgonRangeM right)
-		{
-			Add(in left, in right, out GorgonRangeM result);
-			return result;
-		}
+        {
+            Add(in left, in right, out GorgonRangeM result);
+            return result;
+        }
 
-		/// <summary>
-		/// Implements the operator -.
-		/// </summary>
-		/// <param name="left">The left range.</param>
-		/// <param name="right">The right range.</param>
-		/// <returns>The result of the operator.</returns>
-		public static GorgonRangeM operator -(GorgonRangeM left, GorgonRangeM right)
-		{
-			Subtract(in left, in right, out GorgonRangeM result);
-			return result;
-		}
+        /// <summary>
+        /// Implements the operator -.
+        /// </summary>
+        /// <param name="left">The left range.</param>
+        /// <param name="right">The right range.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GorgonRangeM operator -(GorgonRangeM left, GorgonRangeM right)
+        {
+            Subtract(in left, in right, out GorgonRangeM result);
+            return result;
+        }
 
-		/// <summary>
-		/// Implements the operator *.
-		/// </summary>
-		/// <param name="left">The left range.</param>
-		/// <param name="right">The right range.</param>
-		/// <returns>The result of the operator.</returns>
-		public static GorgonRangeM operator *(GorgonRangeM left, GorgonRangeM right)
-		{
-			Multiply(in left, in right, out GorgonRangeM result);
-			return result;
-		}
+        /// <summary>
+        /// Implements the operator *.
+        /// </summary>
+        /// <param name="left">The left range.</param>
+        /// <param name="right">The right range.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GorgonRangeM operator *(GorgonRangeM left, GorgonRangeM right)
+        {
+            Multiply(in left, in right, out GorgonRangeM result);
+            return result;
+        }
 
-		/// <summary>
-		/// Implements the operator *.
-		/// </summary>
-		/// <param name="left">The left range.</param>
-		/// <param name="scalar">The right scalar value.</param>
-		/// <returns>The result of the operator.</returns>
-		public static GorgonRangeM operator *(GorgonRangeM left, decimal scalar)
-		{
-			Multiply(in left, scalar, out GorgonRangeM result);
-			return result;
-		}
+        /// <summary>
+        /// Implements the operator *.
+        /// </summary>
+        /// <param name="left">The left range.</param>
+        /// <param name="scalar">The right scalar value.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GorgonRangeM operator *(GorgonRangeM left, decimal scalar)
+        {
+            Multiply(in left, scalar, out GorgonRangeM result);
+            return result;
+        }
 
-		/// <summary>
-		/// Implements the operator *.
-		/// </summary>
-		/// <param name="scalar">The scalar value.</param>
-		/// <param name="right">The right scalar value.</param>
-		/// <returns>The result of the operator.</returns>
-		public static GorgonRangeM operator *(decimal scalar, GorgonRangeM right)
-		{
-			Multiply(in right, scalar, out GorgonRangeM result);
-			return result;
-		}
+        /// <summary>
+        /// Implements the operator *.
+        /// </summary>
+        /// <param name="scalar">The scalar value.</param>
+        /// <param name="right">The right scalar value.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GorgonRangeM operator *(decimal scalar, GorgonRangeM right)
+        {
+            Multiply(in right, scalar, out GorgonRangeM result);
+            return result;
+        }
 
-		/// <summary>
-		/// Implements the operator /.
-		/// </summary>
-		/// <param name="left">The left range.</param>
-		/// <param name="scalar">The right scalar value.</param>
-		/// <returns>The result of the operator.</returns>
-		public static GorgonRangeM operator /(GorgonRangeM left, decimal scalar)
-		{
-			Divide(in left, scalar, out GorgonRangeM result);
-			return result;
-		}
+        /// <summary>
+        /// Implements the operator /.
+        /// </summary>
+        /// <param name="left">The left range.</param>
+        /// <param name="scalar">The right scalar value.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GorgonRangeM operator /(GorgonRangeM left, decimal scalar)
+        {
+            Divide(in left, scalar, out GorgonRangeM result);
+            return result;
+        }
 
         /// <summary>
         /// Implements the operator >.
@@ -927,72 +927,72 @@ namespace Gorgon.Core
         /// </summary>
         /// <param name="minMax">The min max value to copy.</param>
         public GorgonRangeM(GorgonRangeM minMax)
-			: this(minMax.Minimum, minMax.Maximum)
-		{
-		}
+            : this(minMax.Minimum, minMax.Maximum)
+        {
+        }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRangeM"/> struct.
-		/// </summary>
-		/// <param name="min">The minimum value.</param>
-		/// <param name="max">The maximum value.</param>
-		public GorgonRangeM(decimal min, decimal max)
-		{
-			if (min < max)
-			{
-				Minimum = min;
-				Maximum = max;
-			}
-			else
-			{
-				Maximum = min;
-				Minimum = max;
-			}
-		}
-		#endregion
-	}
-	#endregion
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonRangeM"/> struct.
+        /// </summary>
+        /// <param name="min">The minimum value.</param>
+        /// <param name="max">The maximum value.</param>
+        public GorgonRangeM(decimal min, decimal max)
+        {
+            if (min < max)
+            {
+                Minimum = min;
+                Maximum = max;
+            }
+            else
+            {
+                Maximum = min;
+                Minimum = max;
+            }
+        }
+        #endregion
+    }
+    #endregion
 
-	#region Float
-	/// <summary>
-	/// A type that represents a range between two <see cref="float"/> values.
-	/// </summary>
-	/// <remarks>
-	/// This a means to determine the range between a minimum <see cref="float"/> value and a maximum <see cref="float"/> value. Use this object to determine if a value falls within a specific range of 
-	/// values.
-	/// </remarks>
-	[StructLayout(LayoutKind.Sequential, Pack = 4)]
-	public readonly struct GorgonRangeF
-		: IGorgonEquatableByRef<GorgonRangeF>, IComparable<GorgonRangeF>
-	{
-		#region Variables.
-		/// <summary>
-		/// The minimum value in the range.
-		/// </summary>
-		public readonly float Minimum;
-		/// <summary>
-		/// The maximum value in the range.
-		/// </summary>
-		public readonly float Maximum;
+    #region Float
+    /// <summary>
+    /// A type that represents a range between two <see cref="float"/> values.
+    /// </summary>
+    /// <remarks>
+    /// This a means to determine the range between a minimum <see cref="float"/> value and a maximum <see cref="float"/> value. Use this object to determine if a value falls within a specific range of 
+    /// values.
+    /// </remarks>
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    public readonly struct GorgonRangeF
+        : IGorgonEquatableByRef<GorgonRangeF>, IComparable<GorgonRangeF>
+    {
+        #region Variables.
+        /// <summary>
+        /// The minimum value in the range.
+        /// </summary>
+        public readonly float Minimum;
+        /// <summary>
+        /// The maximum value in the range.
+        /// </summary>
+        public readonly float Maximum;
 
-		/// <summary>
-		/// An empty range value.
-		/// </summary>
-		public static readonly GorgonRangeF Empty = new GorgonRangeF(0.0f, 0.0f);
-		#endregion
+        /// <summary>
+        /// An empty range value.
+        /// </summary>
+        public static readonly GorgonRangeF Empty = new GorgonRangeF(0.0f, 0.0f);
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to return whether the range is empty or not.
-		/// </summary>
-		[JsonIgnore]
-		public bool IsEmpty => ((Maximum.EqualsEpsilon(0.0f)) && (Minimum.EqualsEpsilon(0.0f)));
+        #region Properties.
+        /// <summary>
+        /// Property to return whether the range is empty or not.
+        /// </summary>
+        [JsonIgnore]
+        public bool IsEmpty => ((Maximum.EqualsEpsilon(0.0f)) && (Minimum.EqualsEpsilon(0.0f)));
 
-		/// <summary>
-		/// Property to return the range between the two values.
-		/// </summary>
-		[JsonIgnore]
-		public float Range => (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
+        /// <summary>
+        /// Property to return the range between the two values.
+        /// </summary>
+        [JsonIgnore]
+        public float Range => (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
 
         #endregion
 
@@ -1011,98 +1011,98 @@ namespace Gorgon.Core
         /// <param name="amount">The amount to shrink the <see cref="GorgonRangeF"/> by.</param>
         /// <param name="result">A new <see cref="GorgonRangeF"/> value, decreased in size by <paramref name="amount"/>.</param>
         public static void Shrink(in GorgonRangeF range, float amount, out GorgonRangeF result)
-		{
-			float min;
-			float max;
+        {
+            float min;
+            float max;
 
-			if (range.Minimum < range.Maximum)
-			{
-				min = range.Minimum + amount;
-				max = range.Maximum - amount;
-			}
-			else
-			{
-				min = range.Minimum - amount;
-				max = range.Maximum + amount;
-			}
+            if (range.Minimum < range.Maximum)
+            {
+                min = range.Minimum + amount;
+                max = range.Maximum - amount;
+            }
+            else
+            {
+                min = range.Minimum - amount;
+                max = range.Maximum + amount;
+            }
 
-			result = new GorgonRangeF(min, max);
-		}
+            result = new GorgonRangeF(min, max);
+        }
 
-		/// <summary>
-		/// Function to shrink a <see cref="GorgonRangeF"/> by a specific amount.
-		/// </summary>
-		/// <param name="range">A <see cref="GorgonRangeF"/> to shrink.</param>
-		/// <param name="amount">The amount to shrink the <see cref="GorgonRangeF"/> by.</param>
-		/// <returns>A new <see cref="GorgonRangeF"/> value, decreased in size by <paramref name="amount"/>.</returns>
-		public static GorgonRangeF Shrink(GorgonRangeF range, float amount)
-		{
-			float min;
-			float max;
+        /// <summary>
+        /// Function to shrink a <see cref="GorgonRangeF"/> by a specific amount.
+        /// </summary>
+        /// <param name="range">A <see cref="GorgonRangeF"/> to shrink.</param>
+        /// <param name="amount">The amount to shrink the <see cref="GorgonRangeF"/> by.</param>
+        /// <returns>A new <see cref="GorgonRangeF"/> value, decreased in size by <paramref name="amount"/>.</returns>
+        public static GorgonRangeF Shrink(GorgonRangeF range, float amount)
+        {
+            float min;
+            float max;
 
-			if (range.Minimum < range.Maximum)
-			{
-				min = range.Minimum + amount;
-				max = range.Maximum - amount;
-			}
-			else
-			{
-				min = range.Minimum - amount;
-				max = range.Maximum + amount;
-			}
+            if (range.Minimum < range.Maximum)
+            {
+                min = range.Minimum + amount;
+                max = range.Maximum - amount;
+            }
+            else
+            {
+                min = range.Minimum - amount;
+                max = range.Maximum + amount;
+            }
 
-			return new GorgonRangeF(min, max);
-		}
+            return new GorgonRangeF(min, max);
+        }
 
-		/// <summary>
-		/// Function to expand a <see cref="GorgonRangeF"/> by a specific amount.
-		/// </summary>
-		/// <param name="range">A <see cref="GorgonRangeF"/> to expand.</param>
-		/// <param name="amount">The amount to expand the <see cref="GorgonRangeF"/> by.</param>
-		/// <param name="result">A new <see cref="GorgonRangeF"/> value, increased in size by <paramref name="amount"/>.</param>
-		public static void Expand(in GorgonRangeF range, float amount, out GorgonRangeF result)
-		{
-			float min;
-			float max;
+        /// <summary>
+        /// Function to expand a <see cref="GorgonRangeF"/> by a specific amount.
+        /// </summary>
+        /// <param name="range">A <see cref="GorgonRangeF"/> to expand.</param>
+        /// <param name="amount">The amount to expand the <see cref="GorgonRangeF"/> by.</param>
+        /// <param name="result">A new <see cref="GorgonRangeF"/> value, increased in size by <paramref name="amount"/>.</param>
+        public static void Expand(in GorgonRangeF range, float amount, out GorgonRangeF result)
+        {
+            float min;
+            float max;
 
-			if (range.Minimum < range.Maximum)
-			{
-				min = range.Minimum - amount;
-				max = range.Maximum + amount;
-			}
-			else
-			{
-				min = range.Minimum + amount;
-				max = range.Maximum - amount;
-			}
+            if (range.Minimum < range.Maximum)
+            {
+                min = range.Minimum - amount;
+                max = range.Maximum + amount;
+            }
+            else
+            {
+                min = range.Minimum + amount;
+                max = range.Maximum - amount;
+            }
 
-			result = new GorgonRangeF(min, max);
-		}
+            result = new GorgonRangeF(min, max);
+        }
 
-		/// <summary>
-		/// Function to expand a <see cref="GorgonRangeF"/> by a specific amount.
-		/// </summary>
-		/// <param name="range">A <see cref="GorgonRangeF"/> to expand.</param>
-		/// <param name="amount">The amount to expand the <see cref="GorgonRangeF"/> by.</param>
-		/// <returns>A new <see cref="GorgonRangeF"/> value, increased in size by <paramref name="amount"/>.</returns>
-		public static GorgonRangeF Expand(GorgonRangeF range, float amount)
-		{
-			float min;
-			float max;
+        /// <summary>
+        /// Function to expand a <see cref="GorgonRangeF"/> by a specific amount.
+        /// </summary>
+        /// <param name="range">A <see cref="GorgonRangeF"/> to expand.</param>
+        /// <param name="amount">The amount to expand the <see cref="GorgonRangeF"/> by.</param>
+        /// <returns>A new <see cref="GorgonRangeF"/> value, increased in size by <paramref name="amount"/>.</returns>
+        public static GorgonRangeF Expand(GorgonRangeF range, float amount)
+        {
+            float min;
+            float max;
 
-			if (range.Minimum < range.Maximum)
-			{
-				min = range.Minimum - amount;
-				max = range.Maximum + amount;
-			}
-			else
-			{
-				min = range.Minimum + amount;
-				max = range.Maximum - amount;
-			}
+            if (range.Minimum < range.Maximum)
+            {
+                min = range.Minimum - amount;
+                max = range.Maximum + amount;
+            }
+            else
+            {
+                min = range.Minimum + amount;
+                max = range.Maximum - amount;
+            }
 
-			return new GorgonRangeF(min, max);
-		}
+            return new GorgonRangeF(min, max);
+        }
 
         /// <summary>
         /// Function to add two <see cref="GorgonRangeF"/> values together.
@@ -1229,44 +1229,44 @@ namespace Gorgon.Core
         /// </returns>
         public bool Equals(GorgonRangeF other) => (Minimum.EqualsEpsilon(other.Minimum)) && (Maximum.EqualsEpsilon(other.Maximum));
 
-	    /// <summary>
-	    /// Indicates whether the current object is equal to another object of the same type.
-	    /// </summary>
-	    /// <param name="other">An object to compare with this object.</param>
-	    /// <returns>
-	    /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
-	    /// </returns>
-	    public bool Equals(in GorgonRangeF other) => (Minimum.EqualsEpsilon(other.Minimum)) && (Maximum.EqualsEpsilon(other.Maximum));
-		#endregion
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+        /// </returns>
+        public bool Equals(in GorgonRangeF other) => (Minimum.EqualsEpsilon(other.Minimum)) && (Maximum.EqualsEpsilon(other.Maximum));
+        #endregion
 
-		#region Constructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRangeF" /> struct.
-		/// </summary>
-		/// <param name="minMax">The min max value to copy.</param>
-		public GorgonRangeF(GorgonRangeF minMax)
-			: this(minMax.Minimum, minMax.Maximum)
-		{
-		}
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonRangeF" /> struct.
+        /// </summary>
+        /// <param name="minMax">The min max value to copy.</param>
+        public GorgonRangeF(GorgonRangeF minMax)
+            : this(minMax.Minimum, minMax.Maximum)
+        {
+        }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRangeF"/> struct.
-		/// </summary>
-		/// <param name="min">The minimum value.</param>
-		/// <param name="max">The maximum value.</param>
-		public GorgonRangeF(float min, float max)
-		{
-			if (min < max)
-			{
-				Minimum = min;
-				Maximum = max;
-			}
-			else
-			{
-				Maximum = min;
-				Minimum = max;
-			}
-		}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonRangeF"/> struct.
+        /// </summary>
+        /// <param name="min">The minimum value.</param>
+        /// <param name="max">The maximum value.</param>
+        public GorgonRangeF(float min, float max)
+        {
+            if (min < max)
+            {
+                Minimum = min;
+                Maximum = max;
+            }
+            else
+            {
+                Maximum = min;
+                Minimum = max;
+            }
+        }
         #endregion
 
         #region Operators.
@@ -1314,70 +1314,70 @@ namespace Gorgon.Core
         /// <param name="right">The right range.</param>
         /// <returns>The result of the operator.</returns>
         public static GorgonRangeF operator +(GorgonRangeF left, GorgonRangeF right)
-		{
-			Add(in left, in right, out GorgonRangeF result);
-			return result;
-		}
+        {
+            Add(in left, in right, out GorgonRangeF result);
+            return result;
+        }
 
-		/// <summary>
-		/// Implements the operator -.
-		/// </summary>
-		/// <param name="left">The left range.</param>
-		/// <param name="right">The right range.</param>
-		/// <returns>The result of the operator.</returns>
-		public static GorgonRangeF operator -(GorgonRangeF left, GorgonRangeF right)
-		{
-			Subtract(in left, in right, out GorgonRangeF result);
-			return result;
-		}
+        /// <summary>
+        /// Implements the operator -.
+        /// </summary>
+        /// <param name="left">The left range.</param>
+        /// <param name="right">The right range.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GorgonRangeF operator -(GorgonRangeF left, GorgonRangeF right)
+        {
+            Subtract(in left, in right, out GorgonRangeF result);
+            return result;
+        }
 
-		/// <summary>
-		/// Implements the operator *.
-		/// </summary>
-		/// <param name="left">The left range.</param>
-		/// <param name="right">The right range.</param>
-		/// <returns>The result of the operator.</returns>
-		public static GorgonRangeF operator *(GorgonRangeF left, GorgonRangeF right)
-		{
-			Multiply(in left, in right, out GorgonRangeF result);
-			return result;
-		}
+        /// <summary>
+        /// Implements the operator *.
+        /// </summary>
+        /// <param name="left">The left range.</param>
+        /// <param name="right">The right range.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GorgonRangeF operator *(GorgonRangeF left, GorgonRangeF right)
+        {
+            Multiply(in left, in right, out GorgonRangeF result);
+            return result;
+        }
 
-		/// <summary>
-		/// Implements the operator *.
-		/// </summary>
-		/// <param name="left">The left range.</param>
-		/// <param name="scalar">The right scalar value.</param>
-		/// <returns>The result of the operator.</returns>
-		public static GorgonRangeF operator *(GorgonRangeF left, float scalar)
-		{
-			Multiply(in left, scalar, out GorgonRangeF result);
-			return result;
-		}
+        /// <summary>
+        /// Implements the operator *.
+        /// </summary>
+        /// <param name="left">The left range.</param>
+        /// <param name="scalar">The right scalar value.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GorgonRangeF operator *(GorgonRangeF left, float scalar)
+        {
+            Multiply(in left, scalar, out GorgonRangeF result);
+            return result;
+        }
 
-		/// <summary>
-		/// Implements the operator *.
-		/// </summary>
-		/// <param name="scalar">The scalar value.</param>
-		/// <param name="right">The right scalar value.</param>
-		/// <returns>The result of the operator.</returns>
-		public static GorgonRangeF operator *(float scalar, GorgonRangeF right)
-		{
-			Multiply(in right, scalar, out GorgonRangeF result);
-			return result;
-		}
+        /// <summary>
+        /// Implements the operator *.
+        /// </summary>
+        /// <param name="scalar">The scalar value.</param>
+        /// <param name="right">The right scalar value.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GorgonRangeF operator *(float scalar, GorgonRangeF right)
+        {
+            Multiply(in right, scalar, out GorgonRangeF result);
+            return result;
+        }
 
-		/// <summary>
-		/// Implements the operator /.
-		/// </summary>
-		/// <param name="left">The left range.</param>
-		/// <param name="scalar">The right scalar value.</param>
-		/// <returns>The result of the operator.</returns>
-		public static GorgonRangeF operator /(GorgonRangeF left, float scalar)
-		{
-			Divide(in left, scalar, out GorgonRangeF result);
-			return result;
-		}
+        /// <summary>
+        /// Implements the operator /.
+        /// </summary>
+        /// <param name="left">The left range.</param>
+        /// <param name="scalar">The right scalar value.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GorgonRangeF operator /(GorgonRangeF left, float scalar)
+        {
+            Divide(in left, scalar, out GorgonRangeF result);
+            return result;
+        }
 
         /// <summary>
         /// Implements the operator >.
@@ -1412,48 +1412,48 @@ namespace Gorgon.Core
         public static bool operator <=(GorgonRangeF left, GorgonRangeF right) => left.Range <= right.Range;
         #endregion
     }
-	#endregion
+    #endregion
 
-	#region int
-	/// <summary>
-	/// A type that represents a range between two <see cref="int"/> values.
-	/// </summary>
-	/// <remarks>
-	/// This a means to determine the range between a minimum <see cref="int"/> value and a maximum <see cref="int"/> value. Use this object to determine if a value falls within a specific range of 
-	/// values.
-	/// </remarks>
-	[StructLayout(LayoutKind.Sequential, Pack = 4)]
-	public readonly struct GorgonRange
-		: IGorgonEquatableByRef<GorgonRange>, IComparable<GorgonRange>
-	{
-		#region Variables.
-		/// <summary>
-		/// The minimum value in the range.
-		/// </summary>
-		public readonly int Minimum;
-		/// <summary>
-		/// The maximum value in the range.
-		/// </summary>
-		public readonly int Maximum;
+    #region int
+    /// <summary>
+    /// A type that represents a range between two <see cref="int"/> values.
+    /// </summary>
+    /// <remarks>
+    /// This a means to determine the range between a minimum <see cref="int"/> value and a maximum <see cref="int"/> value. Use this object to determine if a value falls within a specific range of 
+    /// values.
+    /// </remarks>
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    public readonly struct GorgonRange
+        : IGorgonEquatableByRef<GorgonRange>, IComparable<GorgonRange>
+    {
+        #region Variables.
+        /// <summary>
+        /// The minimum value in the range.
+        /// </summary>
+        public readonly int Minimum;
+        /// <summary>
+        /// The maximum value in the range.
+        /// </summary>
+        public readonly int Maximum;
 
-		/// <summary>
-		/// An empty range value.
-		/// </summary>
-		public static readonly GorgonRange Empty = new GorgonRange(0, 0);
-		#endregion
+        /// <summary>
+        /// An empty range value.
+        /// </summary>
+        public static readonly GorgonRange Empty = new GorgonRange(0, 0);
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to return whether the range is empty or not.
-		/// </summary>
-		[JsonIgnore]
-		public bool IsEmpty => Maximum == 0 && Minimum == 0;
+        #region Properties.
+        /// <summary>
+        /// Property to return whether the range is empty or not.
+        /// </summary>
+        [JsonIgnore]
+        public bool IsEmpty => Maximum == 0 && Minimum == 0;
 
-		/// <summary>
-		/// Property to return the range between the two values.
-		/// </summary>
-		[JsonIgnore]
-		public int Range => (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
+        /// <summary>
+        /// Property to return the range between the two values.
+        /// </summary>
+        [JsonIgnore]
+        public int Range => (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
         #endregion
 
         #region Methods.
@@ -1471,98 +1471,98 @@ namespace Gorgon.Core
         /// <param name="amount">The amount to shrink the <see cref="GorgonRange"/> by.</param>
         /// <param name="result">A new <see cref="GorgonRange"/> value, decreased in size by <paramref name="amount"/>.</param>
         public static void Shrink(in GorgonRange range, int amount, out GorgonRange result)
-		{
-			int min;
-			int max;
+        {
+            int min;
+            int max;
 
-			if (range.Minimum < range.Maximum)
-			{
-				min = range.Minimum + amount;
-				max = range.Maximum - amount;
-			}
-			else
-			{
-				min = range.Minimum - amount;
-				max = range.Maximum + amount;
-			}
+            if (range.Minimum < range.Maximum)
+            {
+                min = range.Minimum + amount;
+                max = range.Maximum - amount;
+            }
+            else
+            {
+                min = range.Minimum - amount;
+                max = range.Maximum + amount;
+            }
 
-			result = new GorgonRange(min, max);
-		}
+            result = new GorgonRange(min, max);
+        }
 
-		/// <summary>
-		/// Function to shrink a <see cref="GorgonRange"/> by a specific amount.
-		/// </summary>
-		/// <param name="range">A <see cref="GorgonRange"/> to shrink.</param>
-		/// <param name="amount">The amount to shrink the <see cref="GorgonRange"/> by.</param>
-		/// <returns>A new <see cref="GorgonRange"/> value, decreased in size by <paramref name="amount"/>.</returns>
-		public static GorgonRange Shrink(GorgonRange range, int amount)
-		{
-			int min;
-			int max;
+        /// <summary>
+        /// Function to shrink a <see cref="GorgonRange"/> by a specific amount.
+        /// </summary>
+        /// <param name="range">A <see cref="GorgonRange"/> to shrink.</param>
+        /// <param name="amount">The amount to shrink the <see cref="GorgonRange"/> by.</param>
+        /// <returns>A new <see cref="GorgonRange"/> value, decreased in size by <paramref name="amount"/>.</returns>
+        public static GorgonRange Shrink(GorgonRange range, int amount)
+        {
+            int min;
+            int max;
 
-			if (range.Minimum < range.Maximum)
-			{
-				min = range.Minimum + amount;
-				max = range.Maximum - amount;
-			}
-			else
-			{
-				min = range.Minimum - amount;
-				max = range.Maximum + amount;
-			}
+            if (range.Minimum < range.Maximum)
+            {
+                min = range.Minimum + amount;
+                max = range.Maximum - amount;
+            }
+            else
+            {
+                min = range.Minimum - amount;
+                max = range.Maximum + amount;
+            }
 
-			return new GorgonRange(min, max);
-		}
+            return new GorgonRange(min, max);
+        }
 
-		/// <summary>
-		/// Function to expand a <see cref="GorgonRange"/> by a specific amount.
-		/// </summary>
-		/// <param name="range">A <see cref="GorgonRange"/> to expand.</param>
-		/// <param name="amount">The amount to expand the <see cref="GorgonRange"/> by.</param>
-		/// <param name="result">A new <see cref="GorgonRange"/> value, increased in size by <paramref name="amount"/>.</param>
-		public static void Expand(in GorgonRange range, int amount, out GorgonRange result)
-		{
-			int min;
-			int max;
+        /// <summary>
+        /// Function to expand a <see cref="GorgonRange"/> by a specific amount.
+        /// </summary>
+        /// <param name="range">A <see cref="GorgonRange"/> to expand.</param>
+        /// <param name="amount">The amount to expand the <see cref="GorgonRange"/> by.</param>
+        /// <param name="result">A new <see cref="GorgonRange"/> value, increased in size by <paramref name="amount"/>.</param>
+        public static void Expand(in GorgonRange range, int amount, out GorgonRange result)
+        {
+            int min;
+            int max;
 
-			if (range.Minimum < range.Maximum)
-			{
-				min = range.Minimum - amount;
-				max = range.Maximum + amount;
-			}
-			else
-			{
-				min = range.Minimum + amount;
-				max = range.Maximum - amount;
-			}
+            if (range.Minimum < range.Maximum)
+            {
+                min = range.Minimum - amount;
+                max = range.Maximum + amount;
+            }
+            else
+            {
+                min = range.Minimum + amount;
+                max = range.Maximum - amount;
+            }
 
-			result = new GorgonRange(min, max);
-		}
+            result = new GorgonRange(min, max);
+        }
 
-		/// <summary>
-		/// Function to expand a <see cref="GorgonRange"/> by a specific amount.
-		/// </summary>
-		/// <param name="range">A <see cref="GorgonRange"/> to expand.</param>
-		/// <param name="amount">The amount to expand the <see cref="GorgonRange"/> by.</param>
-		/// <returns>A new <see cref="GorgonRange"/> value, increased in size by <paramref name="amount"/>.</returns>
-		public static GorgonRange Expand(GorgonRange range, int amount)
-		{
-			int min;
-			int max;
+        /// <summary>
+        /// Function to expand a <see cref="GorgonRange"/> by a specific amount.
+        /// </summary>
+        /// <param name="range">A <see cref="GorgonRange"/> to expand.</param>
+        /// <param name="amount">The amount to expand the <see cref="GorgonRange"/> by.</param>
+        /// <returns>A new <see cref="GorgonRange"/> value, increased in size by <paramref name="amount"/>.</returns>
+        public static GorgonRange Expand(GorgonRange range, int amount)
+        {
+            int min;
+            int max;
 
-			if (range.Minimum < range.Maximum)
-			{
-				min = range.Minimum - amount;
-				max = range.Maximum + amount;
-			}
-			else
-			{
-				min = range.Minimum + amount;
-				max = range.Maximum - amount;
-			}
+            if (range.Minimum < range.Maximum)
+            {
+                min = range.Minimum - amount;
+                max = range.Maximum + amount;
+            }
+            else
+            {
+                min = range.Minimum + amount;
+                max = range.Maximum - amount;
+            }
 
-			return new GorgonRange(min, max);
-		}
+            return new GorgonRange(min, max);
+        }
 
         /// <summary>
         /// Function to add two <see cref="GorgonRange"/> values together.
@@ -1680,14 +1680,14 @@ namespace Gorgon.Core
         /// </returns>
         public bool Equals(GorgonRange other) => Minimum == other.Minimum && Maximum == other.Maximum;
 
-	    /// <summary>
-	    /// Indicates whether the current object is equal to another object of the same type.
-	    /// </summary>
-	    /// <param name="other">An object to compare with this object.</param>
-	    /// <returns>
-	    /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
-	    /// </returns>
-	    public bool Equals(in GorgonRange other) => Minimum == other.Minimum && Maximum == other.Maximum;
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+        /// </returns>
+        public bool Equals(in GorgonRange other) => Minimum == other.Minimum && Maximum == other.Maximum;
 
         /// <summary>
         /// Compares the current object with another object of the same type.
@@ -1705,28 +1705,28 @@ namespace Gorgon.Core
         /// </summary>
         /// <param name="minMax">The min max value to copy.</param>
         public GorgonRange(GorgonRange minMax)
-			: this(minMax.Minimum, minMax.Maximum)
-		{
-		}
+            : this(minMax.Minimum, minMax.Maximum)
+        {
+        }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRange"/> struct.
-		/// </summary>
-		/// <param name="min">The minimum value.</param>
-		/// <param name="max">The maximum value.</param>
-		public GorgonRange(int min, int max)
-		{
-			if (min < max)
-			{
-				Minimum = min;
-				Maximum = max;
-			}
-			else
-			{
-				Maximum = min;
-				Minimum = max;
-			}
-		}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonRange"/> struct.
+        /// </summary>
+        /// <param name="min">The minimum value.</param>
+        /// <param name="max">The maximum value.</param>
+        public GorgonRange(int min, int max)
+        {
+            if (min < max)
+            {
+                Minimum = min;
+                Maximum = max;
+            }
+            else
+            {
+                Maximum = min;
+                Minimum = max;
+            }
+        }
         #endregion
 
         #region Operators.
@@ -1775,70 +1775,70 @@ namespace Gorgon.Core
         /// <param name="right">The right range.</param>
         /// <returns>The result of the operator.</returns>
         public static GorgonRange operator +(GorgonRange left, GorgonRange right)
-		{
-			Add(in left, in right, out GorgonRange result);
-			return result;
-		}
+        {
+            Add(in left, in right, out GorgonRange result);
+            return result;
+        }
 
-		/// <summary>
-		/// Implements the operator -.
-		/// </summary>
-		/// <param name="left">The left range.</param>
-		/// <param name="right">The right range.</param>
-		/// <returns>The result of the operator.</returns>
-		public static GorgonRange operator -(GorgonRange left, GorgonRange right)
-		{
-			Subtract(in left, in right, out GorgonRange result);
-			return result;
-		}
+        /// <summary>
+        /// Implements the operator -.
+        /// </summary>
+        /// <param name="left">The left range.</param>
+        /// <param name="right">The right range.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GorgonRange operator -(GorgonRange left, GorgonRange right)
+        {
+            Subtract(in left, in right, out GorgonRange result);
+            return result;
+        }
 
-		/// <summary>
-		/// Implements the operator *.
-		/// </summary>
-		/// <param name="left">The left range.</param>
-		/// <param name="right">The right range.</param>
-		/// <returns>The result of the operator.</returns>
-		public static GorgonRange operator *(GorgonRange left, GorgonRange right)
-		{
-			Multiply(in left, in right, out GorgonRange result);
-			return result;
-		}
+        /// <summary>
+        /// Implements the operator *.
+        /// </summary>
+        /// <param name="left">The left range.</param>
+        /// <param name="right">The right range.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GorgonRange operator *(GorgonRange left, GorgonRange right)
+        {
+            Multiply(in left, in right, out GorgonRange result);
+            return result;
+        }
 
-		/// <summary>
-		/// Implements the operator *.
-		/// </summary>
-		/// <param name="left">The left range.</param>
-		/// <param name="scalar">The right scalar value.</param>
-		/// <returns>The result of the operator.</returns>
-		public static GorgonRange operator *(GorgonRange left, int scalar)
-		{
-			Multiply(in left, scalar, out GorgonRange result);
-			return result;
-		}
+        /// <summary>
+        /// Implements the operator *.
+        /// </summary>
+        /// <param name="left">The left range.</param>
+        /// <param name="scalar">The right scalar value.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GorgonRange operator *(GorgonRange left, int scalar)
+        {
+            Multiply(in left, scalar, out GorgonRange result);
+            return result;
+        }
 
-		/// <summary>
-		/// Implements the operator *.
-		/// </summary>
-		/// <param name="scalar">The scalar value.</param>
-		/// <param name="right">The right scalar value.</param>
-		/// <returns>The result of the operator.</returns>
-		public static GorgonRange operator *(int scalar, GorgonRange right)
-		{
-			Multiply(in right, scalar, out GorgonRange result);
-			return result;
-		}
+        /// <summary>
+        /// Implements the operator *.
+        /// </summary>
+        /// <param name="scalar">The scalar value.</param>
+        /// <param name="right">The right scalar value.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GorgonRange operator *(int scalar, GorgonRange right)
+        {
+            Multiply(in right, scalar, out GorgonRange result);
+            return result;
+        }
 
-		/// <summary>
-		/// Implements the operator /.
-		/// </summary>
-		/// <param name="left">The left range.</param>
-		/// <param name="scalar">The right scalar value.</param>
-		/// <returns>The result of the operator.</returns>
-		public static GorgonRange operator /(GorgonRange left, int scalar)
-		{
-			Divide(in left, scalar, out GorgonRange result);
-			return result;
-		}
+        /// <summary>
+        /// Implements the operator /.
+        /// </summary>
+        /// <param name="left">The left range.</param>
+        /// <param name="scalar">The right scalar value.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GorgonRange operator /(GorgonRange left, int scalar)
+        {
+            Divide(in left, scalar, out GorgonRange result);
+            return result;
+        }
 
         /// <summary>
         /// Implements the operator >.
@@ -1873,5 +1873,5 @@ namespace Gorgon.Core
         public static bool operator <=(GorgonRange left, GorgonRange right) => left.Range <= right.Range;
         #endregion
     }
-	#endregion
+    #endregion
 }

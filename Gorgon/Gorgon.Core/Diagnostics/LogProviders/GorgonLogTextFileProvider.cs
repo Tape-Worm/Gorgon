@@ -54,7 +54,7 @@ namespace Gorgon.Diagnostics.LogProviders
             StreamWriter stream = null;
 
             Debug.Assert(_filePath.Directory != null, $"Directory not found for '{_filePath.FullName}'");
-            
+
             try
             {
                 // Create the directory if it doesn't exist.
@@ -122,7 +122,7 @@ namespace Gorgon.Diagnostics.LogProviders
             {
                 return;
             }
-            
+
             try
             {
                 // Open the stream.
@@ -156,7 +156,7 @@ namespace Gorgon.Diagnostics.LogProviders
                 throw new ArgumentEmptyException(nameof(filePath));
             }
 
-            
+
             _filePath = new FileInfo(filePath.FormatPath(Path.DirectorySeparatorChar));
         }
         #endregion

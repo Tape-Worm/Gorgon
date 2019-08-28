@@ -16,12 +16,12 @@ namespace Gorgon.Editor.ImageEditor
     /// A registry for the image codecs used by the plug ins in this assembly.
     /// </summary>
     internal class CodecRegistry
-		: ICodecRegistry
+        : ICodecRegistry
     {
         #region Variables.
         // The cache containing the plug in assemblies.
         private readonly GorgonMefPlugInCache _pluginCache;
-		// The service used to manage the plug ins.
+        // The service used to manage the plug ins.
         private readonly IGorgonPlugInService _pluginService;
         // The log.
         private readonly IGorgonLog _log;
@@ -132,7 +132,7 @@ namespace Gorgon.Editor.ImageEditor
                     CodecFileTypes.Remove(type);
                 }
             }
-			            
+
             _pluginService.Unload(plugin.Name);
 
             CodecPlugIns.Remove(plugin);
@@ -156,7 +156,7 @@ namespace Gorgon.Editor.ImageEditor
 
             if (assemblies.Count == 0)
             {
-                _log.Print("Assembly was not loaded. This means that most likely it's already referenced.", LoggingLevel.Verbose);                
+                _log.Print("Assembly was not loaded. This means that most likely it's already referenced.", LoggingLevel.Verbose);
             }
 
             IEnumerable<PlugInAssemblyState> failedAssemblies = assemblies.Where(item => !item.IsAssemblyLoaded);

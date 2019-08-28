@@ -32,7 +32,7 @@ namespace Gorgon.Editor.ViewModels
     /// <summary>
     /// A new project view model.
     /// </summary>
-    internal interface IStageNewVm    
+    internal interface IStageNewVm
         : IViewModel
     {
         #region Properties.

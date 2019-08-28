@@ -25,8 +25,8 @@
 #endregion
 
 using System.Collections.Generic;
-using DX = SharpDX;
 using Gorgon.Editor.UI;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -62,10 +62,10 @@ namespace Gorgon.Editor.SpriteEditor
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return the vertices that are being edited.
         /// </summary>
-		IReadOnlyList<DX.Vector2> Vertices
+        IReadOnlyList<DX.Vector2> Vertices
         {
             get;
             set;

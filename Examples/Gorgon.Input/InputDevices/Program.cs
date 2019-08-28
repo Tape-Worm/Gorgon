@@ -30,29 +30,29 @@ using Gorgon.UI;
 
 namespace Gorgon.Examples
 {
-	/// <summary>
-	/// Example entry point.
-	/// </summary>
-	/// <remarks>To see a description of this example, look in formMain.cs</remarks>
-	internal static class Program
-	{
-		/// <summary>
-		/// The main entry point for the application.
-		/// </summary>
-		[STAThread]
-		private static void Main()
-		{
-			try
-			{
-				Application.EnableVisualStyles();
-				Application.SetCompatibleTextRenderingDefault(false);
+    /// <summary>
+    /// Example entry point.
+    /// </summary>
+    /// <remarks>To see a description of this example, look in formMain.cs</remarks>
+    internal static class Program
+    {
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        private static void Main()
+        {
+            try
+            {
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
 
                 GorgonApplication.Run(new Form());
-			}
-			catch (Exception ex)
-			{
+            }
+            catch (Exception ex)
+            {
                 GorgonExample.HandleException(ex);
-			}
-		}
-	}
+            }
+        }
+    }
 }

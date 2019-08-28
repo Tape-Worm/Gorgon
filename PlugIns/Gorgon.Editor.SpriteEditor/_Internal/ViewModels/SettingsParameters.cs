@@ -50,8 +50,8 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="settings">The plug in settings.</param>
         /// <param name="commonServices">Common application services.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settings" /> parameter is <strong>null</strong>.</exception>
-        public SettingsParameters(SpriteEditorSettings settings, IViewModelInjection commonServices) 
-			: base(commonServices) =>  Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        public SettingsParameters(SpriteEditorSettings settings, IViewModelInjection commonServices)
+            : base(commonServices) => Settings = settings ?? throw new ArgumentNullException(nameof(settings));
         #endregion
     }
 }

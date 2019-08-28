@@ -29,12 +29,12 @@ using Gorgon.Graphics.Core;
 
 namespace Gorgon.Editor.SpriteEditor
 {
-	/// <summary>
+    /// <summary>
     /// The service used to build a sampler.
     /// </summary>
     internal interface ISamplerBuildService
     {
-		/// <summary>
+        /// <summary>
         /// Function to retrieve the sampler based on the specified states.
         /// </summary>
         /// <param name="filter">The texture filtering state to use.</param>

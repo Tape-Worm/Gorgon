@@ -38,7 +38,7 @@ namespace Gorgon.Editor.UI
     /// <summary>
     /// A locator dialog to find a workspace directory.
     /// </summary>
-    internal partial class FormDirectoryLocator 
+    internal partial class FormDirectoryLocator
         : KryptonForm
     {
         #region Events.

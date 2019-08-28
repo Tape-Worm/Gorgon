@@ -80,7 +80,7 @@ namespace Gorgon.Native
             }
 
             var result = new GorgonNativeBuffer<T>(count.Value);
-            
+
             using (var reader = new GorgonBinaryReader(stream, true))
             {
                 for (int i = 0; i < count.Value; ++i)
@@ -138,7 +138,7 @@ namespace Gorgon.Native
             }
 
             GorgonNativeBuffer<T>.ValidateArrayParams(array, arrayIndex, count.Value);
-            
+
             if (bufferIndex < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(bufferIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
@@ -153,7 +153,7 @@ namespace Gorgon.Native
             {
                 fixed (T* srcPtr = &array[arrayIndex])
                 fixed (T* destPtr = &buffer[bufferIndex])
-                {                    
+                {
                     Unsafe.CopyBlock(destPtr, srcPtr, (uint)count.Value);
                 }
             }
@@ -195,7 +195,7 @@ namespace Gorgon.Native
             GorgonNativeBuffer<T>.ValidateArrayParams(array, index, count.Value);
 
             var result = new GorgonNativeBuffer<T>(count.Value);
-            
+
             unsafe
             {
                 fixed (T* srcPtr = &array[index])

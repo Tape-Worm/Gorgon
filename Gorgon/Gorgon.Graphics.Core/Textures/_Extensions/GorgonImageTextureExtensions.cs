@@ -35,7 +35,7 @@ namespace Gorgon.Graphics.Core
     /// Extension methods used to create textures from images.
     /// </summary>
     public static class GorgonImageTextureExtensions
-	{
+    {
         // Default load options.
         private static readonly GorgonTexture2DLoadOptions _defaultLoadOptions = new GorgonTexture2DLoadOptions();
 
@@ -80,39 +80,39 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// </remarks>
         public static GorgonTexture2D ToTexture2D(this Bitmap gdiBitmap,
-	                                              GorgonGraphics graphics,
-	                                              GorgonTexture2DLoadOptions options = null)
-	    {
-	        if (gdiBitmap == null)
-	        {
-	            throw new ArgumentNullException(nameof(gdiBitmap));
-	        }
+                                                  GorgonGraphics graphics,
+                                                  GorgonTexture2DLoadOptions options = null)
+        {
+            if (gdiBitmap == null)
+            {
+                throw new ArgumentNullException(nameof(gdiBitmap));
+            }
 
-	        if (graphics == null)
-	        {
-	            throw new ArgumentNullException(nameof(graphics));
-	        }
+            if (graphics == null)
+            {
+                throw new ArgumentNullException(nameof(graphics));
+            }
 
-	        if (options == null)
-	        {
-	            options = _defaultLoadOptions;
-	        }
+            if (options == null)
+            {
+                options = _defaultLoadOptions;
+            }
 
-	        if (string.IsNullOrEmpty(options.Name))
-	        {
-	            options.Name = GorgonGraphicsResource.GenerateName(GorgonTexture2D.NamePrefix);
-	        }
+            if (string.IsNullOrEmpty(options.Name))
+            {
+                options.Name = GorgonGraphicsResource.GenerateName(GorgonTexture2D.NamePrefix);
+            }
 
-	        using (IGorgonImage image = gdiBitmap.ToGorgonImage())
-	        {
+            using (IGorgonImage image = gdiBitmap.ToGorgonImage())
+            {
                 if (options.ConvertToPremultipliedAlpha)
                 {
                     image.ConvertToPremultipliedAlpha();
                 }
 
                 return new GorgonTexture2D(graphics, image, options);
-	        }
-	    }
+            }
+        }
 
         /// <summary>
         /// Function to create a <see cref="GorgonTexture3D"/> from a <see cref="GorgonImage"/>.
@@ -151,36 +151,36 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// </remarks>
         public static GorgonTexture3D ToTexture3D(this IGorgonImage image,
-	                                              GorgonGraphics graphics,
+                                                  GorgonGraphics graphics,
                                                   GorgonTextureLoadOptions options = null)
-	    {
-	        if (image == null)
-	        {
-	            throw new ArgumentNullException(nameof(image));
-	        }
+        {
+            if (image == null)
+            {
+                throw new ArgumentNullException(nameof(image));
+            }
 
-	        if (graphics == null)
-	        {
-	            throw new ArgumentNullException(nameof(graphics));
-	        }
+            if (graphics == null)
+            {
+                throw new ArgumentNullException(nameof(graphics));
+            }
 
-	        if (options == null)
-	        {
+            if (options == null)
+            {
                 options = _defaultLoadOptions;
-	        }
+            }
 
-	        if (string.IsNullOrEmpty(options.Name))
-	        {
-	            options.Name = GorgonGraphicsResource.GenerateName(GorgonTexture3D.NamePrefix);
-	        }
+            if (string.IsNullOrEmpty(options.Name))
+            {
+                options.Name = GorgonGraphicsResource.GenerateName(GorgonTexture3D.NamePrefix);
+            }
 
             if (options.ConvertToPremultipliedAlpha)
             {
                 image.ConvertToPremultipliedAlpha();
             }
 
-	        return new GorgonTexture3D(graphics, image, options);
-	    }
+            return new GorgonTexture3D(graphics, image, options);
+        }
 
         /// <summary>
         /// Function to create a <see cref="GorgonTexture2D"/> from a <see cref="GorgonImage"/>.
@@ -219,28 +219,28 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// </remarks>
         public static GorgonTexture2D ToTexture2D(this IGorgonImage image,
-	                                              GorgonGraphics graphics,
+                                                  GorgonGraphics graphics,
                                                   GorgonTexture2DLoadOptions options = null)
-	    {
-	        if (image == null)
-	        {
-	            throw new ArgumentNullException(nameof(image));
-	        }
+        {
+            if (image == null)
+            {
+                throw new ArgumentNullException(nameof(image));
+            }
 
-	        if (graphics == null)
-	        {
-	            throw new ArgumentNullException(nameof(graphics));
-	        }
+            if (graphics == null)
+            {
+                throw new ArgumentNullException(nameof(graphics));
+            }
 
-	        if (options == null)
-	        {
+            if (options == null)
+            {
                 options = _defaultLoadOptions;
-	        }
+            }
 
-	        if (string.IsNullOrEmpty(options.Name))
-	        {
-	            options.Name = GorgonGraphicsResource.GenerateName(GorgonTexture2D.NamePrefix);
-	        }
+            if (string.IsNullOrEmpty(options.Name))
+            {
+                options.Name = GorgonGraphicsResource.GenerateName(GorgonTexture2D.NamePrefix);
+            }
 
             if (options.ConvertToPremultipliedAlpha)
             {
@@ -248,67 +248,67 @@ namespace Gorgon.Graphics.Core
             }
 
             return new GorgonTexture2D(graphics, image, options);
-	    }
+        }
 
-	    /// <summary>
-	    /// Function to create a <see cref="GorgonTexture1D"/> from a <see cref="GorgonImage"/>.
-	    /// </summary>
-	    /// <param name="image">The image used to create the texture.</param>
-	    /// <param name="graphics">The graphics interface used to create the texture.</param>
-	    /// <param name="options">[Optional] Options used to further define the texture.</param>
-	    /// <returns>A new <see cref="GorgonTexture1D"/> containing the data from the <paramref name="image"/>.</returns>
-	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="image"/>, or the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
-	    /// <remarks>
-	    /// <para>
-	    /// A <see cref="GorgonImage"/> is useful to holding image data in memory, but it cannot be sent to the GPU for use as a texture. This method allows an application to convert the 
-	    /// <see cref="GorgonImage"/> into a <see cref="GorgonTexture1D"/>. 
-	    /// </para>
-	    /// <para>
-	    /// If specified, the <paramref name="options"/>parameter will define how Gorgon and shaders should handle the texture.  The <see cref="GorgonTextureLoadOptions"/> type contains the following:
-	    /// <list type="bullet">
-	    ///		<item>
-	    ///			<term>Binding</term>
-	    ///			<description>When defined, will indicate the <see cref="TextureBinding"/> that defines how the texture will be bound to the graphics pipeline. If it is omitted, then the binding will be 
-	    ///         <see cref="TextureBinding.ShaderResource"/>.</description>
-	    ///		</item>
-	    ///		<item>
-	    ///			<term>Usage</term>
-	    ///			<description>When defined, will indicate the preferred usage for the texture. If it is omitted, then the usage will be set to <see cref="ResourceUsage.Default"/>.</description>
-	    ///		</item>
-	    ///		<item>
-	    ///			<term>Multisample info</term>
-	    ///			<description>This is not available on 1D textures, and is ignored.</description>
-	    ///		</item>
+        /// <summary>
+        /// Function to create a <see cref="GorgonTexture1D"/> from a <see cref="GorgonImage"/>.
+        /// </summary>
+        /// <param name="image">The image used to create the texture.</param>
+        /// <param name="graphics">The graphics interface used to create the texture.</param>
+        /// <param name="options">[Optional] Options used to further define the texture.</param>
+        /// <returns>A new <see cref="GorgonTexture1D"/> containing the data from the <paramref name="image"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="image"/>, or the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
+        /// <remarks>
+        /// <para>
+        /// A <see cref="GorgonImage"/> is useful to holding image data in memory, but it cannot be sent to the GPU for use as a texture. This method allows an application to convert the 
+        /// <see cref="GorgonImage"/> into a <see cref="GorgonTexture1D"/>. 
+        /// </para>
+        /// <para>
+        /// If specified, the <paramref name="options"/>parameter will define how Gorgon and shaders should handle the texture.  The <see cref="GorgonTextureLoadOptions"/> type contains the following:
+        /// <list type="bullet">
+        ///		<item>
+        ///			<term>Binding</term>
+        ///			<description>When defined, will indicate the <see cref="TextureBinding"/> that defines how the texture will be bound to the graphics pipeline. If it is omitted, then the binding will be 
+        ///         <see cref="TextureBinding.ShaderResource"/>.</description>
+        ///		</item>
+        ///		<item>
+        ///			<term>Usage</term>
+        ///			<description>When defined, will indicate the preferred usage for the texture. If it is omitted, then the usage will be set to <see cref="ResourceUsage.Default"/>.</description>
+        ///		</item>
+        ///		<item>
+        ///			<term>Multisample info</term>
+        ///			<description>This is not available on 1D textures, and is ignored.</description>
+        ///		</item>
         ///		<item>
         ///		    <term>ConvertToPremultipliedAlpha</term>
         ///		    <description>Converts the image to premultiplied alpha before uploading the image data to the texture.</description>
         ///		</item>
-	    /// </list>
-	    /// </para>
-	    /// </remarks>
-	    public static GorgonTexture1D ToTexture1D(this IGorgonImage image,
-	                                              GorgonGraphics graphics,
+        /// </list>
+        /// </para>
+        /// </remarks>
+        public static GorgonTexture1D ToTexture1D(this IGorgonImage image,
+                                                  GorgonGraphics graphics,
                                                   GorgonTextureLoadOptions options = null)
-	    {
-	        if (image == null)
-	        {
-	            throw new ArgumentNullException(nameof(image));
-	        }
+        {
+            if (image == null)
+            {
+                throw new ArgumentNullException(nameof(image));
+            }
 
-	        if (graphics == null)
-	        {
-	            throw new ArgumentNullException(nameof(graphics));
-	        }
+            if (graphics == null)
+            {
+                throw new ArgumentNullException(nameof(graphics));
+            }
 
-	        if (options == null)
-	        {
+            if (options == null)
+            {
                 options = _defaultLoadOptions;
-	        }
+            }
 
-	        if (string.IsNullOrEmpty(options.Name))
-	        {
-	            options.Name = GorgonGraphicsResource.GenerateName(GorgonTexture1D.NamePrefix);
-	        }
+            if (string.IsNullOrEmpty(options.Name))
+            {
+                options.Name = GorgonGraphicsResource.GenerateName(GorgonTexture1D.NamePrefix);
+            }
 
             if (options.ConvertToPremultipliedAlpha)
             {
@@ -316,6 +316,6 @@ namespace Gorgon.Graphics.Core
             }
 
             return new GorgonTexture1D(graphics, image, options);
-	    }
-	}
+        }
+    }
 }

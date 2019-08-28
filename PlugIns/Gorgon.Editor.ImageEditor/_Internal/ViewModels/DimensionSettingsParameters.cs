@@ -25,8 +25,8 @@
 #endregion
 
 using System;
-using Gorgon.Graphics.Core;
 using Gorgon.Editor.UI.ViewModels;
+using Gorgon.Graphics.Core;
 
 namespace Gorgon.Editor.ImageEditor.ViewModels
 {
@@ -52,7 +52,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <param name="commonServices">Common application services.</param>
         /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
         public DimensionSettingsParameters(IGorgonVideoAdapterInfo videoAdapter, IViewModelInjection commonServices)
-			: base(commonServices) => VideoAdapter = videoAdapter ?? throw new ArgumentNullException(nameof(videoAdapter));        
+            : base(commonServices) => VideoAdapter = videoAdapter ?? throw new ArgumentNullException(nameof(videoAdapter));
         #endregion
 
     }

@@ -24,13 +24,13 @@
 // 
 #endregion
 
+using System.ComponentModel;
 using System.Linq;
-using DX = SharpDX;
-using Gorgon.Math;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Math;
 using Gorgon.Renderers;
-using System.ComponentModel;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -38,16 +38,16 @@ namespace Gorgon.Editor.SpriteEditor
     /// A renderer for editing sprite wrapping sampler states.
     /// </summary>
     internal class SpriteWrappingRenderer
-		: SingleSpriteRenderer
+        : SingleSpriteRenderer
     {
         #region Variables.
-		// The render target containing the sprite.
+        // The render target containing the sprite.
         private GorgonRenderTarget2DView _rtv;
-		// The texture for the render target.
+        // The texture for the render target.
         private GorgonTexture2DView _srv;
-		// The builder for creating samplers.
+        // The builder for creating samplers.
         private GorgonSamplerStateBuilder _builder;
-		// The current sampler state.
+        // The current sampler state.
         private GorgonSamplerState _current;
         #endregion
 
@@ -56,7 +56,7 @@ namespace Gorgon.Editor.SpriteEditor
         #endregion
 
         #region Methods.
-		/// <summary>
+        /// <summary>
         /// Function to build up the sprite render target view.
         /// </summary>
         private void BuildSpriteRtv()
@@ -81,7 +81,7 @@ namespace Gorgon.Editor.SpriteEditor
             _srv = _rtv.GetShaderResourceView();
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to render the sprite to the render target so we can show the effects of wrapping.
         /// </summary>
         /// <remarks>
@@ -197,7 +197,7 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 _builder = new GorgonSamplerStateBuilder(Graphics);
             }
-			
+
             _current = SpriteContent.SamplerState;
 
             SpriteContent.WrappingEditor.HorizontalWrapping = _current.WrapU;
@@ -229,8 +229,8 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="renderer">The 2D renderer for the application.</param>
         /// <param name="initialZoom">The initial zoom scale value.</param>
         public SpriteWrappingRenderer(ISpriteContent sprite, GorgonGraphics graphics, GorgonSwapChain swapChain, Gorgon2D renderer, float initialZoom)
-			: base(sprite, graphics, swapChain, renderer, initialZoom)
-        {            
+            : base(sprite, graphics, swapChain, renderer, initialZoom)
+        {
         }
         #endregion
     }

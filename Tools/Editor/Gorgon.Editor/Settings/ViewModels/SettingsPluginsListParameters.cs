@@ -36,10 +36,10 @@ namespace Gorgon.Editor.ViewModels
     internal class SettingsPlugInsListParameters
         : ViewModelInjection
     {
-		/// <summary>
+        /// <summary>
         /// Property to return the list of plugins.
         /// </summary>
-		public IEnumerable<ISettingsPlugInListItem> PlugIns
+        public IEnumerable<ISettingsPlugInListItem> PlugIns
         {
             get;
         }
@@ -49,6 +49,6 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="commonServices">Common application services.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
         public SettingsPlugInsListParameters(IEnumerable<ISettingsPlugInListItem> plugins, IViewModelInjection commonServices)
-			: base(commonServices) => PlugIns = plugins ?? throw new ArgumentNullException(nameof(plugins));
+            : base(commonServices) => PlugIns = plugins ?? throw new ArgumentNullException(nameof(plugins));
     }
 }

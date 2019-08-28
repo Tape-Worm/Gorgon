@@ -25,9 +25,9 @@
 #endregion
 
 using System;
-using DX = SharpDX;
 using Gorgon.Animation;
 using Newtonsoft.Json;
+using DX = SharpDX;
 
 namespace Gorgon.IO
 {
@@ -74,7 +74,7 @@ namespace Gorgon.IO
             float x = 0;
             float y = 0;
             float z = 0;
-            
+
             while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
             {
                 if (reader.TokenType != JsonToken.PropertyName)
@@ -100,7 +100,7 @@ namespace Gorgon.IO
                         break;
                 }
             }
-            
+
             return new GorgonKeyVector3(time, new DX.Vector3(x, y, z));
         }
     }

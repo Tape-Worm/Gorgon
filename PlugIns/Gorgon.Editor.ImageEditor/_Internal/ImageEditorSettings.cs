@@ -34,7 +34,7 @@ namespace Gorgon.Editor.ImageEditor
     /// The settings for the image editor plug in.
     /// </summary>
     internal class ImageEditorSettings
-    {		
+    {
 
         /// <summary>
         /// Property to return the list of additional image codec plug ins to load.
@@ -46,11 +46,11 @@ namespace Gorgon.Editor.ImageEditor
             private set;
         } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return the last codec plug in path.
         /// </summary>
-		[JsonProperty]
-		public string LastCodecPlugInPath
+        [JsonProperty]
+        public string LastCodecPlugInPath
         {
             get;
             set;

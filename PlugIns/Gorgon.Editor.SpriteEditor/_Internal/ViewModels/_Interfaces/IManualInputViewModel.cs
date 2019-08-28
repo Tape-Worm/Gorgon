@@ -24,8 +24,8 @@
 // 
 #endregion
 
-using DX = SharpDX;
 using Gorgon.Editor.UI;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {

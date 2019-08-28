@@ -59,10 +59,10 @@ namespace Gorgon.Graphics.Core
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the total number of render targets available in the factory.
         /// </summary>
-		int TotalCount
+        int TotalCount
         {
             get;
         }

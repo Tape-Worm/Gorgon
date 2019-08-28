@@ -30,55 +30,55 @@ using SharpDX.WIC;
 
 namespace Gorgon.Graphics.Imaging.Codecs
 {
-	/// <summary>
-	/// Filter to apply for compression optimization.
-	/// </summary>
-	public enum PngFilter
-	{
-		/// <summary>
-		/// The system will chose the best filter based on the image data.
-		/// </summary>
-		DontCare = PngFilterOption.Unspecified,
-		/// <summary>
-		/// No filtering.
-		/// </summary>
-		None = PngFilterOption.None,
-		/// <summary>
-		/// Sub filtering.
-		/// </summary>
-		Sub = PngFilterOption.Sub,
-		/// <summary>
-		/// Up filtering.
-		/// </summary>
-		Up = PngFilterOption.Up,
-		/// <summary>
-		/// Average filtering.
-		/// </summary>
-		Average = PngFilterOption.Average,
-		/// <summary>
-		/// Paeth filtering.
-		/// </summary>
-		Paeth = PngFilterOption.Paeth,
-		/// <summary>
-		/// Adaptive filtering.  The system will choose the best filter based on a per-scanline basis.
-		/// </summary>
-		Adaptive = PngFilterOption.Adaptive
-	}
+    /// <summary>
+    /// Filter to apply for compression optimization.
+    /// </summary>
+    public enum PngFilter
+    {
+        /// <summary>
+        /// The system will chose the best filter based on the image data.
+        /// </summary>
+        DontCare = PngFilterOption.Unspecified,
+        /// <summary>
+        /// No filtering.
+        /// </summary>
+        None = PngFilterOption.None,
+        /// <summary>
+        /// Sub filtering.
+        /// </summary>
+        Sub = PngFilterOption.Sub,
+        /// <summary>
+        /// Up filtering.
+        /// </summary>
+        Up = PngFilterOption.Up,
+        /// <summary>
+        /// Average filtering.
+        /// </summary>
+        Average = PngFilterOption.Average,
+        /// <summary>
+        /// Paeth filtering.
+        /// </summary>
+        Paeth = PngFilterOption.Paeth,
+        /// <summary>
+        /// Adaptive filtering.  The system will choose the best filter based on a per-scanline basis.
+        /// </summary>
+        Adaptive = PngFilterOption.Adaptive
+    }
 
-	/// <summary>
-	/// Options used when encoding an image to a stream as a PNG file..
-	/// </summary>
-	public sealed class GorgonPngEncodingOptions
-		: IGorgonWicEncodingOptions
-	{
-		#region Properties.
-		/// <summary>
-		/// Property to set or return whether all frames in an image array should be persisted.
-		/// </summary>
-		/// <remarks>
-		/// This flag is not supported by this codec and will always return <b>false</b>.
-		/// </remarks>
-		bool IGorgonImageCodecEncodingOptions.SaveAllFrames
+    /// <summary>
+    /// Options used when encoding an image to a stream as a PNG file..
+    /// </summary>
+    public sealed class GorgonPngEncodingOptions
+        : IGorgonWicEncodingOptions
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to set or return whether all frames in an image array should be persisted.
+        /// </summary>
+        /// <remarks>
+        /// This flag is not supported by this codec and will always return <b>false</b>.
+        /// </remarks>
+        bool IGorgonImageCodecEncodingOptions.SaveAllFrames
         {
             get => false;
             set
@@ -99,80 +99,80 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// </para>
         /// </remarks>
         public double DpiX
-		{
-			get => Options.GetOptionValue<double>(nameof(DpiX));
-			set => Options.SetOptionValue(nameof(DpiX), value);
-		}
+        {
+            get => Options.GetOptionValue<double>(nameof(DpiX));
+            set => Options.SetOptionValue(nameof(DpiX), value);
+        }
 
-		/// <summary>
-		/// Property to set or return the vertical dots-per-index for the encoded image.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This information is metadata only, no action is taken with this value.
-		/// </para>
-		/// <para>
-		/// The default value is 72.
-		/// </para>
-		/// </remarks>
-		public double DpiY
-		{
-			get => Options.GetOptionValue<double>(nameof(DpiY));
-			set => Options.SetOptionValue(nameof(DpiY), value);
-		}
+        /// <summary>
+        /// Property to set or return the vertical dots-per-index for the encoded image.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This information is metadata only, no action is taken with this value.
+        /// </para>
+        /// <para>
+        /// The default value is 72.
+        /// </para>
+        /// </remarks>
+        public double DpiY
+        {
+            get => Options.GetOptionValue<double>(nameof(DpiY));
+            set => Options.SetOptionValue(nameof(DpiY), value);
+        }
 
-		/// <summary>
-		/// Property to set or return whether to use interlacing when encoding an image as a PNG file.
-		/// </summary>
-		/// <remarks>
-		/// The default value is <b>false</b>.
-		/// </remarks>
-		public bool Interlacing
-		{
-			get => Options.GetOptionValue<bool>(nameof(Interlacing));
-			set => Options.SetOptionValue(nameof(Interlacing), value);
-		}
+        /// <summary>
+        /// Property to set or return whether to use interlacing when encoding an image as a PNG file.
+        /// </summary>
+        /// <remarks>
+        /// The default value is <b>false</b>.
+        /// </remarks>
+        public bool Interlacing
+        {
+            get => Options.GetOptionValue<bool>(nameof(Interlacing));
+            set => Options.SetOptionValue(nameof(Interlacing), value);
+        }
 
-		/// <summary>
-		/// Property to set or return the type of filter to use when when compressing the PNG file.
-		/// </summary>
-		/// <remarks>
-		/// The default value is <see cref="PngFilter.DontCare"/>.
-		/// </remarks>
-		public PngFilter Filter
-		{
-			get => Options.GetOptionValue<PngFilter>(nameof(Filter));
-			set => Options.SetOptionValue(nameof(Filter), value);
-		}
+        /// <summary>
+        /// Property to set or return the type of filter to use when when compressing the PNG file.
+        /// </summary>
+        /// <remarks>
+        /// The default value is <see cref="PngFilter.DontCare"/>.
+        /// </remarks>
+        public PngFilter Filter
+        {
+            get => Options.GetOptionValue<PngFilter>(nameof(Filter));
+            set => Options.SetOptionValue(nameof(Filter), value);
+        }
 
-		/// <summary>
-		/// Property to set or return the type of <see cref="ImageDithering"/> to use.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This flag is used to determine which type of dithering algorithm should be used when converting the bit depth for a pixel format to a lower bit depth. If the pixel format of the image is supported 
-		/// natively by the codec, then this value will be ignored.
-		/// </para> 
-		/// <para> 
-		/// With dithering applied, the image will visually appear closer to the original by using patterns to simulate a greater number of colors.
-		/// </para>
-		/// <para>
-		/// The default value is <see cref="ImageDithering.None"/>.
-		/// </para>
-		/// </remarks>
-		public ImageDithering Dithering
-		{
-			get => Options.GetOptionValue<ImageDithering>(nameof(Dithering));
-			set => Options.SetOptionValue(nameof(Dithering), value);
-		}
+        /// <summary>
+        /// Property to set or return the type of <see cref="ImageDithering"/> to use.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This flag is used to determine which type of dithering algorithm should be used when converting the bit depth for a pixel format to a lower bit depth. If the pixel format of the image is supported 
+        /// natively by the codec, then this value will be ignored.
+        /// </para> 
+        /// <para> 
+        /// With dithering applied, the image will visually appear closer to the original by using patterns to simulate a greater number of colors.
+        /// </para>
+        /// <para>
+        /// The default value is <see cref="ImageDithering.None"/>.
+        /// </para>
+        /// </remarks>
+        public ImageDithering Dithering
+        {
+            get => Options.GetOptionValue<ImageDithering>(nameof(Dithering));
+            set => Options.SetOptionValue(nameof(Dithering), value);
+        }
 
-		/// <summary>
-		/// Property to return the list of options available to the codec.
-		/// </summary>
-		public IGorgonOptionBag Options
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the list of options available to the codec.
+        /// </summary>
+        public IGorgonOptionBag Options
+        {
+            get;
+        }
         #endregion
 
         #region Constructor.

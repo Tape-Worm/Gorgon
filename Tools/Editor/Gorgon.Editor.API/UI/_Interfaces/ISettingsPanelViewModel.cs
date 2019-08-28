@@ -33,12 +33,12 @@ namespace Gorgon.Editor.UI
     /// A view model for a settings category.
     /// </summary>
     public interface ISettingsCategoryViewModel
-		: IViewModel, IGorgonNamedObject
+        : IViewModel, IGorgonNamedObject
     {
-		/// <summary>
+        /// <summary>
         /// Property to return the ID for the panel.
         /// </summary>
-		Guid ID
+        Guid ID
         {
             get;
         }

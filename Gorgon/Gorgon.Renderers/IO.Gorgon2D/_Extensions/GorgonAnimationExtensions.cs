@@ -64,22 +64,22 @@ namespace Gorgon.IO
             }
 
             var settings = new JsonSerializer
-                           {
-                               Formatting = prettyFormat ? Formatting.Indented : Formatting.None,
-                               Converters =
+            {
+                Formatting = prettyFormat ? Formatting.Indented : Formatting.None,
+                Converters =
                                {
                                    new JsonTextureKeyConverter(null),
                                    new JsonVector3KeyConverter(),
                                    new JsonGorgonColorKeyConverter(),
                                    new JsonRectKeyConverter()
                                }
-                           };
+            };
 
             var jsonObj = JObject.FromObject(animation, settings);
             JToken firstProp = jsonObj.First;
             firstProp.AddBeforeSelf(new JProperty(JsonHeaderProp, GorgonAnimationCodecCommon.CurrentFileHeader));
             firstProp.AddBeforeSelf(new JProperty(JsonVersionProp, GorgonAnimationCodecCommon.CurrentVersion.ToString(2)));
-            
+
             return jsonObj.ToString(prettyFormat ? Formatting.Indented : Formatting.None);
         }
         #endregion

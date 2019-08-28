@@ -33,116 +33,116 @@ using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
-	/// <summary>
-	/// An effect that renders images burn/dodge effect.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This provides an image post processing filter akin to the dodge and burn effect filters in Photoshop.
-	/// </para>
-	/// </remarks>
-	public class Gorgon2DBurnDodgeEffect
-		: Gorgon2DEffect
-	{
+    /// <summary>
+    /// An effect that renders images burn/dodge effect.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This provides an image post processing filter akin to the dodge and burn effect filters in Photoshop.
+    /// </para>
+    /// </remarks>
+    public class Gorgon2DBurnDodgeEffect
+        : Gorgon2DEffect
+    {
         #region Variables.
-	    // Burn/dodge buffer.
-		private GorgonConstantBufferView _burnDodgeBuffer;
+        // Burn/dodge buffer.
+        private GorgonConstantBufferView _burnDodgeBuffer;
         // Dodge/burn shader.
         private GorgonPixelShader _dodgeBurnShader;
         private Gorgon2DShaderState<GorgonPixelShader> _dodgeBurn;
         // Linear dodge/burn shader.
         private GorgonPixelShader _linearDodgeBurnShader;
-		private Gorgon2DShaderState<GorgonPixelShader> _linearDodgeBurn;						
-	    // Flag to indicate that the effect parameters are updated.
-		private bool _isUpdated = true;									
-	    // Flag to indicate whether to use dodging or burning.
-		private bool _useDodge;
+        private Gorgon2DShaderState<GorgonPixelShader> _linearDodgeBurn;
+        // Flag to indicate that the effect parameters are updated.
+        private bool _isUpdated = true;
+        // Flag to indicate whether to use dodging or burning.
+        private bool _useDodge;
         // The batch render state for a linear burn/dodge.
-	    private Gorgon2DBatchState _batchStateLinearDodgeBurn;
+        private Gorgon2DBatchState _batchStateLinearDodgeBurn;
         // The batch render state.
-	    private Gorgon2DBatchState _batchStateDodgeBurn;
-		#endregion
+        private Gorgon2DBatchState _batchStateDodgeBurn;
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to set or return whether to use a burn or dodge effect.
-		/// </summary>
-		public bool UseDodge
-		{
-			get => _useDodge;
-		    set
-			{
-				if (_useDodge == value)
-				{
-					return;
-				}
+        #region Properties.
+        /// <summary>
+        /// Property to set or return whether to use a burn or dodge effect.
+        /// </summary>
+        public bool UseDodge
+        {
+            get => _useDodge;
+            set
+            {
+                if (_useDodge == value)
+                {
+                    return;
+                }
 
-				_useDodge = value;
-				_isUpdated = true;
-			}
-		}
+                _useDodge = value;
+                _isUpdated = true;
+            }
+        }
 
-		/// <summary>
-		/// Property to set or return whether to use a linear burn/dodge.
-		/// </summary>
-		public bool UseLinear
-		{
-			get;
-			set;
-		}
-		#endregion
+        /// <summary>
+        /// Property to set or return whether to use a linear burn/dodge.
+        /// </summary>
+        public bool UseLinear
+        {
+            get;
+            set;
+        }
+        #endregion
 
-		#region Methods.
-	    /// <summary>
-	    /// Function called when the effect is being initialized.
-	    /// </summary>
-	    /// <remarks>
-	    /// Use this method to set up the effect upon its creation.  For example, this method could be used to create the required shaders for the effect.
-	    /// </remarks>
-	    protected override void OnInitialize()
-	    {
-	        _burnDodgeBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics,
-	                                                                         new GorgonConstantBufferInfo("Gorgon 2D Burn/Dodge Effect Constant Buffer")
-	                                                                         {
-	                                                                             Usage = ResourceUsage.Default,
-	                                                                             SizeInBytes = 16
-	                                                                         });
+        #region Methods.
+        /// <summary>
+        /// Function called when the effect is being initialized.
+        /// </summary>
+        /// <remarks>
+        /// Use this method to set up the effect upon its creation.  For example, this method could be used to create the required shaders for the effect.
+        /// </remarks>
+        protected override void OnInitialize()
+        {
+            _burnDodgeBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics,
+                                                                             new GorgonConstantBufferInfo("Gorgon 2D Burn/Dodge Effect Constant Buffer")
+                                                                             {
+                                                                                 Usage = ResourceUsage.Default,
+                                                                                 SizeInBytes = 16
+                                                                             });
 
             _dodgeBurnShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderLinearBurnDodge");
             _linearDodgeBurnShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderBurnDodge");
-			
+
             _linearDodgeBurn = PixelShaderBuilder
-	                           .Shader(_linearDodgeBurnShader)
-	                           .ConstantBuffer(_burnDodgeBuffer, 1)
-	                           .Build();
+                               .Shader(_linearDodgeBurnShader)
+                               .ConstantBuffer(_burnDodgeBuffer, 1)
+                               .Build();
 
-	        _dodgeBurn = PixelShaderBuilder
-	                     .Shader(_dodgeBurnShader)
-	                     .Build();
+            _dodgeBurn = PixelShaderBuilder
+                         .Shader(_dodgeBurnShader)
+                         .Build();
 
-	        _batchStateLinearDodgeBurn = BatchStateBuilder.PixelShaderState(_linearDodgeBurn)
-	                                                      .Build();
-	        _batchStateDodgeBurn = BatchStateBuilder.PixelShaderState(_dodgeBurn)
-	                                                .Build();
-	    }
+            _batchStateLinearDodgeBurn = BatchStateBuilder.PixelShaderState(_linearDodgeBurn)
+                                                          .Build();
+            _batchStateDodgeBurn = BatchStateBuilder.PixelShaderState(_dodgeBurn)
+                                                    .Build();
+        }
 
-	    /// <summary>
-	    /// Function called to build a new (or return an existing) 2D batch state.
-	    /// </summary>
-	    /// <param name="passIndex">The index of the current rendering pass.</param>
-	    /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
-	    /// <returns>The 2D batch state.</returns>
-	    protected override Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged)
-	    {
-	        // ReSharper disable once InvertIf
-	        if (statesChanged)
-	        {
-	            _batchStateLinearDodgeBurn = BatchStateBuilder.Build();
-	            _batchStateDodgeBurn = BatchStateBuilder.Build();
-	        }
+        /// <summary>
+        /// Function called to build a new (or return an existing) 2D batch state.
+        /// </summary>
+        /// <param name="passIndex">The index of the current rendering pass.</param>
+        /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
+        /// <returns>The 2D batch state.</returns>
+        protected override Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged)
+        {
+            // ReSharper disable once InvertIf
+            if (statesChanged)
+            {
+                _batchStateLinearDodgeBurn = BatchStateBuilder.Build();
+                _batchStateDodgeBurn = BatchStateBuilder.Build();
+            }
 
-	        return UseLinear ? _batchStateLinearDodgeBurn : _batchStateDodgeBurn;
-	    }
+            return UseLinear ? _batchStateLinearDodgeBurn : _batchStateDodgeBurn;
+        }
 
         /// <summary>
         /// Function called prior to rendering.
@@ -157,20 +157,20 @@ namespace Gorgon.Renderers
         /// </para>
         /// </remarks>
         protected override void OnBeforeRender(GorgonRenderTargetView output, IGorgon2DCamera camera, bool sizeChanged)
-		{
-		    if (Graphics.RenderTargets[0] != output)
-		    {
+        {
+            if (Graphics.RenderTargets[0] != output)
+            {
                 Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
-		    }
+            }
 
-		    if (!_isUpdated)
-		    {
-		        return;
-		    }
+            if (!_isUpdated)
+            {
+                return;
+            }
 
-		    _burnDodgeBuffer.Buffer.SetData(ref _useDodge);
-			_isUpdated = false;
-		}
+            _burnDodgeBuffer.Buffer.SetData(ref _useDodge);
+            _isUpdated = false;
+        }
 
         /// <summary>
         /// Function called to render a single effect pass.
@@ -190,20 +190,20 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
-		{
-		    if (!disposing)
-		    {
-		        return;
-		    }
+        {
+            if (!disposing)
+            {
+                return;
+            }
 
-		    GorgonConstantBufferView buffer = Interlocked.Exchange(ref _burnDodgeBuffer, null);
-		    GorgonPixelShader shader1 = Interlocked.Exchange(ref _linearDodgeBurnShader, null);
-		    GorgonPixelShader shader2 = Interlocked.Exchange(ref _dodgeBurnShader, null);
+            GorgonConstantBufferView buffer = Interlocked.Exchange(ref _burnDodgeBuffer, null);
+            GorgonPixelShader shader1 = Interlocked.Exchange(ref _linearDodgeBurnShader, null);
+            GorgonPixelShader shader2 = Interlocked.Exchange(ref _dodgeBurnShader, null);
 
             buffer?.Dispose();
             shader1?.Dispose();
             shader2?.Dispose();
-		}
+        }
         #endregion
 
         #region Constructor/Destructor.

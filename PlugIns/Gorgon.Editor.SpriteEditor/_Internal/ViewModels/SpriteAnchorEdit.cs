@@ -103,7 +103,7 @@ namespace Gorgon.Editor.SpriteEditor
                 OnPropertyChanged();
             }
         }
-        
+
         /// <summary>Property to set or return the anchor position, in sprite space.</summary>
         public DX.Vector2 AnchorPosition
         {

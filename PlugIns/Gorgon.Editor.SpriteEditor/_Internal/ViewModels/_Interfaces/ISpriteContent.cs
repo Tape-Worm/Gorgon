@@ -26,11 +26,11 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DX = SharpDX;
 using Gorgon.Editor.UI;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
-using Gorgon.Graphics;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -52,10 +52,10 @@ namespace Gorgon.Editor.SpriteEditor
         : IEditorContent, IUndoHandler, IDragDropHandler<IContentFileDragData>
     {
         #region Properties.
-		/// <summary>
+        /// <summary>
         /// Property to return the editor used to modify the texture wrapping state for a sprite.
         /// </summary>
-		ISpriteWrappingEditor WrappingEditor
+        ISpriteWrappingEditor WrappingEditor
         {
             get;
         }
@@ -195,18 +195,18 @@ namespace Gorgon.Editor.SpriteEditor
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return whether the sprite will use nearest neighbour filtering, or bilinear filtering.
         /// </summary>
-		bool IsPixellated
+        bool IsPixellated
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the current sampler state for the sprite.
         /// </summary>
-		GorgonSamplerState SamplerState
+        GorgonSamplerState SamplerState
         {
             get;
         }
@@ -284,10 +284,10 @@ namespace Gorgon.Editor.SpriteEditor
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the command used to show the sprite texture wrapping editor.
         /// </summary>
-		IEditorCommand<object> ShowWrappingEditorCommand
+        IEditorCommand<object> ShowWrappingEditorCommand
         {
             get;
         }
@@ -300,18 +300,18 @@ namespace Gorgon.Editor.SpriteEditor
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the command used to apply the vertex offsets to the sprite.
         /// </summary>
-		IEditorCommand<IReadOnlyList<DX.Vector3>> SetVertexOffsetsCommand
+        IEditorCommand<IReadOnlyList<DX.Vector3>> SetVertexOffsetsCommand
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the command used to apply texture filtering to the sprite.
         /// </summary>
-		IEditorCommand<SampleFilter> SetTextureFilteringCommand
+        IEditorCommand<SampleFilter> SetTextureFilteringCommand
         {
             get;
         }

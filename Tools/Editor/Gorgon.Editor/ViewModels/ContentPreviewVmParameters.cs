@@ -71,7 +71,7 @@ namespace Gorgon.Editor.ViewModels
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
         public ContentPreviewVmParameters(IFileExplorerVm fileExplorer, IContentFileManager contentFileManager, DirectoryInfo thumbDirectory, ViewModelFactory viewModelFactory)
             : base(viewModelFactory)
-        {            
+        {
             FileExplorer = fileExplorer ?? throw new ArgumentNullException(nameof(fileExplorer));
             ContentFileManager = contentFileManager ?? throw new ArgumentNullException(nameof(contentFileManager));
             ThumbDirectory = thumbDirectory ?? throw new ArgumentNullException(nameof(thumbDirectory));

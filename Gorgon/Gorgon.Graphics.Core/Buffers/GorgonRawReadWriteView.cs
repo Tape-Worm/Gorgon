@@ -161,21 +161,21 @@ namespace Gorgon.Graphics.Core
             }
 
             var desc = new D3D11.UnorderedAccessViewDescription1
-                       {
-                           Dimension = D3D11.UnorderedAccessViewDimension.Buffer,
-                           Buffer =
+            {
+                Dimension = D3D11.UnorderedAccessViewDimension.Buffer,
+                Buffer =
                            {
                                FirstElement = StartElement,
                                ElementCount = ElementCount,
                                Flags = D3D11.UnorderedAccessViewBufferFlags.Raw
                            },
-                           Format = (Format)format
-                       };
+                Format = (Format)format
+            };
 
             Native = new D3D11.UnorderedAccessView1(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
-                     {
-                         DebugName = $"'{Buffer.Name}'_D3D11UnorderedResourceView1_Raw"
-                     };
+            {
+                DebugName = $"'{Buffer.Name}'_D3D11UnorderedResourceView1_Raw"
+            };
 
             Graphics.Log.Print($"Unordered Resource Raw Buffer View '{Buffer.Name}': {Buffer.ResourceType} -> Start: {StartElement}, Count: {ElementCount}, Element Size: {ElementSize}, ElementType(Format): {ElementType}({format})",
                                LoggingLevel.Verbose);

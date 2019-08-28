@@ -154,7 +154,7 @@ namespace Gorgon.Graphics.Core
                                    {
                                        // If the object has been collected/disposed, then do nothing.
                                        if ((!item.TryGetTarget(out IDisposable disposable))
-                                           || (!(disposable is T resource)) 
+                                           || (!(disposable is T resource))
                                            || (resource.IsDisposed))
                                        {
                                            return null;

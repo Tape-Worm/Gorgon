@@ -34,8 +34,8 @@ using Gorgon.Graphics.Core.Properties;
 using Gorgon.IO;
 using Gorgon.Reflection;
 using SharpDX.D3DCompiler;
-using DX = SharpDX;
 using D3D = SharpDX.Direct3D;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core
 {

@@ -34,12 +34,12 @@ using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
+using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.Native;
 using SharpDX.DXGI;
-using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
-using Gorgon.Graphics.Imaging;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core
 {
@@ -412,84 +412,84 @@ namespace Gorgon.Graphics.Core
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ParentForm_Activated(object sender, EventArgs e)
-		{
-            if ((!ExitFullScreenModeOnFocusLoss) 
-				|| (!IsWindowed)
-				|| (_resizeState.PreviousOutput == null) 
-				|| (_resizeState.PreviousVideoMode == null))
-			{
-				return;
-			}
+        {
+            if ((!ExitFullScreenModeOnFocusLoss)
+                || (!IsWindowed)
+                || (_resizeState.PreviousOutput == null)
+                || (_resizeState.PreviousVideoMode == null))
+            {
+                return;
+            }
 
-			GorgonVideoMode mode = _resizeState.PreviousVideoMode.Value;
+            GorgonVideoMode mode = _resizeState.PreviousVideoMode.Value;
 
-			try
-			{
-				EnterFullScreen(in mode, _resizeState.PreviousOutput);
-			}
-			catch (Exception ex)
-			{
-				Graphics.Log.LogException(ex);
-			}
-			finally
-			{
+            try
+            {
+                EnterFullScreen(in mode, _resizeState.PreviousOutput);
+            }
+            catch (Exception ex)
+            {
+                Graphics.Log.LogException(ex);
+            }
+            finally
+            {
                 _resizeState.PreviousOutput = null;
                 _resizeState.PreviousVideoMode = null;
-			}
-		}
+            }
+        }
 
-		/// <summary>
-		/// Handles the Deactivated event of the ParentForm control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void ParentForm_Deactivated(object sender, EventArgs e)
-		{
-			if ((!ExitFullScreenModeOnFocusLoss)
-				|| (IsWindowed)
-				|| (_fullScreenVideoMode == null)
-			    || (_resizeState.PreviousOutput == null) 
-			    || (_resizeState.PreviousVideoMode == null))
-			{
-				return;
-			}
+        /// <summary>
+        /// Handles the Deactivated event of the ParentForm control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ParentForm_Deactivated(object sender, EventArgs e)
+        {
+            if ((!ExitFullScreenModeOnFocusLoss)
+                || (IsWindowed)
+                || (_fullScreenVideoMode == null)
+                || (_resizeState.PreviousOutput == null)
+                || (_resizeState.PreviousVideoMode == null))
+            {
+                return;
+            }
 
-		    _resizeState.PreviousVideoMode = _fullScreenVideoMode;
-		    _resizeState.PreviousOutput = FullscreenOutput;
+            _resizeState.PreviousVideoMode = _fullScreenVideoMode;
+            _resizeState.PreviousOutput = FullscreenOutput;
 
-			try
-			{
-				ExitFullScreen();
-			}
-			catch (Exception ex)
-			{
-				Graphics.Log.LogException(ex);
-			}
-		}
+            try
+            {
+                ExitFullScreen();
+            }
+            catch (Exception ex)
+            {
+                Graphics.Log.LogException(ex);
+            }
+        }
 
-		/// <summary>
-		/// Handles the ResizeEnd event of the ParentForm control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void ParentForm_ResizeEnd(object sender, EventArgs e)
-		{
-			try
-			{
-				// When we're done, tell the system that the resize is complete.
+        /// <summary>
+        /// Handles the ResizeEnd event of the ParentForm control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ParentForm_ResizeEnd(object sender, EventArgs e)
+        {
+            try
+            {
+                // When we're done, tell the system that the resize is complete.
                 _resizeState.Resized = true;
 
-				Window_Resize(this, e);
-			}
-			catch (Exception ex)
-			{
-				Graphics.Log.LogException(ex);
-			}
-			finally
-			{
-				_resizeState.Resized = false;
-			}
-		}
+                Window_Resize(this, e);
+            }
+            catch (Exception ex)
+            {
+                Graphics.Log.LogException(ex);
+            }
+            finally
+            {
+                _resizeState.Resized = false;
+            }
+        }
 
         /// <summary>
         /// Handles the ResizeBegin event of the ParentForm control.
@@ -506,48 +506,48 @@ namespace Gorgon.Graphics.Core
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void Window_Resize(object sender, EventArgs e)
-		{
-			try
-			{
-				// The user will handle the resizing, so do nothing.
-				if (DoNotAutoResizeBackBuffer)
-				{
-					return;
-				}
+        {
+            try
+            {
+                // The user will handle the resizing, so do nothing.
+                if (DoNotAutoResizeBackBuffer)
+                {
+                    return;
+                }
 
-				// If we maximize, or restore, then we'll need to force a buffer resize.
-				if ((!_resizeState.Resized) && 
-					((ParentForm.WindowState == FormWindowState.Maximized) || (ParentForm.WindowState == FormWindowState.Normal)))
-				{
-					_resizeState.Resized = true;
-				}
+                // If we maximize, or restore, then we'll need to force a buffer resize.
+                if ((!_resizeState.Resized) &&
+                    ((ParentForm.WindowState == FormWindowState.Maximized) || (ParentForm.WindowState == FormWindowState.Normal)))
+                {
+                    _resizeState.Resized = true;
+                }
 
-				// If we're entering/exiting full screen, or not at the end of a resize operation, or the window client size is invalid, or the window is in a minimized state, 
-				// or the window size has not changed (can occur when the window is moved) then do nothing.
-				if (!_resizeState.IsScreenStateTransition)
-				{
-					if ((Window.ClientSize.Width < 1)
-					    || (Window.ClientSize.Height < 1)
-						|| ((Window.ClientSize.Width == _info.Width) && (Window.ClientSize.Height == _info.Height))
-					    || (ParentForm.WindowState == FormWindowState.Minimized)
-						|| (!_resizeState.Resized))
-					{
-						return;
-					}
-				}
-				
-				ResizeBackBuffers(Window.ClientSize.Width, Window.ClientSize.Height);
-			}
-			catch (Exception ex)
-			{
-				Graphics.Log.LogException(ex);
-			    throw;
-			}
-			finally
-			{
-				_resizeState.Resized = ParentForm.WindowState == FormWindowState.Minimized;
-			}
-		}
+                // If we're entering/exiting full screen, or not at the end of a resize operation, or the window client size is invalid, or the window is in a minimized state, 
+                // or the window size has not changed (can occur when the window is moved) then do nothing.
+                if (!_resizeState.IsScreenStateTransition)
+                {
+                    if ((Window.ClientSize.Width < 1)
+                        || (Window.ClientSize.Height < 1)
+                        || ((Window.ClientSize.Width == _info.Width) && (Window.ClientSize.Height == _info.Height))
+                        || (ParentForm.WindowState == FormWindowState.Minimized)
+                        || (!_resizeState.Resized))
+                    {
+                        return;
+                    }
+                }
+
+                ResizeBackBuffers(Window.ClientSize.Width, Window.ClientSize.Height);
+            }
+            catch (Exception ex)
+            {
+                Graphics.Log.LogException(ex);
+                throw;
+            }
+            finally
+            {
+                _resizeState.Resized = ParentForm.WindowState == FormWindowState.Minimized;
+            }
+        }
 
         /// <summary>
         /// Function to destroy the resources for the swap chain.
@@ -621,9 +621,9 @@ namespace Gorgon.Graphics.Core
             GorgonDepthStencil2DView dsv = null;
             if (Graphics.DepthStencilView != null)
             {
-                dsv = ((_info.Width == Graphics.DepthStencilView.Width) 
-                       && (_info.Height == Graphics.DepthStencilView.Height) 
-                       && (Graphics.DepthStencilView.ArrayCount == 1) 
+                dsv = ((_info.Width == Graphics.DepthStencilView.Width)
+                       && (_info.Height == Graphics.DepthStencilView.Height)
+                       && (Graphics.DepthStencilView.ArrayCount == 1)
                        && (Graphics.DepthStencilView.ArrayIndex == 0)
                        && (Graphics.DepthStencilView.MultisampleInfo == GorgonMultisampleInfo.NoMultiSampling))
                           ? Graphics.DepthStencilView
@@ -676,7 +676,7 @@ namespace Gorgon.Graphics.Core
                 }
                 ++targetCount;
             }
-            
+
             // Unbind the render targets.
             return thisTargetIsSet ? (firstTarget == -1 ? 0 : firstTarget, targetCount) : (0, 0);
         }
@@ -732,315 +732,315 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
-			try
-			{
-			    IntPtr monitor = Win32API.MonitorFromWindow(ParentForm.Handle, MonitorFlags.MONITOR_DEFAULTTONEAREST);
-			    IGorgonVideoOutputInfo output = null;
+            try
+            {
+                IntPtr monitor = Win32API.MonitorFromWindow(ParentForm.Handle, MonitorFlags.MONITOR_DEFAULTTONEAREST);
+                IGorgonVideoOutputInfo output = null;
 
-			    if (monitor != IntPtr.Zero)
-			    {
-			        output = Graphics.VideoAdapter.Outputs.FirstOrDefault(item => item.MonitorHandle == monitor);
-			    }
+                if (monitor != IntPtr.Zero)
+                {
+                    output = Graphics.VideoAdapter.Outputs.FirstOrDefault(item => item.MonitorHandle == monitor);
+                }
 
-			    if (output == null)
-			    {
-			        monitor = Win32API.MonitorFromWindow(ParentForm.Handle, MonitorFlags.MONITOR_DEFAULTTOPRIMARY);
-			        output = Graphics.VideoAdapter.Outputs.FirstOrDefault(item => item.MonitorHandle == monitor);
+                if (output == null)
+                {
+                    monitor = Win32API.MonitorFromWindow(ParentForm.Handle, MonitorFlags.MONITOR_DEFAULTTOPRIMARY);
+                    output = Graphics.VideoAdapter.Outputs.FirstOrDefault(item => item.MonitorHandle == monitor);
 
                     Debug.Assert(output != null, "Cannot find a suitable output for full screen borderless window mode.");
-			    }
+                }
 
-			    var videoMode = new GorgonVideoMode(output.DesktopBounds.Width, output.DesktopBounds.Height, BufferFormat.R8G8B8A8_UNorm);
-			    _fullScreenBordlessState.BorderStyle = ParentForm.FormBorderStyle;
-			    _fullScreenBordlessState.FormWindowState = ParentForm.WindowState;
-			    _fullScreenBordlessState.ClientSize = ParentForm.ClientSize;
-                
-				Graphics.Log.Print($"SwapChain '{Name}': Entering full screen borderless windowed mode.  Requested mode {videoMode} on output {output.Name}.", LoggingLevel.Verbose);
+                var videoMode = new GorgonVideoMode(output.DesktopBounds.Width, output.DesktopBounds.Height, BufferFormat.R8G8B8A8_UNorm);
+                _fullScreenBordlessState.BorderStyle = ParentForm.FormBorderStyle;
+                _fullScreenBordlessState.FormWindowState = ParentForm.WindowState;
+                _fullScreenBordlessState.ClientSize = ParentForm.ClientSize;
 
-			    // Bring the control up before attempting to switch to full screen.
-			    // Otherwise things get real weird, real fast.
-			    if (!ParentForm.Visible)
-			    {
-			        ParentForm.Show();
-			    }
+                Graphics.Log.Print($"SwapChain '{Name}': Entering full screen borderless windowed mode.  Requested mode {videoMode} on output {output.Name}.", LoggingLevel.Verbose);
 
-			    // Switch to the format we want so that ResizeBackBuffers will work correctly.
-			    _info.Format = videoMode.Format;
-			    ParentForm.WindowState = FormWindowState.Normal;
-			    ParentForm.FormBorderStyle = FormBorderStyle.None;
-			    ParentForm.WindowState = FormWindowState.Maximized;
+                // Bring the control up before attempting to switch to full screen.
+                // Otherwise things get real weird, real fast.
+                if (!ParentForm.Visible)
+                {
+                    ParentForm.Show();
+                }
+
+                // Switch to the format we want so that ResizeBackBuffers will work correctly.
+                _info.Format = videoMode.Format;
+                ParentForm.WindowState = FormWindowState.Normal;
+                ParentForm.FormBorderStyle = FormBorderStyle.None;
+                ParentForm.WindowState = FormWindowState.Maximized;
                 ParentForm.Activate();
 
-				// Before every call to ResizeTarget, we must indicate that we want to handle the resize event on the control.
-				// Failure to do so will bring up warnings in the debug log output about presentation inefficiencies.
+                // Before every call to ResizeTarget, we must indicate that we want to handle the resize event on the control.
+                // Failure to do so will bring up warnings in the debug log output about presentation inefficiencies.
                 _resizeState.IsScreenStateTransition = true;
-			    ModeDescription modeDesc = videoMode.ToModeDesc();
-				DXGISwapChain.ResizeTarget(ref modeDesc);
+                ModeDescription modeDesc = videoMode.ToModeDesc();
+                DXGISwapChain.ResizeTarget(ref modeDesc);
 
-				modeDesc = new ModeDescription(modeDesc.Width, modeDesc.Height, new Rational(0, 0), modeDesc.Format);
-				DXGISwapChain.ResizeTarget(ref modeDesc);
+                modeDesc = new ModeDescription(modeDesc.Width, modeDesc.Height, new Rational(0, 0), modeDesc.Format);
+                DXGISwapChain.ResizeTarget(ref modeDesc);
 
-				// Ensure that we have an up-to-date copy of the video mode information.
-				_fullScreenVideoMode = modeDesc.ToGorgonVideoMode();
-				FullscreenOutput = output;
-				_info.Width = _fullScreenVideoMode.Value.Width;
-				_info.Height = _fullScreenVideoMode.Value.Height;
-				_info.Format = _fullScreenVideoMode.Value.Format;
-			    _isFullScreenBorderless = true;
+                // Ensure that we have an up-to-date copy of the video mode information.
+                _fullScreenVideoMode = modeDesc.ToGorgonVideoMode();
+                FullscreenOutput = output;
+                _info.Width = _fullScreenVideoMode.Value.Width;
+                _info.Height = _fullScreenVideoMode.Value.Height;
+                _info.Format = _fullScreenVideoMode.Value.Format;
+                _isFullScreenBorderless = true;
 
-				Graphics.Log.Print($"SwapChain '{Name}': Full screen borderless windowed mode was set.  Final mode: {FullScreenVideoMode}.  Swap chain back buffer size: {_info.Width}x{_info.Height}, Format: {_info.Format}",
-				           LoggingLevel.Verbose);
-			}
-			catch (DX.SharpDXException sdEx)
-			{
-				switch (sdEx.ResultCode.Code)
-				{
-					case (int)DXGIStatus.ModeChangeInProgress:
-						Graphics.Log.Print($"SwapChain '{Name}': Could not switch to full screen borderless windowed mode because the device was busy switching to full screen on another output.",
-								   LoggingLevel.All);
-						break;
-					default:
-						if (sdEx.ResultCode != ResultCode.NotCurrentlyAvailable)
-						{
-							throw;
-						}
+                Graphics.Log.Print($"SwapChain '{Name}': Full screen borderless windowed mode was set.  Final mode: {FullScreenVideoMode}.  Swap chain back buffer size: {_info.Width}x{_info.Height}, Format: {_info.Format}",
+                           LoggingLevel.Verbose);
+            }
+            catch (DX.SharpDXException sdEx)
+            {
+                switch (sdEx.ResultCode.Code)
+                {
+                    case (int)DXGIStatus.ModeChangeInProgress:
+                        Graphics.Log.Print($"SwapChain '{Name}': Could not switch to full screen borderless windowed mode because the device was busy switching to full screen on another output.",
+                                   LoggingLevel.All);
+                        break;
+                    default:
+                        if (sdEx.ResultCode != ResultCode.NotCurrentlyAvailable)
+                        {
+                            throw;
+                        }
 
-					    Graphics.Log.Print($"SwapChain '{Name}': Could not switch to full screen boderless windowed rmode because the device is not currently available.",
-					               LoggingLevel.All);
-						break;
-				}
-			}
-			finally
-			{
+                        Graphics.Log.Print($"SwapChain '{Name}': Could not switch to full screen boderless windowed rmode because the device is not currently available.",
+                                   LoggingLevel.All);
+                        break;
+                }
+            }
+            finally
+            {
                 _resizeState.IsScreenStateTransition = false;
-			}
+            }
         }
 
-		/// <summary>
-		/// Function to put the swap chain in full screen mode.
-		/// </summary>
-		/// <param name="desiredMode">The video mode to use when entering full screen.</param>
-		/// <param name="output">The output that will be used for full screen mode.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="output"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown if the <paramref name="output"/> is from a different video adapter than the one specified by <see cref="GorgonGraphics.VideoAdapter"/> on the <see cref="GorgonGraphics"/> interface.</exception>
-		/// <exception cref="GorgonException">Thrown when the <see cref="Window"/> bound to this swap chain is not the <see cref="ParentForm"/>.</exception>
-		/// <remarks>
-		/// <para>
-		/// This will transition the swap chain to full screen mode from windowed mode. If a render target view for this swap chain is bound to the pipeline, then it will be unbound before resetting its state.
-		/// </para>
-		/// <para>
-		/// If the <paramref name="desiredMode"/> parameter does not match a supported video mode for the <paramref name="output"/>, then the closest available video mode will be used and the <paramref name="desiredMode"/> 
-		/// parameter will be updated to reflect the video mode that was chosen.
-		/// </para>
-		/// <para>
-		/// If the <paramref name="desiredMode"/> parameter is the same as the <see cref="FullScreenVideoMode"/> property and the <paramref name="output"/> parameter is the same as the 
-		/// <see cref="FullscreenOutput"/> property, then this method will do nothing.
-		/// </para>
-		/// <para>
-		/// When the swap chain is bound to a child control (e.g. a panel), then this method will throw an exception if called. Entering full screen is only supported on swap chains bound to a Windows 
-		/// <see cref="Form"/>.
-		/// </para>
-		/// </remarks>
-		/// <seealso cref="ExitFullScreen"/>
-		public void EnterFullScreen(in GorgonVideoMode desiredMode, IGorgonVideoOutputInfo output)
-		{
-			if (output == null)
-			{
-				throw new ArgumentNullException(nameof(output));
-			}
+        /// <summary>
+        /// Function to put the swap chain in full screen mode.
+        /// </summary>
+        /// <param name="desiredMode">The video mode to use when entering full screen.</param>
+        /// <param name="output">The output that will be used for full screen mode.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="output"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentException">Thrown if the <paramref name="output"/> is from a different video adapter than the one specified by <see cref="GorgonGraphics.VideoAdapter"/> on the <see cref="GorgonGraphics"/> interface.</exception>
+        /// <exception cref="GorgonException">Thrown when the <see cref="Window"/> bound to this swap chain is not the <see cref="ParentForm"/>.</exception>
+        /// <remarks>
+        /// <para>
+        /// This will transition the swap chain to full screen mode from windowed mode. If a render target view for this swap chain is bound to the pipeline, then it will be unbound before resetting its state.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="desiredMode"/> parameter does not match a supported video mode for the <paramref name="output"/>, then the closest available video mode will be used and the <paramref name="desiredMode"/> 
+        /// parameter will be updated to reflect the video mode that was chosen.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="desiredMode"/> parameter is the same as the <see cref="FullScreenVideoMode"/> property and the <paramref name="output"/> parameter is the same as the 
+        /// <see cref="FullscreenOutput"/> property, then this method will do nothing.
+        /// </para>
+        /// <para>
+        /// When the swap chain is bound to a child control (e.g. a panel), then this method will throw an exception if called. Entering full screen is only supported on swap chains bound to a Windows 
+        /// <see cref="Form"/>.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="ExitFullScreen"/>
+        public void EnterFullScreen(in GorgonVideoMode desiredMode, IGorgonVideoOutputInfo output)
+        {
+            if (output == null)
+            {
+                throw new ArgumentNullException(nameof(output));
+            }
 
-		    if (output.Adapter != Graphics.VideoAdapter)
-		    {
+            if (output.Adapter != Graphics.VideoAdapter)
+            {
                 throw new ArgumentException(string.Format(Resources.GORGFX_ERR_OUTPUT_ADAPTER_MISMATCH, output.Adapter.Name, Graphics.VideoAdapter.Name), nameof(output));
-		    }
+            }
 
-			if (ParentForm != Window)
-			{
-				throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_ERR_NEED_FORM_FOR_FULLSCREEN, Name));
-			}
+            if (ParentForm != Window)
+            {
+                throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_ERR_NEED_FORM_FOR_FULLSCREEN, Name));
+            }
 
-			if (((_fullScreenVideoMode != null) && (_fullScreenVideoMode.Value.Equals(in desiredMode)) && (output == FullscreenOutput))
+            if (((_fullScreenVideoMode != null) && (_fullScreenVideoMode.Value.Equals(in desiredMode)) && (output == FullscreenOutput))
                 || (_isFullScreenBorderless))
-			{
-				return;
-			}
+            {
+                return;
+            }
 
-			Output dxgiOutput = null;
-			Output1 dxgiOutput6 = null;
+            Output dxgiOutput = null;
+            Output1 dxgiOutput6 = null;
 
-			try
-			{
-				Graphics.Log.Print($"SwapChain '{Name}': Entering full screen mode.  Requested mode {desiredMode} on output {output.Name}.", LoggingLevel.Verbose);
+            try
+            {
+                Graphics.Log.Print($"SwapChain '{Name}': Entering full screen mode.  Requested mode {desiredMode} on output {output.Name}.", LoggingLevel.Verbose);
 
-				dxgiOutput = Graphics.DXGIAdapter.GetOutput(output.Index);
-				dxgiOutput6 = dxgiOutput.QueryInterface<Output6>();
+                dxgiOutput = Graphics.DXGIAdapter.GetOutput(output.Index);
+                dxgiOutput6 = dxgiOutput.QueryInterface<Output6>();
 
-				// Try to find something resembling the video mode we asked for.
-			    ModeDescription1 desiredDxGiMode = desiredMode.ToModeDesc1();
-				dxgiOutput6.FindClosestMatchingMode1(ref desiredDxGiMode, out ModeDescription1 actualMode, Graphics.D3DDevice);
+                // Try to find something resembling the video mode we asked for.
+                ModeDescription1 desiredDxGiMode = desiredMode.ToModeDesc1();
+                dxgiOutput6.FindClosestMatchingMode1(ref desiredDxGiMode, out ModeDescription1 actualMode, Graphics.D3DDevice);
 
-				ModeDescription resizeMode = actualMode.ToModeDesc();
+                ModeDescription resizeMode = actualMode.ToModeDesc();
 
-				// Switch to the format we want so that ResizeBackBuffers will work correctly.
-				_info.Format = desiredMode.Format;
+                // Switch to the format we want so that ResizeBackBuffers will work correctly.
+                _info.Format = desiredMode.Format;
 
-				// Bring the control up before attempting to switch to full screen.
-				// Otherwise things get real weird, real fast.
-				if (!Window.Visible)
-				{
-					Window.Show();
-				}
+                // Bring the control up before attempting to switch to full screen.
+                // Otherwise things get real weird, real fast.
+                if (!Window.Visible)
+                {
+                    Window.Show();
+                }
 
-				// Before every call to ResizeTarget, we must indicate that we want to handle the resize event on the control.
-				// Failure to do so will bring up warnings in the debug log output about presentation inefficiencies.
+                // Before every call to ResizeTarget, we must indicate that we want to handle the resize event on the control.
+                // Failure to do so will bring up warnings in the debug log output about presentation inefficiencies.
                 _resizeState.IsScreenStateTransition = true;
-				DXGISwapChain.ResizeTarget(ref resizeMode);
+                DXGISwapChain.ResizeTarget(ref resizeMode);
 
-				Rational refreshRate = resizeMode.RefreshRate;
-				DXGISwapChain.SetFullscreenState(true, dxgiOutput6);
+                Rational refreshRate = resizeMode.RefreshRate;
+                DXGISwapChain.SetFullscreenState(true, dxgiOutput6);
 
-				// The MSDN documentation says to call resize targets again with a zeroed refresh rate after setting the mode: 
-				// https://msdn.microsoft.com/en-us/library/windows/desktop/ee417025(v=vs.85).aspx.
-				resizeMode = new ModeDescription(resizeMode.Width, resizeMode.Height, new Rational(0, 0), resizeMode.Format);
-				DXGISwapChain.ResizeTarget(ref resizeMode);
+                // The MSDN documentation says to call resize targets again with a zeroed refresh rate after setting the mode: 
+                // https://msdn.microsoft.com/en-us/library/windows/desktop/ee417025(v=vs.85).aspx.
+                resizeMode = new ModeDescription(resizeMode.Width, resizeMode.Height, new Rational(0, 0), resizeMode.Format);
+                DXGISwapChain.ResizeTarget(ref resizeMode);
 
-				// Ensure that we have an up-to-date copy of the video mode information.
-				resizeMode.RefreshRate = refreshRate;
-				_fullScreenVideoMode = resizeMode.ToGorgonVideoMode();
-				FullscreenOutput = output;
-				_info.Width = _fullScreenVideoMode.Value.Width;
-				_info.Height = _fullScreenVideoMode.Value.Height;
-				_info.Format = _fullScreenVideoMode.Value.Format;
+                // Ensure that we have an up-to-date copy of the video mode information.
+                resizeMode.RefreshRate = refreshRate;
+                _fullScreenVideoMode = resizeMode.ToGorgonVideoMode();
+                FullscreenOutput = output;
+                _info.Width = _fullScreenVideoMode.Value.Width;
+                _info.Height = _fullScreenVideoMode.Value.Height;
+                _info.Format = _fullScreenVideoMode.Value.Format;
 
-				Graphics.Log.Print($"SwapChain '{Name}': Full screen mode was set.  Final mode: {FullScreenVideoMode}.  Swap chain back buffer size: {_info.Width}x{_info.Height}, Format: {_info.Format}",
-				           LoggingLevel.Verbose);
-			}
-			catch (DX.SharpDXException sdEx)
-			{
-				switch (sdEx.ResultCode.Code)
-				{
-					case (int)DXGIStatus.ModeChangeInProgress:
-						Graphics.Log.Print($"SwapChain '{Name}': Could not switch to full screen mode because the device was busy switching to full screen on another output.",
-								   LoggingLevel.All);
-						break;
-					default:
-						if (sdEx.ResultCode != ResultCode.NotCurrentlyAvailable)
-						{
-							throw;
-						}
+                Graphics.Log.Print($"SwapChain '{Name}': Full screen mode was set.  Final mode: {FullScreenVideoMode}.  Swap chain back buffer size: {_info.Width}x{_info.Height}, Format: {_info.Format}",
+                           LoggingLevel.Verbose);
+            }
+            catch (DX.SharpDXException sdEx)
+            {
+                switch (sdEx.ResultCode.Code)
+                {
+                    case (int)DXGIStatus.ModeChangeInProgress:
+                        Graphics.Log.Print($"SwapChain '{Name}': Could not switch to full screen mode because the device was busy switching to full screen on another output.",
+                                   LoggingLevel.All);
+                        break;
+                    default:
+                        if (sdEx.ResultCode != ResultCode.NotCurrentlyAvailable)
+                        {
+                            throw;
+                        }
 
-					    Graphics.Log.Print($"SwapChain '{Name}': Could not switch to full screen mode because the device is not currently available.",
-					               LoggingLevel.All);
-						break;
-				}
-			}
-			finally
-			{
+                        Graphics.Log.Print($"SwapChain '{Name}': Could not switch to full screen mode because the device is not currently available.",
+                                   LoggingLevel.All);
+                        break;
+                }
+            }
+            finally
+            {
                 dxgiOutput6?.Dispose();
-				dxgiOutput?.Dispose();
+                dxgiOutput?.Dispose();
                 _resizeState.IsScreenStateTransition = false;
-			}
-		}
+            }
+        }
 
-		/// <summary>
-		/// Function to put the swap chain into windowed mode.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This will restore the swap chain to windowed mode from full screen mode. If a render target view for this swap chain is bound to the pipeline, then it will be unbound before resetting its state.
-		/// </para>
-		/// <para>
-		/// When the swap chain is already in windowed mode, then this method will do nothing.
-		/// </para>
-		/// </remarks>
-		/// <seealso cref="O:Gorgon.Graphics.Core.GorgonSwapChain.EnterFullScreen"/>
-		public void ExitFullScreen()
-		{
-			if ((IsWindowed)
-				|| (FullScreenVideoMode == null)
-				|| (FullscreenOutput == null))
-			{
-				return;
-			}
+        /// <summary>
+        /// Function to put the swap chain into windowed mode.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This will restore the swap chain to windowed mode from full screen mode. If a render target view for this swap chain is bound to the pipeline, then it will be unbound before resetting its state.
+        /// </para>
+        /// <para>
+        /// When the swap chain is already in windowed mode, then this method will do nothing.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="O:Gorgon.Graphics.Core.GorgonSwapChain.EnterFullScreen"/>
+        public void ExitFullScreen()
+        {
+            if ((IsWindowed)
+                || (FullScreenVideoMode == null)
+                || (FullscreenOutput == null))
+            {
+                return;
+            }
 
-			try
-			{
+            try
+            {
                 Graphics.Log.Print($"SwapChain '{Name}': Restoring windowed mode.", LoggingLevel.Verbose);
-                
+
                 _resizeState.IsScreenStateTransition = true;
 
                 ModeDescription desc = FullScreenVideoMode.Value.ToModeDesc();
 
-				if (_isFullScreenBorderless)
-			    {
-			        desc.Width = _fullScreenBordlessState.ClientSize.Width;
-			        desc.Height = _fullScreenBordlessState.ClientSize.Height;
+                if (_isFullScreenBorderless)
+                {
+                    desc.Width = _fullScreenBordlessState.ClientSize.Width;
+                    desc.Height = _fullScreenBordlessState.ClientSize.Height;
 
-			        ParentForm.WindowState = _fullScreenBordlessState.FormWindowState;
-			        ParentForm.ClientSize = _fullScreenBordlessState.ClientSize;
-			        ParentForm.FormBorderStyle = _fullScreenBordlessState.BorderStyle;
-			        _isFullScreenBorderless = false;
-			    }
-				else
-				{
-				    DXGISwapChain.SetFullscreenState(false, null);
-				}
+                    ParentForm.WindowState = _fullScreenBordlessState.FormWindowState;
+                    ParentForm.ClientSize = _fullScreenBordlessState.ClientSize;
+                    ParentForm.FormBorderStyle = _fullScreenBordlessState.BorderStyle;
+                    _isFullScreenBorderless = false;
+                }
+                else
+                {
+                    DXGISwapChain.SetFullscreenState(false, null);
+                }
 
-				// Resize to match the video mode.
-				DXGISwapChain.ResizeTarget(ref desc);
+                // Resize to match the video mode.
+                DXGISwapChain.ResizeTarget(ref desc);
 
-				_info.Width = desc.Width;
-				_info.Height = desc.Height;
-				_info.Format = (BufferFormat)desc.Format;
+                _info.Width = desc.Width;
+                _info.Height = desc.Height;
+                _info.Format = (BufferFormat)desc.Format;
 
-				Graphics.Log.Print($"SwapChain '{Name}': Windowed mode restored. Back buffer size: {_info.Width}x{_info.Height}, Format: {_info.Format}.", LoggingLevel.Verbose);
-			}
-			catch (Exception ex)
-			{
-				Graphics.Log.LogException(ex);
-				throw;
-			}
-			finally
-			{
-				_fullScreenVideoMode = null;
-				FullscreenOutput = null;
+                Graphics.Log.Print($"SwapChain '{Name}': Windowed mode restored. Back buffer size: {_info.Width}x{_info.Height}, Format: {_info.Format}.", LoggingLevel.Verbose);
+            }
+            catch (Exception ex)
+            {
+                Graphics.Log.LogException(ex);
+                throw;
+            }
+            finally
+            {
+                _fullScreenVideoMode = null;
+                FullscreenOutput = null;
                 _resizeState.IsScreenStateTransition = false;
-			}
-		}
+            }
+        }
 
-		/// <summary>
-		/// Function to resize the back buffers for the swap chain.
-		/// </summary>
-		/// <param name="newWidth">The new width of the swap chain back buffers.</param>
-		/// <param name="newHeight">The new height of the swap chain back buffers.</param>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="newWidth"/>, or the <paramref name="newHeight"/> parameter is less than 1.</exception>
-		/// <remarks>
-		/// <para>
-		/// This method will only resize the back buffers associated with the swap chain, and not the swap chain <see cref="Window"/> that it is bound with. 
-		/// </para>
-		/// <para>
-		/// Developers who set the <see cref="DoNotAutoResizeBackBuffer"/> to <b>true</b> should use this method to resize the back buffers manually when a <see cref="Window"/> is resized. Otherwise, developers 
-		/// should rarely, if ever, have to call this method.
-		/// </para>
-		/// </remarks>
-		public void ResizeBackBuffers(int newWidth, int newHeight)
-		{
-			if (newWidth < 1)
-			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_SWAP_BACKBUFFER_TOO_SMALL, newWidth, newHeight), nameof(newWidth));
-			}
+        /// <summary>
+        /// Function to resize the back buffers for the swap chain.
+        /// </summary>
+        /// <param name="newWidth">The new width of the swap chain back buffers.</param>
+        /// <param name="newHeight">The new height of the swap chain back buffers.</param>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="newWidth"/>, or the <paramref name="newHeight"/> parameter is less than 1.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method will only resize the back buffers associated with the swap chain, and not the swap chain <see cref="Window"/> that it is bound with. 
+        /// </para>
+        /// <para>
+        /// Developers who set the <see cref="DoNotAutoResizeBackBuffer"/> to <b>true</b> should use this method to resize the back buffers manually when a <see cref="Window"/> is resized. Otherwise, developers 
+        /// should rarely, if ever, have to call this method.
+        /// </para>
+        /// </remarks>
+        public void ResizeBackBuffers(int newWidth, int newHeight)
+        {
+            if (newWidth < 1)
+            {
+                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_SWAP_BACKBUFFER_TOO_SMALL, newWidth, newHeight), nameof(newWidth));
+            }
 
-			if (newHeight < 1)
-			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_SWAP_BACKBUFFER_TOO_SMALL, newWidth, newHeight), nameof(newHeight));
-			}
+            if (newHeight < 1)
+            {
+                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_SWAP_BACKBUFFER_TOO_SMALL, newWidth, newHeight), nameof(newHeight));
+            }
 
-			Graphics.Log.Print($"SwapChain '{Name}': Resizing back buffers.", LoggingLevel.Verbose);
+            Graphics.Log.Print($"SwapChain '{Name}': Resizing back buffers.", LoggingLevel.Verbose);
 
-			// Tell the application that this swap chain is going to be resized.
-			BeforeSwapChainResized?.Invoke(this, new BeforeSwapChainResizedEventArgs(new DX.Size2(_info.Width, _info.Height), new DX.Size2(newWidth, newHeight)));
+            // Tell the application that this swap chain is going to be resized.
+            BeforeSwapChainResized?.Invoke(this, new BeforeSwapChainResizedEventArgs(new DX.Size2(_info.Width, _info.Height), new DX.Size2(newWidth, newHeight)));
 
-			int rtvIndex = DestroyResources(false);
+            int rtvIndex = DestroyResources(false);
 
             SwapChainFlags flags = SwapChainFlags.AllowModeSwitch;
 
@@ -1049,18 +1049,18 @@ namespace Gorgon.Graphics.Core
                 flags |= SwapChainFlags.AllowTearing;
             }
 
-			DXGISwapChain.ResizeBuffers(IsWindowed ? 2 : 3, newWidth, newHeight, (Format)Format, flags);
+            DXGISwapChain.ResizeBuffers(IsWindowed ? 2 : 3, newWidth, newHeight, (Format)Format, flags);
 
             var oldSize = new DX.Size2(_info.Width, _info.Height);
-			_info.Width = newWidth;
-			_info.Height = newHeight;
+            _info.Width = newWidth;
+            _info.Height = newHeight;
 
             CreateResources(rtvIndex);
 
-			AfterSwapChainResized?.Invoke(this, new AfterSwapChainResizedEventArgs(new DX.Size2(newWidth, newHeight), oldSize));
+            AfterSwapChainResized?.Invoke(this, new AfterSwapChainResizedEventArgs(new DX.Size2(newWidth, newHeight), oldSize));
 
-			Graphics.Log.Print($"SwapChain '{Name}': Back buffers resized.", LoggingLevel.Verbose);
-		}
+            Graphics.Log.Print($"SwapChain '{Name}': Back buffers resized.", LoggingLevel.Verbose);
+        }
 
         /// <summary>
         /// Function to capture the back buffer data and place it into a new texture.
@@ -1132,50 +1132,50 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the interval parameter is less than 0 or greater than 4. This is only thrown when Gorgon is compiled in <b>DEBUG</b> mode.</exception>
         /// <exception cref="GorgonException">Thrown when the method encounters an unrecoverable error.</exception>
         public void Present(int interval = 0)
-		{
-			PresentFlags flags = !IsInStandBy ? PresentFlags.None : PresentFlags.Test;
+        {
+            PresentFlags flags = !IsInStandBy ? PresentFlags.None : PresentFlags.Test;
 
-			interval.ValidateRange(nameof(interval), 0, 4, true, true);
+            interval.ValidateRange(nameof(interval), 0, 4, true, true);
 
             if ((_supportsTearing != 0) && (interval == 0) && (!IsInStandBy))
             {
                 flags |= PresentFlags.AllowTearing;
             }
 
-			try
-			{
-				IsInStandBy = false;
-			    
-			    (int FirstIndex, int TargetCount) prevTargetRange = (0, 0);
-			    GorgonDepthStencil2DView prevDepthStencil = null;
+            try
+            {
+                IsInStandBy = false;
+
+                (int FirstIndex, int TargetCount) prevTargetRange = (0, 0);
+                GorgonDepthStencil2DView prevDepthStencil = null;
 
                 // In flip modes, we have to unbind the render targets before presenting.
-			    if (_info.UseFlipMode)
-			    {
-			        prevDepthStencil = Graphics.DepthStencilView;
-			        prevTargetRange = GetCurrentTargets();
+                if (_info.UseFlipMode)
+                {
+                    prevDepthStencil = Graphics.DepthStencilView;
+                    prevTargetRange = GetCurrentTargets();
 
                     // If we had previous targets (and we are part of that list), then reset the targets before presenting (the runtime will do it for us anyway, but this will just 
                     // get rid of that annoying warning in the debug spew).
-			        if (prevTargetRange.TargetCount != 0)
-			        {
-			            Graphics.SetRenderTarget(null);
-			        }
-			    }
+                    if (prevTargetRange.TargetCount != 0)
+                    {
+                        Graphics.SetRenderTarget(null);
+                    }
+                }
 
-			    _swapChain.Present(interval, flags);
+                _swapChain.Present(interval, flags);
 
-			    if (prevTargetRange.TargetCount == 0)
-			    {
-			        return;
-			    }
+                if (prevTargetRange.TargetCount == 0)
+                {
+                    return;
+                }
 
                 // The typical use case is that we have only a single rtv set when we present.  So, rather than restoring everything
                 // we should just restore the single rtv.
-			    Graphics.SetRenderTargets(_previousViews, prevDepthStencil);
-                
+                Graphics.SetRenderTargets(_previousViews, prevDepthStencil);
+
                 // Remove all items from the list so we don't hang on to them.
-			    Array.Clear(_previousViews, prevTargetRange.FirstIndex, prevTargetRange.TargetCount);
+                Array.Clear(_previousViews, prevTargetRange.FirstIndex, prevTargetRange.TargetCount);
 
                 if (!GorgonGraphics.IsDebugEnabled)
                 {
@@ -1195,28 +1195,28 @@ namespace Gorgon.Graphics.Core
                 }
             }
             catch (DX.SharpDXException sdex)
-			{
-				if ((sdex.ResultCode == ResultCode.DeviceReset)
-					|| (sdex.ResultCode == ResultCode.DeviceRemoved)
-					|| (sdex.ResultCode == ResultCode.ModeChangeInProgress)
-					|| (sdex.ResultCode.Code == (int)DXGIStatus.ModeChangeInProgress)
-					|| (sdex.ResultCode.Code == (int)DXGIStatus.Occluded))
-				{
-					IsInStandBy = true;
-					return;
-				}
+            {
+                if ((sdex.ResultCode == ResultCode.DeviceReset)
+                    || (sdex.ResultCode == ResultCode.DeviceRemoved)
+                    || (sdex.ResultCode == ResultCode.ModeChangeInProgress)
+                    || (sdex.ResultCode.Code == (int)DXGIStatus.ModeChangeInProgress)
+                    || (sdex.ResultCode.Code == (int)DXGIStatus.Occluded))
+                {
+                    IsInStandBy = true;
+                    return;
+                }
 
-				if (sdex.ResultCode == DX.Result.Ok)
-				{
-					return;
-				}
+                if (sdex.ResultCode == DX.Result.Ok)
+                {
+                    return;
+                }
 
-				if (!sdex.ResultCode.Success)
-				{
-					throw new GorgonException(GorgonResult.DriverError, Resources.GORGFX_ERR_CATASTROPHIC);
-				}
-			}
-		}
+                if (!sdex.ResultCode.Success)
+                {
+                    throw new GorgonException(GorgonResult.DriverError, Resources.GORGFX_ERR_CATASTROPHIC);
+                }
+            }
+        }
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -1299,7 +1299,7 @@ namespace Gorgon.Graphics.Core
                         Graphics.DXGIFactory.CheckFeatureSupport(Feature.PresentAllowTearing, new IntPtr(&supportsTearing), sizeof(int));
                     }
                 }
-                
+
                 if (_supportsTearing != 0)
                 {
                     desc.Flags |= SwapChainFlags.AllowTearing;
@@ -1307,9 +1307,9 @@ namespace Gorgon.Graphics.Core
             }
 
             using (var dxgiSwapChain = new SwapChain1(Graphics.DXGIFactory, Graphics.D3DDevice, control.Handle, ref desc)
-                                                   {
-                                                       DebugName = $"{info.Name}_DXGISwapChain4"
-                                                   })
+            {
+                DebugName = $"{info.Name}_DXGISwapChain4"
+            })
             {
                 _swapChain = dxgiSwapChain.QueryInterface<SwapChain4>();
             }
@@ -1318,7 +1318,7 @@ namespace Gorgon.Graphics.Core
             _backBufferTextures = new GorgonTexture2D[_info.UseFlipMode ? 2 : 1];
 
             Graphics.DXGIFactory.MakeWindowAssociation(control.Handle, WindowAssociationFlags.IgnoreAll);
-            
+
             CreateResources(-1);
 
             Window.Resize += Window_Resize;
@@ -1331,7 +1331,7 @@ namespace Gorgon.Graphics.Core
             // Use these events to restore full screen or windowed state when the application regains or loses focus.
             ParentForm.Activated += ParentForm_Activated;
             ParentForm.Deactivate += ParentForm_Deactivated;
-            
+
         }
         #endregion
     }

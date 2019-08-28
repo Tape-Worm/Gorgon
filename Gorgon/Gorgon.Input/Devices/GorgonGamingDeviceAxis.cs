@@ -28,79 +28,79 @@ using Gorgon.Core;
 
 namespace Gorgon.Input
 {
-	/// <summary>
-	/// A representation of a gaming device axis.
-	/// </summary>
-	/// <remarks>
-	/// This will provide the current value for the axis that it represents, as well as its dead zone range. Users may set either of these values as required.
-	/// </remarks>
-	public class GorgonGamingDeviceAxis
-		: IGorgonGamingDeviceAxis
-	{
-		#region Variables.
-		// The value for the axis.
-		private int _value;
-		// The default value for the axis.
-		private readonly int _defaultValue;
-		#endregion
+    /// <summary>
+    /// A representation of a gaming device axis.
+    /// </summary>
+    /// <remarks>
+    /// This will provide the current value for the axis that it represents, as well as its dead zone range. Users may set either of these values as required.
+    /// </remarks>
+    public class GorgonGamingDeviceAxis
+        : IGorgonGamingDeviceAxis
+    {
+        #region Variables.
+        // The value for the axis.
+        private int _value;
+        // The default value for the axis.
+        private readonly int _defaultValue;
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to return the identifier for the axis.
-		/// </summary>
-		public GamingDeviceAxis Axis
-		{
-			get;
-		}
+        #region Properties.
+        /// <summary>
+        /// Property to return the identifier for the axis.
+        /// </summary>
+        public GamingDeviceAxis Axis
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the value representing the position of a gaming device axis.
-		/// </summary>
-		/// <remarks>
-		/// When a <see cref="DeadZone"/> is applied to the axis, the value will remain at its <see cref="GorgonGamingDeviceAxisInfo.DefaultValue"/> until it exits the dead zone range.
-		/// </remarks>
-		public int Value
-		{
-			get => DeadZone.Equals(GorgonRange.Empty) || !DeadZone.Contains(_value) ? _value : _defaultValue;
-			set => _value = value;
-		}
+        /// <summary>
+        /// Property to return the value representing the position of a gaming device axis.
+        /// </summary>
+        /// <remarks>
+        /// When a <see cref="DeadZone"/> is applied to the axis, the value will remain at its <see cref="GorgonGamingDeviceAxisInfo.DefaultValue"/> until it exits the dead zone range.
+        /// </remarks>
+        public int Value
+        {
+            get => DeadZone.Equals(GorgonRange.Empty) || !DeadZone.Contains(_value) ? _value : _defaultValue;
+            set => _value = value;
+        }
 
-		/// <summary>
-		/// Property to set or return the dead zone value for the axis.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This will apply a dead zone area for the axis. A dead zone is used to limit the sensitivity of a gaming device to ensure that the device does not register movement until a certain threshold 
-		/// is exceeded. This is necessary as a slight movement of the gaming device may cause undesired actions.
-		/// </para>
-		/// <para>
-		/// This value should be within the axis range returned by the <see cref="GorgonGamingDeviceAxisInfo.Range"/> property. If it exceeds the axis range, then no movement will be registered.
-		/// </para>
-		/// <para>
-		/// If the <see cref="Value"/> for the axis position is within this dead zone range, the <see cref="Value"/> property will return its <see cref="GorgonGamingDeviceAxisInfo.DefaultValue"/> 
-		/// until it exceeds the dead zone threshold. 
-		/// </para>
-		/// <para>
-		/// Specify <see cref="GorgonRange.Empty"/> to disable the dead zone on the axis.
-		/// </para>
-		/// </remarks>
-		public GorgonRange DeadZone
-		{
-			get;
-			set;
-		}
-		#endregion
+        /// <summary>
+        /// Property to set or return the dead zone value for the axis.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This will apply a dead zone area for the axis. A dead zone is used to limit the sensitivity of a gaming device to ensure that the device does not register movement until a certain threshold 
+        /// is exceeded. This is necessary as a slight movement of the gaming device may cause undesired actions.
+        /// </para>
+        /// <para>
+        /// This value should be within the axis range returned by the <see cref="GorgonGamingDeviceAxisInfo.Range"/> property. If it exceeds the axis range, then no movement will be registered.
+        /// </para>
+        /// <para>
+        /// If the <see cref="Value"/> for the axis position is within this dead zone range, the <see cref="Value"/> property will return its <see cref="GorgonGamingDeviceAxisInfo.DefaultValue"/> 
+        /// until it exceeds the dead zone threshold. 
+        /// </para>
+        /// <para>
+        /// Specify <see cref="GorgonRange.Empty"/> to disable the dead zone on the axis.
+        /// </para>
+        /// </remarks>
+        public GorgonRange DeadZone
+        {
+            get;
+            set;
+        }
+        #endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonGamingDeviceAxis"/> class.
-		/// </summary>
-		/// <param name="info">The information for the axis.</param>
-		internal GorgonGamingDeviceAxis(GorgonGamingDeviceAxisInfo info)
-		{
-			Axis = info.Axis;
-			_defaultValue = info.DefaultValue;
-		}
-		#endregion
-	}
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonGamingDeviceAxis"/> class.
+        /// </summary>
+        /// <param name="info">The information for the axis.</param>
+        internal GorgonGamingDeviceAxis(GorgonGamingDeviceAxisInfo info)
+        {
+            Axis = info.Axis;
+            _defaultValue = info.DefaultValue;
+        }
+        #endregion
+    }
 }

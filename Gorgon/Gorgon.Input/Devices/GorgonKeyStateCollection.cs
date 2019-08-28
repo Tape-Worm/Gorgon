@@ -31,95 +31,95 @@ using System.Windows.Forms;
 
 namespace Gorgon.Input
 {
-	/// <summary>
-	/// A list containing the current <see cref="KeyState"/> for each key in the <see cref="Keys"/> enumeration. 
-	/// </summary>
-	public class GorgonKeyStateCollection
-		: ICollection<KeyState>
-	{
-		#region Variables.
-		// Keyboard key state.
-		private readonly Dictionary<Keys, KeyState> _keys = new Dictionary<Keys, KeyState>(new GorgonKeysEqualityComparer());
-		#endregion
+    /// <summary>
+    /// A list containing the current <see cref="KeyState"/> for each key in the <see cref="Keys"/> enumeration. 
+    /// </summary>
+    public class GorgonKeyStateCollection
+        : ICollection<KeyState>
+    {
+        #region Variables.
+        // Keyboard key state.
+        private readonly Dictionary<Keys, KeyState> _keys = new Dictionary<Keys, KeyState>(new GorgonKeysEqualityComparer());
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to return the state of a given key.
-		/// </summary>
-		/// <param name="key">Key to check.</param>
-		/// <returns>The state of the key.</returns>
-		public KeyState this[Keys key]
-		{
-			get
-			{
+        #region Properties.
+        /// <summary>
+        /// Property to return the state of a given key.
+        /// </summary>
+        /// <param name="key">Key to check.</param>
+        /// <returns>The state of the key.</returns>
+        public KeyState this[Keys key]
+        {
+            get
+            {
 
-				if (!_keys.TryGetValue(key, out KeyState result))
-				{
-					_keys.Add(key, KeyState.Up);
-				}
+                if (!_keys.TryGetValue(key, out KeyState result))
+                {
+                    _keys.Add(key, KeyState.Up);
+                }
 
-				return result;
-			}
-			set => _keys[key] = value;
-		}
-		#endregion
+                return result;
+            }
+            set => _keys[key] = value;
+        }
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to reset the key states.
-		/// </summary>
-		public void Reset()
-		{
-			var keys = (Keys[])Enum.GetValues(typeof(Keys));
+        #region Methods.
+        /// <summary>
+        /// Function to reset the key states.
+        /// </summary>
+        public void Reset()
+        {
+            var keys = (Keys[])Enum.GetValues(typeof(Keys));
 
-			foreach (Keys key in keys)
-			{
-				this[key] = KeyState.Up;
-			}
-		}
+            foreach (Keys key in keys)
+            {
+                this[key] = KeyState.Up;
+            }
+        }
 
-		/// <summary>
-		/// Function to reset any modifier keys.
-		/// </summary>
-		public void ResetModifiers()
-		{
-			this[Keys.Menu] = KeyState.Up;
-			this[Keys.RMenu] = KeyState.Up;
-			this[Keys.LMenu] = KeyState.Up;
-			this[Keys.ShiftKey] = KeyState.Up;
-			this[Keys.LShiftKey] = KeyState.Up;
-			this[Keys.RShiftKey] = KeyState.Up;
-			this[Keys.ControlKey] = KeyState.Up;
-			this[Keys.RControlKey] = KeyState.Up;
-			this[Keys.LControlKey] = KeyState.Up;
-			this[Keys.Alt] = KeyState.Up;
-			this[Keys.Control] = KeyState.Up;
-			this[Keys.Shift] = KeyState.Up;
-		}
-		#endregion
+        /// <summary>
+        /// Function to reset any modifier keys.
+        /// </summary>
+        public void ResetModifiers()
+        {
+            this[Keys.Menu] = KeyState.Up;
+            this[Keys.RMenu] = KeyState.Up;
+            this[Keys.LMenu] = KeyState.Up;
+            this[Keys.ShiftKey] = KeyState.Up;
+            this[Keys.LShiftKey] = KeyState.Up;
+            this[Keys.RShiftKey] = KeyState.Up;
+            this[Keys.ControlKey] = KeyState.Up;
+            this[Keys.RControlKey] = KeyState.Up;
+            this[Keys.LControlKey] = KeyState.Up;
+            this[Keys.Alt] = KeyState.Up;
+            this[Keys.Control] = KeyState.Up;
+            this[Keys.Shift] = KeyState.Up;
+        }
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonKeyStateCollection"/> class.
-		/// </summary>
-		internal GorgonKeyStateCollection()
-		{
-		}
-		#endregion
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonKeyStateCollection"/> class.
+        /// </summary>
+        internal GorgonKeyStateCollection()
+        {
+        }
+        #endregion
 
-		#region ICollection<KeyState> Members
-		#region Properties.
-		/// <summary>
-		/// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
-		/// </summary>
-		/// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</returns>
-		public int Count => _keys.Count;
+        #region ICollection<KeyState> Members
+        #region Properties.
+        /// <summary>
+        /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+        /// </summary>
+        /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</returns>
+        public int Count => _keys.Count;
 
-		/// <summary>
-		/// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.
-		/// </summary>
-		/// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only; otherwise, false.</returns>
-		public bool IsReadOnly => true;
+        /// <summary>
+        /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.
+        /// </summary>
+        /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only; otherwise, false.</returns>
+        public bool IsReadOnly => true;
 
         #endregion
 
@@ -173,13 +173,13 @@ namespace Gorgon.Input
         /// A <see cref="T:System.Collections.Generic.IEnumerator`1"></see> that can be used to iterate through the collection.
         /// </returns>
         public IEnumerator<KeyState> GetEnumerator()
-		{
-			// ReSharper disable once LoopCanBeConvertedToQuery
-			foreach (KeyValuePair<Keys, KeyState> state in _keys)
-			{
-				yield return state.Value;
-			}
-		}
+        {
+            // ReSharper disable once LoopCanBeConvertedToQuery
+            foreach (KeyValuePair<Keys, KeyState> state in _keys)
+            {
+                yield return state.Value;
+            }
+        }
         #endregion
 
         #region IEnumerable Members

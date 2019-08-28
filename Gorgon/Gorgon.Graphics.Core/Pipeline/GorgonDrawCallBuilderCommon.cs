@@ -50,7 +50,7 @@ namespace Gorgon.Graphics.Core
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonGraphics"/>
-    public abstract class GorgonDrawCallBuilderCommon<TB, TDc> 
+    public abstract class GorgonDrawCallBuilderCommon<TB, TDc>
         : IGorgonFluentBuilderAllocator<TB, TDc, GorgonDrawCallPoolAllocator<TDc>>
         where TB : GorgonDrawCallBuilderCommon<TB, TDc>
         where TDc : GorgonDrawCallCommon
@@ -133,7 +133,7 @@ namespace Gorgon.Graphics.Core
                 default:
                     throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_SHADER_UNKNOWN_TYPE, shaderType));
             }
-            
+
             return (TB)this;
         }
 
@@ -536,7 +536,7 @@ namespace Gorgon.Graphics.Core
             {
                 return Clear();
             }
-            
+
             VertexBuffers(drawCall.InputLayout, drawCall.VertexBufferBindings);
             StreamOutBuffers(drawCall.StreamOutBufferBindings);
 
@@ -546,7 +546,7 @@ namespace Gorgon.Graphics.Core
             ConstantBuffers(ShaderType.Geometry, drawCall.D3DState.GsConstantBuffers);
             ConstantBuffers(ShaderType.Domain, drawCall.D3DState.DsConstantBuffers);
             ConstantBuffers(ShaderType.Hull, drawCall.D3DState.HsConstantBuffers);
-            
+
             SamplerStates(ShaderType.Pixel, drawCall.D3DState.PsSamplers);
             SamplerStates(ShaderType.Vertex, drawCall.D3DState.VsSamplers);
             SamplerStates(ShaderType.Geometry, drawCall.D3DState.GsSamplers);
@@ -578,7 +578,7 @@ namespace Gorgon.Graphics.Core
         {
             DrawCall.D3DState.VertexBuffers.Clear();
             DrawCall.D3DState.StreamOutBindings.Clear();
-            
+
             DrawCall.D3DState.PsConstantBuffers.Clear();
             DrawCall.D3DState.VsConstantBuffers.Clear();
             DrawCall.D3DState.GsConstantBuffers.Clear();
@@ -645,7 +645,7 @@ namespace Gorgon.Graphics.Core
             {
                 final.D3DState.StreamOutBindings = new GorgonStreamOutBindings();
             }
-            
+
             StateCopy.CopyVertexBuffers(final.D3DState.VertexBuffers, DrawCall.VertexBufferBindings, DrawCall.InputLayout);
             StateCopy.CopyStreamOutBuffers(final.D3DState.StreamOutBindings, DrawCall.StreamOutBufferBindings);
 

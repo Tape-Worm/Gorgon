@@ -44,26 +44,26 @@ namespace Gorgon.Editor.SpriteEditor
             set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return whether to use a fixed size for the rectangle, or free form.
         /// </summary>
-		bool IsFixedSize
+        bool IsFixedSize
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the width and height to use when 
         /// </summary>
-		DX.Size2F FixedSize
+        DX.Size2F FixedSize
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return the current texture array index.
         /// </summary>
-		int TextureArrayIndex
+        int TextureArrayIndex
         {
             get;
             set;
@@ -78,15 +78,15 @@ namespace Gorgon.Editor.SpriteEditor
             set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the command used to toggle the fixed size rectangle.
         /// </summary>
-		IEditorCommand<DX.Size2F> ToggleFixedSizeCommand
+        IEditorCommand<DX.Size2F> ToggleFixedSizeCommand
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the command to execute when assigning the fixed width/height.
         /// </summary>
         IEditorCommand<DX.Size2F> SetFixedWidthHeightCommand
@@ -94,10 +94,10 @@ namespace Gorgon.Editor.SpriteEditor
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return the command to set the region to the full size of the texture.
         /// </summary>
-		IEditorCommand<object> SetFullSizeCommand
+        IEditorCommand<object> SetFullSizeCommand
         {
             get;
             set;

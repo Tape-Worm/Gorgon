@@ -30,24 +30,24 @@ using System.Runtime.InteropServices;
 // ReSharper disable InconsistentNaming
 namespace Gorgon.Native
 {
-	/// <summary>
-	/// Header item structure.
-	/// </summary>
-	[StructLayout(LayoutKind.Sequential)]
-	internal struct HDITEM
-	{
-		public uint mask;
-		public int cxy;
-		[MarshalAs(UnmanagedType.LPTStr)]
-		public string pszText;
-		public IntPtr hbm;
-		public int cchTextMax;
-		public int fmt;
-		public IntPtr lParam;
-		public int iImage;
-		public int iOrder;
-		public uint type;
-		public IntPtr pvFilter;
-		public uint state;
-	}
+    /// <summary>
+    /// Header item structure.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct HDITEM
+    {
+        public uint mask;
+        public int cxy;
+        [MarshalAs(UnmanagedType.LPTStr)]
+        public string pszText;
+        public IntPtr hbm;
+        public int cchTextMax;
+        public int fmt;
+        public IntPtr lParam;
+        public int iImage;
+        public int iOrder;
+        public uint type;
+        public IntPtr pvFilter;
+        public uint state;
+    }
 }

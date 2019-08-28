@@ -150,7 +150,7 @@ namespace Gorgon.Editor.ImageEditor
 
                 if (texConvProcess == null)
                 {
-                    return null;             
+                    return null;
                 }
 
                 texConvProcess.WaitForExit();
@@ -227,7 +227,7 @@ namespace Gorgon.Editor.ImageEditor
 
                 decodedFile = _writer.FileSystem.GetFile(imageFile.Directory.FullPath + "decoded" + imageFile.Name);
                 inStream = decodedFile.OpenStream();
-                result = _codec.LoadFromStream(inStream);                
+                result = _codec.LoadFromStream(inStream);
 
                 return result;
             }

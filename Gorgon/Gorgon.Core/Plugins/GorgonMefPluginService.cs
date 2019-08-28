@@ -268,7 +268,7 @@ namespace Gorgon.PlugIns
         /// This will retrieve all the plugins from the plugin service of the type <typeparamref name="T"/>. If the <paramref name="assemblyName"/> parameter is not <b>null</b>, then, 
         /// the only the assembly with that name will be scanned for the plugin type.
         /// </remarks>
-        public IReadOnlyList<T> GetPlugIns<T>(AssemblyName assemblyName = null) 
+        public IReadOnlyList<T> GetPlugIns<T>(AssemblyName assemblyName = null)
             where T : GorgonPlugIn
         {
             if (_scanned == 0)
@@ -314,7 +314,7 @@ namespace Gorgon.PlugIns
                         wait.SpinOnce();
                         continue;
                     }
-					                    
+
                     UnloadAll();
                     _log.Print("Scanning cached assemblies for available plug ins...", LoggingLevel.Intermediate);
 
@@ -385,7 +385,7 @@ namespace Gorgon.PlugIns
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentEmptyException(nameof(name));
-            }			
+            }
 
             if (!_loadedPlugIns.TryRemove(name, out Lazy<GorgonPlugIn, IDictionary<string, object>> plugin))
             {

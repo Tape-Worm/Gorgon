@@ -37,256 +37,256 @@ using DX = SharpDX;
 
 namespace Gorgon.Graphics
 {
-	/// <summary>
-	/// An immutable 4 component (Red, Green, Blue, and Alpha) color value.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This value type represents an RGBA (Red, Green, Blue, Alpha) color using a <see cref="float"/> for each color component. 
-	/// </para>
-	/// <para>
-	/// Primarily this is used in graphical operations and can be converted to a <see cref="Color"/> value implicitly for use in <see cref="System.Drawing"/> operations.
-	/// </para>
-	/// </remarks>
-	[Serializable]
-	[StructLayout(LayoutKind.Sequential, Pack=4)]
-	public readonly struct GorgonColor
-		: IGorgonEquatableByRef<GorgonColor>, ISerializable
-	{
+    /// <summary>
+    /// An immutable 4 component (Red, Green, Blue, and Alpha) color value.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This value type represents an RGBA (Red, Green, Blue, Alpha) color using a <see cref="float"/> for each color component. 
+    /// </para>
+    /// <para>
+    /// Primarily this is used in graphical operations and can be converted to a <see cref="Color"/> value implicitly for use in <see cref="System.Drawing"/> operations.
+    /// </para>
+    /// </remarks>
+    [Serializable]
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    public readonly struct GorgonColor
+        : IGorgonEquatableByRef<GorgonColor>, ISerializable
+    {
         #region Variables.
         /// <summary>
         /// A completely transparent color.
         /// </summary>
         public static readonly GorgonColor Transparent = new GorgonColor(1, 1, 1, 0);
-	    /// <summary>
-	    /// A completely transparent color.
-	    /// </summary>
-	    public static readonly GorgonColor BlackTransparent = new GorgonColor(0, 0, 0, 0);
-		/// <summary>
+        /// <summary>
+        /// A completely transparent color.
+        /// </summary>
+        public static readonly GorgonColor BlackTransparent = new GorgonColor(0, 0, 0, 0);
+        /// <summary>
         /// The color white.
         /// </summary>
         public static readonly GorgonColor White = new GorgonColor(1, 1, 1, 1);
-		/// <summary>
-		/// The color black.
-		/// </summary>
-		public static readonly GorgonColor Black = new GorgonColor(0, 0, 0, 1);
-	    /// <summary>
-	    /// Pure red (Red = 1, Green = 0, Blue = 0).
-	    /// </summary>
-	    public static readonly GorgonColor RedPure = new GorgonColor(1, 0, 0);
-	    /// <summary>
-	    /// Pure green (Red = 0, Green = 1, Blue = 0).
-	    /// </summary>
-	    public static readonly GorgonColor GreenPure = new GorgonColor(0, 1, 0);
-	    /// <summary>
-	    /// Pure blue (Red = 0, Green = 0, Blue = 1).
-	    /// </summary>
-	    public static readonly GorgonColor BluePure = new GorgonColor(0, 0, 1);
-	    /// <summary>
-	    /// Pure purple (Red = 1, Green = 0, Blue = 1).
-	    /// </summary>
-	    public static readonly GorgonColor PurplePure = new GorgonColor(1, 0, 1);
-	    /// <summary>
-	    /// Pure yellow (Red = 1, Green = 1, Blue = 0).
-	    /// </summary>
-	    public static readonly GorgonColor YellowPure = new GorgonColor(1, 1, 0);
-	    /// <summary>
-	    /// Pure cyan (Red = 0, Green = 1, Blue = 1).
-	    /// </summary>
-	    public static readonly GorgonColor CyanPure = new GorgonColor(0, 1, 1);
-	    /// <summary>
-	    /// 90% gray.
-	    /// </summary>
-	    public static readonly GorgonColor Gray90 = new GorgonColor(0.9f, 0.9f, 0.9f);
-	    /// <summary>
-	    /// 80% gray.
-	    /// </summary>
-	    public static readonly GorgonColor Gray80 = new GorgonColor(0.8f, 0.8f, 0.8f);
-	    /// <summary>
-	    /// 75% gray.
-	    /// </summary>
-	    public static readonly GorgonColor Gray75 = new GorgonColor(0.75f, 0.75f, 0.75f);
-	    /// <summary>
-	    /// 70% gray.
-	    /// </summary>
-	    public static readonly GorgonColor Gray70 = new GorgonColor(0.7f, 0.7f, 0.7f);
-	    /// <summary>
-	    /// 60% gray.
-	    /// </summary>
-	    public static readonly GorgonColor Gray60 = new GorgonColor(0.6f, 0.6f, 0.6f);
-	    /// <summary>
-	    /// 50% gray.
-	    /// </summary>
-	    public static readonly GorgonColor Gray50 = new GorgonColor(0.5f, 0.5f, 0.5f);
-	    /// <summary>
-	    /// 40% gray.
-	    /// </summary>
-	    public static readonly GorgonColor Gray40 = new GorgonColor(0.4f, 0.4f, 0.4f);
-	    /// <summary>
-	    /// 30% gray.
-	    /// </summary>
-	    public static readonly GorgonColor Gray30 = new GorgonColor(0.3f, 0.3f, 0.3f);
-	    /// <summary>
-	    /// 25% gray.
-	    /// </summary>
-	    public static readonly GorgonColor Gray25 = new GorgonColor(0.25f, 0.25f, 0.25f);
-	    /// <summary>
-	    /// 20% gray.
-	    /// </summary>
-	    public static readonly GorgonColor Gray20 = new GorgonColor(0.2f, 0.2f, 0.2f);
-	    /// <summary>
-	    /// 10% gray.
-	    /// </summary>
-	    public static readonly GorgonColor Gray10 = new GorgonColor(0.1f, 0.1f, 0.1f);
-	    /// <summary>
-	    /// Corn flower blue.
-	    /// </summary>
-	    public static readonly GorgonColor CornFlowerBlue = Color.CornflowerBlue;
-	    /// <summary>
-	    /// Steel blue.
-	    /// </summary>
-	    public static readonly GorgonColor SteelBlue = Color.SteelBlue;
-	    /// <summary>
-	    /// Yellow green.
-	    /// </summary>
-	    public static readonly GorgonColor YellowGreen = Color.YellowGreen;
-	    /// <summary>
-	    /// Saddle brown.
-	    /// </summary>
-	    public static readonly GorgonColor SaddleBrown = Color.SaddleBrown;
-	    /// <summary>
-	    /// Orange.
-	    /// </summary>
-	    public static readonly GorgonColor Orange = Color.Orange;
-	    /// <summary>
-	    /// Aquamarine.
-	    /// </summary>
-	    public static readonly GorgonColor Aquamarine = Color.Aquamarine;
-	    /// <summary>
-	    /// Beige.
-	    /// </summary>
-	    public static readonly GorgonColor Beige = Color.Beige;
-	    /// <summary>
-	    /// BlueViolet.
-	    /// </summary>
-	    public static readonly GorgonColor BlueViolet = Color.BlueViolet;
-	    /// <summary>
-	    /// CadetBlue.
-	    /// </summary>
-	    public static readonly GorgonColor CadetBlue = Color.CadetBlue;
-	    /// <summary>
-	    /// Brown.
-	    /// </summary>
-	    public static readonly GorgonColor Brown = Color.Brown;
-	    /// <summary>
-	    /// Crimson.
-	    /// </summary>
-	    public static readonly GorgonColor Crimson = Color.Crimson;
-	    /// <summary>
-	    /// Chartreuse.
-	    /// </summary>
-	    public static readonly GorgonColor Chartreuse = Color.Chartreuse;
-	    /// <summary>
-	    /// Gold.
-	    /// </summary>
-	    public static readonly GorgonColor Gold = Color.Gold;
-	    /// <summary>
-	    /// Dark cyan.
-	    /// </summary>
-	    public static readonly GorgonColor DarkCyan = Color.DarkCyan;
-	    /// <summary>
-	    /// Dark purple.
-	    /// </summary>
-	    public static readonly GorgonColor DarkPurple = Color.DarkMagenta;
-	    /// <summary>
-	    /// Dark yellow.
-	    /// </summary>
-	    public static readonly GorgonColor DarkYellow = new GorgonColor(0.5f, 0.5f , 0); 
-	    /// <summary>
-	    /// Dark red.
-	    /// </summary>
-	    public static readonly GorgonColor DarkRed = Color.DarkRed;
-	    /// <summary>
-	    /// Dark green.
-	    /// </summary>
-	    public static readonly GorgonColor DarkGreen = Color.DarkGreen;
-	    /// <summary>
-	    /// Dark blue.
-	    /// </summary>
-	    public static readonly GorgonColor DarkBlue = Color.DarkBlue;
-	    /// <summary>
-	    /// Light cyan.
-	    /// </summary>
-	    public static readonly GorgonColor LightCyan = Color.LightCyan;
-	    /// <summary>
-	    /// Light purple.
-	    /// </summary>
-	    public static readonly GorgonColor LightPurple = new GorgonColor(1, 0.5f, 1);
-	    /// <summary>
-	    /// Light yellow.
-	    /// </summary>
-	    public static readonly GorgonColor LightYellow = new GorgonColor(1, 1, 0.5f);
-	    /// <summary>
-	    /// Light red.
-	    /// </summary>
-	    public static readonly GorgonColor LightRed = new GorgonColor(1, 0.5f, 0.5f);
-	    /// <summary>
-	    /// Light green.
-	    /// </summary>
-	    public static readonly GorgonColor LightGreen = new GorgonColor(0.5f, 1.0f, 0.5f);
-	    /// <summary>
-	    /// Light blue.
-	    /// </summary>
-	    public static readonly GorgonColor LightBlue = new GorgonColor(0.5f, 0.5f, 1.0f);
-	    /// <summary>
-	    /// DeepPink.
-	    /// </summary>
-	    public static readonly GorgonColor DeepPink = Color.DeepPink;
-	    /// <summary>
-	    /// DeepSkyBlue.
-	    /// </summary>
-	    public static readonly GorgonColor DeepSkyBlue = Color.DeepSkyBlue;
-	    /// <summary>
-	    /// Firebrick.
-	    /// </summary>
-	    public static readonly GorgonColor Firebrick = Color.Firebrick;
-	    /// <summary>
-	    /// OrangeRed.
-	    /// </summary>
-	    public static readonly GorgonColor OrangeRed = Color.OrangeRed;
-	    /// <summary>
-	    /// SeaGreen.
-	    /// </summary>
-	    public static readonly GorgonColor SeaGreen = Color.SeaGreen;
-	    /// <summary>
-	    /// WhiteSmoke.
-	    /// </summary>
-	    public static readonly GorgonColor WhiteSmoke = Color.WhiteSmoke;
-	    /// <summary>
-	    /// WhiteSmoke.
-	    /// </summary>
-	    public static readonly GorgonColor BlanchedAlmond = Color.BlanchedAlmond;
-        
-	    /// <summary>
+        /// <summary>
+        /// The color black.
+        /// </summary>
+        public static readonly GorgonColor Black = new GorgonColor(0, 0, 0, 1);
+        /// <summary>
+        /// Pure red (Red = 1, Green = 0, Blue = 0).
+        /// </summary>
+        public static readonly GorgonColor RedPure = new GorgonColor(1, 0, 0);
+        /// <summary>
+        /// Pure green (Red = 0, Green = 1, Blue = 0).
+        /// </summary>
+        public static readonly GorgonColor GreenPure = new GorgonColor(0, 1, 0);
+        /// <summary>
+        /// Pure blue (Red = 0, Green = 0, Blue = 1).
+        /// </summary>
+        public static readonly GorgonColor BluePure = new GorgonColor(0, 0, 1);
+        /// <summary>
+        /// Pure purple (Red = 1, Green = 0, Blue = 1).
+        /// </summary>
+        public static readonly GorgonColor PurplePure = new GorgonColor(1, 0, 1);
+        /// <summary>
+        /// Pure yellow (Red = 1, Green = 1, Blue = 0).
+        /// </summary>
+        public static readonly GorgonColor YellowPure = new GorgonColor(1, 1, 0);
+        /// <summary>
+        /// Pure cyan (Red = 0, Green = 1, Blue = 1).
+        /// </summary>
+        public static readonly GorgonColor CyanPure = new GorgonColor(0, 1, 1);
+        /// <summary>
+        /// 90% gray.
+        /// </summary>
+        public static readonly GorgonColor Gray90 = new GorgonColor(0.9f, 0.9f, 0.9f);
+        /// <summary>
+        /// 80% gray.
+        /// </summary>
+        public static readonly GorgonColor Gray80 = new GorgonColor(0.8f, 0.8f, 0.8f);
+        /// <summary>
+        /// 75% gray.
+        /// </summary>
+        public static readonly GorgonColor Gray75 = new GorgonColor(0.75f, 0.75f, 0.75f);
+        /// <summary>
+        /// 70% gray.
+        /// </summary>
+        public static readonly GorgonColor Gray70 = new GorgonColor(0.7f, 0.7f, 0.7f);
+        /// <summary>
+        /// 60% gray.
+        /// </summary>
+        public static readonly GorgonColor Gray60 = new GorgonColor(0.6f, 0.6f, 0.6f);
+        /// <summary>
+        /// 50% gray.
+        /// </summary>
+        public static readonly GorgonColor Gray50 = new GorgonColor(0.5f, 0.5f, 0.5f);
+        /// <summary>
+        /// 40% gray.
+        /// </summary>
+        public static readonly GorgonColor Gray40 = new GorgonColor(0.4f, 0.4f, 0.4f);
+        /// <summary>
+        /// 30% gray.
+        /// </summary>
+        public static readonly GorgonColor Gray30 = new GorgonColor(0.3f, 0.3f, 0.3f);
+        /// <summary>
+        /// 25% gray.
+        /// </summary>
+        public static readonly GorgonColor Gray25 = new GorgonColor(0.25f, 0.25f, 0.25f);
+        /// <summary>
+        /// 20% gray.
+        /// </summary>
+        public static readonly GorgonColor Gray20 = new GorgonColor(0.2f, 0.2f, 0.2f);
+        /// <summary>
+        /// 10% gray.
+        /// </summary>
+        public static readonly GorgonColor Gray10 = new GorgonColor(0.1f, 0.1f, 0.1f);
+        /// <summary>
+        /// Corn flower blue.
+        /// </summary>
+        public static readonly GorgonColor CornFlowerBlue = Color.CornflowerBlue;
+        /// <summary>
+        /// Steel blue.
+        /// </summary>
+        public static readonly GorgonColor SteelBlue = Color.SteelBlue;
+        /// <summary>
+        /// Yellow green.
+        /// </summary>
+        public static readonly GorgonColor YellowGreen = Color.YellowGreen;
+        /// <summary>
+        /// Saddle brown.
+        /// </summary>
+        public static readonly GorgonColor SaddleBrown = Color.SaddleBrown;
+        /// <summary>
+        /// Orange.
+        /// </summary>
+        public static readonly GorgonColor Orange = Color.Orange;
+        /// <summary>
+        /// Aquamarine.
+        /// </summary>
+        public static readonly GorgonColor Aquamarine = Color.Aquamarine;
+        /// <summary>
+        /// Beige.
+        /// </summary>
+        public static readonly GorgonColor Beige = Color.Beige;
+        /// <summary>
+        /// BlueViolet.
+        /// </summary>
+        public static readonly GorgonColor BlueViolet = Color.BlueViolet;
+        /// <summary>
+        /// CadetBlue.
+        /// </summary>
+        public static readonly GorgonColor CadetBlue = Color.CadetBlue;
+        /// <summary>
+        /// Brown.
+        /// </summary>
+        public static readonly GorgonColor Brown = Color.Brown;
+        /// <summary>
+        /// Crimson.
+        /// </summary>
+        public static readonly GorgonColor Crimson = Color.Crimson;
+        /// <summary>
+        /// Chartreuse.
+        /// </summary>
+        public static readonly GorgonColor Chartreuse = Color.Chartreuse;
+        /// <summary>
+        /// Gold.
+        /// </summary>
+        public static readonly GorgonColor Gold = Color.Gold;
+        /// <summary>
+        /// Dark cyan.
+        /// </summary>
+        public static readonly GorgonColor DarkCyan = Color.DarkCyan;
+        /// <summary>
+        /// Dark purple.
+        /// </summary>
+        public static readonly GorgonColor DarkPurple = Color.DarkMagenta;
+        /// <summary>
+        /// Dark yellow.
+        /// </summary>
+        public static readonly GorgonColor DarkYellow = new GorgonColor(0.5f, 0.5f, 0);
+        /// <summary>
+        /// Dark red.
+        /// </summary>
+        public static readonly GorgonColor DarkRed = Color.DarkRed;
+        /// <summary>
+        /// Dark green.
+        /// </summary>
+        public static readonly GorgonColor DarkGreen = Color.DarkGreen;
+        /// <summary>
+        /// Dark blue.
+        /// </summary>
+        public static readonly GorgonColor DarkBlue = Color.DarkBlue;
+        /// <summary>
+        /// Light cyan.
+        /// </summary>
+        public static readonly GorgonColor LightCyan = Color.LightCyan;
+        /// <summary>
+        /// Light purple.
+        /// </summary>
+        public static readonly GorgonColor LightPurple = new GorgonColor(1, 0.5f, 1);
+        /// <summary>
+        /// Light yellow.
+        /// </summary>
+        public static readonly GorgonColor LightYellow = new GorgonColor(1, 1, 0.5f);
+        /// <summary>
+        /// Light red.
+        /// </summary>
+        public static readonly GorgonColor LightRed = new GorgonColor(1, 0.5f, 0.5f);
+        /// <summary>
+        /// Light green.
+        /// </summary>
+        public static readonly GorgonColor LightGreen = new GorgonColor(0.5f, 1.0f, 0.5f);
+        /// <summary>
+        /// Light blue.
+        /// </summary>
+        public static readonly GorgonColor LightBlue = new GorgonColor(0.5f, 0.5f, 1.0f);
+        /// <summary>
+        /// DeepPink.
+        /// </summary>
+        public static readonly GorgonColor DeepPink = Color.DeepPink;
+        /// <summary>
+        /// DeepSkyBlue.
+        /// </summary>
+        public static readonly GorgonColor DeepSkyBlue = Color.DeepSkyBlue;
+        /// <summary>
+        /// Firebrick.
+        /// </summary>
+        public static readonly GorgonColor Firebrick = Color.Firebrick;
+        /// <summary>
+        /// OrangeRed.
+        /// </summary>
+        public static readonly GorgonColor OrangeRed = Color.OrangeRed;
+        /// <summary>
+        /// SeaGreen.
+        /// </summary>
+        public static readonly GorgonColor SeaGreen = Color.SeaGreen;
+        /// <summary>
+        /// WhiteSmoke.
+        /// </summary>
+        public static readonly GorgonColor WhiteSmoke = Color.WhiteSmoke;
+        /// <summary>
+        /// WhiteSmoke.
+        /// </summary>
+        public static readonly GorgonColor BlanchedAlmond = Color.BlanchedAlmond;
+
+        /// <summary>
         /// The size of the value, in bytes.
         /// </summary>
-	    public static readonly int SizeInBytes = Unsafe.SizeOf<GorgonColor>();
+        public static readonly int SizeInBytes = Unsafe.SizeOf<GorgonColor>();
 
-		/// <summary>
-		/// The Red color channel component.
-		/// </summary>
-		public readonly float Red;
-		/// <summary>
-		/// The Green color channel component.
-		/// </summary>
+        /// <summary>
+        /// The Red color channel component.
+        /// </summary>
+        public readonly float Red;
+        /// <summary>
+        /// The Green color channel component.
+        /// </summary>
         public readonly float Green;
-		/// <summary>
-		/// The Blue color channel component.
-		/// </summary>
+        /// <summary>
+        /// The Blue color channel component.
+        /// </summary>
         public readonly float Blue;
-		/// <summary>
-		/// The Alpha channel component.
-		/// </summary>
+        /// <summary>
+        /// The Alpha channel component.
+        /// </summary>
         public readonly float Alpha;
         #endregion
 
@@ -306,44 +306,44 @@ namespace Gorgon.Graphics
         /// <param name="abgrColor">An <see cref="int"/> representing the color in ABGR format.</param>
         /// <returns>The <see cref="GorgonColor"/> representation.</returns>
         public static GorgonColor FromABGR(int abgrColor)
-		{
-			byte a = (byte)((abgrColor >> 24) & 0xff);
-			byte b = (byte)((abgrColor >> 16) & 0xff);
-			byte g = (byte)((abgrColor >> 8) & 0xff);
-			byte r = (byte)(abgrColor & 0xff);
+        {
+            byte a = (byte)((abgrColor >> 24) & 0xff);
+            byte b = (byte)((abgrColor >> 16) & 0xff);
+            byte g = (byte)((abgrColor >> 8) & 0xff);
+            byte r = (byte)(abgrColor & 0xff);
 
-			return new GorgonColor(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
-		}
+            return new GorgonColor(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
+        }
 
-		/// <summary>
-		/// Function to convert a BGRA color into a <see cref="GorgonColor"/>.
-		/// </summary>
-		/// <param name="bgraColor">An <see cref="int"/> representing the color in BGRA format.</param>
-		/// <returns>The GorgonColor representation.</returns>
-		public static GorgonColor FromBGRA(int bgraColor)
-		{
-			byte b = (byte)((bgraColor >> 24) & 0xff);
-			byte g = (byte)((bgraColor >> 16) & 0xff);
-			byte r = (byte)((bgraColor >> 8) & 0xff);
-			byte a = (byte)(bgraColor & 0xff);
+        /// <summary>
+        /// Function to convert a BGRA color into a <see cref="GorgonColor"/>.
+        /// </summary>
+        /// <param name="bgraColor">An <see cref="int"/> representing the color in BGRA format.</param>
+        /// <returns>The GorgonColor representation.</returns>
+        public static GorgonColor FromBGRA(int bgraColor)
+        {
+            byte b = (byte)((bgraColor >> 24) & 0xff);
+            byte g = (byte)((bgraColor >> 16) & 0xff);
+            byte r = (byte)((bgraColor >> 8) & 0xff);
+            byte a = (byte)(bgraColor & 0xff);
 
-			return new GorgonColor(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
-		}
+            return new GorgonColor(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
+        }
 
-		/// <summary>
-		/// Function to convert a RGBA color into a <see cref="GorgonColor"/>.
-		/// </summary>
-		/// <param name="rgbaColor">An <see cref="int"/> representing the color in RGBA format.</param>
-		/// <returns>The <see cref="GorgonColor"/> representation.</returns>
-		public static GorgonColor FromRGBA(int rgbaColor)
-		{
-			byte r = (byte)((rgbaColor >> 24) & 0xff);
-			byte g = (byte)((rgbaColor >> 16) & 0xff);
-			byte b = (byte)((rgbaColor >> 8) & 0xff);
-			byte a = (byte)(rgbaColor & 0xff);
+        /// <summary>
+        /// Function to convert a RGBA color into a <see cref="GorgonColor"/>.
+        /// </summary>
+        /// <param name="rgbaColor">An <see cref="int"/> representing the color in RGBA format.</param>
+        /// <returns>The <see cref="GorgonColor"/> representation.</returns>
+        public static GorgonColor FromRGBA(int rgbaColor)
+        {
+            byte r = (byte)((rgbaColor >> 24) & 0xff);
+            byte g = (byte)((rgbaColor >> 16) & 0xff);
+            byte b = (byte)((rgbaColor >> 8) & 0xff);
+            byte a = (byte)(rgbaColor & 0xff);
 
-			return new GorgonColor(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
-		}
+            return new GorgonColor(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
+        }
 
         /// <summary>
         /// Function to compare two colors for equality.
@@ -422,15 +422,15 @@ namespace Gorgon.Graphics
         /// 0.5f, the result will be Red = 0.5f, Green = 0, Blue = 0.5f, and an Alpha = 0.25f.
         /// </remarks>
         public static GorgonColor Lerp(GorgonColor start, GorgonColor end, float weight)
-		{
-		    var outColor = new GorgonColor(
-		        start.Red + ((end.Red - start.Red) * weight),
-		        start.Green + ((end.Green - start.Green) * weight),
-		        start.Blue + ((end.Blue - start.Blue) * weight),
-		        start.Alpha + ((end.Alpha - start.Alpha) * weight));
+        {
+            var outColor = new GorgonColor(
+                start.Red + ((end.Red - start.Red) * weight),
+                start.Green + ((end.Green - start.Green) * weight),
+                start.Blue + ((end.Blue - start.Blue) * weight),
+                start.Alpha + ((end.Alpha - start.Alpha) * weight));
 
-			return outColor;
-		}
+            return outColor;
+        }
 
         /// <summary>
         /// Function to perform linear interpolation between two <see cref="GorgonColor"/> values.
@@ -569,57 +569,57 @@ namespace Gorgon.Graphics
         /// The format indicates the byte position of each color component in the <see cref="int"/> value.
         /// </remarks>
         [Pure]
-		public int ToARGB()
-		{
-		    uint result = ((((uint)(Alpha * 255.0f)) & 0xff) << 24) | ((((uint)(Red * 255.0f)) & 0xff) << 16) |
-		                  ((((uint)(Green * 255.0f)) & 0xff) << 8) | (((uint)(Blue * 255.0f)) & 0xff);
-			return (int)result;
-		}
+        public int ToARGB()
+        {
+            uint result = ((((uint)(Alpha * 255.0f)) & 0xff) << 24) | ((((uint)(Red * 255.0f)) & 0xff) << 16) |
+                          ((((uint)(Green * 255.0f)) & 0xff) << 8) | (((uint)(Blue * 255.0f)) & 0xff);
+            return (int)result;
+        }
 
-		/// <summary>
-		/// Function to convert this <see cref="GorgonColor"/> value into an <see cref="int"/> value with a RGBA format.
-		/// </summary>
-		/// <returns>An <see cref="int"/> representing the color value in ARGB format.</returns>
-		/// <remarks>
-		/// The format indicates the byte position of each color component in the <see cref="int"/> value.
-		/// </remarks>
-		[Pure]
-		public int ToRGBA()
-		{
-		    uint result = ((((uint)(Red * 255.0f)) & 0xff) << 24) | ((((uint)(Green * 255.0f)) & 0xff) << 16) |
-		                  ((((uint)(Blue * 255.0f)) & 0xff) << 8) | (((uint)(Alpha * 255.0f)) & 0xff);
-			return (int)result;
-		}
+        /// <summary>
+        /// Function to convert this <see cref="GorgonColor"/> value into an <see cref="int"/> value with a RGBA format.
+        /// </summary>
+        /// <returns>An <see cref="int"/> representing the color value in ARGB format.</returns>
+        /// <remarks>
+        /// The format indicates the byte position of each color component in the <see cref="int"/> value.
+        /// </remarks>
+        [Pure]
+        public int ToRGBA()
+        {
+            uint result = ((((uint)(Red * 255.0f)) & 0xff) << 24) | ((((uint)(Green * 255.0f)) & 0xff) << 16) |
+                          ((((uint)(Blue * 255.0f)) & 0xff) << 8) | (((uint)(Alpha * 255.0f)) & 0xff);
+            return (int)result;
+        }
 
-		/// <summary>
-		/// Function to convert this <see cref="GorgonColor"/> value into an <see cref="int"/> value with a BGRA format.
-		/// </summary>
-		/// <returns>An <see cref="int"/> representing the color value in ARGB format.</returns>
-		/// <remarks>
-		/// The format indicates the byte position of each color component in the <see cref="int"/> value.
-		/// </remarks>
-		[Pure]
-		public int ToBGRA()
-		{
-		    uint result = ((((uint)(Blue * 255.0f)) & 0xff) << 24) | ((((uint)(Green * 255.0f)) & 0xff) << 16) |
-		                  ((((uint)(Red * 255.0f)) & 0xff) << 8) | (((uint)(Alpha * 255.0f)) & 0xff);
-			return (int)result;
-		}
+        /// <summary>
+        /// Function to convert this <see cref="GorgonColor"/> value into an <see cref="int"/> value with a BGRA format.
+        /// </summary>
+        /// <returns>An <see cref="int"/> representing the color value in ARGB format.</returns>
+        /// <remarks>
+        /// The format indicates the byte position of each color component in the <see cref="int"/> value.
+        /// </remarks>
+        [Pure]
+        public int ToBGRA()
+        {
+            uint result = ((((uint)(Blue * 255.0f)) & 0xff) << 24) | ((((uint)(Green * 255.0f)) & 0xff) << 16) |
+                          ((((uint)(Red * 255.0f)) & 0xff) << 8) | (((uint)(Alpha * 255.0f)) & 0xff);
+            return (int)result;
+        }
 
-		/// <summary>
-		/// Function to convert this <see cref="GorgonColor"/> value into an <see cref="int"/> value with a ABGR format.
-		/// </summary>
-		/// <returns>An <see cref="int"/> representing the color value in ARGB format.</returns>
-		/// <remarks>
-		/// The format indicates the byte position of each color component in the <see cref="int"/> value.
-		/// </remarks>
-		[Pure]
-		public int ToABGR()
-		{
-		    uint result = ((((uint)(Alpha * 255.0f)) & 0xff) << 24) | ((((uint)(Blue * 255.0f)) & 0xff) << 16) |
-		                  ((((uint)(Green * 255.0f)) & 0xff) << 8) | (((uint)(Red * 255.0f)) & 0xff);
-			return (int)result;
-		}
+        /// <summary>
+        /// Function to convert this <see cref="GorgonColor"/> value into an <see cref="int"/> value with a ABGR format.
+        /// </summary>
+        /// <returns>An <see cref="int"/> representing the color value in ARGB format.</returns>
+        /// <remarks>
+        /// The format indicates the byte position of each color component in the <see cref="int"/> value.
+        /// </remarks>
+        [Pure]
+        public int ToABGR()
+        {
+            uint result = ((((uint)(Alpha * 255.0f)) & 0xff) << 24) | ((((uint)(Blue * 255.0f)) & 0xff) << 16) |
+                          ((((uint)(Green * 255.0f)) & 0xff) << 8) | (((uint)(Red * 255.0f)) & 0xff);
+            return (int)result;
+        }
 
         /// <summary>
         /// Function to convert the sRGB version of the color to a linear color value.
@@ -627,11 +627,11 @@ namespace Gorgon.Graphics
         /// <returns>The linear color value.</returns>
         [Pure]
         public GorgonColor ToLinear()
-        {            
+        {
             var linearRGBLo = new GorgonColor(Red / 12.92f, Green / 12.92f, Blue / 12.92f, Alpha);
-            var linearRGBHi = new GorgonColor(((Red + 0.055f) / 1.055f).Pow(2.4f), 
-                                            ((Green + 0.055f) / 1.055f).Pow(2.4f), 
-                                            ((Blue + 0.055f) / 1.055f).Pow(2.4f), 
+            var linearRGBHi = new GorgonColor(((Red + 0.055f) / 1.055f).Pow(2.4f),
+                                            ((Green + 0.055f) / 1.055f).Pow(2.4f),
+                                            ((Blue + 0.055f) / 1.055f).Pow(2.4f),
                                             Alpha);
             return ((Red <= 0.04045f) && (Green <= 0.04045f) && (Blue <= 0.04045f)) ? linearRGBLo : linearRGBHi;
         }
@@ -647,7 +647,7 @@ namespace Gorgon.Graphics
 
             var sRGBLo = new GorgonColor(Red * 12.92f, Green * 12.92f, Blue * 12.92f, Alpha);
             var sRGBHi = new GorgonColor((Red.Pow(pow) * 1.055f) - 0.055f,
-                                        (Green.Pow(pow) * 1.055f) -0.055f,
+                                        (Green.Pow(pow) * 1.055f) - 0.055f,
                                         (Blue.Pow(pow) * 1.055f) - 0.055f,
                                         Alpha);
             return ((Red <= 0.0031308f) && (Green <= 0.0031308f) && (Blue <= 0.0031308f)) ? sRGBLo : sRGBHi;
@@ -722,57 +722,57 @@ namespace Gorgon.Graphics
         /// This method does not clamp its output. Values greater than 1 or less than 0 are possible.
         /// </remarks>
         public static GorgonColor operator +(GorgonColor left, GorgonColor right)
-		{
+        {
 
-			Add(in left, in right, out GorgonColor result);
+            Add(in left, in right, out GorgonColor result);
 
-			return result;
-		}
+            return result;
+        }
 
-		/// <summary>
-		/// An operator to subtract two <see cref="GorgonColor"/> values from each other.
-		/// </summary>
-		/// <param name="left">The left value.</param>
-		/// <param name="right">The right value.</param>
-		/// <returns>The result of the operator.</returns>
-		/// <remarks>
-		/// This method does not clamp its output. Values greater than 1 or less than 0 are possible.
-		/// </remarks>
-		public static GorgonColor operator -(GorgonColor left, GorgonColor right)
-		{
+        /// <summary>
+        /// An operator to subtract two <see cref="GorgonColor"/> values from each other.
+        /// </summary>
+        /// <param name="left">The left value.</param>
+        /// <param name="right">The right value.</param>
+        /// <returns>The result of the operator.</returns>
+        /// <remarks>
+        /// This method does not clamp its output. Values greater than 1 or less than 0 are possible.
+        /// </remarks>
+        public static GorgonColor operator -(GorgonColor left, GorgonColor right)
+        {
 
-			Subtract(in left, in right, out GorgonColor result);
+            Subtract(in left, in right, out GorgonColor result);
 
-			return result;
-		}
+            return result;
+        }
 
-		/// <summary>
-		/// An operator to multiply two <see cref="GorgonColor"/> values together.
-		/// </summary>
-		/// <param name="left">The left value.</param>
-		/// <param name="right">The right value.</param>
-		/// <returns>The result of the operator.</returns>
-		public static GorgonColor operator *(GorgonColor left, GorgonColor right)
-		{
+        /// <summary>
+        /// An operator to multiply two <see cref="GorgonColor"/> values together.
+        /// </summary>
+        /// <param name="left">The left value.</param>
+        /// <param name="right">The right value.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GorgonColor operator *(GorgonColor left, GorgonColor right)
+        {
 
-			Multiply(in left, in right, out GorgonColor result);
+            Multiply(in left, in right, out GorgonColor result);
 
-			return result;
-		}
+            return result;
+        }
 
-		/// <summary>
-		/// An operator to multiply a <see cref="GorgonColor"/> and a <see cref="float"/> value.
-		/// </summary>
-		/// <param name="color">The color to multiply.</param>
-		/// <param name="value">The value to multiply by.</param>
-		/// <returns>The result of the operator.</returns>
-		public static GorgonColor operator *(GorgonColor color, float value)
-		{
+        /// <summary>
+        /// An operator to multiply a <see cref="GorgonColor"/> and a <see cref="float"/> value.
+        /// </summary>
+        /// <param name="color">The color to multiply.</param>
+        /// <param name="value">The value to multiply by.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GorgonColor operator *(GorgonColor color, float value)
+        {
 
-			Multiply(in color, value, out GorgonColor result);
+            Multiply(in color, value, out GorgonColor result);
 
-			return result;
-		}
+            return result;
+        }
 
         /// <summary>
         /// An operator to determine if two instances are equal.
@@ -875,74 +875,74 @@ namespace Gorgon.Graphics
         /// <param name="b">The blue component.</param>
         /// <param name="a">The alpha component.</param>
         public GorgonColor(float r, float g, float b, float a)
-		{
-			Alpha = a;
-			Red = r;
-			Green = g;
-			Blue = b;
-		}
+        {
+            Alpha = a;
+            Red = r;
+            Green = g;
+            Blue = b;
+        }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonColor"/> struct.
-		/// </summary>
-		/// <param name="r">The red component.</param>
-		/// <param name="g">The green component.</param>
-		/// <param name="b">The blue component.</param>
-		public GorgonColor(float r, float g, float b)
-			: this(r, g, b, 1.0f)
-		{
-		}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonColor"/> struct.
+        /// </summary>
+        /// <param name="r">The red component.</param>
+        /// <param name="g">The green component.</param>
+        /// <param name="b">The blue component.</param>
+        public GorgonColor(float r, float g, float b)
+            : this(r, g, b, 1.0f)
+        {
+        }
 
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonColor"/> struct.
-		/// </summary>
-		/// <param name="argb">An <see cref="int"/> value representing a color in ARGB format.</param>
-		public GorgonColor(int argb)			
-		{
-			Alpha = ((argb >> 24) & 0xff) / 255.0f;
-			Red = ((argb >> 16) & 0xff) / 255.0f;
-			Green = ((argb >> 8) & 0xff) / 255.0f;
-			Blue = (argb & 0xff) / 255.0f;
-		}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonColor"/> struct.
+        /// </summary>
+        /// <param name="argb">An <see cref="int"/> value representing a color in ARGB format.</param>
+        public GorgonColor(int argb)
+        {
+            Alpha = ((argb >> 24) & 0xff) / 255.0f;
+            Red = ((argb >> 16) & 0xff) / 255.0f;
+            Green = ((argb >> 8) & 0xff) / 255.0f;
+            Blue = (argb & 0xff) / 255.0f;
+        }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonColor"/> struct.
-		/// </summary>
-		/// <param name="color">The <see cref="Color"/> that will be used to generate this <see cref="GorgonColor"/>.</param>
-		public GorgonColor(Color color)
-		{
-			Alpha = color.A / 255.0f;
-			Red = color.R / 255.0f;
-			Green = color.G / 255.0f;
-			Blue = color.B / 255.0f;
-		}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonColor"/> struct.
+        /// </summary>
+        /// <param name="color">The <see cref="Color"/> that will be used to generate this <see cref="GorgonColor"/>.</param>
+        public GorgonColor(Color color)
+        {
+            Alpha = color.A / 255.0f;
+            Red = color.R / 255.0f;
+            Green = color.G / 255.0f;
+            Blue = color.B / 255.0f;
+        }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonColor"/> struct.
-		/// </summary>
-		/// <param name="color">The <see cref="DX.Vector3"/> that will be used to generate this <see cref="GorgonColor"/>.</param>
-		/// <remarks>
-		/// This will map the <see cref="DX.Vector3.X"/>, <see cref="DX.Vector3.Y"/> and <see cref="DX.Vector3.Z"/> components to the <see cref="Red"/>, <see cref="Green"/> and <see cref="Blue"/> values respectively. 
-		/// The <see cref="Alpha"/> value is set to 1.0f (opaque) for this conversion.
-		/// </remarks>
-		public GorgonColor(DX.Vector3 color)
-			: this(color.X, color.Y, color.Z, 1.0f)
-		{
-		}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonColor"/> struct.
+        /// </summary>
+        /// <param name="color">The <see cref="DX.Vector3"/> that will be used to generate this <see cref="GorgonColor"/>.</param>
+        /// <remarks>
+        /// This will map the <see cref="DX.Vector3.X"/>, <see cref="DX.Vector3.Y"/> and <see cref="DX.Vector3.Z"/> components to the <see cref="Red"/>, <see cref="Green"/> and <see cref="Blue"/> values respectively. 
+        /// The <see cref="Alpha"/> value is set to 1.0f (opaque) for this conversion.
+        /// </remarks>
+        public GorgonColor(DX.Vector3 color)
+            : this(color.X, color.Y, color.Z, 1.0f)
+        {
+        }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonColor"/> struct.
-		/// </summary>
-		/// <param name="color">The <see cref="DX.Vector4"/> that will be used to generate this <see cref="GorgonColor"/>.</param>
-		/// <remarks>
-		/// This will map the <see cref="DX.Vector4.X"/>, <see cref="DX.Vector4.Y"/>, <see cref="DX.Vector4.Z"/> and <see cref="DX.Vector4.W"/> components to the <see cref="Red"/>, <see cref="Green"/>, <see cref="Blue"/> and <see cref="Alpha"/> values respectively.
-		/// </remarks>
-		public GorgonColor(DX.Vector4 color)
-			: this(color.X, color.Y, color.Z, color.W)
-		{
-			
-		}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonColor"/> struct.
+        /// </summary>
+        /// <param name="color">The <see cref="DX.Vector4"/> that will be used to generate this <see cref="GorgonColor"/>.</param>
+        /// <remarks>
+        /// This will map the <see cref="DX.Vector4.X"/>, <see cref="DX.Vector4.Y"/>, <see cref="DX.Vector4.Z"/> and <see cref="DX.Vector4.W"/> components to the <see cref="Red"/>, <see cref="Green"/>, <see cref="Blue"/> and <see cref="Alpha"/> values respectively.
+        /// </remarks>
+        public GorgonColor(DX.Vector4 color)
+            : this(color.X, color.Y, color.Z, color.W)
+        {
+
+        }
 
 
         /// <summary>
@@ -961,20 +961,20 @@ namespace Gorgon.Graphics
             Alpha = alpha;
         }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonColor"/> struct.
-		/// </summary>
-		/// <param name="info">The information.</param>
-		/// <param name="context">The context.</param>
-		private GorgonColor(SerializationInfo info, StreamingContext context)
-		{
-			int colorValue = info.GetInt32("Color");
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonColor"/> struct.
+        /// </summary>
+        /// <param name="info">The information.</param>
+        /// <param name="context">The context.</param>
+        private GorgonColor(SerializationInfo info, StreamingContext context)
+        {
+            int colorValue = info.GetInt32("Color");
 
-			Alpha = ((colorValue >> 24) & 0xff) / 255.0f;
-			Red = ((colorValue >> 16) & 0xff) / 255.0f;
-			Green = ((colorValue >> 8) & 0xff) / 255.0f;
-			Blue = (colorValue & 0xff) / 255.0f;
-		}
-		#endregion
-	}
+            Alpha = ((colorValue >> 24) & 0xff) / 255.0f;
+            Red = ((colorValue >> 16) & 0xff) / 255.0f;
+            Green = ((colorValue >> 8) & 0xff) / 255.0f;
+            Blue = (colorValue & 0xff) / 255.0f;
+        }
+        #endregion
+    }
 }

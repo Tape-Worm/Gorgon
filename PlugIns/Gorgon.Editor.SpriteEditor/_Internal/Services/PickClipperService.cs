@@ -37,7 +37,7 @@ namespace Gorgon.Editor.SpriteEditor
     /// <summary>
     /// A clipper that automatically defines the bounds of the sprite based on pixel data.
     /// </summary>
-    internal class PickClipperService 
+    internal class PickClipperService
         : IPickClipperService
     {
         #region Value Types.
@@ -77,7 +77,7 @@ namespace Gorgon.Editor.SpriteEditor
             get;
             set;
         }
-        
+
         /// <summary>
         /// Property to set or return the padding for the clipping rectangle.
         /// </summary>
@@ -359,7 +359,7 @@ namespace Gorgon.Editor.SpriteEditor
                 {
                     return true;
                 }
-                
+
                 Rectangle = clipRegion;
             }
             finally

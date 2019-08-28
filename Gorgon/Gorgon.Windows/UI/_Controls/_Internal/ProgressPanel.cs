@@ -31,7 +31,7 @@ namespace Gorgon.UI
     /// <summary>
     /// The progress meter panel.
     /// </summary>
-    internal partial class ProgressPanel 
+    internal partial class ProgressPanel
         : UserControl
     {
         /// <summary>

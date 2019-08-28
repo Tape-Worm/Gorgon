@@ -111,10 +111,10 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public bool IsIndependentBlendingEnabled => PipelineState.IsIndependentBlendingEnabled;
 
-	    /// <summary>
-	    /// Property to return the list of blending states for each render target.
-	    /// </summary>
-	    public IGorgonReadOnlyArray<GorgonBlendState> BlendStates => PipelineState.RwBlendStates;
+        /// <summary>
+        /// Property to return the list of blending states for each render target.
+        /// </summary>
+        public IGorgonReadOnlyArray<GorgonBlendState> BlendStates => PipelineState.RwBlendStates;
         #endregion
 
         #region Constructor/Finalizer.

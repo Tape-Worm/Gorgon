@@ -37,17 +37,17 @@ namespace Gorgon.Renderers
         /// A default batch state that turns off blending.
         /// </summary>
         public static readonly Gorgon2DBatchState NoBlend = new Gorgon2DBatchState
-                                                            {
-                                                                BlendState = GorgonBlendState.NoBlending
-                                                            };
+        {
+            BlendState = GorgonBlendState.NoBlending
+        };
 
         /// <summary>
         /// A default batch state that sets up additive blending.
         /// </summary>
         public static readonly Gorgon2DBatchState AdditiveBlend = new Gorgon2DBatchState
-                                                                  {
-                                                                      BlendState = GorgonBlendState.Additive
-                                                                  };
+        {
+            BlendState = GorgonBlendState.Additive
+        };
 
         /// <summary>
         /// A default batch state that sets up soft additive blending.
@@ -61,17 +61,17 @@ namespace Gorgon.Renderers
         /// A default batch state that sets up premultiplied blending.
         /// </summary>
         public static readonly Gorgon2DBatchState PremultipliedBlend = new Gorgon2DBatchState
-                                                                       {
-                                                                           BlendState = GorgonBlendState.Premultiplied
-                                                                       };
+        {
+            BlendState = GorgonBlendState.Premultiplied
+        };
 
         /// <summary>
         /// A default batch state that sets up wirefame mode with no culling.
         /// </summary>
         public static readonly Gorgon2DBatchState WireFrameNoCulling = new Gorgon2DBatchState
-                                                                       {
-                                                                           RasterState = GorgonRasterState.WireFrameNoCulling
-                                                                       };
+        {
+            RasterState = GorgonRasterState.WireFrameNoCulling
+        };
 
         /// <summary>
         /// A default batch state that enabled depth testing/writing and no blending.
@@ -87,7 +87,7 @@ namespace Gorgon.Renderers
         /// </summary>
         public static readonly Gorgon2DBatchState DepthEnabled = new Gorgon2DBatchState
         {
-			BlendState = GorgonBlendState.Default,
+            BlendState = GorgonBlendState.Default,
             DepthStencilState = GorgonDepthStencilState.DepthEnabled
         };
 

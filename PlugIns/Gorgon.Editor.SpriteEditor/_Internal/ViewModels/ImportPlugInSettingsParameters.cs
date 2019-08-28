@@ -53,18 +53,18 @@ namespace Gorgon.Editor.SpriteEditor
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the service used to locate plug in assemblies for loading.
         /// </summary>
-		public IFileDialogService OpenCodecDialog
+        public IFileDialogService OpenCodecDialog
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the service used to manage content plug ins.
         /// </summary>
-		public IContentPlugInService ContentPlugInService
+        public IContentPlugInService ContentPlugInService
         {
             get;
         }

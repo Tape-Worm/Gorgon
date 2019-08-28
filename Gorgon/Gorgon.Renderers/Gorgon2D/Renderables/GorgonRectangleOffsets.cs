@@ -30,15 +30,15 @@ using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
-	/// <summary>
-	/// Defines the offsets for each corner of a rectangle.
-	/// </summary>
-	public class GorgonRectangleOffsets
+    /// <summary>
+    /// Defines the offsets for each corner of a rectangle.
+    /// </summary>
+    public class GorgonRectangleOffsets
         : IReadOnlyList<DX.Vector3>
-	{
-		#region Variables.
+    {
+        #region Variables.
         // The renderable object to update.
-	    private readonly BatchRenderable _renderable;
+        private readonly BatchRenderable _renderable;
         #endregion
 
         #region Properties.
@@ -93,77 +93,77 @@ namespace Gorgon.Renderers
         /// Property to set or return the offset of the upper left corner.
         /// </summary>
         public DX.Vector3 UpperLeft
-		{
-			get => _renderable.UpperLeftOffset;
-			set
-			{
-				if (_renderable.UpperLeftOffset.Equals(ref value))
-				{
-					return;
-				}
+        {
+            get => _renderable.UpperLeftOffset;
+            set
+            {
+                if (_renderable.UpperLeftOffset.Equals(ref value))
+                {
+                    return;
+                }
 
-			    _renderable.UpperLeftOffset = value;
-				_renderable.HasTransformChanges = true;
-			}
-		}
+                _renderable.UpperLeftOffset = value;
+                _renderable.HasTransformChanges = true;
+            }
+        }
 
-		/// <summary>
-		/// Property to set or return the offset of the upper right corner.
-		/// </summary>
-		public DX.Vector3 UpperRight
-		{
-			get => _renderable.UpperRightOffset;
-			set
-			{
-				if (_renderable.UpperRightOffset.Equals(ref value))
-				{
-					return;
-				}
+        /// <summary>
+        /// Property to set or return the offset of the upper right corner.
+        /// </summary>
+        public DX.Vector3 UpperRight
+        {
+            get => _renderable.UpperRightOffset;
+            set
+            {
+                if (_renderable.UpperRightOffset.Equals(ref value))
+                {
+                    return;
+                }
 
-			    _renderable.UpperRightOffset = value;
-				_renderable.HasTransformChanges = true;
-			}
-		}
+                _renderable.UpperRightOffset = value;
+                _renderable.HasTransformChanges = true;
+            }
+        }
 
-		/// <summary>
-		/// Property to set or return the offset of the lower left corner.
-		/// </summary>
-		public DX.Vector3 LowerLeft
-		{
-			get => _renderable.LowerLeftOffset;
-			set
-			{
-				if (_renderable.LowerLeftOffset.Equals(ref value))
-				{
-					return;
-				}
+        /// <summary>
+        /// Property to set or return the offset of the lower left corner.
+        /// </summary>
+        public DX.Vector3 LowerLeft
+        {
+            get => _renderable.LowerLeftOffset;
+            set
+            {
+                if (_renderable.LowerLeftOffset.Equals(ref value))
+                {
+                    return;
+                }
 
-			    _renderable.LowerLeftOffset = value;
-				_renderable.HasTransformChanges = true;
-			}
-		}
+                _renderable.LowerLeftOffset = value;
+                _renderable.HasTransformChanges = true;
+            }
+        }
 
-		/// <summary>
-		/// Property to set or return the offset of the lower right corner.
-		/// </summary>
-		public DX.Vector3 LowerRight
-		{
-			get => _renderable.LowerRightOffset;
-			set
-			{
-				if (_renderable.LowerRightOffset.Equals(ref value))
-				{
-					return;
-				}
+        /// <summary>
+        /// Property to set or return the offset of the lower right corner.
+        /// </summary>
+        public DX.Vector3 LowerRight
+        {
+            get => _renderable.LowerRightOffset;
+            set
+            {
+                if (_renderable.LowerRightOffset.Equals(ref value))
+                {
+                    return;
+                }
 
-			    _renderable.LowerRightOffset = value;
-				_renderable.HasTransformChanges = true;
-			}
-		}
+                _renderable.LowerRightOffset = value;
+                _renderable.HasTransformChanges = true;
+            }
+        }
 
         /// <summary>Gets the number of elements in the collection.</summary>
         public int Count => 4;
-        
+
         /// <summary>Returns an enumerator that iterates through the collection.</summary>
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
         public IEnumerator<DX.Vector3> GetEnumerator()
@@ -191,35 +191,35 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="offset">The offset to assign.</param>
         public void SetAll(DX.Vector3 offset)
-		{
-		    if ((offset.Equals(ref _renderable.LowerLeftOffset))
-		        && (offset.Equals(ref _renderable.LowerRightOffset))
-		        && (offset.Equals(ref _renderable.UpperRightOffset))
-		        && (offset.Equals(ref _renderable.UpperLeftOffset)))
-		    {
-		        return;
-		    }
+        {
+            if ((offset.Equals(ref _renderable.LowerLeftOffset))
+                && (offset.Equals(ref _renderable.LowerRightOffset))
+                && (offset.Equals(ref _renderable.UpperRightOffset))
+                && (offset.Equals(ref _renderable.UpperLeftOffset)))
+            {
+                return;
+            }
 
-		    _renderable.LowerLeftOffset = _renderable.LowerRightOffset = _renderable.UpperRightOffset = _renderable.UpperLeftOffset;
-		}
+            _renderable.LowerLeftOffset = _renderable.LowerRightOffset = _renderable.UpperRightOffset = _renderable.UpperLeftOffset;
+        }
 
-		/// <summary>
-		/// Function to copy the offsets into the specified destination.
-		/// </summary>
-		/// <param name="destination">The destination that will receive the copy of the offsets.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/> parameter is <b>null</b>.</exception>
-		public void CopyTo(GorgonRectangleOffsets destination)
-		{
-			if (destination == null)
-			{
-				throw new ArgumentNullException(nameof(destination));
-			}
+        /// <summary>
+        /// Function to copy the offsets into the specified destination.
+        /// </summary>
+        /// <param name="destination">The destination that will receive the copy of the offsets.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/> parameter is <b>null</b>.</exception>
+        public void CopyTo(GorgonRectangleOffsets destination)
+        {
+            if (destination == null)
+            {
+                throw new ArgumentNullException(nameof(destination));
+            }
 
-			destination.LowerLeft = LowerLeft;
-			destination.LowerRight = LowerRight;
-			destination.UpperRight = UpperRight;
-			destination.UpperLeft = UpperLeft;
-		}
+            destination.LowerLeft = LowerLeft;
+            destination.LowerRight = LowerRight;
+            destination.UpperRight = UpperRight;
+            destination.UpperLeft = UpperLeft;
+        }
         #endregion
 
         #region Constructor

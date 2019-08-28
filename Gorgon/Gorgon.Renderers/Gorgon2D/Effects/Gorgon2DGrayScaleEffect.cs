@@ -32,70 +32,70 @@ using SharpDX;
 
 namespace Gorgon.Renderers
 {
-	/// <summary>
-	/// An effect that renders as gray scale.
-	/// </summary>
-	public class Gorgon2DGrayScaleEffect
-		: Gorgon2DEffect
-	{
+    /// <summary>
+    /// An effect that renders as gray scale.
+    /// </summary>
+    public class Gorgon2DGrayScaleEffect
+        : Gorgon2DEffect
+    {
         #region Variables.
         // The batch state to use when rendering.
-	    private Gorgon2DBatchState _batchState;
+        private Gorgon2DBatchState _batchState;
         // The shader used to render grayscale images.
         private GorgonPixelShader _grayScaleShader;
-	    private Gorgon2DShaderState<GorgonPixelShader> _grayScaleState;
+        private Gorgon2DShaderState<GorgonPixelShader> _grayScaleState;
         #endregion
 
-		#region Methods.
+        #region Methods.
         /// <summary>
         /// Function called when the effect is being initialized.
         /// </summary>
         /// <remarks>
         /// Use this method to set up the effect upon its creation.  For example, this method could be used to create the required shaders for the effect.
         /// </remarks>
-	    protected override void OnInitialize()
-	    {
+        protected override void OnInitialize()
+        {
             // Compile our blur shader.
             _grayScaleShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderGrayScale");
             _grayScaleState = PixelShaderBuilder
-	                           .Shader(_grayScaleShader)
-	                           .Build();
+                               .Shader(_grayScaleShader)
+                               .Build();
 
-	        _batchState = BatchStateBuilder
-	                      .PixelShaderState(_grayScaleState)
-	                      .Build();
-	    }
+            _batchState = BatchStateBuilder
+                          .PixelShaderState(_grayScaleState)
+                          .Build();
+        }
 
-	    /// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
-		protected override void Dispose(bool disposing)
-		{
-		    if (!disposing)
-		    {
-		        return;
-		    }
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources
+        /// </summary>
+        /// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (!disposing)
+            {
+                return;
+            }
 
-		    GorgonPixelShader shader = Interlocked.Exchange(ref _grayScaleShader, null);
-		    shader?.Dispose();
-		}
+            GorgonPixelShader shader = Interlocked.Exchange(ref _grayScaleShader, null);
+            shader?.Dispose();
+        }
 
-	    /// <summary>
-	    /// Function called to build a new (or return an existing) 2D batch state.
-	    /// </summary>
-	    /// <param name="passIndex">The index of the current rendering pass.</param>
-	    /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
-	    /// <returns>The 2D batch state.</returns>
-	    protected override Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged)
-	    {
-	        if (statesChanged)
-	        {
-	            _batchState = BatchStateBuilder.Build();
-	        }
+        /// <summary>
+        /// Function called to build a new (or return an existing) 2D batch state.
+        /// </summary>
+        /// <param name="passIndex">The index of the current rendering pass.</param>
+        /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
+        /// <returns>The 2D batch state.</returns>
+        protected override Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged)
+        {
+            if (statesChanged)
+            {
+                _batchState = BatchStateBuilder.Build();
+            }
 
-	        return _batchState;
-	    }
+            return _batchState;
+        }
 
         /// <summary>
         /// Function called prior to rendering.
@@ -110,12 +110,12 @@ namespace Gorgon.Renderers
         /// </para>
         /// </remarks>
         protected override void OnBeforeRender(GorgonRenderTargetView output, IGorgon2DCamera camera, bool sizeChanged)
-	    {
-	        if (Graphics.RenderTargets[0] != output)
-	        {
+        {
+            if (Graphics.RenderTargets[0] != output)
+            {
                 Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
-	        }
-	    }
+            }
+        }
 
         /// <summary>
         /// Function called to render a single effect pass.

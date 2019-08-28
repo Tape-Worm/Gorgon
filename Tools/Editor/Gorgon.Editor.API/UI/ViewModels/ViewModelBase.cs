@@ -151,7 +151,7 @@ namespace Gorgon.Editor.UI
         /// </summary>
         /// <param name="message">The message for the wait overlay.</param>
         /// <param name="title">[Optional] The title for the overlay.</param>
-        protected void ShowWaitPanel(string message, string title = null) => ShowWaitPanel(new WaitPanelActivateArgs(message, title));        
+        protected void ShowWaitPanel(string message, string title = null) => ShowWaitPanel(new WaitPanelActivateArgs(message, title));
 
         /// <summary>
         /// Function to deactivate an active wait panel overlay on the view, if the view supports it.
@@ -219,7 +219,7 @@ namespace Gorgon.Editor.UI
         /// </summary>
         protected ViewModelBase()
         {
-			
+
         }
         #endregion
     }

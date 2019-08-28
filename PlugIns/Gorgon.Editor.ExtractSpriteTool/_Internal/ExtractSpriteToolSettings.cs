@@ -29,7 +29,7 @@ using DX = SharpDX;
 
 namespace Gorgon.Editor.ExtractSpriteTool
 {
-	/// <summary>
+    /// <summary>
     /// The settings for the plug in.
     /// </summary>
     internal class ExtractSpriteToolSettings
@@ -44,30 +44,30 @@ namespace Gorgon.Editor.ExtractSpriteTool
             set;
         } = true;
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return the color to use when skipping empty sprites.
         /// </summary>
-		[JsonProperty]
+        [JsonProperty]
         public int SkipColor
         {
             get;
             set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return the last directory path used to output sprites into.
         /// </summary>
-		[JsonProperty]
-		public string LastOutputDir
+        [JsonProperty]
+        public string LastOutputDir
         {
             get;
             set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return whether the window is in a maximized state or not.
         /// </summary>
-		[JsonProperty]
+        [JsonProperty]
         public bool IsMaximized
         {
             get;

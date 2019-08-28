@@ -28,44 +28,44 @@ using System;
 
 namespace Gorgon.Input
 {
-	/// <summary>
-	/// Common information for a Raw Input device.
-	/// </summary>
-	/// <remarks>
-	/// This interface is not meant to be used within an application and should only be used internally by Gorgon.
-	/// </remarks>
-	public interface IGorgonRawInputDeviceInfo
-	{
-		/// <summary>
-		/// Property to return the device handle.
-		/// </summary>
-		IntPtr Handle
-		{
-			get;
-		}
+    /// <summary>
+    /// Common information for a Raw Input device.
+    /// </summary>
+    /// <remarks>
+    /// This interface is not meant to be used within an application and should only be used internally by Gorgon.
+    /// </remarks>
+    public interface IGorgonRawInputDeviceInfo
+    {
+        /// <summary>
+        /// Property to return the device handle.
+        /// </summary>
+        IntPtr Handle
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return a human friendly description of the device.
-		/// </summary>
-		string Description
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return a human friendly description of the device.
+        /// </summary>
+        string Description
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return human interface device path for the device.
-		/// </summary>
-		string HIDPath
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return human interface device path for the device.
+        /// </summary>
+        string HIDPath
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the device class name.
-		/// </summary>
-		string DeviceClass
-		{
-			get;
-		}
-	}
+        /// <summary>
+        /// Property to return the device class name.
+        /// </summary>
+        string DeviceClass
+        {
+            get;
+        }
+    }
 }

@@ -47,7 +47,7 @@ namespace Gorgon.Graphics.Core
     public abstract class GorgonRenderTargetView
         : GorgonResourceView
     {
-		#region Properties.
+        #region Properties.
         /// <summary>
         /// Property to return the native D3D depth/stencil view.
         /// </summary>
@@ -69,17 +69,17 @@ namespace Gorgon.Graphics.Core
         /// Property to return the format used to interpret this view.
         /// </summary>
         public BufferFormat Format
-	    {
-		    get;
-	    }
+        {
+            get;
+        }
 
-	    /// <summary>
-	    /// Property to return information about the <see cref="Format"/> used by this view.
-	    /// </summary>
-	    public GorgonFormatInfo FormatInformation
-	    {
-		    get;
-	    }
+        /// <summary>
+        /// Property to return information about the <see cref="Format"/> used by this view.
+        /// </summary>
+        public GorgonFormatInfo FormatInformation
+        {
+            get;
+        }
 
         /// <summary>
         /// Property to return the width of the render target view.

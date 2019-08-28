@@ -33,7 +33,7 @@ namespace Gorgon.Editor.Views
     /// <summary>
     /// The main staging view for accessing file operations, settings, etc...
     /// </summary>
-    internal partial class Stage 
+    internal partial class Stage
         : EditorBaseControl
     {
         #region Events.

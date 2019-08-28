@@ -45,7 +45,7 @@ namespace Gorgon.Editor.Content
         /// </summary>
         event EventHandler Deleted;
 
-		/// <summary>
+        /// <summary>
         /// Event triggered if the content was closed with the <see cref="CloseContent"/> method.
         /// </summary>
         event EventHandler Closed;
@@ -109,7 +109,7 @@ namespace Gorgon.Editor.Content
         ProjectItemMetadata Metadata
         {
             get;
-        }        
+        }
 
         /// <summary>
         /// Property to set or return whether the file is open for editing or not.
@@ -122,7 +122,7 @@ namespace Gorgon.Editor.Content
         #endregion
 
         #region Methods.  
-		/// <summary>
+        /// <summary>
         /// Function to notify that the content should close if it's open.
         /// </summary>
         /// <remarks>

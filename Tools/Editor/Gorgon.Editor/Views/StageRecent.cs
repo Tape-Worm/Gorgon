@@ -35,7 +35,7 @@ namespace Gorgon.Editor.Views
     /// <summary>
     /// The control to display recent documents.
     /// </summary>
-    internal partial class StageRecent 
+    internal partial class StageRecent
         : EditorBaseControl, IDataContext<IRecentVm>
     {
         #region Properties.
@@ -93,7 +93,7 @@ namespace Gorgon.Editor.Views
             {
                 return;
             }
-                        
+
             if (!DataContext.OpenProjectCommand.CanExecute(e.Item))
             {
                 return;

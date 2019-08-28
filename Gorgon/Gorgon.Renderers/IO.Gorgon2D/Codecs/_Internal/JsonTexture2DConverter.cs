@@ -59,7 +59,7 @@ namespace Gorgon.IO
                                                           "mipCount",
                                                           "format"
                                                       };
-        
+
         /// <summary>Writes the JSON representation of the object.</summary>
         /// <param name="writer">The <see cref="T:Newtonsoft.Json.JsonWriter" /> to write to.</param>
         /// <param name="value">The value.</param>
@@ -142,7 +142,7 @@ namespace Gorgon.IO
             int? viewArrayStart = null;
             int? viewArrayCount = null;
             BufferFormat? viewFormat = null;
-            
+
             while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
             {
                 if (reader.TokenType != JsonToken.PropertyName)

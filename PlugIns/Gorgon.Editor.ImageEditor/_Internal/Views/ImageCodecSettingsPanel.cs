@@ -25,20 +25,20 @@
 #endregion
 
 using System;
-using System.ComponentModel;
-using Gorgon.Editor.UI.Views;
-using Gorgon.Editor.UI;
-using System.Windows.Forms;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
+using System.Windows.Forms;
+using Gorgon.Editor.UI;
+using Gorgon.Editor.UI.Views;
 
 namespace Gorgon.Editor.ImageEditor
 {
     /// <summary>
     /// The panel used to display settings for image codec support.
     /// </summary>
-    internal partial class ImageCodecSettingsPanel 
-		: SettingsBaseControl, IDataContext<ISettings>
+    internal partial class ImageCodecSettingsPanel
+        : SettingsBaseControl, IDataContext<ISettings>
     {
         #region Properties.
         /// <summary>Property to return the ID of the panel.</summary>
@@ -55,7 +55,7 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Methods.
-		/// <summary>
+        /// <summary>
         /// Function to validate the buttons on the control.
         /// </summary>
         private void ValidateButtons()
@@ -66,11 +66,11 @@ namespace Gorgon.Editor.ImageEditor
                 return;
             }
 
-			ButtonAddCodec.Enabled = true;
+            ButtonAddCodec.Enabled = true;
             ButtonRemoveCodecs.Enabled = DataContext.UnloadPlugInAssembliesCommand?.CanExecute(null) ?? false;
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to populate the list of codecs.
         /// </summary>
         /// <param name="dataContext">The current data context.</param>
@@ -82,7 +82,7 @@ namespace Gorgon.Editor.ImageEditor
             {
                 ListCodecs.Items.Clear();
                 DataContext?.SelectedCodecs.Clear();
-                
+
                 if (dataContext == null)
                 {
                     return;
@@ -92,9 +92,9 @@ namespace Gorgon.Editor.ImageEditor
                 {
                     var item = new ListViewItem
                     {
-						Text = setting.Description,
-						Name = setting.Name,
-						Tag = setting
+                        Text = setting.Description,
+                        Name = setting.Name,
+                        Tag = setting
                     };
 
                     item.SubItems.Add(setting.PlugIn.PlugInPath);
@@ -121,7 +121,7 @@ namespace Gorgon.Editor.ImageEditor
             }
 
             if (!(e.Item.Tag is CodecSetting setting))
-            {				
+            {
                 return;
             }
 
@@ -224,7 +224,7 @@ namespace Gorgon.Editor.ImageEditor
                         }
 
                         foreach (ListViewItem item in ListCodecs.Items.OfType<ListViewItem>().Where(item => item.Tag == setting))
-                        {							
+                        {
                             item.Selected = true;
                         }
                     }
@@ -308,10 +308,10 @@ namespace Gorgon.Editor.ImageEditor
             {
                 return;
             }
-						
+
             DataContext.CodecPlugInPaths.CollectionChanged += CodecPlugInPaths_CollectionChanged;
             DataContext.SelectedCodecs.CollectionChanged += SelectedCodecs_CollectionChanged;
-        }        
+        }
         #endregion
 
         #region Constructor/Finalizer.

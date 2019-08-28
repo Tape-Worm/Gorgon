@@ -28,14 +28,14 @@ using System;
 
 namespace Gorgon.Examples
 {
-	/// <summary>
-	/// Here's our main plug in entry point.
-	/// 
-	/// In this plug in assembly we have 2 plug ins in the same assembly. 
-	/// </summary>
-	internal class GreenPlugIn
-		: TextColorPlugIn
-	{
+    /// <summary>
+    /// Here's our main plug in entry point.
+    /// 
+    /// In this plug in assembly we have 2 plug ins in the same assembly. 
+    /// </summary>
+    internal class GreenPlugIn
+        : TextColorPlugIn
+    {
         #region Methods.
         /// <summary>
         /// Function to create the writer that will output our text with a specified color.
@@ -49,11 +49,11 @@ namespace Gorgon.Examples
         /// Initializes a new instance of the <see cref="GreenPlugIn" /> class.
         /// </summary>
         public GreenPlugIn()
-			: base("This plug in will print green text.")
-		{
-			// Here we can pass a description of the plug in back to the application.
-			// This is handy when we want friendly names for the plug in.
-		}
-		#endregion
-	}
+            : base("This plug in will print green text.")
+        {
+            // Here we can pass a description of the plug in back to the application.
+            // This is handy when we want friendly names for the plug in.
+        }
+        #endregion
+    }
 }

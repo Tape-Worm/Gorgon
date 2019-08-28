@@ -38,62 +38,62 @@ namespace Gorgon.Renderers
     /// </summary>
     internal class TextSpriteTransformer
     {
-		/// <summary>
-		/// Function to update the transform coordinates by the alignment settings.
-		/// </summary>
-		/// <param name="leftTop">Left and top coordinates.</param>
-		/// <param name="alignment">The alignment to use.</param>
-		/// <param name="layoutSize">The layout region size.</param>
-		/// <param name="lineLength">Length of the line, in pixels.</param>
-		/// <param name="textHeight">The height of the text block being rendered.</param>
-		private static void GetTextAlignmentExtents(ref DX.Vector2 leftTop, Alignment alignment, ref DX.Size2F layoutSize, float lineLength, float textHeight)
-		{
-			int calc;
+        /// <summary>
+        /// Function to update the transform coordinates by the alignment settings.
+        /// </summary>
+        /// <param name="leftTop">Left and top coordinates.</param>
+        /// <param name="alignment">The alignment to use.</param>
+        /// <param name="layoutSize">The layout region size.</param>
+        /// <param name="lineLength">Length of the line, in pixels.</param>
+        /// <param name="textHeight">The height of the text block being rendered.</param>
+        private static void GetTextAlignmentExtents(ref DX.Vector2 leftTop, Alignment alignment, ref DX.Size2F layoutSize, float lineLength, float textHeight)
+        {
+            int calc;
 
-			switch (alignment)
-			{
-				case Alignment.UpperCenter:
-					calc = (int)((layoutSize.Width / 2.0f) - (lineLength / 2.0f));
-					leftTop.X += calc;
-					break;
-				case Alignment.UpperRight:
-					calc = (int)(layoutSize.Width - lineLength);
-					leftTop.X += calc;
-					break;
-				case Alignment.CenterLeft:
-					calc = (int)((layoutSize.Height / 2.0f) - (textHeight / 2.0f));
-					leftTop.Y += calc;
-					break;
-				case Alignment.Center:
-					calc = (int)((layoutSize.Width / 2.0f) - (lineLength / 2.0f));
-					leftTop.X += calc;
-					calc = (int)((layoutSize.Height / 2.0f) - (textHeight / 2.0f));
-					leftTop.Y += calc;
-					break;
-				case Alignment.CenterRight:
-					calc = (int)(layoutSize.Width - lineLength);
-					leftTop.X += calc;
-					calc = (int)((layoutSize.Height / 2.0f) - (textHeight / 2.0f));
-					leftTop.Y += calc;
-					break;
-				case Alignment.LowerLeft:
-					calc = (int)(layoutSize.Height - textHeight);
-					leftTop.Y += calc;
-					break;
-				case Alignment.LowerCenter:
-					calc = (int)((layoutSize.Width / 2.0f) - (lineLength / 2.0f));
-					leftTop.X += calc;
-					calc = (int)(layoutSize.Height - textHeight);
-					leftTop.Y += calc;
-					break;
-				case Alignment.LowerRight:
-					calc = (int)(layoutSize.Width - lineLength);
-					leftTop.X += calc;
-					calc = (int)(layoutSize.Height - textHeight);
-					leftTop.Y += calc;
-					break;
-			}
-		}
+            switch (alignment)
+            {
+                case Alignment.UpperCenter:
+                    calc = (int)((layoutSize.Width / 2.0f) - (lineLength / 2.0f));
+                    leftTop.X += calc;
+                    break;
+                case Alignment.UpperRight:
+                    calc = (int)(layoutSize.Width - lineLength);
+                    leftTop.X += calc;
+                    break;
+                case Alignment.CenterLeft:
+                    calc = (int)((layoutSize.Height / 2.0f) - (textHeight / 2.0f));
+                    leftTop.Y += calc;
+                    break;
+                case Alignment.Center:
+                    calc = (int)((layoutSize.Width / 2.0f) - (lineLength / 2.0f));
+                    leftTop.X += calc;
+                    calc = (int)((layoutSize.Height / 2.0f) - (textHeight / 2.0f));
+                    leftTop.Y += calc;
+                    break;
+                case Alignment.CenterRight:
+                    calc = (int)(layoutSize.Width - lineLength);
+                    leftTop.X += calc;
+                    calc = (int)((layoutSize.Height / 2.0f) - (textHeight / 2.0f));
+                    leftTop.Y += calc;
+                    break;
+                case Alignment.LowerLeft:
+                    calc = (int)(layoutSize.Height - textHeight);
+                    leftTop.Y += calc;
+                    break;
+                case Alignment.LowerCenter:
+                    calc = (int)((layoutSize.Width / 2.0f) - (lineLength / 2.0f));
+                    leftTop.X += calc;
+                    calc = (int)(layoutSize.Height - textHeight);
+                    leftTop.Y += calc;
+                    break;
+                case Alignment.LowerRight:
+                    calc = (int)(layoutSize.Width - lineLength);
+                    leftTop.X += calc;
+                    calc = (int)(layoutSize.Height - textHeight);
+                    leftTop.Y += calc;
+                    break;
+            }
+        }
 
         /// <summary>
         /// Function to build up the renderable vertices.
@@ -322,7 +322,7 @@ namespace Gorgon.Renderers
             ref DX.RectangleF spriteBounds = ref renderable.Bounds;
             Alignment alignment = renderable.Alignment;
             ref GorgonColor outlineTint = ref renderable.OutlineTint;
-            
+
             // Ensure there's enough vertices allocated.
             if (renderable.VertexCountChanged)
             {
@@ -389,7 +389,7 @@ namespace Gorgon.Renderers
             {
                 GetTextAlignmentExtents(ref upperLeft, alignment, ref renderable.LayoutArea, lineMeasure, spriteBounds.Height);
             }
-                
+
             var glyphBounds = new DX.RectangleF(upperLeft.X, upperLeft.Y, size.X, size.Y);
 
             TransformVertices(vertices,

@@ -92,7 +92,7 @@ namespace Gorgon.Graphics.Core
                 suggestedMode = result;
                 return;
             }
-            
+
             using (var factory = new Factory1())
             using (Adapter1 adapter = factory.GetAdapter1(output.Adapter.Index))
             using (Output giOutput = adapter.GetOutput(output.Index))

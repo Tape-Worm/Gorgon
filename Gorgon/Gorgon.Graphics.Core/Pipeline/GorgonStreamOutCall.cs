@@ -124,7 +124,7 @@ namespace Gorgon.Graphics.Core
             D3DState.ReadWriteViews = new GorgonReadWriteViewBindings();
             D3DState.CsReadWriteViews = new GorgonReadWriteViewBindings();
             D3DState.DsSrvs = D3DState.HsSrvs = D3DState.VsSrvs = D3DState.GsSrvs = D3DState.CsSrvs = new GorgonShaderResourceViews();
-            
+
         }
 
         /// <summary>

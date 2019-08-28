@@ -31,56 +31,56 @@ using Gorgon.Editor.UI.ViewModels;
 
 namespace Gorgon.Editor.ExtractSpriteTool
 {
-	/// <summary>
+    /// <summary>
     /// Parameters to pass to the <see cref="IExtract"/> view model.
     /// </summary>
     internal class ExtractParameters
-		: ViewModelInjection
+        : ViewModelInjection
     {
-		/// <summary>
+        /// <summary>
         /// Property to return the plug in settings.
         /// </summary>
-		public ExtractSpriteToolSettings Settings
+        public ExtractSpriteToolSettings Settings
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the data structure that will hold the information used to extract sprites.
         /// </summary>
-		public SpriteExtractionData Data
+        public SpriteExtractionData Data
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the file containing the texture data.
         /// </summary>
-		public IContentFile TextureFile
+        public IContentFile TextureFile
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the extractor used to build the sprites.
         /// </summary>
-		public IExtractorService Extractor
+        public IExtractorService Extractor
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the color picker service.
         /// </summary>
-		public IColorPickerService ColorPicker
+        public IColorPickerService ColorPicker
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the project file system folder browser.
         /// </summary>
-		public IFileSystemFolderBrowseService FolderBrowser
+        public IFileSystemFolderBrowseService FolderBrowser
         {
             get;
         }

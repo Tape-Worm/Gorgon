@@ -25,12 +25,12 @@
 #endregion
 
 using System;
-using DX = SharpDX;
-using Gorgon.Editor.Services;
-using Gorgon.Editor.UI;
-using Gorgon.Editor.SpriteEditor.Properties;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using Gorgon.Editor.Services;
+using Gorgon.Editor.SpriteEditor.Properties;
+using Gorgon.Editor.UI;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -51,7 +51,7 @@ namespace Gorgon.Editor.SpriteEditor
         private int _selectedVertexIndex = -1;
         // The message display service.
         private IMessageDisplayService _messageDisplay;
-		// The vertices being edited
+        // The vertices being edited
         private readonly DX.Vector2[] _vertices = new DX.Vector2[4];
         // The command to apply the values.
         private IEditorCommand<object> _applyCommand;
@@ -78,7 +78,7 @@ namespace Gorgon.Editor.SpriteEditor
                 OnPropertyChanged();
             }
         }
-        
+
         /// <summary>Property to set or return the position of the input interface.</summary>
         public DX.Point? Position
         {
@@ -184,10 +184,10 @@ namespace Gorgon.Editor.SpriteEditor
                 {
                     return;
                 }
-								
+
                 OnPropertyChanging();
                 for (int i = 0; i < _vertices.Length; ++i)
-                {					
+                {
                     _vertices[i] = i < value.Count ? value[i] : DX.Vector2.Zero;
                 }
                 OnPropertyChanged();

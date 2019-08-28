@@ -8,24 +8,24 @@ using System.Collections.Generic;
 
 namespace GorgonTriangulator
 {
-	/// <summary>
-	/// Implements a LinkedList that is both indexable as well as cyclical. Thus
-	/// indexing into the list with an out-of-bounds index will automatically cycle
-	/// around the list to find a valid node.
-	/// </summary>
-	internal class IndexableCyclicalLinkedList<T> : LinkedList<T>
-	{
-		/// <summary>
-		/// Gets the LinkedListNode at a particular index.
-		/// </summary>
-		/// <param name="index">The index of the node to retrieve.</param>
-		/// <returns>The LinkedListNode found at the index given.</returns>
-		public LinkedListNode<T> this[int index]
-		{
-			get
-			{
-				//perform the index wrapping
-				while (index < 0)
+    /// <summary>
+    /// Implements a LinkedList that is both indexable as well as cyclical. Thus
+    /// indexing into the list with an out-of-bounds index will automatically cycle
+    /// around the list to find a valid node.
+    /// </summary>
+    internal class IndexableCyclicalLinkedList<T> : LinkedList<T>
+    {
+        /// <summary>
+        /// Gets the LinkedListNode at a particular index.
+        /// </summary>
+        /// <param name="index">The index of the node to retrieve.</param>
+        /// <returns>The LinkedListNode found at the index given.</returns>
+        public LinkedListNode<T> this[int index]
+        {
+            get
+            {
+                //perform the index wrapping
+                while (index < 0)
                 {
                     index = Count + index;
                 }
@@ -37,14 +37,14 @@ namespace GorgonTriangulator
 
                 //find the proper node
                 LinkedListNode<T> node = First;
-				for (int i = 0; i < index; i++)
+                for (int i = 0; i < index; i++)
                 {
                     node = node?.Next;
                 }
 
                 return node;
-			}
-		}
+            }
+        }
 
         /// <summary>
         /// Removes the node at a given index.
@@ -58,8 +58,8 @@ namespace GorgonTriangulator
         /// <param name="item">The item to find.</param>
         /// <returns>The index of the item if found; -1 if the item is not found.</returns>
         public int IndexOf(T item)
-		{
-			for (int i = 0; i < Count; i++)
+        {
+            for (int i = 0; i < Count; i++)
             {
                 if (this[i].Value.Equals(item))
                 {
@@ -68,6 +68,6 @@ namespace GorgonTriangulator
             }
 
             return -1;
-		}
-	}
+        }
+    }
 }

@@ -37,9 +37,9 @@ namespace Gorgon.Editor.ViewModels
     /// The parameters for the <see cref="IEditorSettingsVm"/> view model.
     /// </summary>
     internal class EditorSettingsParameters
-		: IViewModelInjection
+        : IViewModelInjection
     {
-		/// <summary>
+        /// <summary>
         /// Property to return the categories for the settings.
         /// </summary>
         public IEnumerable<ISettingsCategoryViewModel> Categories

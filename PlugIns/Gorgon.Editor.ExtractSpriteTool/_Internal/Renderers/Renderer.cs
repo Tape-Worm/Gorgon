@@ -25,13 +25,13 @@
 #endregion
 
 using System.Linq;
-using DX = SharpDX;
+using Gorgon.Editor.ExtractSpriteTool.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Renderers;
 using Gorgon.Math;
-using Gorgon.Editor.ExtractSpriteTool.Properties;
+using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.ExtractSpriteTool
 {
@@ -42,21 +42,21 @@ namespace Gorgon.Editor.ExtractSpriteTool
         : IRenderer
     {
         #region Variables.
-		// The graphics interface for the application.
+        // The graphics interface for the application.
         private readonly GorgonGraphics _graphics;
-		// The 2D renderer for the application.
+        // The 2D renderer for the application.
         private readonly Gorgon2D _renderer;
-		// The swap chain used to render onto the window.
+        // The swap chain used to render onto the window.
         private readonly GorgonSwapChain _swapChain;
-		// Background texture.
+        // Background texture.
         private GorgonTexture2DView _bgTexture;
-		// The camera for viewing the scene.
+        // The camera for viewing the scene.
         private IGorgon2DCamera _camera;
-		// The sprite used to display the texture.
+        // The sprite used to display the texture.
         private GorgonSprite _textureSprite;
-		// Inverted rendering.
+        // Inverted rendering.
         private Gorgon2DBatchState _inverted;
-		// The sprite to display for preview.
+        // The sprite to display for preview.
         private readonly GorgonSprite _previewSprite = new GorgonSprite();
         #endregion
 
@@ -70,7 +70,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         #endregion
 
         #region Methods.
-		/// <summary>
+        /// <summary>
         /// Function to initialize the render data from the data context.
         /// </summary>
         /// <param name="dataContext">The current data context.</param>
@@ -86,14 +86,14 @@ namespace Gorgon.Editor.ExtractSpriteTool
             _previewSprite.Texture = dataContext.Texture;
             _textureSprite = new GorgonSprite
             {
-				Texture = dataContext.Texture,
-				TextureRegion = new DX.RectangleF(0, 0, 1, 1),
-				Size = new DX.Size2F(dataContext.Texture.Width, dataContext.Texture.Height),				
-				TextureSampler = GorgonSamplerState.PointFiltering
+                Texture = dataContext.Texture,
+                TextureRegion = new DX.RectangleF(0, 0, 1, 1),
+                Size = new DX.Size2F(dataContext.Texture.Width, dataContext.Texture.Height),
+                TextureSampler = GorgonSamplerState.PointFiltering
             };
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to update the preview sprite.
         /// </summary>
         /// <param name="scale">The current scale factor.</param>
@@ -118,7 +118,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
             return scaling.X.Min(scaling.Y);
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to render the sprite preview.
         /// </summary>
         private void DrawPreview()
@@ -136,7 +136,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
             _renderer.End();
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to draw the wait panel for generating sprites.
         /// </summary>
         private void DrawWaitingPanel()
@@ -149,12 +149,12 @@ namespace Gorgon.Editor.ExtractSpriteTool
 
             float percent = (float)prog.Current / prog.Total;
             var barOutline = new DX.RectangleF(pos.X, _swapChain.Height * 0.5f - (textSize.Height + 4) * 0.5f,
-											textSize.Width + 4, textSize.Height + 8);
+                                            textSize.Width + 4, textSize.Height + 8);
             var bar = new DX.RectangleF(barOutline.X + 1, barOutline.Y + 1, ((barOutline.Width - 2) * percent), barOutline.Height - 2);
 
             _renderer.Begin();
             _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _swapChain.Width, _swapChain.Height),
-										new GorgonColor(GorgonColor.White, 0.80f));
+                                        new GorgonColor(GorgonColor.White, 0.80f));
             _renderer.DrawString(text, pos, color: GorgonColor.Black);
             _renderer.DrawRectangle(barOutline, GorgonColor.Black, 2);
             _renderer.End();
@@ -198,14 +198,14 @@ namespace Gorgon.Editor.ExtractSpriteTool
 
             _renderer.End();
 
-            _renderer.Begin(_inverted ,_camera);
+            _renderer.Begin(_inverted, _camera);
             var pos = new DX.Vector2(_textureSprite.Position.X + (DataContext.GridOffset.X * scale), _textureSprite.Position.Y + (DataContext.GridOffset.Y * scale));
 
             int maxWidth = (int)((DataContext.CellSize.Width * DataContext.GridSize.Width) * scale);
             int maxHeight = (int)((DataContext.CellSize.Height * DataContext.GridSize.Height) * scale);
 
-            _renderer.DrawRectangle(new DX.RectangleF(pos.X - 1, pos.Y - 1,  maxWidth + 2, maxHeight + 2),
-									GorgonColor.DeepPink);
+            _renderer.DrawRectangle(new DX.RectangleF(pos.X - 1, pos.Y - 1, maxWidth + 2, maxHeight + 2),
+                                    GorgonColor.DeepPink);
 
             for (int x = 1; x < DataContext.GridSize.Width; ++x)
             {
@@ -228,7 +228,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
             if (DataContext.SpriteGenerationTask != null)
             {
                 DrawWaitingPanel();
-            }			
+            }
         }
 
         /// <summary>Function to perform setup on the renderer.</summary>
@@ -238,8 +238,8 @@ namespace Gorgon.Editor.ExtractSpriteTool
             {
                 Binding = TextureBinding.ShaderResource,
                 Usage = ResourceUsage.Immutable,
-				Width = EditorCommonResources.CheckerBoardPatternImage.Width,
-				Height = EditorCommonResources.CheckerBoardPatternImage.Height
+                Width = EditorCommonResources.CheckerBoardPatternImage.Width,
+                Height = EditorCommonResources.CheckerBoardPatternImage.Height
             }, EditorCommonResources.CheckerBoardPatternImage);
 
             _camera = new Gorgon2DOrthoCamera(_renderer, new DX.Size2F(_swapChain.Width, _swapChain.Height))
@@ -249,7 +249,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
 
             var builder = new Gorgon2DBatchStateBuilder();
             _inverted = builder.BlendState(GorgonBlendState.Inverted)
-								.Build();
+                                .Build();
         }
 
         /// <summary>Function to assign a data context to the view as a view model.</summary>

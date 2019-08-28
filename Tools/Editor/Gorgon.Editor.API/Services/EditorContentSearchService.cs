@@ -174,7 +174,7 @@ namespace Gorgon.Editor.Services
                 searchText = updatedSearchText;
             }
 
-            (SearchMode mode, string modeSearchText) = ExtractSearchMode(searchText);            
+            (SearchMode mode, string modeSearchText) = ExtractSearchMode(searchText);
 
             // Test code for search:
             var searchResults = new List<IContentFileExplorerSearchEntry>();
@@ -195,9 +195,9 @@ namespace Gorgon.Editor.Services
                     case SearchMode.OnlyWord when string.Equals(path, modeSearchText, StringComparison.CurrentCultureIgnoreCase):
                     case SearchMode.StartsWith when path.StartsWith(modeSearchText, StringComparison.CurrentCultureIgnoreCase):
                     case SearchMode.EndsWith when path.EndsWith(modeSearchText, StringComparison.CurrentCultureIgnoreCase):
-                    case SearchMode.Contains when (path.IndexOf(modeSearchText, StringComparison.CurrentCultureIgnoreCase) != -1):                        
+                    case SearchMode.Contains when (path.IndexOf(modeSearchText, StringComparison.CurrentCultureIgnoreCase) != -1):
                     case SearchMode.All:
-                        if (isDirSearch) 
+                        if (isDirSearch)
                         {
                             if (row.IsDirectory)
                             {

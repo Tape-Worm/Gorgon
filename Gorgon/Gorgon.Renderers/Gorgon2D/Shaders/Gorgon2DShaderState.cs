@@ -59,22 +59,22 @@ namespace Gorgon.Renderers
         /// The shader resource views, with read/write access.
         /// </summary>
         internal GorgonArray<GorgonShaderResourceView> RwSrvs = new GorgonArray<GorgonShaderResourceView>(16);
-		#endregion
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to return the shader.
-		/// </summary>
-		public T Shader
+        #region Properties.
+        /// <summary>
+        /// Property to return the shader.
+        /// </summary>
+        public T Shader
         {
             get;
-			internal set;
+            internal set;
         }
 
-		/// <summary>
-		/// Property to return the samplers for the shader.
-		/// </summary>
-		public IGorgonReadOnlyArray<GorgonSamplerState> Samplers => RwSamplers;
+        /// <summary>
+        /// Property to return the samplers for the shader.
+        /// </summary>
+        public IGorgonReadOnlyArray<GorgonSamplerState> Samplers => RwSamplers;
 
         /// <summary>
         /// Property to return the constant buffers for the shader.

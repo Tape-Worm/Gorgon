@@ -195,7 +195,7 @@ namespace Gorgon.Graphics.Core
             {
                 throw new ArgumentNullException(nameof(info));
             }
-            
+
             Name = string.IsNullOrEmpty(newName) ? info.Name : newName;
             Usage = info.Usage;
             SizeInBytes = info.SizeInBytes;

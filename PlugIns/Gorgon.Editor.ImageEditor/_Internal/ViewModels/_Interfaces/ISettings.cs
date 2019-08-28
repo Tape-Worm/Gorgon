@@ -29,11 +29,11 @@ using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ImageEditor
 {
-	/// <summary>
+    /// <summary>
     /// Settings view model for image codecs.
     /// </summary>
     internal interface ISettings
-		: ISettingsCategoryViewModel
+        : ISettingsCategoryViewModel
     {
         /// <summary>
         /// Property to set or return the to the directory that was last used for importing/exporting.
@@ -44,10 +44,10 @@ namespace Gorgon.Editor.ImageEditor
             set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the list of selected codecs.
         /// </summary>
-		ObservableCollection<CodecSetting> SelectedCodecs
+        ObservableCollection<CodecSetting> SelectedCodecs
         {
             get;
         }
@@ -57,29 +57,29 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         ObservableCollection<CodecSetting> CodecPlugInPaths
         {
-            get;            
+            get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the command for writing setting data.
         /// </summary>
-		IEditorCommand<object> WriteSettingsCommand
+        IEditorCommand<object> WriteSettingsCommand
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the command for loading a plug in assembly.
         /// </summary>
-		IEditorCommand<object> LoadPlugInAssemblyCommand
+        IEditorCommand<object> LoadPlugInAssemblyCommand
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the command to unloading a plug in assembly.
         /// </summary>
-		IEditorCommand<object> UnloadPlugInAssembliesCommand
+        IEditorCommand<object> UnloadPlugInAssembliesCommand
         {
             get;
         }

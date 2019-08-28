@@ -38,20 +38,20 @@ namespace Gorgon.Graphics.Core
     /// Provides information on how to set up a constant buffer.
     /// </summary>
     public class GorgonConstantBufferInfo
-		: IGorgonConstantBufferInfo
-	{
-		#region Properties.
-		/// <summary>
-		/// Property to set or return the intended usage flags for this buffer.
-		/// </summary>
-		/// <remarks>
-		/// This value is defaulted to <see cref="ResourceUsage.Default"/>.
-		/// </remarks>
-		public ResourceUsage Usage
-		{
-			get;
-			set;
-		}
+        : IGorgonConstantBufferInfo
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to set or return the intended usage flags for this buffer.
+        /// </summary>
+        /// <remarks>
+        /// This value is defaulted to <see cref="ResourceUsage.Default"/>.
+        /// </remarks>
+        public ResourceUsage Usage
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Property to set or return the number of bytes to allocate for the buffer.
@@ -69,18 +69,18 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </remarks>
         public int SizeInBytes
-		{
-			get;
-			set;
-		}
+        {
+            get;
+            set;
+        }
 
-	    /// <summary>
-	    /// Property to return the name of this object.
-	    /// </summary>
-	    public string Name
-	    {
-	        get;
-	    }
+        /// <summary>
+        /// Property to return the name of this object.
+        /// </summary>
+        public string Name
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
@@ -118,61 +118,61 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type)"/>
         /// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type,out IReadOnlyList{FieldInfo})"/>
         public static IGorgonConstantBufferInfo CreateFromType<T>(string name = null, int count = 1, ResourceUsage usage = ResourceUsage.Default)
-			where T : unmanaged
-		{
-			if (count < 1)
-			{
-				throw new ArgumentOutOfRangeException(nameof(count));
-			}
+            where T : unmanaged
+        {
+            if (count < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(count));
+            }
 
-			Type dataType = typeof(T);
+            Type dataType = typeof(T);
 
-			if (dataType.IsSafeForNative(out IReadOnlyList<FieldInfo> badFields))
-			{
-				return new GorgonConstantBufferInfo(string.IsNullOrEmpty(dataType.Name) ? dataType.FullName : name)
-				{
-					Usage = usage,
-					SizeInBytes = ((count * Unsafe.SizeOf<T>()) + 15) & ~15
-				};
-			}
+            if (dataType.IsSafeForNative(out IReadOnlyList<FieldInfo> badFields))
+            {
+                return new GorgonConstantBufferInfo(string.IsNullOrEmpty(dataType.Name) ? dataType.FullName : name)
+                {
+                    Usage = usage,
+                    SizeInBytes = ((count * Unsafe.SizeOf<T>()) + 15) & ~15
+                };
+            }
 
-			if (badFields.Count == 0)
-			{
-				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TYPE_NO_FIELDS, dataType.FullName));
-			}
+            if (badFields.Count == 0)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TYPE_NO_FIELDS, dataType.FullName));
+            }
 
-			throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TYPE_NOT_VALID_FOR_NATIVE, dataType.FullName));
-		}
-		#endregion
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TYPE_NOT_VALID_FOR_NATIVE, dataType.FullName));
+        }
+        #endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonConstantBufferInfo"/> class.
-		/// </summary>
-		/// <param name="info">A <see cref="IGorgonConstantBufferInfo"/> to copy settings from.</param>
-		/// <param name="newName">[Optional] The new name for the buffer.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-		public GorgonConstantBufferInfo(IGorgonConstantBufferInfo info, string newName = null)
-		{
-		    if (info == null)
-		    {
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonConstantBufferInfo"/> class.
+        /// </summary>
+        /// <param name="info">A <see cref="IGorgonConstantBufferInfo"/> to copy settings from.</param>
+        /// <param name="newName">[Optional] The new name for the buffer.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
+        public GorgonConstantBufferInfo(IGorgonConstantBufferInfo info, string newName = null)
+        {
+            if (info == null)
+            {
                 throw new ArgumentNullException(nameof(info));
-		    }
-            
-		    Name = string.IsNullOrEmpty(newName) ? info.Name : newName;
-		    SizeInBytes = info.SizeInBytes;
-			Usage = info.Usage;
-		}
+            }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonConstantBufferInfo"/> class.
-		/// </summary>
-		/// <param name="name">[Optional] The name of the constant buffer.</param>
-		public GorgonConstantBufferInfo(string name = null)
-		{
-		    Name = string.IsNullOrEmpty(name) ? GorgonGraphicsResource.GenerateName(GorgonConstantBuffer.NamePrefix) : name;
-			Usage = ResourceUsage.Default;
-		}
-		#endregion
-	}
+            Name = string.IsNullOrEmpty(newName) ? info.Name : newName;
+            SizeInBytes = info.SizeInBytes;
+            Usage = info.Usage;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonConstantBufferInfo"/> class.
+        /// </summary>
+        /// <param name="name">[Optional] The name of the constant buffer.</param>
+        public GorgonConstantBufferInfo(string name = null)
+        {
+            Name = string.IsNullOrEmpty(name) ? GorgonGraphicsResource.GenerateName(GorgonConstantBuffer.NamePrefix) : name;
+            Usage = ResourceUsage.Default;
+        }
+        #endregion
+    }
 }

@@ -46,34 +46,34 @@ namespace Gorgon.Editor.ImageEditor
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the content plug in service.
         /// </summary>
-		public IContentPlugInService PlugInService
+        public IContentPlugInService PlugInService
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the codecs loaded into the system.
         /// </summary>
-		public ICodecRegistry Codecs
+        public ICodecRegistry Codecs
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the plug in cache.
         /// </summary>
-		public GorgonMefPlugInCache PlugInCache
+        public GorgonMefPlugInCache PlugInCache
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the file dialog service used to locate codec assemblies.
         /// </summary>
-		public IFileDialogService CodecFileDialog
+        public IFileDialogService CodecFileDialog
         {
             get;
         }
@@ -89,7 +89,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="commonServices">Common application services.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
         public SettingsParameters(ImageEditorSettings settings, ICodecRegistry codecs, IFileDialogService codecDialog, IContentPlugInService pluginService, GorgonMefPlugInCache plugInCache, IViewModelInjection commonServices)
-			: base(commonServices)
+            : base(commonServices)
         {
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             Codecs = codecs ?? throw new ArgumentNullException(nameof(codecs));

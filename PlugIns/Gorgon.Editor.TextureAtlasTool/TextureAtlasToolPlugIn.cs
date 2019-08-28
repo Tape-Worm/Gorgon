@@ -25,18 +25,18 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Gorgon.Editor.Content;
-using Gorgon.Editor.TextureAtlasTool.Properties;
 using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Services;
+using Gorgon.Editor.TextureAtlasTool.Properties;
+using Gorgon.Editor.UI.Controls;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
-using Gorgon.UI;
-using System.Collections.Generic;
-using Gorgon.Editor.UI.Controls;
-using System.Linq;
-using Gorgon.Editor.Services;
 using Gorgon.Renderers.Services;
+using Gorgon.UI;
 
 namespace Gorgon.Editor.TextureAtlasTool
 {
@@ -47,15 +47,15 @@ namespace Gorgon.Editor.TextureAtlasTool
         : ToolPlugIn
     {
         #region Variables.
-		// The cached button definition.
+        // The cached button definition.
         private ToolPlugInRibbonButton _button;
-		// The project file manager.
+        // The project file manager.
         private IContentFileManager _fileManager;
-		// The default image codec to use.
+        // The default image codec to use.
         private IGorgonImageCodec _defaultImageCodec;
         // The default sprite codec to use.
         private IGorgonSpriteCodec _defaultSpriteCodec;
-		// The view model for the sprite file browser.
+        // The view model for the sprite file browser.
         private SpriteFiles _fileVm;
         // The texture atlas view model.
         private TextureAtlas _textureAtlas;
@@ -123,7 +123,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// Function to show the tool form.
         /// </summary>
         private void ShowForm()
-        {        
+        {
             TextureAtlasSettings settings;
             FormAtlasGen form = null;
 
@@ -153,17 +153,17 @@ namespace Gorgon.Editor.TextureAtlasTool
                 var fileIO = new FileIOService(_fileManager, _defaultImageCodec, _defaultSpriteCodec);
 
                 _fileVm.Initialize(new SpriteFilesParameters(entries, new EditorContentSearchService(searchEntries), CommonServices));
-                _textureAtlas.Initialize(new TextureAtlasParameters(settings, 
-                                        _fileVm, 
-                                        new GorgonTextureAtlasService(GraphicsContext.Renderer2D), 
-                                        fileIO, 
-                                        FolderBrowser, 
-                                        CommonServices));	
+                _textureAtlas.Initialize(new TextureAtlasParameters(settings,
+                                        _fileVm,
+                                        new GorgonTextureAtlasService(GraphicsContext.Renderer2D),
+                                        fileIO,
+                                        FolderBrowser,
+                                        CommonServices));
 
                 form = new FormAtlasGen();
                 form.SetupGraphics(GraphicsContext);
                 form.SetDataContext(_textureAtlas);
-                
+
                 CommonServices.BusyService.SetIdle();
                 form.ShowDialog(GorgonApplication.MainForm);
 
@@ -216,7 +216,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <summary>Function to provide initialization for the plugin.</summary>
         /// <remarks>This method is only called when the plugin is loaded at startup.</remarks>
         protected override void OnInitialize()
-        {            
+        {
             _defaultImageCodec = new GorgonCodecDds();
             _defaultSpriteCodec = new GorgonV3SpriteBinaryCodec(GraphicsContext.Renderer2D);
 

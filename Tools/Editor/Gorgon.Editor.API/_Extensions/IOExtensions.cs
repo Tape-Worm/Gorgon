@@ -172,7 +172,7 @@ namespace Gorgon.IO
             if (pathSeparator != Path.DirectorySeparatorChar)
             {
                 pathBuilder.Replace(Path.DirectorySeparatorChar, pathSeparator);
-            }            
+            }
 
             return string.IsNullOrWhiteSpace(fileName) ? pathBuilder.ToString() : Path.Combine(pathBuilder.ToString(), fileName);
         }
@@ -235,7 +235,7 @@ namespace Gorgon.IO
 
             IEnumerable<IGorgonVirtualFile> files = fileSystem.FindFiles(directory.FullPath, searchMask, recursive);
 
-			// Handle the unassociated files.
+            // Handle the unassociated files.
             if (string.IsNullOrWhiteSpace(contentType))
             {
                 foreach (IGorgonVirtualFile file in files)
@@ -256,7 +256,7 @@ namespace Gorgon.IO
                 }
                 return result;
             }
-			
+
             // Filter the list based on the content type we ask for.
             foreach (IGorgonVirtualFile file in files)
             {
@@ -267,10 +267,10 @@ namespace Gorgon.IO
 
                 IReadOnlyDictionary<string, string> attributes = metaDataItem.Attributes;
 
-                if ((attributes == null) 
-					|| (attributes.Count == 0) 
-					|| (!attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string type))
-					|| (!string.Equals(contentType, type, StringComparison.OrdinalIgnoreCase)))
+                if ((attributes == null)
+                    || (attributes.Count == 0)
+                    || (!attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string type))
+                    || (!string.Equals(contentType, type, StringComparison.OrdinalIgnoreCase)))
                 {
                     continue;
                 }

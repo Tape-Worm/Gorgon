@@ -30,19 +30,19 @@ using System.Runtime.InteropServices;
 // ReSharper disable InconsistentNaming
 namespace Gorgon.Native
 {
-	/// <summary>
-	/// Value type for raw input devices.
-	/// </summary>
-	[StructLayout(LayoutKind.Sequential)]
-	internal struct RAWINPUTDEVICE
-	{
-		/// <summary>Top level collection Usage page for the raw input device.</summary>
-		public HIDUsagePage UsagePage;
-		/// <summary>Top level collection Usage for the raw input device. </summary>
-		public ushort Usage;
-		/// <summary>Mode flag that specifies how to interpret the information provided by UsagePage and Usage.</summary>
-		public RawInputDeviceFlags Flags;
-		/// <summary>Handle to the target device. If <see cref="IntPtr.Zero"/>, it follows the keyboard focus.</summary>
-		public IntPtr WindowHandle;
-	}
+    /// <summary>
+    /// Value type for raw input devices.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct RAWINPUTDEVICE
+    {
+        /// <summary>Top level collection Usage page for the raw input device.</summary>
+        public HIDUsagePage UsagePage;
+        /// <summary>Top level collection Usage for the raw input device. </summary>
+        public ushort Usage;
+        /// <summary>Mode flag that specifies how to interpret the information provided by UsagePage and Usage.</summary>
+        public RawInputDeviceFlags Flags;
+        /// <summary>Handle to the target device. If <see cref="IntPtr.Zero"/>, it follows the keyboard focus.</summary>
+        public IntPtr WindowHandle;
+    }
 }

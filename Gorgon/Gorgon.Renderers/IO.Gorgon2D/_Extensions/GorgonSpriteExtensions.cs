@@ -25,9 +25,9 @@
 #endregion
 
 using System;
+using Gorgon.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Gorgon.IO;
 
 namespace Gorgon.Renderers
 {
@@ -64,10 +64,10 @@ namespace Gorgon.Renderers
             }
 
             var serializer = new JsonSerializer
-                           {
-                               CheckAdditionalContent = false,
-                               Formatting = prettyFormat ? Formatting.Indented : Formatting.None
-                           };
+            {
+                CheckAdditionalContent = false,
+                Formatting = prettyFormat ? Formatting.Indented : Formatting.None
+            };
 
             serializer.Converters.Add(new JsonVector2Converter());
             serializer.Converters.Add(new JsonVector3Converter());
@@ -101,10 +101,10 @@ namespace Gorgon.Renderers
             }
 
             var serializer = new JsonSerializer
-                             {
-                                 CheckAdditionalContent = false,
-                                 Formatting = prettyFormat ? Formatting.Indented : Formatting.None
-                             };
+            {
+                CheckAdditionalContent = false,
+                Formatting = prettyFormat ? Formatting.Indented : Formatting.None
+            };
 
             serializer.Converters.Add(new JsonVector2Converter());
             serializer.Converters.Add(new JsonVector3Converter());

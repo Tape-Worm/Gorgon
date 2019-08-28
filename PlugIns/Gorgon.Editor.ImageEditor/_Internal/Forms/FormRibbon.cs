@@ -21,7 +21,7 @@ namespace Gorgon.Editor.ImageEditor
     /// <remarks>
     /// We cannot provide a ribbon on the control directly. For some reason, the krypton components will only allow ribbons on forms.
     /// </remarks>
-    internal partial class FormRibbon 
+    internal partial class FormRibbon
         : KryptonForm, IDataContext<IImageContent>
     {
         #region Events.
@@ -166,7 +166,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonDimensions_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.ShowImageDimensionsCommand == null) 
+            if ((DataContext?.ShowImageDimensionsCommand == null)
                 || (!DataContext.ShowImageDimensionsCommand.CanExecute(null)))
             {
                 return;
@@ -333,7 +333,7 @@ namespace Gorgon.Editor.ImageEditor
             ButtonImageType.Enabled = DataContext.CurrentPanel == null;
             ButtonImageUndo.Enabled = DataContext.UndoCommand?.CanExecute(null) ?? false;
             ButtonImageRedo.Enabled = DataContext.RedoCommand?.CanExecute(null) ?? false;
-            ButtonExport.Enabled = MenuCodecs.Items.Count > 0;            
+            ButtonExport.Enabled = MenuCodecs.Items.Count > 0;
             ButtonSaveImage.Enabled = DataContext.SaveContentCommand?.CanExecute(SaveReason.UserSave) ?? false;
 
             if (DataContext.ChangeImageTypeCommand == null)
@@ -424,7 +424,7 @@ namespace Gorgon.Editor.ImageEditor
         {
             var item = new ToolStripMenuItem($"{codec.CodecDescription} ({codec.Codec})")
             {
-                Name = codec.Name,                
+                Name = codec.Name,
                 CheckOnClick = false,
                 Tag = codec
             };
@@ -455,7 +455,7 @@ namespace Gorgon.Editor.ImageEditor
         /// Function to unassign the events for the data context.
         /// </summary>
         private void UnassignEvents()
-        {            
+        {
             if (DataContext == null)
             {
                 return;
@@ -502,7 +502,7 @@ namespace Gorgon.Editor.ImageEditor
                 item.Checked = true;
                 return;
             }
-                        
+
             _zoomLevel = zoom;
             UpdateZoomMenu();
         }
@@ -523,8 +523,8 @@ namespace Gorgon.Editor.ImageEditor
 
             var imageType = (ImageType)item.Tag;
 
-            if ((DataContext?.ChangeImageTypeCommand == null) 
-                || (!DataContext.ChangeImageTypeCommand.CanExecute(imageType)) 
+            if ((DataContext?.ChangeImageTypeCommand == null)
+                || (!DataContext.ChangeImageTypeCommand.CanExecute(imageType))
                 || (DataContext.ImageType == imageType))
             {
                 item.Checked = true;

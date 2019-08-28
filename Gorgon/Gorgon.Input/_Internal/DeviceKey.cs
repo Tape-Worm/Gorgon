@@ -29,20 +29,20 @@ using Gorgon.Core;
 
 namespace Gorgon.Input
 {
-	/// <summary>
-	/// A key used to identify a device in a dictionary.
-	/// </summary>
-	internal struct DeviceKey
-		: IEquatable<DeviceKey>
-	{
-		/// <summary>
-		/// The type of device.
-		/// </summary>
-		public RawInputType DeviceType;
-		/// <summary>
-		/// The handle for the device.
-		/// </summary>
-		public IntPtr DeviceHandle;
+    /// <summary>
+    /// A key used to identify a device in a dictionary.
+    /// </summary>
+    internal struct DeviceKey
+        : IEquatable<DeviceKey>
+    {
+        /// <summary>
+        /// The type of device.
+        /// </summary>
+        public RawInputType DeviceType;
+        /// <summary>
+        /// The handle for the device.
+        /// </summary>
+        public IntPtr DeviceHandle;
 
         /// <summary>
         /// Function to compare two instances for equality.

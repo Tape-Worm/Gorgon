@@ -28,38 +28,38 @@ using System;
 
 namespace Gorgon.Examples
 {
-	/// <summary>
-	/// Our abstract class for our plug in.
-	/// </summary>
-	/// <remarks>This will be a simple plug in interface to write text with a specified (hard coded in the plug in DLL) color.  
-	/// We could have just as easily used an interface here, but an abstract class will work for our needs.
-	/// 
-	/// As you can see, it's just a basic abstract class, there's no plug in details anywhere and there isn't any need for it
-	/// because all of the plug in specific information is stored in the actual plug in assembly DLL.  This way, we could implement
-	/// this class in our application for default behaviour, and override that behaviour in our plug in class.
-	/// </remarks>
-	public abstract class TextColorWriter
-	{
-		#region Properties
-		/// <summary>
-		/// We'll use this property to advertise the text color.
-		/// </summary>
-		public abstract ConsoleColor TextColor
-		{
-			get;
-		}
-		#endregion
+    /// <summary>
+    /// Our abstract class for our plug in.
+    /// </summary>
+    /// <remarks>This will be a simple plug in interface to write text with a specified (hard coded in the plug in DLL) color.  
+    /// We could have just as easily used an interface here, but an abstract class will work for our needs.
+    /// 
+    /// As you can see, it's just a basic abstract class, there's no plug in details anywhere and there isn't any need for it
+    /// because all of the plug in specific information is stored in the actual plug in assembly DLL.  This way, we could implement
+    /// this class in our application for default behaviour, and override that behaviour in our plug in class.
+    /// </remarks>
+    public abstract class TextColorWriter
+    {
+        #region Properties
+        /// <summary>
+        /// We'll use this property to advertise the text color.
+        /// </summary>
+        public abstract ConsoleColor TextColor
+        {
+            get;
+        }
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// This function will output the text passed into it with the specified color.
-		/// </summary>
-		/// <param name="text">Text to write.</param>
-		public void WriteString(string text)
-		{
-			Console.ForegroundColor = TextColor;
-			Console.WriteLine(text);
-		}
-		#endregion
-	}
+        #region Methods.
+        /// <summary>
+        /// This function will output the text passed into it with the specified color.
+        /// </summary>
+        /// <param name="text">Text to write.</param>
+        public void WriteString(string text)
+        {
+            Console.ForegroundColor = TextColor;
+            Console.WriteLine(text);
+        }
+        #endregion
+    }
 }

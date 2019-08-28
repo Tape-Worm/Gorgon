@@ -28,16 +28,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using DX = SharpDX;
-using Gorgon.Graphics.Core;
-using System.Runtime.InteropServices;
+using Gorgon.Collections;
 using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
+using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Timing;
-using Gorgon.Collections;
-using Gorgon.Math;
+using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -68,7 +68,7 @@ namespace Gorgon.Examples
         [StructLayout(LayoutKind.Sequential, Pack = 16, Size = 16)]
         private struct Material
         {
-			/// <summary>
+            /// <summary>
             /// The albedo color.
             /// </summary>
             public GorgonColor Albedo;
@@ -115,23 +115,23 @@ namespace Gorgon.Examples
             /// </summary>
             public float Attenuation;
 
-			/// <summary>
+            /// <summary>
             /// The light intensity.
             /// </summary>
             public float Intensity;
         }
         #endregion
-		
+
         #region Variables.
         // The application graphics interface.
         private readonly GorgonGraphics _graphics;
-		// The application resources.
+        // The application resources.
         private readonly ResourceManagement _resources;
         // The layout for a 3D vertex.
         private GorgonInputLayout _vertexLayout;
-		// The pipeline state for rendering the planet.
+        // The pipeline state for rendering the planet.
         private GorgonPipelineStateBuilder _stateBuilder;
-		// The builder for create a draw call.
+        // The builder for create a draw call.
         private GorgonDrawIndexCallBuilder _drawCallBuilder;
         // A constant buffer for holding the projection*view matrix.
         private GorgonConstantBufferView _viewProjectionBuffer;
@@ -143,21 +143,21 @@ namespace Gorgon.Examples
         private GorgonConstantBufferView _lightBuffer;
         // A constant buffer for holding material information.
         private GorgonConstantBufferView _materialBuffer;
-		// The draw call to render.
+        // The draw call to render.
         private List<GorgonDrawIndexCall> _drawCalls;
         // The light data to send to the constant buffer.
         private readonly LightData[] _lightData = new LightData[MaxLights];
         // The current view matrix, and projection matrix.  We'll pull these from our 2D camera.
         private DX.Matrix _viewMatrix;
         private DX.Matrix _projectionMatrix;
-		// A combination of both matrices. This is calculated on every frame update when the view/projection is updated.
+        // A combination of both matrices. This is calculated on every frame update when the view/projection is updated.
         private DX.Matrix _viewProjection;
         // Flag to indicate that we can draw the planet or not.
         private readonly List<Planet> _drawPlanets = new List<Planet>();
         #endregion
 
         #region Properties.
-		/// <summary>
+        /// <summary>
         /// Property to return a list of 3D planets to render.
         /// </summary>
         public IList<Planet> Planets
@@ -167,7 +167,7 @@ namespace Gorgon.Examples
         #endregion
 
         #region Methods.
-		/// <summary>
+        /// <summary>
         /// Function to build up the constant buffer data for our shaders.
         /// </summary>
         private void BuildConstantBuffers()
@@ -176,7 +176,7 @@ namespace Gorgon.Examples
             DX.Vector3 cameraPos = _viewMatrix.TranslationVector;
             var emptyMaterial = new Material
             {
-				Albedo = GorgonColor.White,
+                Albedo = GorgonColor.White,
                 SpecularPower = 1.0f,
                 UVOffset = DX.Vector2.Zero
             };
@@ -194,7 +194,7 @@ namespace Gorgon.Examples
                                                     });
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to update the material on the shader for the specified mesh.
         /// </summary>
         /// <param name="mesh">The mesh to evaluate.</param>
@@ -211,7 +211,7 @@ namespace Gorgon.Examples
             _materialBuffer.Buffer.SetData(ref materialData);
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to update the world matrix for the mesh for AABB calculations.
         /// </summary>
         /// <param name="mesh">The mesh to update.</param>
@@ -348,7 +348,7 @@ namespace Gorgon.Examples
             }
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to load the resources for the layer.
         /// </summary>
         public override void LoadResources()
@@ -407,7 +407,7 @@ namespace Gorgon.Examples
             UpdateLightTransforms();
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to assign a view matrix for the layer.
         /// </summary>
         /// <param name="view">The view (camera) matrix to assign.</param>

@@ -86,7 +86,7 @@ namespace Gorgon.Editor.UI
             method?.Invoke(control, new[] { viewModel });
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to determine if the view model type has a view registration.
         /// </summary>
         /// <param name="viewModel">The view model type to evaluate.</param>

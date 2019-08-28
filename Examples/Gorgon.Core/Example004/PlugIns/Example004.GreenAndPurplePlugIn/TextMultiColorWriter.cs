@@ -28,22 +28,22 @@ using System;
 
 namespace Gorgon.Examples
 {
-	/// <summary>
-	/// Our writer that uses multiple colors.
-	/// 
-	/// So now we can implement our green/purple text color writer by passing in the color 
-	/// on the constructor from the plug in interface.
-	/// </summary>
-	internal class TextMultiColorWriter
-		: TextColorWriter
-	{
-		/// <summary>
-		/// We'll use this property to advertise the text color.
-		/// </summary>
-		public override ConsoleColor TextColor
-		{
-			get;
-		}
+    /// <summary>
+    /// Our writer that uses multiple colors.
+    /// 
+    /// So now we can implement our green/purple text color writer by passing in the color 
+    /// on the constructor from the plug in interface.
+    /// </summary>
+    internal class TextMultiColorWriter
+        : TextColorWriter
+    {
+        /// <summary>
+        /// We'll use this property to advertise the text color.
+        /// </summary>
+        public override ConsoleColor TextColor
+        {
+            get;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextMultiColorWriter"/> class.

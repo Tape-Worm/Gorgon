@@ -29,36 +29,36 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DX = SharpDX;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
-using Gorgon.Graphics;
+using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
-	/// <summary>
+    /// <summary>
     /// Represents a layer used for 2D drawing.
     /// </summary>
     internal abstract class Layer2D
-		: Layer
+        : Layer
     {
         #region Properties.
-		/// <summary>
+        /// <summary>
         /// Property to return the graphics interface for the applicaton.
         /// </summary>
         protected GorgonGraphics Graphics => Renderer?.Graphics;
 
-		/// <summary>
+        /// <summary>
         /// Property to return the 2D renderer for the application.
         /// </summary>
-		protected Gorgon2D Renderer
+        protected Gorgon2D Renderer
         {
             get;
         }
         #endregion
 
         #region Methods.
-		/// <summary>
+        /// <summary>
         /// Function to blit the specified texture into the current output target.
         /// </summary>
         /// <param name="texture">The texture to blit.</param>
@@ -69,7 +69,7 @@ namespace Gorgon.Examples
                 GorgonColor.White,
                 texture,
                 textureCoordinates ?? new DX.RectangleF(0, 0, 1, 1),
-                textureSampler: samplerState ?? GorgonSamplerState.Default,				
+                textureSampler: samplerState ?? GorgonSamplerState.Default,
                 depth: 0.1f);
         #endregion
 
@@ -77,7 +77,7 @@ namespace Gorgon.Examples
         /// <summary>Initializes a new instance of the <see cref="Layer2D"/> class.</summary>
         /// <param name="renderer">The 2D renderer for the application.</param>
         protected Layer2D(Gorgon2D renderer) => Renderer = renderer;
-		#endregion
+        #endregion
 
     }
 }

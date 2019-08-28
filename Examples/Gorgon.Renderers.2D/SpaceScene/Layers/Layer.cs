@@ -34,7 +34,7 @@ using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
-	/// <summary>
+    /// <summary>
     /// A class that represnets a layer that can be rendered into the scene.
     /// </summary>
     internal abstract class Layer
@@ -59,7 +59,7 @@ namespace Gorgon.Examples
             private set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the lights owned by this layer.
         /// </summary>
         /// <remarks>
@@ -70,10 +70,10 @@ namespace Gorgon.Examples
             get;
         } = new List<Light>();
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return the post processing group that the layer belongs to.
         /// </summary>
-		public string PostProcessGroup
+        public string PostProcessGroup
         {
             get;
             set;
@@ -139,7 +139,7 @@ namespace Gorgon.Examples
         {
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to apply the specified light to the layer.
         /// </summary>
         /// <param name="light">The light to apply.</param>
@@ -182,7 +182,7 @@ namespace Gorgon.Examples
             OnUpdate();
         }
 
-		/// <summary>
+        /// <summary>
         /// Function used to load in resources required by the layer.
         /// </summary>
         public virtual void LoadResources()
@@ -190,10 +190,10 @@ namespace Gorgon.Examples
 
         }
 
-		/// <summary>
+        /// <summary>
         /// Function used to render data into the layer.
         /// </summary>
         public abstract void Render();
-		#endregion
+        #endregion
     }
 }

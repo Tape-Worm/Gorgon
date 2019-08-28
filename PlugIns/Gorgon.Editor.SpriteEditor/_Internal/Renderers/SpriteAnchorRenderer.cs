@@ -24,13 +24,13 @@
 // 
 #endregion
 
-using DX = SharpDX;
+using System;
+using System.ComponentModel;
+using System.Windows.Forms;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
-using System.ComponentModel;
-using Gorgon.Graphics;
-using System.Windows.Forms;
-using System;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -56,7 +56,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Handles the AnchorChanged event of the AnchorEdit control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void AnchorEdit_AnchorChanged(object sender, EventArgs e) => SpriteContent.AnchorEditor.AnchorPosition = new DX.Vector2(_anchorEdit.AnchorPosition.X - _anchorEdit.Bounds.X, 
+        private void AnchorEdit_AnchorChanged(object sender, EventArgs e) => SpriteContent.AnchorEditor.AnchorPosition = new DX.Vector2(_anchorEdit.AnchorPosition.X - _anchorEdit.Bounds.X,
                                                                                                                                         _anchorEdit.AnchorPosition.Y - _anchorEdit.Bounds.Y);
 
         /// <summary>Handles the BoundsChanged event of the AnchorEdit control.</summary>
@@ -198,7 +198,7 @@ namespace Gorgon.Editor.SpriteEditor
             SwapChain.Window.MouseDown += Window_MouseDown;
             SwapChain.Window.MouseUp += Window_MouseUp;
             SwapChain.Window.PreviewKeyDown += Window_PreviewKeyDown;
-        }        
+        }
 
         /// <summary>Function called to perform custom unloading of resources.</summary>
         protected override void OnUnload()
@@ -244,7 +244,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             _anchorEdit.AnchorChanged += AnchorEdit_AnchorChanged;
             _anchorEdit.BoundsChanged += AnchorEdit_BoundsChanged;
-        }        
+        }
         #endregion
     }
 }

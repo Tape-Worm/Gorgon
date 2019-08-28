@@ -26,12 +26,12 @@
 
 using System.ComponentModel;
 using System.Linq;
-using DX = SharpDX;
 using Gorgon.Editor.Rendering;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Renderers;
 using Gorgon.Math;
+using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -60,7 +60,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
 
             _workingSprite.Texture = SpriteContent?.Texture;
-            _workingSprite.TextureArrayIndex = TextureArrayIndex;			
+            _workingSprite.TextureArrayIndex = TextureArrayIndex;
 
             if (SpriteContent?.Texture == null)
             {
@@ -128,7 +128,7 @@ namespace Gorgon.Editor.SpriteEditor
             // Draw an indicator for the anchor.
             DX.Vector2 anchorPos = ToClient(new DX.Vector2(SpriteContent.Anchor.X * spriteRegion.Width + spriteRegion.Left,
                                                            SpriteContent.Anchor.Y * spriteRegion.Height + spriteRegion.Top)).Truncate();
-            
+
             Renderer.DrawEllipse(new DX.RectangleF(anchorPos.X - 4, anchorPos.Y - 4, 8, 8), GorgonColor.Black);
             Renderer.DrawEllipse(new DX.RectangleF(anchorPos.X - 3, anchorPos.Y - 3, 6, 6), GorgonColor.White);
 
@@ -180,7 +180,7 @@ namespace Gorgon.Editor.SpriteEditor
         public DefaultSpriteRenderer(ISpriteContent sprite, GorgonGraphics graphics, GorgonSwapChain swapChain, Gorgon2D renderer, IMarchingAnts ants, float initialScale)
             : base(sprite, graphics, swapChain, renderer, initialScale)
         {
-            _marchAnts = ants;            
+            _marchAnts = ants;
 
             _workingSprite = new GorgonSprite
             {

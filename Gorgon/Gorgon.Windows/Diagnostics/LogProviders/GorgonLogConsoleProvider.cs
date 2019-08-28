@@ -80,7 +80,7 @@ namespace Gorgon.Diagnostics.LogProviders
         // Flag to indicate that the app has a console window.
         private int _hasConsole;
         // Flag to indicate that we own the console window.
-        private bool _ownsConsole;        
+        private bool _ownsConsole;
         #endregion
 
         #region Methods.
@@ -163,9 +163,9 @@ namespace Gorgon.Diagnostics.LogProviders
 
                 var stream = new FileStream(handle, FileAccess.Write);
                 var writer = new StreamWriter(stream, Encoding.Default)
-                             {
-                                 AutoFlush = true
-                             };
+                {
+                    AutoFlush = true
+                };
                 Console.SetOut(writer);
 
                 if (KernelApi.GetConsoleMode(filePtr, out uint consoleMode))
@@ -198,7 +198,7 @@ namespace Gorgon.Diagnostics.LogProviders
                                  },
                                  StringSplitOptions.RemoveEmptyEntries);
 
-		/// <summary>
+        /// <summary>
         /// Function to hilight a specific word in a line using a console color.
         /// </summary>
         /// <param name="line">The line of text to scan.</param>
@@ -287,7 +287,7 @@ namespace Gorgon.Diagnostics.LogProviders
             }
             else
             {
-                lines = new []
+                lines = new[]
                         {
                             message
                         };
@@ -298,13 +298,16 @@ namespace Gorgon.Diagnostics.LogProviders
             if (message.Contains(_exceptionLine))
             {
                 messageType = MessageType.Exception;
-            } else if (message.Contains(_errorLine))
+            }
+            else if (message.Contains(_errorLine))
             {
                 messageType = MessageType.Error;
-            } else if (message.Contains(_warnLine1))
+            }
+            else if (message.Contains(_warnLine1))
             {
                 messageType = MessageType.Warning;
-            } else if (message.Contains(_warnLine2))
+            }
+            else if (message.Contains(_warnLine2))
             {
                 messageType = MessageType.Warning2;
             }

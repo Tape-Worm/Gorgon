@@ -26,25 +26,25 @@
 
 namespace Gorgon.Native
 {
-	// ReSharper disable InconsistentNaming
+    // ReSharper disable InconsistentNaming
 
-	/// <summary>
-	/// Get monitor from window flags.
-	/// </summary>
-	internal enum MonitorFlags
-	{
-		/// <summary>
-		/// Return <b>null</b>.
-		/// </summary>
-		MONITOR_DEFAULTTONULL = 0,
-		/// <summary>
-		/// Return the primary monitor.
-		/// </summary>
-		MONITOR_DEFAULTTOPRIMARY = 1,
-		/// <summary>
-		/// Return the monitor nearest to the window.
-		/// </summary>
-		MONITOR_DEFAULTTONEAREST = 2
-	}
-	// ReSharper restore InconsistentNaming
+    /// <summary>
+    /// Get monitor from window flags.
+    /// </summary>
+    internal enum MonitorFlags
+    {
+        /// <summary>
+        /// Return <b>null</b>.
+        /// </summary>
+        MONITOR_DEFAULTTONULL = 0,
+        /// <summary>
+        /// Return the primary monitor.
+        /// </summary>
+        MONITOR_DEFAULTTOPRIMARY = 1,
+        /// <summary>
+        /// Return the monitor nearest to the window.
+        /// </summary>
+        MONITOR_DEFAULTTONEAREST = 2
+    }
+    // ReSharper restore InconsistentNaming
 }

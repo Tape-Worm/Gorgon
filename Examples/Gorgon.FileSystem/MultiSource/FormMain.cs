@@ -39,10 +39,10 @@ using Gorgon.UI;
 
 namespace Gorgon.Examples
 {
-	/// <summary>
-	/// Main application interface.
-	/// </summary>
-	/// <remarks>
+    /// <summary>
+    /// Main application interface.
+    /// </summary>
+    /// <remarks>
     /// In this example we will mount two different data sources into a virtual file system.  
     /// 
     /// The file system is able to mount different data sources into the same file system which will allow for access
@@ -63,106 +63,106 @@ namespace Gorgon.Examples
     /// opened via the file system interface (allowing the user to pass a full path to the file).  Files can be returned
     /// as a stream (OpenStream) or an array of bytes (ReadFile).  Please note that writing to these file systems is not
     /// supported and can only be done when a write directory is set.  This will be covered in another example.
-	/// </remarks>
-	public partial class FormMain 
-	    : Form
-	{
-		#region Variables.
-		// Our file system.
-		private GorgonFileSystem _fileSystem;
-		// Our picture box.
-		private PictureBox _picture;
-		// Loaded image.
-		private Image _image;
-		// Loaded text/binary info.
-		private TextBox _textDisplay;
-		// Textbox font.
-		private Font _textFont;
-		// Instructions label.
-		private Label _instructions;
-		#endregion
+    /// </remarks>
+    public partial class FormMain
+        : Form
+    {
+        #region Variables.
+        // Our file system.
+        private GorgonFileSystem _fileSystem;
+        // Our picture box.
+        private PictureBox _picture;
+        // Loaded image.
+        private Image _image;
+        // Loaded text/binary info.
+        private TextBox _textDisplay;
+        // Textbox font.
+        private Font _textFont;
+        // Instructions label.
+        private Label _instructions;
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Handles the NodeMouseDoubleClick event of the treeFileSystem control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="TreeNodeMouseClickEventArgs" /> instance containing the event data.</param>
-		private void TreeFileSystem_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
-		{
-		    if (splitFileSystem.Panel2.Controls.Count > 0)
-			{
-				splitFileSystem.Panel2.Controls.RemoveAt(0);
-			}
+        #region Methods.
+        /// <summary>
+        /// Handles the NodeMouseDoubleClick event of the treeFileSystem control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="TreeNodeMouseClickEventArgs" /> instance containing the event data.</param>
+        private void TreeFileSystem_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if (splitFileSystem.Panel2.Controls.Count > 0)
+            {
+                splitFileSystem.Panel2.Controls.RemoveAt(0);
+            }
 
-			try
-			{                
-				if (!(e.Node?.Tag is IGorgonVirtualFile))
-				{
-					splitFileSystem.Panel2.Controls.Add(_instructions);
-					return;
-				}
+            try
+            {
+                if (!(e.Node?.Tag is IGorgonVirtualFile))
+                {
+                    splitFileSystem.Panel2.Controls.Add(_instructions);
+                    return;
+                }
 
-				_picture.Image = null;
-				_textDisplay.Text = string.Empty;
-				var file = (IGorgonVirtualFile)e.Node.Tag;
+                _picture.Image = null;
+                _textDisplay.Text = string.Empty;
+                var file = (IGorgonVirtualFile)e.Node.Tag;
 
-				// Here we load the image from the file system.
-				// Note that we don't care if it's from the zip file
-				// or the folder.  It's all the same to us.
-				using (Stream fileStream = file.OpenStream())
-				{
-					// If it's a picture, then load it.
-					switch (file.Extension.ToLower())
-					{
-						case ".jpg":
-						case ".jpeg":
-						case ".bmp":
-						case ".png":
-							if (_image != null)
-							{
-								_image.Dispose();
-								_image = null;
-							}
+                // Here we load the image from the file system.
+                // Note that we don't care if it's from the zip file
+                // or the folder.  It's all the same to us.
+                using (Stream fileStream = file.OpenStream())
+                {
+                    // If it's a picture, then load it.
+                    switch (file.Extension.ToLower())
+                    {
+                        case ".jpg":
+                        case ".jpeg":
+                        case ".bmp":
+                        case ".png":
+                            if (_image != null)
+                            {
+                                _image.Dispose();
+                                _image = null;
+                            }
 
-							_image = Image.FromStream(fileStream);
-							_picture.Image = _image;
-							_picture.SizeMode = PictureBoxSizeMode.Zoom;
+                            _image = Image.FromStream(fileStream);
+                            _picture.Image = _image;
+                            _picture.SizeMode = PictureBoxSizeMode.Zoom;
 
-							// Add to control.
-							splitFileSystem.Panel2.Controls.Add(_picture);
-							_picture.Dock = DockStyle.Fill;
-							break;
-						default:
-							// Get data in the file stream.
-							byte[] textData = new byte[fileStream.Length];
-							fileStream.Read(textData, 0, textData.Length);
+                            // Add to control.
+                            splitFileSystem.Panel2.Controls.Add(_picture);
+                            _picture.Dock = DockStyle.Fill;
+                            break;
+                        default:
+                            // Get data in the file stream.
+                            byte[] textData = new byte[fileStream.Length];
+                            fileStream.Read(textData, 0, textData.Length);
 
-							// Convert to a string.
-							_textDisplay.Text = Encoding.UTF8.GetString(textData);
-							_textDisplay.Multiline = true;
-							_textDisplay.ReadOnly = true;
-							_textDisplay.ScrollBars = ScrollBars.Both;
-							_textDisplay.Dock = DockStyle.Fill;
-							splitFileSystem.Panel2.Controls.Add(_textDisplay);
-							break;
-					}
-				}
-			}
-			catch (Exception ex)
-			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
-				splitFileSystem.Panel2.Controls.Add(_instructions);
-			}
-		}
+                            // Convert to a string.
+                            _textDisplay.Text = Encoding.UTF8.GetString(textData);
+                            _textDisplay.Multiline = true;
+                            _textDisplay.ReadOnly = true;
+                            _textDisplay.ScrollBars = ScrollBars.Both;
+                            _textDisplay.Dock = DockStyle.Fill;
+                            splitFileSystem.Panel2.Controls.Add(_textDisplay);
+                            break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
+                splitFileSystem.Panel2.Controls.Add(_instructions);
+            }
+        }
 
-		/// <summary>
-		/// Handles the BeforeExpand event of the treeFileSystem control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="TreeViewCancelEventArgs" /> instance containing the event data.</param>
-		private void TreeFileSystem_BeforeExpand(object sender, TreeViewCancelEventArgs e)
-		{
+        /// <summary>
+        /// Handles the BeforeExpand event of the treeFileSystem control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="TreeViewCancelEventArgs" /> instance containing the event data.</param>
+        private void TreeFileSystem_BeforeExpand(object sender, TreeViewCancelEventArgs e)
+        {
 
             try
             {
@@ -180,263 +180,263 @@ namespace Gorgon.Examples
             }
         }
 
-		/// <summary>
-		/// Handles the BeforeCollapse event of the treeFileSystem control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="TreeViewCancelEventArgs" /> instance containing the event data.</param>
-		private void TreeFileSystem_BeforeCollapse(object sender, TreeViewCancelEventArgs e)
-		{
-			var directory = e.Node.Tag as IGorgonVirtualDirectory;
+        /// <summary>
+        /// Handles the BeforeCollapse event of the treeFileSystem control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="TreeViewCancelEventArgs" /> instance containing the event data.</param>
+        private void TreeFileSystem_BeforeCollapse(object sender, TreeViewCancelEventArgs e)
+        {
+            var directory = e.Node.Tag as IGorgonVirtualDirectory;
 
-			try
-			{
-				// Do not expand or collapse
-				if (directory == _fileSystem.RootDirectory)
-				{
-					e.Cancel = true;
-				}
-			}
-			catch (Exception ex)
-			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
-			}
-		}
+            try
+            {
+                // Do not expand or collapse
+                if (directory == _fileSystem.RootDirectory)
+                {
+                    e.Cancel = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
+            }
+        }
 
-		/// <summary>
-		/// Function to load the zip file system provider.
-		/// </summary>
-		private void LoadZipFileSystemProvider()
-		{
-			// Name of our zip provider plugin.
-			const string zipProviderPlugInName = "Gorgon.IO.Zip.ZipProvider";
+        /// <summary>
+        /// Function to load the zip file system provider.
+        /// </summary>
+        private void LoadZipFileSystemProvider()
+        {
+            // Name of our zip provider plugin.
+            const string zipProviderPlugInName = "Gorgon.IO.Zip.ZipProvider";
 
-			// We can load the objects we need and discard the plugin system after.
-			// This works because we keep the references to the objects that our 
-			// plugin creates, even after the plugin is gone.
-			using (var pluginAssemblies = new GorgonMefPlugInCache(Program.Log))
-			{
-				pluginAssemblies.LoadPlugInAssemblies(Program.PlugInPath, "Gorgon.FileSystem.Zip.DLL");
+            // We can load the objects we need and discard the plugin system after.
+            // This works because we keep the references to the objects that our 
+            // plugin creates, even after the plugin is gone.
+            using (var pluginAssemblies = new GorgonMefPlugInCache(Program.Log))
+            {
+                pluginAssemblies.LoadPlugInAssemblies(Program.PlugInPath, "Gorgon.FileSystem.Zip.DLL");
 
-				var providerFactory = new GorgonFileSystemProviderFactory(
-					new GorgonMefPlugInService(pluginAssemblies),
-					Program.Log);
+                var providerFactory = new GorgonFileSystemProviderFactory(
+                    new GorgonMefPlugInService(pluginAssemblies),
+                    Program.Log);
 
-				_fileSystem = new GorgonFileSystem(providerFactory.CreateProvider(zipProviderPlugInName), Program.Log);
-			}
-		}
+                _fileSystem = new GorgonFileSystem(providerFactory.CreateProvider(zipProviderPlugInName), Program.Log);
+            }
+        }
 
-		/// <summary>
-		/// Function to fill the file system tree view.
-		/// </summary>
-		/// <param name="directory">Parent directory to fill, or <b>null</b> to fill the root directory.</param>
-		private void FillTree(IGorgonVirtualDirectory directory)
-		{
-			TreeNodeCollection nodes;
-			TreeNode parentNode;
+        /// <summary>
+        /// Function to fill the file system tree view.
+        /// </summary>
+        /// <param name="directory">Parent directory to fill, or <b>null</b> to fill the root directory.</param>
+        private void FillTree(IGorgonVirtualDirectory directory)
+        {
+            TreeNodeCollection nodes;
+            TreeNode parentNode;
 
-		    if (directory == null)
-			{
-				directory = _fileSystem.RootDirectory;
-				nodes = treeFileSystem.Nodes;
-				
-				// Set root node.
-				parentNode = new TreeNode("/") {Name = "/"};
-			    parentNode.SelectedImageIndex = parentNode.ImageIndex = 0;
-			}
-			else
-			{
-				// Find the node with the directory.
-				TreeNode[] searchNodes = treeFileSystem.Nodes.Find(directory.FullPath, true);
+            if (directory == null)
+            {
+                directory = _fileSystem.RootDirectory;
+                nodes = treeFileSystem.Nodes;
 
-				if (searchNodes.Length > 0)
-				{					
-					parentNode = searchNodes[0];					
-					nodes = parentNode.Nodes;
-				}
-				else
-				{
-					GorgonDialogs.ErrorBox(this, "Could not find the virtual directory '" + directory.FullPath + "'");
-					return;
-				}
-			}
+                // Set root node.
+                parentNode = new TreeNode("/") { Name = "/" };
+                parentNode.SelectedImageIndex = parentNode.ImageIndex = 0;
+            }
+            else
+            {
+                // Find the node with the directory.
+                TreeNode[] searchNodes = treeFileSystem.Nodes.Find(directory.FullPath, true);
 
-			parentNode.Tag = directory;			
+                if (searchNodes.Length > 0)
+                {
+                    parentNode = searchNodes[0];
+                    nodes = parentNode.Nodes;
+                }
+                else
+                {
+                    GorgonDialogs.ErrorBox(this, "Could not find the virtual directory '" + directory.FullPath + "'");
+                    return;
+                }
+            }
 
-			// Turn off the expand event.
-			treeFileSystem.BeforeExpand -= TreeFileSystem_BeforeExpand;
+            parentNode.Tag = directory;
 
-			try
-			{
-				// Clean up the tree node.
-				treeFileSystem.BeginUpdate();
-				nodes.Clear();
+            // Turn off the expand event.
+            treeFileSystem.BeforeExpand -= TreeFileSystem_BeforeExpand;
 
-				// Add the root node if necessary.
-				if (parentNode.Tag == _fileSystem.RootDirectory)
-				{
-					nodes.Add(parentNode);
-				}
+            try
+            {
+                // Clean up the tree node.
+                treeFileSystem.BeginUpdate();
+                nodes.Clear();
 
-				// Enumerate the data.  For the purposed of this example, we will filter out known binary files from our file system.				
-				IOrderedEnumerable<IGorgonVirtualDirectory> directories = directory.Directories.OrderBy(item => item.Name);
-				IEnumerable<IGorgonVirtualFile> files = directory.Files.OrderBy(item => item.Name).Where(item => item.Extension != ".gorSprite" && item.Extension != ".gal");
+                // Add the root node if necessary.
+                if (parentNode.Tag == _fileSystem.RootDirectory)
+                {
+                    nodes.Add(parentNode);
+                }
 
-				// Get directories.
-				foreach (IGorgonVirtualDirectory subDirectory in directories)
-				{
-					var directoryNode = new TreeNode(subDirectory.Name)
-					    {
-					        Name = subDirectory.FullPath, 
-                            Tag = subDirectory
-					    };
+                // Enumerate the data.  For the purposed of this example, we will filter out known binary files from our file system.				
+                IOrderedEnumerable<IGorgonVirtualDirectory> directories = directory.Directories.OrderBy(item => item.Name);
+                IEnumerable<IGorgonVirtualFile> files = directory.Files.OrderBy(item => item.Name).Where(item => item.Extension != ".gorSprite" && item.Extension != ".gal");
 
-				    // Put a special icon on the zip file so we have a visual representation
-					// of where it is in our VFS.
-					// The VFS does not care if the data is in a zip file or folder, and Gorgon
-					// does very little to differentiate it.  After all, the whole point of
-					// have a unified file system is to abstract away the differences.
-					if (subDirectory.Name != "ZipFile")
-					{
-						directoryNode.SelectedImageIndex = directoryNode.ImageIndex = 0;
-					}
-					else
-					{
-						directoryNode.SelectedImageIndex = directoryNode.ImageIndex = 2;
-					}
+                // Get directories.
+                foreach (IGorgonVirtualDirectory subDirectory in directories)
+                {
+                    var directoryNode = new TreeNode(subDirectory.Name)
+                    {
+                        Name = subDirectory.FullPath,
+                        Tag = subDirectory
+                    };
 
-					// Add a dummy node if there are files or sub directories.
-					if ((subDirectory.Directories.Count > 0) || (subDirectory.Files.Count(item => item.Extension != ".gorSprite" && item.Extension != ".gal") > 0))
-					{
-						directoryNode.Nodes.Add(new TreeNode("This is a dummy node."));
-					}
+                    // Put a special icon on the zip file so we have a visual representation
+                    // of where it is in our VFS.
+                    // The VFS does not care if the data is in a zip file or folder, and Gorgon
+                    // does very little to differentiate it.  After all, the whole point of
+                    // have a unified file system is to abstract away the differences.
+                    if (subDirectory.Name != "ZipFile")
+                    {
+                        directoryNode.SelectedImageIndex = directoryNode.ImageIndex = 0;
+                    }
+                    else
+                    {
+                        directoryNode.SelectedImageIndex = directoryNode.ImageIndex = 2;
+                    }
 
-					parentNode.Nodes.Add(directoryNode);
-				}
+                    // Add a dummy node if there are files or sub directories.
+                    if ((subDirectory.Directories.Count > 0) || (subDirectory.Files.Count(item => item.Extension != ".gorSprite" && item.Extension != ".gal") > 0))
+                    {
+                        directoryNode.Nodes.Add(new TreeNode("This is a dummy node."));
+                    }
 
-				// Get files.
-				foreach (IGorgonVirtualFile file in files)
-				{
-					if (file.Extension == ".gorSprite")
-					{
-						continue;
-					}
+                    parentNode.Nodes.Add(directoryNode);
+                }
 
-					var fileNode = new TreeNode(file.Name)
-					{
-						Name = file.FullPath, 
-						Tag = file
-					};
-					fileNode.SelectedImageIndex = fileNode.ImageIndex = 1;
-					parentNode.Nodes.Add(fileNode);
-				}
+                // Get files.
+                foreach (IGorgonVirtualFile file in files)
+                {
+                    if (file.Extension == ".gorSprite")
+                    {
+                        continue;
+                    }
 
-				parentNode.Expand();
-			}
-			finally
-			{
-				treeFileSystem.EndUpdate();
-				treeFileSystem.BeforeExpand += TreeFileSystem_BeforeExpand;
-			}
-		}
+                    var fileNode = new TreeNode(file.Name)
+                    {
+                        Name = file.FullPath,
+                        Tag = file
+                    };
+                    fileNode.SelectedImageIndex = fileNode.ImageIndex = 1;
+                    parentNode.Nodes.Add(fileNode);
+                }
 
-		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.
-		/// </summary>
-		/// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs" /> that contains the event data.</param>
-		protected override void OnFormClosing(FormClosingEventArgs e)
-		{
-			base.OnFormClosing(e);
+                parentNode.Expand();
+            }
+            finally
+            {
+                treeFileSystem.EndUpdate();
+                treeFileSystem.BeforeExpand += TreeFileSystem_BeforeExpand;
+            }
+        }
 
-			try
-			{
-				if (_picture != null)
-				{
-					_picture.Dispose();
-					_picture = null;
-				}
+        /// <summary>
+        /// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.
+        /// </summary>
+        /// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs" /> that contains the event data.</param>
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
 
-				if (_image != null)
-				{
-					_image.Dispose();
-					_image = null;
-				}
+            try
+            {
+                if (_picture != null)
+                {
+                    _picture.Dispose();
+                    _picture = null;
+                }
 
-				if (_textDisplay != null)
-				{
-					_textDisplay.Dispose();
-					_textDisplay = null;
-				}
+                if (_image != null)
+                {
+                    _image.Dispose();
+                    _image = null;
+                }
 
-				if (_textFont == null)
-				{
-					return;
-				}
+                if (_textDisplay != null)
+                {
+                    _textDisplay.Dispose();
+                    _textDisplay = null;
+                }
 
-				_textFont.Dispose();
-				_textFont = null;
-			}
-			catch (Exception ex)
-			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
-			}
-		}
+                if (_textFont == null)
+                {
+                    return;
+                }
 
-	    /// <summary>
-	    /// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
-	    /// </summary>
-	    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
-	    protected override void OnLoad(EventArgs e)
-	    {
-	        base.OnLoad(e);
+                _textFont.Dispose();
+                _textFont = null;
+            }
+            catch (Exception ex)
+            {
+                ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
+            }
+        }
 
-	        try
-	        {
-	            // Picture box.
-	            _picture = new PictureBox
-	                       {
-	                           Name = "pictureImage"
-	                       };
+        /// <summary>
+        /// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
+        /// </summary>
+        /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
 
-	            // Text display.
-	            _textDisplay = new TextBox
-	                           {
-	                               Name = "textDisplay"
-	                           };
-	            _textFont = new Font("Consolas", 10.0f, FontStyle.Regular, GraphicsUnit.Point);
-	            _textDisplay.Font = _textFont;
+            try
+            {
+                // Picture box.
+                _picture = new PictureBox
+                {
+                    Name = "pictureImage"
+                };
 
-	            _instructions = new Label
-	                            {
-	                                Name = "labelInstructions",
-	                                Text = "Double click on a file node in the tree to display it.",
-	                                AutoSize = false,
-	                                TextAlign = ContentAlignment.MiddleCenter,
-	                                Dock = DockStyle.Fill,
-	                                Font = Font
-	                            };
+                // Text display.
+                _textDisplay = new TextBox
+                {
+                    Name = "textDisplay"
+                };
+                _textFont = new Font("Consolas", 10.0f, FontStyle.Regular, GraphicsUnit.Point);
+                _textDisplay.Font = _textFont;
 
-	            // Add the instructions.
-	            splitFileSystem.Panel2.Controls.Add(_instructions);
+                _instructions = new Label
+                {
+                    Name = "labelInstructions",
+                    Text = "Double click on a file node in the tree to display it.",
+                    AutoSize = false,
+                    TextAlign = ContentAlignment.MiddleCenter,
+                    Dock = DockStyle.Fill,
+                    Font = Font
+                };
 
-	            // Get the zip file provider.
-	            LoadZipFileSystemProvider();
+                // Add the instructions.
+                splitFileSystem.Panel2.Controls.Add(_instructions);
 
-	            // Mount the physical file system directory.
-	            _fileSystem.Mount(Program.GetResourcePath(@"VFSRoot\"));
+                // Get the zip file provider.
+                LoadZipFileSystemProvider();
 
-	            // Mount the zip file into a sub directory.
-	            _fileSystem.Mount(Program.GetResourcePath("VFSRoot.zip"), "/ZipFile");
+                // Mount the physical file system directory.
+                _fileSystem.Mount(Program.GetResourcePath(@"VFSRoot\"));
 
-	            // Fill the root of the tree.
-	            FillTree(null);
-	        }
-	        catch (Exception ex)
-	        {
-	            ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
-	            GorgonApplication.Quit();
-	        }
-	    }
+                // Mount the zip file into a sub directory.
+                _fileSystem.Mount(Program.GetResourcePath("VFSRoot.zip"), "/ZipFile");
+
+                // Fill the root of the tree.
+                FillTree(null);
+            }
+            catch (Exception ex)
+            {
+                ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
+                GorgonApplication.Quit();
+            }
+        }
         #endregion
 
         #region Constructor/Destructor.

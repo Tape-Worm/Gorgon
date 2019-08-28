@@ -233,7 +233,7 @@ namespace Gorgon.Editor.ViewModels
             // Do not allow us to write to the main windows or system folders, that'd be bad.
             if ((directory.FullName.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.System), StringComparison.OrdinalIgnoreCase))
                 || (directory.FullName.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.Windows), StringComparison.OrdinalIgnoreCase))
-				|| (directory.Parent == null))
+                || (directory.Parent == null))
             {
                 InvalidPathReason = string.Format(Resources.GOREDIT_ERR_NOT_AUTHORIZED, directory.FullName.Ellipses(65, true));
                 return false;
@@ -302,7 +302,7 @@ namespace Gorgon.Editor.ViewModels
                     if (!dir.Exists)
                     {
                         dir = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
-                    }                    
+                    }
                 }
 
                 // Check for read access.                
@@ -321,7 +321,7 @@ namespace Gorgon.Editor.ViewModels
                         {
                             dir = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
                             break;
-                        }                        
+                        }
                     }
                 }
 
@@ -343,7 +343,7 @@ namespace Gorgon.Editor.ViewModels
 
                 Title = dir.Name;
 
-                InvalidPathReason = null;                
+                InvalidPathReason = null;
                 AvailableDriveSpace = (ulong)(new DriveInfo(Path.GetPathRoot(dir.FullName))).AvailableFreeSpace;
                 _settings.LastProjectWorkingDirectory = dir.Parent.FullName.FormatDirectory(Path.DirectorySeparatorChar);
             }
@@ -461,14 +461,14 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="injectionParameters">The parameters to inject.</param>
         /// <remarks>Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.</remarks>
         protected override void OnInitialize(StageNewVmParameters injectionParameters)
-        {            
-            _settings = injectionParameters.Settings ?? throw new ArgumentMissingException(nameof(StageNewVmParameters.Settings), nameof(injectionParameters));            
-            _projectManager = injectionParameters.ProjectManager ?? throw new ArgumentMissingException(nameof(StageNewVmParameters.ProjectManager), nameof(injectionParameters));            
+        {
+            _settings = injectionParameters.Settings ?? throw new ArgumentMissingException(nameof(StageNewVmParameters.Settings), nameof(injectionParameters));
+            _projectManager = injectionParameters.ProjectManager ?? throw new ArgumentMissingException(nameof(StageNewVmParameters.ProjectManager), nameof(injectionParameters));
             _messageService = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(StageNewVmParameters.MessageDisplay), nameof(injectionParameters));
             _directoryLocator = injectionParameters.DirectoryLocator ?? throw new ArgumentMissingException(nameof(StageNewVmParameters.DirectoryLocator), nameof(injectionParameters));
 
-            var lastWorkspace = new DirectoryInfo(string.IsNullOrWhiteSpace(_settings.LastProjectWorkingDirectory) ? 
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) : 
+            var lastWorkspace = new DirectoryInfo(string.IsNullOrWhiteSpace(_settings.LastProjectWorkingDirectory) ?
+                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) :
                 _settings.LastProjectWorkingDirectory);
 
             if (!lastWorkspace.Exists)

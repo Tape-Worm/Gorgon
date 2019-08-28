@@ -161,7 +161,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 int maxMips = GorgonImage.CalculateMaxMipCount(width, height, depth);
                 _mipLevels = _mipLevels.Min(maxMips).Max(2);
                 MaxMipLevels = maxMips;
-                NotifyPropertyChanged(nameof(MipLevels));                
+                NotifyPropertyChanged(nameof(MipLevels));
             }
             catch (Exception ex)
             {
@@ -183,7 +183,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     MipLevels = 2;
                     return;
                 }
-                                
+
                 _mipLevels = image.MipCount;
                 UpdateMaxMips(image.Width, image.Height, image.Depth);
             }
@@ -215,7 +215,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <remarks>
         /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
         /// </remarks>
-        protected override void OnInitialize(IViewModelInjection injectionParameters) => 
+        protected override void OnInitialize(IViewModelInjection injectionParameters) =>
             _messageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(injectionParameters.MessageDisplay), nameof(injectionParameters));
         #endregion
 

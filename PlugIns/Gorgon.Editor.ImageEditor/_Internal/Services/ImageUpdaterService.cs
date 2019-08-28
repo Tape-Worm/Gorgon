@@ -25,10 +25,10 @@
 #endregion
 
 using System.Linq;
-using DX = SharpDX;
 using Gorgon.Graphics.Imaging;
-using Gorgon.UI;
 using Gorgon.Math;
+using Gorgon.UI;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -257,7 +257,7 @@ namespace Gorgon.Editor.ImageEditor
             if (sourceImage.ImageType == ImageType.Image3D)
             {
                 depthCount = sourceImage.GetDepthCount(currentMipLevel);
-            }                       
+            }
 
             IGorgonImage result = new GorgonImage(new GorgonImageInfo(sourceImage)
             {

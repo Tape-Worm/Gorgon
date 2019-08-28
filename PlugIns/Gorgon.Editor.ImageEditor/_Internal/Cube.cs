@@ -39,31 +39,31 @@ namespace Gorgon.Editor.ImageEditor
         : IDisposable
     {
         #region Variables.
-		// The matrix that defines our rotation.
-		private DX.Matrix _rotation = DX.Matrix.Identity;
-		// The matrix that defines our translation.
-		private DX.Matrix _translation = DX.Matrix.Identity;
-		// The world matrix to send to the vertex shader for transformation.
-		// This is the combination of the rotation and translation matrix.
-	    private DX.Matrix _world = DX.Matrix.Identity;
+        // The matrix that defines our rotation.
+        private DX.Matrix _rotation = DX.Matrix.Identity;
+        // The matrix that defines our translation.
+        private DX.Matrix _translation = DX.Matrix.Identity;
+        // The world matrix to send to the vertex shader for transformation.
+        // This is the combination of the rotation and translation matrix.
+        private DX.Matrix _world = DX.Matrix.Identity;
         #endregion
 
         #region Properties.
-		/// <summary>
-		/// Property to return the vertex buffer that holds the cube vertex data.
-		/// </summary>
-	    public GorgonVertexBufferBindings VertexBuffer
-	    {
-		    get;
-	    }
+        /// <summary>
+        /// Property to return the vertex buffer that holds the cube vertex data.
+        /// </summary>
+        public GorgonVertexBufferBindings VertexBuffer
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the index buffer that holds the cube index data.
-		/// </summary>
-	    public GorgonIndexBuffer IndexBuffer
-	    {
-		    get;
-	    }
+        /// <summary>
+        /// Property to return the index buffer that holds the cube index data.
+        /// </summary>
+        public GorgonIndexBuffer IndexBuffer
+        {
+            get;
+        }
 
         /// <summary>
         /// Property to set or return the texture image for the cube.
@@ -82,7 +82,7 @@ namespace Gorgon.Editor.ImageEditor
             get
             {
                 DX.Matrix.Multiply(ref _rotation, ref _translation, out _world);
-                return ref _world ;
+                return ref _world;
             }
         }
         #endregion
@@ -96,14 +96,14 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="zAngle">Z axis angle in degrees.</param>
         public void RotateXYZ(float xAngle, float yAngle, float zAngle)
         {
-			// Quaternion for rotation.
+            // Quaternion for rotation.
 
-			// Convert degrees to radians.
-			var rotRads = new DX.Vector3(xAngle.ToRadians(), yAngle.ToRadians(), zAngle.ToRadians());
+            // Convert degrees to radians.
+            var rotRads = new DX.Vector3(xAngle.ToRadians(), yAngle.ToRadians(), zAngle.ToRadians());
 
-			// Rotate and build a new rotation matrix.
-			DX.Quaternion.RotationYawPitchRoll(rotRads.Y, rotRads.X, rotRads.Z, out DX.Quaternion quatRotation);
-			DX.Matrix.RotationQuaternion(ref quatRotation, out _rotation);
+            // Rotate and build a new rotation matrix.
+            DX.Quaternion.RotationYawPitchRoll(rotRads.Y, rotRads.X, rotRads.Z, out DX.Quaternion quatRotation);
+            DX.Matrix.RotationQuaternion(ref quatRotation, out _rotation);
         }
 
         /// <summary>
@@ -118,35 +118,35 @@ namespace Gorgon.Editor.ImageEditor
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
-		{
-			VertexBuffer[0].VertexBuffer.Dispose();
-			IndexBuffer?.Dispose();
-		}
-		#endregion
+        {
+            VertexBuffer[0].VertexBuffer.Dispose();
+            IndexBuffer?.Dispose();
+        }
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Cube"/> class.
-		/// </summary>
-		/// <param name="graphics">The graphics object used to create the buffers needed by this object.</param>
-		/// <param name="inputLayout">The input layout describing how a vertex is laid out.</param>
-		public Cube(GorgonGraphics graphics, GorgonInputLayout inputLayout)
-		{
-			CubeVertex[] vertices =
-			{
-			    new CubeVertex(new DX.Vector3(-0.5f, 0.5f, -0.5f), new DX.Vector3(0, 0, 0)),
-				new CubeVertex(new DX.Vector3(0.5f, 0.5f, -0.5f), new DX.Vector3(1.0f, 1.0f, 0)),
-				new CubeVertex(new DX.Vector3(0.5f, -0.5f, -0.5f), new DX.Vector3(0.0f, 1.0f, 0)),
-				new CubeVertex(new DX.Vector3(-0.5f, -0.5f, -0.5f), new DX.Vector3(1.0f, 0.0f, 0)),
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Cube"/> class.
+        /// </summary>
+        /// <param name="graphics">The graphics object used to create the buffers needed by this object.</param>
+        /// <param name="inputLayout">The input layout describing how a vertex is laid out.</param>
+        public Cube(GorgonGraphics graphics, GorgonInputLayout inputLayout)
+        {
+            CubeVertex[] vertices =
+            {
+                new CubeVertex(new DX.Vector3(-0.5f, 0.5f, -0.5f), new DX.Vector3(0, 0, 0)),
+                new CubeVertex(new DX.Vector3(0.5f, 0.5f, -0.5f), new DX.Vector3(1.0f, 1.0f, 0)),
+                new CubeVertex(new DX.Vector3(0.5f, -0.5f, -0.5f), new DX.Vector3(0.0f, 1.0f, 0)),
+                new CubeVertex(new DX.Vector3(-0.5f, -0.5f, -0.5f), new DX.Vector3(1.0f, 0.0f, 0)),
 
                 new CubeVertex(new DX.Vector3(-0.5f, 0.5f, 0.5f), new DX.Vector3(0, 0, 0)),
                 new CubeVertex(new DX.Vector3(0.5f, 0.5f, 0.5f), new DX.Vector3(1.0f, 1.0f, 0)),
                 new CubeVertex(new DX.Vector3(0.5f, -0.5f, 0.5f), new DX.Vector3(0.0f, 1.0f, 0)),
                 new CubeVertex(new DX.Vector3(-0.5f, -0.5f, 0.5f), new DX.Vector3(1.0f, 0.0f, 0)),
-			};
+            };
 
-			ushort[] indices =
-			{
+            ushort[] indices =
+            {
                 // Front face.
                 0, 1, 2,
                 2, 3, 0,
@@ -165,31 +165,31 @@ namespace Gorgon.Editor.ImageEditor
                 // Bottom face
                 2, 6, 7,
                 7, 3, 2
-			};
+            };
 
-			// Create our index buffer and vertex buffer and populate with our cube data.
-			using (var indexPtr = GorgonNativeBuffer<ushort>.Pin(indices))
-		    using (var vertexPtr = GorgonNativeBuffer<CubeVertex>.Pin(vertices))
-		    {
-		        IndexBuffer = new GorgonIndexBuffer(graphics,
-		                                            new GorgonIndexBufferInfo("Volume Index Buffer")
-		                                            {
-		                                                Usage = ResourceUsage.Immutable,
-		                                                IndexCount = indices.Length,
-		                                                Use16BitIndices = true
-		                                            },
-		                                            indexPtr);
+            // Create our index buffer and vertex buffer and populate with our cube data.
+            using (var indexPtr = GorgonNativeBuffer<ushort>.Pin(indices))
+            using (var vertexPtr = GorgonNativeBuffer<CubeVertex>.Pin(vertices))
+            {
+                IndexBuffer = new GorgonIndexBuffer(graphics,
+                                                    new GorgonIndexBufferInfo("Volume Index Buffer")
+                                                    {
+                                                        Usage = ResourceUsage.Immutable,
+                                                        IndexCount = indices.Length,
+                                                        Use16BitIndices = true
+                                                    },
+                                                    indexPtr);
 
-		        VertexBuffer = new GorgonVertexBufferBindings(inputLayout)
-		                       {
-		                           [0] = GorgonVertexBufferBinding.CreateVertexBuffer(graphics,
-		                                                                              vertices.Length,
+                VertexBuffer = new GorgonVertexBufferBindings(inputLayout)
+                {
+                    [0] = GorgonVertexBufferBinding.CreateVertexBuffer(graphics,
+                                                                                      vertices.Length,
                                                                                       ResourceUsage.Immutable,
-		                                                                              initialData: vertexPtr,
-		                                                                              bufferName: "Volume Vertex Buffer")
-		                       };
-		    }
-		}
-		#endregion
-	}
+                                                                                      initialData: vertexPtr,
+                                                                                      bufferName: "Volume Vertex Buffer")
+                };
+            }
+        }
+        #endregion
+    }
 }

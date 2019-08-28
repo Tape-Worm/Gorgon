@@ -27,30 +27,30 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using DX = SharpDX;
-using Gorgon.Editor.UI.Views;
-using Gorgon.Editor.UI;
-using Gorgon.Editor.ViewModels;
-using Gorgon.Editor.Rendering;
-using Gorgon.Graphics.Core;
-using Gorgon.Graphics;
-using Gorgon.Renderers;
-using System.IO;
 using Gorgon.Editor.Properties;
-using Gorgon.Graphics.Imaging.Codecs;
-using Gorgon.Graphics.Imaging;
-using Gorgon.Math;
+using Gorgon.Editor.Rendering;
+using Gorgon.Editor.UI;
+using Gorgon.Editor.UI.Views;
+using Gorgon.Editor.ViewModels;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
+using Gorgon.Graphics.Imaging;
+using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Graphics.Imaging.GdiPlus;
+using Gorgon.Math;
+using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.Views
 {
     /// <summary>
     /// The preview window for editor content.
     /// </summary>
-    internal partial class ContentPreview 
+    internal partial class ContentPreview
         : EditorBaseControl, IDataContext<IContentPreviewVm>
     {
         #region Variables.
@@ -98,7 +98,7 @@ namespace Gorgon.Editor.Views
                 case nameof(IContentPreviewVm.PreviewImage):
                     UpdateImageTexture(DataContext.PreviewImage);
                     break;
-                case nameof(IContentPreviewVm.Title):                    
+                case nameof(IContentPreviewVm.Title):
                     _titleText.Text = _titleFont.WordWrap(DataContext.Title, _swapChain.Width);
                     RenderImage();
                     break;
@@ -146,13 +146,13 @@ namespace Gorgon.Editor.Views
         /// Function to clean up the resources for the preview window.
         /// </summary>
         private void CleanupResources()
-        {            
+        {
             _defaultTexture?.Dispose();
 
             if (_swapChain != null)
             {
                 GraphicsContext.ReturnSwapPresenter(ref _swapChain);
-            }            
+            }
         }
 
         /// <summary>
@@ -186,7 +186,7 @@ namespace Gorgon.Editor.Views
                     Usage = ResourceUsage.Immutable
                 });
             }
-        }        
+        }
 
         /// <summary>
         /// Function used to unassign events on the data context.

@@ -34,110 +34,110 @@ using DrawingGraphics = System.Drawing.Graphics;
 
 namespace Gorgon.Examples
 {
-	/// <summary>
-	/// Our form for the example.
-	/// </summary>
-	public partial class FormMain : Form
-	{
-		#region Variables.
-		// GDI+ form graphics interface.
-		private DrawingGraphics _formGraphics;
-		// GDI+ graphics interface.
-		private DrawingGraphics _graphics;
-		// Image for our form.
-		private Bitmap _bitmap;				
-		#endregion
+    /// <summary>
+    /// Our form for the example.
+    /// </summary>
+    public partial class FormMain : Form
+    {
+        #region Variables.
+        // GDI+ form graphics interface.
+        private DrawingGraphics _formGraphics;
+        // GDI+ graphics interface.
+        private DrawingGraphics _graphics;
+        // Image for our form.
+        private Bitmap _bitmap;
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to return the size of the graphics canvas.
-		/// </summary>
-		public Size GraphicsSize => _bitmap.Size;
+        #region Properties.
+        /// <summary>
+        /// Property to return the size of the graphics canvas.
+        /// </summary>
+        public Size GraphicsSize => _bitmap.Size;
 
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
-		/// </summary>
-		/// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
-		protected override void OnLoad(EventArgs e)
-		{
-			base.OnLoad(e);
+        #region Methods.
+        /// <summary>
+        /// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
+        /// </summary>
+        /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
 
-			try
-			{
-				_formGraphics = panelGraphics.CreateGraphics();
-				_bitmap = new Bitmap(panelGraphics.ClientSize.Width, panelGraphics.ClientSize.Height, _formGraphics);
-				_graphics = DrawingGraphics.FromImage(_bitmap);
-				_graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
-				_graphics.Clear(Color.Black);				
-			}
-			catch (Exception ex)
-			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), GorgonApplication.Log);
-			}
-		}
+            try
+            {
+                _formGraphics = panelGraphics.CreateGraphics();
+                _bitmap = new Bitmap(panelGraphics.ClientSize.Width, panelGraphics.ClientSize.Height, _formGraphics);
+                _graphics = DrawingGraphics.FromImage(_bitmap);
+                _graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+                _graphics.Clear(Color.Black);
+            }
+            catch (Exception ex)
+            {
+                ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), GorgonApplication.Log);
+            }
+        }
 
-		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.Control.SizeChanged" /> event.
-		/// </summary>
-		/// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
-		protected override void OnSizeChanged(EventArgs e)
-		{
-			base.OnSizeChanged(e);
+        /// <summary>
+        /// Raises the <see cref="E:System.Windows.Forms.Control.SizeChanged" /> event.
+        /// </summary>
+        /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+        protected override void OnSizeChanged(EventArgs e)
+        {
+            base.OnSizeChanged(e);
 
-			try
-			{
-				if (_bitmap == null)
-				{
-					return;
-				}
+            try
+            {
+                if (_bitmap == null)
+                {
+                    return;
+                }
 
-				_formGraphics.Dispose();
-				_graphics.Dispose();
-				_bitmap.Dispose();
-				_bitmap = null;
-				_graphics = null;
+                _formGraphics.Dispose();
+                _graphics.Dispose();
+                _bitmap.Dispose();
+                _bitmap = null;
+                _graphics = null;
 
-				_formGraphics = panelGraphics.CreateGraphics();
-				_bitmap = new Bitmap(panelGraphics.ClientSize.Width, panelGraphics.ClientSize.Height, _formGraphics);
-				_graphics = DrawingGraphics.FromImage(_bitmap);
-				_graphics.Clear(Color.Black);
-			}
-			catch (Exception ex)
-			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), GorgonApplication.Log);
-			}
-		}
+                _formGraphics = panelGraphics.CreateGraphics();
+                _bitmap = new Bitmap(panelGraphics.ClientSize.Width, panelGraphics.ClientSize.Height, _formGraphics);
+                _graphics = DrawingGraphics.FromImage(_bitmap);
+                _graphics.Clear(Color.Black);
+            }
+            catch (Exception ex)
+            {
+                ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), GorgonApplication.Log);
+            }
+        }
 
 
-		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.
-		/// </summary>
-		/// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs" /> that contains the event data.</param>
-		protected override void OnFormClosing(FormClosingEventArgs e)
-		{
-			base.OnFormClosing(e);
+        /// <summary>
+        /// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.
+        /// </summary>
+        /// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs" /> that contains the event data.</param>
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
 
-			_graphics?.Dispose();
+            _graphics?.Dispose();
 
-			_formGraphics?.Dispose();
+            _formGraphics?.Dispose();
 
-			_bitmap?.Dispose();
-		}
+            _bitmap?.Dispose();
+        }
 
-		/// <summary>
-		/// Function to draw a dot (or line) on the screen.
-		/// </summary>
-		/// <param name="lastX">Last horizontal coordinate.</param>
-		/// <param name="lastY">Last vertical coordinate.</param>
-		/// <param name="x">Horizontal coordinate.</param>
-		/// <param name="y">Vertical coordinate.</param>
-		/// <param name="color">Color of the pixel.</param>
-		public void Draw(int lastX, int lastY, int x, int y, Color color)
-		{
-			if (_bitmap == null)
+        /// <summary>
+        /// Function to draw a dot (or line) on the screen.
+        /// </summary>
+        /// <param name="lastX">Last horizontal coordinate.</param>
+        /// <param name="lastY">Last vertical coordinate.</param>
+        /// <param name="x">Horizontal coordinate.</param>
+        /// <param name="y">Vertical coordinate.</param>
+        /// <param name="color">Color of the pixel.</param>
+        public void Draw(int lastX, int lastY, int x, int y, Color color)
+        {
+            if (_bitmap == null)
             {
                 return;
             }
@@ -147,13 +147,13 @@ namespace Gorgon.Examples
                 _bitmap.SetPixel(x, y, color);
             }
             else
-			{
-				using (var pen = new Pen(color))
+            {
+                using (var pen = new Pen(color))
                 {
                     _graphics.DrawLine(pen, new Point(lastX, lastY), new Point(x, y));
                 }
             }
-		}
+        }
 
         /// <summary>
         /// Function to draw the FPS on the screen.

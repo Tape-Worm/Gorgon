@@ -27,10 +27,10 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;
-using DX = SharpDX;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Properties;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
@@ -38,97 +38,97 @@ namespace Gorgon.Renderers
     /// Type of wave effect.
     /// </summary>
     public enum WaveType
-	{
-		/// <summary>
-		/// A horizontal wave.
-		/// </summary>
-		Horizontal = 0,
-		/// <summary>
-		/// A vertical wave.
-		/// </summary>
-		Vertical = 1,
-		/// <summary>
-		/// Both horizontal and vertical.
-		/// </summary>
-		Both = 2
-	}
+    {
+        /// <summary>
+        /// A horizontal wave.
+        /// </summary>
+        Horizontal = 0,
+        /// <summary>
+        /// A vertical wave.
+        /// </summary>
+        Vertical = 1,
+        /// <summary>
+        /// Both horizontal and vertical.
+        /// </summary>
+        Both = 2
+    }
 
-	/// <summary>
-	/// An effect that renders a wavy image.
-	/// </summary>
-	public class Gorgon2DWaveEffect
-		: Gorgon2DEffect
-	{
-		#region Value Types.
-		/// <summary>
-		/// Settings for the effect shader.
-		/// </summary>
-		[StructLayout(LayoutKind.Sequential, Size = 32)]
-		private struct Settings
-		{
-			/// <summary>
-			/// Amplitude for the wave.
-			/// </summary>
-			public readonly float Amplitude;						
-			/// <summary>
-			/// Length of the wave.
-			/// </summary>
-			public readonly float Length;							
-			/// <summary>
-			/// Period for the wave.
-			/// </summary>
-			public readonly float Period;
-			/// <summary>
-			/// Scale for the wave length.
-			/// </summary>
-			public readonly float LengthScale;
+    /// <summary>
+    /// An effect that renders a wavy image.
+    /// </summary>
+    public class Gorgon2DWaveEffect
+        : Gorgon2DEffect
+    {
+        #region Value Types.
+        /// <summary>
+        /// Settings for the effect shader.
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, Size = 32)]
+        private struct Settings
+        {
+            /// <summary>
+            /// Amplitude for the wave.
+            /// </summary>
+            public readonly float Amplitude;
+            /// <summary>
+            /// Length of the wave.
+            /// </summary>
+            public readonly float Length;
+            /// <summary>
+            /// Period for the wave.
+            /// </summary>
+            public readonly float Period;
+            /// <summary>
+            /// Scale for the wave length.
+            /// </summary>
+            public readonly float LengthScale;
 
-		    // Wave type.
-		    private readonly int _waveType;							
+            // Wave type.
+            private readonly int _waveType;
 
-			/// <summary>
-			/// Property to return the type of wave.
-			/// </summary>
-			public WaveType WaveType => (WaveType)_waveType;
+            /// <summary>
+            /// Property to return the type of wave.
+            /// </summary>
+            public WaveType WaveType => (WaveType)_waveType;
 
-			/// <summary>
-			/// Initializes a new instance of the <see cref="Settings"/> struct.
-			/// </summary>
-			/// <param name="amplitude">The amplitude.</param>
-			/// <param name="length">The length.</param>
-			/// <param name="period">The period.</param>
-			/// <param name="scale">Scale for the length.</param>
-			/// <param name="waveType">Type of the wave.</param>
-			public Settings(float amplitude, float length, float period, float scale, WaveType waveType)
-			{
-				Amplitude = amplitude;
-				Length = length;
-				Period = period;
-				LengthScale = scale.Max(1.0f);
-				_waveType = (int)waveType;
-			}
-		}
-		#endregion
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Settings"/> struct.
+            /// </summary>
+            /// <param name="amplitude">The amplitude.</param>
+            /// <param name="length">The length.</param>
+            /// <param name="period">The period.</param>
+            /// <param name="scale">Scale for the length.</param>
+            /// <param name="waveType">Type of the wave.</param>
+            public Settings(float amplitude, float length, float period, float scale, WaveType waveType)
+            {
+                Amplitude = amplitude;
+                Length = length;
+                Period = period;
+                LengthScale = scale.Max(1.0f);
+                _waveType = (int)waveType;
+            }
+        }
+        #endregion
 
-		#region Variables.
-	    // Constant buffer for the wave information.
-		private GorgonConstantBufferView _waveBuffer;		    
-	    // Settings for the effect shader.
-		private Settings _settings;								
-	    // Flag to indicate that the parameters were updated.
-		private bool _isUpdated = true;
+        #region Variables.
+        // Constant buffer for the wave information.
+        private GorgonConstantBufferView _waveBuffer;
+        // Settings for the effect shader.
+        private Settings _settings;
+        // Flag to indicate that the parameters were updated.
+        private bool _isUpdated = true;
         // The shader used to render the wave effect.
         private GorgonPixelShader _waveShader;
-	    private Gorgon2DShaderState<GorgonPixelShader> _waveState;
+        private Gorgon2DShaderState<GorgonPixelShader> _waveState;
         // The batch state for rendering.
-	    private Gorgon2DBatchState _batchState;
-		#endregion
+        private Gorgon2DBatchState _batchState;
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to set or return the wave type.
-		/// </summary>
-		public WaveType WaveType
+        #region Properties.
+        /// <summary>
+        /// Property to set or return the wave type.
+        /// </summary>
+        public WaveType WaveType
         {
             get => _settings.WaveType;
             set
@@ -147,77 +147,77 @@ namespace Gorgon.Renderers
         /// Property to set or return the amplitude for the wave.
         /// </summary>
         public float Amplitude
-		{
-			get => _settings.Amplitude;
+        {
+            get => _settings.Amplitude;
             set
-			{
-				// ReSharper disable once CompareOfFloatsByEqualityOperator
-				if (_settings.Amplitude == value)
-				{
-					return;
-				}
+            {
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
+                if (_settings.Amplitude == value)
+                {
+                    return;
+                }
 
-				_settings = new Settings(value, _settings.Length, _settings.Period, _settings.LengthScale, _settings.WaveType);
-				_isUpdated = true;
-			}
-		}
+                _settings = new Settings(value, _settings.Length, _settings.Period, _settings.LengthScale, _settings.WaveType);
+                _isUpdated = true;
+            }
+        }
 
-		/// <summary>
-		/// Property to set or return the period for the wave.
-		/// </summary>
-		public float Period
-		{
-			get => _settings.Period;
-		    set
-			{
-				// ReSharper disable once CompareOfFloatsByEqualityOperator
-				if (_settings.Period == value)
-				{
-					return;
-				}
+        /// <summary>
+        /// Property to set or return the period for the wave.
+        /// </summary>
+        public float Period
+        {
+            get => _settings.Period;
+            set
+            {
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
+                if (_settings.Period == value)
+                {
+                    return;
+                }
 
-				_settings = new Settings(_settings.Amplitude, _settings.Length, value, _settings.LengthScale, _settings.WaveType);
-				_isUpdated = true;
-			}
-		}
+                _settings = new Settings(_settings.Amplitude, _settings.Length, value, _settings.LengthScale, _settings.WaveType);
+                _isUpdated = true;
+            }
+        }
 
-		/// <summary>
-		/// Property to set or return the length of the wave.
-		/// </summary>
-		public float Length
-		{
-			get => _settings.Length;
-		    set
-			{
-				// ReSharper disable once CompareOfFloatsByEqualityOperator
-				if (_settings.Length == value)
-				{
-					return;
-				}
+        /// <summary>
+        /// Property to set or return the length of the wave.
+        /// </summary>
+        public float Length
+        {
+            get => _settings.Length;
+            set
+            {
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
+                if (_settings.Length == value)
+                {
+                    return;
+                }
 
-				_settings = new Settings(_settings.Amplitude, value, _settings.Period, _settings.LengthScale, _settings.WaveType);
-				_isUpdated = true;
-			}
-		}
+                _settings = new Settings(_settings.Amplitude, value, _settings.Period, _settings.LengthScale, _settings.WaveType);
+                _isUpdated = true;
+            }
+        }
 
-		/// <summary>
-		/// Property to set or return the scale for the wave length.
-		/// </summary>
-		public float LengthScale
-		{
-			get => _settings.LengthScale;
-		    set
-			{
-				// ReSharper disable once CompareOfFloatsByEqualityOperator
-				if (_settings.LengthScale == value)
-				{
-					return;
-				}
+        /// <summary>
+        /// Property to set or return the scale for the wave length.
+        /// </summary>
+        public float LengthScale
+        {
+            get => _settings.LengthScale;
+            set
+            {
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
+                if (_settings.LengthScale == value)
+                {
+                    return;
+                }
 
-				_settings = new Settings(_settings.Amplitude, _settings.Length, _settings.Period, value, _settings.WaveType);
-				_isUpdated = true;
-			}
-		}
+                _settings = new Settings(_settings.Amplitude, _settings.Length, _settings.Period, value, _settings.WaveType);
+                _isUpdated = true;
+            }
+        }
         #endregion
 
         #region Methods.
@@ -230,7 +230,7 @@ namespace Gorgon.Renderers
             _settings = new Settings(10.0f, 50.0f, 0.0f, 100.0f, WaveType.Horizontal);
             _waveBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _settings, "Gorgon2DWaveEffect Constant Buffer", ResourceUsage.Dynamic);
 
-			Macros.Add(new GorgonShaderMacro("WAVE_EFFECT"));
+            Macros.Add(new GorgonShaderMacro("WAVE_EFFECT"));
             _waveShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderWaveEffect");
             _waveState = PixelShaderBuilder
                           .Shader(_waveShader)
@@ -255,15 +255,15 @@ namespace Gorgon.Renderers
         /// </para>
         /// </remarks>
         protected override void OnBeforeRender(GorgonRenderTargetView output, IGorgon2DCamera camera, bool sizeChanged)
-		{
-		    if (!_isUpdated)
-		    {
-		        return;
-		    }
+        {
+            if (!_isUpdated)
+            {
+                return;
+            }
 
-		    _waveBuffer.Buffer.SetData(ref _settings);
-		    _isUpdated = false;
-		}
+            _waveBuffer.Buffer.SetData(ref _settings);
+            _isUpdated = false;
+        }
 
         /// <summary>
         /// Function called prior to rendering a pass.
@@ -279,48 +279,48 @@ namespace Gorgon.Renderers
         /// </remarks>
         /// <seealso cref="PassContinuationState"/>
         protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, IGorgon2DCamera camera)
-	    {
-	        if (Graphics.RenderTargets[0] != output)
-	        {
+        {
+            if (Graphics.RenderTargets[0] != output)
+            {
                 Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
-	        }
+            }
 
-	        return PassContinuationState.Continue;
-	    }
+            return PassContinuationState.Continue;
+        }
 
-	    /// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
-		protected override void Dispose(bool disposing)
-		{
-		    if (!disposing)
-		    {
-		        return;
-		    }
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources
+        /// </summary>
+        /// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (!disposing)
+            {
+                return;
+            }
 
-		    GorgonConstantBufferView waveBuffer = Interlocked.Exchange(ref _waveBuffer, null);
-		    GorgonPixelShader shader = Interlocked.Exchange(ref _waveShader, null);
+            GorgonConstantBufferView waveBuffer = Interlocked.Exchange(ref _waveBuffer, null);
+            GorgonPixelShader shader = Interlocked.Exchange(ref _waveShader, null);
 
             waveBuffer?.Dispose();
             shader?.Dispose();
-		}
+        }
 
-	    /// <summary>
-	    /// Function called to build a new (or return an existing) 2D batch state.
-	    /// </summary>
-	    /// <param name="passIndex">The index of the current rendering pass.</param>
-	    /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
-	    /// <returns>The 2D batch state.</returns>
-	    protected override Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged)
-	    {
-	        if (statesChanged)
-	        {
-	            _batchState = BatchStateBuilder.Build();
-	        }
+        /// <summary>
+        /// Function called to build a new (or return an existing) 2D batch state.
+        /// </summary>
+        /// <param name="passIndex">The index of the current rendering pass.</param>
+        /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
+        /// <returns>The 2D batch state.</returns>
+        protected override Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged)
+        {
+            if (statesChanged)
+            {
+                _batchState = BatchStateBuilder.Build();
+            }
 
-	        return _batchState;
-	    }
+            return _batchState;
+        }
 
         /// <summary>
         /// Function called to render a single effect pass.
@@ -342,9 +342,9 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="renderer">The renderer used to render the effect.</param>
         public Gorgon2DWaveEffect(Gorgon2D renderer)
-			: base(renderer, Resources.GOR2D_EFFECT_WAVE, Resources.GOR2D_EFFECT_WAVE_DESC, 1)
-		{
-		}
-		#endregion
-	}
+            : base(renderer, Resources.GOR2D_EFFECT_WAVE, Resources.GOR2D_EFFECT_WAVE_DESC, 1)
+        {
+        }
+        #endregion
+    }
 }

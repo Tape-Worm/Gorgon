@@ -31,41 +31,41 @@ using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
-	/// <summary>
-	/// The layout for our vertex.
-	/// </summary>
-	[StructLayout(LayoutKind.Sequential, Pack = 1)]
-	public struct Vertex3D
-	{
-		#region Variables.
-		/// <summary>
-		/// Size of the vertex, in bytes.
-		/// </summary>
-		public static readonly int Size = Unsafe.SizeOf<Vertex3D>();
+    /// <summary>
+    /// The layout for our vertex.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct Vertex3D
+    {
+        #region Variables.
+        /// <summary>
+        /// Size of the vertex, in bytes.
+        /// </summary>
+        public static readonly int Size = Unsafe.SizeOf<Vertex3D>();
 
-		/// <summary>
-		/// The position of the vertex.
-		/// </summary>
-		[InputElement(0, "SV_POSITION")]
-		public DX.Vector4 Position;
+        /// <summary>
+        /// The position of the vertex.
+        /// </summary>
+        [InputElement(0, "SV_POSITION")]
+        public DX.Vector4 Position;
 
-		/// <summary>
-		/// The position of the vertex normal.
-		/// </summary>
-		[InputElement(1, "NORMAL")]
-		public DX.Vector3 Normal;
+        /// <summary>
+        /// The position of the vertex normal.
+        /// </summary>
+        [InputElement(1, "NORMAL")]
+        public DX.Vector3 Normal;
 
-		/// <summary>
-		/// The texture coordinates.
-		/// </summary>
-		[InputElement(2, "TEXCOORD")]
-		public DX.Vector2 UV;
-		
+        /// <summary>
+        /// The texture coordinates.
+        /// </summary>
+        [InputElement(2, "TEXCOORD")]
+        public DX.Vector2 UV;
+
         /// <summary>
         /// The tangent vector.
         /// </summary>
         [InputElement(3, "TANGENT")]
-	    public DX.Vector4 Tangent;
-	    #endregion
-	}
+        public DX.Vector4 Tangent;
+        #endregion
+    }
 }

@@ -105,7 +105,7 @@ namespace Gorgon.Renderers
             /// Various attributes (x = Specular power, y = Attenuation, z = Intensity, w = Specular enabled flag).
             /// </summary>
             public DX.Vector4 LightAttribs;
-			/// <summary>
+            /// <summary>
             /// The type of light.
             /// </summary>
             public int LightType;
@@ -203,14 +203,14 @@ namespace Gorgon.Renderers
             get;
         } = new List<Gorgon2DLight>(8);
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return whether the Y (green channel) in the normal map should be flipped. 
         /// </summary>
         /// <remarks>
         /// This property is no longer supported. Use an application such as Adobe Photoshop or Gimp to flip the normal axes. 
         /// </remarks>
         [Obsolete("This property is not working correctly and will be removed. Users should flip their normal map axes using an application such as Photoshop or Gimp.")]
-		public bool FlipYNormal
+        public bool FlipYNormal
         {
             get;
             set;
@@ -281,7 +281,7 @@ namespace Gorgon.Renderers
 
             // Normals.
             // We'll clear it before the pass, the default color is insufficient.
-            _gbufferTargets[2] = Graphics.TemporaryTargets.Rent(_rtvInfo, "Gorgon 2D Buffer - Normals", false); 
+            _gbufferTargets[2] = Graphics.TemporaryTargets.Rent(_rtvInfo, "Gorgon 2D Buffer - Normals", false);
             GorgonTexture2DView normalSrv = _gbufferTargets[2].GetShaderResourceView();
 
             if ((_pixelDeferShaderState.ShaderResources[1] != normalSrv)
@@ -309,7 +309,7 @@ namespace Gorgon.Renderers
 
                 _lightingState = BatchStateBuilder
                                                 .ResetTo(_lightingState)
-                                                .PixelShaderState(_pixelLitShaderState)												
+                                                .PixelShaderState(_pixelLitShaderState)
                                                 .Build();
 
             }
@@ -383,10 +383,10 @@ namespace Gorgon.Renderers
                     if ((statesChanged) || (_deferredState == null))
                     {
                         _deferredState = BatchStateBuilder
-											.PixelShaderState(_pixelDeferShaderState)
-                                            .VertexShaderState(_vertexDeferShaderState)															
-											.BlendState(BlendStateOverride ?? GorgonBlendState.NoBlending)
-											.Build();
+                                            .PixelShaderState(_pixelDeferShaderState)
+                                            .VertexShaderState(_vertexDeferShaderState)
+                                            .BlendState(BlendStateOverride ?? GorgonBlendState.NoBlending)
+                                            .Build();
                     }
 
                     return _deferredState;
@@ -448,7 +448,7 @@ namespace Gorgon.Renderers
         {
             BuildRenderTargets(output.Width, output.Height, output.Format);
 
-			var globals = new GlobalEffectData
+            var globals = new GlobalEffectData
             {
                 FlipYNormal = 0,
                 // If no custom camera is in use, we need to pass in our default viewing information which is normally the output width, and height (by half), and an arbitrary Z value so 
@@ -499,8 +499,8 @@ namespace Gorgon.Renderers
                 minZ = currentCamera.MinimumDepth;
                 destRect = currentCamera.ViewableRegion;
             }
-			            
-			for (int i = 0; i < Lights.Count; ++i)
+
+            for (int i = 0; i < Lights.Count; ++i)
             {
                 Gorgon2DLight light = Lights[i];
 
@@ -508,7 +508,7 @@ namespace Gorgon.Renderers
                 {
                     continue;
                 }
-								
+
                 UpdateLight(light);
 
                 Renderer.Begin(_lightingState, currentCamera);
@@ -517,9 +517,9 @@ namespace Gorgon.Renderers
                                             _gbufferTexture,
                                             new DX.RectangleF(0, 0, 1, 1),
                                             textureSampler: GorgonSamplerState.Default,
-                                            depth: minZ);                
+                                            depth: minZ);
                 Renderer.End();
-            }            
+            }
         }
 
         /// <summary>
@@ -530,8 +530,8 @@ namespace Gorgon.Renderers
         {
             var globalData = new GlobalEffectData
             {
-				CameraPosition = DX.Vector3.Zero,
-				FlipYNormal = 0
+                CameraPosition = DX.Vector3.Zero,
+                FlipYNormal = 0
             };
 
             _globalData = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref globalData, "Global deferred light effect data.", ResourceUsage.Default);
@@ -540,7 +540,7 @@ namespace Gorgon.Renderers
                                                                        new GorgonConstantBufferInfo("Deferred Lighting Light Data Buffer")
                                                                        {
                                                                            SizeInBytes = Unsafe.SizeOf<PointLightData>(),
-																		   Usage = ResourceUsage.Dynamic
+                                                                           Usage = ResourceUsage.Dynamic
                                                                        });
 
             Macros.Add(new GorgonShaderMacro("DEFERRED_LIGHTING"));
@@ -564,7 +564,7 @@ namespace Gorgon.Renderers
             _pixelLitShader = CompileShader<GorgonPixelShader>(Resources.Lighting, "GorgonPixelShaderLighting");
             _pixelLitShaderState = PixelShaderBuilder.Shader(_pixelLitShader)
                                              .ConstantBuffer(_lightData, 1)
-											 .ConstantBuffer(_globalData, 2)
+                                             .ConstantBuffer(_globalData, 2)
                                                 .SamplerState(_diffuseFilter, 0)
                                                 .SamplerState(_normalFilter, 1)
                                                 .SamplerState(_specularFilter, 2)

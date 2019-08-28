@@ -32,23 +32,23 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using DX = SharpDX;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
+using Gorgon.Editor.Converters;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Editor.UI;
+using Gorgon.Editor.UI.Forms;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
-using Gorgon.Renderers;
 using Gorgon.Math;
-using Gorgon.Editor.Converters;
-using Gorgon.Editor.UI.Forms;
+using Gorgon.Renderers;
 using Gorgon.UI;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -171,7 +171,7 @@ namespace Gorgon.Editor.SpriteEditor
                 return null;
             }
 
-            return textureFile;            
+            return textureFile;
         }
 
         /// <summary>
@@ -181,13 +181,13 @@ namespace Gorgon.Editor.SpriteEditor
         /// <returns>The image containing the rendered sprite.</returns>
         private IGorgonImage RenderThumbnail(GorgonSprite sprite)
         {
-                      
+
             GorgonRenderTargetView prevRtv = null;
 
             try
             {
                 sprite.Anchor = new DX.Vector2(0.5f);
-                
+
                 if (sprite.Size.Width > sprite.Size.Height)
                 {
                     sprite.Scale = new DX.Vector2(256.0f / (sprite.Size.Width.Max(1)));
@@ -199,7 +199,7 @@ namespace Gorgon.Editor.SpriteEditor
 
                 sprite.Position = new DX.Vector2(128, 128);
 
-                prevRtv = GraphicsContext.Graphics.RenderTargets[0];                
+                prevRtv = GraphicsContext.Graphics.RenderTargets[0];
                 GraphicsContext.Graphics.SetRenderTarget(_rtv);
                 GraphicsContext.Renderer2D.Begin();
                 GraphicsContext.Renderer2D.DrawFilledRectangle(new DX.RectangleF(0, 0, 256, 256), GorgonColor.White, _bgPattern, new DX.RectangleF(0, 0, 1, 1));
@@ -213,7 +213,7 @@ namespace Gorgon.Editor.SpriteEditor
                 if (prevRtv != null)
                 {
                     GraphicsContext.Graphics.SetRenderTarget(prevRtv);
-                }                
+                }
             }
         }
 
@@ -291,7 +291,7 @@ namespace Gorgon.Editor.SpriteEditor
         private bool UpdateFileMetadataAttributes(Dictionary<string, string> attributes)
         {
             bool needsRefresh = false;
-            
+
             if ((attributes.TryGetValue(SpriteContent.CodecAttr, out string currentCodecType))
                 && (!string.IsNullOrWhiteSpace(currentCodecType)))
             {
@@ -313,7 +313,7 @@ namespace Gorgon.Editor.SpriteEditor
                 attributes[SpriteContent.CodecAttr] = codecType;
                 needsRefresh = true;
             }
-            
+
             if ((!attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out currentContentType))
                 || (!string.Equals(currentContentType, CommonEditorContentTypes.SpriteType, StringComparison.OrdinalIgnoreCase)))
             {
@@ -349,12 +349,12 @@ namespace Gorgon.Editor.SpriteEditor
             IContentFile imageFile;
             GorgonSprite sprite;
             ISpriteTextureService textureService;
-            Stream stream = null;            
+            Stream stream = null;
 
             try
-            {                
+            {
                 textureService = new SpriteTextureService(GraphicsContext, fileManager, _ddsCodec);
-                                               
+
                 // Load the sprite image.
                 (spriteImage, imageFile) = await textureService.LoadFromSpriteContentAsync(file);
 
@@ -472,7 +472,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             _bgPattern = GorgonTexture2DView.CreateTexture(GraphicsContext.Graphics, new GorgonTexture2DInfo($"Sprite_Editor_Bg_Preview_{Guid.NewGuid():N}")
             {
-				Width = EditorCommonResources.CheckerBoardPatternImage.Width,
+                Width = EditorCommonResources.CheckerBoardPatternImage.Width,
                 Height = EditorCommonResources.CheckerBoardPatternImage.Height
             }, EditorCommonResources.CheckerBoardPatternImage);
 
@@ -553,7 +553,7 @@ namespace Gorgon.Editor.SpriteEditor
                     UpdateDependencies(stream, file.Metadata.DependsOn, fileManager);
                     return true;
                 }
-                                
+
                 return false;
             }
         }
@@ -624,7 +624,7 @@ namespace Gorgon.Editor.SpriteEditor
             IGorgonImage resultImage = null;
 
             try
-            {                
+            {
                 spriteTexture = GorgonTexture2DView.CreateTexture(GraphicsContext.Graphics, new GorgonTexture2DInfo(imageFile.Path)
                 {
                     Width = image.Width,

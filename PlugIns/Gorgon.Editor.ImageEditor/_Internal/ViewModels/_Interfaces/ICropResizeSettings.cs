@@ -25,10 +25,10 @@
 #endregion
 
 using System;
-using DX = SharpDX;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Imaging;
 using Gorgon.UI;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor.ViewModels
 {

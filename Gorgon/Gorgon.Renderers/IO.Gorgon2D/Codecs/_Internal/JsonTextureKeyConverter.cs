@@ -25,10 +25,10 @@
 #endregion
 
 using System;
-using DX = SharpDX;
 using Gorgon.Animation;
 using Gorgon.Graphics.Core;
 using Newtonsoft.Json;
+using DX = SharpDX;
 
 namespace Gorgon.IO
 {
@@ -81,7 +81,7 @@ namespace Gorgon.IO
             DX.RectangleF uv = DX.RectangleF.Empty;
             GorgonTexture2DView texture = null;
             string textureName = string.Empty;
-            
+
             while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
             {
                 if (reader.TokenType != JsonToken.PropertyName)

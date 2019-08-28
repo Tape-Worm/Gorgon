@@ -26,10 +26,10 @@
 
 using System;
 using System.Collections.Generic;
-using Gorgon.Math;
-using DX = SharpDX;
-using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Core;
+using Gorgon.Math;
+using D3D11 = SharpDX.Direct3D11;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core
 {
@@ -62,7 +62,7 @@ namespace Gorgon.Graphics.Core
         {
             get;
         } = new GorgonRasterState();
-        
+
         /// <summary>
         /// Wireframe, with no culling.
         /// </summary>
@@ -70,10 +70,10 @@ namespace Gorgon.Graphics.Core
         {
             get;
         } = new GorgonRasterState
-            {
-                CullMode = CullingMode.None,
-                FillMode = FillMode.Wireframe
-            };
+        {
+            CullMode = CullingMode.None,
+            FillMode = FillMode.Wireframe
+        };
 
         /// <summary>
         /// Front face culling.
@@ -82,9 +82,9 @@ namespace Gorgon.Graphics.Core
         {
             get;
         } = new GorgonRasterState
-            {
-                CullMode = CullingMode.Front
-            };
+        {
+            CullMode = CullingMode.Front
+        };
 
         /// <summary>
         /// No culling.
@@ -93,9 +93,9 @@ namespace Gorgon.Graphics.Core
         {
             get;
         } = new GorgonRasterState
-            {
-                CullMode = CullingMode.None
-            };
+        {
+            CullMode = CullingMode.None
+        };
         #endregion
 
         #region Properties.
@@ -330,26 +330,26 @@ namespace Gorgon.Graphics.Core
         internal D3D11.RasterizerState2 GetD3D11RasterState(D3D11.Device5 device)
         {
             var desc = new D3D11.RasterizerStateDescription2
-                       {
-                           CullMode = (D3D11.CullMode)CullMode,
-                           ConservativeRasterizationMode =
+            {
+                CullMode = (D3D11.CullMode)CullMode,
+                ConservativeRasterizationMode =
                                UseConservativeRasterization ? D3D11.ConservativeRasterizationMode.On : D3D11.ConservativeRasterizationMode.Off,
-                           FillMode = (D3D11.FillMode)FillMode,
-                           DepthBias = DepthBias,
-                           DepthBiasClamp = DepthBiasClamp,
-                           IsAntialiasedLineEnabled = IsAntialiasedLineEnabled,
-                           IsFrontCounterClockwise = IsFrontCounterClockwise,
-                           SlopeScaledDepthBias = SlopeScaledDepthBias,
-                           ForcedSampleCount = ForcedReadWriteViewSampleCount,
-                           IsScissorEnabled = ScissorRectangles.Count > 0,
-                           IsDepthClipEnabled = IsDepthClippingEnabled,
-                           IsMultisampleEnabled = IsMultisamplingEnabled
-                       };
+                FillMode = (D3D11.FillMode)FillMode,
+                DepthBias = DepthBias,
+                DepthBiasClamp = DepthBiasClamp,
+                IsAntialiasedLineEnabled = IsAntialiasedLineEnabled,
+                IsFrontCounterClockwise = IsFrontCounterClockwise,
+                SlopeScaledDepthBias = SlopeScaledDepthBias,
+                ForcedSampleCount = ForcedReadWriteViewSampleCount,
+                IsScissorEnabled = ScissorRectangles.Count > 0,
+                IsDepthClipEnabled = IsDepthClippingEnabled,
+                IsMultisampleEnabled = IsMultisamplingEnabled
+            };
 
             return new D3D11.RasterizerState2(device, desc)
-                   {
-                       DebugName = nameof(GorgonRasterState)
-                   };
+            {
+                DebugName = nameof(GorgonRasterState)
+            };
         }
 
         /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>

@@ -32,15 +32,15 @@ using Gorgon.IO;
 
 namespace GorgonLibrary.IO
 {
-	/// <summary>
-	/// Reads Gorgon chunked formatted data.
-	/// </summary>
-	/// <remarks>This object will take data and turn it into chunks of data.  This is similar to the old IFF format in that 
-	/// it allows Gorgon's file formats to be future proof.  That is, if a later version of Gorgon has support for a feature
-	/// that does not exist in a previous version, then the older version will be able to read the file and skip the 
-	/// unnecessary parts.</remarks>
-	internal class GorgonChunkReader
-		: GorgonChunkedFormat
+    /// <summary>
+    /// Reads Gorgon chunked formatted data.
+    /// </summary>
+    /// <remarks>This object will take data and turn it into chunks of data.  This is similar to the old IFF format in that 
+    /// it allows Gorgon's file formats to be future proof.  That is, if a later version of Gorgon has support for a feature
+    /// that does not exist in a previous version, then the older version will be able to read the file and skip the 
+    /// unnecessary parts.</remarks>
+    internal class GorgonChunkReader
+        : GorgonChunkedFormat
     {
         #region Methods.
         /// <summary>
@@ -75,11 +75,11 @@ namespace GorgonLibrary.IO
 		/// <returns>The signed byte in the stream.</returns>
 		/// <exception cref="IOException">Thrown when the stream is write-only.</exception>
 		public sbyte ReadSByte()
-		{
-			ValidateAccess(false);
+        {
+            ValidateAccess(false);
 
-			return Reader.ReadSByte();
-		}
+            return Reader.ReadSByte();
+        }
 
         /// <summary>
         /// Function to read an unsigned byte from the stream.
@@ -87,10 +87,10 @@ namespace GorgonLibrary.IO
         /// <returns>Unsigned byte in the stream.</returns>
         /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
         public byte ReadByte()
-		{
-			ValidateAccess(false);
-			return Reader.ReadByte();
-		}
+        {
+            ValidateAccess(false);
+            return Reader.ReadByte();
+        }
 
         /// <summary>
         /// Function to read a signed 16 bit integer from the stream.
@@ -98,10 +98,10 @@ namespace GorgonLibrary.IO
         /// <returns>The signed 16 bit integer in the stream.</returns>
         /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
         public Int16 ReadInt16()
-		{
-			ValidateAccess(false);
-			return Reader.ReadInt16();
-		}
+        {
+            ValidateAccess(false);
+            return Reader.ReadInt16();
+        }
 
         /// <summary>
         /// Function to read an unsigned 16 bit integer from the stream.
@@ -109,10 +109,10 @@ namespace GorgonLibrary.IO
         /// <returns>The unsigned 16 bit integer in the stream.</returns>
         /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
         public UInt16 ReadUInt16()
-		{
-			ValidateAccess(false);
-			return Reader.ReadUInt16();
-		}
+        {
+            ValidateAccess(false);
+            return Reader.ReadUInt16();
+        }
 
         /// <summary>
         /// Function to read a signed 32 bit integer from the stream.
@@ -120,10 +120,10 @@ namespace GorgonLibrary.IO
         /// <returns>The signed 32 bit integer in the stream.</returns>
         /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
         public Int32 ReadInt32()
-		{
-			ValidateAccess(false);
-			return Reader.ReadInt32();
-		}
+        {
+            ValidateAccess(false);
+            return Reader.ReadInt32();
+        }
 
         /// <summary>
         /// Function to read a unsigned 32 bit integer from the stream.
@@ -131,10 +131,10 @@ namespace GorgonLibrary.IO
         /// <returns>The unsigned 32 bit integer in the stream.</returns>
         /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
         public UInt32 ReadUInt32()
-		{
-			ValidateAccess(false);
-			return Reader.ReadUInt32();
-		}
+        {
+            ValidateAccess(false);
+            return Reader.ReadUInt32();
+        }
 
         /// <summary>
         /// Function to read a signed 64 bit integer from the stream.
@@ -142,10 +142,10 @@ namespace GorgonLibrary.IO
         /// <returns>The signed 64 bit integer in the stream.</returns>
         /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
         public Int64 ReadInt64()
-		{
-			ValidateAccess(false);
-			return Reader.ReadInt64();
-		}
+        {
+            ValidateAccess(false);
+            return Reader.ReadInt64();
+        }
 
         /// <summary>
         /// Function to read an unsigned 64 bit integer from the stream.
@@ -153,10 +153,10 @@ namespace GorgonLibrary.IO
         /// <returns>The unsigned 64 bit integer in the stream.</returns>
         /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
         public UInt64 ReadUInt64()
-		{
-			ValidateAccess(false);
-			return Reader.ReadUInt64();
-		}
+        {
+            ValidateAccess(false);
+            return Reader.ReadUInt64();
+        }
 
         /// <summary>
         /// Function to read a boolean value from the stream.
@@ -164,10 +164,10 @@ namespace GorgonLibrary.IO
         /// <returns>The boolean value in the stream.</returns>
         /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
         public Boolean ReadBoolean()
-		{
-			ValidateAccess(false);
-			return Reader.ReadBoolean();
-		}
+        {
+            ValidateAccess(false);
+            return Reader.ReadBoolean();
+        }
 
         /// <summary>
         /// Function to read a single character from the stream.
@@ -176,11 +176,11 @@ namespace GorgonLibrary.IO
         /// <remarks>This will read 2 bytes for the character since the default encoding for .NET is UTF-16.</remarks>
         /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
         public char ReadChar()
-		{
-			ValidateAccess(false);
+        {
+            ValidateAccess(false);
 
-			return (char)ReadInt16();
-		}
+            return (char)ReadInt16();
+        }
 
         /// <summary>
         /// Function to read a string from the stream with the specified encoding.
@@ -190,11 +190,11 @@ namespace GorgonLibrary.IO
         /// <remarks>If the <paramref name="encoding"/> is NULL (Nothing in VB.Net), UTF-8 encoding will be used instead.</remarks>
         /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
         public string ReadString(Encoding encoding)
-		{
-			ValidateAccess(false);
+        {
+            ValidateAccess(false);
 
-			return Reader.BaseStream.ReadString(encoding);
-		}
+            return Reader.BaseStream.ReadString(encoding);
+        }
 
         /// <summary>
         /// Function to read a string from the stream.
@@ -202,10 +202,10 @@ namespace GorgonLibrary.IO
         /// <returns>The string value in the stream.</returns>
         /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
         public string ReadString()
-		{
-			ValidateAccess(false);
-			return Reader.BaseStream.ReadString(null);
-		}
+        {
+            ValidateAccess(false);
+            return Reader.BaseStream.ReadString(null);
+        }
 
         /// <summary>
         /// Function to read double precision value from the stream.
@@ -213,10 +213,10 @@ namespace GorgonLibrary.IO
         /// <returns>The double precision value in the stream.</returns>
         /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
         public double ReadDouble()
-		{
-			ValidateAccess(false);
-			return Reader.ReadDouble();
-		}
+        {
+            ValidateAccess(false);
+            return Reader.ReadDouble();
+        }
 
         /// <summary>
         /// Function to read a single precision floating point value from the stream.
@@ -224,10 +224,10 @@ namespace GorgonLibrary.IO
         /// <returns>The single precision floating point value in the stream.</returns>
         /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
         public float ReadFloat()
-		{
-			ValidateAccess(false);
-			return Reader.ReadSingle();
-		}
+        {
+            ValidateAccess(false);
+            return Reader.ReadSingle();
+        }
 
         /// <summary>
         /// Function to read a decimal value from the stream.
@@ -235,10 +235,10 @@ namespace GorgonLibrary.IO
         /// <returns>The decimal value in the stream.</returns>
         /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
         public decimal ReadDecimal()
-		{
-			ValidateAccess(false);
-			return Reader.ReadDecimal();
-		}
+        {
+            ValidateAccess(false);
+            return Reader.ReadDecimal();
+        }
 
         /// <summary>
         /// Function to read an array of bytes from the stream.
@@ -255,8 +255,8 @@ namespace GorgonLibrary.IO
         /// <para>Thrown when the sum of startIndex and <paramref name="count"/> is greater than the number of elements in the value parameter.</para>
         /// </exception>
         public void Read(byte[] data, int startIndex, int count)
-		{
-			ValidateAccess(false);
+        {
+            ValidateAccess(false);
 
             if (data == null)
             {
@@ -268,8 +268,8 @@ namespace GorgonLibrary.IO
                 return;
             }
 
-			Reader.Read(data, startIndex, count);
-		}
+            Reader.Read(data, startIndex, count);
+        }
 
         /// <summary>
         /// Function to read a range of generic values.
@@ -365,11 +365,11 @@ namespace GorgonLibrary.IO
         /// <returns>The point in the stream.</returns>
         /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
         public Point ReadPoint()
-		{
-			ValidateAccess(false);
+        {
+            ValidateAccess(false);
 
-			return new Point(Reader.ReadInt32(), Reader.ReadInt32());
-		}
+            return new Point(Reader.ReadInt32(), Reader.ReadInt32());
+        }
 
         /// <summary>
         /// Function to read a point from the stream.
@@ -377,11 +377,11 @@ namespace GorgonLibrary.IO
         /// <returns>The point in the stream.</returns>
         /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
         public PointF ReadPointF()
-		{
-			ValidateAccess(false);
+        {
+            ValidateAccess(false);
 
-			return new PointF(Reader.ReadSingle(), Reader.ReadSingle());
-		}
+            return new PointF(Reader.ReadSingle(), Reader.ReadSingle());
+        }
 
         /// <summary>
         /// Function to read a point from the stream.
@@ -389,11 +389,11 @@ namespace GorgonLibrary.IO
         /// <returns>The point in the stream.</returns>
         /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
         public Size ReadSize()
-		{
-			ValidateAccess(false);
+        {
+            ValidateAccess(false);
 
-			return new Size(Reader.ReadInt32(), Reader.ReadInt32());
-		}
+            return new Size(Reader.ReadInt32(), Reader.ReadInt32());
+        }
 
         /// <summary>
         /// Function to read a point from the stream.
@@ -401,11 +401,11 @@ namespace GorgonLibrary.IO
         /// <returns>The point in the stream.</returns>
         /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
         public SizeF ReadSizeF()
-		{
-			ValidateAccess(false);
+        {
+            ValidateAccess(false);
 
-			return new SizeF(Reader.ReadSingle(), Reader.ReadSingle());
-		}
+            return new SizeF(Reader.ReadSingle(), Reader.ReadSingle());
+        }
 
         /// <summary>
         /// Function to read a rectangle from the stream.
@@ -413,11 +413,11 @@ namespace GorgonLibrary.IO
         /// <returns>The rectangle in the stream.</returns>
         /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
         public Rectangle ReadRectangle()
-		{
-			ValidateAccess(false);
+        {
+            ValidateAccess(false);
 
-			return new Rectangle(Reader.ReadInt32(), Reader.ReadInt32(), Reader.ReadInt32(), Reader.ReadInt32());
-		}
+            return new Rectangle(Reader.ReadInt32(), Reader.ReadInt32(), Reader.ReadInt32(), Reader.ReadInt32());
+        }
 
         /// <summary>
         /// Function to read a rectangle from the stream.
@@ -425,22 +425,22 @@ namespace GorgonLibrary.IO
         /// <returns>The rectangle in the stream.</returns>
         /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
         public SharpDX.RectangleF ReadRectangleF()
-		{
-			ValidateAccess(false);
+        {
+            ValidateAccess(false);
 
-			return new SharpDX.RectangleF(Reader.ReadSingle(), Reader.ReadSingle(), Reader.ReadSingle(), Reader.ReadSingle());
-		}
-		#endregion
+            return new SharpDX.RectangleF(Reader.ReadSingle(), Reader.ReadSingle(), Reader.ReadSingle(), Reader.ReadSingle());
+        }
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonChunkReader" /> class.
-		/// </summary>
-		/// <param name="stream">The stream.</param>
-		public GorgonChunkReader(Stream stream)
-			: base(stream, ChunkAccessMode.Read)
-		{
-		}
-		#endregion
-	}
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonChunkReader" /> class.
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        public GorgonChunkReader(Stream stream)
+            : base(stream, ChunkAccessMode.Read)
+        {
+        }
+        #endregion
+    }
 }

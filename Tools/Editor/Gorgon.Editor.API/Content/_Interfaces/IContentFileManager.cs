@@ -44,10 +44,10 @@ namespace Gorgon.Editor.Content
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the currently selected file (if one is selected).
         /// </summary>
-		IContentFile SelectedFile
+        IContentFile SelectedFile
         {
             get;
         }

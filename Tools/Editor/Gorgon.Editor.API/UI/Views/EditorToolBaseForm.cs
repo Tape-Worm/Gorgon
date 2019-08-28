@@ -173,7 +173,7 @@ namespace Gorgon.Editor.UI.Views
             _oldIdle?.TryGetTarget(out oldIdle);
             GorgonApplication.IdleMethod = oldIdle;
             GorgonApplication.AllowBackground = _oldBackgroundState;
-            
+
             if (swapChain != null)
             {
                 context?.ReturnSwapPresenter(ref swapChain);

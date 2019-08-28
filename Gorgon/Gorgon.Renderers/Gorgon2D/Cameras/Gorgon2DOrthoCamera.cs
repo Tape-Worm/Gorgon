@@ -74,10 +74,10 @@ namespace Gorgon.Renderers
             private set;
         } = true;
 
-		/// <summary>
-		/// Property to return whether the projection changed or not.
-		/// </summary>
-		public bool ViewChanged
+        /// <summary>
+        /// Property to return whether the projection changed or not.
+        /// </summary>
+        public bool ViewChanged
         {
             get;
             private set;
@@ -197,137 +197,137 @@ namespace Gorgon.Renderers
         /// Property to set or return the projection view dimensions for the camera.
         /// </summary>
         public DX.Size2F ViewDimensions
-		{
-			get => _viewDimensions;
-		    set
-			{
-				if (_viewDimensions.Equals(value))
-				{
-					return;
-				}
+        {
+            get => _viewDimensions;
+            set
+            {
+                if (_viewDimensions.Equals(value))
+                {
+                    return;
+                }
 
-				_viewDimensions = value;
-				ProjectionChanged = true;
-			}
-		}
+                _viewDimensions = value;
+                ProjectionChanged = true;
+            }
+        }
 
-		/// <summary>
-		/// Property to set or return the minimum depth for the camera.
-		/// </summary>
-		public float MinimumDepth
-		{
-			get => _minDepth;
-		    set
-			{
-			    if (_minDepth == value)
-			    {
-			        return;
-			    }
+        /// <summary>
+        /// Property to set or return the minimum depth for the camera.
+        /// </summary>
+        public float MinimumDepth
+        {
+            get => _minDepth;
+            set
+            {
+                if (_minDepth == value)
+                {
+                    return;
+                }
 
-				_minDepth = value;
-				ProjectionChanged = true;
-			}
-		}
+                _minDepth = value;
+                ProjectionChanged = true;
+            }
+        }
 
-		/// <summary>
-		/// Property to set or return the maximum depth for the camera.
-		/// </summary>
-		public float MaximumDepth
-		{
-			get => _maxDepth;
-		    set
-			{
-				if (value < 1.0f)
-				{
-					value = 1.0f;
-				}
+        /// <summary>
+        /// Property to set or return the maximum depth for the camera.
+        /// </summary>
+        public float MaximumDepth
+        {
+            get => _maxDepth;
+            set
+            {
+                if (value < 1.0f)
+                {
+                    value = 1.0f;
+                }
 
-			    if (_maxDepth == value)
-			    {
-			        return;
-			    }
+                if (_maxDepth == value)
+                {
+                    return;
+                }
 
-				_maxDepth = value;
-				ProjectionChanged = true;
-			}
-		}
+                _maxDepth = value;
+                ProjectionChanged = true;
+            }
+        }
 
-	    /// <summary>
-	    /// Property to set or return a flag to indicate that the renderer should automatically update this camera when the render target size changes.
-	    /// </summary>
-	    /// <remarks>
-	    /// <para>
-	    /// When this flag is set to <b>true</b>, the renderer will automatically update the <see cref="ViewDimensions"/> for this camera when the current render target is resized (typically in response
-	    /// to a window resize event). However, this is not always desirable, and when set to <b>false</b>, the camera <see cref="ViewDimensions"/> will not be resized.
-	    /// </para>
-	    /// <para>
-	    /// If this value is set to <b>false</b>, then it is the responsibility of the developer to update the camera manually when required.
-	    /// </para>
-	    /// </remarks>
-	    public bool AllowUpdateOnResize
-	    {
-	        get;
-	        set;
-	    } = true;
+        /// <summary>
+        /// Property to set or return a flag to indicate that the renderer should automatically update this camera when the render target size changes.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// When this flag is set to <b>true</b>, the renderer will automatically update the <see cref="ViewDimensions"/> for this camera when the current render target is resized (typically in response
+        /// to a window resize event). However, this is not always desirable, and when set to <b>false</b>, the camera <see cref="ViewDimensions"/> will not be resized.
+        /// </para>
+        /// <para>
+        /// If this value is set to <b>false</b>, then it is the responsibility of the developer to update the camera manually when required.
+        /// </para>
+        /// </remarks>
+        public bool AllowUpdateOnResize
+        {
+            get;
+            set;
+        } = true;
 
-	    /// <summary>
-	    /// Property to return the width of the current target.
-	    /// </summary>
-	    public int TargetWidth => Renderer.Graphics.RenderTargets[0]?.Width ?? 0;
+        /// <summary>
+        /// Property to return the width of the current target.
+        /// </summary>
+        public int TargetWidth => Renderer.Graphics.RenderTargets[0]?.Width ?? 0;
 
-	    /// <summary>
-	    /// Property to return the height of the current target.
-	    /// </summary>
-	    public int TargetHeight => Renderer.Graphics.RenderTargets[0]?.Height ?? 0;
+        /// <summary>
+        /// Property to return the height of the current target.
+        /// </summary>
+        public int TargetHeight => Renderer.Graphics.RenderTargets[0]?.Height ?? 0;
 
-		/// <summary>
-		/// Property to return the 2D renderer assigned to this camera.
-		/// </summary>
-		public Gorgon2D Renderer
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the 2D renderer assigned to this camera.
+        /// </summary>
+        public Gorgon2D Renderer
+        {
+            get;
+        }
 
-	    /// <summary>
-	    /// Property to return the name of this object.
-	    /// </summary>
-	    public string Name
-	    {
-	        get;
-	    }
+        /// <summary>
+        /// Property to return the name of this object.
+        /// </summary>
+        public string Name
+        {
+            get;
+        }
         #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to update the view matrix.
-		/// </summary>
-		private void UpdateViewMatrix()
-		{
-			DX.Matrix center = DX.Matrix.Identity;	// Centering matrix.
+        #region Methods.
+        /// <summary>
+        /// Function to update the view matrix.
+        /// </summary>
+        private void UpdateViewMatrix()
+        {
+            DX.Matrix center = DX.Matrix.Identity;  // Centering matrix.
 
-		    // Scale it.
-			// ReSharper disable CompareOfFloatsByEqualityOperator
-			if ((_zoom.X != 1.0f) || (_zoom.Y != 1.0f))
-			{
-				center.M11 = _zoom.X;
-				center.M22 = _zoom.Y;
-				center.M33 = 1.0f;
-			}
+            // Scale it.
+            // ReSharper disable CompareOfFloatsByEqualityOperator
+            if ((_zoom.X != 1.0f) || (_zoom.Y != 1.0f))
+            {
+                center.M11 = _zoom.X;
+                center.M22 = _zoom.Y;
+                center.M33 = 1.0f;
+            }
 
-			if (_angle != 0.0f)
-			{
-			    DX.Matrix.RotationZ(_angle.ToRadians(), out DX.Matrix rotation);
-			    // This is the inversion of the rotation matrix.
-			    // We need to invert the matrix in order to apply the correct transformation to the world data.
+            if (_angle != 0.0f)
+            {
+                DX.Matrix.RotationZ(_angle.ToRadians(), out DX.Matrix rotation);
+                // This is the inversion of the rotation matrix.
+                // We need to invert the matrix in order to apply the correct transformation to the world data.
                 rotation.Transpose();
-				DX.Matrix.Multiply(ref rotation, ref center, out center);
-			}
-			// ReSharper restore CompareOfFloatsByEqualityOperator
+                DX.Matrix.Multiply(ref rotation, ref center, out center);
+            }
+            // ReSharper restore CompareOfFloatsByEqualityOperator
 
-		    // Pass in the inversion of the positioning.
-		    DX.Matrix.Translation(-_position.X, -_position.Y, 0.0f, out DX.Matrix translation);
-			DX.Matrix.Multiply(ref translation, ref center, out _viewMatrix);
-		}
+            // Pass in the inversion of the positioning.
+            DX.Matrix.Translation(-_position.X, -_position.Y, 0.0f, out DX.Matrix translation);
+            DX.Matrix.Multiply(ref translation, ref center, out _viewMatrix);
+        }
 
         /// <summary>
         /// Function to project a screen position into camera space.
@@ -387,7 +387,7 @@ namespace Gorgon.Renderers
 
             result = (DX.Vector3)transformed;
 
-	        // ReSharper disable once CompareOfFloatsByEqualityOperator
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
             if (transformed.W != 1.0f)
             {
                 DX.Vector3.Divide(ref result, transformed.W, out result);
@@ -406,7 +406,7 @@ namespace Gorgon.Renderers
         /// be used to convert the position.  This means if the camera is moved or moving, then the converted screen point will not reflect that.</remarks>
         public void Unproject(ref DX.Vector3 worldSpacePosition, out DX.Vector3 result, bool includeViewTransform = true) =>
             Unproject(ref worldSpacePosition, out result, new DX.Size2(TargetWidth, TargetHeight), includeViewTransform);
-        
+
 
         /// <summary>
         /// Function to unproject a world space position into screen space.
@@ -447,7 +447,7 @@ namespace Gorgon.Renderers
 
             DX.Vector3.Transform(ref worldSpacePosition, ref transformMatrix, out DX.Vector4 transform);
 
-	        // ReSharper disable once CompareOfFloatsByEqualityOperator
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
             if (transform.W != 1.0f)
             {
                 DX.Vector4.Divide(ref transform, transform.W, out transform);
@@ -536,57 +536,57 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="view">The view matrix.</param>
         public void GetViewMatrix(out DX.Matrix view)
-	    {
-	        if (ViewChanged)
-	        {
-	            UpdateViewMatrix();
-	        }
-            
-	        view = _viewMatrix;
-	        ViewChanged = false;
-	    }
+        {
+            if (ViewChanged)
+            {
+                UpdateViewMatrix();
+            }
 
-	    /// <summary>
-	    /// Function to retrieve the projection matrix for the camera type.
-	    /// </summary>
-	    /// <param name="projection">The project matrix.</param>
-	    public void GetProjectionMatrix(out DX.Matrix projection)
-	    {
-	        if (ProjectionChanged)
-	        {
-	            var anchor = new DX.Vector2(Anchor.X * ViewDimensions.Width, Anchor.Y * ViewDimensions.Height);
-	            DX.Matrix.OrthoOffCenterLH(-anchor.X,
-	                                       ViewDimensions.Width - anchor.X,
-	                                       ViewDimensions.Height - anchor.Y,
-	                                       -anchor.Y,
-	                                       MinimumDepth,
-	                                       MaximumDepth,
-	                                       out _projectionMatrix);
-	        }
+            view = _viewMatrix;
+            ViewChanged = false;
+        }
 
-	        projection = _projectionMatrix;
-	        ProjectionChanged = false;
-	    }
-		#endregion
+        /// <summary>
+        /// Function to retrieve the projection matrix for the camera type.
+        /// </summary>
+        /// <param name="projection">The project matrix.</param>
+        public void GetProjectionMatrix(out DX.Matrix projection)
+        {
+            if (ProjectionChanged)
+            {
+                var anchor = new DX.Vector2(Anchor.X * ViewDimensions.Width, Anchor.Y * ViewDimensions.Height);
+                DX.Matrix.OrthoOffCenterLH(-anchor.X,
+                                           ViewDimensions.Width - anchor.X,
+                                           ViewDimensions.Height - anchor.Y,
+                                           -anchor.Y,
+                                           MinimumDepth,
+                                           MaximumDepth,
+                                           out _projectionMatrix);
+            }
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Gorgon2DOrthoCamera"/> class.
-		/// </summary>
-		/// <param name="gorgon2D">The 2D renderer to use with this object.</param>
-		/// <param name="viewDimensions">The view dimensions.</param>
-		/// <param name="minDepth">[Optional] The minimum depth value.</param>
-		/// <param name="maximumDepth">[Optional] The maximum depth value.</param>
-		/// <param name="name">[Optional] The name of the camera.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="gorgon2D"/> parameter is <b>null</b>.</exception>
-		public Gorgon2DOrthoCamera(Gorgon2D gorgon2D, DX.Size2F viewDimensions,float minDepth = 0.0f, float maximumDepth = 1.0f, string name = null)
-		{
+            projection = _projectionMatrix;
+            ProjectionChanged = false;
+        }
+        #endregion
+
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Gorgon2DOrthoCamera"/> class.
+        /// </summary>
+        /// <param name="gorgon2D">The 2D renderer to use with this object.</param>
+        /// <param name="viewDimensions">The view dimensions.</param>
+        /// <param name="minDepth">[Optional] The minimum depth value.</param>
+        /// <param name="maximumDepth">[Optional] The maximum depth value.</param>
+        /// <param name="name">[Optional] The name of the camera.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="gorgon2D"/> parameter is <b>null</b>.</exception>
+        public Gorgon2DOrthoCamera(Gorgon2D gorgon2D, DX.Size2F viewDimensions, float minDepth = 0.0f, float maximumDepth = 1.0f, string name = null)
+        {
             Renderer = gorgon2D ?? throw new ArgumentNullException(nameof(gorgon2D));
-		    ViewDimensions = viewDimensions;
-		    Name = string.IsNullOrWhiteSpace(name) ? $"Gorgon2D.OrthoCamera.{Guid.NewGuid():N}" : name;
-		    MinimumDepth = minDepth;
-		    MaximumDepth = maximumDepth.Max(1.0f);
-		}
-		#endregion
-	}
+            ViewDimensions = viewDimensions;
+            Name = string.IsNullOrWhiteSpace(name) ? $"Gorgon2D.OrthoCamera.{Guid.NewGuid():N}" : name;
+            MinimumDepth = minDepth;
+            MaximumDepth = maximumDepth.Max(1.0f);
+        }
+        #endregion
+    }
 }

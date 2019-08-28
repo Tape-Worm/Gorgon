@@ -29,15 +29,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DX = SharpDX;
 using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using Gorgon.Graphics.Core;
+using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
-	/// <summary>
+    /// <summary>
     /// Function to build the layers for our example.
     /// </summary>
     /// <remarks>
@@ -45,7 +45,7 @@ namespace Gorgon.Examples
     /// </remarks>
     internal static class LayerBuilder
     {
-		/// <summary>
+        /// <summary>
         /// Function to build the background layer representing distant stars.
         /// </summary>
         /// <param name="renderer">The 2D renderer for the application.</param>
@@ -63,7 +63,7 @@ namespace Gorgon.Examples
             return backgroundLayer;
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to build the layer that contains the sun.
         /// </summary>
         /// <param name="renderer">The 2D renderer for the application.</param>
@@ -83,7 +83,7 @@ namespace Gorgon.Examples
                         LocalPosition = new DX.Vector2(1200, -650)
                     }
                 },
-                PostProcessGroup = "Final Pass",	
+                PostProcessGroup = "Final Pass",
                 Lights =
                 {
                     new Light
@@ -176,7 +176,7 @@ namespace Gorgon.Examples
                     new SpriteEntity("BigShip_Illum")
                     {
                         Sprite = resources.Sprites["BigShip_Illum"],
-                        Color = GorgonColor.YellowPure * 0.70f, 
+                        Color = GorgonColor.YellowPure * 0.70f,
                         Rotation = -95.0f,
                         IsLit = false,
                         Visible = false,
@@ -184,7 +184,7 @@ namespace Gorgon.Examples
                     },
                     new SpriteEntity("EngineGlow")
                     {
-                        Sprite = resources.Sprites["Fighter_Engine_F0"],                        
+                        Sprite = resources.Sprites["Fighter_Engine_F0"],
                         Color = new GorgonColor(GorgonColor.CyanPure * 0.75f, 0),
                         Rotation = -45.0f,
                         Anchor = new DX.Vector2(0.5f, -1.5f),
@@ -192,11 +192,11 @@ namespace Gorgon.Examples
                     },
                     new SpriteEntity("Fighter")
                     {
-                        Sprite = resources.Sprites["Fighter"],                        
+                        Sprite = resources.Sprites["Fighter"],
                         Color = GorgonColor.Gray20, // Make this a bit darker so that we can light it using per-pixel lighting.
                         Rotation = -45.0f,
                         IsLit = true
-                    }                    
+                    }
                 },
                 Offset = DX.Vector2.Zero,
                 PostProcessGroup = "Final Pass",

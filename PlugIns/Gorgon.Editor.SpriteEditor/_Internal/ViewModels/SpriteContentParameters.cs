@@ -122,10 +122,10 @@ namespace Gorgon.Editor.SpriteEditor
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the sprite texture wrapping state editor.
         /// </summary>
-		public ISpriteWrappingEditor SpriteWrappingEditor
+        public ISpriteWrappingEditor SpriteWrappingEditor
         {
             get;
         }
@@ -160,12 +160,12 @@ namespace Gorgon.Editor.SpriteEditor
         public ISpriteAnchorEdit AnchorEditor
         {
             get;
-        }       
-		
-		/// <summary>
+        }
+
+        /// <summary>
         /// Property to return the sampler builder service.
         /// </summary>
-		public ISamplerBuildService SamplerBuilder
+        public ISamplerBuildService SamplerBuilder
         {
             get;
         }
@@ -190,23 +190,23 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="commonServices">Common application services.</param>
         public SpriteContentParameters(
             ISpriteContentFactory factory,
-            IContentFile spriteFile, 
-            IContentFile spriteTextureFile, 
-            IContentFileManager fileManager, 
-            ISpriteTextureService textureService, 
-            GorgonSprite sprite, 
-            IGorgonSpriteCodec codec, 
+            IContentFile spriteFile,
+            IContentFile spriteTextureFile,
+            IContentFileManager fileManager,
+            ISpriteTextureService textureService,
+            GorgonSprite sprite,
+            IGorgonSpriteCodec codec,
             IManualRectangleEditor manualRectEdit,
             IManualVertexEditor manualVertexEdit,
             ISpritePickMaskEditor spritePickMaskEditor,
             ISpriteColorEdit colorEditor,
             ISpriteAnchorEdit anchorEditor,
-			ISpriteWrappingEditor wrapEditor,
-			ISamplerBuildService samplerBuilder,
+            ISpriteWrappingEditor wrapEditor,
+            ISamplerBuildService samplerBuilder,
             IEditorPlugInSettings settings,
-            IUndoService undoService, 
-            IGorgonFileSystemWriter<Stream> scratchArea, 
-			IViewModelInjection commonServices)
+            IUndoService undoService,
+            IGorgonFileSystemWriter<Stream> scratchArea,
+            IViewModelInjection commonServices)
             : base(spriteFile, commonServices)
         {
             Factory = factory ?? throw new ArgumentNullException(nameof(factory));
@@ -224,7 +224,7 @@ namespace Gorgon.Editor.SpriteEditor
             AnchorEditor = anchorEditor ?? throw new ArgumentNullException(nameof(anchorEditor));
             SpriteWrappingEditor = wrapEditor ?? throw new ArgumentNullException(nameof(wrapEditor));
             SamplerBuilder = samplerBuilder ?? throw new ArgumentNullException(nameof(samplerBuilder));
-            SpriteTextureFile = spriteTextureFile;            
+            SpriteTextureFile = spriteTextureFile;
         }
     }
 }

@@ -24,11 +24,11 @@
 // 
 #endregion
 
-using DX = SharpDX;
-using Gorgon.Editor.UI;
 using System;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.SpriteEditor.Properties;
+using Gorgon.Editor.UI;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -47,19 +47,19 @@ namespace Gorgon.Editor.SpriteEditor
         private IEditorPlugInSettings _settings;
         // Flag to indicate that the interface is moving.
         private bool _isMoving;
-		// The current texture array index.
+        // The current texture array index.
         private int _textureArrayIndex;
-		// The service used to display messages to the user.
+        // The service used to display messages to the user.
         private IMessageDisplayService _messageDisplay;
-		// The fixed size width/height.
+        // The fixed size width/height.
         private DX.Size2F _fixedSize = new DX.Size2F(32, 32);
-		// Flag to indicate that the selection rectangle is a fixed size.
+        // Flag to indicate that the selection rectangle is a fixed size.
         private bool _isFixedSize;
-		// The command to execute to set the region to the full size of the texture.
+        // The command to execute to set the region to the full size of the texture.
         private IEditorCommand<object> _fullSizeCommand;
-		// The command to apply the values.
+        // The command to apply the values.
         private IEditorCommand<object> _applyCommand;
-		// The command to cancel the operatin.
+        // The command to cancel the operatin.
         private IEditorCommand<object> _cancelCommand;
         // The padding to apply to the selection rectangle.
         private int _padding;
@@ -107,7 +107,7 @@ namespace Gorgon.Editor.SpriteEditor
                 else
                 {
                     _rect = value;
-                }                
+                }
                 OnPropertyChanged();
             }
         }
@@ -294,7 +294,7 @@ namespace Gorgon.Editor.SpriteEditor
         #endregion
 
         #region Methods.
-		/// <summary>
+        /// <summary>
         /// Function to determine if the fixed size functionality can be toggled on or off.
         /// </summary>
         /// <param name="size">The current fixed width and height.</param>
@@ -315,7 +315,7 @@ namespace Gorgon.Editor.SpriteEditor
                 {
                     FixedSize = size;
                     Rectangle = new DX.RectangleF(_rect.X, _rect.Y, FixedSize.Width, FixedSize.Height);
-                }                
+                }
             }
             catch (Exception ex)
             {
@@ -331,7 +331,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <returns><b>true</b> if the fixed width/height values can be assigned, <b>false</b> if not.</returns>
         private bool CanSetFixedWidthHeight(DX.Size2F size) => (!size.Equals(DX.Size2F.Empty)) && (IsFixedSize);
 
-		/// <summary>
+        /// <summary>
         /// Fucntion to assign a new fixed width/height.
         /// </summary>
         /// <param name="size">The size to assign.</param>

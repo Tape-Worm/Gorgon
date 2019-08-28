@@ -32,21 +32,21 @@ namespace Gorgon.Editor.UI.Controls
     /// Defines a content file explorer entry that can be searched.
     /// </summary>
     public interface IContentFileExplorerSearchEntry
-		: IGorgonNamedObject
+        : IGorgonNamedObject
     {
-		/// <summary>
+        /// <summary>
         /// Property to set or return whether the entry is visible or not.
         /// </summary>
-		bool IsVisible
+        bool IsVisible
         {
             get;
             set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the full path for the entry.
         /// </summary>
-		string FullPath
+        string FullPath
         {
             get;
         }

@@ -31,15 +31,15 @@ using Gorgon.Input;
 // ReSharper disable InconsistentNaming
 namespace Gorgon.Native
 {
-	/// <summary>
-	/// Value type for raw input device list.
-	/// </summary>
-	[StructLayout(LayoutKind.Sequential)]
-	internal struct RAWINPUTDEVICELIST
-	{
-		/// <summary>Device handle.</summary>
-		public IntPtr Device;
-		/// <summary>Device type.</summary>
-		public RawInputType DeviceType;
-	}
+    /// <summary>
+    /// Value type for raw input device list.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct RAWINPUTDEVICELIST
+    {
+        /// <summary>Device handle.</summary>
+        public IntPtr Device;
+        /// <summary>Device type.</summary>
+        public RawInputType DeviceType;
+    }
 }

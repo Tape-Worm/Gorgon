@@ -29,15 +29,15 @@ using DX = SharpDX;
 
 namespace Gorgon.Renderers.Services
 {
-	/// <summary>
+    /// <summary>
     /// A list of rectangles for a sprite texture.
     /// </summary>
     internal class TextureRects
     {
-		/// <summary>
+        /// <summary>
         /// Property to return the boundaries of the texture.
         /// </summary>
-		public DX.Rectangle Bounds
+        public DX.Rectangle Bounds
         {
             get;
         }
@@ -50,10 +50,10 @@ namespace Gorgon.Renderers.Services
             get;
         } = new Dictionary<GorgonSprite, DX.Rectangle>();
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return the array index for the texture.
         /// </summary>
-		public int ArrayIndex
+        public int ArrayIndex
         {
             get;
             set;

@@ -32,38 +32,38 @@ using System.Threading;
 
 namespace Gorgon.Design
 {
-	/// <summary>
-	/// A localizable version of the category attribute.
-	/// </summary>
-	[AttributeUsage(AttributeTargets.Property)]
-	public class LocalCategoryAttribute
-		: CategoryAttribute
-	{
-		#region Methods.
-		/// <summary>
-		/// Function to retrieve the resource string.
-		/// </summary>
-		/// <param name="resourcesType">Type of resource object.</param>
-		/// <param name="resourceName">Name of the resource object.</param>
-		/// <returns>The string value for the resource object.</returns>
-		private static string GetString(Type resourcesType, string resourceName)
-		{
+    /// <summary>
+    /// A localizable version of the category attribute.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Property)]
+    public class LocalCategoryAttribute
+        : CategoryAttribute
+    {
+        #region Methods.
+        /// <summary>
+        /// Function to retrieve the resource string.
+        /// </summary>
+        /// <param name="resourcesType">Type of resource object.</param>
+        /// <param name="resourceName">Name of the resource object.</param>
+        /// <returns>The string value for the resource object.</returns>
+        private static string GetString(Type resourcesType, string resourceName)
+        {
             Debug.Assert(resourcesType.FullName != null, nameof(resourcesType) + ".FullName is null");
-			var manager = new ResourceManager(resourcesType.FullName, resourcesType.Assembly);
-			return manager.GetString(resourceName, Thread.CurrentThread.CurrentUICulture);
-		}
-		#endregion
+            var manager = new ResourceManager(resourcesType.FullName, resourcesType.Assembly);
+            return manager.GetString(resourceName, Thread.CurrentThread.CurrentUICulture);
+        }
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="LocalCategoryAttribute"/> class.
-		/// </summary>
-		/// <param name="resourcesType">The type of resources for the assembly.</param>
-		/// <param name="resourceName">Name of the resource to look up.</param>
-		public LocalCategoryAttribute(Type resourcesType, [Localizable(false)] string resourceName)
-			: base(GetString(resourcesType, resourceName))
-		{
-		}
-		#endregion
-	}
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LocalCategoryAttribute"/> class.
+        /// </summary>
+        /// <param name="resourcesType">The type of resources for the assembly.</param>
+        /// <param name="resourceName">Name of the resource to look up.</param>
+        public LocalCategoryAttribute(Type resourcesType, [Localizable(false)] string resourceName)
+            : base(GetString(resourcesType, resourceName))
+        {
+        }
+        #endregion
+    }
 }

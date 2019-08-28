@@ -212,12 +212,12 @@ namespace Gorgon.Editor
             IEnumerable<KryptonRibbonTab> sourceTabs = sourceRibbon.RibbonTabs.ToArray();
 
             foreach (KryptonRibbonTab tab in sourceTabs)
-            {                
+            {
                 KryptonRibbonTab existingTab = targetRibbon.RibbonTabs.FirstOrDefault(item => string.Equals(item.Text, tab.Text, StringComparison.CurrentCulture));
 
                 // The tab doesn't exist, so just add it
                 if ((existingTab == null) && (!targetRibbon.RibbonTabs.Contains(tab)))
-                {                    
+                {
                     sourceRibbon.RibbonTabs.Remove(tab);
 
                     int index = GetSortIndexFromTag(tab.Tag, targetRibbon.RibbonTabs.Count);
@@ -275,7 +275,7 @@ namespace Gorgon.Editor
             IEnumerable<KryptonRibbonContext> contexts = sourceRibbon.RibbonContexts.ToArray();
 
             foreach (KryptonRibbonContext context in contexts)
-            {                
+            {
                 KryptonRibbonContext existing = targetRibbon.RibbonContexts.FirstOrDefault(item => string.Equals(item.ContextTitle, context.ContextTitle, StringComparison.CurrentCulture));
 
                 // The tab doesn't exist, so just add it
@@ -314,7 +314,7 @@ namespace Gorgon.Editor
                     if (existingTab != null)
                     {
                         UnmergeGroups(existingTab.Groups, tab.Groups);
-                    }                    
+                    }
                     continue;
                 }
 
@@ -348,7 +348,7 @@ namespace Gorgon.Editor
 
             // Restore the selected tab.
             TargetRibbon.SelectedContext = selectedContext;
-            TargetRibbon.SelectedTab = selectedTab;            
+            TargetRibbon.SelectedTab = selectedTab;
         }
 
         /// <summary>

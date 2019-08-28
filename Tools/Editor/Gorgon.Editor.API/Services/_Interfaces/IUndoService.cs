@@ -98,7 +98,7 @@ namespace Gorgon.Editor.Services
         void Record<TU, TR>(string desc, Func<TU, CancellationToken, Task> undoAction, Func<TR, CancellationToken, Task> redoAction, TU undoArgs, TR redoArgs)
             where TU : class
             where TR : class;
-        
+
         /// <summary>
         /// Function to clear the undo/redo stacks.
         /// </summary>

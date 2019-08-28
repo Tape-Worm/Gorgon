@@ -33,7 +33,7 @@ namespace Gorgon.Editor.Services
     /// <summary>
     /// Provides access to the various tool plugins in the application.
     /// </summary>
-    public interface IToolPlugInService        
+    public interface IToolPlugInService
         : IDisabledPlugInService
     {
         #region Properties.

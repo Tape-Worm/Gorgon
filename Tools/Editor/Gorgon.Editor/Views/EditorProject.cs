@@ -45,7 +45,7 @@ namespace Gorgon.Editor.Views
     /// <summary>
     /// The view used for editing projects.
     /// </summary>
-    internal partial class EditorProject 
+    internal partial class EditorProject
         : EditorBaseControl, IDataContext<IProjectVm>
     {
         #region Constants.
@@ -289,7 +289,7 @@ namespace Gorgon.Editor.Views
         private void SetupContent(IProjectVm dataContext)
         {
             if (_currentContentRibbon != null)
-            {                
+            {
                 var args = new ContentRibbonEventArgs(_currentContentRibbon);
                 _currentContentRibbon = null;
 
@@ -424,7 +424,7 @@ namespace Gorgon.Editor.Views
                 DataContext.ClipboardContext = DataContext.CurrentContent as IClipboardHandler;
             }
         }
-        
+
         /// <summary>Handles the Leave event of the PanelContent control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -456,7 +456,7 @@ namespace Gorgon.Editor.Views
 
                 DataContext.Layout = cleanData;
             }
-            catch(Exception)
+            catch (Exception)
             {
                 // We don't care if this fails.
             }
@@ -497,26 +497,26 @@ namespace Gorgon.Editor.Views
             // Setup content area.
             _contentPage = new KryptonPage
             {
-                Name = ContentID,                
+                Name = ContentID,
                 Text = "Content Panel",
-                TextTitle = "Content Panel",                
+                TextTitle = "Content Panel",
                 UniqueName = ContentID
             };
-            _contentPage.ClearFlags(KryptonPageFlags.DockingAllowAutoHidden | 
-                KryptonPageFlags.DockingAllowDocked | 
+            _contentPage.ClearFlags(KryptonPageFlags.DockingAllowAutoHidden |
+                KryptonPageFlags.DockingAllowDocked |
                 KryptonPageFlags.AllowPageDrag |
                 KryptonPageFlags.AllowPageReorder |
                 KryptonPageFlags.DockingAllowDropDown |
                 KryptonPageFlags.DockingAllowFloating |
                 KryptonPageFlags.DockingAllowNavigator);
-            
+
             // Setup file explorer area.
             _fileSystemPage = new KryptonPage
             {
                 Name = FileSystemID,
                 Text = Resources.GOREDIT_TEXT_FILESYSTEM,
                 TextTitle = Resources.GOREDIT_TEXT_FILESYSTEM,
-                UniqueName = FileSystemID                
+                UniqueName = FileSystemID
             };
 
             _previewPage = new KryptonPage
@@ -524,7 +524,7 @@ namespace Gorgon.Editor.Views
                 Name = PreviewID,
                 Text = Resources.GOREDIT_TEXT_PREVIEW,
                 TextTitle = Resources.GOREDIT_TEXT_PREVIEW,
-                UniqueName = PreviewID,                                
+                UniqueName = PreviewID,
             };
 
             _fileSystemPage.ClearFlags(KryptonPageFlags.DockingAllowClose | KryptonPageFlags.DockingAllowDropDown | KryptonPageFlags.DockingAllowWorkspace);
@@ -652,7 +652,7 @@ namespace Gorgon.Editor.Views
             }
 
             DataContext.PropertyChanging += DataContext_PropertyChanging;
-            DataContext.PropertyChanged += DataContext_PropertyChanged;            
+            DataContext.PropertyChanged += DataContext_PropertyChanged;
         }
         #endregion
 

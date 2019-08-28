@@ -29,19 +29,19 @@ using Gorgon.Core;
 
 namespace Gorgon.Input
 {
-	/// <summary>
-	/// A factory used to load gaming device drivers.
-	/// </summary>
-	public interface IGorgonGamingDeviceDriverFactory
-	{
-		/// <summary>
-		/// Function to load a gaming device driver from any loaded plug in assembly.
-		/// </summary>
-		/// <param name="driverType">The fully qualified type name of the driver to load.</param>
-		/// <returns>The gaming device driver plug in.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="driverType"/> parameter is <b>null</b></exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="driverType"/> parameter is empty.</exception>
-		/// <exception cref="ArgumentException">Thrown when the driver type name specified by <paramref name="driverType"/> was not found in any of the loaded plug in assemblies.</exception>
-		IGorgonGamingDeviceDriver LoadDriver(string driverType);
-	}
+    /// <summary>
+    /// A factory used to load gaming device drivers.
+    /// </summary>
+    public interface IGorgonGamingDeviceDriverFactory
+    {
+        /// <summary>
+        /// Function to load a gaming device driver from any loaded plug in assembly.
+        /// </summary>
+        /// <param name="driverType">The fully qualified type name of the driver to load.</param>
+        /// <returns>The gaming device driver plug in.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="driverType"/> parameter is <b>null</b></exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="driverType"/> parameter is empty.</exception>
+        /// <exception cref="ArgumentException">Thrown when the driver type name specified by <paramref name="driverType"/> was not found in any of the loaded plug in assemblies.</exception>
+        IGorgonGamingDeviceDriver LoadDriver(string driverType);
+    }
 }

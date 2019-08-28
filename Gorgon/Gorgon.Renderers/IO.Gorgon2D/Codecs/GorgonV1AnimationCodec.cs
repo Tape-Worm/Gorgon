@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using DX =  SharpDX;
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -36,6 +35,7 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.IO
 {
@@ -374,8 +374,8 @@ namespace Gorgon.IO
                 }
 
                 DX.RectangleF uv;
-                    
-                    
+
+
                 if (view != null)
                 {
                     uv = new DX.RectangleF(uvOffset.X / texture.Width,
@@ -734,7 +734,7 @@ namespace Gorgon.IO
                     reader.ReadInt32(); // We don't use interpolation on texture tracks.
 
                     string imageName = reader.ReadString();
-                    
+
                     if (string.IsNullOrWhiteSpace(imageName))
                     {
                         continue;
@@ -847,7 +847,7 @@ namespace Gorgon.IO
                 {
                     return count;
                 }
-                
+
                 string header = reader.ReadString();
 
                 return !string.Equals(header, "GORANM11", StringComparison.OrdinalIgnoreCase) ? 0 : count;
@@ -872,10 +872,10 @@ namespace Gorgon.IO
                 {
                     return false;
                 }
-                
+
                 string headerVersion = reader.ReadString();
-                if ((!headerVersion.StartsWith("GORSPR", StringComparison.OrdinalIgnoreCase)) 
-                    || (headerVersion.Length < 7) 
+                if ((!headerVersion.StartsWith("GORSPR", StringComparison.OrdinalIgnoreCase))
+                    || (headerVersion.Length < 7)
                     || (headerVersion.Length > 9))
                 {
                     return false;
@@ -970,7 +970,7 @@ namespace Gorgon.IO
             {
                 byteCount = (int)stream.Length;
             }
-            
+
             if ((stream.Position + byteCount.Value) > stream.Length)
             {
                 throw new EndOfStreamException();

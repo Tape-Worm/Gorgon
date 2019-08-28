@@ -91,7 +91,7 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentNullException(nameof(scanProgress));
             }
 
-            IEnumerable<IFileExplorerNodeVm> contentFiles;            
+            IEnumerable<IFileExplorerNodeVm> contentFiles;
             int fileCount;
 
             if (node.Children.Count > 0)
@@ -115,8 +115,8 @@ namespace Gorgon.Editor.Services
             int count = 0;
             var prevDeps = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-            foreach(IContentFile contentFile in contentFiles.OfType<IContentFile>())
-            {                
+            foreach (IContentFile contentFile in contentFiles.OfType<IContentFile>())
+            {
                 string pluginName = contentFile.Metadata.PlugInName;
 
                 if (forceScan)
@@ -129,10 +129,10 @@ namespace Gorgon.Editor.Services
                 foreach (KeyValuePair<string, string> dep in contentFile.Metadata.DependsOn)
                 {
                     prevDeps[dep.Key] = dep.Value;
-                }                
+                }
 
                 if (_contentPlugIns.AssignContentPlugIn(contentFile, contentFileManager, !deepScan))
-                {                    
+                {
                     if ((!string.Equals(pluginName, contentFile.Metadata.PlugInName, StringComparison.OrdinalIgnoreCase))
                         || (!CompareDependencyLists(contentFile.Metadata.DependsOn, prevDeps)))
                     {

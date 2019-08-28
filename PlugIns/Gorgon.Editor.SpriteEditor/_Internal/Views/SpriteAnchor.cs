@@ -26,17 +26,17 @@
 
 using System;
 using System.ComponentModel;
-using DX = SharpDX;
-using Gorgon.Editor.UI.Controls;
 using Gorgon.Editor.UI;
+using Gorgon.Editor.UI.Controls;
 using Gorgon.Math;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
     /// <summary>
     /// A view used to manually update the sprite anchor value.
     /// </summary>
-    internal partial class SpriteAnchor 
+    internal partial class SpriteAnchor
         : EditorSubPanelCommon, IDataContext<ISpriteAnchorEdit>
     {
         #region Properties.
@@ -89,7 +89,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             decimal w = (decimal)DataContext.Bounds.Width;
             decimal h = (decimal)DataContext.Bounds.Height;
-            decimal mx = (int)(w  * 0.5M);
+            decimal mx = (int)(w * 0.5M);
             decimal my = (int)(h * 0.5M);
 
             switch (Alignment.Alignment)
@@ -281,7 +281,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             NumericVertical.Minimum = 0;
             NumericVertical.Maximum = (decimal)dataContext.Bounds.Height - 1;
-            
+
             SetAlignment(dataContext);
 
             ValidateOk();

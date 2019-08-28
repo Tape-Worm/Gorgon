@@ -575,7 +575,7 @@ namespace Gorgon.Editor.Services
                 .Cast<FileSystemInfo>()
                 .Concat(directoryPath.GetDirectories("*", SearchOption.AllDirectories)
                                      .OrderByDescending(item => item.FullName.Length));
-            
+
             foreach (FileSystemInfo info in subItems)
             {
                 if (cancelToken.IsCancellationRequested)
@@ -588,7 +588,7 @@ namespace Gorgon.Editor.Services
                 if (!Shell32.SendToRecycleBin(info.FullName, RecycleFlags))
                 {
                     return false;
-                }                
+                }
             }
 
             if (cancelToken.IsCancellationRequested)
@@ -634,7 +634,7 @@ namespace Gorgon.Editor.Services
             {
                 throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, filePath.Name));
             }
-            
+
             if (!destPath.Directory.Exists)
             {
                 throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, destPath.Directory.Name));
@@ -816,7 +816,7 @@ namespace Gorgon.Editor.Services
                 {
                     CleanupDirectory(dest);
                 }
-                
+
                 throw;
             }
         }
@@ -897,7 +897,7 @@ namespace Gorgon.Editor.Services
                 if (dir.Exists)
                 {
                     Shell32.SendToRecycleBin(dir.FullName, RecycleFlags);
-                }                
+                }
             }
         }
 
@@ -939,7 +939,7 @@ namespace Gorgon.Editor.Services
             if (!dest.Directory.Exists)
             {
                 throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, dest.Directory.Name));
-            }                        
+            }
 
             BlockCopyFile(file, dest, importProgress, writeBuffer, cancelToken);
         }

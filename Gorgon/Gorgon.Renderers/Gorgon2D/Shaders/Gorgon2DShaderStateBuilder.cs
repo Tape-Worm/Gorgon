@@ -49,7 +49,7 @@ namespace Gorgon.Renderers
     /// <seealso cref="GorgonDrawCall"/>
     /// <seealso cref="Gorgon2DBatchState"/>
     /// <seealso cref="GorgonShader"/>
-    [SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable", 
+    [SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
         Justification = "Seriously?  This doesn't even KEEP any IDisposable items, and there's nothing that can be disposed in the object itself. This suggestion is useless.")]
     public class Gorgon2DShaderStateBuilder<T>
         : IGorgonFluentBuilder<Gorgon2DShaderStateBuilder<T>, Gorgon2DShaderState<T>>
@@ -228,9 +228,9 @@ namespace Gorgon.Renderers
         public Gorgon2DShaderState<T> Build()
         {
             var shader = new Gorgon2DShaderState<T>
-                         {
-                             Shader = _workingShader.Shader
-                         };
+            {
+                Shader = _workingShader.Shader
+            };
 
             Copy(shader.RwConstantBuffers, _workingShader.RwConstantBuffers, 0);
             Copy(shader.RwSrvs, _workingShader.RwSrvs, 0);

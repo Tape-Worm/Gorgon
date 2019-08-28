@@ -67,33 +67,33 @@ namespace Gorgon.Examples
             {
                 switch (Direction)
                 {
-                        case CloakDirection.Cloak:
-                        case CloakDirection.Uncloak:
-                            return _cloakAmount;
-                        case CloakDirection.CloakPulse:
-                        case CloakDirection.UncloakStopPulse:
-                            return (_cloakAmount - ((_cloakAngleRads.Cos() + 1.0f) / 10.0f)).Min(0.25f).Max(0);
-                        default:
-                            return 0.0f;
+                    case CloakDirection.Cloak:
+                    case CloakDirection.Uncloak:
+                        return _cloakAmount;
+                    case CloakDirection.CloakPulse:
+                    case CloakDirection.UncloakStopPulse:
+                        return (_cloakAmount - ((_cloakAngleRads.Cos() + 1.0f) / 10.0f)).Min(0.25f).Max(0);
+                    default:
+                        return 0.0f;
                 }
             }
         }
 
-		/// <summary>
-		/// Property to return the cloak direction.
-		/// </summary>
-		public CloakDirection Direction
+        /// <summary>
+        /// Property to return the cloak direction.
+        /// </summary>
+        public CloakDirection Direction
         {
             get;
             private set;
         }
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to initiate the cloak.
-		/// </summary>
-		public void Cloak()
+        #region Methods.
+        /// <summary>
+        /// Function to initiate the cloak.
+        /// </summary>
+        public void Cloak()
         {
             _cloakPulseAngle = 180.0f;
             Direction = CloakDirection.Cloak;
@@ -121,7 +121,7 @@ namespace Gorgon.Examples
 
                     _cloakAmount = _cloakAmount.Min(0.25f).Max(0);
                     Opacity = Opacity.Min(1.0f).Max(0);
-                    
+
                     if ((_cloakAmount >= 0.25f) && (Opacity <= 0.0f))
                     {
                         Direction = CloakDirection.CloakPulse;

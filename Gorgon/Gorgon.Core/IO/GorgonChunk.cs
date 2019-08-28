@@ -29,33 +29,33 @@ using Gorgon.Properties;
 
 namespace Gorgon.IO
 {
-	/// <summary>
-	/// A chunk for the chunked file format.
-	/// </summary>
-	public readonly struct GorgonChunk
-		: IGorgonEquatableByRef<GorgonChunk>
-	{
-		#region Variables.		
-		/// <summary>
-		/// An empty chunk.
-		/// </summary>
-		public static readonly GorgonChunk EmptyChunk = default;
+    /// <summary>
+    /// A chunk for the chunked file format.
+    /// </summary>
+    public readonly struct GorgonChunk
+        : IGorgonEquatableByRef<GorgonChunk>
+    {
+        #region Variables.		
+        /// <summary>
+        /// An empty chunk.
+        /// </summary>
+        public static readonly GorgonChunk EmptyChunk = default;
 
-		/// <summary>
-		/// The ID for the chunk.
-		/// </summary>
-		public readonly ulong ID;
+        /// <summary>
+        /// The ID for the chunk.
+        /// </summary>
+        public readonly ulong ID;
 
-		/// <summary>
-		/// The size of the chunk, in bytes.
-		/// </summary>
-		public readonly int Size;
+        /// <summary>
+        /// The size of the chunk, in bytes.
+        /// </summary>
+        public readonly int Size;
 
-		/// <summary>
-		/// The offset, in bytes, of the chunk within the chunked file.
-		/// </summary>
-		/// <remarks>This is relative to the header of the file.</remarks>
-		public readonly ulong FileOffset;
+        /// <summary>
+        /// The offset, in bytes, of the chunk within the chunked file.
+        /// </summary>
+        /// <remarks>This is relative to the header of the file.</remarks>
+        public readonly ulong FileOffset;
         #endregion
 
         #region Methods.
@@ -127,11 +127,11 @@ namespace Gorgon.IO
         /// <param name="size">The size of the chunk, in bytes.</param>
         /// <param name="offset">The offset within the file, in bytes.</param>
         public GorgonChunk(ulong id, int size, ulong offset)
-		{
-			ID = id;
-			Size = size;
-			FileOffset = offset;
-		}
-		#endregion
-	}
+        {
+            ID = id;
+            Size = size;
+            FileOffset = offset;
+        }
+        #endregion
+    }
 }

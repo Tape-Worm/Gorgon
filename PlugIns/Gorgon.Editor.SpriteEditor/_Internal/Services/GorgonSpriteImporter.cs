@@ -147,7 +147,7 @@ namespace Gorgon.Editor.SpriteEditor.Services
 
                 return textureForSprite;
             }
-        }        
+        }
 
         /// <summary>Imports the data.</summary>
         /// <param name="temporaryDirectory">The temporary directory for writing any transitory data.</param>
@@ -166,7 +166,7 @@ namespace Gorgon.Editor.SpriteEditor.Services
             GorgonTexture2DView texture = GetTexture();
 
             try
-            {                
+            {
                 _log.Print($"Importing file '{SourceFile.FullName}' (Codec: {_codec.Name})...", LoggingLevel.Verbose);
                 GorgonSprite sprite = _codec.FromFile(SourceFile.FullName);
 
@@ -176,7 +176,7 @@ namespace Gorgon.Editor.SpriteEditor.Services
                 }
 
                 var tempFile = new FileInfo(Path.Combine(temporaryDirectory.FullName, Path.GetFileNameWithoutExtension(SourceFile.Name)));
-                
+
                 _log.Print($"Converting '{SourceFile.FullName}' to Gorgon v3 Sprite file format.", LoggingLevel.Verbose);
                 spriteCodec.Save(sprite, tempFile.FullName);
 

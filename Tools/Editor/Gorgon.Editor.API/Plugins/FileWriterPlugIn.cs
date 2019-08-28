@@ -56,12 +56,12 @@ namespace Gorgon.Editor.PlugIns
         Encryption = 2
     }
 
-	/// <summary>
-	/// An interface for file output plug ins.
-	/// </summary>
-	public abstract class FileWriterPlugIn
-		: EditorPlugIn
-	{
+    /// <summary>
+    /// An interface for file output plug ins.
+    /// </summary>
+    public abstract class FileWriterPlugIn
+        : EditorPlugIn
+    {
         #region Variables.
         // Default compression amount.
         private float _compressAmount = 0.5f;
@@ -125,10 +125,10 @@ namespace Gorgon.Editor.PlugIns
         /// Plug in developers must provide common file extensions supported by the plug in type, or else this plug in cannot be used.
         /// </remarks>
         public IGorgonNamedObjectReadOnlyDictionary<GorgonFileExtension> FileExtensions
-		{
-			get;
-			private set;
-		}
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// Property to return the type of plug in.
@@ -229,7 +229,7 @@ namespace Gorgon.Editor.PlugIns
         /// </para>
         /// </remarks>
         public Task WriteAsync(FileInfo file, DirectoryInfo workspace, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
-		{
+        {
             if (file == null)
             {
                 throw new ArgumentNullException(nameof(file));
@@ -239,32 +239,32 @@ namespace Gorgon.Editor.PlugIns
             {
                 throw new ArgumentNullException(nameof(workspace));
             }
-            
+
             if (!workspace.Exists)
             {
                 throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIR_NOT_FOUND, workspace.FullName));
             }
 
-            return OnWriteAsync(file, workspace, progressCallback, cancelToken);            
-		}
-		#endregion
+            return OnWriteAsync(file, workspace, progressCallback, cancelToken);
+        }
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="FileWriterPlugIn"/> class.
-		/// </summary>
-		/// <param name="description">Friendly description of the plug in.</param>
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileWriterPlugIn"/> class.
+        /// </summary>
+        /// <param name="description">Friendly description of the plug in.</param>
         /// <param name="fileExtensions">The file of common file name extensions supported by this writer.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileExtensions"/> parameter is <b>null</b>.</exception>
-		protected FileWriterPlugIn(string description, IEnumerable<GorgonFileExtension> fileExtensions)
-			: base(description)
-		{
+        protected FileWriterPlugIn(string description, IEnumerable<GorgonFileExtension> fileExtensions)
+            : base(description)
+        {
             if (fileExtensions == null)
             {
                 throw new ArgumentNullException(nameof(fileExtensions));
             }
 
-			var extensions = new GorgonFileExtensionCollection();
+            var extensions = new GorgonFileExtensionCollection();
 
             foreach (GorgonFileExtension extension in fileExtensions)
             {
@@ -272,7 +272,7 @@ namespace Gorgon.Editor.PlugIns
             }
 
             FileExtensions = extensions;
-		}
-		#endregion
-	}
+        }
+        #endregion
+    }
 }

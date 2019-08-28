@@ -25,14 +25,14 @@
 #endregion
 
 using System;
-using DX = SharpDX;
-using Gorgon.Editor.Services;
-using Gorgon.Graphics.Core;
-using Gorgon.Renderers;
-using Gorgon.Graphics;
 using System.ComponentModel;
 using System.Windows.Forms;
+using Gorgon.Editor.Services;
 using Gorgon.Editor.SpriteEditor.Properties;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
+using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -92,7 +92,7 @@ namespace Gorgon.Editor.SpriteEditor
             switch (e.KeyCode)
             {
                 case Keys.Enter:
-                    SubmitTextureCoordinates();                    
+                    SubmitTextureCoordinates();
                     if (SpriteContent.ManualRectangleEditor.IsActive)
                     {
                         Clipper_KeyboardIconClicked(_clipper, EventArgs.Empty);
@@ -104,7 +104,7 @@ namespace Gorgon.Editor.SpriteEditor
                     {
                         SpriteContent.ManualRectangleEditor.CancelCommand.Execute(null);
                     }
-                    
+
                     if (SpriteContent.ManualRectangleEditor.IsActive)
                     {
                         Clipper_KeyboardIconClicked(_clipper, EventArgs.Empty);
@@ -138,7 +138,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Handles the MouseMove event of the Window control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-        private void Window_MouseMove(object sender, MouseEventArgs e) 
+        private void Window_MouseMove(object sender, MouseEventArgs e)
         {
             _clipper.MousePosition = new DX.Vector2(e.X, e.Y);
             _clipper.MouseMove(e.Button);
@@ -147,7 +147,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Handles the PropertyChanged event of the ManualInput control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
-        private void ManualInput_PropertyChanged(object sender, PropertyChangedEventArgs e) 
+        private void ManualInput_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
             {
@@ -238,8 +238,8 @@ namespace Gorgon.Editor.SpriteEditor
                     SpriteContent.ManualRectangleEditor.Rectangle = SpriteContent.Texture.ToPixel(SpriteContent.TextureCoordinates).ToRectangleF();
                     break;
             }
-        }       
-        
+        }
+
         /// <summary>Function called to render the sprite data.</summary>
         /// <returns>The presentation interval to use when rendering.</returns>
         protected override int OnRender()
@@ -277,7 +277,7 @@ namespace Gorgon.Editor.SpriteEditor
 
         /// <summary>Function called to perform custom loading of resources.</summary>
         protected override void OnLoad()
-        {            
+        {
             if (SpriteContent.Texture != null)
             {
                 _clipper.Bounds = new DX.RectangleF(0, 0, SpriteContent.Texture.Width, SpriteContent.Texture.Height);
@@ -291,8 +291,8 @@ namespace Gorgon.Editor.SpriteEditor
                 _clipper.Bounds = DX.RectangleF.Empty;
                 SpriteContent.ManualRectangleEditor.Rectangle = _clipper.Rectangle = DX.RectangleF.Empty;
             }
-            
-            _clipper.AllowResize = !SpriteContent.ManualRectangleEditor.IsFixedSize;            
+
+            _clipper.AllowResize = !SpriteContent.ManualRectangleEditor.IsFixedSize;
             SpriteContent.ManualRectangleEditor.PropertyChanged += ManualInput_PropertyChanged;
 
             SwapChain.Window.MouseMove += Window_MouseMove;
@@ -312,7 +312,7 @@ namespace Gorgon.Editor.SpriteEditor
             SwapChain.Window.PreviewKeyDown -= Window_PreviewKeyDown;
 
             base.OnUnload();
-        }        
+        }
 
         /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
         public override void Dispose()

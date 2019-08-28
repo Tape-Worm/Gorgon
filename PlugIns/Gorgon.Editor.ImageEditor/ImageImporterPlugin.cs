@@ -47,7 +47,7 @@ namespace Gorgon.Editor.ImageEditor
         // The image editor settings.
         private ISettings _settings;
 
-		// The codec registry.
+        // The codec registry.
         private ICodecRegistry _codecs;
         #endregion
 
@@ -107,8 +107,8 @@ namespace Gorgon.Editor.ImageEditor
         protected override void OnInitialize()
         {
             ViewFactory.Register<ISettings>(() => new ImageCodecSettingsPanel());
-			
-			// Retrieve the shared settings.
+
+            // Retrieve the shared settings.
             (_codecs, _settings) = SharedDataFactory.GetSharedData(ContentPlugInService, CommonServices);
         }
 
@@ -157,7 +157,7 @@ namespace Gorgon.Editor.ImageEditor
             : base(Resources.GORIMG_IMPORT_DESC)
         {
 
-        }	
+        }
         #endregion
     }
 }

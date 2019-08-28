@@ -37,15 +37,15 @@ namespace Gorgon.Editor.ViewModels
         : ViewModelBase<SettingsPlugInListItemParameters>, ISettingsPlugInListItem
     {
         #region Variables.
-		// The name of the plug in.
+        // The name of the plug in.
         private string _name;
-		// The plug in type.
+        // The plug in type.
         private PlugInType _type;
-		// The current state.
+        // The current state.
         private string _state;
-		// The reason why a plug in is disabled.
+        // The reason why a plug in is disabled.
         private string _disableReason;
-		// The path to the plug in assembly.
+        // The path to the plug in assembly.
         private string _path;
         #endregion
 

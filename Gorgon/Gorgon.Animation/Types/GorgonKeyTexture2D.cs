@@ -26,9 +26,9 @@
 
 using System;
 using Gorgon.Core;
-using DX = SharpDX;
 using Gorgon.Graphics.Core;
 using Newtonsoft.Json;
+using DX = SharpDX;
 
 namespace Gorgon.Animation
 {
@@ -49,59 +49,59 @@ namespace Gorgon.Animation
     /// </remarks>
     /// <seealso cref="IGorgonTrack{T}"/>
 	public class GorgonKeyTexture2D
-		: IGorgonKeyFrame
-	{
-		#region Variables.
+        : IGorgonKeyFrame
+    {
+        #region Variables.
         // The texture coordinates.
-	    private DX.RectangleF _textureCoordinates;
+        private DX.RectangleF _textureCoordinates;
         // The texture array index.
-	    private int _textureArrayIndex;
+        private int _textureArrayIndex;
         #endregion
 
         #region Properties.
-	    /// <summary>
-	    /// Property to set or return the texture view to use.
-	    /// </summary>
-	    public GorgonTexture2DView Value
-	    {
-	        get;
-	        set;
-	    }
+        /// <summary>
+        /// Property to set or return the texture view to use.
+        /// </summary>
+        public GorgonTexture2DView Value
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Property to set or return the texture array index to use on a texture array.
         /// </summary>
 	    public ref int TextureArrayIndex => ref _textureArrayIndex;
 
-	    /// <summary>
-	    /// Property to set or return the texture coordinates.
-	    /// </summary>
-	    public ref DX.RectangleF TextureCoordinates => ref _textureCoordinates;
+        /// <summary>
+        /// Property to set or return the texture coordinates.
+        /// </summary>
+        public ref DX.RectangleF TextureCoordinates => ref _textureCoordinates;
 
-	    /// <summary>
-	    /// Property to return the time at which the key frame is stored.
-	    /// </summary>
-	    public float Time
-	    {
+        /// <summary>
+        /// Property to return the time at which the key frame is stored.
+        /// </summary>
+        public float Time
+        {
             get;
-	    }
+        }
 
         /// <summary>
         /// Property to return the name of the texture.
         /// </summary>
         [JsonIgnore]
-	    public string TextureName
-	    {
+        public string TextureName
+        {
             get;
-	    }
+        }
 
-	    /// <summary>
-	    /// Property to return the type of data for this key frame.
-	    /// </summary>
-	    public Type DataType
-	    {
-	        get;
-	    } = typeof(GorgonTexture2DView);
+        /// <summary>
+        /// Property to return the type of data for this key frame.
+        /// </summary>
+        public Type DataType
+        {
+            get;
+        } = typeof(GorgonTexture2DView);
         #endregion
 
         #region Methods.
@@ -128,39 +128,39 @@ namespace Gorgon.Animation
         /// </para>
         /// </remarks>
         public GorgonKeyTexture2D(float time, string textureName, DX.RectangleF textureCoordinates, int textureArrayIndex)
-	    {
-	        if (textureName == null)
-	        {
+        {
+            if (textureName == null)
+            {
                 throw new ArgumentNullException(nameof(textureName));
-	        }
+            }
 
-	        if (string.IsNullOrWhiteSpace(textureName))
-	        {
+            if (string.IsNullOrWhiteSpace(textureName))
+            {
                 throw new ArgumentEmptyException(nameof(textureName));
-	        }
+            }
 
-	        Time = time;
-	        Value = null;
-	        TextureName = textureName;
-	        _textureCoordinates = textureCoordinates;
-	        _textureArrayIndex = textureArrayIndex;
-	    }
+            Time = time;
+            Value = null;
+            TextureName = textureName;
+            _textureCoordinates = textureCoordinates;
+            _textureArrayIndex = textureArrayIndex;
+        }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonKeyTexture2D" /> struct.
-		/// </summary>
-		/// <param name="time">The time for the key frame.</param>
-		/// <param name="value">The value to apply to the key frame.</param>
-		/// <param name="textureCoordinates">Region on the texture to update.</param>
-		/// <param name="textureArrayIndex">The texture array index to use with a texture array.</param>
-		public GorgonKeyTexture2D(float time, GorgonTexture2DView value, DX.RectangleF textureCoordinates, int textureArrayIndex)
-		{
-			Time = time;
-			Value = value;
-		    TextureName = value?.Texture.Name ?? string.Empty;
-			_textureCoordinates = textureCoordinates;
-		    _textureArrayIndex = textureArrayIndex;
-		}
-		#endregion
-	}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonKeyTexture2D" /> struct.
+        /// </summary>
+        /// <param name="time">The time for the key frame.</param>
+        /// <param name="value">The value to apply to the key frame.</param>
+        /// <param name="textureCoordinates">Region on the texture to update.</param>
+        /// <param name="textureArrayIndex">The texture array index to use with a texture array.</param>
+        public GorgonKeyTexture2D(float time, GorgonTexture2DView value, DX.RectangleF textureCoordinates, int textureArrayIndex)
+        {
+            Time = time;
+            Value = value;
+            TextureName = value?.Texture.Name ?? string.Empty;
+            _textureCoordinates = textureCoordinates;
+            _textureArrayIndex = textureArrayIndex;
+        }
+        #endregion
+    }
 }

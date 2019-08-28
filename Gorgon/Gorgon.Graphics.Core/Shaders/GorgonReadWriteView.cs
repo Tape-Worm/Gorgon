@@ -25,8 +25,8 @@
 #endregion
 
 using System;
-using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core
 {
@@ -69,7 +69,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         internal D3D11.UnorderedAccessView1 Native
         {
-            get; 
+            get;
             set;
         }
         #endregion

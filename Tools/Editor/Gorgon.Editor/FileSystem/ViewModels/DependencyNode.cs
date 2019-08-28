@@ -25,17 +25,17 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Core;
-using System.Threading;
-using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Metadata;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
-using System.Collections.ObjectModel;
-using System.Collections.Generic;
-using System.ComponentModel;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -81,7 +81,7 @@ namespace Gorgon.Editor.ViewModels
         public IFileExplorerNodeVm Parent
         {
             get => _parent;
-            private set 
+            private set
             {
                 if (_parent == value)
                 {
@@ -140,7 +140,7 @@ namespace Gorgon.Editor.ViewModels
         public ProjectItemMetadata Metadata
         {
             get => _content.Metadata;
-            set =>  _node.Metadata = value;
+            set => _node.Metadata = value;
         }
 
         /// <summary>Property to set or return whether the node is open for editing.</summary>
@@ -295,7 +295,7 @@ namespace Gorgon.Editor.ViewModels
             _node.RenameNode(newName);
 
             NotifyPropertyChanged(nameof(Name));
-            
+
             EventHandler<ContentFileRenamedEventArgs> handler = Renamed;
             handler?.Invoke(this, args);
         }
@@ -325,9 +325,9 @@ namespace Gorgon.Editor.ViewModels
             {
                 // And always remove us from the dependency list.
                 // Worst case is that the source file isn't deleted, and we temporarily lose the linkage.
-                Parent.Dependencies.Remove(this);                
+                Parent.Dependencies.Remove(this);
             }
-        }            
+        }
 
         /// <summary>
         /// Function to copy the file node into another node.
@@ -368,7 +368,7 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="append">[Optional] <b>true</b> to append data to the end of the file, or <b>false</b> to overwrite.</param>
         /// <returns>A stream to write the file data into.</returns>
         Stream IContentFile.OpenWrite(bool append) => _content.OpenWrite(append);
-        
+
         /// <summary>Function to notify that the metadata should be refreshed.</summary>
         void IContentFile.RefreshMetadata() => NotifyPropertyChanged(nameof(Metadata));
 
@@ -409,7 +409,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 throw new ArgumentNullException(nameof(newNode));
             }
-            
+
             // Not used... yet.
         }
 

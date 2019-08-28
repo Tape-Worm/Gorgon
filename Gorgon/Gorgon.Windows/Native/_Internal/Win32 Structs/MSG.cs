@@ -31,23 +31,23 @@ using System.Runtime.InteropServices;
 // ReSharper disable InconsistentNaming
 namespace Gorgon.Native
 {
-	/// <summary>
-	/// Value type representing a Window message.
-	/// </summary>
-	/// <remarks>
-	/// See the MSDN documentation for more detail.
-	/// <para>
-	/// Used to pass various messages back and forth between the OS and the app.
-	/// </para>
-	/// </remarks>
-	[StructLayout(LayoutKind.Sequential)]
-	internal struct MSG
-	{
-		public IntPtr hwnd;
-		public uint Message;
-		public IntPtr wParam;
-		public IntPtr lParam;
-		public uint time;
-		public Point pt;
-	}
+    /// <summary>
+    /// Value type representing a Window message.
+    /// </summary>
+    /// <remarks>
+    /// See the MSDN documentation for more detail.
+    /// <para>
+    /// Used to pass various messages back and forth between the OS and the app.
+    /// </para>
+    /// </remarks>
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct MSG
+    {
+        public IntPtr hwnd;
+        public uint Message;
+        public IntPtr wParam;
+        public IntPtr lParam;
+        public uint time;
+        public Point pt;
+    }
 }

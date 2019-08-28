@@ -25,11 +25,11 @@
 #endregion
 
 using System.Collections.Generic;
-using DX = SharpDX;
+using System.Linq;
 using Gorgon.Animation.Properties;
 using Gorgon.Core;
 using Gorgon.Math;
-using System.Linq;
+using DX = SharpDX;
 
 namespace Gorgon.Animation
 {
@@ -66,7 +66,7 @@ namespace Gorgon.Animation
         public TrackInterpolationMode InterpolationMode
         {
             get => _interpolationMode;
-            set 
+            set
             {
                 if ((SupportsInterpolation & value) != value)
                 {

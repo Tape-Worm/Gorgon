@@ -64,7 +64,7 @@ namespace Gorgon.Renderers
         // The kernel data to upload into the constant buffer.
         private GorgonNativeBuffer<float> _blurKernelData;
         // Radius for the blur.
-        private int _blurRadius;												
+        private int _blurRadius;
         // The size of the render targets used to blur.
         private DX.Size2 _renderTargetSize = new DX.Size2(256, 256);
 
@@ -181,24 +181,24 @@ namespace Gorgon.Renderers
             }
         }
 
-		/// <summary>
-		/// Property to set or return the format of the internal render targets used for blurring.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This is the default texture surface format for the internal render targets used for blurring. This value may be any type of format supported by a render target (see 
-		/// <see cref="GorgonGraphics.FormatSupport"/> for determining an acceptable format).
-		/// </para>
-		/// <para>
-		/// If this value is set to an unacceptable format, then the effect will throw an exception during rendering.
-		/// </para>
-		/// <para>
-		/// The default value is <see cref="BufferFormat.R8G8B8A8_UNorm"/>
-		/// </para>
-		/// </remarks>
-		/// <seealso cref="GorgonGraphics"/>
-		/// <seealso cref="BufferFormat"/>
-		public BufferFormat BlurTargetFormat
+        /// <summary>
+        /// Property to set or return the format of the internal render targets used for blurring.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This is the default texture surface format for the internal render targets used for blurring. This value may be any type of format supported by a render target (see 
+        /// <see cref="GorgonGraphics.FormatSupport"/> for determining an acceptable format).
+        /// </para>
+        /// <para>
+        /// If this value is set to an unacceptable format, then the effect will throw an exception during rendering.
+        /// </para>
+        /// <para>
+        /// The default value is <see cref="BufferFormat.R8G8B8A8_UNorm"/>
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonGraphics"/>
+        /// <seealso cref="BufferFormat"/>
+        public BufferFormat BlurTargetFormat
         {
             get;
             set;
@@ -258,7 +258,7 @@ namespace Gorgon.Renderers
             // Now recreate with a new size and format (if applicable).
             _blurRtvInfo.Format = BlurTargetFormat;
             _blurRtvInfo.Width = _renderTargetSize.Width;
-            _blurRtvInfo.Height = _renderTargetSize.Height;           
+            _blurRtvInfo.Height = _renderTargetSize.Height;
 
             _hPass = Graphics.TemporaryTargets.Rent(_blurRtvInfo, clearOnRetrieve: false);
 
@@ -312,10 +312,10 @@ namespace Gorgon.Renderers
                 float kernelValue = (-distance / sqSigmaDouble).Exp() / sigmaRoot;
 
                 _blurKernelData[firstPassOffset++] = kernelValue;
-                
+
                 total += kernelValue;
             }
-            
+
             // We need to read back the memory and average the kernel weights.
             for (int i = 0; i < blurKernelSize; ++i)
             {
@@ -345,7 +345,7 @@ namespace Gorgon.Renderers
                 return;
             }
 
-			Graphics.TemporaryTargets.Return(_vPass);
+            Graphics.TemporaryTargets.Return(_vPass);
         }
 
         /// <summary>
@@ -387,12 +387,12 @@ namespace Gorgon.Renderers
         {
             // Align sizes to 16 byte boundaries.
             _blurBufferKernel = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo("Effect.GorgonGaussKernelData")
-                                                         {
-                                                             Usage = ResourceUsage.Default,
-                                                             SizeInBytes = (((sizeof(float) * KernelSize) + 15) & ~15) 
+            {
+                Usage = ResourceUsage.Default,
+                SizeInBytes = (((sizeof(float) * KernelSize) + 15) & ~15)
                                                                            + (((sizeof(float) * _offsetSize) + 15) & ~15)
                                                                            + sizeof(int)
-                                                         });
+            });
             _blurKernelData = new GorgonNativeBuffer<float>(_blurBufferKernel.Buffer.SizeInBytes / sizeof(float));
             _blurKernelData.Fill(0);
 
@@ -412,11 +412,11 @@ namespace Gorgon.Renderers
 
             _blurState = PixelShaderBuilder.Build();
 
-			_blurShaderNoAlpha = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderGaussBlurNoAlpha");
+            _blurShaderNoAlpha = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderGaussBlurNoAlpha");
             PixelShaderBuilder.Shader(_blurShaderNoAlpha);
 
             _blurStateNoAlpha = PixelShaderBuilder.Build();
-                        
+
             UpdateKernelWeights();
             UpdateOffsets();
 
@@ -577,7 +577,7 @@ namespace Gorgon.Renderers
         public Gorgon2DGaussBlurEffect(Gorgon2D renderer, int kernelSize = 7)
             : base(renderer, Resources.GOR2D_EFFECT_GAUSS_BLUR, Resources.GOR2D_EFFECT_GAUSS_BLUT_DESC, 2)
         {
-            if ((kernelSize < 3) 
+            if ((kernelSize < 3)
                 || (kernelSize > 81))
             {
                 throw new ArgumentOutOfRangeException(nameof(kernelSize), Resources.GOR2D_ERR_EFFECT_BLUR_KERNEL_SIZE_INVALID);
@@ -588,7 +588,7 @@ namespace Gorgon.Renderers
             MaximumBlurRadius = ((kernelSize - 1) / 2).Max(1);
 
             // Adjust offset size to start on a 4 float boundary.
-            _offsetSize = ((2 * KernelSize) + 3) & ~3; 
+            _offsetSize = ((2 * KernelSize) + 3) & ~3;
             _blurRadius = MaximumBlurRadius;
 
             _blurRtvInfo = new GorgonTexture2DInfo

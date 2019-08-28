@@ -30,8 +30,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Gorgon.Diagnostics;
-using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.IO;
 using Gorgon.PlugIns;
 using Gorgon.Renderers;
@@ -42,16 +42,16 @@ namespace Gorgon.Editor.SpriteEditor
     /// A registry for the sprite codecs used by the plug ins in this assembly.
     /// </summary>
     internal class CodecRegistry
-		: ICodecRegistry
+        : ICodecRegistry
     {
         #region Variables.
         // The cache containing the plug in assemblies.
         private readonly GorgonMefPlugInCache _pluginCache;
-		// The service used to manage the plug ins.
+        // The service used to manage the plug ins.
         private readonly IGorgonPlugInService _pluginService;
         // The log.
         private readonly IGorgonLog _log;
-		// The 2D renderer for the application.
+        // The 2D renderer for the application.
         private readonly Gorgon2D _renderer;
         #endregion
 
@@ -160,7 +160,7 @@ namespace Gorgon.Editor.SpriteEditor
                     CodecFileTypes.Remove(type);
                 }
             }
-			            
+
             _pluginService.Unload(plugin.Name);
 
             CodecPlugIns.Remove(plugin);
@@ -184,7 +184,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             if (assemblies.Count == 0)
             {
-                _log.Print("Assembly was not loaded. This means that most likely it's already referenced.", LoggingLevel.Verbose);                
+                _log.Print("Assembly was not loaded. This means that most likely it's already referenced.", LoggingLevel.Verbose);
             }
 
             IEnumerable<PlugInAssemblyState> failedAssemblies = assemblies.Where(item => !item.IsAssemblyLoaded);

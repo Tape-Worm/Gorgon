@@ -29,28 +29,28 @@ using Gorgon.Graphics.Imaging.Properties;
 
 namespace Gorgon.Graphics.Imaging.Codecs
 {
-	/// <summary>
-	/// Options used when decoding an image from a stream as a TGA file.
-	/// </summary>
-	public class GorgonTgaDecodingOptions
-		: IGorgonImageCodecDecodingOptions
-	{
-		#region Properties.
-		/// <summary>
-		/// Property to return the list of options available to the codec.
-		/// </summary>
-		public IGorgonOptionBag Options
-		{
-			get;
-		}
+    /// <summary>
+    /// Options used when decoding an image from a stream as a TGA file.
+    /// </summary>
+    public class GorgonTgaDecodingOptions
+        : IGorgonImageCodecDecodingOptions
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to return the list of options available to the codec.
+        /// </summary>
+        public IGorgonOptionBag Options
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to set or return whether to read all frames from an image.
-		/// </summary>
-		/// <remarks>
-		/// Some codecs do not use multiple frames in their image data. For those codecs, this flag will be ignored.
-		/// </remarks>
-		bool IGorgonImageCodecDecodingOptions.ReadAllFrames
+        /// <summary>
+        /// Property to set or return whether to read all frames from an image.
+        /// </summary>
+        /// <remarks>
+        /// Some codecs do not use multiple frames in their image data. For those codecs, this flag will be ignored.
+        /// </remarks>
+        bool IGorgonImageCodecDecodingOptions.ReadAllFrames
         {
             get => false;
             set
@@ -75,11 +75,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// </para>
         /// </remarks>
         public bool SetZeroAlphaAsOpaque
-		{
-			get => Options.GetOptionValue<bool>(nameof(SetZeroAlphaAsOpaque));
+        {
+            get => Options.GetOptionValue<bool>(nameof(SetZeroAlphaAsOpaque));
 
-			set => Options.SetOptionValue(nameof(SetZeroAlphaAsOpaque), value);
-		}
+            set => Options.SetOptionValue(nameof(SetZeroAlphaAsOpaque), value);
+        }
         #endregion
 
         #region Constructor/Finalizer.

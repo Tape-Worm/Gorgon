@@ -42,10 +42,10 @@ namespace Gorgon.Editor.ViewModels
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the name of the new node.
         /// </summary>
-		public string NewNodeName
+        public string NewNodeName
         {
             get;
         }

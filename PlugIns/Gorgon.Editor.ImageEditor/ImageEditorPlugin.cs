@@ -26,26 +26,26 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Drawing;
-using System.Threading.Tasks;
 using System.Threading;
-using DX = SharpDX;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
+using Gorgon.Editor.UI;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
-using Gorgon.Graphics.Imaging;
-using Gorgon.Editor.UI;
 using Gorgon.Math;
-using Gorgon.Graphics.Core;
-using Gorgon.Graphics;
-using System.Windows.Forms;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -62,18 +62,18 @@ namespace Gorgon.Editor.ImageEditor
         // The synchronization lock for threads.
         private readonly object _syncLock = new object();
 
-		// The codec registry.
+        // The codec registry.
         private ICodecRegistry _codecs;
 
-		// The plug in settings.
+        // The plug in settings.
         private ISettings _settings;
 
-		/// <summary>
+        /// <summary>
         /// The name of the settings file.
         /// </summary>
-		public static readonly string SettingsName = typeof(ImageEditorPlugIn).FullName;
+        public static readonly string SettingsName = typeof(ImageEditorPlugIn).FullName;
         #endregion
-		
+
         #region Properties.
         /// <summary>Property to return the name of the plug in.</summary>
         string IContentPlugInMetadata.PlugInName => Name;
@@ -85,7 +85,7 @@ namespace Gorgon.Editor.ImageEditor
         public override bool CanCreateContent => false;
 
         /// <summary>Property to return the ID of the small icon for this plug in.</summary>
-        public Guid SmallIconID 
+        public Guid SmallIconID
         {
             get;
         }
@@ -270,16 +270,17 @@ namespace Gorgon.Editor.ImageEditor
                 compressor = new TexConvCompressor(texConvExe, scratchArea, _ddsCodec);
             }
 
-            var imageIO = new ImageIOService(_ddsCodec, 
+            var imageIO = new ImageIOService(_ddsCodec,
                 _codecs,
-                new ExportImageDialogService(_settings), 
+                new ExportImageDialogService(_settings),
                 new ImportImageDialogService(_settings, _codecs),
-                CommonServices.BusyService, 
-                scratchArea, 
-                compressor, 
+                CommonServices.BusyService,
+                scratchArea,
+                compressor,
                 CommonServices.Log);
 
-            (IGorgonImage image, IGorgonVirtualFile workingFile, BufferFormat originalFormat) imageData = await Task.Run(() => {
+            (IGorgonImage image, IGorgonVirtualFile workingFile, BufferFormat originalFormat) imageData = await Task.Run(() =>
+            {
                 using (Stream inStream = file.OpenRead())
                 {
                     return imageIO.LoadImageFile(inStream, file.Name);
@@ -325,7 +326,7 @@ namespace Gorgon.Editor.ImageEditor
             {
                 _settings.WriteSettingsCommand.Execute(null);
             }
-			            
+
             ViewFactory.Unregister<IImageContent>();
 
             base.OnShutdown();
@@ -452,7 +453,7 @@ namespace Gorgon.Editor.ImageEditor
                 // We're done on the main thread, we can switch to another thread to write the image.
                 Cursor.Current = Cursors.Default;
 
-                await Task.Run(() => pngCodec.SaveToFile(thumbImage, outputFile.FullName), cancelToken);                    
+                await Task.Run(() => pngCodec.SaveToFile(thumbImage, outputFile.FullName), cancelToken);
 
                 if (cancelToken.IsCancellationRequested)
                 {

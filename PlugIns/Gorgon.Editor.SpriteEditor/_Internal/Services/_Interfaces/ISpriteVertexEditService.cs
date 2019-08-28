@@ -31,7 +31,7 @@ using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
-	/// <summary>
+    /// <summary>
     /// The service used to edit sprite vertices.
     /// </summary>
     internal interface ISpriteVertexEditService
@@ -70,10 +70,10 @@ namespace Gorgon.Editor.SpriteEditor
             set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return the rectangular boundaries for the sprite.
         /// </summary>
-		DX.RectangleF SpriteBounds
+        DX.RectangleF SpriteBounds
         {
             get;
             set;
@@ -97,10 +97,10 @@ namespace Gorgon.Editor.SpriteEditor
             set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return the function used to transform a point from local clip space to window client space.
         /// </summary>
-		Func<DX.Vector2, DX.Vector2> PointToClient
+        Func<DX.Vector2, DX.Vector2> PointToClient
         {
             get;
             set;
@@ -160,10 +160,10 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         void Render();
 
-		/// <summary>
+        /// <summary>
         /// Function to refresh the UI of the editor.
         /// </summary>
         void Refresh();
-		#endregion
+        #endregion
     }
 }

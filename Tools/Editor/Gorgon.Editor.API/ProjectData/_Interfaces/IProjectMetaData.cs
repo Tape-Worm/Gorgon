@@ -41,7 +41,7 @@ namespace Gorgon.Editor.ProjectData
         {
             get;
         }
-        
+
         /// <summary>
         /// Property to return the list of project items.
         /// </summary>

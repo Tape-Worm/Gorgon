@@ -29,13 +29,13 @@ using Gorgon.IO;
 
 namespace Gorgon.Editor.SpriteEditor
 {
-	/// <summary>
+    /// <summary>
     /// A setting used to display a loaded codec.
     /// </summary>
     internal class CodecSetting
-		: IGorgonNamedObject
+        : IGorgonNamedObject
     {
-		/// <summary>
+        /// <summary>
         /// Property to return the description for the codec.
         /// </summary>
         public string Description
@@ -43,15 +43,15 @@ namespace Gorgon.Editor.SpriteEditor
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the plug in that contains the codec.
         /// </summary>
-		public GorgonSpriteCodecPlugIn PlugIn
+        public GorgonSpriteCodecPlugIn PlugIn
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the formal name of the codec.
         /// </summary>
         public string Name

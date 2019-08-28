@@ -141,17 +141,17 @@ namespace Gorgon.Editor
                 if (string.Equals(logType, "console", StringComparison.OrdinalIgnoreCase))
                 {
                     Log = GorgonApplication.Log = new GorgonLogConsole("Gorgon.Editor", typeof(Program).Assembly.GetName().Version)
-                                                  {
-                                                      LogFilterLevel = level
-                                                  };
+                    {
+                        LogFilterLevel = level
+                    };
                 }
 
                 if (string.Equals(logType, "file", StringComparison.OrdinalIgnoreCase))
                 {
                     Log = GorgonApplication.Log = new GorgonLog("Gorgon.Editor", @"Tape_Worm\Gorgon.Editor\Logging\", typeof(Program).Assembly.GetName().Version)
-                                                  {
-                                                      LogFilterLevel = level
-                                                  };
+                    {
+                        LogFilterLevel = level
+                    };
                 }
             }
             catch (Exception ex)

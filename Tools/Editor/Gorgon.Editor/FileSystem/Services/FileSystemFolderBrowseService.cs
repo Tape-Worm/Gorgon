@@ -91,9 +91,9 @@ namespace Gorgon.Editor.FileSystem
             }
 
             using (var browser = new FormFileSystemFolderBrowser()
-            {				
-				Text = caption,
-				Description = description
+            {
+                Text = caption,
+                Description = description
             })
             {
 

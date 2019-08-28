@@ -230,43 +230,43 @@ namespace Gorgon.Examples
                                                             });
 
                 _ship = new GorgonSprite
-                        {
-                            Bounds = new DX.RectangleF(0, 0, 206, 369),
-                            Texture = _shipTexture,
-                            // Calculate the ship texture coordinates.
-                            TextureRegion = _shipTexture.Texture.ToTexel(new DX.Rectangle(34, 10, 206, 369)),
-                            Anchor = new DX.Vector2(0.5f, 1.0f)
-                        };
+                {
+                    Bounds = new DX.RectangleF(0, 0, 206, 369),
+                    Texture = _shipTexture,
+                    // Calculate the ship texture coordinates.
+                    TextureRegion = _shipTexture.Texture.ToTexel(new DX.Rectangle(34, 10, 206, 369)),
+                    Anchor = new DX.Vector2(0.5f, 1.0f)
+                };
                 _engineGlow[0] = new GorgonSprite
-                                 {
-                                     Bounds = new DX.RectangleF(0, 0, 250, 85),
-                                     Texture = _shipTexture,
-                                     TextureRegion = _shipTexture.Texture.ToTexel(new DX.Rectangle(512, 11, 250, 85))
-                                 };
+                {
+                    Bounds = new DX.RectangleF(0, 0, 250, 85),
+                    Texture = _shipTexture,
+                    TextureRegion = _shipTexture.Texture.ToTexel(new DX.Rectangle(512, 11, 250, 85))
+                };
                 _engineGlow[1] = new GorgonSprite
-                                 {
-                                     Bounds = new DX.RectangleF(0, 0, 250, 85),
-                                     Texture = _shipTexture,
-                                     TextureRegion = _shipTexture.Texture.ToTexel(new DX.Rectangle(512, 114, 250, 85))
-                                 };
+                {
+                    Bounds = new DX.RectangleF(0, 0, 250, 85),
+                    Texture = _shipTexture,
+                    TextureRegion = _shipTexture.Texture.ToTexel(new DX.Rectangle(512, 114, 250, 85))
+                };
                 _engineGlow[2] = new GorgonSprite
-                                 {
-                                     Bounds = new DX.RectangleF(0, 0, 250, 85),
-                                     Texture = _shipTexture,
-                                     TextureRegion = _shipTexture.Texture.ToTexel(new DX.Rectangle(512, 207, 250, 85))
-                                 };
+                {
+                    Bounds = new DX.RectangleF(0, 0, 250, 85),
+                    Texture = _shipTexture,
+                    TextureRegion = _shipTexture.Texture.ToTexel(new DX.Rectangle(512, 207, 250, 85))
+                };
 
                 // Space background sprite texture positioning.
                 _background = new GorgonSprite
-                              {
-                                  Texture = _spaceBackground,
-                                  Bounds = new DX.RectangleF(_screen.Width / 2,
+                {
+                    Texture = _spaceBackground,
+                    Bounds = new DX.RectangleF(_screen.Width / 2,
                                                              _screen.Height,
                                                              _spaceBackground.Width,
                                                              _spaceBackground.Height),
-                                  TextureRegion = new DX.RectangleF(0, 0, 1, 1),
-                                  Anchor = new DX.Vector2(0.5f, 1.0f)
-                              };
+                    TextureRegion = new DX.RectangleF(0, 0, 1, 1),
+                    Anchor = new DX.Vector2(0.5f, 1.0f)
+                };
 
                 GorgonExample.LoadResources(_graphics);
 

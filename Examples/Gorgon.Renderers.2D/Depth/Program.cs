@@ -30,23 +30,23 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using DX = SharpDX;
-using Gorgon.UI;
-using Gorgon.Examples.Properties;
-using Gorgon.Graphics.Core;
-using Gorgon.Renderers;
-using Gorgon.Core;
-using Gorgon.Graphics;
-using Gorgon.IO;
-using Gorgon.Timing;
 using Gorgon.Animation;
+using Gorgon.Core;
+using Gorgon.Examples.Properties;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
+using Gorgon.IO;
+using Gorgon.IO.Providers;
 using Gorgon.Math;
 using Gorgon.PlugIns;
-using Gorgon.IO.Providers;
+using Gorgon.Renderers;
+using Gorgon.Timing;
+using Gorgon.UI;
+using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
-	/// <summary>
+    /// <summary>
     /// This is an updated version of the "DeepAsAPuddle" example from Gorgon v1.x.
     /// 
     /// This example shows how to use the depth buffer in conjunction with 2D graphics to provide the illusion of a scene with 
@@ -62,14 +62,14 @@ namespace Gorgon.Examples
     static class Program
     {
         #region Enums.
-		/// <summary>
+        /// <summary>
         /// The name of an animation.
         /// </summary>
         private enum AnimationName
         {
-			WalkUp = 0,
-			Turn = 1,
-			WalkLeft = 2
+            WalkUp = 0,
+            Turn = 1,
+            WalkLeft = 2
         }
         #endregion
 
@@ -78,29 +78,29 @@ namespace Gorgon.Examples
         private static GorgonGraphics _graphics;
         // The main "screen" for the application.
         private static GorgonSwapChain _screen;
-		// The depth buffer for the screen.
+        // The depth buffer for the screen.
         private static GorgonDepthStencil2DView _depthBuffer;
         // Our 2D renderer.
         private static Gorgon2D _renderer;
-		// The list of textures for the sprite.
+        // The list of textures for the sprite.
         private static readonly List<GorgonTexture2D> _textures = new List<GorgonTexture2D>();
-		// The size of the tiled screen.
+        // The size of the tiled screen.
         private static DX.Size2 _tileSize;
-		// The tile used for the snow layer.
+        // The tile used for the snow layer.
         private static GorgonSprite _snowTile;
-		// The sprite for the guy.
+        // The sprite for the guy.
         private static GorgonSprite _guySprite;
-		// The icicle sprite.
+        // The icicle sprite.
         private static GorgonSprite _icicle;
-		// The position of the guy.
+        // The position of the guy.
         private static DX.Vector2 _guyPosition;
-		// Up animation.
+        // Up animation.
         private static Dictionary<AnimationName, IGorgonAnimation> _animations = new Dictionary<AnimationName, IGorgonAnimation>();
-		// The animation controller.
+        // The animation controller.
         private static GorgonSpriteAnimationController _controller;
-		// The current animation.
+        // The current animation.
         private static AnimationName _current;
-		// The cache for our plug in assemblies.
+        // The cache for our plug in assemblies.
         private static GorgonMefPlugInCache _assemblyCache;
         #endregion
 
@@ -120,16 +120,16 @@ namespace Gorgon.Examples
             }
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to draw an obstacle that we can move behind.
         /// </summary>
         private static void DrawIcicle()
         {
-			_icicle.Position = new DX.Vector2(((_tileSize.Width - 2) / 2) * _snowTile.ScaledSize.Width, ((_tileSize.Height - 2) /2) * _snowTile.ScaledSize.Height);
+            _icicle.Position = new DX.Vector2(((_tileSize.Width - 2) / 2) * _snowTile.ScaledSize.Width, ((_tileSize.Height - 2) / 2) * _snowTile.ScaledSize.Height);
             _renderer.DrawSprite(_icicle);
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to draw our character.
         /// </summary>
         private static void DrawGuy()
@@ -138,12 +138,12 @@ namespace Gorgon.Examples
             _renderer.DrawSprite(_guySprite);
         }
 
-		/// <summary>
+        /// <summary>
         /// Function used to transition the animation for the guy.
         /// </summary>
         private static void AnimationTransition()
         {
-			// We'll cycle between different animations depending on where we are on the screen.
+            // We'll cycle between different animations depending on where we are on the screen.
             switch (_current)
             {
                 case AnimationName.WalkUp:
@@ -158,11 +158,11 @@ namespace Gorgon.Examples
                         _controller.Stop();
                         _current = AnimationName.Turn;
 
-						// Make it so the guy will appear behind the icicle.
+                        // Make it so the guy will appear behind the icicle.
                         _guySprite.Depth = _icicle.Depth + 0.1f;
 
                         _controller.Play(_guySprite, _animations[_current]);
-                        
+
                     }
                     break;
                 case AnimationName.Turn:
@@ -182,19 +182,19 @@ namespace Gorgon.Examples
                     {
                         _controller.Stop();
 
-						// If we reach the extreme left of the screen (and we're off screen), then move to the right side and continue this animation.						
+                        // If we reach the extreme left of the screen (and we're off screen), then move to the right side and continue this animation.						
                         if (_guyPosition.Y < _icicle.Position.Y + _snowTile.ScaledSize.Height)
                         {
                             _guyPosition = new DX.Vector2(_screen.Width + _guySprite.ScaledSize.Width * 1.25f, _icicle.Position.Y + _icicle.ScaledSize.Height / 2.0f);
                         }
                         else
                         {
-							// Otherwise, reset and start over.
+                            // Otherwise, reset and start over.
                             _current = AnimationName.WalkUp;
                             _guyPosition = new DX.Vector2(_screen.Width / 2 + _guySprite.ScaledSize.Width * 1.25f, _screen.Height + _snowTile.ScaledSize.Height);
                         }
 
-						// Ensure that the guy's depth value is less than the icicle so he'll appear in front of it.
+                        // Ensure that the guy's depth value is less than the icicle so he'll appear in front of it.
                         _guySprite.Depth = _icicle.Depth - 0.1f;
                     }
                     break;
@@ -212,15 +212,15 @@ namespace Gorgon.Examples
             _screen.RenderTargetView.Clear(GorgonColor.White);
             _depthBuffer.Clear(1.0f, 0);
 
-			// We have to pass in a state that allows depth writing and testing. Otherwise the depth buffer won't be used.
+            // We have to pass in a state that allows depth writing and testing. Otherwise the depth buffer won't be used.
             _renderer.Begin(Gorgon2DBatchState.DepthEnabled);
 
             DrawBackground();
 
-			// Note that the order that we draw here is not important since the depth buffer will sort on our behalf.
-			// As mentioned in the description for the example, alpha blending doesn't work all that well with this 
-			// trick. You'll notice this when the guy walks behind the icicle as the icicle completely obscures the 
-			// guy even though the icicle has alpha translucency.
+            // Note that the order that we draw here is not important since the depth buffer will sort on our behalf.
+            // As mentioned in the description for the example, alpha blending doesn't work all that well with this 
+            // trick. You'll notice this when the guy walks behind the icicle as the icicle completely obscures the 
+            // guy even though the icicle has alpha translucency.
             DrawIcicle();
 
             DrawGuy();
@@ -237,7 +237,7 @@ namespace Gorgon.Examples
             return true;
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to build the animations.
         /// </summary>
         /// <param name="sprites">The list of sprites loaded from the file system.</param>
@@ -245,39 +245,39 @@ namespace Gorgon.Examples
         {
             var animBuilder = new GorgonAnimationBuilder();
 
-			// Extract the sprites that have the animation frames.
-			// We'll use the name of the sprite to determine the type of animation and ordering.
-			// If we had an animation editor in the editor application, this would be a lot easier, but for now we'll have to do this.
-			// If I create an editor, I'll try to replace this code with the animations in the editor file system.
+            // Extract the sprites that have the animation frames.
+            // We'll use the name of the sprite to determine the type of animation and ordering.
+            // If we had an animation editor in the editor application, this would be a lot easier, but for now we'll have to do this.
+            // If I create an editor, I'll try to replace this code with the animations in the editor file system.
             GorgonSprite[] upFrames = sprites.OrderBy(item => item.Key)
                                               .Where(item => item.Key.StartsWith("Guy_Up_", StringComparison.OrdinalIgnoreCase))
-											  .Select(item => item.Value)
-											  .ToArray();
+                                              .Select(item => item.Value)
+                                              .ToArray();
 
             IEnumerable<GorgonSprite> turnFrames = sprites.OrderBy(item => item.Key)
-														   .Where(item => item.Key.StartsWith("Guy_Turn_", StringComparison.OrdinalIgnoreCase))
+                                                           .Where(item => item.Key.StartsWith("Guy_Turn_", StringComparison.OrdinalIgnoreCase))
                                                            .Select(item => item.Value);
 
             GorgonSprite[] walkLeftFrames = sprites.OrderBy(item => item.Key)
                                                     .Where(item => item.Key.StartsWith("Guy_Left_", StringComparison.OrdinalIgnoreCase))
                                                     .Select(item => item.Value)
-													.ToArray();
+                                                    .ToArray();
 
             float time = 0;
 
-			// Build animation for walking up.
+            // Build animation for walking up.
             for (int i = 0; i < upFrames.Length; ++i)
             {
                 GorgonSprite sprite = upFrames[i];
 
                 animBuilder.Edit2DTexture()
-							.SetKey(new GorgonKeyTexture2D(time, sprite.Texture, sprite.TextureRegion, 0))
-							.EndEdit();
+                            .SetKey(new GorgonKeyTexture2D(time, sprite.Texture, sprite.TextureRegion, 0))
+                            .EndEdit();
 
                 time += 0.15f;
             }
 
-			// Reverse the animation so we don't get popping as it loops.
+            // Reverse the animation so we don't get popping as it loops.
             for (int i = upFrames.Length - 2; i >= 1; --i)
             {
                 GorgonSprite sprite = upFrames[i];
@@ -293,7 +293,7 @@ namespace Gorgon.Examples
             _animations[AnimationName.WalkUp].IsLooped = true;
 
 
-			// Build animation for turning left.
+            // Build animation for turning left.
             time = 0;
             animBuilder.Clear();
             foreach (GorgonSprite sprite in turnFrames)
@@ -392,13 +392,13 @@ namespace Gorgon.Examples
                 // For now though, we'll load the packed file.
                 fileSystem.Mount(Path.Combine(GorgonExample.GetResourcePath(@"FileSystems").FullName, "Depth.gorPack"));
 
-				// Get our sprites.  These make up the frames of animation for our Guy.
-				// If and when there's an animation editor, we'll only need to create a single sprite and load the animation.
+                // Get our sprites.  These make up the frames of animation for our Guy.
+                // If and when there's an animation editor, we'll only need to create a single sprite and load the animation.
                 IGorgonVirtualFile[] spriteFiles = fileSystem.FindFiles("/Sprites/", "*", true).ToArray();
 
                 // Load our sprite data (any associated textures will be loaded as well).
                 Dictionary<string, GorgonSprite> sprites = new Dictionary<string, GorgonSprite>(StringComparer.OrdinalIgnoreCase);
-				
+
                 for (int i = 0; i < spriteFiles.Length; i++)
                 {
                     IGorgonVirtualFile file = spriteFiles[i];
@@ -413,11 +413,11 @@ namespace Gorgon.Examples
                         _textures.Add(texture);
                     }
 
-					// At super duper resolution, the example graphics would be really hard to see, so we'll scale them up.
+                    // At super duper resolution, the example graphics would be really hard to see, so we'll scale them up.
                     sprite.Scale = new DX.Vector2((_screen.Width / (_screen.Height / 2)) * 2.0f);
                     sprites[file.Name] = sprite;
                 }
-				
+
                 _snowTile = sprites["Snow"];
                 _snowTile.Depth = 0.5f;
 
@@ -428,7 +428,7 @@ namespace Gorgon.Examples
                 _guySprite.Depth = 0.1f;
                 _guyPosition = new DX.Vector2(_screen.Width / 2 + _guySprite.ScaledSize.Width * 1.25f, _screen.Height / 2 + _guySprite.ScaledSize.Height);
 
-                BuildAnimations(sprites);                
+                BuildAnimations(sprites);
             }
             finally
             {

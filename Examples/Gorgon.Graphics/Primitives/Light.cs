@@ -31,10 +31,10 @@ using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
-	/// <summary>
-	/// A light to shine on our sad primitives
-	/// </summary>
-	internal class Light
+    /// <summary>
+    /// A light to shine on our sad primitives
+    /// </summary>
+    internal class Light
         : IEquatable<Light>
     {
         #region Variables.
@@ -48,7 +48,7 @@ namespace Gorgon.Examples
         private float _attenuation;
         // The position of the light.
         private DX.Vector3 _position;
-		// The intensity of the light.
+        // The intensity of the light.
         private float _intensity;
         #endregion
 
@@ -79,7 +79,7 @@ namespace Gorgon.Examples
                 IsDirty = true;
             }
         }
-        
+
         /// <summary>
         /// Property to set or return the diffuse color of the light.
         /// </summary>
@@ -152,10 +152,10 @@ namespace Gorgon.Examples
             }
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return the intensity of the light.
         /// </summary>
-		public float Intensity
+        public float Intensity
         {
             get => _intensity;
             set
@@ -194,23 +194,23 @@ namespace Gorgon.Examples
                     && (_lightColor.Equals(in other._lightColor))
                     && (_specularColor.Equals(in other._specularColor))
                     && (_position.Equals(ref other._position))
-					&& (_intensity.EqualsEpsilon(other._intensity)));
+                    && (_intensity.EqualsEpsilon(other._intensity)));
         }
         #endregion
 
-		#region Constructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Camera"/> class.
-		/// </summary>
-		public Light()
-		{
-		    _position = DX.Vector3.Zero;
-		    _attenuation = 6.0f;
-		    _lightColor = GorgonColor.White;
-		    _specularColor = GorgonColor.White;
-		    _specularPower = 512.0f;
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Camera"/> class.
+        /// </summary>
+        public Light()
+        {
+            _position = DX.Vector3.Zero;
+            _attenuation = 6.0f;
+            _lightColor = GorgonColor.White;
+            _specularColor = GorgonColor.White;
+            _specularPower = 512.0f;
             _intensity = 1.0f;
-		}
+        }
         #endregion
     }
 }

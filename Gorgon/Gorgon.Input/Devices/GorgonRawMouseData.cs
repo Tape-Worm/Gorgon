@@ -29,98 +29,98 @@ using System.Drawing;
 
 namespace Gorgon.Input
 {
-	/// <summary>
-	/// The current state for the mouse buttons.
-	/// </summary>
-	/// <remarks>
-	/// This is used by the <see cref="GorgonRawMouseData"/> value type to determine if a specific button is being held down, or released. It is not intended for use in general applications.
-	/// </remarks>
-	[Flags]
-	public enum MouseButtonState
-		: short
-	{
-		/// <summary>
-		/// No button has a state.
-		/// </summary>
-		None = 0,
-		/// <summary>
-		/// The left button was held down (button 1).
-		/// </summary>
-		ButtonLeftDown = 1,
-		/// <summary>
-		/// The right button was held down (button 2).
-		/// </summary>
-		ButtonRightDown = 2,
-		/// <summary>
-		/// The middle button was held down (button 3).
-		/// </summary>
-		ButtonMiddleDown = 4,
-		/// <summary>
-		/// The fifth button was held down.
-		/// </summary>
-		Button4Down = 8,
-		/// <summary>
-		/// The fourth button was held down.
-		/// </summary>
-		Button5Down = 16,
-		/// <summary>
-		/// The left button was released (button 1).
-		/// </summary>
-		ButtonLeftUp = 32,
-		/// <summary>
-		/// The right button was released (button 2).
-		/// </summary>
-		ButtonRightUp = 64,
-		/// <summary>
-		/// The middle button was released (button 3).
-		/// </summary>
-		ButtonMiddleUp = 128,
-		/// <summary>
-		/// The fourth button was released.
-		/// </summary>
-		Button4Up = 256,
-		/// <summary>
-		/// The fifth button was released.
-		/// </summary>
-		Button5Up = 512
-	}
+    /// <summary>
+    /// The current state for the mouse buttons.
+    /// </summary>
+    /// <remarks>
+    /// This is used by the <see cref="GorgonRawMouseData"/> value type to determine if a specific button is being held down, or released. It is not intended for use in general applications.
+    /// </remarks>
+    [Flags]
+    public enum MouseButtonState
+        : short
+    {
+        /// <summary>
+        /// No button has a state.
+        /// </summary>
+        None = 0,
+        /// <summary>
+        /// The left button was held down (button 1).
+        /// </summary>
+        ButtonLeftDown = 1,
+        /// <summary>
+        /// The right button was held down (button 2).
+        /// </summary>
+        ButtonRightDown = 2,
+        /// <summary>
+        /// The middle button was held down (button 3).
+        /// </summary>
+        ButtonMiddleDown = 4,
+        /// <summary>
+        /// The fifth button was held down.
+        /// </summary>
+        Button4Down = 8,
+        /// <summary>
+        /// The fourth button was held down.
+        /// </summary>
+        Button5Down = 16,
+        /// <summary>
+        /// The left button was released (button 1).
+        /// </summary>
+        ButtonLeftUp = 32,
+        /// <summary>
+        /// The right button was released (button 2).
+        /// </summary>
+        ButtonRightUp = 64,
+        /// <summary>
+        /// The middle button was released (button 3).
+        /// </summary>
+        ButtonMiddleUp = 128,
+        /// <summary>
+        /// The fourth button was released.
+        /// </summary>
+        Button4Up = 256,
+        /// <summary>
+        /// The fifth button was released.
+        /// </summary>
+        Button5Up = 512
+    }
 
-	/// <summary>
-	/// A representation of the Raw Input data received from <c>WM_INPUT</c>.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This is a Gorgon friendly representation of the data received from the <c>WM_INPUT</c> window message. The data from Raw Input is parsed and placed in an instance of this type and sent to the 
-	/// appropriate <see cref="GorgonRawMouse"/> object to be turned into state for that device. 
-	/// </para>
-	/// <para>
-	/// This type is not intended for use by applications.
-	/// </para>
-	/// </remarks>
-	public struct GorgonRawMouseData
-	{
-		/// <summary>
-		/// The current position of the mouse.
-		/// </summary>
-		/// <remarks>
-		/// If the <see cref="IsRelative"/> value is set to <b>true</b>, then this value will be a relative value based on the last known position of the mouse. Otherwise, this will return the absolute 
-		/// position of the mouse.
-		/// </remarks>
-		public Point Position;
+    /// <summary>
+    /// A representation of the Raw Input data received from <c>WM_INPUT</c>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This is a Gorgon friendly representation of the data received from the <c>WM_INPUT</c> window message. The data from Raw Input is parsed and placed in an instance of this type and sent to the 
+    /// appropriate <see cref="GorgonRawMouse"/> object to be turned into state for that device. 
+    /// </para>
+    /// <para>
+    /// This type is not intended for use by applications.
+    /// </para>
+    /// </remarks>
+    public struct GorgonRawMouseData
+    {
+        /// <summary>
+        /// The current position of the mouse.
+        /// </summary>
+        /// <remarks>
+        /// If the <see cref="IsRelative"/> value is set to <b>true</b>, then this value will be a relative value based on the last known position of the mouse. Otherwise, this will return the absolute 
+        /// position of the mouse.
+        /// </remarks>
+        public Point Position;
 
-		/// <summary>
-		/// The change in the mouse wheel since the last event.
-		/// </summary>
-		public short MouseWheelDelta;
+        /// <summary>
+        /// The change in the mouse wheel since the last event.
+        /// </summary>
+        public short MouseWheelDelta;
 
-		/// <summary>
-		/// The state of the mouse button
-		/// </summary>
-		public MouseButtonState ButtonState;
+        /// <summary>
+        /// The state of the mouse button
+        /// </summary>
+        public MouseButtonState ButtonState;
 
-		/// <summary>
-		/// Flag to indicate whether the <see cref="Position"/> value is relative or not.
-		/// </summary>
-		public bool IsRelative;
-	}
+        /// <summary>
+        /// Flag to indicate whether the <see cref="Position"/> value is relative or not.
+        /// </summary>
+        public bool IsRelative;
+    }
 }

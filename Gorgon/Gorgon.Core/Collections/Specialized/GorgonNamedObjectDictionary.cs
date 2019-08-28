@@ -29,50 +29,50 @@ using Gorgon.Core;
 
 namespace Gorgon.Collections.Specialized
 {
-	/// <summary>
-	/// A dictionary to contain <see cref="IGorgonNamedObject"/> types.
-	/// </summary>
-	/// <typeparam name="T">The type of object to store in the list. Must implement the <see cref="IGorgonNamedObject"/> interface.</typeparam>
-	/// <remarks>
-	/// <para>
-	/// This is a concrete implementation of the <see cref="GorgonBaseNamedObjectDictionary{T}"/> type.
-	/// </para>
-	/// <para>
-	/// This collection is <b><i>not</i></b> thread safe.
-	/// </para>
-	/// </remarks>
-	public class GorgonNamedObjectDictionary<T>
-		: GorgonBaseNamedObjectDictionary<T>
-		where T : IGorgonNamedObject
-	{
-		#region Properties.
-		/// <summary>
-		/// Property to return an item in this list by name.
-		/// </summary>
-		public T this[string name]
-		{
-			get => Items[name];
-			set
-			{
-				if (!Items.ContainsKey(name))
-				{
-					if (value != null)
-					{
-						Items[value.Name] = value;
-					}
+    /// <summary>
+    /// A dictionary to contain <see cref="IGorgonNamedObject"/> types.
+    /// </summary>
+    /// <typeparam name="T">The type of object to store in the list. Must implement the <see cref="IGorgonNamedObject"/> interface.</typeparam>
+    /// <remarks>
+    /// <para>
+    /// This is a concrete implementation of the <see cref="GorgonBaseNamedObjectDictionary{T}"/> type.
+    /// </para>
+    /// <para>
+    /// This collection is <b><i>not</i></b> thread safe.
+    /// </para>
+    /// </remarks>
+    public class GorgonNamedObjectDictionary<T>
+        : GorgonBaseNamedObjectDictionary<T>
+        where T : IGorgonNamedObject
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to return an item in this list by name.
+        /// </summary>
+        public T this[string name]
+        {
+            get => Items[name];
+            set
+            {
+                if (!Items.ContainsKey(name))
+                {
+                    if (value != null)
+                    {
+                        Items[value.Name] = value;
+                    }
 
-					return;
-				}
+                    return;
+                }
 
-				if (value == null)
-				{
-					Items.Remove(name);
-					return;
-				}
-				
-				UpdateItem(name, value);
-			}
-		}
+                if (value == null)
+                {
+                    Items.Remove(name);
+                    return;
+                }
+
+                UpdateItem(name, value);
+            }
+        }
         #endregion
 
         #region Methods.
@@ -113,10 +113,10 @@ namespace Gorgon.Collections.Specialized
         /// </summary>
         /// <param name="caseSensitive">[Optional] <b>true</b> to use case sensitive keys, <b>false</b> to ignore casing.</param>
         public GorgonNamedObjectDictionary(bool caseSensitive = true)
-			: base(caseSensitive)
-		{
-		}
-		#endregion
+            : base(caseSensitive)
+        {
+        }
+        #endregion
 
-	}
+    }
 }

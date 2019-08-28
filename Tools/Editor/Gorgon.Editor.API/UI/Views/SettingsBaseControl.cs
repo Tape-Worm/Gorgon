@@ -32,11 +32,11 @@ namespace Gorgon.Editor.UI.Views
     /// <summary>
     /// The base control used for settings panels.
     /// </summary>
-    public partial class SettingsBaseControl 
-		: EditorBaseControl
+    public partial class SettingsBaseControl
+        : EditorBaseControl
     {
         #region Variables.
-		/// <summary>
+        /// <summary>
         /// The panel that will contain the controls for the settings.
         /// </summary>
         protected Panel PanelBody;
@@ -47,7 +47,7 @@ namespace Gorgon.Editor.UI.Views
         /// Property to return the ID of the panel.
         /// </summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-		public virtual string PanelID
+        public virtual string PanelID
         {
             get;
         }
@@ -57,7 +57,7 @@ namespace Gorgon.Editor.UI.Views
         public new string Text
         {
             get => base.Text;
-            set => LabelCaption.Text =base.Text = value;
+            set => LabelCaption.Text = base.Text = value;
         }
         #endregion
 

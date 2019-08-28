@@ -25,18 +25,18 @@
 #endregion
 
 using System;
-using System.Linq;
-using DX = SharpDX;
-using Gorgon.Graphics.Core;
-using Gorgon.Renderers;
-using Gorgon.Editor.Properties;
-using System.IO;
-using Gorgon.Graphics.Imaging.Codecs;
-using System.Threading;
-using Gorgon.Graphics;
 using System.Diagnostics;
-using Gorgon.Timing;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using Gorgon.Editor.Properties;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
+using Gorgon.Renderers;
+using Gorgon.Timing;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.Rendering
 {

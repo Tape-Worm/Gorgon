@@ -369,7 +369,7 @@ namespace Gorgon.Native
             {
                 throw new ArgumentException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
             }
-            
+
             if (startIndex + count.Value > Length)
             {
                 throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, startIndex, count.Value));
@@ -384,7 +384,7 @@ namespace Gorgon.Native
 
             return result;
         }
-        
+
         /// <summary>
         /// Function to pin an array and access its contents natively.
         /// </summary>
@@ -421,7 +421,7 @@ namespace Gorgon.Native
 
             int typeSize = Unsafe.SizeOf<T>();
             var handle = GCHandle.Alloc(array, GCHandleType.Pinned);
-            
+
             return new GorgonNativeBuffer<T>(handle, index * typeSize, count.Value * typeSize, count.Value, typeSize);
         }
 
@@ -487,7 +487,7 @@ namespace Gorgon.Native
             {
                 count = Length - startIndex;
             }
-            
+
 
             if (count < 0)
             {
@@ -646,7 +646,7 @@ namespace Gorgon.Native
         /// </note>
         /// </para>
         /// </remarks>
-        public static explicit operator void* (GorgonNativeBuffer<T> buffer) => buffer == null ? null : buffer._memoryBlock;
+        public static explicit operator void*(GorgonNativeBuffer<T> buffer) => buffer == null ? null : buffer._memoryBlock;
 
         /// <summary>
         /// Function to fill the buffer with a specific value.
@@ -767,7 +767,7 @@ namespace Gorgon.Native
         public GorgonNativeBuffer(GorgonReadOnlyPointer pointer)
         {
             _typeSize = Unsafe.SizeOf<T>();
-            _memoryBlock = (byte *)pointer;
+            _memoryBlock = (byte*)pointer;
             Length = pointer.SizeInBytes / _typeSize;
             SizeInBytes = pointer.SizeInBytes;
         }

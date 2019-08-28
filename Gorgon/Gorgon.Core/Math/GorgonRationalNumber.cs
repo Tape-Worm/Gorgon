@@ -30,27 +30,27 @@ using Gorgon.Properties;
 
 namespace Gorgon.Math
 {
-	/// <summary>
-	/// A representation of a rational number.
-	/// </summary>
-	public readonly struct GorgonRationalNumber
-		: IEquatable<GorgonRationalNumber>, IComparable<GorgonRationalNumber>
-	{
-		#region Variables.
-		/// <summary>
-		/// An empty rational number.
-		/// </summary>
-		public static readonly GorgonRationalNumber Empty = new GorgonRationalNumber();
+    /// <summary>
+    /// A representation of a rational number.
+    /// </summary>
+    public readonly struct GorgonRationalNumber
+        : IEquatable<GorgonRationalNumber>, IComparable<GorgonRationalNumber>
+    {
+        #region Variables.
+        /// <summary>
+        /// An empty rational number.
+        /// </summary>
+        public static readonly GorgonRationalNumber Empty = new GorgonRationalNumber();
 
-		/// <summary>
-		/// The numerator for the number.
-		/// </summary>
-		public readonly int Numerator;
+        /// <summary>
+        /// The numerator for the number.
+        /// </summary>
+        public readonly int Numerator;
 
-		/// <summary>
-		/// The denominator for the number.
-		/// </summary>
-		public readonly int Denominator;
+        /// <summary>
+        /// The denominator for the number.
+        /// </summary>
+        public readonly int Denominator;
         #endregion
 
         #region Methods.
@@ -171,73 +171,73 @@ namespace Gorgon.Math
         /// <param name="right">Right rational to compare.</param>
         /// <returns><b>true</b> if the <paramref  name="left"/> is less than the <paramref  name="right"/>, <b>false</b> if not.</returns>
         public static bool operator <(GorgonRationalNumber left, GorgonRationalNumber right)
-		{
-			decimal leftRational = left;
-			decimal rightRational = right;
+        {
+            decimal leftRational = left;
+            decimal rightRational = right;
 
-			return leftRational < rightRational;
-		}
+            return leftRational < rightRational;
+        }
 
-		/// <summary>
-		/// Operator to determine if the left rational is less than or equal to the right rational.
-		/// </summary>
-		/// <param name="left">Left rational to compare.</param>
-		/// <param name="right">Right rational to compare.</param>
-		/// <returns><b>true</b> if the <paramref  name="left"/> is less than or equal to the <paramref  name="right"/>, <b>false</b> if not.</returns>
-		public static bool operator <=(GorgonRationalNumber left, GorgonRationalNumber right)
-		{
-			decimal leftRational = left;
-			decimal rightRational = right;
+        /// <summary>
+        /// Operator to determine if the left rational is less than or equal to the right rational.
+        /// </summary>
+        /// <param name="left">Left rational to compare.</param>
+        /// <param name="right">Right rational to compare.</param>
+        /// <returns><b>true</b> if the <paramref  name="left"/> is less than or equal to the <paramref  name="right"/>, <b>false</b> if not.</returns>
+        public static bool operator <=(GorgonRationalNumber left, GorgonRationalNumber right)
+        {
+            decimal leftRational = left;
+            decimal rightRational = right;
 
-			return leftRational <= rightRational;
-		}
+            return leftRational <= rightRational;
+        }
 
-		/// <summary>
-		/// Operator to determine if the left rational is greater than the right rational.
-		/// </summary>
-		/// <param name="left">Left rational to compare.</param>
-		/// <param name="right">Right rational to compare.</param>
-		/// <returns><b>true</b> if the <paramref  name="left"/> is greater than the <paramref  name="right"/>, <b>false</b> if not.</returns>
-		public static bool operator >(GorgonRationalNumber left, GorgonRationalNumber right)
-		{
-			decimal leftRational = left;
-			decimal rightRational = right;
+        /// <summary>
+        /// Operator to determine if the left rational is greater than the right rational.
+        /// </summary>
+        /// <param name="left">Left rational to compare.</param>
+        /// <param name="right">Right rational to compare.</param>
+        /// <returns><b>true</b> if the <paramref  name="left"/> is greater than the <paramref  name="right"/>, <b>false</b> if not.</returns>
+        public static bool operator >(GorgonRationalNumber left, GorgonRationalNumber right)
+        {
+            decimal leftRational = left;
+            decimal rightRational = right;
 
-			return leftRational < rightRational;
-		}
+            return leftRational < rightRational;
+        }
 
-		/// <summary>
-		/// Operator to determine if the left rational is greater than or equal to the right rational.
-		/// </summary>
-		/// <param name="left">Left rational to compare.</param>
-		/// <param name="right">Right rational to compare.</param>
-		/// <returns><b>true</b> if the <paramref  name="left"/> is greater than or equal to the <paramref  name="right"/>, <b>false</b> if not.</returns>
-		public static bool operator >=(GorgonRationalNumber left, GorgonRationalNumber right)
-		{
-			decimal leftRational = left;
-			decimal rightRational = right;
+        /// <summary>
+        /// Operator to determine if the left rational is greater than or equal to the right rational.
+        /// </summary>
+        /// <param name="left">Left rational to compare.</param>
+        /// <param name="right">Right rational to compare.</param>
+        /// <returns><b>true</b> if the <paramref  name="left"/> is greater than or equal to the <paramref  name="right"/>, <b>false</b> if not.</returns>
+        public static bool operator >=(GorgonRationalNumber left, GorgonRationalNumber right)
+        {
+            decimal leftRational = left;
+            decimal rightRational = right;
 
-			return leftRational >= rightRational;
-		}
-		#endregion
+            return leftRational >= rightRational;
+        }
+        #endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRationalNumber"/> struct.
-		/// </summary>
-		/// <param name="numerator">The numerator for the number.</param>
-		/// <param name="denominator">The denominator for the number.</param>
-		/// <exception cref="DivideByZeroException">Thrown when the <paramref  name="denominator"/> is 0.</exception>
-		public GorgonRationalNumber(int numerator, int denominator)
-		{
-			if (denominator == 0)
-			{
-				throw new DivideByZeroException();
-			}
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonRationalNumber"/> struct.
+        /// </summary>
+        /// <param name="numerator">The numerator for the number.</param>
+        /// <param name="denominator">The denominator for the number.</param>
+        /// <exception cref="DivideByZeroException">Thrown when the <paramref  name="denominator"/> is 0.</exception>
+        public GorgonRationalNumber(int numerator, int denominator)
+        {
+            if (denominator == 0)
+            {
+                throw new DivideByZeroException();
+            }
 
-			Numerator = numerator;
-			Denominator = denominator;
-		}
-		#endregion
-	}
+            Numerator = numerator;
+            Denominator = denominator;
+        }
+        #endregion
+    }
 }

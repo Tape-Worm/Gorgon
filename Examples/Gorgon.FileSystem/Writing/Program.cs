@@ -31,19 +31,19 @@ using Gorgon.Diagnostics;
 
 namespace Gorgon.Examples
 {
-	/// <summary>
-	/// Example entry point.
-	/// </summary>
-	/// <remarks>To see a description of this example, look in formMain.cs</remarks>
-	internal static class Program
-	{
-	    #region Properties.
+    /// <summary>
+    /// Example entry point.
+    /// </summary>
+    /// <remarks>To see a description of this example, look in formMain.cs</remarks>
+    internal static class Program
+    {
+        #region Properties.
         /// <summary>
         /// Property to return the application log file.
         /// </summary>
-	    public static IGorgonLog Log
-	    {
-	        get;
+        public static IGorgonLog Log
+        {
+            get;
             private set;
         }
 
@@ -55,43 +55,43 @@ namespace Gorgon.Examples
             get;
             private set;
         }
-	    #endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// The main entry point for the application.
-		/// </summary>
-		[STAThread]
-		private static void Main()
-		{
+        #region Methods.
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        private static void Main()
+        {
             Log = new GorgonLog("Writing", "Tape_Worm");
-            
+
             Log.LogStart();
 
-		    try
-		    {
+            try
+            {
                 Application.EnableVisualStyles();
-		        Application.SetCompatibleTextRenderingDefault(false);
+                Application.SetCompatibleTextRenderingDefault(false);
 
                 WriteDirectory = new DirectoryInfo(Path.Combine(Path.GetTempPath(), "Writing"));
 
-		        if (!WriteDirectory.Exists)
-		        {
+                if (!WriteDirectory.Exists)
+                {
                     WriteDirectory.Create();
                     WriteDirectory.Refresh();
-		        }
+                }
 
-		        Application.Run(new Form());
-		    }
-		    catch (Exception ex)
-		    {
-		        GorgonExample.HandleException(ex);
-		    }
-		    finally
-		    {
+                Application.Run(new Form());
+            }
+            catch (Exception ex)
+            {
+                GorgonExample.HandleException(ex);
+            }
+            finally
+            {
                 Log.LogEnd();
-		    }
-		}
-		#endregion
-	}
+            }
+        }
+        #endregion
+    }
 }

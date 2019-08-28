@@ -25,14 +25,14 @@
 #endregion
 
 using System.Windows.Forms;
-using DX = SharpDX;
+using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Editor.Rendering;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Renderers;
-using Gorgon.Graphics;
-using Gorgon.Editor.ImageEditor.Properties;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -124,7 +124,7 @@ namespace Gorgon.Editor.ImageEditor
             DX.Size2F textArea = renderer.DefaultFont.MeasureLine(Resources.GORIMG_TEXT_3DVIEW, false);
             renderer.DrawFilledRectangle(volRegion, new GorgonColor(GorgonColor.Black, 0.5f));
             renderer.DrawFilledRectangle(new DX.RectangleF(volRegion.Left - 1, volRegion.Bottom, volRegion.Width + 2, textArea.Height + 6), GorgonColor.White);
-            renderer.DrawRectangle(new DX.RectangleF(volRegion.X - 1, volRegion.Y - 1, volRegion.Width + 2, volRegion.Height + 2), GorgonColor.White);            
+            renderer.DrawRectangle(new DX.RectangleF(volRegion.X - 1, volRegion.Y - 1, volRegion.Width + 2, volRegion.Height + 2), GorgonColor.White);
             renderer.DrawString("3D View", new DX.Vector2((volRegion.Right + volRegion.Left) / 2.0f - (textArea.Width / 2.0f), volRegion.Bottom + 3), color: GorgonColor.Black);
 
             renderer.End();
@@ -140,7 +140,7 @@ namespace Gorgon.Editor.ImageEditor
         protected override void OnCreateResources(IGraphicsContext context, GorgonSwapChain swapChain)
         {
             _volRenderer = new VolumeRenderer(context.Graphics, swapChain);
-            _volRenderer.CreateResources();            
+            _volRenderer.CreateResources();
         }
 
         /// <summary>

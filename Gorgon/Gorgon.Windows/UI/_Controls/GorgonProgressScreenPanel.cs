@@ -59,7 +59,7 @@ namespace Gorgon.UI
 
         #region Properties.
         /// <summary>Gets or sets the foreground color of progress message box.</summary>
-        [Browsable(true), 
+        [Browsable(true),
         Category("Appearance"),
         Description("Sets the foreground color for the text in the progress message box"),
         DefaultValue(typeof(Color), "Black"),
@@ -71,7 +71,7 @@ namespace Gorgon.UI
         }
 
         /// <summary>Gets or sets the foreground color of progress message box.</summary>
-        [Browsable(true), 
+        [Browsable(true),
          Category("Appearance"),
          Description("Sets the foreground color for the title text in the progress message box"),
          DefaultValue(typeof(Color), "DimGray"),
@@ -249,7 +249,7 @@ namespace Gorgon.UI
                 _messagePanel.ProgressMeter.Value = 1;
                 _messagePanel.ProgressMeter.Value = 0;
             }
-            _messagePanel.ProgressMeter.Update();            
+            _messagePanel.ProgressMeter.Update();
         }
 
         /// <summary>Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.Control" /> and its child controls and optionally releases the managed resources.</summary>
@@ -333,7 +333,7 @@ namespace Gorgon.UI
             }
 
             _messagePanel.Resize += MessagePanel_Resize;
-        }        
+        }
         #endregion
     }
 }

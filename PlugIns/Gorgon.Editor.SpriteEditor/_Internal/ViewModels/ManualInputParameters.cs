@@ -48,6 +48,6 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="commonServices">Common application services.</param>
         /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
         public ManualInputParameters(IEditorPlugInSettings settings, IViewModelInjection commonServices)
-			: base(commonServices) => Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            : base(commonServices) => Settings = settings ?? throw new ArgumentNullException(nameof(settings));
     }
 }

@@ -30,20 +30,20 @@ using System.Runtime.InteropServices;
 // ReSharper disable InconsistentNaming
 namespace Gorgon.Native
 {
-	/// <summary>
-	/// Value type for raw input from a HID.
-	/// </summary>	
-	[StructLayout(LayoutKind.Explicit)]
-	internal struct RAWINPUTHID
-	{
-		/// <summary>Size of the HID data in bytes.</summary>
-		[FieldOffset(0)]
-		public int Size;
-		/// <summary>Number of HID in Data.</summary>
-		[FieldOffset(4)]
-		public int Count;
-		/// <summary>HID data.</summary>
-		[FieldOffset(8)]
-		public IntPtr Data;
-	}
+    /// <summary>
+    /// Value type for raw input from a HID.
+    /// </summary>	
+    [StructLayout(LayoutKind.Explicit)]
+    internal struct RAWINPUTHID
+    {
+        /// <summary>Size of the HID data in bytes.</summary>
+        [FieldOffset(0)]
+        public int Size;
+        /// <summary>Number of HID in Data.</summary>
+        [FieldOffset(4)]
+        public int Count;
+        /// <summary>HID data.</summary>
+        [FieldOffset(8)]
+        public IntPtr Data;
+    }
 }

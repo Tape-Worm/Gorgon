@@ -33,7 +33,7 @@ using Gorgon.Animation;
 
 namespace Gorgon.Examples
 {
-	/// <summary>
+    /// <summary>
     /// Defines a layer for our planet.
     /// </summary>
     /// <remarks>
@@ -41,22 +41,22 @@ namespace Gorgon.Examples
     /// </remarks>
     internal class PlanetaryLayer
     {
-		/// <summary>
+        /// <summary>
         /// Property to return the mesh representing the layer.
         /// </summary>
-		public MoveableMesh Mesh
+        public MoveableMesh Mesh
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return an animation to play for this layer.
         /// </summary>
-		public IGorgonAnimation Animation
+        public IGorgonAnimation Animation
         {
             get;
             set;
-        }		
+        }
 
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Examples.PlanetaryLayer"/> class.</summary>
         /// <param name="mesh">The mesh.</param>

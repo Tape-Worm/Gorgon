@@ -24,16 +24,16 @@
 // 
 #endregion
 
-using System.Linq;
-using DX = SharpDX;
-using Gorgon.Graphics.Core;
-using Gorgon.Renderers;
-using Gorgon.Math;
-using Gorgon.Graphics;
-using System.Threading;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using Gorgon.Editor.SpriteEditor.Properties;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
+using Gorgon.Math;
+using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {

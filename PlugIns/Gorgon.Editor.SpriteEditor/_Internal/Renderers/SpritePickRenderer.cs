@@ -24,14 +24,14 @@
 // 
 #endregion
 
-using DX = SharpDX;
+using System.ComponentModel;
+using System.Windows.Forms;
 using Gorgon.Editor.Rendering;
+using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
-using System.ComponentModel;
-using System.Windows.Forms;
-using Gorgon.Editor.SpriteEditor.Properties;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -197,7 +197,7 @@ namespace Gorgon.Editor.SpriteEditor
                 case nameof(ISpriteContent.TextureCoordinates):
                 case nameof(ISpriteContent.Texture):
                     if (SpriteContent.Texture != null)
-                    {                        
+                    {
                         SpriteContent.ManualRectangleEditor.Rectangle = SpriteContent.Texture.ToPixel(SpriteContent.TextureCoordinates).ToRectangleF();
                     }
                     else
@@ -247,13 +247,13 @@ namespace Gorgon.Editor.SpriteEditor
             }
             else
             {
-                SpriteContent.ManualRectangleEditor.TextureArrayIndex = 0;                
+                SpriteContent.ManualRectangleEditor.TextureArrayIndex = 0;
                 SpriteContent.ManualRectangleEditor.Rectangle = _picker.Rectangle = DX.RectangleF.Empty;
             }
 
             SpriteContent.ManualRectangleEditor.PropertyChanged += ManualInput_PropertyChanged;
             SpriteContent.Settings.PropertyChanged += Settings_PropertyChanged;
-            
+
             SwapChain.Window.MouseUp += Window_MouseUp;
             SwapChain.Window.PreviewKeyDown += Window_PreviewKeyDown;
 
@@ -303,7 +303,7 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 DX.Vector2 pos = FromClient(p);
                 return new DX.Vector2((int)pos.X, (int)pos.Y);
-            };            
+            };
         }
         #endregion
     }

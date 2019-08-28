@@ -104,21 +104,21 @@ namespace Gorgon.Graphics.Core
             Graphics.Log.Print($"Creating D3D11 vertex buffer unordered access view for {Buffer.Name}.", LoggingLevel.Verbose);
 
             var desc = new D3D11.UnorderedAccessViewDescription1
-                                                         {
-                                                             Dimension = D3D11.UnorderedAccessViewDimension.Buffer,
-                                                             Buffer =
+            {
+                Dimension = D3D11.UnorderedAccessViewDimension.Buffer,
+                Buffer =
                                                              {
                                                                  FirstElement = StartElement,
                                                                  ElementCount = ElementCount,
                                                                  Flags = D3D11.UnorderedAccessViewBufferFlags.None
                                                              },
-                                                             Format = (Format)Format
-                                                         };
+                Format = (Format)Format
+            };
 
             Native = new D3D11.UnorderedAccessView1(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
-                     {
-                         DebugName = $"'{Buffer.Name}'_D3D11UnorderedAccessView1"
-                     };
+            {
+                DebugName = $"'{Buffer.Name}'_D3D11UnorderedAccessView1"
+            };
 
             Graphics.Log.Print($"Unordered Access Vertex Buffer View '{Buffer.Name}': {Buffer.ResourceType} -> Start: {StartElement}, Count: {ElementCount}, Element Size: {ElementSize}",
                                LoggingLevel.Verbose);

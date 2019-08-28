@@ -25,9 +25,9 @@
 #endregion
 
 using System;
-using DX = SharpDX;
 using Gorgon.Animation;
 using Newtonsoft.Json;
+using DX = SharpDX;
 
 namespace Gorgon.IO
 {
@@ -110,7 +110,10 @@ namespace Gorgon.IO
             return new GorgonKeyRectangle(time,
                                           new DX.RectangleF
                                           {
-                                              Left = left, Top = top, Right = right, Bottom = bottom
+                                              Left = left,
+                                              Top = top,
+                                              Right = right,
+                                              Bottom = bottom
                                           });
         }
     }

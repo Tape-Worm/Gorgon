@@ -28,19 +28,19 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using Gorgon.Editor.UI.Views;
-using Gorgon.Editor.UI;
-using Gorgon.Editor.ViewModels;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
+using Gorgon.Editor.UI;
+using Gorgon.Editor.UI.Views;
+using Gorgon.Editor.ViewModels;
 
 namespace Gorgon.Editor.Views
 {
     /// <summary>
     /// General settings for the application.
     /// </summary>
-    internal partial class PlugInListPanel 
-		: SettingsBaseControl, IDataContext<ISettingsPlugInsList>
+    internal partial class PlugInListPanel
+        : SettingsBaseControl, IDataContext<ISettingsPlugInsList>
     {
         #region Variables.
 
@@ -95,7 +95,7 @@ namespace Gorgon.Editor.Views
         private void FillPlugInList(ISettingsPlugInsList dataContext)
         {
             ListPlugIns.BeginUpdate();
-            
+
             try
             {
                 ListPlugIns.Items.Clear();
@@ -139,7 +139,7 @@ namespace Gorgon.Editor.Views
                 }
 
                 selected.Selected = true;
-                ListPlugIns.SelectedIndices.Add(selected.Index);                
+                ListPlugIns.SelectedIndices.Add(selected.Index);
             }
             finally
             {
@@ -148,7 +148,7 @@ namespace Gorgon.Editor.Views
             }
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to unassign events on the data context.
         /// </summary>
         private void UnassignEvents()
@@ -170,7 +170,7 @@ namespace Gorgon.Editor.Views
             TextStatus.Text = string.Empty;
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to initialize the control from the data context.
         /// </summary>
         /// <param name="dataContext">The current data context.</param>
@@ -183,7 +183,7 @@ namespace Gorgon.Editor.Views
             }
 
             FillPlugInList(dataContext);
-            TextStatus.Text = dataContext.Current?.DisabledReason ?? string.Empty;            
+            TextStatus.Text = dataContext.Current?.DisabledReason ?? string.Empty;
         }
 
         /// <summary>Function to assign a data context to the view as a view model.</summary>

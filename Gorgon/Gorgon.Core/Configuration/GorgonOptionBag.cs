@@ -31,12 +31,12 @@ using Gorgon.Properties;
 
 namespace Gorgon.Configuration
 {
-	/// <summary>
-	/// Provides a functionality for setting and reading various options from a predefined option bag.
-	/// </summary>
-	public sealed class GorgonOptionBag
-		: GorgonNamedObjectList<IGorgonOption>, IGorgonOptionBag
-	{
+    /// <summary>
+    /// Provides a functionality for setting and reading various options from a predefined option bag.
+    /// </summary>
+    public sealed class GorgonOptionBag
+        : GorgonNamedObjectList<IGorgonOption>, IGorgonOptionBag
+    {
         #region Methods.
         /// <summary>
         /// Function to retrieve the value for an option.
@@ -53,43 +53,43 @@ namespace Gorgon.Configuration
         /// <param name="optionName">The name of the option.</param>
         /// <param name="value">The value to assign to the option.</param>
         public void SetOptionValue<T>(string optionName, T value)
-		{
-			if (!Contains(optionName))
-			{
-				throw new KeyNotFoundException();
-			}
+        {
+            if (!Contains(optionName))
+            {
+                throw new KeyNotFoundException();
+            }
 
-			GetItemByName(optionName).SetValue(value);
-		}
-		#endregion
+            GetItemByName(optionName).SetValue(value);
+        }
+        #endregion
 
-		#region Constructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonOptionBag"/> class.
-		/// </summary>
-		/// <param name="options">Values and types used to initialize the options.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="options"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="options"/> contains a value that is already in this option bag.</exception>
-		public GorgonOptionBag(IEnumerable<IGorgonOption> options)
-			: base(false)
-		{
-			if (options == null)
-			{
-				throw new ArgumentNullException(nameof(options));
-			}
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonOptionBag"/> class.
+        /// </summary>
+        /// <param name="options">Values and types used to initialize the options.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="options"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="options"/> contains a value that is already in this option bag.</exception>
+        public GorgonOptionBag(IEnumerable<IGorgonOption> options)
+            : base(false)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
 
-			foreach (IGorgonOption option in options)
-			{
-				// Don't allow duplicates.
-				if ((Contains(option.Name))
-					|| (Contains(option)))
-				{
-					throw new ArgumentException(string.Format(Resources.GOR_ERR_OPTION_ALREADY_EXISTS, option.Name), nameof(options));
-				}
+            foreach (IGorgonOption option in options)
+            {
+                // Don't allow duplicates.
+                if ((Contains(option.Name))
+                    || (Contains(option)))
+                {
+                    throw new ArgumentException(string.Format(Resources.GOR_ERR_OPTION_ALREADY_EXISTS, option.Name), nameof(options));
+                }
 
-				Add(option);
-			}
-		}
-		#endregion
-	}
+                Add(option);
+            }
+        }
+        #endregion
+    }
 }

@@ -112,7 +112,7 @@ namespace Gorgon.Editor.ImageEditor
             result = new FileSystemWatcher
             {
                 NotifyFilter = NotifyFilters.Attributes | NotifyFilters.CreationTime | NotifyFilters.LastWrite | NotifyFilters.Size | NotifyFilters.FileName | NotifyFilters.Security,
-                Path = Path.GetDirectoryName(values.FilePath).FormatDirectory(Path.DirectorySeparatorChar),                
+                Path = Path.GetDirectoryName(values.FilePath).FormatDirectory(Path.DirectorySeparatorChar),
                 Filter = "*" + Path.GetExtension(values.FilePath),
                 IncludeSubdirectories = false,
                 EnableRaisingEvents = true
@@ -182,7 +182,7 @@ namespace Gorgon.Editor.ImageEditor
                 watcher?.Dispose();
                 externalProcess?.Dispose();
                 GorgonApplication.MainForm.Visible = true;
-            }            
+            }
 
             return true;
         }

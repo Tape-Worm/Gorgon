@@ -26,17 +26,17 @@
 
 namespace Gorgon.Input
 {
-	/// <summary>
-	/// Defines an axis for a gaming device.
-	/// </summary>
-	public interface IGorgonGamingDeviceAxis
-	{
-		/// <summary>
-		/// Property to return the identifier for the axis.
-		/// </summary>
-		GamingDeviceAxis Axis
-		{
-			get;
-		}
-	}
+    /// <summary>
+    /// Defines an axis for a gaming device.
+    /// </summary>
+    public interface IGorgonGamingDeviceAxis
+    {
+        /// <summary>
+        /// Property to return the identifier for the axis.
+        /// </summary>
+        GamingDeviceAxis Axis
+        {
+            get;
+        }
+    }
 }

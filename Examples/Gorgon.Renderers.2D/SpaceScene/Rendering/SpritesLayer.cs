@@ -29,27 +29,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DX = SharpDX;
-using Gorgon.Renderers;
-using Gorgon.Graphics.Core;
 using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
+using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
-	/// <summary>
+    /// <summary>
     /// A layer used to display sprites.
     /// </summary>
     internal class SpritesLayer
-		: Layer2D
+        : Layer2D
     {
         #region Variables.
-		// The list of sprites that are lit.
+        // The list of sprites that are lit.
         private List<GorgonSprite> _litSprites = new List<GorgonSprite>();
         // The list of sprites that are lit.
         private List<Gorgon2DBatchState> _states = new List<Gorgon2DBatchState>();
         // The list of sprites organized by name.
         private Dictionary<string, SpriteEntity> _spriteByName = new Dictionary<string, SpriteEntity>();
-		// A list of sprite entities to draw.
+        // A list of sprite entities to draw.
         private List<(int index, SpriteEntity entity)> _drawList = new List<(int index, SpriteEntity entity)>();
         #endregion
 
@@ -62,10 +62,10 @@ namespace Gorgon.Examples
             get;
         } = new List<SpriteEntity>();
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return the deferred lighting effect.
         /// </summary>
-		public Gorgon2DDeferredLightingEffect DeferredLighter
+        public Gorgon2DDeferredLightingEffect DeferredLighter
         {
             get;
             set;
@@ -92,7 +92,7 @@ namespace Gorgon.Examples
             Renderer.GetAABB(sprite, out DX.RectangleF bounds);
 
             if ((Camera.ViewableRegion.Intersects(bounds))
-				&& (entity.Visible))
+                && (entity.Visible))
             {
                 _drawList.Add((index, entity));
                 return false;
@@ -122,7 +122,7 @@ namespace Gorgon.Examples
 
                 DX.Vector2 transformed = sprite.LocalPosition + Offset;
 
-                sprite.Position = transformed / ParallaxLevel;				               
+                sprite.Position = transformed / ParallaxLevel;
 
                 if ((!DoCullingPass(i, sprite)) && (sprite.IsLit))
                 {
@@ -163,7 +163,7 @@ namespace Gorgon.Examples
                 sprite.Color = entity.Color;
                 sprite.Anchor = entity.Anchor;
 
-                Renderer.DrawSprite(sprite);                
+                Renderer.DrawSprite(sprite);
             }
             Renderer.End();
 
@@ -225,7 +225,7 @@ namespace Gorgon.Examples
             }
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to retrieve a sprite from the layer by its name.
         /// </summary>
         /// <param name="name">The name of the sprite.</param>
@@ -237,7 +237,7 @@ namespace Gorgon.Examples
         /// <summary>Initializes a new instance of the <see cref="SpritesLayer"/> class.</summary>
         /// <param name="renderer">The 2D renderer for the application.</param>
         public SpritesLayer(Gorgon2D renderer)
-			: base(renderer)
+            : base(renderer)
         {
         }
         #endregion

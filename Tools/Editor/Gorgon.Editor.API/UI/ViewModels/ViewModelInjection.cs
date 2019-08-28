@@ -36,7 +36,7 @@ namespace Gorgon.Editor.UI.ViewModels
     public class ViewModelInjection
         : IViewModelInjection
     {
-		/// <summary>
+        /// <summary>
         /// Property to return the log for the application.
         /// </summary>
         public IGorgonLog Log
@@ -44,7 +44,7 @@ namespace Gorgon.Editor.UI.ViewModels
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the busy state service for the application.
         /// </summary>
         public IBusyStateService BusyService
@@ -52,7 +52,7 @@ namespace Gorgon.Editor.UI.ViewModels
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the message display service for the application.
         /// </summary>
         public IMessageDisplayService MessageDisplay
@@ -85,6 +85,6 @@ namespace Gorgon.Editor.UI.ViewModels
             Log = log ?? throw new ArgumentNullException(nameof(log));
             BusyService = busyService ?? throw new ArgumentNullException(nameof(busyService));
             MessageDisplay = messageService ?? throw new ArgumentNullException(nameof(messageService));
-        }		
+        }
     }
 }

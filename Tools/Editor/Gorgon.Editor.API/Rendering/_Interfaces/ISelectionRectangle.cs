@@ -25,8 +25,8 @@
 #endregion
 
 using System;
-using DX = SharpDX;
 using Gorgon.Graphics;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.Rendering
 {

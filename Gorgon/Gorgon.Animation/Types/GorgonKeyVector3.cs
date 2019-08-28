@@ -43,34 +43,34 @@ namespace Gorgon.Animation
     /// </remarks>
     /// <seealso cref="IGorgonTrack{T}"/>
 	public class GorgonKeyVector3
-		: IGorgonKeyFrame
-	{
+        : IGorgonKeyFrame
+    {
         #region Variables.
         // The value for the key.
-	    private DX.Vector3 _value;
+        private DX.Vector3 _value;
         #endregion
 
-		#region Properties.
+        #region Properties.
         /// <summary>
-	    /// Property to return the time at which the key frame is stored.
-	    /// </summary>
-	    public float Time
-	    {
-	        get;
-	    }
+        /// Property to return the time at which the key frame is stored.
+        /// </summary>
+        public float Time
+        {
+            get;
+        }
 
-	    /// <summary>
-	    /// Property to set or return the value for the key frame.
-	    /// </summary>
-	    public ref DX.Vector3 Value => ref _value;
+        /// <summary>
+        /// Property to set or return the value for the key frame.
+        /// </summary>
+        public ref DX.Vector3 Value => ref _value;
 
-	    /// <summary>
-	    /// Property to return the type of data for this key frame.
-	    /// </summary>
-	    public Type DataType
-	    {
-	        get;
-	    } = typeof(DX.Vector3);
+        /// <summary>
+        /// Property to return the type of data for this key frame.
+        /// </summary>
+        public Type DataType
+        {
+            get;
+        } = typeof(DX.Vector3);
         #endregion
 
         #region Methods.
@@ -88,21 +88,21 @@ namespace Gorgon.Animation
         /// <param name="time">The time for the key frame.</param>
         /// <param name="value">The value to apply to the key frame.</param>
         public GorgonKeyVector3(float time, DX.Vector2 value)
-	    {
-	        Time = time;
-	        Value = new DX.Vector3(value, 0);
-	    }
+        {
+            Time = time;
+            Value = new DX.Vector3(value, 0);
+        }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonKeyVector3" /> struct.
-		/// </summary>
-		/// <param name="time">The time for the key frame.</param>
-		/// <param name="value">The value to apply to the key frame.</param>
-		public GorgonKeyVector3(float time, DX.Vector3 value)
-		{
-			Time = time;
-			Value = value;
-		}
-		#endregion
-	}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonKeyVector3" /> struct.
+        /// </summary>
+        /// <param name="time">The time for the key frame.</param>
+        /// <param name="value">The value to apply to the key frame.</param>
+        public GorgonKeyVector3(float time, DX.Vector3 value)
+        {
+            Time = time;
+            Value = value;
+        }
+        #endregion
+    }
 }

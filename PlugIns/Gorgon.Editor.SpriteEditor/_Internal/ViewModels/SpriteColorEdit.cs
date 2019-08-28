@@ -43,16 +43,16 @@ namespace Gorgon.Editor.SpriteEditor
     {
         #region Variables.
         // The service used to show messages to the user.
-        private IMessageDisplayService _messageDisplay; 
+        private IMessageDisplayService _messageDisplay;
         // The original color for the sprite.
         private readonly GorgonColor[] _originalColor = new GorgonColor[4];
         // The current color for the sprite.
         private readonly GorgonColor[] _color = new GorgonColor[4];
-		// The currently selected vertex.
+        // The currently selected vertex.
         private readonly bool[] _selectedVertex = new bool[4];
         // Flag to indicate whether the panel is active or not.
         private bool _isActive;
-		// The currently selected color.
+        // The currently selected color.
         private GorgonColor _selectedColor = GorgonColor.BlackTransparent;
         #endregion
 
@@ -119,7 +119,7 @@ namespace Gorgon.Editor.SpriteEditor
                 {
                     return;
                 }
-								
+
                 if (_color.SequenceEqual(value))
                 {
                     return;

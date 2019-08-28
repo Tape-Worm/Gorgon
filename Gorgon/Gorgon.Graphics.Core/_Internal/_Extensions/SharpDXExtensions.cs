@@ -30,11 +30,11 @@ using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// Extension methods for SharpDX object conversion.
-	/// </summary>
-	internal static class SharpDXExtensions
-	{
+    /// <summary>
+    /// Extension methods for SharpDX object conversion.
+    /// </summary>
+    internal static class SharpDXExtensions
+    {
         /// <summary>
         /// Function to convert a DXGI swap chain description to a <see cref="GorgonSwapChainInfo"/>.
         /// </summary>

@@ -132,7 +132,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonDrawCallBuilder"/> class.
         /// </summary>
-        public GorgonDrawCallBuilder()  
+        public GorgonDrawCallBuilder()
             : base(new GorgonDrawCall())
         {
 

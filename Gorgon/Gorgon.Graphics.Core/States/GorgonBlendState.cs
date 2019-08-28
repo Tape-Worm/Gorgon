@@ -312,20 +312,20 @@ namespace Gorgon.Graphics.Core
         {
             // Modulated blending.
             Default = new GorgonBlendState
-                      {
-                          IsBlendingEnabled = true,
-                          SourceColorBlend = Blend.SourceAlpha,
-                          DestinationColorBlend = Blend.InverseSourceAlpha
-                      };
+            {
+                IsBlendingEnabled = true,
+                SourceColorBlend = Blend.SourceAlpha,
+                DestinationColorBlend = Blend.InverseSourceAlpha
+            };
 
 
             // Additive
             Additive = new GorgonBlendState
-                       {
-                           IsBlendingEnabled = true,
-                           SourceColorBlend = Blend.SourceAlpha,
-                           DestinationColorBlend = Blend.One						   
-                       };
+            {
+                IsBlendingEnabled = true,
+                SourceColorBlend = Blend.SourceAlpha,
+                DestinationColorBlend = Blend.One
+            };
 
             // Soft Additive
             SoftAdditive = new GorgonBlendState
@@ -337,19 +337,19 @@ namespace Gorgon.Graphics.Core
 
             // Premultiplied
             Premultiplied = new GorgonBlendState
-                            {
-                                IsBlendingEnabled = true,
-                                SourceColorBlend = Blend.One,
-                                DestinationColorBlend = Blend.InverseSourceAlpha
-                            };
+            {
+                IsBlendingEnabled = true,
+                SourceColorBlend = Blend.One,
+                DestinationColorBlend = Blend.InverseSourceAlpha
+            };
 
             // Inverted
             Inverted = new GorgonBlendState
-                       {
-                           IsBlendingEnabled = true,
-                           SourceColorBlend = Blend.InverseDestinationColor,
-                           DestinationColorBlend = Blend.InverseSourceColor
-                       };
+            {
+                IsBlendingEnabled = true,
+                SourceColorBlend = Blend.InverseDestinationColor,
+                DestinationColorBlend = Blend.InverseSourceColor
+            };
         }
         #endregion
     }

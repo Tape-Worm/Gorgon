@@ -34,158 +34,158 @@ using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
-	/// <summary>
-	/// An effect that renders an image as if it were 1 bit image.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This effect renders a 1-bit color image by using a <see cref="Threshold"/> to determine which bit is on, and which is off.  If a color value falls within the <see cref="Threshold"/>, then a bit is 
-	/// set as on, otherwise it will be set as off.
-	/// </para>
-	/// </remarks>
-	public class Gorgon2D1BitEffect
-		: Gorgon2DEffect
-	{
-		#region Value Types.
-		/// <summary>
-		/// Settings for the effect shader.
-		/// </summary>
-		[StructLayout(LayoutKind.Explicit, Size = 32)]
-		private struct Settings
-		{
-			[FieldOffset(0)]
-			private readonly int _useAverage;			// Flag to indicate that the average of the texel colors should be used.
-			[FieldOffset(4)]
-			private readonly int _invert;				// Flag to invert the texel colors.
-			[FieldOffset(8)]
-			private readonly int _useAlpha;				// Flag to indicate that the alpha channel should be included.
+    /// <summary>
+    /// An effect that renders an image as if it were 1 bit image.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This effect renders a 1-bit color image by using a <see cref="Threshold"/> to determine which bit is on, and which is off.  If a color value falls within the <see cref="Threshold"/>, then a bit is 
+    /// set as on, otherwise it will be set as off.
+    /// </para>
+    /// </remarks>
+    public class Gorgon2D1BitEffect
+        : Gorgon2DEffect
+    {
+        #region Value Types.
+        /// <summary>
+        /// Settings for the effect shader.
+        /// </summary>
+        [StructLayout(LayoutKind.Explicit, Size = 32)]
+        private struct Settings
+        {
+            [FieldOffset(0)]
+            private readonly int _useAverage;           // Flag to indicate that the average of the texel colors should be used.
+            [FieldOffset(4)]
+            private readonly int _invert;               // Flag to invert the texel colors.
+            [FieldOffset(8)]
+            private readonly int _useAlpha;             // Flag to indicate that the alpha channel should be included.
 
-			/// <summary>
-			/// Range of values that are considered "on".
-			/// </summary>
-			[FieldOffset(16)]
-			public readonly GorgonRangeF WhiteRange;
-			
-			/// <summary>
-			/// Flag to indicate that the average of the texel colors should be used.
-			/// </summary>
-			public bool UseAverage => _useAverage != 0;
+            /// <summary>
+            /// Range of values that are considered "on".
+            /// </summary>
+            [FieldOffset(16)]
+            public readonly GorgonRangeF WhiteRange;
 
-			/// <summary>
-			/// Flag to invert the texel colors.
-			/// </summary>
-			public bool Invert => _invert != 0;
+            /// <summary>
+            /// Flag to indicate that the average of the texel colors should be used.
+            /// </summary>
+            public bool UseAverage => _useAverage != 0;
 
-			/// <summary>
-			/// Flag to indicate that the alpha channel should be included.
-			/// </summary>
-			public bool UseAlpha => _useAlpha != 0;
+            /// <summary>
+            /// Flag to invert the texel colors.
+            /// </summary>
+            public bool Invert => _invert != 0;
 
-			/// <summary>
-			/// Initializes a new instance of the <see cref="Settings"/> struct.
-			/// </summary>
-			/// <param name="range">The range.</param>
-			/// <param name="average">if set to <b>true</b> [average].</param>
-			/// <param name="invert">if set to <b>true</b> [invert].</param>
-			/// <param name="useAlpha">if set to <b>true</b> [use alpha].</param>
-			public Settings(GorgonRangeF range, bool average, bool invert, bool useAlpha)
-			{
-				WhiteRange = range;
-				_useAverage = Convert.ToInt32(average);
-				_invert = Convert.ToInt32(invert);
-				_useAlpha = Convert.ToInt32(useAlpha);
-			}
-		}
-		#endregion
+            /// <summary>
+            /// Flag to indicate that the alpha channel should be included.
+            /// </summary>
+            public bool UseAlpha => _useAlpha != 0;
 
-		#region Variables.
-	    // Constant buffer for the 1 bit information.
-		private GorgonConstantBufferView _1BitBuffer;						
-	    // Settings for the effect.
-		private Settings _settings;											
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Settings"/> struct.
+            /// </summary>
+            /// <param name="range">The range.</param>
+            /// <param name="average">if set to <b>true</b> [average].</param>
+            /// <param name="invert">if set to <b>true</b> [invert].</param>
+            /// <param name="useAlpha">if set to <b>true</b> [use alpha].</param>
+            public Settings(GorgonRangeF range, bool average, bool invert, bool useAlpha)
+            {
+                WhiteRange = range;
+                _useAverage = Convert.ToInt32(average);
+                _invert = Convert.ToInt32(invert);
+                _useAlpha = Convert.ToInt32(useAlpha);
+            }
+        }
+        #endregion
+
+        #region Variables.
+        // Constant buffer for the 1 bit information.
+        private GorgonConstantBufferView _1BitBuffer;
+        // Settings for the effect.
+        private Settings _settings;
         // Flag to indicate that the parameters were updated.
-		private bool _isUpdated = true;
-		// The pixel shader for the effect.
+        private bool _isUpdated = true;
+        // The pixel shader for the effect.
         private GorgonPixelShader _shader;
         // The shader used to render the image.
-	    private Gorgon2DShaderState<GorgonPixelShader> _shaderState;
+        private Gorgon2DShaderState<GorgonPixelShader> _shaderState;
         // The batch state to render.
-	    private Gorgon2DBatchState _batchState;
-		#endregion
+        private Gorgon2DBatchState _batchState;
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to set or return whether to use an average of the texel colors or to use a grayscale calculation.
-		/// </summary>
-		public bool UseAverage
-		{
-			get => _settings.UseAverage;
-		    set
-			{
-				if (_settings.UseAverage == value)
-				{
-					return;
-				}
+        #region Properties.
+        /// <summary>
+        /// Property to set or return whether to use an average of the texel colors or to use a grayscale calculation.
+        /// </summary>
+        public bool UseAverage
+        {
+            get => _settings.UseAverage;
+            set
+            {
+                if (_settings.UseAverage == value)
+                {
+                    return;
+                }
 
-				_settings = new Settings(_settings.WhiteRange, value, _settings.Invert, _settings.UseAlpha);
-				_isUpdated = true;
-			}
-		}
+                _settings = new Settings(_settings.WhiteRange, value, _settings.Invert, _settings.UseAlpha);
+                _isUpdated = true;
+            }
+        }
 
 
-		/// <summary>
-		/// Property to set or return whether the alpha channel should be included in the conversion.
-		/// </summary>
-		public bool ConvertAlphaChannel
-		{
-			get => _settings.UseAlpha;
-		    set
-			{
-				if (_settings.UseAlpha == value)
-				{
-					return;
-				}
+        /// <summary>
+        /// Property to set or return whether the alpha channel should be included in the conversion.
+        /// </summary>
+        public bool ConvertAlphaChannel
+        {
+            get => _settings.UseAlpha;
+            set
+            {
+                if (_settings.UseAlpha == value)
+                {
+                    return;
+                }
 
-				_settings = new Settings(_settings.WhiteRange, _settings.UseAverage, _settings.Invert, value);
-				_isUpdated = true;
-			}
-		}
+                _settings = new Settings(_settings.WhiteRange, _settings.UseAverage, _settings.Invert, value);
+                _isUpdated = true;
+            }
+        }
 
-		/// <summary>
-		/// Property to set or return whether to invert the texel colors.
-		/// </summary>
-		public bool Invert
-		{
-			get => _settings.Invert;
-		    set
-			{
-				if (_settings.Invert == value)
-				{
-					return;
-				}
+        /// <summary>
+        /// Property to set or return whether to invert the texel colors.
+        /// </summary>
+        public bool Invert
+        {
+            get => _settings.Invert;
+            set
+            {
+                if (_settings.Invert == value)
+                {
+                    return;
+                }
 
-				_settings = new Settings(_settings.WhiteRange, _settings.UseAverage, value, _settings.UseAlpha);
-				_isUpdated = true;
-			}
-		}
+                _settings = new Settings(_settings.WhiteRange, _settings.UseAverage, value, _settings.UseAlpha);
+                _isUpdated = true;
+            }
+        }
 
-		/// <summary>
-		/// Property to set or return the range of values that are considered to be "on".
-		/// </summary>
-		public GorgonRangeF Threshold
-		{
-			get => _settings.WhiteRange;
-		    set
-			{
-				if (_settings.WhiteRange.Equals(value))
-				{
-					return;
-				}
+        /// <summary>
+        /// Property to set or return the range of values that are considered to be "on".
+        /// </summary>
+        public GorgonRangeF Threshold
+        {
+            get => _settings.WhiteRange;
+            set
+            {
+                if (_settings.WhiteRange.Equals(value))
+                {
+                    return;
+                }
 
-				_settings = new Settings(value, _settings.UseAverage, _settings.Invert, _settings.UseAlpha);
-				_isUpdated = true;
-			}
-		}
+                _settings = new Settings(value, _settings.UseAverage, _settings.Invert, _settings.UseAlpha);
+                _isUpdated = true;
+            }
+        }
         #endregion
 
         #region Methods.
@@ -211,17 +211,17 @@ namespace Gorgon.Renderers
         /// </para>
         /// </remarks>
         protected override void OnInitialize()
-	    {
-	        _1BitBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _settings, "Gorgon2D1BitEffect Constant Buffer");
+        {
+            _1BitBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _settings, "Gorgon2D1BitEffect Constant Buffer");
 
             _shader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShader1Bit");
             _shaderState = PixelShaderBuilder.ConstantBuffer(_1BitBuffer, 1)
-	                                    .Shader(_shader)
-	                                    .Build();
+                                        .Shader(_shader)
+                                        .Build();
 
-	        _batchState = BatchStateBuilder.PixelShaderState(_shaderState)
-	                                       .Build();
-	    }
+            _batchState = BatchStateBuilder.PixelShaderState(_shaderState)
+                                           .Build();
+        }
 
         /// <summary>
         /// Function called prior to rendering.
@@ -236,55 +236,55 @@ namespace Gorgon.Renderers
         /// </para>
         /// </remarks>
         protected override void OnBeforeRender(GorgonRenderTargetView output, IGorgon2DCamera camera, bool sizeChanged)
-		{
-		    if (Graphics.RenderTargets[0] != output)
-		    {
-		        Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
-		    }
+        {
+            if (Graphics.RenderTargets[0] != output)
+            {
+                Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
+            }
 
-		    if (!_isUpdated)
-		    {
-		        return;
-		    }
-            
-		    _1BitBuffer.Buffer.SetData(ref _settings);
-		    _isUpdated = false;
-		}
-        
-	    /// <summary>
-	    /// Function called to build a new (or return an existing) 2D batch state.
-	    /// </summary>
-	    /// <param name="passIndex">The index of the current rendering pass.</param>
-	    /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
-	    /// <returns>The 2D batch state.</returns>
-	    protected override Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged)
-	    {
-	        if (statesChanged)
-	        {
-	            _batchState = BatchStateBuilder.Build();
-	        }
+            if (!_isUpdated)
+            {
+                return;
+            }
 
-	        return _batchState;
-	    }
-        
-	    /// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
-		protected override void Dispose(bool disposing)
-	    {
-	        if (!disposing)
-	        {
-	            return;
-	        }
+            _1BitBuffer.Buffer.SetData(ref _settings);
+            _isUpdated = false;
+        }
 
-	        GorgonConstantBufferView buffer = Interlocked.Exchange(ref _1BitBuffer, null);
-	        GorgonPixelShader shader = Interlocked.Exchange(ref _shader, null);
-	        
+        /// <summary>
+        /// Function called to build a new (or return an existing) 2D batch state.
+        /// </summary>
+        /// <param name="passIndex">The index of the current rendering pass.</param>
+        /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
+        /// <returns>The 2D batch state.</returns>
+        protected override Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged)
+        {
+            if (statesChanged)
+            {
+                _batchState = BatchStateBuilder.Build();
+            }
+
+            return _batchState;
+        }
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources
+        /// </summary>
+        /// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (!disposing)
+            {
+                return;
+            }
+
+            GorgonConstantBufferView buffer = Interlocked.Exchange(ref _1BitBuffer, null);
+            GorgonPixelShader shader = Interlocked.Exchange(ref _shader, null);
+
             buffer?.Dispose();
             shader?.Dispose();
-		}
-	    #endregion
+        }
+        #endregion
 
         #region Constructor/Destructor.
         /// <summary>
@@ -292,12 +292,12 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="renderer">The renderer used to draw the effect.</param>
         public Gorgon2D1BitEffect(Gorgon2D renderer)
-			: base(renderer, Resources.GOR2D_EFFECT_1BIT, Resources.GOR2D_EFFECT_1BIT_DESC, 1)
-		{
-		    _settings = new Settings(new GorgonRangeF(0.5f, 1.0f), false, false, true);
-		    Macros.Add(new GorgonShaderMacro("GRAYSCALE_EFFECT"));
-		    Macros.Add(new GorgonShaderMacro("ONEBIT_EFFECT"));
-		}
-		#endregion
-	}
+            : base(renderer, Resources.GOR2D_EFFECT_1BIT, Resources.GOR2D_EFFECT_1BIT_DESC, 1)
+        {
+            _settings = new Settings(new GorgonRangeF(0.5f, 1.0f), false, false, true);
+            Macros.Add(new GorgonShaderMacro("GRAYSCALE_EFFECT"));
+            Macros.Add(new GorgonShaderMacro("ONEBIT_EFFECT"));
+        }
+        #endregion
+    }
 }

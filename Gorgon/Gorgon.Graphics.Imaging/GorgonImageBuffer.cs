@@ -28,9 +28,9 @@ using System;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
-using DX = SharpDX;
 using Gorgon.Math;
 using Gorgon.Native;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Imaging
 {
@@ -38,7 +38,7 @@ namespace Gorgon.Graphics.Imaging
     /// An image buffer containing data about a part of a <see cref="IGorgonImage"/>.
     /// </summary>
     public class GorgonImageBuffer
-		: IGorgonImageBuffer
+        : IGorgonImageBuffer
     {
         #region Properties.
         /// <summary>
@@ -124,94 +124,94 @@ namespace Gorgon.Graphics.Imaging
         {
             get;
         }
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to copy the image buffer data from this buffer into another.
-		/// </summary>
-		/// <param name="buffer">The buffer to copy into.</param>
-		/// <param name="sourceRegion">[Optional] The region in the source to copy.</param>
-		/// <param name="destX">[Optional] Horizontal offset in the destination buffer.</param>
-		/// <param name="destY">[Optional] Vertical offset in the destination buffer.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer" /> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="buffer"/> has no data.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="buffer" /> is not the same format as this buffer.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the source region does not fit within the bounds of this buffer.</exception>
-		/// <remarks>
-		/// <para>
-		/// This method will copy the contents of this buffer into another buffer and will provide clipping to handle cases where the buffer or <paramref name="sourceRegion" /> is mismatched with the 
-		/// destination size. If this buffer, and the buffer passed to <paramref name="buffer"/> share the same pointer address, then this method will return immediately without making any changes.
-		/// </para>
-		/// <para>
-		/// Users may define an area on this buffer to copy by specifying the <paramref name="sourceRegion" /> parameter. If <b>null</b> is passed to this parameter, then the entire buffer will be copied 
-		/// to the destination.
-		/// </para>
-		/// <para>
-		/// An offset into the destination buffer may also be specified to relocate the data copied from this buffer into the destination.  Clipping will be applied if the offset pushes the source data 
-		/// outside of the boundaries of the destination buffer.
-		/// </para>
-		/// <para>
-		/// The destination buffer must be the same format as the source buffer.  If it is not, then an exception will be thrown.
-		/// </para>
-		/// </remarks>
-		public void CopyTo(IGorgonImageBuffer buffer, in DX.Rectangle? sourceRegion = null, int destX = 0, int destY = 0)
-		{
-			var sourceBufferDims = new DX.Rectangle
-			                       {
-				                       Left = 0,
-				                       Top = 0,
-				                       Right = Width,
-				                       Bottom = Height
-			                       };
+        #region Methods.
+        /// <summary>
+        /// Function to copy the image buffer data from this buffer into another.
+        /// </summary>
+        /// <param name="buffer">The buffer to copy into.</param>
+        /// <param name="sourceRegion">[Optional] The region in the source to copy.</param>
+        /// <param name="destX">[Optional] Horizontal offset in the destination buffer.</param>
+        /// <param name="destY">[Optional] Vertical offset in the destination buffer.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer" /> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="buffer"/> has no data.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="buffer" /> is not the same format as this buffer.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the source region does not fit within the bounds of this buffer.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method will copy the contents of this buffer into another buffer and will provide clipping to handle cases where the buffer or <paramref name="sourceRegion" /> is mismatched with the 
+        /// destination size. If this buffer, and the buffer passed to <paramref name="buffer"/> share the same pointer address, then this method will return immediately without making any changes.
+        /// </para>
+        /// <para>
+        /// Users may define an area on this buffer to copy by specifying the <paramref name="sourceRegion" /> parameter. If <b>null</b> is passed to this parameter, then the entire buffer will be copied 
+        /// to the destination.
+        /// </para>
+        /// <para>
+        /// An offset into the destination buffer may also be specified to relocate the data copied from this buffer into the destination.  Clipping will be applied if the offset pushes the source data 
+        /// outside of the boundaries of the destination buffer.
+        /// </para>
+        /// <para>
+        /// The destination buffer must be the same format as the source buffer.  If it is not, then an exception will be thrown.
+        /// </para>
+        /// </remarks>
+        public void CopyTo(IGorgonImageBuffer buffer, in DX.Rectangle? sourceRegion = null, int destX = 0, int destY = 0)
+        {
+            var sourceBufferDims = new DX.Rectangle
+            {
+                Left = 0,
+                Top = 0,
+                Right = Width,
+                Bottom = Height
+            };
 
             if (buffer?.Data == null)
-			{
-				throw new ArgumentNullException(nameof(buffer));	
-			}
+            {
+                throw new ArgumentNullException(nameof(buffer));
+            }
 
-			if (buffer.Data.SizeInBytes == 0)
-			{
-				throw new ArgumentEmptyException(nameof(buffer));
-			}
+            if (buffer.Data.SizeInBytes == 0)
+            {
+                throw new ArgumentEmptyException(nameof(buffer));
+            }
 
-			if (buffer.Format != Format)
-			{
-				throw new ArgumentException(string.Format(Resources.GORIMG_ERR_BUFFER_FORMAT_MISMATCH, Format), nameof(buffer));
-			}
+            if (buffer.Format != Format)
+            {
+                throw new ArgumentException(string.Format(Resources.GORIMG_ERR_BUFFER_FORMAT_MISMATCH, Format), nameof(buffer));
+            }
 
-			// If we're attempting to copy ourselves into... well, ourselves, then do nothing.
-			if ((buffer == this)
-				|| (buffer.Data == Data))
-			{
-				return;
-			}
+            // If we're attempting to copy ourselves into... well, ourselves, then do nothing.
+            if ((buffer == this)
+                || (buffer.Data == Data))
+            {
+                return;
+            }
 
-			DX.Rectangle srcRegion;
+            DX.Rectangle srcRegion;
 
-			if (sourceRegion == null)
-			{
-				srcRegion = sourceBufferDims;
-			}
-			else
-			{
+            if (sourceRegion == null)
+            {
+                srcRegion = sourceBufferDims;
+            }
+            else
+            {
                 // Clip the rectangle to the buffer size.
                 srcRegion = DX.Rectangle.Intersect(sourceRegion.Value, sourceBufferDims);
-			}
+            }
 
-			// If we've nothing to copy, then leave.
-			if (((srcRegion.Right - srcRegion.Left) <= 0)
-			    || (srcRegion.Bottom - srcRegion.Top) <= 0)
-			{
-				return;
-			}
-				
+            // If we've nothing to copy, then leave.
+            if (((srcRegion.Right - srcRegion.Left) <= 0)
+                || (srcRegion.Bottom - srcRegion.Top) <= 0)
+            {
+                return;
+            }
+
             // If we try to place this image outside of the target buffer, then do nothing.
-		    if ((destX >= buffer.Width)
+            if ((destX >= buffer.Width)
                 || (destY >= buffer.Height))
-		    {
-		        return;
-		    }
+            {
+                return;
+            }
 
             // Ensure that the regions actually fit within their respective buffers.
             var dstRegion = DX.Rectangle.Intersect(new DX.Rectangle(destX, destY, srcRegion.Width, srcRegion.Height),
@@ -219,52 +219,52 @@ namespace Gorgon.Graphics.Imaging
 
             // If the source/dest region is empty, then we have nothing to copy.
             if ((srcRegion.IsEmpty)
-				|| (dstRegion.IsEmpty)
+                || (dstRegion.IsEmpty)
                 || ((dstRegion.Right - dstRegion.Left) <= 0)
                 || ((dstRegion.Bottom - dstRegion.Top) <= 0))
-			{
-				return;
-			}
+            {
+                return;
+            }
 
-			// If the buffers are identical in dimensions and have no offset, then just do a straight copy.
-		    if ((buffer.Width == Width)
+            // If the buffers are identical in dimensions and have no offset, then just do a straight copy.
+            if ((buffer.Width == Width)
                 && (buffer.Height == Height)
                 && (srcRegion.Equals(ref dstRegion)))
-		    {
+            {
                 Data.CopyTo(buffer.Data);
-		        return;
-		    }
+                return;
+            }
 
-			unsafe
-			{
+            unsafe
+            {
                 byte* dest = (byte*)buffer.Data;
                 byte* source = (byte*)Data;
 
-				// Find out how many bytes each pixel occupies.
-				int dataSize = PitchInformation.RowPitch / Width;
+                // Find out how many bytes each pixel occupies.
+                int dataSize = PitchInformation.RowPitch / Width;
 
-				// Number of source bytes/scanline.
-				int srcLineSize = dataSize * (srcRegion.Right - srcRegion.Left);
-				byte* srcData = source + (srcRegion.Top * PitchInformation.RowPitch) + (srcRegion.Left * dataSize);
+                // Number of source bytes/scanline.
+                int srcLineSize = dataSize * (srcRegion.Right - srcRegion.Left);
+                byte* srcData = source + (srcRegion.Top * PitchInformation.RowPitch) + (srcRegion.Left * dataSize);
 
-				// Number of dest bytes/scanline.
-				int dstLineSize = dataSize * (dstRegion.Right - dstRegion.Left);
-				byte* dstData = dest + (dstRegion.Top * buffer.PitchInformation.RowPitch) + (dstRegion.Left * dataSize);
+                // Number of dest bytes/scanline.
+                int dstLineSize = dataSize * (dstRegion.Right - dstRegion.Left);
+                byte* dstData = dest + (dstRegion.Top * buffer.PitchInformation.RowPitch) + (dstRegion.Left * dataSize);
 
-				// Get the smallest line size.
-				int minLineSize = dstLineSize.Min(srcLineSize);
-				int minHeight = (dstRegion.Bottom - dstRegion.Top).Min(srcRegion.Bottom - srcRegion.Top);
+                // Get the smallest line size.
+                int minLineSize = dstLineSize.Min(srcLineSize);
+                int minHeight = (dstRegion.Bottom - dstRegion.Top).Min(srcRegion.Bottom - srcRegion.Top);
 
-				// Finally, copy our data.
-				for (int i = 0; i < minHeight; ++i)
-				{
+                // Finally, copy our data.
+                for (int i = 0; i < minHeight; ++i)
+                {
                     Unsafe.CopyBlock(dstData, srcData, (uint)minLineSize);
 
-					srcData += PitchInformation.RowPitch;
-					dstData += buffer.PitchInformation.RowPitch;
-				}
-			}
-		}
+                    srcData += PitchInformation.RowPitch;
+                    dstData += buffer.PitchInformation.RowPitch;
+                }
+            }
+        }
 
         /// <summary>
         /// Function to create a sub region from the current image data contained within this buffer.
@@ -366,7 +366,7 @@ namespace Gorgon.Graphics.Imaging
             Format = format;
             FormatInformation = formatInfo;
         }
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonImageBuffer" /> class.
         /// </summary>

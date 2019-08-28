@@ -170,14 +170,14 @@ namespace Gorgon.Animation
             get;
         }
 
-		/// <summary>
-		/// Property to set or return whether this animation should be looping or not.
-		/// </summary>
-		public bool IsLooped
-		{
-			get;
-			set;
-		}
+        /// <summary>
+        /// Property to set or return whether this animation should be looping or not.
+        /// </summary>
+        public bool IsLooped
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Property to return the track used to update positioning of an object.

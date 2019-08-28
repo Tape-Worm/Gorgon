@@ -31,7 +31,7 @@ namespace Gorgon.UI
     /// <summary>
     /// A message panel to display on an overlay.
     /// </summary>
-    internal partial class WaitMessagePanel 
+    internal partial class WaitMessagePanel
         : UserControl
     {
         /// <summary>

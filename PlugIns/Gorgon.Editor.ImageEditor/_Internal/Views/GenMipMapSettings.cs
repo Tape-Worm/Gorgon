@@ -27,10 +27,10 @@
 using System;
 using System.ComponentModel;
 using System.Windows.Forms;
-using Gorgon.Editor.UI;
 using Gorgon.Editor.ImageEditor.ViewModels;
-using Gorgon.Graphics.Imaging;
+using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
+using Gorgon.Graphics.Imaging;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -159,7 +159,7 @@ namespace Gorgon.Editor.ImageEditor
                 ResetDataContext();
                 return;
             }
-            
+
             ComboMipFilter.SelectedItem = dataContext.MipFilter;
             UpdateMipSupport(dataContext);
             UpdateNumericUpDown(NumericMipLevels, dataContext.MaxMipLevels, dataContext.MipLevels);

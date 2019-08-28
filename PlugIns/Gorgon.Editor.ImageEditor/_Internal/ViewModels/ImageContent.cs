@@ -27,11 +27,15 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using DX = SharpDX;
+using Gorgon.Collections;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.Services;
@@ -43,11 +47,7 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.UI;
-using System.Diagnostics;
-using System.Text;
-using System.ComponentModel;
-using Gorgon.Collections;
-using System.Collections.Specialized;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor.ViewModels
 {
@@ -160,7 +160,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Property to return whether mip maps are supported for the current format.
         /// </summary>
         public bool MipSupport => (_formatSupport != null) && (ImageData != null)
-            && (_formatSupport.ContainsKey(CurrentPixelFormat)) 
+            && (_formatSupport.ContainsKey(CurrentPixelFormat))
             && (_formatSupport[CurrentPixelFormat].FormatSupport & BufferFormatSupport.Mip) == BufferFormatSupport.Mip;
 
         /// <summary>Property to return the type of content.</summary>
@@ -230,7 +230,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 if (DimensionSettings != null)
                 {
                     DimensionSettings.MipSupport = MipSupport;
-                }                
+                }
             }
         }
 
@@ -510,7 +510,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     if ((CurrentPanel != null) && (!CurrentPanel.IsActive))
                     {
                         CurrentPanel = null;
-                    }                    
+                    }
                     break;
             }
         }
@@ -747,7 +747,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 return false;
             }
 
-            CurrentPanel = null;            
+            CurrentPanel = null;
 
             CropOrResizeSettings.AllowedModes = ((ImageData.Width < importImage.Width) || (ImageData.Height < importImage.Height)) ? (CropResizeMode.Crop | CropResizeMode.Resize) : CropResizeMode.Resize;
             if ((CropOrResizeSettings.CurrentMode & CropOrResizeSettings.AllowedModes) != CropOrResizeSettings.CurrentMode)
@@ -909,7 +909,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             try
             {
                 // Persist the image to a new working file so that block compression won't be applied to our current working file.   
-                workFile = await Task.Run(() =>_imageIO.SaveImageFile(Guid.NewGuid().ToString("N"), ImageData, CurrentPixelFormat));
+                workFile = await Task.Run(() => _imageIO.SaveImageFile(Guid.NewGuid().ToString("N"), ImageData, CurrentPixelFormat));
 
                 inStream = workFile.OpenStream();
                 outStream = File.OpenWrite();
@@ -1022,7 +1022,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 {
                     continue;
                 }
-                                
+
                 if ((!ImageData.FormatInfo.IsCompressed) && (!formatInfo.IsCompressed) && (!ImageData.CanConvertToFormat(format)))
                 {
                     continue;
@@ -1074,7 +1074,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             {
                 _imageIO.ScratchArea.DeleteFile(undoFile.FullPath);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Log.Print($"[ERROR] Unable to delete the undo cache file at '{undoFile.PhysicalFile.FullPath}'.", LoggingLevel.Simple);
                 Log.LogException(ex);
@@ -1149,16 +1149,17 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                             return Task.FromException(new InvalidCastException(message));
                         }
                     }
-                    else if (!_imageIO.CanHandleBlockCompression)                    {
-                        
+                    else if (!_imageIO.CanHandleBlockCompression)
+                    {
+
                         string message = string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, format);
                         MessageDisplay.ShowError(message);
                         return Task.FromException(new InvalidCastException(message));
                     }
 
-                    undoFile = CreateUndoCacheFile();                    
+                    undoFile = CreateUndoCacheFile();
                     _workingFile = _imageIO.SaveImageFile(File.Name, ImageData, format);
-                    
+
                     if (redoArgs == null)
                     {
                         redoArgs = convertUndoArgs = new ConvertUndoArgs();
@@ -1191,7 +1192,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             if (!task.IsFaulted)
             {
                 _undoService.Record(string.Format(Resources.GORIMG_UNDO_DESC_FORMAT_CONVERT, format), UndoAction, RedoAction, convertUndoArgs, convertUndoArgs);
-            }            
+            }
         }
 
         /// <summary>
@@ -1311,8 +1312,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
             try
             {
-                ImportImageData(CropOrResizeSettings.ImportFile, image, CropOrResizeSettings.CurrentMode, 
-                    CropOrResizeSettings.CurrentMode == CropResizeMode.Resize ? Alignment.UpperLeft : CropOrResizeSettings.CurrentAlignment, 
+                ImportImageData(CropOrResizeSettings.ImportFile, image, CropOrResizeSettings.CurrentMode,
+                    CropOrResizeSettings.CurrentMode == CropResizeMode.Resize ? Alignment.UpperLeft : CropOrResizeSettings.CurrentAlignment,
                     CropOrResizeSettings.ImageFilter, CropOrResizeSettings.PreserveAspect);
 
                 if ((!string.IsNullOrWhiteSpace(CropOrResizeSettings.ImportFileDirectory)) && (Directory.Exists(CropOrResizeSettings.ImportFileDirectory)))
@@ -1363,7 +1364,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// </summary>
         private void DoUpdateImageDimensions()
         {
-            ImportDimensionUndoArgs dimensionUndoArgs = null;            
+            ImportDimensionUndoArgs dimensionUndoArgs = null;
 
             Task UndoAction(ImportDimensionUndoArgs undoArgs, CancellationToken cancelToken)
             {
@@ -1509,7 +1510,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                             }
                         }
                     }
-                   
+
                     // Ensure we aren't on a mip level that doesn't exist.
                     if (CurrentMipLevel >= MipCount)
                     {
@@ -1683,7 +1684,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     }
                     else
                     {
-                        int mipCount = MipMapSettings.MipLevels;                        
+                        int mipCount = MipMapSettings.MipLevels;
                         int currentMip = CurrentMipLevel.Min(mipCount - 1).Max(0);
 
                         ImageData.GenerateMipMaps(mipCount, MipMapSettings.MipFilter);
@@ -1707,8 +1708,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     {
                         NotifyPropertyChanged(nameof(MipCount));
                     }
-                    
-                    NotifyPropertyChanged(nameof(ImageData));                    
+
+                    NotifyPropertyChanged(nameof(ImageData));
                     ContentState = ContentState.Modified;
 
                     return Task.CompletedTask;
@@ -1782,7 +1783,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 return false;
             }
 
-            return (imageType != ImageType.Image3D) 
+            return (imageType != ImageType.Image3D)
                 || ((Width <= _videoAdapter.MaxTexture3DWidth) && (Height <= _videoAdapter.MaxTexture3DHeight));
 #pragma warning restore IDE0046 // Convert to conditional expression
         }
@@ -1872,7 +1873,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                         default:
                             return Task.CompletedTask;
                     }
-                    
+
                     ImageData.Dispose();
                     ImageData = newImage;
 
@@ -1987,7 +1988,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                     workImage.ConvertToFormat(ImageData.Format);
                 }
-                
+
                 CropOrResizeSettings.ImportFileDirectory = null;
                 if (CheckForCropResize(workImage, workImageFile.Name))
                 {
@@ -2011,7 +2012,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     {
                         _imageIO.ScratchArea.DeleteFile(workImageFile.FullPath);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         Log.Print("Error deleting working image file.", LoggingLevel.All);
                         Log.LogException(ex);
@@ -2069,7 +2070,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
 
             MessageResponse response = MessageDisplay.ShowConfirmation(string.Format(Resources.GORIMG_CONFIRM_CLOSE, File.Name), allowCancel: true);
-            
+
             switch (response)
             {
                 case MessageResponse.Yes:
@@ -2092,14 +2093,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             _dimensionSettings = injectionParameters.DimensionSettings ?? throw new ArgumentMissingException(nameof(injectionParameters.DimensionSettings), nameof(injectionParameters));
             _mipMapSettings = injectionParameters.MipMapSettings ?? throw new ArgumentMissingException(nameof(injectionParameters.MipMapSettings), nameof(injectionParameters));
             _settings = injectionParameters.Settings ?? throw new ArgumentMissingException(nameof(injectionParameters.Settings), nameof(injectionParameters));
-            _workingFile = injectionParameters.WorkingFile ?? throw new ArgumentMissingException(nameof(injectionParameters.WorkingFile), nameof(injectionParameters));            
+            _workingFile = injectionParameters.WorkingFile ?? throw new ArgumentMissingException(nameof(injectionParameters.WorkingFile), nameof(injectionParameters));
             ImageData = injectionParameters.Image ?? throw new ArgumentMissingException(nameof(injectionParameters.Image), nameof(injectionParameters));
             _formatSupport = injectionParameters.FormatSupport ?? throw new ArgumentMissingException(nameof(injectionParameters.FormatSupport), nameof(injectionParameters));
             _imageIO = injectionParameters.ImageIOService ?? throw new ArgumentMissingException(nameof(injectionParameters.ImageIOService), nameof(injectionParameters));
             _undoService = injectionParameters.UndoService ?? throw new ArgumentMissingException(nameof(injectionParameters.UndoService), nameof(injectionParameters));
             _imageUpdater = injectionParameters.ImageUpdater ?? throw new ArgumentMissingException(nameof(injectionParameters.ImageUpdater), nameof(injectionParameters));
             _videoAdapter = injectionParameters.VideoAdapterInfo ?? throw new ArgumentMissingException(nameof(injectionParameters.VideoAdapterInfo), nameof(injectionParameters));
-            _externalEditor = injectionParameters.ExternalEditorService ?? throw new ArgumentMissingException(nameof(injectionParameters.ExternalEditorService), nameof(injectionParameters));            
+            _externalEditor = injectionParameters.ExternalEditorService ?? throw new ArgumentMissingException(nameof(injectionParameters.ExternalEditorService), nameof(injectionParameters));
             _format = injectionParameters.OriginalFormat;
 
             _cropResizeSettings.OkCommand = new EditorCommand<object>(DoCropResize, CanCropResize);
@@ -2135,13 +2136,13 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 CurrentPanel = null;
 
                 if (_workingFile != null)
-                {                       
+                {
                     _imageIO.ScratchArea.DeleteFile(_workingFile.FullPath);
                     _workingFile = null;
                 }
 
                 if (_undoCacheDir != null)
-                {                    
+                {
                     _imageIO.ScratchArea.DeleteDirectory(_undoCacheDir.FullPath);
                     _undoCacheDir = null;
                 }
@@ -2153,7 +2154,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
 
             base.OnUnload();
-        }        
+        }
 
         /// <summary>Function to determine if an object can be dropped.</summary>
         /// <param name="dragData">The drag/drop data.</param>
@@ -2165,7 +2166,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             if ((dragData?.File == null)
                 || (!dragData.File.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string dataType))
                 || (!string.Equals(dataType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)))
-            {                
+            {
                 return false;
             }
 
@@ -2231,7 +2232,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 {
                     _imageIO.ScratchArea.DeleteFile(tempFile.FullPath);
                 }
-                
+
                 importImage?.Dispose();
                 BusyState.SetIdle();
             }
@@ -2347,7 +2348,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             ImportFileCommand = new EditorCommand<object>(DoImportFile, CanImportFile);
             ShowImageDimensionsCommand = new EditorCommand<object>(DoShowImageDimensions, CanShowImageDimensions);
             ShowMipGenerationCommand = new EditorCommand<object>(DoShowMipGeneration, CanShowMipGeneration);
-            EditInAppCommand = new EditorCommand<object>(DoEditInApp, () => ImageData != null);            
+            EditInAppCommand = new EditorCommand<object>(DoEditInApp, () => ImageData != null);
         }
         #endregion
     }

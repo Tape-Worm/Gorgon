@@ -29,16 +29,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
+using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
-using Gorgon.Math;
+using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -87,7 +87,7 @@ namespace Gorgon.Examples
         /// <param name="outputSize">The size of the output render target.</param>
         private static void DrawLitScene(int pass, int passCount, DX.Size2 outputSize)
         {
-            _logoSprite.Position = new DX.Vector2(outputSize.Width / 2.0f, outputSize.Height / 2.0f);            
+            _logoSprite.Position = new DX.Vector2(outputSize.Width / 2.0f, outputSize.Height / 2.0f);
             _renderer.DrawSprite(_logoSprite);
         }
 
@@ -127,7 +127,7 @@ namespace Gorgon.Examples
                 _lightBrightDir = !_lightBrightDir;
             }
 
-            _lightEffect.Lights[0].Color = new GorgonColor((_lightValue * 253.0f) / 255.0f, (_lightValue * 248.0f) / 255.0f,  (_lightValue  * 230.0f) / 255.0f);
+            _lightEffect.Lights[0].Color = new GorgonColor((_lightValue * 253.0f) / 255.0f, (_lightValue * 248.0f) / 255.0f, (_lightValue * 230.0f) / 255.0f);
             _lightEffect.Lights[0].SpecularPower = (1.0f - (_lightValue / 1.2f)) * 15;
 
             _finalTarget.Clear(GorgonColor.BlackTransparent);
@@ -163,9 +163,9 @@ namespace Gorgon.Examples
         {
             // This will be our final output target for our effect.
             _finalTarget = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(_screen.RenderTargetView, "Final Render Target")
-                                                                                  {
-                                                                                      Binding = TextureBinding.ShaderResource
-                                                                                  });
+            {
+                Binding = TextureBinding.ShaderResource
+            });
             // And this is the texture we will display at the end of the frame.
             _finalTexture = _finalTarget.GetShaderResourceView();
         }
@@ -189,7 +189,7 @@ namespace Gorgon.Examples
                     throw new GorgonException(GorgonResult.CannotCreate,
                                               "Gorgon requires at least a Direct3D 11.4 capable video device.\nThere is no suitable device installed on the system.");
                 }
-                
+
                 // Find the best video device.
                 _graphics = new GorgonGraphics(videoDevices.OrderByDescending(item => item.FeatureSet).First());
 
@@ -233,44 +233,44 @@ namespace Gorgon.Examples
                 _renderer = new Gorgon2D(_graphics);
 
                 _logoSprite = new GorgonSprite
-                              {
-                                  Texture = _backgroundLogoTexture,
-                                  Bounds = new DX.RectangleF(0, 0, _backgroundLogoTexture.Width, _backgroundLogoTexture.Height),
-                                  TextureRegion = new DX.RectangleF(0, 0, 1, 1),
-                                  Anchor = new DX.Vector2(0.5f, 0.5f)
-                              };
+                {
+                    Texture = _backgroundLogoTexture,
+                    Bounds = new DX.RectangleF(0, 0, _backgroundLogoTexture.Width, _backgroundLogoTexture.Height),
+                    TextureRegion = new DX.RectangleF(0, 0, 1, 1),
+                    Anchor = new DX.Vector2(0.5f, 0.5f)
+                };
 
                 _torchSprite = new GorgonSprite
-                               {
-                                   Texture = _torchTexture,
-                                   Bounds = new DX.RectangleF(0, 0, 55, _torchTexture.Height),
-                                   TextureRegion = _torchTexture.Texture.ToTexel(new DX.Rectangle(0, 0, 55, _torchTexture.Height)),
-                               };
+                {
+                    Texture = _torchTexture,
+                    Bounds = new DX.RectangleF(0, 0, 55, _torchTexture.Height),
+                    TextureRegion = _torchTexture.Texture.ToTexel(new DX.Rectangle(0, 0, 55, _torchTexture.Height)),
+                };
 
                 // Create the effect that will light up our sprite(s).
                 _lightEffect = new Gorgon2DDeferredLightingEffect(_renderer);
 
                 _lightEffect.Lights.Add(new Gorgon2DLight
-                                        {
-                                            Color = new GorgonColor(0.25f, 0.25f, 0.25f),
-                                            Attenuation = 75,
-                                            LightType = LightType.Point,
-                                            SpecularEnabled = true,
-                                            SpecularPower = 6.0f,
-                                            Position = new DX.Vector3((_screen.Width / 2.0f) - 150.0f, (_screen.Height / 2.0f) - 150.0f, -50)
-                                        });
+                {
+                    Color = new GorgonColor(0.25f, 0.25f, 0.25f),
+                    Attenuation = 75,
+                    LightType = LightType.Point,
+                    SpecularEnabled = true,
+                    SpecularPower = 6.0f,
+                    Position = new DX.Vector3((_screen.Width / 2.0f) - 150.0f, (_screen.Height / 2.0f) - 150.0f, -50)
+                });
                 _lightEffect.Lights.Add(new Gorgon2DLight
-                                        {
-                                            Color = GorgonColor.White,
-                                            Intensity = 0.075f,
-                                            LightType = LightType.Directional,
-                                            SpecularEnabled = false,
-                                            Position = new DX.Vector3(0, 0, -200),
-                                            LightDirection = new DX.Vector3(0, 0, 1)
-                                        });
+                {
+                    Color = GorgonColor.White,
+                    Intensity = 0.075f,
+                    LightType = LightType.Directional,
+                    SpecularEnabled = false,
+                    Position = new DX.Vector3(0, 0, -200),
+                    LightDirection = new DX.Vector3(0, 0, 1)
+                });
 
                 GorgonExample.LoadResources(_graphics);
-                
+
                 window.MouseMove += Window_MouseMove;
                 window.KeyDown += Window_KeyDown;
 
@@ -355,7 +355,7 @@ namespace Gorgon.Examples
             finally
             {
                 GorgonExample.UnloadResources();
-                
+
                 _lightEffect?.Dispose();
                 _renderer?.Dispose();
                 _finalTexture?.Dispose();

@@ -183,7 +183,7 @@ namespace Gorgon.Graphics.Core
         /// All pipeline states.
         /// </summary>
         AllPipelineState = Topology
-                           |RasterState 
+                           | RasterState
                            | DepthStencilState
                            | BlendState
                            | PixelShader
@@ -195,10 +195,10 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Everything changed.
         /// </summary>
-        All = VertexBuffers 
-              | InputLayout 
-              | IndexBuffer 
-              | Topology 
+        All = VertexBuffers
+              | InputLayout
+              | IndexBuffer
+              | Topology
               | Uavs
               | PsSamplers
               | VsSamplers

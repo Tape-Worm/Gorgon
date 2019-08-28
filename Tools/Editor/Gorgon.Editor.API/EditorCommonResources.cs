@@ -47,7 +47,7 @@ namespace Gorgon.Editor
             get;
             private set;
         }
-        
+
         /// <summary>
         /// Property to return a keyboard icon (encoded as DDS/DXT5 data).
         /// </summary>

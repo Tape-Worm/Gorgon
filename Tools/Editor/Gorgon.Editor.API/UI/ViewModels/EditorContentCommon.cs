@@ -241,7 +241,7 @@ namespace Gorgon.Editor.UI
         private async void DoCloseContent(CloseContentArgs args)
         {
             try
-            {                
+            {
                 if (args.CheckChanges)
                 {
                     bool continueClose = await OnCloseContentTask();

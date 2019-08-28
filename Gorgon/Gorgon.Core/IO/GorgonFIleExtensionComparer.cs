@@ -29,12 +29,12 @@ using System.Collections.Generic;
 
 namespace Gorgon.IO
 {
-	/// <summary>
-	/// A comparer used to perform a comparison on two instances of <see cref="GorgonFileExtension"/>.
-	/// </summary>
-	public class GorgonFileExtensionComparer
-		: IComparer<GorgonFileExtension>
-	{
+    /// <summary>
+    /// A comparer used to perform a comparison on two instances of <see cref="GorgonFileExtension"/>.
+    /// </summary>
+    public class GorgonFileExtensionComparer
+        : IComparer<GorgonFileExtension>
+    {
         #region IComparer<GorgonFileExtension> Members
         /// <summary>
         /// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.

@@ -29,22 +29,22 @@ using Gorgon.IO.Properties;
 
 namespace Gorgon.IO
 {
-	/// <summary>
-	/// A name and description for an image codec within a <see cref="GorgonAnimationCodecPlugIn"/>.
-	/// </summary>
-	public struct GorgonAnimationCodecDescription
-		: IEquatable<GorgonAnimationCodecDescription>
-	{
-		#region Variables.
-		/// <summary>
-		/// The name of the plug in.  This will be the same as its fully qualified type name.
-		/// </summary>
-		public readonly string Name;
+    /// <summary>
+    /// A name and description for an image codec within a <see cref="GorgonAnimationCodecPlugIn"/>.
+    /// </summary>
+    public struct GorgonAnimationCodecDescription
+        : IEquatable<GorgonAnimationCodecDescription>
+    {
+        #region Variables.
+        /// <summary>
+        /// The name of the plug in.  This will be the same as its fully qualified type name.
+        /// </summary>
+        public readonly string Name;
 
-		/// <summary>
-		/// A friendly description used for display.
-		/// </summary>
-		public string Description;
+        /// <summary>
+        /// A friendly description used for display.
+        /// </summary>
+        public string Description;
         #endregion
 
         #region Methods.
@@ -100,15 +100,15 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="type">The type of codec object.</param>
         public GorgonAnimationCodecDescription(Type type)
-		{
-			if (type == null)
-			{
-				throw new ArgumentNullException(nameof(type));	
-			}
+        {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
 
-			Name = type.FullName;
-			Description = string.Empty;
-		}
-		#endregion
-	}
+            Name = type.FullName;
+            Description = string.Empty;
+        }
+        #endregion
+    }
 }

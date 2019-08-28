@@ -45,7 +45,7 @@ namespace Gorgon.Native
         /// A null pointer.
         /// </summary>
         public static readonly GorgonReadOnlyPointer Null = new GorgonReadOnlyPointer();
-        
+
         /// <summary>
         /// The amount of memory allocated.
         /// </summary>
@@ -158,7 +158,7 @@ namespace Gorgon.Native
         /// </note>
         /// </para>
         /// </remarks>
-        public static explicit operator void* (GorgonReadOnlyPointer pointer) => pointer._data;
+        public static explicit operator void*(GorgonReadOnlyPointer pointer) => pointer._data;
 
         /// <summary>
         /// Operator to test if two pointers are at the same address.
@@ -286,8 +286,8 @@ namespace Gorgon.Native
             {
                 throw new ArgumentOutOfRangeException(nameof(sizeInBytes), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
             }
-            
-            _data = (byte *)pointer;
+
+            _data = (byte*)pointer;
             SizeInBytes = sizeInBytes;
         }
         #endregion

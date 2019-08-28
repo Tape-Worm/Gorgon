@@ -33,17 +33,17 @@ using Gorgon.PlugIns;
 
 namespace Gorgon.Input
 {
-	/// <summary>
-	/// A factory used to load gaming device drivers.
-	/// </summary>
-	public sealed class GorgonGamingDeviceDriverFactory 
-		: IGorgonGamingDeviceDriverFactory
-	{
-		#region Variables.
-		// The logger used for debugging.
-		private readonly IGorgonLog _log;
-		// The plug in service to use when loading drivers.
-		private readonly IGorgonPlugInService _plugInService;
+    /// <summary>
+    /// A factory used to load gaming device drivers.
+    /// </summary>
+    public sealed class GorgonGamingDeviceDriverFactory
+        : IGorgonGamingDeviceDriverFactory
+    {
+        #region Variables.
+        // The logger used for debugging.
+        private readonly IGorgonLog _log;
+        // The plug in service to use when loading drivers.
+        private readonly IGorgonPlugInService _plugInService;
         #endregion
 
         #region Methods.
@@ -62,42 +62,42 @@ namespace Gorgon.Input
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="driverType"/> parameter is empty.</exception>
         /// <exception cref="ArgumentException">Thrown when the driver type name specified by <paramref name="driverType"/> was not found in any of the loaded plug in assemblies.</exception>
         public IGorgonGamingDeviceDriver LoadDriver(string driverType)
-		{
-			if (driverType == null)
-			{
-				throw new ArgumentNullException(nameof(driverType));
-			}
+        {
+            if (driverType == null)
+            {
+                throw new ArgumentNullException(nameof(driverType));
+            }
 
-			if (string.IsNullOrWhiteSpace(driverType))
-			{
-				throw new ArgumentEmptyException(nameof(driverType));
-			}
+            if (string.IsNullOrWhiteSpace(driverType))
+            {
+                throw new ArgumentEmptyException(nameof(driverType));
+            }
 
-			GorgonGamingDeviceDriver result = _plugInService.GetPlugIn<GorgonGamingDeviceDriver>(driverType);
+            GorgonGamingDeviceDriver result = _plugInService.GetPlugIn<GorgonGamingDeviceDriver>(driverType);
 
-			if (result == null)
-			{
-				throw new ArgumentException(string.Format(Resources.GORINP_ERR_DRIVER_NOT_FOUND, driverType));
-			}
+            if (result == null)
+            {
+                throw new ArgumentException(string.Format(Resources.GORINP_ERR_DRIVER_NOT_FOUND, driverType));
+            }
 
-			result.Log = _log;
+            result.Log = _log;
 
-			return result;
-		}
-		#endregion
+            return result;
+        }
+        #endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonGamingDeviceDriverFactory"/> class.
-		/// </summary>
-		/// <param name="plugInService">The plug in service to use when loading drivers.</param>
-		/// <param name="log">[Optional] The logger used for debugging.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugInService"/> is <b>null</b>.</exception>
-		public GorgonGamingDeviceDriverFactory(IGorgonPlugInService plugInService, IGorgonLog log = null)
-		{
-			_log = log ?? GorgonLog.NullLog;
-			_plugInService = plugInService;
-		}
-		#endregion
-	}
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonGamingDeviceDriverFactory"/> class.
+        /// </summary>
+        /// <param name="plugInService">The plug in service to use when loading drivers.</param>
+        /// <param name="log">[Optional] The logger used for debugging.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugInService"/> is <b>null</b>.</exception>
+        public GorgonGamingDeviceDriverFactory(IGorgonPlugInService plugInService, IGorgonLog log = null)
+        {
+            _log = log ?? GorgonLog.NullLog;
+            _plugInService = plugInService;
+        }
+        #endregion
+    }
 }

@@ -31,33 +31,33 @@ using DX = SharpDX;
 
 namespace Gorgon.Graphics
 {
-	/// <summary>
-	/// The vertex of the blitter used to blit textures to the current render target.
-	/// </summary>
-	[StructLayout(LayoutKind.Sequential, Pack = 1)]
-	internal struct BltVertex
-	{
-		/// <summary>
-		/// The size of the vertex, in bytes.
-		/// </summary>
-		public static readonly int Size = Unsafe.SizeOf<BltVertex>();
+    /// <summary>
+    /// The vertex of the blitter used to blit textures to the current render target.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    internal struct BltVertex
+    {
+        /// <summary>
+        /// The size of the vertex, in bytes.
+        /// </summary>
+        public static readonly int Size = Unsafe.SizeOf<BltVertex>();
 
-		/// <summary>
-		/// The position of the vertex.
-		/// </summary>
-		[InputElement(0, "SV_POSITION")]
-		public DX.Vector4 Position;
+        /// <summary>
+        /// The position of the vertex.
+        /// </summary>
+        [InputElement(0, "SV_POSITION")]
+        public DX.Vector4 Position;
 
         /// <summary>
         /// The color of the vertex.
         /// </summary>
         [InputElement(2, "COLOR")]
-	    public GorgonColor Color;
+        public GorgonColor Color;
 
-	    /// <summary>
-	    /// The texture coordinate for the vertex.
-	    /// </summary>
-	    [InputElement(1, "TEXCOORD")]
-	    public DX.Vector2 Uv;
-	}
+        /// <summary>
+        /// The texture coordinate for the vertex.
+        /// </summary>
+        [InputElement(1, "TEXCOORD")]
+        public DX.Vector2 Uv;
+    }
 }

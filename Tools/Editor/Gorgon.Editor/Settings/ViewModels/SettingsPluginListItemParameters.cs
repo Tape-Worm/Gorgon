@@ -48,16 +48,16 @@ namespace Gorgon.Editor.ViewModels
             private set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the type of plug in.
         /// </summary>
-		public PlugInType Type
+        public PlugInType Type
         {
             get;
             private set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the current state of the plug in.
         /// </summary>
         public string State
@@ -66,7 +66,7 @@ namespace Gorgon.Editor.ViewModels
             private set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the reason that the plug in was disabled.
         /// </summary>
         public string DisabledReason
@@ -75,10 +75,10 @@ namespace Gorgon.Editor.ViewModels
             private set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the path to the plug in assembly.
         /// </summary>
-		public string Path
+        public string Path
         {
             get;
             private set;
@@ -91,7 +91,7 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="commonServices">Common application services.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> is parameter <b>null</b>.</exception>
         public SettingsPlugInListItemParameters(EditorPlugIn plugin, IViewModelInjection commonServices)
-			: base(commonServices)
+            : base(commonServices)
         {
             if (plugin == null)
             {

@@ -29,13 +29,13 @@ using System.Runtime.InteropServices;
 // ReSharper disable InconsistentNaming
 namespace Gorgon.Native
 {
-	/// <summary>
-	/// Time capabilities.
-	/// </summary>
-	[StructLayout(LayoutKind.Sequential)]
-	internal struct TIMECAPS
-	{
-		public uint MinPeriod;
-		public uint MaxPeriod;
-	}
+    /// <summary>
+    /// Time capabilities.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct TIMECAPS
+    {
+        public uint MinPeriod;
+        public uint MaxPeriod;
+    }
 }

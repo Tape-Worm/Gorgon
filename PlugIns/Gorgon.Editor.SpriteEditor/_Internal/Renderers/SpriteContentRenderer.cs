@@ -24,19 +24,19 @@
 // 
 #endregion
 
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading;
-using DX = SharpDX;
+using System.Windows.Forms;
+using Gorgon.Animation;
+using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Renderers;
 using Gorgon.Math;
-using Gorgon.Animation;
-using System;
-using System.Windows.Forms;
-using System.ComponentModel;
-using System.Collections.Generic;
-using Gorgon.Editor.SpriteEditor.Properties;
+using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -595,13 +595,13 @@ namespace Gorgon.Editor.SpriteEditor
                 BackgroundPattern = GorgonTexture2DView.CreateTexture(Graphics, new GorgonTexture2DInfo("SpriteEditor_Bg_Pattern")
                 {
                     Usage = ResourceUsage.Immutable,
-					Width = EditorCommonResources.CheckerBoardPatternImage.Width,
-					Height = EditorCommonResources.CheckerBoardPatternImage.Height
-                }, EditorCommonResources.CheckerBoardPatternImage);                
+                    Width = EditorCommonResources.CheckerBoardPatternImage.Width,
+                    Height = EditorCommonResources.CheckerBoardPatternImage.Height
+                }, EditorCommonResources.CheckerBoardPatternImage);
             }
 
             _textureArrayIndex = SpriteContent?.ArrayIndex ?? 0;
-                       
+
             OnLoad();
         }
 
@@ -702,7 +702,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             _animController.Update();
 
-            SwapChain.Present(OnRender());            
+            SwapChain.Present(OnRender());
         }
 
         /// <summary></summary>

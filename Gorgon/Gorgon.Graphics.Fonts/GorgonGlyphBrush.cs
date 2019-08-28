@@ -35,51 +35,51 @@ namespace Gorgon.Graphics.Fonts
     /// The type of glyph brush to use when painting the glyphs for the font.
     /// </summary>
     public enum GlyphBrushType
-	{
-		/// <summary>
-		/// A solid color.
-		/// </summary>
-		Solid = 0,
-		/// <summary>
-		/// Texture.
-		/// </summary>
-		Texture = 1,
-		/// <summary>
-		/// Hatch pattern.
-		/// </summary>
-		Hatched = 2,
-		/// <summary>
-		/// Linear gradient colors.
-		/// </summary>
-		LinearGradient = 3,
-		/// <summary>
-		/// Path gradient colors.
-		/// </summary>
-		PathGradient = 4
-	}
+    {
+        /// <summary>
+        /// A solid color.
+        /// </summary>
+        Solid = 0,
+        /// <summary>
+        /// Texture.
+        /// </summary>
+        Texture = 1,
+        /// <summary>
+        /// Hatch pattern.
+        /// </summary>
+        Hatched = 2,
+        /// <summary>
+        /// Linear gradient colors.
+        /// </summary>
+        LinearGradient = 3,
+        /// <summary>
+        /// Path gradient colors.
+        /// </summary>
+        PathGradient = 4
+    }
 
-	/// <summary>
-	/// A brush used to paint the glyphs when generating a font.
-	/// </summary>
-	public abstract class GorgonGlyphBrush
+    /// <summary>
+    /// A brush used to paint the glyphs when generating a font.
+    /// </summary>
+    public abstract class GorgonGlyphBrush
         : IGorgonCloneable<GorgonGlyphBrush>, IEquatable<GorgonGlyphBrush>
     {
-		#region Properties.
-		/// <summary>
-		/// Property to return the type of brush.
-		/// </summary>
-		public abstract GlyphBrushType BrushType
-		{
-			get;
-		}
-		#endregion
+        #region Properties.
+        /// <summary>
+        /// Property to return the type of brush.
+        /// </summary>
+        public abstract GlyphBrushType BrushType
+        {
+            get;
+        }
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to convert this brush to the equivalent GDI+ brush type.
-		/// </summary>
-		/// <returns>The GDI+ brush type for this object.</returns>
-		internal abstract Brush ToGDIBrush();
+        #region Methods.
+        /// <summary>
+        /// Function to convert this brush to the equivalent GDI+ brush type.
+        /// </summary>
+        /// <returns>The GDI+ brush type for this object.</returns>
+        internal abstract Brush ToGDIBrush();
 
         /// <summary>
         /// Function to write out the specifics of the font brush data to a file writer.

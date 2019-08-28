@@ -29,24 +29,24 @@ using SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary> 
-	/// Settings for defining the set up for a swap chain.
-	/// </summary>
-	public class GorgonSwapChainInfo 
-		: IGorgonSwapChainInfo
-	{
-		#region Properties.
-		/// <summary>
-		/// Property to set or return whether the back buffer contents will be stretched to fit the size of the presentation target area (typically the client area of the window).
-		/// </summary>
-		/// <remarks>
-		/// The default value for this value is <b>true</b>.
-		/// </remarks>
-		public bool StretchBackBuffer
-		{
-			get;
-			set;
-		}
+    /// <summary> 
+    /// Settings for defining the set up for a swap chain.
+    /// </summary>
+    public class GorgonSwapChainInfo
+        : IGorgonSwapChainInfo
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to set or return whether the back buffer contents will be stretched to fit the size of the presentation target area (typically the client area of the window).
+        /// </summary>
+        /// <remarks>
+        /// The default value for this value is <b>true</b>.
+        /// </remarks>
+        public bool StretchBackBuffer
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Property to set or return whether to use flip mode rather than a bitblt mode to present the back buffer to the presentation target.
@@ -77,36 +77,36 @@ namespace Gorgon.Graphics.Core
         /// The default value is <see cref="BufferFormat.R8G8B8A8_UNorm"/>
         /// </remarks>
         public BufferFormat Format
-		{
-			get;
-			set;
-		}
-	
-		/// <summary>
-		/// Property to set or return the width of the swap chain back buffer.
-		/// </summary>
-		public int Width
-		{
-			get;
-			set;
-		}
+        {
+            get;
+            set;
+        }
 
-		/// <summary>
-		/// Property to set or return the height of the swap chain back buffer.
-		/// </summary>
-		public int Height
-		{
-			get;
-			set;
-		}
+        /// <summary>
+        /// Property to set or return the width of the swap chain back buffer.
+        /// </summary>
+        public int Width
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the height of the swap chain back buffer.
+        /// </summary>
+        public int Height
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Property to return the name of the swap chain.
         /// </summary>
 	    public string Name
-	    {
-	        get;
-	    }
+        {
+            get;
+        }
         #endregion
 
         #region Constructor/Destructor.
@@ -140,22 +140,22 @@ namespace Gorgon.Graphics.Core
 
             Name = string.IsNullOrEmpty(newName) ? info.Name : newName;
             Format = info.Format;
-			Height = info.Height;
-			StretchBackBuffer = info.StretchBackBuffer;
-			UseFlipMode = info.UseFlipMode;
-			Width = info.Width;
-		}
+            Height = info.Height;
+            StretchBackBuffer = info.StretchBackBuffer;
+            UseFlipMode = info.UseFlipMode;
+            Width = info.Width;
+        }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonSwapChainInfo"/> class.
-		/// </summary>
-		/// <param name="name">The name of the swap chain.</param>
-		public GorgonSwapChainInfo(string name = null)
-		{
-		    Name = string.IsNullOrEmpty(name) ? $"GorgonSwapChain_{Guid.NewGuid():N}" : name;
-			StretchBackBuffer = true;
-			Format = BufferFormat.R8G8B8A8_UNorm;
-		}
-		#endregion
-	}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonSwapChainInfo"/> class.
+        /// </summary>
+        /// <param name="name">The name of the swap chain.</param>
+        public GorgonSwapChainInfo(string name = null)
+        {
+            Name = string.IsNullOrEmpty(name) ? $"GorgonSwapChain_{Guid.NewGuid():N}" : name;
+            StretchBackBuffer = true;
+            Format = BufferFormat.R8G8B8A8_UNorm;
+        }
+        #endregion
+    }
 }

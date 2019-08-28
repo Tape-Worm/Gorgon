@@ -29,37 +29,37 @@ using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ViewModels
 {
-	/// <summary>
+    /// <summary>
     /// The view model for the editor settings panel.
     /// </summary>
     internal interface IEditorSettingsVm
-		: IViewModel
+        : IViewModel
     {
-		/// <summary>
+        /// <summary>
         /// Property to return the current category ID being used.
         /// </summary>
-		ISettingsCategoryViewModel CurrentCategory
+        ISettingsCategoryViewModel CurrentCategory
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the list of categories available.
         /// </summary>
-		ObservableCollection<ISettingsCategoryViewModel> Categories
+        ObservableCollection<ISettingsCategoryViewModel> Categories
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the list of plug ins for the fixed plug in list category.
         /// </summary>
-		ISettingsPlugInsList PlugInsList
+        ISettingsPlugInsList PlugInsList
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the command to execute to select a category.
         /// </summary>
         IEditorCommand<string> SetCategoryCommand

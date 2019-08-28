@@ -25,20 +25,20 @@
 #endregion
 
 using System;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
 using Gorgon.Editor.ProjectData;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 
 namespace Gorgon.Editor.UI.Controls
 {
     /// <summary>
     /// A control for displaying the <see cref="RecentItem"/> items.
     /// </summary>
-    public partial class RecentFilesControl 
+    public partial class RecentFilesControl
         : UserControl
     {
         #region Variables.
@@ -82,7 +82,7 @@ namespace Gorgon.Editor.UI.Controls
 
                 _recentItems = value ?? new ObservableCollection<RecentItem>();
 
-                FillList();                
+                FillList();
 
                 if (_recentItems != null)
                 {

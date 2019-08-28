@@ -176,7 +176,7 @@ namespace Gorgon.Graphics.Core
             }
 
             int count = srcBindings.Count.Min(GorgonStreamOutBindings.MaximumStreamOutCount);
-            
+
             for (int i = 0; i < count; ++i)
             {
                 destBindings[i] = srcBindings[i];
@@ -200,7 +200,7 @@ namespace Gorgon.Graphics.Core
             }
 
             int count = srcBindings.Count.Min(GorgonVertexBufferBindings.MaximumVertexBufferCount);
-            
+
             for (int i = 0; i < count; ++i)
             {
                 destBindings[i] = srcBindings[i];

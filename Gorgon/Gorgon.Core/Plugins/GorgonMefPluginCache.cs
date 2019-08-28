@@ -109,8 +109,8 @@ namespace Gorgon.PlugIns
     /// </code>
     /// </example>
     public sealed class GorgonMefPlugInCache
-		: IDisposable
-	{
+        : IDisposable
+    {
         #region Constants.
         // The signature for a portable executable header.
         private const uint PeHeaderSignature = 0x4550;
@@ -128,37 +128,37 @@ namespace Gorgon.PlugIns
         // The container for the plugin definitions.
         private CompositionContainer _container;
         // The synchronization lock for multiple threads..
-	    private static readonly object _syncLock = new object();
+        private static readonly object _syncLock = new object();
         // The builder used for type registration.
-	    private readonly RegistrationBuilder _builder = new RegistrationBuilder();
-		#endregion
+        private readonly RegistrationBuilder _builder = new RegistrationBuilder();
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to return the logging interface for debug logging.
-		/// </summary>
-		internal IGorgonLog Log
+        #region Properties.
+        /// <summary>
+        /// Property to return the logging interface for debug logging.
+        /// </summary>
+        internal IGorgonLog Log
         {
             get;
         }
 
-		/// <summary>
-		/// Property to return the list of cached plugin assemblies.
-		/// </summary>
-		public IReadOnlyList<string> PlugInAssemblies
-	    {
+        /// <summary>
+        /// Property to return the list of cached plugin assemblies.
+        /// </summary>
+        public IReadOnlyList<string> PlugInAssemblies
+        {
             get;
-	        private set;
-	    }
-		#endregion
+            private set;
+        }
+        #endregion
 
-		#region Methods.
+        #region Methods.
         /// <summary>
         /// Function to update the list of assemblies.
         /// </summary>
         /// <param name="catalog">The catalog for the assembly.</param>
         /// <param name="assemblyList">The list of assemblies.</param>
-	    private void UpdateAssemblyList(DirectoryCatalog catalog, HashSet<string> assemblyList)
+        private void UpdateAssemblyList(DirectoryCatalog catalog, HashSet<string> assemblyList)
         {
             foreach (string file in catalog.LoadedFiles)
             {
@@ -227,7 +227,7 @@ namespace Gorgon.PlugIns
                 {
                     return (false, AssemblyPlatformType.Unknown);
                 }
-				
+
                 stream.Position += 20;
 
                 ushort exePlatform = reader.ReadUInt16();
@@ -236,7 +236,7 @@ namespace Gorgon.PlugIns
                 {
                     return (false, AssemblyPlatformType.Unknown);
                 }
-				                
+
                 uint rvaPointer = 0;
 
                 switch (exePlatform)
@@ -258,9 +258,9 @@ namespace Gorgon.PlugIns
             }
 
             // AnyCPU assemblies are marked as x86.  We need to read the cor20 header, but I'm lazy and it's a lot of work.
-			// So, we'll use the old tried and true method of reading the assembly metadata.  We shouldn't exception here because 
-			// we've already determined that we're not using a native DLL.  GetAssemblyName doesn't care if our executing platform 
-			// environment is x64 or x86 and our DLL doesn't match, it just reads the metadata (tested and confirmed).
+            // So, we'll use the old tried and true method of reading the assembly metadata.  We shouldn't exception here because 
+            // we've already determined that we're not using a native DLL.  GetAssemblyName doesn't care if our executing platform 
+            // environment is x64 or x86 and our DLL doesn't match, it just reads the metadata (tested and confirmed).
             if ((cor2HeaderPtr != 0) && (platformType == AssemblyPlatformType.x86))
             {
                 var name = AssemblyName.GetAssemblyName(assemblyPath);
@@ -322,31 +322,31 @@ namespace Gorgon.PlugIns
         /// </para>
         /// </remarks>
         public static AssemblySigningResult VerifyAssemblyStrongName(string assemblyPath, byte[] publicKey = null)
-		{
-			if ((string.IsNullOrWhiteSpace(assemblyPath)) || (!File.Exists(assemblyPath)))
-			{
-				return AssemblySigningResult.NotSigned;
-			}
+        {
+            if ((string.IsNullOrWhiteSpace(assemblyPath)) || (!File.Exists(assemblyPath)))
+            {
+                return AssemblySigningResult.NotSigned;
+            }
 
-			var clrStrongNameClsId = new Guid("B79B0ACD-F5CD-409b-B5A5-A16244610B92");
-			var clrStrongNameriid = new Guid("9FD93CCF-3280-4391-B3A9-96E1CDE77C8D");
+            var clrStrongNameClsId = new Guid("B79B0ACD-F5CD-409b-B5A5-A16244610B92");
+            var clrStrongNameriid = new Guid("9FD93CCF-3280-4391-B3A9-96E1CDE77C8D");
 
-			var strongName = (IClrStrongName)RuntimeEnvironment.GetRuntimeInterfaceAsObject(clrStrongNameClsId, clrStrongNameriid);
+            var strongName = (IClrStrongName)RuntimeEnvironment.GetRuntimeInterfaceAsObject(clrStrongNameClsId, clrStrongNameriid);
 
-			int result = strongName.StrongNameSignatureVerificationEx(assemblyPath, true, out bool wasVerified);
+            int result = strongName.StrongNameSignatureVerificationEx(assemblyPath, true, out bool wasVerified);
 
-			if ((result != 0) || (!wasVerified))
-			{
-				return AssemblySigningResult.NotSigned;
-			}
+            if ((result != 0) || (!wasVerified))
+            {
+                return AssemblySigningResult.NotSigned;
+            }
 
-			if (publicKey == null)
-			{
-				return AssemblySigningResult.Signed;
-			}
+            if (publicKey == null)
+            {
+                return AssemblySigningResult.Signed;
+            }
 
-			var assemblyName = AssemblyName.GetAssemblyName(assemblyPath);
-			byte[] compareToken = assemblyName.GetPublicKey();
+            var assemblyName = AssemblyName.GetAssemblyName(assemblyPath);
+            byte[] compareToken = assemblyName.GetPublicKey();
 
             return (compareToken == null) || (publicKey.Length != compareToken.Length) || (!publicKey.SequenceEqual(compareToken))
                 ? AssemblySigningResult.Signed | AssemblySigningResult.KeyMismatch
@@ -358,40 +358,40 @@ namespace Gorgon.PlugIns
         /// </summary>
         /// <returns>A composition container containing the plugins from the assemblies.</returns>
         public IEnumerable<Lazy<GorgonPlugIn, IDictionary<string, object>>> EnumeratePlugIns()
-		{
-		    lock (_syncLock)
-		    {
+        {
+            lock (_syncLock)
+            {
                 return _container == null
                     ? (Array.Empty<Lazy<GorgonPlugIn, IDictionary<string, object>>>())
                     : _container.GetExports<GorgonPlugIn, IDictionary<string, object>>(_contractName);
             }
         }
 
-	    /// <summary>
-	    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-	    /// </summary>
-	    /// <remarks>
-	    /// <para>
-	    /// <note type="important">
-	    /// <para>
-	    /// This method must be called, or the application domain that is created to interrogate assembly types will live until the end of the application. This could lead to memory bloat or worse. 
-	    /// </para>
-	    /// <para>
-	    /// Because the application domain is unloaded on a separate thread, it may deadlock with the finalizer thread and thus we cannot count on the finalizer to clean evict the stale app domain on our 
-	    /// behalf.
-	    /// </para>
-	    /// </note>
-	    /// </para>
-	    /// </remarks>
-	    public void Dispose()
-	    {
-	        Log.Print("Unloading MEF plugin container and catalogs.", LoggingLevel.Intermediate);
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// <note type="important">
+        /// <para>
+        /// This method must be called, or the application domain that is created to interrogate assembly types will live until the end of the application. This could lead to memory bloat or worse. 
+        /// </para>
+        /// <para>
+        /// Because the application domain is unloaded on a separate thread, it may deadlock with the finalizer thread and thus we cannot count on the finalizer to clean evict the stale app domain on our 
+        /// behalf.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public void Dispose()
+        {
+            Log.Print("Unloading MEF plugin container and catalogs.", LoggingLevel.Intermediate);
 
             _container?.Dispose();
-	        _container = null;
+            _container = null;
             _rootCatalog?.Dispose();
-	        _rootCatalog = null;
-	    }
+            _rootCatalog = null;
+        }
 
         /// <summary>
         /// Function to load any DLL assemblies in the specified directory path.
@@ -407,97 +407,97 @@ namespace Gorgon.PlugIns
         /// </para>
         /// </remarks>
 	    public void LoadPlugInAssemblies(string directoryPath, string filePattern = "*.dll")
-	    {
-	        if (directoryPath == null)
-	        {
+        {
+            if (directoryPath == null)
+            {
                 throw new ArgumentNullException(nameof(directoryPath));
-	        }
+            }
 
-	        if (string.IsNullOrWhiteSpace(directoryPath))
-	        {
+            if (string.IsNullOrWhiteSpace(directoryPath))
+            {
                 throw new ArgumentEmptyException(nameof(directoryPath));
-	        }
+            }
 
             // Ensure we send in a file search pattern.
-	        filePattern = Path.GetFileName(filePattern);
+            filePattern = Path.GetFileName(filePattern);
 
-	        if (string.IsNullOrWhiteSpace(filePattern))
-	        {
-	            filePattern = "*.dll";
-	        }
+            if (string.IsNullOrWhiteSpace(filePattern))
+            {
+                filePattern = "*.dll";
+            }
 
             var directory = new DirectoryInfo(directoryPath);
 
             Log.Print($"Searching '{directory.FullName}\\{filePattern}' for plug in assemblies.", LoggingLevel.Simple);
 
-	        if (!directory.Exists)
-	        {
+            if (!directory.Exists)
+            {
                 throw new DirectoryNotFoundException(string.Format(Resources.GOR_ERR_DIRECTORY_NOT_FOUND, directory.FullName));
-	        }
+            }
 
-	        lock (_syncLock)
-	        {
-	            // Check to see if we have this directory and search pattern already.
-	            DirectoryCatalog catalog = _rootCatalog.Catalogs.OfType<DirectoryCatalog>()
-	                                                   .FirstOrDefault(item => string.Equals(item.FullPath, directoryPath, StringComparison.OrdinalIgnoreCase)
-	                                                                           && string.Equals(item.SearchPattern,
-	                                                                                            filePattern,
-	                                                                                            StringComparison.OrdinalIgnoreCase));
+            lock (_syncLock)
+            {
+                // Check to see if we have this directory and search pattern already.
+                DirectoryCatalog catalog = _rootCatalog.Catalogs.OfType<DirectoryCatalog>()
+                                                       .FirstOrDefault(item => string.Equals(item.FullPath, directoryPath, StringComparison.OrdinalIgnoreCase)
+                                                                               && string.Equals(item.SearchPattern,
+                                                                                                filePattern,
+                                                                                                StringComparison.OrdinalIgnoreCase));
 
-	            // This catalog was already loaded, so just refresh it by recomposing.
-	            if (catalog != null)
-	            {
-	                Log.Print("Path is already registered in cache, no need to re-add.", LoggingLevel.Verbose);
-	                catalog.Refresh();
-	            }
-	            else
-	            {
-	                catalog = new DirectoryCatalog(directory.FullName, filePattern, _builder);
-	                _rootCatalog.Catalogs.Add(catalog);
+                // This catalog was already loaded, so just refresh it by recomposing.
+                if (catalog != null)
+                {
+                    Log.Print("Path is already registered in cache, no need to re-add.", LoggingLevel.Verbose);
+                    catalog.Refresh();
+                }
+                else
+                {
+                    catalog = new DirectoryCatalog(directory.FullName, filePattern, _builder);
+                    _rootCatalog.Catalogs.Add(catalog);
 
-	                Log.Print($"Added {catalog.LoadedFiles.Count} plug in assemblies to cache.", LoggingLevel.Verbose);
-	            }
-	        }
+                    Log.Print($"Added {catalog.LoadedFiles.Count} plug in assemblies to cache.", LoggingLevel.Verbose);
+                }
+            }
 
-	        Refresh();
-	    }
+            Refresh();
+        }
 
         /// <summary>
         /// Function to refresh the loaded plugin assembly list, and import any other assemblies that match the previously watched paths.
         /// </summary>
 	    public void Refresh()
-	    {
-	        lock (_syncLock)
-	        {
-	            var assemblyList = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-	            foreach (DirectoryCatalog catalog in _rootCatalog.Catalogs.OfType<DirectoryCatalog>())
-	            {
-	                UpdateAssemblyList(catalog, assemblyList);
-	            }
+        {
+            lock (_syncLock)
+            {
+                var assemblyList = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (DirectoryCatalog catalog in _rootCatalog.Catalogs.OfType<DirectoryCatalog>())
+                {
+                    UpdateAssemblyList(catalog, assemblyList);
+                }
 
-	            PlugInAssemblies = assemblyList.ToArray();
+                PlugInAssemblies = assemblyList.ToArray();
 
-	            Log.Print($"{PlugInAssemblies.Count} cached with valid plug in types.", LoggingLevel.Simple);
-	        }
-	    }
-		#endregion
+                Log.Print($"{PlugInAssemblies.Count} cached with valid plug in types.", LoggingLevel.Simple);
+            }
+        }
+        #endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonMefPlugInCache"/> class.
-		/// </summary>
-		/// <param name="log">[Optional] The application log file to use.</param>
-		public GorgonMefPlugInCache(IGorgonLog log = null)
-		{
-		    _builder.ForTypesDerivedFrom<GorgonPlugIn>().Export<GorgonPlugIn>(b =>
-		                                                                      {
-		                                                                          b.AddMetadata("Name", t => t.FullName);
-		                                                                          b.AddMetadata("Assembly", t => t.Assembly.GetName());
-		                                                                          b.Inherited();
-		                                                                      });
-		    Log = log ?? GorgonLog.NullLog;
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonMefPlugInCache"/> class.
+        /// </summary>
+        /// <param name="log">[Optional] The application log file to use.</param>
+        public GorgonMefPlugInCache(IGorgonLog log = null)
+        {
+            _builder.ForTypesDerivedFrom<GorgonPlugIn>().Export<GorgonPlugIn>(b =>
+                                                                              {
+                                                                                  b.AddMetadata("Name", t => t.FullName);
+                                                                                  b.AddMetadata("Assembly", t => t.Assembly.GetName());
+                                                                                  b.Inherited();
+                                                                              });
+            Log = log ?? GorgonLog.NullLog;
             _container = new CompositionContainer(_rootCatalog, CompositionOptions.DisableSilentRejection | CompositionOptions.IsThreadSafe);
-		}
-		#endregion
-	}
+        }
+        #endregion
+    }
 }

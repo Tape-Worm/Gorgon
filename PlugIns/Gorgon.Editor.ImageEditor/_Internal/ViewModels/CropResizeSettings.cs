@@ -271,7 +271,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 if (_currentMode == value)
                 {
                     return;
-                }                
+                }
 
                 OnPropertyChanging();
                 _currentMode = value;
@@ -321,8 +321,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <remarks>
         /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
         /// </remarks>
-        protected override void OnInitialize(IViewModelInjection injectionParameters) =>        
-            _messageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(IViewModelInjection.MessageDisplay), nameof(injectionParameters));        
+        protected override void OnInitialize(IViewModelInjection injectionParameters) =>
+            _messageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(IViewModelInjection.MessageDisplay), nameof(injectionParameters));
         #endregion
 
         #region Constructor/Finalizer.

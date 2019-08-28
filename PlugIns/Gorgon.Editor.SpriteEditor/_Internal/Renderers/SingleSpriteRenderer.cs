@@ -24,13 +24,13 @@
 // 
 #endregion
 
-using System.Linq;
-using DX = SharpDX;
-using Gorgon.Graphics.Core;
-using Gorgon.Renderers;
-using Gorgon.Graphics;
 using System.ComponentModel;
+using System.Linq;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
 using Gorgon.Math;
+using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -50,21 +50,21 @@ namespace Gorgon.Editor.SpriteEditor
             set => Sprite.TextureSampler = value;
         }
 
-		/// <summary>
-		/// Property to return the sprite used for rendering.
-		/// </summary>
-		protected GorgonSprite Sprite
+        /// <summary>
+        /// Property to return the sprite used for rendering.
+        /// </summary>
+        protected GorgonSprite Sprite
         {
             get;
         }
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to retrieve the sprite texture coordinates, in texel space.
-		/// </summary>
-		/// <returns>The sprite texture coordinates.</returns>
-		protected virtual DX.RectangleF GetSpriteTextureCoordinates() => SpriteContent.TextureCoordinates;
+        #region Methods.
+        /// <summary>
+        /// Function to retrieve the sprite texture coordinates, in texel space.
+        /// </summary>
+        /// <returns>The sprite texture coordinates.</returns>
+        protected virtual DX.RectangleF GetSpriteTextureCoordinates() => SpriteContent.TextureCoordinates;
 
         /// <summary>Function called when the <see cref="P:Gorgon.Editor.SpriteEditor.SpriteContentRenderer.ZoomScaleValue"/> property is changed.</summary>
         protected override void OnZoomScaleChanged() => UpdateWorkingSprite();
@@ -101,7 +101,7 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-			// Use the actual texture coordinates here because we need it to define the size and position of the sprite in image space.
+            // Use the actual texture coordinates here because we need it to define the size and position of the sprite in image space.
             var spriteRegion = SpriteContent.Texture.ToPixel(SpriteContent.TextureCoordinates).ToRectangleF();
             DX.RectangleF scaledSprite = ToClient(spriteRegion).Truncate();
 
@@ -153,9 +153,9 @@ namespace Gorgon.Editor.SpriteEditor
             Renderer.Begin();
 
             // Draw the pattern layer.
-            Renderer.DrawFilledRectangle(new DX.RectangleF(0,0, SwapChain.Width, SwapChain.Height), 
-                new GorgonColor(GorgonColor.Gray75, (0.5f - TextureAlpha.Min(0.5f).Max(0)) * 2), 
-                BackgroundPattern, 
+            Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, SwapChain.Width, SwapChain.Height),
+                new GorgonColor(GorgonColor.Gray75, (0.5f - TextureAlpha.Min(0.5f).Max(0)) * 2),
+                BackgroundPattern,
                 new DX.RectangleF(0, 0, SwapChain.Width / BackgroundPattern.Width, SwapChain.Height / BackgroundPattern.Height));
 
             if (IsAnimating)
@@ -166,7 +166,7 @@ namespace Gorgon.Editor.SpriteEditor
             RenderRect(spriteRegion, GorgonColor.White, BackgroundPattern, new DX.RectangleF(0, 0, (spriteRegion.Width * ZoomScaleValue) / BackgroundPattern.Width, (spriteRegion.Height * ZoomScaleValue) / BackgroundPattern.Height));
 
             if (IsAnimating)
-            {                
+            {
                 Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, SwapChain.Width, SwapChain.Height), new GorgonColor(GorgonColor.White, TextureAlpha), ImageBufferTexture, new DX.RectangleF(0, 0, 1, 1));
             }
 

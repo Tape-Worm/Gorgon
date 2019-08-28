@@ -209,7 +209,7 @@ namespace Gorgon.IO.Extensions
             {
                 return (null, null, false);
             }
-            
+
             // Try to find a codec for the image file.
             codec = FindTextureCodec(textureFile, codecs);
 
@@ -469,7 +469,7 @@ namespace Gorgon.IO.Extensions
                 // Use all built-in codecs if we haven't asked for any.
                 spriteCodecs = new IGorgonPolySpriteCodec[]
                                {
-                                   new GorgonV3PolySpriteBinaryCodec(renderer), 
+                                   new GorgonV3PolySpriteBinaryCodec(renderer),
                                    new GorgonV3PolySpriteJsonCodec(renderer)
                                };
             }
@@ -632,7 +632,7 @@ namespace Gorgon.IO.Extensions
                 // Use all built-in codecs if we haven't asked for any.
                 animationCodecs = new IGorgonAnimationCodec[]
                                {
-                                   new GorgonV3AnimationBinaryCodec(renderer), 
+                                   new GorgonV3AnimationBinaryCodec(renderer),
                                    new GorgonV3AnimationJsonCodec(renderer),
                                    new GorgonV1AnimationCodec(renderer)
                                };
@@ -727,5 +727,5 @@ namespace Gorgon.IO.Extensions
         }
         // ReSharper restore PossibleMultipleEnumeration
     }
-    
+
 }

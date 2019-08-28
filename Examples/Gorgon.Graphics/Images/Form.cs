@@ -27,8 +27,8 @@
 using System;
 using System.Threading;
 using System.Windows.Forms;
-using Gorgon.UI;
 using Gorgon.Examples;
+using Gorgon.UI;
 
 namespace Gorgon.Graphics.Example
 {
@@ -60,7 +60,7 @@ namespace Gorgon.Graphics.Example
     /// 
     /// The ImageGallery and GifAnimator classes contain the relevant code for this example.
     /// </summary>
-    public partial class Form 
+    public partial class Form
         : System.Windows.Forms.Form
     {
         #region Variables.

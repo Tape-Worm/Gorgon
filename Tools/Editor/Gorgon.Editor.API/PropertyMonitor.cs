@@ -117,7 +117,7 @@ namespace Gorgon.Editor
                     if ((lastIndex != -1) && (lastIndex < name.Length - 1))
                     {
                         name.Remove(0, lastIndex + 1);
-                    }                    
+                    }
 
                     string finalName = name.ToString();
 

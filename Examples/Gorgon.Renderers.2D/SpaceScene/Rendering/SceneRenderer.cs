@@ -29,13 +29,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DX = SharpDX;
+using Gorgon.Animation;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Renderers;
 using Gorgon.Math;
+using Gorgon.Renderers;
 using Gorgon.Timing;
-using Gorgon.Animation;
+using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -54,14 +54,14 @@ namespace Gorgon.Examples
         private readonly ResourceManagement _resources;
         // The camera used for rendering.
         private IGorgon2DCamera _camera;
-		// The screen buffer.
+        // The screen buffer.
         private GorgonRenderTarget2DView _screen;
-		// The list of layers to render.
+        // The list of layers to render.
         private List<Layer> _layers = new List<Layer>();
-		// Post processing groups.  Use to render specific layers with post processing effects.
+        // Post processing groups.  Use to render specific layers with post processing effects.
         private readonly List<(string name, Gorgon2DCompositor compositor)> _postProcessGroups = new List<(string name, Gorgon2DCompositor compositor)>();
         private readonly Dictionary<string, List<Layer>> _postProcessLayers = new Dictionary<string, List<Layer>>(StringComparer.OrdinalIgnoreCase);
-		
+
         // The controller for the layers in the application.
         private LayerCamera _layerController;
         #endregion
@@ -80,16 +80,16 @@ namespace Gorgon.Examples
                                         src,
                                         new DX.RectangleF(0, 0, 1, 1),
                                         textureSampler: GorgonSamplerState.Default);
-			
+
             _renderer.End();
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to apply lighting to the layers.
         /// </summary>
         private void ApplyLightingToLayers()
         {
-			// Turn off lighting before attempting to update the lights.
+            // Turn off lighting before attempting to update the lights.
             for (int i = 0; i < _layers.Count; ++i)
             {
                 _layers[i].ClearActiveLights();
@@ -103,7 +103,7 @@ namespace Gorgon.Examples
                 {
                     Light light = layer.Lights[j];
 
-					// If we don't specify layers to light up, assume all layers receive light.
+                    // If we don't specify layers to light up, assume all layers receive light.
                     if (light.Layers.Count == 0)
                     {
                         for (int k = 0; k < _layers.Count; ++k)
@@ -126,17 +126,17 @@ namespace Gorgon.Examples
         /// Function to render the scene.
         /// </summary>
         public void Render()
-        {			
+        {
             GorgonRenderTarget2DView sceneBuffer = _graphics.TemporaryTargets.Rent(_screen, "Work Buffer", true);
             GorgonTexture2DView sceneSrv = sceneBuffer.GetShaderResourceView();
 
-			void FlipSceneToPostProcessBuffer()
+            void FlipSceneToPostProcessBuffer()
             {
                 _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _screen.Width, _screen.Height),
                     GorgonColor.White,
                     sceneSrv,
                     new DX.RectangleF(0, 0, 1, 1),
-					textureSampler: GorgonSamplerState.Default);
+                    textureSampler: GorgonSamplerState.Default);
             }
 
             _graphics.SetRenderTarget(sceneBuffer);
@@ -159,10 +159,10 @@ namespace Gorgon.Examples
             {
                 for (int i = 0; i < _postProcessGroups.Count; ++i)
                 {
-                    (string name, Gorgon2DCompositor compositor) = _postProcessGroups[i];			
+                    (string name, Gorgon2DCompositor compositor) = _postProcessGroups[i];
 
                     if ((!_postProcessLayers.TryGetValue(name, out List<Layer> layers))
-						|| (layers.Count == 0))
+                        || (layers.Count == 0))
                     {
                         continue;
                     }
@@ -170,7 +170,7 @@ namespace Gorgon.Examples
                     sceneBuffer.Clear(GorgonColor.Black);
                     _graphics.SetRenderTarget(sceneBuffer);
 
-					// Render the data.
+                    // Render the data.
                     for (int j = 0; j < layers.Count; ++j)
                     {
                         layers[j].Render();
@@ -183,8 +183,8 @@ namespace Gorgon.Examples
                     else
                     {
                         compositor
-							.FinalBlendState(GorgonBlendState.Default)
-							.Render(_screen, FlipSceneToPostProcessBuffer);
+                            .FinalBlendState(GorgonBlendState.Default)
+                            .Render(_screen, FlipSceneToPostProcessBuffer);
                     }
                 }
             }
@@ -192,7 +192,7 @@ namespace Gorgon.Examples
             _graphics.TemporaryTargets.Return(sceneBuffer);
         }
 
-		/// <summary>
+        /// <summary>
         /// Function called when the swap chain is resized.
         /// </summary>
         /// <param name="screen">The updated screen render target.</param>
@@ -208,7 +208,7 @@ namespace Gorgon.Examples
             DX.Vector2 aspect;
             if (_screen.Width > _screen.Height)
             {
-                aspect = new DX.Vector2((float)screen.Width / screen.Height, 1.0f);                
+                aspect = new DX.Vector2((float)screen.Width / screen.Height, 1.0f);
             }
             else
             {
@@ -267,7 +267,7 @@ namespace Gorgon.Examples
                 layers.Add(layer);
             }
 
-			// Use this adjust the sprite data to our coordinate space.
+            // Use this adjust the sprite data to our coordinate space.
             OnResize(_screen);
         }
 

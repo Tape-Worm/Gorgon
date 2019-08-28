@@ -90,7 +90,7 @@ namespace Gorgon.Editor.UI
             }
 
             try
-            {                
+            {
                 await _undoAction(_undoArgs, cancelToken);
             }
             finally

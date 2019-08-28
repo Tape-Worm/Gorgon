@@ -129,7 +129,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Function to retrieve a single file name.</summary>
         /// <returns>The selected file path, or <b>null</b> if cancelled.</returns>
         public override string GetFilename()
-        {            
+        {
             ConfigureDialog();
             return base.GetFilename();
         }

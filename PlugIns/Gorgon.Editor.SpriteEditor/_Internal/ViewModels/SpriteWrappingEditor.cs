@@ -37,22 +37,22 @@ namespace Gorgon.Editor.SpriteEditor
     /// The view model for the wrapping editor panel.
     /// </summary>
     internal class SpriteWrappingEditor
-		: ViewModelBase<SpriteWrappingEditorParameters>, ISpriteWrappingEditor
+        : ViewModelBase<SpriteWrappingEditorParameters>, ISpriteWrappingEditor
     {
         #region Variables.
-		// Horiztonal wrapping state.
+        // Horiztonal wrapping state.
         private TextureWrap _hWrap = TextureWrap.Clamp;
-		// Vertical wrapping state.
+        // Vertical wrapping state.
         private TextureWrap _vWrap = TextureWrap.Clamp;
-		// The current color for the border.
+        // The current color for the border.
         private GorgonColor _border = GorgonColor.White;
-		// The original border color.
+        // The original border color.
         private GorgonColor _originalBorder = GorgonColor.White;
-		// The service used to display messages to the user.
+        // The service used to display messages to the user.
         private IMessageDisplayService _messageDisplay;
-		// Flag to indicate that the editor is active.
+        // Flag to indicate that the editor is active.
         private bool _isActive;
-		// The command to execute when the OK button is clicked.
+        // The command to execute when the OK button is clicked.
         private IEditorCommand<object> _okCommand;
         // The builder used to create samplers.
         private ISamplerBuildService _samplerBuilder;

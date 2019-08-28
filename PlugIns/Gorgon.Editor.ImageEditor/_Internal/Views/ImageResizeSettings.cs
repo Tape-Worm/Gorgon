@@ -26,18 +26,18 @@
 
 using System;
 using System.ComponentModel;
-using Gorgon.Editor.UI;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.ViewModels;
-using Gorgon.Graphics.Imaging;
+using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
+using Gorgon.Graphics.Imaging;
 
 namespace Gorgon.Editor.ImageEditor
 {
     /// <summary>
     /// The panel used to provide settings for image import resizing.
     /// </summary>
-    internal partial class ImageResizeSettings 
+    internal partial class ImageResizeSettings
         : EditorSubPanelCommon, IDataContext<ICropResizeSettings>
     {
         #region Properties.
@@ -57,7 +57,7 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         private void ValidateControls()
         {
-            ValidateOk();            
+            ValidateOk();
 
             if (DataContext == null)
             {
@@ -66,7 +66,7 @@ namespace Gorgon.Editor.ImageEditor
                     panelAnchor.Enabled = false;
                 return;
             }
-            
+
             LabelAnchor.Visible = AlignmentPicker.Visible = RadioCrop.Checked;
 
             RadioResize.Enabled = (DataContext.AllowedModes & CropResizeMode.Resize) == CropResizeMode.Resize;
@@ -145,7 +145,7 @@ namespace Gorgon.Editor.ImageEditor
             switch (e.PropertyName)
             {
                 case nameof(ICropResizeSettings.CurrentMode):
-                    RadioCrop.Checked = (DataContext.CurrentMode == CropResizeMode.Crop) 
+                    RadioCrop.Checked = (DataContext.CurrentMode == CropResizeMode.Crop)
                                     || (DataContext.CurrentMode == CropResizeMode.None);
                     RadioResize.Checked = !RadioCrop.Checked;
                     break;
@@ -245,12 +245,12 @@ namespace Gorgon.Editor.ImageEditor
                     RadioCrop.Checked = true;
                     break;
             }
-            
+
             AlignmentPicker.Alignment = dataContext.CurrentAlignment;
             ComboImageFilter.SelectedItem = dataContext.ImageFilter;
             CheckPreserveAspect.Checked = dataContext.PreserveAspect;
         }
-        
+
         /// <summary>Function to cancel the change.</summary>
         protected override void OnCancel()
         {

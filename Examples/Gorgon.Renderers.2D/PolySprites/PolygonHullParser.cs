@@ -27,8 +27,8 @@
 using System;
 using System.Globalization;
 using Gorgon.Graphics;
-using DX = SharpDX;
 using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.Examples
 {

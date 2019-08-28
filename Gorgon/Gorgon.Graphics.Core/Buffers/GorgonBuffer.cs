@@ -188,7 +188,7 @@ namespace Gorgon.Graphics.Core
             {
                 bindFlags |= D3D11.BindFlags.StreamOutput;
             }
-            
+
             return bindFlags;
         }
 
@@ -209,13 +209,13 @@ namespace Gorgon.Graphics.Core
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_STRUCTURE_SIZE_INVALID, bufferInfo.StructureSize));
             }
-            
+
             if (bufferInfo.AllowRawView)
             {
                 // Raw buffers use 4 byte alignment.
                 bufferInfo.SizeInBytes = (bufferInfo.SizeInBytes + 3) & ~3;
             }
-            
+
             ValidateBufferBindings(bufferInfo.Usage, bufferInfo.Binding, bufferInfo.StructureSize);
 
             D3D11.ResourceOptionFlags options = D3D11.ResourceOptionFlags.None;
@@ -236,14 +236,14 @@ namespace Gorgon.Graphics.Core
             }
 
             return new D3D11.BufferDescription
-                   {
-                       SizeInBytes = bufferInfo.SizeInBytes,
-                       Usage = resourceUsage,
-                       BindFlags = bindFlags,
-                       OptionFlags = options,
-                       CpuAccessFlags = GetCpuFlags(bufferInfo.Usage, bufferInfo.Binding, bufferInfo.IndirectArgs),
-                       StructureByteStride = bufferInfo.StructureSize
-                   };
+            {
+                SizeInBytes = bufferInfo.SizeInBytes,
+                Usage = resourceUsage,
+                BindFlags = bindFlags,
+                OptionFlags = options,
+                CpuAccessFlags = GetCpuFlags(bufferInfo.Usage, bufferInfo.Binding, bufferInfo.IndirectArgs),
+                StructureByteStride = bufferInfo.StructureSize
+            };
         }
 
         /// <summary>
@@ -272,7 +272,7 @@ namespace Gorgon.Graphics.Core
                     result = D3D11.CpuAccessFlags.Read | D3D11.CpuAccessFlags.Write;
                     break;
                 case ResourceUsage.Default:
-                    if ((binding != BufferBinding.Shader) 
+                    if ((binding != BufferBinding.Shader)
                         && (binding != BufferBinding.ReadWrite)
                         && (binding != (BufferBinding.Shader | BufferBinding.ReadWrite)))
                     {
@@ -309,7 +309,7 @@ namespace Gorgon.Graphics.Core
             {
                 _info.AllowCpuRead = true;
             }
-            
+
             Log.Print($"{Name} Generic Buffer: Creating D3D11 buffer. Size: {SizeInBytes} bytes", LoggingLevel.Simple);
 
             if ((initialData != null) && (initialData.Length > 0))
@@ -317,17 +317,17 @@ namespace Gorgon.Graphics.Core
                 unsafe
                 {
                     D3DResource = Native = new D3D11.Buffer(Graphics.D3DDevice, new IntPtr((byte*)initialData), desc)
-                                           {
-                                               DebugName = $"{Name}_ID3D11Buffer"
-                                           };
+                    {
+                        DebugName = $"{Name}_ID3D11Buffer"
+                    };
                 }
             }
             else
             {
                 D3DResource = Native = new D3D11.Buffer(Graphics.D3DDevice, desc)
-                                       {
-                                           DebugName = $"{Name}_ID3D11Buffer"
-                                       };
+                {
+                    DebugName = $"{Name}_ID3D11Buffer"
+                };
             }
         }
 
@@ -464,7 +464,7 @@ namespace Gorgon.Graphics.Core
             {
                 return view;
             }
-            
+
             view = new GorgonBufferView(this, format, formatInfo, startElement, elementCount, totalElementCount);
             view.CreateNativeView();
             RegisterView(key, view);
@@ -513,7 +513,7 @@ namespace Gorgon.Graphics.Core
                 elementCount = totalElementCount - startElement;
             }
 
-            elementCount = elementCount.Min(totalElementCount- startElement).Max(1);
+            elementCount = elementCount.Min(totalElementCount - startElement).Max(1);
 
             var key = new BufferShaderViewKey(startElement, elementCount, 0);
 
@@ -793,7 +793,7 @@ namespace Gorgon.Graphics.Core
                 return result;
             }
 
-            result = new GorgonRawReadWriteView(this, startElement, elementCount,  totalElementCount, elementType);
+            result = new GorgonRawReadWriteView(this, startElement, elementCount, totalElementCount, elementType);
             result.CreateNativeView();
             RegisterReadWriteView(key, result);
 

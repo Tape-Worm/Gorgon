@@ -52,7 +52,7 @@ namespace Gorgon.Editor.Services
         private readonly Dictionary<string, FileWriterPlugIn> _writers = new Dictionary<string, FileWriterPlugIn>(StringComparer.OrdinalIgnoreCase);
         // A list of disabled plug ins.
         private readonly Dictionary<string, IDisabledPlugIn> _disabled = new Dictionary<string, IDisabledPlugIn>(StringComparer.OrdinalIgnoreCase);
-		// Common application services.
+        // Common application services.
         private readonly IViewModelInjection _commonServices;
         #endregion
 
@@ -261,8 +261,8 @@ namespace Gorgon.Editor.Services
             foreach (IGorgonFileSystemProvider reader in readers)
             {
                 try
-                {                   
-                    Program.Log.Print($"Creating file system reader plug in '{reader.Name}'...", LoggingLevel.Simple);                    
+                {
+                    Program.Log.Print($"Creating file system reader plug in '{reader.Name}'...", LoggingLevel.Simple);
                     _readers[reader.Name] = reader;
                 }
                 catch (Exception ex)
@@ -284,12 +284,12 @@ namespace Gorgon.Editor.Services
                     Program.Log.Print($"Creating file system writer plug in '{writer.Name}'...", LoggingLevel.Simple);
 
                     if (disabled.Count != 0)
-                    {                        
+                    {
                         Program.Log.Print($"WARNING: The file system writer plug in '{writer.Name}' is disabled:", LoggingLevel.Simple);
                         foreach (string reason in disabled)
                         {
                             Program.Log.Print($"WARNING: {reason}", LoggingLevel.Verbose);
-                        }                        
+                        }
 
                         _disabled[writer.Name] = new DisabledPlugIn(DisabledReasonCode.ValidationError, writer.Name, string.Join("\n", disabled), writer.PlugInPath);
                         continue;

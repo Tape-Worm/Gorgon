@@ -24,10 +24,10 @@
 // 
 #endregion
 
-using DX = SharpDX;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
+using DX = SharpDX;
 
 
 namespace Gorgon.Animation

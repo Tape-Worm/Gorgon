@@ -33,12 +33,12 @@ namespace Gorgon.Editor.FileSystem
     /// An interface used to browse the file system folder structure.
     /// </summary>
     internal interface IEditorFileSystemFolderBrowseService
-		: IFileSystemFolderBrowseService
+        : IFileSystemFolderBrowseService
     {
-		/// <summary>
+        /// <summary>
         /// Property to set or return the file system for the currently loaded project.
         /// </summary>
-		IFileExplorerVm FileSystem
+        IFileExplorerVm FileSystem
         {
             get;
             set;

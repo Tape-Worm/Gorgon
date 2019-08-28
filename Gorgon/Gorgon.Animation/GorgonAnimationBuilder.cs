@@ -41,7 +41,7 @@ namespace Gorgon.Animation
     /// </para>
     /// </remarks>
     public class GorgonAnimationBuilder
-        :  IGorgonFluentBuilder<GorgonAnimationBuilder, IGorgonAnimation>
+        : IGorgonFluentBuilder<GorgonAnimationBuilder, IGorgonAnimation>
     {
         #region Variables.
         // The builder for the positions track.
@@ -224,7 +224,7 @@ namespace Gorgon.Animation
                 length = _trackPositions.Keys.Cast<IGorgonKeyFrame>()
                                         .Concat(_trackColors.Keys)
                                         .Concat(_trackRectBounds.Keys)
-										.Concat(_trackSize.Keys)
+                                        .Concat(_trackSize.Keys)
                                         .Concat(_trackTexture2D.Keys)
                                         .Concat(_trackRotation.Keys)
                                         .Concat(_trackScale.Keys)
@@ -286,7 +286,7 @@ namespace Gorgon.Animation
             _rotationMode = builderObject.RotationTrack.InterpolationMode;
             _scaleMode = builderObject.ScaleTrack.InterpolationMode;
             _sizeMode = builderObject.SizeTrack.InterpolationMode;
-            
+
             _trackPositions.Keys.AddRange(builderObject.PositionTrack.KeyFrames.Select(item => new GorgonKeyVector3(item.Time, item.Value)));
             _trackScale.Keys.AddRange(builderObject.ScaleTrack.KeyFrames.Select(item => new GorgonKeyVector3(item.Time, item.Value)));
             _trackRotation.Keys.AddRange(builderObject.RotationTrack.KeyFrames.Select(item => new GorgonKeyVector3(item.Time, item.Value)));
@@ -342,11 +342,11 @@ namespace Gorgon.Animation
         {
             float maxTime = _trackPositions.Keys.Cast<IGorgonKeyFrame>()
                 .Concat(_trackColors.Keys)
-				.Concat(_trackRectBounds.Keys)
-				.Concat(_trackRotation.Keys)
-				.Concat(_trackScale.Keys)
-				.Concat(_trackSize.Keys)
-				.Concat(_trackTexture2D.Keys).Max(item => item.Time);
+                .Concat(_trackRectBounds.Keys)
+                .Concat(_trackRotation.Keys)
+                .Concat(_trackScale.Keys)
+                .Concat(_trackSize.Keys)
+                .Concat(_trackTexture2D.Keys).Max(item => item.Time);
 
             return Build($"Animation_{Guid.NewGuid():N}", maxTime.Max(0));
         }
@@ -364,7 +364,7 @@ namespace Gorgon.Animation
             _trackTexture2D = new TrackKeyBuilder<GorgonKeyTexture2D>(this);
             _trackScale = new TrackKeyBuilder<GorgonKeyVector3>(this);
             _trackSize = new TrackKeyBuilder<GorgonKeyVector3>(this);
-            _trackRotation =new TrackKeyBuilder<GorgonKeyVector3>(this);
+            _trackRotation = new TrackKeyBuilder<GorgonKeyVector3>(this);
         }
         #endregion
     }

@@ -29,22 +29,22 @@ using Gorgon.Graphics.Fonts.Properties;
 
 namespace Gorgon.Graphics.Fonts
 {
-	/// <summary>
-	/// A kerning pair value.
-	/// </summary>
-	/// <remarks>Kerning pairs are used to offset a pair of characters when they are next to each other.</remarks>
-	public readonly struct GorgonKerningPair
-		: IGorgonEquatableByRef<GorgonKerningPair>
-	{
-		#region Variables.
-		/// <summary>
-		/// Left character.
-		/// </summary>
-		public readonly char LeftCharacter;
-		/// <summary>
-		/// Right character.
-		/// </summary>
-		public readonly char RightCharacter;
+    /// <summary>
+    /// A kerning pair value.
+    /// </summary>
+    /// <remarks>Kerning pairs are used to offset a pair of characters when they are next to each other.</remarks>
+    public readonly struct GorgonKerningPair
+        : IGorgonEquatableByRef<GorgonKerningPair>
+    {
+        #region Variables.
+        /// <summary>
+        /// Left character.
+        /// </summary>
+        public readonly char LeftCharacter;
+        /// <summary>
+        /// Right character.
+        /// </summary>
+        public readonly char RightCharacter;
         #endregion
 
         #region Methods.
@@ -126,10 +126,10 @@ namespace Gorgon.Graphics.Fonts
         /// <param name="leftChar">The left char.</param>
         /// <param name="rightChar">The right char.</param>
         public GorgonKerningPair(char leftChar, char rightChar)
-		{
-			LeftCharacter = leftChar;
-			RightCharacter = rightChar;
-		}
-		#endregion
+        {
+            LeftCharacter = leftChar;
+            RightCharacter = rightChar;
+        }
+        #endregion
     }
 }

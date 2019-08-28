@@ -32,62 +32,62 @@ using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
-	/// <summary>
-	/// An effect that sharpens (and optionally embosses) an image.
-	/// </summary>
-	public class Gorgon2DSharpenEmbossEffect
-		: Gorgon2DEffect
-	{
-		#region Variables.
-	    // Constant buffer for the sharpen/emboss information.
-		private GorgonConstantBufferView _sharpenEmbossBuffer;
+    /// <summary>
+    /// An effect that sharpens (and optionally embosses) an image.
+    /// </summary>
+    public class Gorgon2DSharpenEmbossEffect
+        : Gorgon2DEffect
+    {
+        #region Variables.
+        // Constant buffer for the sharpen/emboss information.
+        private GorgonConstantBufferView _sharpenEmbossBuffer;
         // Pixel shader used to sharpen an image.
         private GorgonPixelShader _sharpenShader;
-		private Gorgon2DShaderState<GorgonPixelShader> _sharpenState;
+        private Gorgon2DShaderState<GorgonPixelShader> _sharpenState;
         // Pixel shader used to emboss an image.
         private GorgonPixelShader _embossShader;
-		private Gorgon2DShaderState<GorgonPixelShader> _embossState;
+        private Gorgon2DShaderState<GorgonPixelShader> _embossState;
         // The batch render state for sharpening.
-	    private Gorgon2DBatchState _sharpenBatchState;
+        private Gorgon2DBatchState _sharpenBatchState;
         // The batch render state for embossing.
-	    private Gorgon2DBatchState _embossBatchState;
-	    // Amount to sharpen/emboss
-		private float _amount = 0.5f;										
-	    // Flag to indicate that the parameters were updated.
-		private bool _isUpdated = true;										
-		#endregion
+        private Gorgon2DBatchState _embossBatchState;
+        // Amount to sharpen/emboss
+        private float _amount = 0.5f;
+        // Flag to indicate that the parameters were updated.
+        private bool _isUpdated = true;
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to set or return whether to use embossing instead of sharpening.
-		/// </summary>
-		public bool UseEmbossing
-		{
-			get;
-			set;
-		}
+        #region Properties.
+        /// <summary>
+        /// Property to set or return whether to use embossing instead of sharpening.
+        /// </summary>
+        public bool UseEmbossing
+        {
+            get;
+            set;
+        }
 
-		/// <summary>
-		/// Property to set or return whether the amount to sharpen/emboss.
-		/// </summary>
-		public float Amount
-		{
-			get => _amount;
-		    set
-			{
-				// ReSharper disable once CompareOfFloatsByEqualityOperator
-				if (_amount == value)
-				{
-					return;
-				}
+        /// <summary>
+        /// Property to set or return whether the amount to sharpen/emboss.
+        /// </summary>
+        public float Amount
+        {
+            get => _amount;
+            set
+            {
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
+                if (_amount == value)
+                {
+                    return;
+                }
 
-				_amount = value;
-				_isUpdated = true;
-			}
-		}
-		#endregion
+                _amount = value;
+                _isUpdated = true;
+            }
+        }
+        #endregion
 
-		#region Methods.
+        #region Methods.
         /// <summary>
         /// Function called when the effect is being initialized.
         /// </summary>
@@ -95,47 +95,47 @@ namespace Gorgon.Renderers
         /// Use this method to set up the effect upon its creation.  For example, this method could be used to create the required shaders for the effect.
         /// <para>When creating a custom effect, use this method to initialize the effect.  Do not put initialization code in the effect constructor.</para>
         /// </remarks>
-	    protected override void OnInitialize()
-	    {
-	        _sharpenEmbossBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo("Gorgon 2D Sharpen/Emboss Constant Buffer")
-	                                                                                       {
-                                                                                               SizeInBytes = 16
-	                                                                                       });
+        protected override void OnInitialize()
+        {
+            _sharpenEmbossBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo("Gorgon 2D Sharpen/Emboss Constant Buffer")
+            {
+                SizeInBytes = 16
+            });
             _sharpenShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderSharpen");
             _embossShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderEmboss");
 
             _sharpenState = PixelShaderBuilder
-	                         .ConstantBuffer(_sharpenEmbossBuffer, 1)
-	                         .Shader(_sharpenShader)
-	                         .Build();
+                             .ConstantBuffer(_sharpenEmbossBuffer, 1)
+                             .Shader(_sharpenShader)
+                             .Build();
 
-	        _embossState = PixelShaderBuilder
-	                        .Shader(_embossShader)
-	                        .Build();
+            _embossState = PixelShaderBuilder
+                            .Shader(_embossShader)
+                            .Build();
 
         }
 
-	    /// <summary>
-	    /// Function called to build a new (or return an existing) 2D batch state.
-	    /// </summary>
-	    /// <param name="passIndex">The index of the current rendering pass.</param>
-	    /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
-	    /// <returns>The 2D batch state.</returns>
-	    protected override Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged)
-	    {
-	        // ReSharper disable once InvertIf
-	        if (statesChanged)
-	        {
-	            _sharpenBatchState = BatchStateBuilder
-	                                 .PixelShaderState(_sharpenState)
-	                                 .Build();
-	            _embossBatchState = BatchStateBuilder
-	                                .PixelShaderState(_embossState)
-	                                .Build();
-	        }
+        /// <summary>
+        /// Function called to build a new (or return an existing) 2D batch state.
+        /// </summary>
+        /// <param name="passIndex">The index of the current rendering pass.</param>
+        /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
+        /// <returns>The 2D batch state.</returns>
+        protected override Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged)
+        {
+            // ReSharper disable once InvertIf
+            if (statesChanged)
+            {
+                _sharpenBatchState = BatchStateBuilder
+                                     .PixelShaderState(_sharpenState)
+                                     .Build();
+                _embossBatchState = BatchStateBuilder
+                                    .PixelShaderState(_embossState)
+                                    .Build();
+            }
 
-	        return UseEmbossing ? _embossBatchState : _sharpenBatchState;
-	    }
+            return UseEmbossing ? _embossBatchState : _sharpenBatchState;
+        }
 
         /// <summary>
         /// Function called prior to rendering.
@@ -150,23 +150,23 @@ namespace Gorgon.Renderers
         /// </para>
         /// </remarks>
         protected override void OnBeforeRender(GorgonRenderTargetView output, IGorgon2DCamera camera, bool sizeChanged)
-	    {
-		    if (Graphics.RenderTargets[0] != output)
-		    {
+        {
+            if (Graphics.RenderTargets[0] != output)
+            {
                 Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
-		        _isUpdated = true;
-		    }
+                _isUpdated = true;
+            }
 
-			if ((!_isUpdated) && (!sizeChanged))
-			{
-			    return;
-			}
+            if ((!_isUpdated) && (!sizeChanged))
+            {
+                return;
+            }
 
-		    var settings = new DX.Vector3(1.0f / output.Width, 1.0f / output.Height, _amount);
+            var settings = new DX.Vector3(1.0f / output.Width, 1.0f / output.Height, _amount);
 
-		    _sharpenEmbossBuffer.Buffer.SetData(ref settings);
-		    _isUpdated = false;
-		}
+            _sharpenEmbossBuffer.Buffer.SetData(ref settings);
+            _isUpdated = false;
+        }
 
         /// <summary>
         /// Function called to render a single effect pass.
@@ -186,15 +186,15 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
-		{
-		    GorgonConstantBufferView buffer = Interlocked.Exchange(ref _sharpenEmbossBuffer, null);
-		    GorgonPixelShader shader1 = Interlocked.Exchange(ref _sharpenShader, null);
-		    GorgonPixelShader shader2 = Interlocked.Exchange(ref _embossShader, null);
+        {
+            GorgonConstantBufferView buffer = Interlocked.Exchange(ref _sharpenEmbossBuffer, null);
+            GorgonPixelShader shader1 = Interlocked.Exchange(ref _sharpenShader, null);
+            GorgonPixelShader shader2 = Interlocked.Exchange(ref _embossShader, null);
 
             buffer?.Dispose();
             shader1?.Dispose();
             shader2?.Dispose();
-		}
+        }
         #endregion
 
         #region Constructor/Destructor.

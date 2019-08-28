@@ -25,20 +25,20 @@
 #endregion
 
 using System;
-using System.IO;
-using System.Threading.Tasks;
-using Gorgon.Core;
-using Gorgon.Editor.Services;
-using System.Threading;
-using Gorgon.Editor.Properties;
-using Gorgon.Editor.PlugIns;
-using Gorgon.Editor.Content;
-using Gorgon.Editor.Metadata;
-using System.Linq;
-using Gorgon.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Editor.Content;
+using Gorgon.Editor.Metadata;
+using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Properties;
+using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -315,7 +315,7 @@ namespace Gorgon.Editor.ViewModels
             finally
             {
                 NotifyPropertyChanged(nameof(Name));
-            }            
+            }
         }
 
         /// <summary>
@@ -350,11 +350,11 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 // If we have a source file, remove it.
-                if ((Metadata != null) 
+                if ((Metadata != null)
                     && (Metadata.Attributes.TryGetValue(ContentImportPlugIn.ImportOriginalFileNameAttr, out string sourcePath)))
-                {                    
+                {
                     var sourceFile = new FileInfo(Path.Combine(Project.SourceDirectory.FullName, sourcePath));
-                    
+
                     if (sourceFile.Exists)
                     {
                         Program.Log.Print($"{FullPath} has a source file that it was imported from: {sourceFile.Name}. This file will be deleted as well.", LoggingLevel.Verbose);
@@ -363,18 +363,18 @@ namespace Gorgon.Editor.ViewModels
                         {
                             sourceFile.Delete();
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             Program.Log.Print($"[ERROR] Could not delete source file {sourcePath}.", LoggingLevel.Verbose);
                             Program.Log.LogException(ex);
                         }
                     }
                 }
-                
+
                 NotifyPropertyChanging(nameof(FullPath));
 
                 OnUnload();
-                
+
                 // Drop us from the parent list.
                 // This will begin a chain reaction that will remove us from the UI.
                 Parent.Children.Remove(this);
@@ -442,9 +442,9 @@ namespace Gorgon.Editor.ViewModels
                     // Otherwise, determine how to resolve the conflict.
                     // If the file is open in the editor then we have no choice but to force the resolver to run because we cannot mess with an open file.
                     isConflictDueToOpenFile = (dupeNode.IsOpen) && (conflictResolution == FileSystemConflictResolution.OverwriteAll);
-                    if ((copyNodeData.ConflictHandler != null) && ((isConflictDueToOpenFile) 
+                    if ((copyNodeData.ConflictHandler != null) && ((isConflictDueToOpenFile)
                         || ((conflictResolution != FileSystemConflictResolution.OverwriteAll) && (conflictResolution != FileSystemConflictResolution.RenameAll))))
-                    {                       
+                    {
                         conflictResolution = copyNodeData.ConflictHandler(this, dupeNode, true, copyNodeData.UseToAllInConflictHandler);
                     }
                     else if (copyNodeData.ConflictHandler == null)
@@ -477,7 +477,7 @@ namespace Gorgon.Editor.ViewModels
                             copyNodeData.DefaultResolution = conflictResolution;
                         }
                         return null;
-                    case FileSystemConflictResolution.Cancel:                        
+                    case FileSystemConflictResolution.Cancel:
                         copyNodeData.DefaultResolution = conflictResolution;
                         return null;
                     case FileSystemConflictResolution.Exception:
@@ -485,7 +485,7 @@ namespace Gorgon.Editor.ViewModels
                         throw new IOException(string.Format(Resources.GOREDIT_ERR_NODE_EXISTS, Name));
                 }
             }
-            
+
             if ((conflictResolution == FileSystemConflictResolution.RenameAll)
                 || (conflictResolution == FileSystemConflictResolution.OverwriteAll))
             {
@@ -791,7 +791,7 @@ namespace Gorgon.Editor.ViewModels
                 return;
             }
 
-            _dependencies.Remove(actualItem);            
+            _dependencies.Remove(actualItem);
         }
 
         /// <summary>

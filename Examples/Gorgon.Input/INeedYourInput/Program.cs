@@ -31,29 +31,29 @@ using Gorgon.UI;
 
 namespace Gorgon.Input.Example
 {
-	/// <summary>
-	/// Example entry point.
-	/// </summary>
-	/// <remarks>To see a description of this example, look in formMain.cs</remarks>
-	static class Program
-	{
-		/// <summary>
-		/// The main entry point for the application.
-		/// </summary>
-		[STAThread]
-		static void Main()
-		{
-			try
-			{
-				Application.EnableVisualStyles();
-				Application.SetCompatibleTextRenderingDefault(false);
+    /// <summary>
+    /// Example entry point.
+    /// </summary>
+    /// <remarks>To see a description of this example, look in formMain.cs</remarks>
+    static class Program
+    {
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        static void Main()
+        {
+            try
+            {
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
 
-				GorgonApplication.Run(new MainForm());
-			}
-			catch (Exception ex)
-			{
+                GorgonApplication.Run(new MainForm());
+            }
+            catch (Exception ex)
+            {
                 GorgonExample.HandleException(ex);
-			}
-		}
-	}
+            }
+        }
+    }
 }

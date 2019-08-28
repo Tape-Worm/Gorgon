@@ -29,17 +29,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Drawing = System.Drawing;
 using Gorgon.Core;
+using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
-using DX = SharpDX;
-using Gorgon.UI;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Timing;
-using Gorgon.Examples.Properties;
+using Gorgon.UI;
+using Drawing = System.Drawing;
+using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -107,7 +107,7 @@ namespace Gorgon.Examples
             {
                 _graphics.SetRenderTarget(_screen.RenderTargetView);
             }
-            
+
             GorgonExample.DrawStatsAndLogo(_renderer);
 
             _screen.Present(1);
@@ -150,7 +150,7 @@ namespace Gorgon.Examples
                 {
                     continue;
                 }
-            
+
                 _renderer.DrawString(button.Text, button.Bounds.TopLeft, color: button.ForeColor);
             }
 
@@ -158,7 +158,7 @@ namespace Gorgon.Examples
             if (_dragButton != null)
             {
                 Drawing.Point cursorPosition = _screen.Window.PointToClient(Cursor.Position);
-                
+
                 var pos = new DX.RectangleF(cursorPosition.X - _dragOffset.X, cursorPosition.Y - _dragOffset.Y, _dragButton.Bounds.Width, _dragButton.Bounds.Height);
                 _renderer.DrawFilledRectangle(pos, _dragButton.BackColor);
                 _renderer.DrawString(_dragButton.Text, pos.TopLeft, color: _dragButton.ForeColor);
@@ -259,67 +259,67 @@ namespace Gorgon.Examples
         {
             // The blur effect.
             _blurEffect = new Gorgon2DGaussBlurEffect(_renderer)
-                          {
-                              PreserveAlpha = true
-                          };
+            {
+                PreserveAlpha = true
+            };
             _blurEffect.Precache();
-            
+
             // The grayscale effect.
             _grayScaleEffect = new Gorgon2DGrayScaleEffect(_renderer);
 
             // The posterize effect.
             _posterizeEffect = new Gorgon2DPosterizedEffect(_renderer)
-                               {
-                                   Bits = 10
-                               };
+            {
+                Bits = 10
+            };
 
             // The 1 bit effect.
             _1BitEffect = new Gorgon2D1BitEffect(_renderer)
-                          {
-                              Threshold = new GorgonRangeF(0.5f, 1.0f),
-                              ConvertAlphaChannel = false
-                          };
-            
+            {
+                Threshold = new GorgonRangeF(0.5f, 1.0f),
+                ConvertAlphaChannel = false
+            };
+
             // The burn effect.
             _burnEffect = new Gorgon2DBurnDodgeEffect(_renderer)
-                          {
-                              UseDodge = false
-                          };
-            
+            {
+                UseDodge = false
+            };
+
             // The dodge effect.
             _dodgeEffect = new Gorgon2DBurnDodgeEffect(_renderer)
-                           {
-                               UseDodge = true
-                           };
+            {
+                UseDodge = true
+            };
 
             // The invert effect.
             _invertEffect = new Gorgon2DInvertEffect(_renderer);
 
             // The sharpen effect.
             _sharpenEffect = new Gorgon2DSharpenEmbossEffect(_renderer)
-                             {
-                                 UseEmbossing = false,
-                                 Amount = 1.0f
-                             };
+            {
+                UseEmbossing = false,
+                Amount = 1.0f
+            };
             // The emboss effect.
             _embossEffect = new Gorgon2DSharpenEmbossEffect(_renderer)
-                            {
-                                UseEmbossing = true, 
-                                Amount = 1.0f
-                            };
+            {
+                UseEmbossing = true,
+                Amount = 1.0f
+            };
 
             // The sobel edge detection effect.
             _sobelEffect = new Gorgon2DSobelEdgeDetectEffect(_renderer)
-                           {
-                               LineThickness = 2.5f,
-                               EdgeThreshold = 0.80f
-                           };
+            {
+                LineThickness = 2.5f,
+                EdgeThreshold = 0.80f
+            };
 
             // An old film effect.
             _oldFilmEffect = new Gorgon2DOldFilmEffect(_renderer)
-                             {
-                                 ScrollSpeed = 0.05f
-                             };
+            {
+                ScrollSpeed = 0.05f
+            };
             // A HDR bloom effect.
             _bloomEffect = new Gorgon2DBloomEffect(_renderer)
             {
@@ -328,10 +328,10 @@ namespace Gorgon.Examples
                 BlurAmount = 6.0f,
                 ColorIntensity = 1.15f
             };
-			// A chromatic aberration effect.
+            // A chromatic aberration effect.
             _chromatic = new Gorgon2DChromaticAberrationEffect(_renderer)
             {
-				Intensity = 0.25f
+                Intensity = 0.25f
             };
 
             _compositor = new Gorgon2DCompositor(_renderer);
@@ -339,7 +339,7 @@ namespace Gorgon.Examples
             // As you can see, we're not strictly limited to using our 2D effect objects, we can define custom passes as well.
             // And, we can also define how existing effects are rendered for things like animation and such.
             _compositor.EffectPass("Chromatic Aberration", _chromatic)
-					   .EffectPass("1-Bit Color", _1BitEffect)
+                       .EffectPass("1-Bit Color", _1BitEffect)
                        .EffectPass("Blur", _blurEffect)
                        .EffectPass("Grayscale", _grayScaleEffect)
                        .EffectPass("Posterize", _posterizeEffect)
@@ -350,9 +350,10 @@ namespace Gorgon.Examples
                        .EffectPass("Emboss", _embossEffect)
                        .EffectPass("Bloom", _bloomEffect)
                        .Pass(new Gorgon2DCompositionPass("Sobel Edge Detection", _sobelEffect)
-                             {
-                                 BlendOverride = GorgonBlendState.Default, ClearColor = GorgonColor.White
-                             })
+                       {
+                           BlendOverride = GorgonBlendState.Default,
+                           ClearColor = GorgonColor.White
+                       })
                        .RenderPass("Sobel Blend Pass",
                                    (sobelTexture, pass, passCount, size) =>
                                    {
@@ -364,29 +365,29 @@ namespace Gorgon.Examples
                                        _renderer.DrawFilledRectangle(rectPosition, GorgonColor.White, sobelTexture, texCoords);
                                    })
                        .Pass(new Gorgon2DCompositionPass("Olde Film", _oldFilmEffect)
-                             {
-                                 BlendOverride = GorgonBlendState.Additive,
-                                 RenderMethod = (prevEffect, passIndex, passCount, size) =>
-                                                {
+                       {
+                           BlendOverride = GorgonBlendState.Additive,
+                           RenderMethod = (prevEffect, passIndex, passCount, size) =>
+                                          {
                                                     // Here we can override the method used to render to the effect. 
                                                     // In this case, we're animating our old film content to shake and darken at defined intervals.
                                                     // If we do not override this, the compositor would just blit the previous texture to the 
                                                     // current render target.
                                                     var rectPosition = new DX.RectangleF(0, 0, size.Width, size.Height);
-                                                    var texCoords = new DX.RectangleF(0, 0, 1, 1);
-                                                    GorgonColor color = GorgonColor.White;
+                                              var texCoords = new DX.RectangleF(0, 0, 1, 1);
+                                              GorgonColor color = GorgonColor.White;
 
-                                                    if ((GorgonTiming.SecondsSinceStart % 10) >= 4)
-                                                    {
-                                                        rectPosition.Inflate(GorgonRandom.RandomSingle(1, 5), GorgonRandom.RandomSingle(1, 5));
-                                                        float value = GorgonRandom.RandomSingle(0.5f, 0.89f);
-                                                        color = new GorgonColor(value, value, value, 1.0f);
-                                                    }
+                                              if ((GorgonTiming.SecondsSinceStart % 10) >= 4)
+                                              {
+                                                  rectPosition.Inflate(GorgonRandom.RandomSingle(1, 5), GorgonRandom.RandomSingle(1, 5));
+                                                  float value = GorgonRandom.RandomSingle(0.5f, 0.89f);
+                                                  color = new GorgonColor(value, value, value, 1.0f);
+                                              }
 
-                                                    _renderer.DrawFilledRectangle(rectPosition, color, prevEffect, texCoords);
-                                                }
+                                              _renderer.DrawFilledRectangle(rectPosition, color, prevEffect, texCoords);
+                                          }
 
-                             })                       
+                       })
                        .InitialClearColor(GorgonColor.White)
                        .FinalClearColor(GorgonColor.White);
 
@@ -418,7 +419,7 @@ namespace Gorgon.Examples
                     throw new GorgonException(GorgonResult.CannotCreate,
                                               "Gorgon requires at least a Direct3D 11.4 capable video device.\nThere is no suitable device installed on the system.");
                 }
-                
+
                 // Find the best video device.
                 _graphics = new GorgonGraphics(videoDevices.OrderByDescending(item => item.FeatureSet).First());
 
@@ -441,7 +442,7 @@ namespace Gorgon.Examples
 
                 // Load the Gorgon logo to show in the lower right corner.
                 var ddsCodec = new GorgonCodecDds();
-                
+
                 // Import the images we'll use in our post process chain.
                 if (!LoadImageFiles(ddsCodec))
                 {
@@ -658,7 +659,7 @@ namespace Gorgon.Examples
                     }
                     _compositor.Dispose();
                 }
-                
+
                 _renderer?.Dispose();
                 _screen?.Dispose();
                 _graphics?.Dispose();

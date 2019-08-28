@@ -28,12 +28,12 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
-using Drawing = System.Drawing;
 using Gorgon.Editor.Rendering;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers;
+using Drawing = System.Drawing;
 using DX = SharpDX;
 
 namespace Gorgon.Editor.Services
@@ -105,7 +105,7 @@ namespace Gorgon.Editor.Services
                 {
                     return;
                 }
-                
+
                 _bounds = value;
                 SetupHandles();
             }
@@ -700,8 +700,8 @@ namespace Gorgon.Editor.Services
 
             _keyboardIcon = new Lazy<GorgonTexture2DView>(() => GorgonTexture2DView.CreateTexture(renderer.Graphics, new GorgonTexture2DInfo("RectClipper_KeyboardIcon")
             {
-				Width = EditorCommonResources.KeyboardIcon.Width,
-				Height = EditorCommonResources.KeyboardIcon.Height
+                Width = EditorCommonResources.KeyboardIcon.Width,
+                Height = EditorCommonResources.KeyboardIcon.Height
             }, EditorCommonResources.KeyboardIcon), true);
         }
         #endregion

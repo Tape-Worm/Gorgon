@@ -30,8 +30,8 @@ using Gorgon.Diagnostics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using SharpDX.DXGI;
-using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core
 {
@@ -51,9 +51,9 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="GorgonTexture2D"/>
     /// <seealso cref="GorgonTexture3D"/>
     public sealed class GorgonRenderTarget3DView
-		: GorgonRenderTargetView, IGorgonTexture3DInfo, IGorgonImageInfo
+        : GorgonRenderTargetView, IGorgonTexture3DInfo, IGorgonImageInfo
     {
-		#region Properties.
+        #region Properties.
         /// <summary>
         /// Property to return the type of image data.
         /// </summary>
@@ -207,16 +207,16 @@ namespace Gorgon.Graphics.Core
             Graphics.Log.Print($"Render Target 3D View '{Texture.Name}': Creating D3D11 render target view.", LoggingLevel.Simple);
 
             var desc = new D3D11.RenderTargetViewDescription1
-                                                      {
-                                                          Format = (Format)Format,
-                                                          Dimension = D3D11.RenderTargetViewDimension.Texture3D,
-                                                          Texture3D =
+            {
+                Format = (Format)Format,
+                Dimension = D3D11.RenderTargetViewDimension.Texture3D,
+                Texture3D =
                                                           {
                                                               DepthSliceCount = DepthSliceCount,
                                                               FirstDepthSlice = StartDepthSlice,
                                                               MipSlice = MipSlice
                                                           }
-                                                      };
+            };
 
             MipWidth = (Width >> MipSlice).Max(1);
             MipHeight = (Height >> MipSlice).Max(1);
@@ -227,73 +227,73 @@ namespace Gorgon.Graphics.Core
                                LoggingLevel.Verbose);
 
             Native = new D3D11.RenderTargetView1(Texture.Graphics.D3DDevice, Texture.D3DResource, desc)
-                     {
-                         DebugName = $"'{Texture.Name}'_D3D11RenderTargetView1_3D"
-                     };
+            {
+                DebugName = $"'{Texture.Name}'_D3D11RenderTargetView1_3D"
+            };
 
             return Native;
         }
-        
-		/// <summary>
-		/// Function to convert a texel coordinate into a pixel coordinate and a depth slice.
-		/// </summary>
-		/// <param name="texelCoordinates">The texel coordinates to convert.</param>
-		/// <returns>The pixel coordinates.</returns>
-		public (DX.Point, int) ToPixel(DX.Vector3 texelCoordinates)
-		{
-		    float width = Texture.Width;
-		    float height = Texture.Height;
 
-		    return (new DX.Point((int)(texelCoordinates.X * width), (int)(texelCoordinates.Y * height)), (int)(texelCoordinates.Z * Depth));
-		}
+        /// <summary>
+        /// Function to convert a texel coordinate into a pixel coordinate and a depth slice.
+        /// </summary>
+        /// <param name="texelCoordinates">The texel coordinates to convert.</param>
+        /// <returns>The pixel coordinates.</returns>
+        public (DX.Point, int) ToPixel(DX.Vector3 texelCoordinates)
+        {
+            float width = Texture.Width;
+            float height = Texture.Height;
 
-		/// <summary>
-		/// Function to convert a pixel coordinate into a texel coordinate.
-		/// </summary>
-		/// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
-		/// <returns>The texel coordinates.</returns>
-		public DX.Vector3 ToTexel(DX.Point pixelCoordinates)
-		{
-		    float width = Texture.Width;
-		    float height = Texture.Height;
+            return (new DX.Point((int)(texelCoordinates.X * width), (int)(texelCoordinates.Y * height)), (int)(texelCoordinates.Z * Depth));
+        }
 
-		    return new DX.Vector3(pixelCoordinates.X / width, pixelCoordinates.Y / height, Depth / (float)Depth);
-		}
+        /// <summary>
+        /// Function to convert a pixel coordinate into a texel coordinate.
+        /// </summary>
+        /// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
+        /// <returns>The texel coordinates.</returns>
+        public DX.Vector3 ToTexel(DX.Point pixelCoordinates)
+        {
+            float width = Texture.Width;
+            float height = Texture.Height;
 
-		/// <summary>
-		/// Function to convert a texel size into a pixel size.
-		/// </summary>
-		/// <param name="texelCoordinates">The texel size to convert.</param>
-		/// <returns>The pixel size.</returns>
-		public DX.Size2 ToPixel(DX.Size2F texelCoordinates)
-		{
-		    float width = Texture.Width;
-		    float height = Texture.Height;
+            return new DX.Vector3(pixelCoordinates.X / width, pixelCoordinates.Y / height, Depth / (float)Depth);
+        }
 
-		    return new DX.Size2((int)(texelCoordinates.Width * width), (int)(texelCoordinates.Height * height));
-		}
+        /// <summary>
+        /// Function to convert a texel size into a pixel size.
+        /// </summary>
+        /// <param name="texelCoordinates">The texel size to convert.</param>
+        /// <returns>The pixel size.</returns>
+        public DX.Size2 ToPixel(DX.Size2F texelCoordinates)
+        {
+            float width = Texture.Width;
+            float height = Texture.Height;
 
-		/// <summary>
-		/// Function to convert a pixel size into a texel size.
-		/// </summary>
-		/// <param name="pixelCoordinates">The pixel size to convert.</param>
-		/// <returns>The texel size.</returns>
-		public DX.Size2F ToTexel(DX.Size2 pixelCoordinates)
-		{
-		    float width = Texture.Width;
-		    float height = Texture.Height;
+            return new DX.Size2((int)(texelCoordinates.Width * width), (int)(texelCoordinates.Height * height));
+        }
 
-		    return new DX.Size2F(pixelCoordinates.Width / width, pixelCoordinates.Height / height);
-		}
+        /// <summary>
+        /// Function to convert a pixel size into a texel size.
+        /// </summary>
+        /// <param name="pixelCoordinates">The pixel size to convert.</param>
+        /// <returns>The texel size.</returns>
+        public DX.Size2F ToTexel(DX.Size2 pixelCoordinates)
+        {
+            float width = Texture.Width;
+            float height = Texture.Height;
+
+            return new DX.Size2F(pixelCoordinates.Width / width, pixelCoordinates.Height / height);
+        }
 
         /// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>
 		public override void Dispose()
-		{
-		    Texture = null;
+        {
+            Texture = null;
             base.Dispose();
-		}
+        }
 
         /// <summary>
         /// Function to create a new render target that is bindable to the GPU.
@@ -339,11 +339,11 @@ namespace Gorgon.Graphics.Core
             }
 
             var newInfo = new GorgonTexture3DInfo(info)
-                          {
-                              // Can't see a reason to use anything other than default for rtvs
-                              Usage = ResourceUsage.Default,
-                              Binding = binding
-                          };
+            {
+                // Can't see a reason to use anything other than default for rtvs
+                Usage = ResourceUsage.Default,
+                Binding = binding
+            };
 
             var texture = new GorgonTexture3D(graphics, newInfo);
             GorgonRenderTarget3DView result = texture.GetRenderTargetView();

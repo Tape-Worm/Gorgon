@@ -62,48 +62,48 @@ namespace Gorgon.Graphics.Core
         /// Depth/stencil enabled.
         /// </summary>
         public static readonly GorgonDepthStencilState DepthStencilEnabled = new GorgonDepthStencilState
-                                                                             {
-                                                                                 IsDepthEnabled = true,
-                                                                                 IsStencilEnabled = true,
-                                                                                 IsDepthWriteEnabled = true
-                                                                             };
+        {
+            IsDepthEnabled = true,
+            IsStencilEnabled = true,
+            IsDepthWriteEnabled = true
+        };
 
         /// <summary>
         /// Depth/stencil enabled, depth write disbled.
         /// </summary>
         public static readonly GorgonDepthStencilState DepthStencilEnabledNoWrite = new GorgonDepthStencilState
-                                                                                    {
-                                                                                        IsDepthEnabled = true,
-                                                                                        IsStencilEnabled = true,
-                                                                                        IsDepthWriteEnabled = false
-                                                                                    };
+        {
+            IsDepthEnabled = true,
+            IsStencilEnabled = true,
+            IsDepthWriteEnabled = false
+        };
 
         /// <summary>
         /// Depth only enabled.
         /// </summary>
         public static readonly GorgonDepthStencilState DepthEnabled = new GorgonDepthStencilState
-                                                                      {
-                                                                          IsDepthEnabled = true,
-                                                                          IsDepthWriteEnabled = true
-                                                                      };
+        {
+            IsDepthEnabled = true,
+            IsDepthWriteEnabled = true
+        };
 
         /// <summary>
         /// Depth only enabled, depth write disabled.
         /// </summary>
         public static readonly GorgonDepthStencilState DepthEnabledNoWrite = new GorgonDepthStencilState
-                                                                             {
-                                                                                 IsDepthEnabled = true,
-                                                                                 IsDepthWriteEnabled = false
-                                                                             };
+        {
+            IsDepthEnabled = true,
+            IsDepthWriteEnabled = false
+        };
 
         /// <summary>
         /// Stencil only enabled.
         /// </summary>
         public static readonly GorgonDepthStencilState StencilEnabled = new GorgonDepthStencilState
-                                                                        {
-                                                                            IsStencilEnabled = true,
-                                                                            IsDepthWriteEnabled = true
-                                                                        };
+        {
+            IsStencilEnabled = true,
+            IsDepthWriteEnabled = true
+        };
 
         /// <summary>
         /// Depth/stencil enabled, with a greater than or equal comparer.
@@ -115,12 +115,12 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// </remarks>
         public static readonly GorgonDepthStencilState DepthStencilEnabledGreaterEqual = new GorgonDepthStencilState
-                                                                                         {
-                                                                                             IsDepthWriteEnabled = true,
-                                                                                             IsDepthEnabled = true,
-                                                                                             IsStencilEnabled = true,
-                                                                                             DepthComparison = Comparison.GreaterEqual
-                                                                                         };
+        {
+            IsDepthWriteEnabled = true,
+            IsDepthEnabled = true,
+            IsStencilEnabled = true,
+            DepthComparison = Comparison.GreaterEqual
+        };
 
         #endregion
 
@@ -141,7 +141,7 @@ namespace Gorgon.Graphics.Core
             get;
             internal set;
         }
-        
+
         /// <summary>
         /// Property to set or return whether to enable writing to the depth buffer or not.
         /// </summary>
@@ -238,33 +238,33 @@ namespace Gorgon.Graphics.Core
         internal D3D11.DepthStencilState GetD3D11DepthStencilState(D3D11.Device5 device)
         {
             var desc = new D3D11.DepthStencilStateDescription
-                       {
-                           BackFace = new D3D11.DepthStencilOperationDescription
-                                      {
-                                          DepthFailOperation = (D3D11.StencilOperation)BackFaceStencilOp.DepthFailOperation,
-                                          Comparison = (D3D11.Comparison)BackFaceStencilOp.Comparison,
-                                          PassOperation = (D3D11.StencilOperation)BackFaceStencilOp.PassOperation,
-                                          FailOperation = (D3D11.StencilOperation)BackFaceStencilOp.FailOperation
-                                      },
-                           FrontFace = new D3D11.DepthStencilOperationDescription
-                                       {
-                                           DepthFailOperation = (D3D11.StencilOperation)FrontFaceStencilOp.DepthFailOperation,
-                                           Comparison = (D3D11.Comparison)FrontFaceStencilOp.Comparison,
-                                           PassOperation = (D3D11.StencilOperation)FrontFaceStencilOp.PassOperation,
-                                           FailOperation = (D3D11.StencilOperation)FrontFaceStencilOp.FailOperation
-                                       },
-                           DepthComparison = (D3D11.Comparison)DepthComparison,
-                           DepthWriteMask = IsDepthWriteEnabled ? D3D11.DepthWriteMask.All : D3D11.DepthWriteMask.Zero,
-                           IsDepthEnabled = IsDepthEnabled,
-                           IsStencilEnabled = IsStencilEnabled,
-                           StencilReadMask = StencilReadMask,
-                           StencilWriteMask = StencilWriteMask
-                       };
+            {
+                BackFace = new D3D11.DepthStencilOperationDescription
+                {
+                    DepthFailOperation = (D3D11.StencilOperation)BackFaceStencilOp.DepthFailOperation,
+                    Comparison = (D3D11.Comparison)BackFaceStencilOp.Comparison,
+                    PassOperation = (D3D11.StencilOperation)BackFaceStencilOp.PassOperation,
+                    FailOperation = (D3D11.StencilOperation)BackFaceStencilOp.FailOperation
+                },
+                FrontFace = new D3D11.DepthStencilOperationDescription
+                {
+                    DepthFailOperation = (D3D11.StencilOperation)FrontFaceStencilOp.DepthFailOperation,
+                    Comparison = (D3D11.Comparison)FrontFaceStencilOp.Comparison,
+                    PassOperation = (D3D11.StencilOperation)FrontFaceStencilOp.PassOperation,
+                    FailOperation = (D3D11.StencilOperation)FrontFaceStencilOp.FailOperation
+                },
+                DepthComparison = (D3D11.Comparison)DepthComparison,
+                DepthWriteMask = IsDepthWriteEnabled ? D3D11.DepthWriteMask.All : D3D11.DepthWriteMask.Zero,
+                IsDepthEnabled = IsDepthEnabled,
+                IsStencilEnabled = IsStencilEnabled,
+                StencilReadMask = StencilReadMask,
+                StencilWriteMask = StencilWriteMask
+            };
 
             return new D3D11.DepthStencilState(device, desc)
-                   {
-                       DebugName = nameof(GorgonDepthStencilState)
-                   };
+            {
+                DebugName = nameof(GorgonDepthStencilState)
+            };
         }
 
         /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>

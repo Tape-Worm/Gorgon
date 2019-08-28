@@ -415,7 +415,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 MaxHeight = _videoAdapter.MaxTextureHeight;
                 MaxWidth = _videoAdapter.MaxTextureWidth;
 
-                _arrayIndexStep = image.ImageType == ImageType.ImageCube ? 6 : 1;                
+                _arrayIndexStep = image.ImageType == ImageType.ImageCube ? 6 : 1;
                 _depthSlicesOrArrayIndices = image.ImageType == ImageType.Image3D ? image.Depth : image.ArrayCount;
                 _height = image.Height;
                 _width = image.Width;

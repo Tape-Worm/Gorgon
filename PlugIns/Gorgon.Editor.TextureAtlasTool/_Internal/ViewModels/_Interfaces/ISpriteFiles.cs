@@ -36,14 +36,14 @@ namespace Gorgon.Editor.TextureAtlasTool
     internal interface ISpriteFiles
         : IViewModel
     {
-		/// <summary>
+        /// <summary>
         /// Property to set or return whether the sprite loader is active or not.
         /// </summary>
-		bool IsActive
+        bool IsActive
         {
             get;
             set;
-        }        
+        }
 
         /// <summary>
         /// Property to return the sprite file entries.
@@ -53,10 +53,10 @@ namespace Gorgon.Editor.TextureAtlasTool
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the list of selected files.
         /// </summary>
-		IReadOnlyList<ContentFileExplorerFileEntry> SelectedFiles
+        IReadOnlyList<ContentFileExplorerFileEntry> SelectedFiles
         {
             get;
         }
@@ -69,19 +69,19 @@ namespace Gorgon.Editor.TextureAtlasTool
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return the command used confirm loading of the sprite files.
         /// </summary>
-		IEditorCommand<object> ConfirmLoadCommand
+        IEditorCommand<object> ConfirmLoadCommand
         {
             get;
             set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the command used to cancel loading of the sprite files.
         /// </summary>
-		IEditorCommand<object> CancelCommand
+        IEditorCommand<object> CancelCommand
         {
             get;
         }

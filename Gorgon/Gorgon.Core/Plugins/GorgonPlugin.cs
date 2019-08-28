@@ -102,58 +102,58 @@ namespace Gorgon.PlugIns
     /// </para>
     /// </remarks>
     public abstract class GorgonPlugIn
-		: IGorgonNamedObject
-	{
-		#region Properties.
-	    /// <summary>
-	    /// Property to return the name of this object.
-	    /// </summary>
-	    public string Name
-	    {
-	        get;
-	    }
+        : IGorgonNamedObject
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to return the name of this object.
+        /// </summary>
+        public string Name
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the assembly that contains this plugin.
-		/// </summary>
-		public AssemblyName Assembly
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the assembly that contains this plugin.
+        /// </summary>
+        public AssemblyName Assembly
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the path to the plugin assembly.
-		/// </summary>
-		public string PlugInPath
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the path to the plugin assembly.
+        /// </summary>
+        public string PlugInPath
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the description of the plugin.
-		/// </summary>
-		public string Description
-		{
-			get;
-		}
-		#endregion
+        /// <summary>
+        /// Property to return the description of the plugin.
+        /// </summary>
+        public string Description
+        {
+            get;
+        }
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonPlugIn"/> class.
-		/// </summary>
-		/// <param name="description">Optional description of the plugin.</param>
-		/// <remarks>
-		/// Implementors of this base class should pass in a hard coded description to the base constructor.
-		/// </remarks>
-		protected GorgonPlugIn(string description)
-		{
-			Description = description ?? string.Empty;
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonPlugIn"/> class.
+        /// </summary>
+        /// <param name="description">Optional description of the plugin.</param>
+        /// <remarks>
+        /// Implementors of this base class should pass in a hard coded description to the base constructor.
+        /// </remarks>
+        protected GorgonPlugIn(string description)
+        {
+            Description = description ?? string.Empty;
 
-			Assembly = GetType().Assembly.GetName();
-			PlugInPath = GetType().Assembly.ManifestModule.FullyQualifiedName;
-			Name = GetType().FullName;
-		}
-		#endregion
-	}
+            Assembly = GetType().Assembly.GetName();
+            PlugInPath = GetType().Assembly.ManifestModule.FullyQualifiedName;
+            Name = GetType().FullName;
+        }
+        #endregion
+    }
 }

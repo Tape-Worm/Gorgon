@@ -26,14 +26,14 @@
 
 using System;
 using System.ComponentModel;
-using Drawing = System.Drawing;
+using System.Drawing;
+using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Editor.ViewModels;
-using System.Drawing;
-using System.Windows.Forms;
+using Drawing = System.Drawing;
 
 namespace Gorgon.Editor.Views
 {
@@ -85,7 +85,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
         private void TextProjectPath_KeyDown(object sender, KeyEventArgs e)
         {
-            
+
             if (e.KeyCode == Keys.Enter)
             {
                 TextName_Leave(TextProjectPath, EventArgs.Empty);
@@ -166,7 +166,7 @@ namespace Gorgon.Editor.Views
             finally
             {
                 ResetTextBoxColor(DataContext);
-                ValidateControls();                
+                ValidateControls();
             }
         }
 
@@ -204,7 +204,7 @@ namespace Gorgon.Editor.Views
                     TextProjectPath.Text = DataContext.WorkspacePath?.FullName ?? string.Empty;
                     break;
                 case nameof(IStageNewVm.InvalidPathReason):
-                    ResetTextBoxColor(DataContext);					
+                    ResetTextBoxColor(DataContext);
                     TipError.Show(DataContext.InvalidPathReason, TextProjectPath, new Point(0, TextProjectPath.Bottom));
                     break;
             }
@@ -279,7 +279,7 @@ namespace Gorgon.Editor.Views
         /// <summary>
         /// Function to validate control state.
         /// </summary>
-        private void ValidateControls() => ButtonCreate.Enabled = (DataContext?.CreateProjectCommand?.CanExecute(null) ?? false);        
+        private void ValidateControls() => ButtonCreate.Enabled = (DataContext?.CreateProjectCommand?.CanExecute(null) ?? false);
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load" /> event.</summary>
         /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data. </param>
@@ -324,6 +324,6 @@ namespace Gorgon.Editor.Views
         /// </summary>
         public StageNew() => InitializeComponent();
         #endregion
-        
+
     }
 }

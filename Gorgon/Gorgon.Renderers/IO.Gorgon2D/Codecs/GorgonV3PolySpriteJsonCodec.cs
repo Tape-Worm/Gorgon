@@ -70,9 +70,9 @@ namespace Gorgon.IO
         {
             var reader = new StreamReader(stream, Encoding.UTF8, true, 1024, true);
             var jsonReader = new JsonTextReader(reader)
-                             {
-                                 CloseInput = true
-                             };
+            {
+                CloseInput = true
+            };
             return jsonReader;
         }
 
@@ -114,7 +114,7 @@ namespace Gorgon.IO
                     return false;
                 }
 
-                return (Version.TryParse(reader.Value.ToString(), out Version version)) 
+                return (Version.TryParse(reader.Value.ToString(), out Version version))
                        && (version.Equals(Version));
             }
 
@@ -244,9 +244,9 @@ namespace Gorgon.IO
 
             // Set up serialization so we can convert our more complicated structures.
             var serializer = new JsonSerializer
-                             {
-                                 CheckAdditionalContent = false
-                             };
+            {
+                CheckAdditionalContent = false
+            };
 
             serializer.Converters.Add(new JsonVector2Converter());
             serializer.Converters.Add(new JsonVector3Converter());

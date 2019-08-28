@@ -56,7 +56,7 @@ namespace Gorgon.Editor.SpriteEditor
         private readonly GorgonSpriteAnimationController _animController;
         // The icon opacity animation.
         private readonly IGorgonAnimation _animation;
-		// The boundaries for the anchor.
+        // The boundaries for the anchor.
         private DX.RectangleF _anchorBounds;
         #endregion
 
@@ -66,7 +66,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         public event EventHandler AnchorChanged;
 
-		/// <summary>
+        /// <summary>
         /// Event triggered when the anchor bounds are changed.
         /// </summary>
         public event EventHandler BoundsChanged;
@@ -79,7 +79,7 @@ namespace Gorgon.Editor.SpriteEditor
             get;
             private set;
         }
-		
+
         /// <summary>Property to set or return the position of the sprite anchor.</summary>
         public DX.Vector2 AnchorPosition
         {

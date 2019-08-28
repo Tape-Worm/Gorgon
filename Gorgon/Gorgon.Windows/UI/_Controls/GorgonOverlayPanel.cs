@@ -117,7 +117,7 @@ namespace Gorgon.UI
 
         /// <summary>Gets or sets the background color for the control.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color" /> that represents the background color of the control. The default is the value of the <see cref="P:System.Windows.Forms.Control.DefaultBackColor" /> property.</returns>
-        [Browsable(true), Category("Appearance"), 
+        [Browsable(true), Category("Appearance"),
          Description("Sets the background color for the control."),
          DefaultValue(typeof(Color), "Black"), RefreshProperties(RefreshProperties.Repaint)]
         public Color OverlayColor
@@ -129,7 +129,7 @@ namespace Gorgon.UI
                 {
                     return;
                 }
-                
+
                 _overlayColor = value;
                 Invalidate();
             }
@@ -252,7 +252,7 @@ namespace Gorgon.UI
         [Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public new bool Enabled
         {
-            get => true; 
+            get => true;
             set => base.Enabled = true;
         }
 
@@ -349,7 +349,7 @@ namespace Gorgon.UI
                 return;
             }
 
-			// If we can't steal focus, then we shouldn't accept focus either, so move to the next control.
+            // If we can't steal focus, then we shouldn't accept focus either, so move to the next control.
             int thisIndex = Parent.Controls.GetChildIndex(this);
 
             // We're at the top, so nothing to do.
@@ -406,10 +406,10 @@ namespace Gorgon.UI
 
             Location = new Point(0, 0);
             Size = Parent.ClientSize;
-            
+
             // This check needs to be done because forms with a Krypton Ribbon have their dock altered to always keep the ribbon exposed even when the panel is a sibling with a lower Z index.
             // This gets around that. Otherwise we'll have a ribbon sitting on top of our panel, and that defeats the purpose of the panel.
-            if (Parent is Form) 
+            if (Parent is Form)
             {
                 base.Dock = DockStyle.None;
                 base.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
@@ -439,15 +439,15 @@ namespace Gorgon.UI
             {
                 parentForm.ActiveControl = this;
             }
-            
+
             using (var backingImage = new Bitmap(Parent.Width, Parent.Height))
             {
                 IEnumerable<Control> siblings = (from sibling in Parent.Controls.Cast<Control>()
                                                  where (sibling.Enabled) && (sibling.Visible)
-                                                let siblingZ = Parent.Controls.GetChildIndex(sibling)
-                                                where (siblingZ > zIndex) && (sibling.Bounds.IntersectsWith(Bounds))
-                                                orderby siblingZ descending
-                                                select sibling);
+                                                 let siblingZ = Parent.Controls.GetChildIndex(sibling)
+                                                 where (siblingZ > zIndex) && (sibling.Bounds.IntersectsWith(Bounds))
+                                                 orderby siblingZ descending
+                                                 select sibling);
 
                 foreach (Control control in siblings)
                 {
@@ -456,7 +456,7 @@ namespace Gorgon.UI
                 }
 
                 int alphaValue = (int)(_opacity / 100.0 * 255.0);
-                
+
                 e.Graphics.DrawImage(backingImage, -Left, -Top);
                 using (var alphaBrush = new SolidBrush(Color.FromArgb(alphaValue, _overlayColor)))
                 {
@@ -478,7 +478,7 @@ namespace Gorgon.UI
             IsDesignTime = LicenseManager.UsageMode == LicenseUsageMode.Designtime;
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
-            SetStyle(ControlStyles.ContainerControl, false);            
+            SetStyle(ControlStyles.ContainerControl, false);
             InitializeComponent();
         }
         #endregion

@@ -33,44 +33,44 @@ namespace Gorgon.Editor.ViewModels
     /// An item to display on the <see cref="ISettingsPlugInsList"/> view model.
     /// </summary>
     internal interface ISettingsPlugInListItem
-		: IViewModel
+        : IViewModel
     {
-		/// <summary>
+        /// <summary>
         /// Property to return the name/description for the plug in.
         /// </summary>
-		string Name
+        string Name
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the path to the plug in.
         /// </summary>
-		string Path
+        string Path
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the type for the plug in.
         /// </summary>
-		PlugInType Type
+        PlugInType Type
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the current state of the plug in.
         /// </summary>
-		string State
+        string State
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return why the plug in was disabled.
         /// </summary>
-		string DisabledReason
+        string DisabledReason
         {
             get;
         }

@@ -28,23 +28,23 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Threading;
-using DX = SharpDX;
-using Gorgon.Examples.Properties;
-using Gorgon.Graphics.Core;
-using Gorgon.UI;
-using Gorgon.Renderers;
-using Gorgon.PlugIns;
 using Gorgon.Core;
+using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
-using Gorgon.Input;
+using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
+using Gorgon.Input;
+using Gorgon.PlugIns;
+using Gorgon.Renderers;
+using Gorgon.UI;
+using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
-	/// <summary>
+    /// <summary>
     /// TODO
     /// 
     /// Due to the effects employed, this example requires a fair bit of video RAM and a fairly fast GPU. 
@@ -60,15 +60,15 @@ namespace Gorgon.Examples
         private static GorgonSwapChain _screen;
         // Our 2D renderer.
         private static Gorgon2D _renderer;
-		// The system to give us access to the resources for the application (textures, sprites, etc...).
+        // The system to give us access to the resources for the application (textures, sprites, etc...).
         private static ResourceManagement _resources;
         // The renderer used to draw the scene.
         private static SceneRenderer _sceneRenderer;
-		// The main render target view.
+        // The main render target view.
         private static GorgonRenderTarget2DView _mainRtv;
-		// THe main shader resource view.
+        // THe main shader resource view.
         private static GorgonTexture2DView _mainSrv;
-		// Our ship.
+        // Our ship.
         private static Ship _ship;
         // Our ship.
         private static Ship _shipDeux;
@@ -76,7 +76,7 @@ namespace Gorgon.Examples
         private static BigShip _bigShip;
         // The user input interface.
         private static GorgonRawInput _input;
-		// The keyboard input interface.
+        // The keyboard input interface.
         private static GorgonRawKeyboard _keyboard;
         // The aspect ratio for the main render target view.
         private static DX.Vector2 _mainRtvAspect = DX.Vector2.Zero;
@@ -115,7 +115,7 @@ namespace Gorgon.Examples
                     }
                     break;
                 case Keys.F1:
-                    _showInstructions = !_showInstructions;                    
+                    _showInstructions = !_showInstructions;
                     break;
             }
         }
@@ -173,7 +173,7 @@ namespace Gorgon.Examples
 
             _sceneRenderer.Render();
 
-			// Render the final image back to our swap chain.
+            // Render the final image back to our swap chain.
             _graphics.SetRenderTarget(_screen.RenderTargetView);
             _renderer.Begin(Gorgon2DBatchState.NoBlend);
 
@@ -195,7 +195,7 @@ namespace Gorgon.Examples
             _renderer.DrawFilledRectangle(destRegion,
                 GorgonColor.White,
                 _mainSrv,
-				new DX.RectangleF(0, 0, 1, 1),
+                new DX.RectangleF(0, 0, 1, 1),
                 textureSampler: GorgonSamplerState.Default);
             _renderer.End();
 
@@ -205,7 +205,7 @@ namespace Gorgon.Examples
             return true;
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to initialize the scene to render.
         /// </summary>
         private static void SetupScene()
@@ -217,7 +217,7 @@ namespace Gorgon.Examples
                 Anchor = new DX.Vector2(0.5f, 0.5f)
             };
             camera.AllowUpdateOnResize = false;    // Since we're using a custom coordinate set, we don't want to change it automatically when we resize the swap chain.
-                                                    // That means we are responsible for any adjustments required on resize.
+                                                   // That means we are responsible for any adjustments required on resize.
 
             // Scenes are composed of layers, which are composed of sprites/meshes/etc...
             // Each layer is used to give an illusion of depth by employing parallax scrolling.  While we could use the Gorgon camera to do this, it will not give an illusion of depth 
@@ -231,8 +231,8 @@ namespace Gorgon.Examples
             SpritesLayer shipLayerDeux = LayerBuilder.GetShipLayer(_renderer, _resources);
 
             // Assign our rendering camera so that we have a means of projecting our coordinate information.
-            sunLayer.Camera = 
-			planetLayer.Camera =
+            sunLayer.Camera =
+            planetLayer.Camera =
             shipLayerDeux.Camera =
             shipLayer.Camera = camera;
 
@@ -241,7 +241,7 @@ namespace Gorgon.Examples
             // In this example, our sun is distant, so when the layer camera moves, it should move slowly.  But in reality, the light source is fairly close to the planet to give 
             // a subtle (or not, depending on bloom) lighting effect.
             sunLayer.Lights[0].Layers.Add(planetLayer);
-            
+
             // Here we'll set up the layer camera controller. This is what will give the illusion of movement across space by shifting the planet, sun, and other sprites.
             var controller = new LayerCamera(new Layer[] { bgLayer, sunLayer, planetLayer, shipLayerDeux, shipLayer });
 
@@ -249,18 +249,18 @@ namespace Gorgon.Examples
             _sceneRenderer = new SceneRenderer(_renderer, _resources, _mainRtv, controller, camera);
             _sceneRenderer.LoadResources();
 
-			// Our player ship.  Since this one is linked to the layer camera controller, we can use our keyboard to move around the scene.
+            // Our player ship.  Since this one is linked to the layer camera controller, we can use our keyboard to move around the scene.
             _ship = new Ship(shipLayer);
             _ship.Position = new DX.Vector2(120.0f, 75.0f);
             _ship.Angle = -45.0f;
-            _ship.LayerController = controller;            
+            _ship.LayerController = controller;
             _ship.LoadResources();
 
             // A secondary ship. Just here to look pretty.
             _shipDeux = new Ship(shipLayerDeux);
             _shipDeux.Position = new DX.Vector2(120.3f, 74.8f);
             _shipDeux.Angle = -78.0f;
-            _shipDeux.Ai = new DummyAi();            
+            _shipDeux.Ai = new DummyAi();
             _shipDeux.LoadResources();
 
             // Create a big ship for some scene variety.
@@ -279,7 +279,7 @@ namespace Gorgon.Examples
             {
                 GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
                 GorgonExample.PlugInLocationDirectory = new DirectoryInfo(Settings.Default.PlugInLocation);
-								
+
                 // Load our packed file system plug in.
                 window.UpdateStatus("Loading plugins...");
 
@@ -314,7 +314,7 @@ namespace Gorgon.Examples
                                                   Format = BufferFormat.R8G8B8A8_UNorm
                                               });
 
-				// Create a secondary render target for our scene. We use 16 bit floating point for the effect fidelity.
+                // Create a secondary render target for our scene. We use 16 bit floating point for the effect fidelity.
                 // We'll lock our resolution to 1920x1080 (pretty common resolution for most people).
                 _mainRtv = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo("Main RTV")
                 {
@@ -330,17 +330,17 @@ namespace Gorgon.Examples
                 _renderer = new Gorgon2D(_graphics);
 
                 // Set up our raw input.
-                _input = new GorgonRawInput(window, GorgonApplication.Log);				
+                _input = new GorgonRawInput(window, GorgonApplication.Log);
                 _keyboard = new GorgonRawKeyboard();
                 _keyboard.KeyUp += Keyboard_KeyUp;
                 _input.RegisterDevice(_keyboard);
 
                 GorgonExample.LoadResources(_graphics);
 
-				// Now for the fun stuff, load our asset resources. We can load this data by mounting a directory (which I did while developing), or use a packed file.
+                // Now for the fun stuff, load our asset resources. We can load this data by mounting a directory (which I did while developing), or use a packed file.
                 //
                 // The resource manager will hold all the data we need for the scene. Including 3D meshes, post processing effects, etc... 
-                _resources = new ResourceManagement(_renderer, plugIns);                
+                _resources = new ResourceManagement(_renderer, plugIns);
                 _resources.Load(Path.Combine(GorgonExample.GetResourcePath(@"FileSystems").FullName, "SpaceScene.gorPack"));
 
                 window.UpdateStatus("Loading resources...");
@@ -365,7 +365,7 @@ namespace Gorgon.Examples
                     DrawMode = TextDrawMode.OutlinedGlyphs,
                     Color = GorgonColor.YellowPure
                 };
-                
+
                 GorgonExample.ShowStatistics = true;
 
                 // Set the idle here. We don't want to try and render until we're done loading.
@@ -384,7 +384,7 @@ namespace Gorgon.Examples
         public static async Task Main()
         {
             try
-            {				
+            {
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
 
@@ -394,8 +394,8 @@ namespace Gorgon.Examples
                 WindowsFormsSynchronizationContext.AutoInstall = false;
                 SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
 
-                FormMain window = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Space Scene", 
-					async (sender, _) => await InitializeAsync(sender as FormMain));
+                FormMain window = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Space Scene",
+                    async (sender, _) => await InitializeAsync(sender as FormMain));
 
                 GorgonApplication.Run(window);
             }
@@ -412,7 +412,7 @@ namespace Gorgon.Examples
                 }
 
                 _helpFont?.Dispose();
-								
+
                 GorgonExample.UnloadResources();
 
                 if (_keyboard != null)

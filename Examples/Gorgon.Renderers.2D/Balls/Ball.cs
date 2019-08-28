@@ -29,32 +29,32 @@ using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
-	/// <summary>
-	/// A ball for bouncing.
-	/// </summary>
-	public class Ball
-	{
-		#region Variables.
-		/// <summary>Position of the ball.</summary>
-		public DX.Vector2 Position;
-		/// <summary>Delta for the position of the ball.</summary>
-		public DX.Vector2 PositionDelta;
-		/// <summary>Scale of the ball.</summary>
-		public float Scale;
-		/// <summary>Delta for the scale of the ball</summary>
-		public float ScaleDelta;
-		/// <summary>Rotation of the ball.</summary>
-		public float Rotation;
-		/// <summary>Rotation delta for the ball.</summary>
-		public float RotationDelta;
-		/// <summary>Color of the ball.</summary>
-		public GorgonColor Color;
-		/// <summary>Opacity of the ball.</summary>
-		public float Opacity;
-		/// <summary>Opacity of the ball.</summary>
-		public float OpacityDelta;
-		/// <summary><b>true</b> to use the checker ball, <b>false</b> to use the bubble.</summary>
-		public bool Checkered;
-		#endregion
-	}
+    /// <summary>
+    /// A ball for bouncing.
+    /// </summary>
+    public class Ball
+    {
+        #region Variables.
+        /// <summary>Position of the ball.</summary>
+        public DX.Vector2 Position;
+        /// <summary>Delta for the position of the ball.</summary>
+        public DX.Vector2 PositionDelta;
+        /// <summary>Scale of the ball.</summary>
+        public float Scale;
+        /// <summary>Delta for the scale of the ball</summary>
+        public float ScaleDelta;
+        /// <summary>Rotation of the ball.</summary>
+        public float Rotation;
+        /// <summary>Rotation delta for the ball.</summary>
+        public float RotationDelta;
+        /// <summary>Color of the ball.</summary>
+        public GorgonColor Color;
+        /// <summary>Opacity of the ball.</summary>
+        public float Opacity;
+        /// <summary>Opacity of the ball.</summary>
+        public float OpacityDelta;
+        /// <summary><b>true</b> to use the checker ball, <b>false</b> to use the bubble.</summary>
+        public bool Checkered;
+        #endregion
+    }
 }

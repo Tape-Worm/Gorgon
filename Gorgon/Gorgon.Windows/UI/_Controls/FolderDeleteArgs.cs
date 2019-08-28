@@ -33,39 +33,39 @@ namespace Gorgon.UI
     /// Event arguments for the <see cref="GorgonFolderBrowser.FolderDeleting"/> event.
     /// </summary>
     public class FolderDeleteArgs
-		: CancelEventArgs
+        : CancelEventArgs
     {
         #region Properties.
-		/// <summary>
+        /// <summary>
         /// Property to return the path to the directory being deleted.
         /// </summary>
-		public string DirectoryPath
+        public string DirectoryPath
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return whether this event has handled the deletion of the directory on our behalf.
         /// </summary>
-		public bool DeletionHandled
+        public bool DeletionHandled
         {
             get;
             set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to suppress the prompt to ask the user if they are sure they wish to delete.
         /// </summary>
-		public bool SuppressPrompt
+        public bool SuppressPrompt
         {
             get;
             set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return an asynchronous task for deleting.
         /// </summary>
-		public Task DeleteTask
+        public Task DeleteTask
         {
             get;
             set;
@@ -76,6 +76,6 @@ namespace Gorgon.UI
         /// <summary>Initializes a new instance of the <see cref="FolderDeleteArgs"/> class.</summary>
         /// <param name="dirPath">The path to the directory to delete.</param>
         internal FolderDeleteArgs(string dirPath) => DirectoryPath = dirPath;
-		#endregion
+        #endregion
     }
 }

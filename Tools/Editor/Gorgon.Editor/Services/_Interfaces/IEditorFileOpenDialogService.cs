@@ -46,6 +46,6 @@ namespace Gorgon.Editor.Services
         EditorSettings Settings
         {
             get;
-        }        
+        }
     }
 }

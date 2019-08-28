@@ -42,7 +42,7 @@ namespace Gorgon.Editor.UI.Forms
     /// Plug in developers can use this to present a dialog that will prompt the user for a name.
     /// </para>
     /// </remarks>
-    public partial class FormName 
+    public partial class FormName
         : KryptonForm
     {
         #region Variables.

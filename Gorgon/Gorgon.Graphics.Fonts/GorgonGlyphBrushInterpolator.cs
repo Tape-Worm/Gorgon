@@ -31,12 +31,12 @@ using Gorgon.Math;
 
 namespace Gorgon.Graphics.Fonts
 {
-	/// <summary>
-	/// An interpolation value used to weight the color blending in a gradient brush.
-	/// </summary>
-	public struct GorgonGlyphBrushInterpolator
-		: IEquatable<GorgonGlyphBrushInterpolator>, IComparable<GorgonGlyphBrushInterpolator>
-	{
+    /// <summary>
+    /// An interpolation value used to weight the color blending in a gradient brush.
+    /// </summary>
+    public struct GorgonGlyphBrushInterpolator
+        : IEquatable<GorgonGlyphBrushInterpolator>, IComparable<GorgonGlyphBrushInterpolator>
+    {
         #region Properties.
         /// <summary>
         /// Property to return the interpolation weight.
@@ -162,10 +162,10 @@ namespace Gorgon.Graphics.Fonts
         /// <param name="weight">The weight in the interpolation.</param>
         /// <param name="color">The color at the interpolation weight.</param>
         public GorgonGlyphBrushInterpolator(float weight, GorgonColor color)
-		{
-			Weight = weight.Min(1.0f).Max(0);
-			Color = color;
-		}
+        {
+            Weight = weight.Min(1.0f).Max(0);
+            Color = color;
+        }
         #endregion
     }
 }

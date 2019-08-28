@@ -99,8 +99,16 @@ namespace Simplex
             // For the 2D case, the simplex shape is an equilateral triangle.
             // Determine which simplex we are in.
             int i1, j1; // Offsets for second (middle) corner of simplex in (i,j) coords
-            if (x0 > y0) { i1 = 1; j1 = 0; } // lower triangle, XY order: (0,0)->(1,0)->(1,1)
-            else { i1 = 0; j1 = 1; }      // upper triangle, YX order: (0,0)->(0,1)->(1,1)
+            if (x0 > y0)
+            {
+                i1 = 1;
+                j1 = 0;
+            } // lower triangle, XY order: (0,0)->(1,0)->(1,1)
+            else
+            {
+                i1 = 0;
+                j1 = 1;
+            }      // upper triangle, YX order: (0,0)->(0,1)->(1,1)
 
             // A step of (1,0) in (i,j) means a step of (1-c,-c) in (x,y), and
             // a step of (0,1) in (i,j) means a step of (-c,1-c) in (x,y), where
@@ -189,15 +197,62 @@ namespace Simplex
             if (x0 >= y0)
             {
                 if (y0 >= z0)
-                { i1 = 1; j1 = 0; k1 = 0; i2 = 1; j2 = 1; k2 = 0; } // X Y Z order
-                else if (x0 >= z0) { i1 = 1; j1 = 0; k1 = 0; i2 = 1; j2 = 0; k2 = 1; } // X Z Y order
-                else { i1 = 0; j1 = 0; k1 = 1; i2 = 1; j2 = 0; k2 = 1; } // Z X Y order
+                {
+                    i1 = 1;
+                    j1 = 0;
+                    k1 = 0;
+                    i2 = 1;
+                    j2 = 1;
+                    k2 = 0;
+                } // X Y Z order
+                else if (x0 >= z0)
+                {
+                    i1 = 1;
+                    j1 = 0;
+                    k1 = 0;
+                    i2 = 1;
+                    j2 = 0;
+                    k2 = 1;
+                } // X Z Y order
+                else
+                {
+                    i1 = 0;
+                    j1 = 0;
+                    k1 = 1;
+                    i2 = 1;
+                    j2 = 0;
+                    k2 = 1;
+                } // Z X Y order
             }
             else
             { // x0<y0
-                if (y0 < z0) { i1 = 0; j1 = 0; k1 = 1; i2 = 0; j2 = 1; k2 = 1; } // Z Y X order
-                else if (x0 < z0) { i1 = 0; j1 = 1; k1 = 0; i2 = 0; j2 = 1; k2 = 1; } // Y Z X order
-                else { i1 = 0; j1 = 1; k1 = 0; i2 = 1; j2 = 1; k2 = 0; } // Y X Z order
+                if (y0 < z0)
+                {
+                    i1 = 0;
+                    j1 = 0;
+                    k1 = 1;
+                    i2 = 0;
+                    j2 = 1;
+                    k2 = 1;
+                } // Z Y X order
+                else if (x0 < z0)
+                {
+                    i1 = 0;
+                    j1 = 1;
+                    k1 = 0;
+                    i2 = 0;
+                    j2 = 1;
+                    k2 = 1;
+                } // Y Z X order
+                else
+                {
+                    i1 = 0;
+                    j1 = 1;
+                    k1 = 0;
+                    i2 = 1;
+                    j2 = 1;
+                    k2 = 0;
+                } // Y X Z order
             }
 
             // A step of (1,0,0) in (i,j,k) means a step of (1-c,-c,-c) in (x,y,z),
@@ -276,7 +331,7 @@ namespace Simplex
             set;
         }
 
-        private static readonly byte[] _permOriginal = 
+        private static readonly byte[] _permOriginal =
         {
             151,160,137,91,90,15,
             131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,
@@ -303,7 +358,7 @@ namespace Simplex
             129,22,39,253, 19,98,108,110,79,113,224,232,178,185, 112,104,218,246,97,228,
             251,34,242,193,238,210,144,12,191,179,162,241, 81,51,145,235,249,14,239,107,
             49,192,214, 31,181,199,106,157,184, 84,204,176,115,121,50,45,127, 4,150,254,
-            138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180 
+            138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180
         };
 
         private static int FastFloor(float x) => (x > 0) ? ((int)x) : (((int)x) - 1);

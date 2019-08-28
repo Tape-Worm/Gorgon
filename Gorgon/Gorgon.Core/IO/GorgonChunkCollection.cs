@@ -29,27 +29,27 @@ using System.Collections.Generic;
 
 namespace Gorgon.IO
 {
-	/// <summary>
-	/// A collection of chunks within a chunked file.
-	/// </summary>
-	internal class GorgonChunkCollection
-		: IList<GorgonChunk>, IGorgonReadOnlyChunkCollection
-	{
-		#region Variables.
-		// The backing store for the chunks.
-		private readonly List<GorgonChunk> _list = new List<GorgonChunk>();
-		#endregion
+    /// <summary>
+    /// A collection of chunks within a chunked file.
+    /// </summary>
+    internal class GorgonChunkCollection
+        : IList<GorgonChunk>, IGorgonReadOnlyChunkCollection
+    {
+        #region Variables.
+        // The backing store for the chunks.
+        private readonly List<GorgonChunk> _list = new List<GorgonChunk>();
+        #endregion
 
-		#region IList<GorgonChunk> Members
-		#region Properties.
-		/// <summary>
-		/// Property to set or return a chunk at the specified index.
-		/// </summary>
-		public GorgonChunk this[int index]
-		{
-			get => _list[index];
-			set => _list[index] = value;
-		}
+        #region IList<GorgonChunk> Members
+        #region Properties.
+        /// <summary>
+        /// Property to set or return a chunk at the specified index.
+        /// </summary>
+        public GorgonChunk this[int index]
+        {
+            get => _list[index];
+            set => _list[index] = value;
+        }
         #endregion
 
         #region Methods.
@@ -83,11 +83,11 @@ namespace Gorgon.IO
         /// <value>The count.</value>
         public int Count => _list.Count;
 
-		/// <summary>
-		/// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
-		/// </summary>
-		/// <value><b>true</b> if this instance is read only; otherwise, <b>false</b>.</value>
-		bool ICollection<GorgonChunk>.IsReadOnly => false;
+        /// <summary>
+        /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
+        /// </summary>
+        /// <value><b>true</b> if this instance is read only; otherwise, <b>false</b>.</value>
+        bool ICollection<GorgonChunk>.IsReadOnly => false;
 
         #endregion
 
@@ -151,49 +151,49 @@ namespace Gorgon.IO
         /// If the chunk is not found, then this property will return <b>null</b>.
         /// </remarks>
         public GorgonChunk this[string chunkName]
-		{
-			get
-			{
-				int index = IndexOf(chunkName);
+        {
+            get
+            {
+                int index = IndexOf(chunkName);
 
-				return index == -1 ? default : _list[index];
-			}
-		}
+                return index == -1 ? default : _list[index];
+            }
+        }
 
-		/// <summary>
-		/// Property to return a chunk by its <see cref="ulong"/> ID.
-		/// </summary>
-		/// <remarks>
-		/// If the chunk is not found, then this property will return <b>null</b>.
-		/// </remarks>
-		public GorgonChunk this[ulong ID]
-		{
-			get
-			{
-				int index = IndexOf(ID);
+        /// <summary>
+        /// Property to return a chunk by its <see cref="ulong"/> ID.
+        /// </summary>
+        /// <remarks>
+        /// If the chunk is not found, then this property will return <b>null</b>.
+        /// </remarks>
+        public GorgonChunk this[ulong ID]
+        {
+            get
+            {
+                int index = IndexOf(ID);
 
-				return index == -1 ? default : _list[index];
-			}
-		}
-		#endregion
+                return index == -1 ? default : _list[index];
+            }
+        }
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to return the index of a chunk by its name.
-		/// </summary>
-		/// <param name="chunkName">A text representation of the <see cref="ulong"/> chunk ID.</param>
-		/// <returns>The index of the chunk with the specific <paramref name="chunkName"/>, or -1 if not found.</returns>
-		public int IndexOf(string chunkName)
-		{
-			if (string.IsNullOrEmpty(chunkName))
-			{
-				return -1;
-			}
+        #region Methods.
+        /// <summary>
+        /// Function to return the index of a chunk by its name.
+        /// </summary>
+        /// <param name="chunkName">A text representation of the <see cref="ulong"/> chunk ID.</param>
+        /// <returns>The index of the chunk with the specific <paramref name="chunkName"/>, or -1 if not found.</returns>
+        public int IndexOf(string chunkName)
+        {
+            if (string.IsNullOrEmpty(chunkName))
+            {
+                return -1;
+            }
 
-			ulong id = chunkName.ChunkID();
+            ulong id = chunkName.ChunkID();
 
-			return IndexOf(id);
-		}
+            return IndexOf(id);
+        }
 
         /// <summary>
         /// Function to return whether a chunk exists in this collection or not.
@@ -208,17 +208,17 @@ namespace Gorgon.IO
         /// <param name="chunkID">The <see cref="ulong"/> ID of the chunk.</param>
         /// <returns>The index of the chunk with the specific <paramref name="chunkID"/>, or -1 if not found.</returns>
         public int IndexOf(ulong chunkID)
-		{
-			for (int i = 0; i < _list.Count; ++i)
-			{
-				if (_list[i].ID == chunkID)
-				{
-					return i;
-				}
-			}
+        {
+            for (int i = 0; i < _list.Count; ++i)
+            {
+                if (_list[i].ID == chunkID)
+                {
+                    return i;
+                }
+            }
 
-			return -1;
-		}
+            return -1;
+        }
 
         /// <summary>
         /// Function to return whether a chunk exists in this collection or not.

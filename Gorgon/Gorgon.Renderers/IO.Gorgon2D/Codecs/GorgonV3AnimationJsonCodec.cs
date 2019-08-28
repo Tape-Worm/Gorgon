@@ -74,9 +74,9 @@ namespace Gorgon.IO
         {
             var reader = new StreamReader(stream, Encoding.UTF8, true, 1024, true);
             var jsonReader = new JsonTextReader(reader)
-                             {
-                                 CloseInput = true
-                             };
+            {
+                CloseInput = true
+            };
             return jsonReader;
         }
 
@@ -171,7 +171,7 @@ namespace Gorgon.IO
                         break;
                 }
             }
-            
+
             return bounds;
         }
 
@@ -224,7 +224,7 @@ namespace Gorgon.IO
                         break;
                 }
             }
-            
+
             return colors;
         }
 
@@ -275,7 +275,7 @@ namespace Gorgon.IO
                     textures = ReadKeys();
                 }
             }
-            
+
             return textures;
         }
 
@@ -328,7 +328,7 @@ namespace Gorgon.IO
                         break;
                 }
             }
-            
+
             return positions;
         }
 
@@ -398,7 +398,7 @@ namespace Gorgon.IO
                     {
                         continue;
                     }
-                    
+
                     string propName = reader.Value.ToString().ToUpperInvariant();
 
                     switch (propName)
@@ -576,7 +576,7 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="renderer">The renderer used for resource handling.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> is <b>null</b>.</exception>
-        public GorgonV3AnimationJsonCodec(Gorgon2D renderer) 
+        public GorgonV3AnimationJsonCodec(Gorgon2D renderer)
             : base(renderer, Resources.GOR2DIO_V3_ANIM_JSON_CODEC, Resources.GOR2DIO_V3_ANIM_JSON_CODEC_DESCRIPTION)
         {
         }

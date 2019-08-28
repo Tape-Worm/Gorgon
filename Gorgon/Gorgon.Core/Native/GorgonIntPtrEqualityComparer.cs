@@ -29,12 +29,12 @@ using System.Collections.Generic;
 
 namespace Gorgon.Native
 {
-	/// <summary>
-	/// An equality comparer for the <see cref="IntPtr"/> type.
-	/// </summary>
-	public class GorgonIntPtrEqualityComparer
-		: IEqualityComparer<IntPtr>
-	{
+    /// <summary>
+    /// An equality comparer for the <see cref="IntPtr"/> type.
+    /// </summary>
+    public class GorgonIntPtrEqualityComparer
+        : IEqualityComparer<IntPtr>
+    {
         #region IEqualityComparer<IntPtr> Members
         /// <summary>
         /// Determines whether the specified objects are equal.

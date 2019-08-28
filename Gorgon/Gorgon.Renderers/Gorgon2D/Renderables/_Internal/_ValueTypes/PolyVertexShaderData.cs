@@ -26,8 +26,8 @@
 
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using DX = SharpDX;
 using Gorgon.Graphics;
+using DX = SharpDX;
 
 
 namespace Gorgon.Renderers

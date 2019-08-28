@@ -29,132 +29,132 @@ using System.IO;
 
 namespace Gorgon.IO
 {
-	/// <summary>
-	/// A file stream for the Gorgon file system.
-	/// </summary>
-	public class GorgonFileSystemStream
-		: Stream
-	{
-		#region Variables.
-		// Base stream to use.
-		private Stream _baseStream;					
-		#endregion
+    /// <summary>
+    /// A file stream for the Gorgon file system.
+    /// </summary>
+    public class GorgonFileSystemStream
+        : Stream
+    {
+        #region Variables.
+        // Base stream to use.
+        private Stream _baseStream;
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to set or return whether to close the underlying stream when this stream is closed.
-		/// </summary>
-		protected bool CloseUnderlyingStream
-		{
-			get;
-			set;
-		}
+        #region Properties.
+        /// <summary>
+        /// Property to set or return whether to close the underlying stream when this stream is closed.
+        /// </summary>
+        protected bool CloseUnderlyingStream
+        {
+            get;
+            set;
+        }
 
-		/// <summary>
-		/// Property to return the file being read/written.
-		/// </summary>
-		protected IGorgonVirtualFile FileEntry
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the file being read/written.
+        /// </summary>
+        protected IGorgonVirtualFile FileEntry
+        {
+            get;
+        }
 
-		/// <summary>
-		/// When overridden in a derived class, gets a value indicating whether the current stream supports reading.
-		/// </summary>
-		/// <value></value>
-		/// <returns>true if the stream supports reading; otherwise, false.</returns>
-		public override bool CanRead => _baseStream.CanRead;
+        /// <summary>
+        /// When overridden in a derived class, gets a value indicating whether the current stream supports reading.
+        /// </summary>
+        /// <value></value>
+        /// <returns>true if the stream supports reading; otherwise, false.</returns>
+        public override bool CanRead => _baseStream.CanRead;
 
-		/// <summary>
-		/// When overridden in a derived class, gets a value indicating whether the current stream supports writing.
-		/// </summary>
-		/// <value></value>
-		/// <returns>true if the stream supports writing; otherwise, false.</returns>
-		public override bool CanWrite => _baseStream.CanWrite;
+        /// <summary>
+        /// When overridden in a derived class, gets a value indicating whether the current stream supports writing.
+        /// </summary>
+        /// <value></value>
+        /// <returns>true if the stream supports writing; otherwise, false.</returns>
+        public override bool CanWrite => _baseStream.CanWrite;
 
-		/// <summary>
-		/// When overridden in a derived class, gets a value indicating whether the current stream supports seeking.
-		/// </summary>
-		/// <value></value>
-		/// <returns>true if the stream supports seeking; otherwise, false.</returns>
-		public override bool CanSeek => _baseStream.CanSeek;
+        /// <summary>
+        /// When overridden in a derived class, gets a value indicating whether the current stream supports seeking.
+        /// </summary>
+        /// <value></value>
+        /// <returns>true if the stream supports seeking; otherwise, false.</returns>
+        public override bool CanSeek => _baseStream.CanSeek;
 
-		/// <summary>
-		/// Gets a value that determines whether the current stream can time out.
-		/// </summary>
-		/// <value></value>
-		/// <returns>A value that determines whether the current stream can time out.</returns>
-		public override bool CanTimeout => _baseStream.CanTimeout;
+        /// <summary>
+        /// Gets a value that determines whether the current stream can time out.
+        /// </summary>
+        /// <value></value>
+        /// <returns>A value that determines whether the current stream can time out.</returns>
+        public override bool CanTimeout => _baseStream.CanTimeout;
 
-		/// <summary>
-		/// When overridden in a derived class, gets the length in bytes of the stream.
-		/// </summary>
-		/// <value></value>
-		/// <returns>A long value representing the length of the stream in bytes.</returns>
-		/// <exception cref="T:System.NotSupportedException">A class derived from Stream does not support seeking. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		public override long Length => _baseStream.Length;
+        /// <summary>
+        /// When overridden in a derived class, gets the length in bytes of the stream.
+        /// </summary>
+        /// <value></value>
+        /// <returns>A long value representing the length of the stream in bytes.</returns>
+        /// <exception cref="T:System.NotSupportedException">A class derived from Stream does not support seeking. </exception>
+        /// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        public override long Length => _baseStream.Length;
 
-		/// <summary>
-		/// When overridden in a derived class, gets or sets the position within the current stream.
-		/// </summary>
-		/// <value></value>
-		/// <returns>The current position within the stream.</returns>
-		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support seeking. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		public override long Position
-		{
-			get => _baseStream.Position;
-			set => _baseStream.Position = value;
-		}
+        /// <summary>
+        /// When overridden in a derived class, gets or sets the position within the current stream.
+        /// </summary>
+        /// <value></value>
+        /// <returns>The current position within the stream.</returns>
+        /// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
+        /// <exception cref="T:System.NotSupportedException">The stream does not support seeking. </exception>
+        /// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        public override long Position
+        {
+            get => _baseStream.Position;
+            set => _baseStream.Position = value;
+        }
 
-		/// <summary>
-		/// Gets or sets a value, in miliseconds, that determines how long the stream will attempt to read before timing out.
-		/// </summary>
-		/// <value></value>
-		/// <returns>A value, in miliseconds, that determines how long the stream will attempt to read before timing out.</returns>
-		/// <exception cref="T:System.InvalidOperationException">The <see cref="P:System.IO.Stream.ReadTimeout"/> method always throws an <see cref="T:System.InvalidOperationException"/>. </exception>
-		public override int ReadTimeout
-		{
-			get => _baseStream.ReadTimeout;
-			set => _baseStream.ReadTimeout = value;
-		}
+        /// <summary>
+        /// Gets or sets a value, in miliseconds, that determines how long the stream will attempt to read before timing out.
+        /// </summary>
+        /// <value></value>
+        /// <returns>A value, in miliseconds, that determines how long the stream will attempt to read before timing out.</returns>
+        /// <exception cref="T:System.InvalidOperationException">The <see cref="P:System.IO.Stream.ReadTimeout"/> method always throws an <see cref="T:System.InvalidOperationException"/>. </exception>
+        public override int ReadTimeout
+        {
+            get => _baseStream.ReadTimeout;
+            set => _baseStream.ReadTimeout = value;
+        }
 
-		/// <summary>
-		/// Gets or sets a value, in milliseconds, that determines how long the stream will attempt to write before timing out.
-		/// </summary>
-		/// <value></value>
-		/// <returns>A value, in milliseconds, that determines how long the stream will attempt to write before timing out.</returns>
-		/// <exception cref="T:System.InvalidOperationException">The <see cref="P:System.IO.Stream.WriteTimeout"/> method always throws an <see cref="T:System.InvalidOperationException"/>. </exception>
-		public override int WriteTimeout
-		{
-			get => _baseStream.WriteTimeout;
-			set => _baseStream.WriteTimeout = value;
-		}
-		#endregion
+        /// <summary>
+        /// Gets or sets a value, in milliseconds, that determines how long the stream will attempt to write before timing out.
+        /// </summary>
+        /// <value></value>
+        /// <returns>A value, in milliseconds, that determines how long the stream will attempt to write before timing out.</returns>
+        /// <exception cref="T:System.InvalidOperationException">The <see cref="P:System.IO.Stream.WriteTimeout"/> method always throws an <see cref="T:System.InvalidOperationException"/>. </exception>
+        public override int WriteTimeout
+        {
+            get => _baseStream.WriteTimeout;
+            set => _baseStream.WriteTimeout = value;
+        }
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Releases the unmanaged resources used by the <see cref="T:System.IO.Stream"/> and optionally releases the managed resources.
-		/// </summary>
-		/// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-		protected override void Dispose(bool disposing)
-		{
-			if (disposing)
-			{
-				if (_baseStream != null)
-				{
-					if (CloseUnderlyingStream)
-					{
-						_baseStream.Dispose();
-					}
-				}
-				_baseStream = null;
-			}
+        #region Methods.
+        /// <summary>
+        /// Releases the unmanaged resources used by the <see cref="T:System.IO.Stream"/> and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (_baseStream != null)
+                {
+                    if (CloseUnderlyingStream)
+                    {
+                        _baseStream.Dispose();
+                    }
+                }
+                _baseStream = null;
+            }
 
-			base.Dispose(disposing);
-		}
+            base.Dispose(disposing);
+        }
 
         /// <summary>
         /// Begins an asynchronous read operation.
@@ -306,17 +306,17 @@ namespace Gorgon.IO
         /// <param name="baseStream">The underlying stream to use for this stream.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="baseStream"/> or the <paramref name="file"/> parameter is <b>null</b>.</exception>
         protected internal GorgonFileSystemStream(IGorgonVirtualFile file, Stream baseStream)
-		{
-			CloseUnderlyingStream = true;
-			_baseStream = baseStream ?? throw new ArgumentNullException(nameof(baseStream));
-			FileEntry = file ?? throw new ArgumentNullException(nameof(file));
+        {
+            CloseUnderlyingStream = true;
+            _baseStream = baseStream ?? throw new ArgumentNullException(nameof(baseStream));
+            FileEntry = file ?? throw new ArgumentNullException(nameof(file));
 
-			// Reset the position to the beginning.
-			if (_baseStream.CanSeek)
-			{
-				_baseStream.Position = 0;
-			}
-		}
-		#endregion
-	}
+            // Reset the position to the beginning.
+            if (_baseStream.CanSeek)
+            {
+                _baseStream.Position = 0;
+            }
+        }
+        #endregion
+    }
 }

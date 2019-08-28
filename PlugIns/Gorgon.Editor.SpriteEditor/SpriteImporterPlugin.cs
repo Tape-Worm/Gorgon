@@ -27,13 +27,13 @@
 using System;
 using System.IO;
 using System.Linq;
-using Gorgon.Editor.SpriteEditor.Properties;
-using Gorgon.Editor.SpriteEditor.Services;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
+using Gorgon.Editor.SpriteEditor.Properties;
+using Gorgon.Editor.SpriteEditor.Services;
+using Gorgon.Editor.UI;
 using Gorgon.IO;
 using Gorgon.PlugIns;
-using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -47,7 +47,7 @@ namespace Gorgon.Editor.SpriteEditor
         // The image editor settings.
         private IImporterPlugInSettings _settings;
 
-		// The codecs registered with the plug in.
+        // The codecs registered with the plug in.
         private ICodecRegistry _codecs;
 
         // The plug in cache for image codecs.
@@ -71,7 +71,7 @@ namespace Gorgon.Editor.SpriteEditor
                 {
                     var extension = new GorgonFileExtension(file.Extension);
 
-					// Since all Gorgon's sprite files use the same extension, we'll have to be a little more aggressive when determining type.
+                    // Since all Gorgon's sprite files use the same extension, we'll have to be a little more aggressive when determining type.
                     (GorgonFileExtension, IGorgonSpriteCodec codec)[] results = _codecs.CodecFileTypes.Where(item => item.extension == extension).ToArray();
 
                     if (results.Length == 0)
@@ -119,7 +119,7 @@ namespace Gorgon.Editor.SpriteEditor
         protected override void OnInitialize()
         {
             ViewFactory.Register<IImporterPlugInSettings>(() => new SpriteCodecSettingsPanel());
-            
+
             _pluginCache = new GorgonMefPlugInCache(CommonServices.Log);
 
             SpriteImportSettings settings = ContentPlugInService.ReadContentSettings<SpriteImportSettings>(typeof(SpriteImporterPlugIn).FullName);
@@ -161,7 +161,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="sourceFile">The file being imported.</param>
         /// <param name="fileSystem">The file system containing the file being imported.</param>
         /// <returns>A new <see cref="T:Gorgon.Editor.Services.IEditorContentImporter"/> object.</returns>
-        protected override IEditorContentImporter OnCreateImporter(FileInfo sourceFile, IGorgonFileSystem fileSystem) => 
+        protected override IEditorContentImporter OnCreateImporter(FileInfo sourceFile, IGorgonFileSystem fileSystem) =>
             new GorgonSpriteImporter(sourceFile, GetCodec(sourceFile), GraphicsContext.Renderer2D, fileSystem, CommonServices.Log);
 
         /// <summary>Function to determine if the content plugin can open the specified file.</summary>

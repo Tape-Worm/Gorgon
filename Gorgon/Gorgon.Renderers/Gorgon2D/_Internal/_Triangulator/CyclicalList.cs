@@ -8,18 +8,18 @@ using System.Collections.Generic;
 
 namespace GorgonTriangulator
 {
-	/// <summary>
-	/// Implements a List structure as a cyclical list where indices are wrapped.
-	/// </summary>
-	/// <typeparam name="T">The Type to hold in the list.</typeparam>
-	internal class CyclicalList<T> : List<T>
-	{
-		public new T this[int index]
-		{
-			get
-			{
-				//perform the index wrapping
-				while (index < 0)
+    /// <summary>
+    /// Implements a List structure as a cyclical list where indices are wrapped.
+    /// </summary>
+    /// <typeparam name="T">The Type to hold in the list.</typeparam>
+    internal class CyclicalList<T> : List<T>
+    {
+        public new T this[int index]
+        {
+            get
+            {
+                //perform the index wrapping
+                while (index < 0)
                 {
                     index = Count + index;
                 }
@@ -30,11 +30,11 @@ namespace GorgonTriangulator
                 }
 
                 return base[index];
-			}
-			set
-			{
-				//perform the index wrapping
-				while (index < 0)
+            }
+            set
+            {
+                //perform the index wrapping
+                while (index < 0)
                 {
                     index = Count + index;
                 }
@@ -45,15 +45,17 @@ namespace GorgonTriangulator
                 }
 
                 base[index] = value;
-			}
-		}
+            }
+        }
 
-		public CyclicalList() { }
+        public CyclicalList()
+        {
+        }
 
-		public CyclicalList(IEnumerable<T> collection)
-			: base(collection)
-		{
-		}
+        public CyclicalList(IEnumerable<T> collection)
+            : base(collection)
+        {
+        }
 
         public new void RemoveAt(int index) => Remove(this[index]);
     }

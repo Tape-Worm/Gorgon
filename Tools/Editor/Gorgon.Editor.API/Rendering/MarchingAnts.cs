@@ -27,13 +27,13 @@
 using System;
 using System.IO;
 using System.Threading;
-using DX = SharpDX;
 using Gorgon.Editor.Properties;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers;
 using Gorgon.Timing;
-using Gorgon.Graphics;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.Rendering
 {
@@ -78,7 +78,7 @@ namespace Gorgon.Editor.Rendering
             {
                 _step = 0;
             }
-            
+
             _renderer.DrawRectangle(rect, GorgonColor.White,
                 texture: _marchAntsTexture.Value,
                 textureRegion: _marchAntsTexture.Value.ToTexel(new DX.Rectangle((int)-_step, 0, (int)rect.Width, (int)rect.Height)),
@@ -99,7 +99,7 @@ namespace Gorgon.Editor.Rendering
                         Name = "MarchingAntsTexture",
                         Usage = ResourceUsage.Immutable
                     });
-            }            
+            }
         }
         #endregion
 
@@ -109,7 +109,7 @@ namespace Gorgon.Editor.Rendering
         public MarchingAnts(Gorgon2D renderer)
         {
             _renderer = renderer;
-            _marchAntsTexture = new Lazy<GorgonTexture2DView>(Build, true);            
+            _marchAntsTexture = new Lazy<GorgonTexture2DView>(Build, true);
         }
         #endregion
     }

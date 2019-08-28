@@ -48,7 +48,7 @@ namespace Gorgon.Editor.Services
         EditorSettings Settings
         {
             get;
-        }        
+        }
 
         /// <summary>
         /// Property to set or return the currently active file writer plugin.

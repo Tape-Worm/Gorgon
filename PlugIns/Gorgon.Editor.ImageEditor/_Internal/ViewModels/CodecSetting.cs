@@ -29,13 +29,13 @@ using Gorgon.Graphics.Imaging.Codecs;
 
 namespace Gorgon.Editor.ImageEditor
 {
-	/// <summary>
+    /// <summary>
     /// A setting used to display a loaded codec.
     /// </summary>
     internal class CodecSetting
-		: IGorgonNamedObject
+        : IGorgonNamedObject
     {
-		/// <summary>
+        /// <summary>
         /// Property to return the description for the codec.
         /// </summary>
         public string Description
@@ -43,15 +43,15 @@ namespace Gorgon.Editor.ImageEditor
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the plug in that contains the codec.
         /// </summary>
-		public GorgonImageCodecPlugIn PlugIn
+        public GorgonImageCodecPlugIn PlugIn
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the formal name of the codec.
         /// </summary>
         public string Name

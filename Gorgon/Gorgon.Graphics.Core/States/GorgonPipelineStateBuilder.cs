@@ -280,7 +280,7 @@ namespace Gorgon.Graphics.Core
             _workState.IsIndependentBlendingEnabled = pipeState.IsIndependentBlendingEnabled;
             _workState.IsAlphaToCoverageEnabled = pipeState.IsAlphaToCoverageEnabled;
             StateCopy.CopyBlendStates(_workState.RwBlendStates, pipeState.RwBlendStates, 0);
-            
+
             return this;
         }
 

@@ -24,10 +24,10 @@
 // 
 #endregion
 
-using DX = SharpDX;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
+using DX = SharpDX;
 
 
 namespace Gorgon.Animation
@@ -120,7 +120,7 @@ namespace Gorgon.Animation
         /// <param name="size">The new size.</param>
         protected override void OnSizeUpdate(GorgonTextSprite animObject, DX.Vector3 size)
         {
-			// NOT USED.
+            // NOT USED.
         }
 
         /// <summary>

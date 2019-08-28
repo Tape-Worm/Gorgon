@@ -32,52 +32,52 @@ using Gorgon.IO.Properties;
 
 namespace Gorgon.IO
 {
-	/// <summary>
-	/// File information for ram disk files.
-	/// </summary>
-	internal struct RamDiskFileInfo
-		: IEquatable<RamDiskFileInfo>
-	{        
+    /// <summary>
+    /// File information for ram disk files.
+    /// </summary>
+    internal struct RamDiskFileInfo
+        : IEquatable<RamDiskFileInfo>
+    {
         /// <summary>
         /// Full path to the file.
         /// </summary>
         public readonly string FullPath;
-		/// <summary>
-		/// Size of the file.
-		/// </summary>
-		public readonly long Size;
-		/// <summary>
-		/// Creation date.
-		/// </summary>
-		public readonly DateTime CreateDate;
-		/// <summary>
-		/// Last modified date.
-		/// </summary>
-		public readonly DateTime LastModified;
+        /// <summary>
+        /// Size of the file.
+        /// </summary>
+        public readonly long Size;
+        /// <summary>
+        /// Creation date.
+        /// </summary>
+        public readonly DateTime CreateDate;
+        /// <summary>
+        /// Last modified date.
+        /// </summary>
+        public readonly DateTime LastModified;
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="RamDiskFileInfo"/> struct.
-		/// </summary>
-		/// <param name="fullPath">The full path.</param>
-		/// <param name="size">The size.</param>
-		/// <param name="created">The created.</param>
-		/// <param name="lastMod">The last mod.</param>
-		public RamDiskFileInfo(string fullPath, long size, DateTime created, DateTime lastMod)
-		{
-			FullPath = fullPath;
-			Size = size;
-			CreateDate = created;
-			LastModified = lastMod;
-		}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RamDiskFileInfo"/> struct.
+        /// </summary>
+        /// <param name="fullPath">The full path.</param>
+        /// <param name="size">The size.</param>
+        /// <param name="created">The created.</param>
+        /// <param name="lastMod">The last mod.</param>
+        public RamDiskFileInfo(string fullPath, long size, DateTime created, DateTime lastMod)
+        {
+            FullPath = fullPath;
+            Size = size;
+            CreateDate = created;
+            LastModified = lastMod;
+        }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="RamDiskFileInfo"/> struct.
-		/// </summary>
-		/// <param name="file">The file.</param>
-		public RamDiskFileInfo(IGorgonVirtualFile file)
-			: this(file.FullPath, file.Size, file.CreateDate, file.LastModifiedDate)
-		{
-		}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RamDiskFileInfo"/> struct.
+        /// </summary>
+        /// <param name="file">The file.</param>
+        public RamDiskFileInfo(IGorgonVirtualFile file)
+            : this(file.FullPath, file.Size, file.CreateDate, file.LastModifiedDate)
+        {
+        }
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -89,20 +89,20 @@ namespace Gorgon.IO
         public bool Equals(RamDiskFileInfo other) => string.Equals(other.FullPath, FullPath, StringComparison.OrdinalIgnoreCase);
     }
 
-	/// <summary>
-	/// A file system object for ram disks.
-	/// </summary>
-	internal class RamDiskFileSystem
-	{
-		#region Variables.
-		// The list of files and their data for the file system.
-		private readonly Dictionary<RamDiskFileInfo, MemoryStream> _fileData;
+    /// <summary>
+    /// A file system object for ram disks.
+    /// </summary>
+    internal class RamDiskFileSystem
+    {
+        #region Variables.
+        // The list of files and their data for the file system.
+        private readonly Dictionary<RamDiskFileInfo, MemoryStream> _fileData;
 
-		// The list of file information values.
-		private readonly Dictionary<string, RamDiskFileInfo> _fileInfos;
+        // The list of file information values.
+        private readonly Dictionary<string, RamDiskFileInfo> _fileInfos;
 
-		// The list of directory paths for the file system.
-		private readonly HashSet<string> _directories;
+        // The list of directory paths for the file system.
+        private readonly HashSet<string> _directories;
         #endregion
 
         #region Properties.
@@ -128,197 +128,197 @@ namespace Gorgon.IO
         /// <param name="path">Path to the file.</param>
         /// <returns>The file information.</returns>
         public RamDiskFileInfo GetFileInfo(string path)
-		{
+        {
 
-			if (!_fileInfos.TryGetValue(path, out RamDiskFileInfo fileInfo))
-			{
-				throw new FileNotFoundException(Resources.GORFS_ERR_FILE_NOT_FOUND, path);
-			}
+            if (!_fileInfos.TryGetValue(path, out RamDiskFileInfo fileInfo))
+            {
+                throw new FileNotFoundException(Resources.GORFS_ERR_FILE_NOT_FOUND, path);
+            }
 
-			return fileInfo;
-		}
+            return fileInfo;
+        }
 
-		/// <summary>
-		/// Function to open a read only stream to a file.
-		/// </summary>
-		/// <param name="path">Path to the file.</param>
-		/// <returns>The stream to the file.</returns>
-		public Stream OpenReadStream(string path)
-		{
-			RamDiskFileInfo fileInfo = GetFileInfo(path);
-
-
-			if (!_fileData.TryGetValue(fileInfo, out MemoryStream stream))
-			{
-				throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, path));
-			}
-
-			return new GorgonStreamWrapper(stream, 0, stream.Length, false);
-		}
-
-		/// <summary>
-		/// Function to add a directory to the file system.
-		/// </summary>
-		/// <param name="path">Path to the directory.</param>
-		public void AddDirectoryPath(string path)
-		{
-			if (_directories.Contains(path))
-			{
-				return;
-			}
-
-			_directories.Add(path);
-		}
-
-		/// <summary>
-		/// Function to remove a directory from the file system.
-		/// </summary>
-		/// <param name="path">Path to the directory.</param>
-		public void RemoveDirectoryPath(string path)
-		{
-			if (!_directories.Any(item => item.StartsWith(path, StringComparison.OrdinalIgnoreCase)))
-			{
-				throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path));
-			}
-
-			string[] directories = _directories.Where(item => item.StartsWith(path, StringComparison.OrdinalIgnoreCase)).ToArray();
-			RamDiskFileInfo[] files = _fileInfos
-				.Where(item => item.Key.StartsWith(path, StringComparison.OrdinalIgnoreCase))
-				.Select(item => item.Value)
-				.ToArray();
-
-			foreach (RamDiskFileInfo fileInfo in files)
-			{
-				_fileInfos.Remove(fileInfo.FullPath);
+        /// <summary>
+        /// Function to open a read only stream to a file.
+        /// </summary>
+        /// <param name="path">Path to the file.</param>
+        /// <returns>The stream to the file.</returns>
+        public Stream OpenReadStream(string path)
+        {
+            RamDiskFileInfo fileInfo = GetFileInfo(path);
 
 
-				if (!_fileData.TryGetValue(fileInfo, out MemoryStream stream))
-				{
-					continue;
-				}
+            if (!_fileData.TryGetValue(fileInfo, out MemoryStream stream))
+            {
+                throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, path));
+            }
 
-				stream.Dispose();
-				_fileData.Remove(fileInfo);
-			}
+            return new GorgonStreamWrapper(stream, 0, stream.Length, false);
+        }
 
-			foreach (string directory in directories)
-			{
-				_directories.Remove(directory);
-			}
-		}
+        /// <summary>
+        /// Function to add a directory to the file system.
+        /// </summary>
+        /// <param name="path">Path to the directory.</param>
+        public void AddDirectoryPath(string path)
+        {
+            if (_directories.Contains(path))
+            {
+                return;
+            }
 
-		/// <summary>
-		/// Function to clear the file system of all directories and files.
-		/// </summary>
-		public void Clear()
-		{
-			foreach (KeyValuePair<RamDiskFileInfo, MemoryStream> file in _fileData)
-			{
-				file.Value?.Dispose();
-			}
+            _directories.Add(path);
+        }
 
-			_fileData.Clear();
-			_fileInfos.Clear();
-			_directories.Clear();
-		}
+        /// <summary>
+        /// Function to remove a directory from the file system.
+        /// </summary>
+        /// <param name="path">Path to the directory.</param>
+        public void RemoveDirectoryPath(string path)
+        {
+            if (!_directories.Any(item => item.StartsWith(path, StringComparison.OrdinalIgnoreCase)))
+            {
+                throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path));
+            }
 
-		/// <summary>
-		/// Function to open a writable stream to the file.
-		/// </summary>
-		/// <param name="path">The path to the file.</param>
-		/// <returns>A stream to the file.</returns>
-		public MemoryStream OpenForWrite(string path)
-		{
-			MemoryStream stream;
+            string[] directories = _directories.Where(item => item.StartsWith(path, StringComparison.OrdinalIgnoreCase)).ToArray();
+            RamDiskFileInfo[] files = _fileInfos
+                .Where(item => item.Key.StartsWith(path, StringComparison.OrdinalIgnoreCase))
+                .Select(item => item.Value)
+                .ToArray();
 
-			if (_fileInfos.ContainsKey(path))
-			{
-				RamDiskFileInfo fileInfo = GetFileInfo(path);
-
-				if (!_fileData.TryGetValue(fileInfo, out stream))
-				{
-					throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, path));
-				}
-
-				return stream;
-			}
-
-			// This is a new file, so open it as such.
-			var info = new RamDiskFileInfo(path, 0, DateTime.Now, DateTime.Now);
-			stream = new MemoryStream();
-			_fileInfos.Add(path, info);
-			_fileData.Add(info, stream);
-
-			return stream;
-		}
-
-		/// <summary>
-		/// Function to delete a file from the file system.
-		/// </summary>
-		/// <param name="path">Path to the file.</param>
-		public void DeleteFile(string path)
-		{
-			if (!_fileInfos.ContainsKey(path))
-			{
-				return;
-			}
+            foreach (RamDiskFileInfo fileInfo in files)
+            {
+                _fileInfos.Remove(fileInfo.FullPath);
 
 
-			if (!_fileInfos.TryGetValue(path, out RamDiskFileInfo fileInfo))
-			{
-				return;
-			}
+                if (!_fileData.TryGetValue(fileInfo, out MemoryStream stream))
+                {
+                    continue;
+                }
 
-			_fileInfos.Remove(path);
+                stream.Dispose();
+                _fileData.Remove(fileInfo);
+            }
+
+            foreach (string directory in directories)
+            {
+                _directories.Remove(directory);
+            }
+        }
+
+        /// <summary>
+        /// Function to clear the file system of all directories and files.
+        /// </summary>
+        public void Clear()
+        {
+            foreach (KeyValuePair<RamDiskFileInfo, MemoryStream> file in _fileData)
+            {
+                file.Value?.Dispose();
+            }
+
+            _fileData.Clear();
+            _fileInfos.Clear();
+            _directories.Clear();
+        }
+
+        /// <summary>
+        /// Function to open a writable stream to the file.
+        /// </summary>
+        /// <param name="path">The path to the file.</param>
+        /// <returns>A stream to the file.</returns>
+        public MemoryStream OpenForWrite(string path)
+        {
+            MemoryStream stream;
+
+            if (_fileInfos.ContainsKey(path))
+            {
+                RamDiskFileInfo fileInfo = GetFileInfo(path);
+
+                if (!_fileData.TryGetValue(fileInfo, out stream))
+                {
+                    throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, path));
+                }
+
+                return stream;
+            }
+
+            // This is a new file, so open it as such.
+            var info = new RamDiskFileInfo(path, 0, DateTime.Now, DateTime.Now);
+            stream = new MemoryStream();
+            _fileInfos.Add(path, info);
+            _fileData.Add(info, stream);
+
+            return stream;
+        }
+
+        /// <summary>
+        /// Function to delete a file from the file system.
+        /// </summary>
+        /// <param name="path">Path to the file.</param>
+        public void DeleteFile(string path)
+        {
+            if (!_fileInfos.ContainsKey(path))
+            {
+                return;
+            }
 
 
-			if (!_fileData.TryGetValue(fileInfo, out MemoryStream _))
-			{
-				return;
-			}
+            if (!_fileInfos.TryGetValue(path, out RamDiskFileInfo fileInfo))
+            {
+                return;
+            }
 
-			_fileData[fileInfo]?.Dispose();
-			_fileData.Remove(fileInfo);
-		}
+            _fileInfos.Remove(path);
 
-		/// <summary>
-		/// Function to update the information for a file.
-		/// </summary>
-		/// <param name="path">Path to the file.</param>
-		/// <param name="fileInfo">File information to replace.</param>
-		public void UpdateFile(string path, ref RamDiskFileInfo fileInfo)
-		{
 
-			if (_fileInfos.TryGetValue(path, out RamDiskFileInfo old))
-			{
-				_fileInfos.Remove(old.FullPath);
-				_fileInfos[path] = fileInfo;
-			}
-			else
-			{
-				old = fileInfo;
-			}
+            if (!_fileData.TryGetValue(fileInfo, out MemoryStream _))
+            {
+                return;
+            }
 
-			if (!_fileData.TryGetValue(old, out MemoryStream oldStream))
-			{
-				throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, path));
-			}
+            _fileData[fileInfo]?.Dispose();
+            _fileData.Remove(fileInfo);
+        }
 
-			_fileData.Remove(old);
-			_fileData[fileInfo] = oldStream;
-		}
-		#endregion
+        /// <summary>
+        /// Function to update the information for a file.
+        /// </summary>
+        /// <param name="path">Path to the file.</param>
+        /// <param name="fileInfo">File information to replace.</param>
+        public void UpdateFile(string path, ref RamDiskFileInfo fileInfo)
+        {
 
-		#region Constructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="RamDiskFileSystem"/> class.
-		/// </summary>
-		public RamDiskFileSystem()
-		{
-			_fileData = new Dictionary<RamDiskFileInfo, MemoryStream>();		
-			_fileInfos = new Dictionary<string, RamDiskFileInfo>();	
-			_directories = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		}
-		#endregion
-	}
+            if (_fileInfos.TryGetValue(path, out RamDiskFileInfo old))
+            {
+                _fileInfos.Remove(old.FullPath);
+                _fileInfos[path] = fileInfo;
+            }
+            else
+            {
+                old = fileInfo;
+            }
+
+            if (!_fileData.TryGetValue(old, out MemoryStream oldStream))
+            {
+                throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, path));
+            }
+
+            _fileData.Remove(old);
+            _fileData[fileInfo] = oldStream;
+        }
+        #endregion
+
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RamDiskFileSystem"/> class.
+        /// </summary>
+        public RamDiskFileSystem()
+        {
+            _fileData = new Dictionary<RamDiskFileInfo, MemoryStream>();
+            _fileInfos = new Dictionary<string, RamDiskFileInfo>();
+            _directories = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        }
+        #endregion
+    }
 }

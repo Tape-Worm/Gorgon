@@ -29,11 +29,11 @@ using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.SpriteEditor
 {
-	/// <summary>
+    /// <summary>
     /// The view model for the importer plug in settings.
     /// </summary>
     internal interface IImporterPlugInSettings
-		: ISettingsCategoryViewModel
+        : ISettingsCategoryViewModel
     {
         /// <summary>
         /// Property to return the list of selected codecs.

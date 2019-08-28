@@ -35,7 +35,7 @@ namespace Gorgon.UI
     /// A control used to provide a visual means of specifying an anchor setting.
     /// </summary>
     [ToolboxItem(true), Designer(typeof(GorgonAlignmentPickerDesigner))]
-    public partial class GorgonAlignmentPicker 
+    public partial class GorgonAlignmentPicker
         : UserControl
     {
         #region Variables.
@@ -90,7 +90,7 @@ namespace Gorgon.UI
                     radioTopCenter.Checked = true;
                     break;
                 case Alignment.LowerCenter:
-                    radioBottomCenter.Checked = true;                
+                    radioBottomCenter.Checked = true;
                     break;
                 case Alignment.UpperLeft:
                     radioTopLeft.Checked = true;
@@ -108,19 +108,19 @@ namespace Gorgon.UI
                     radioCenter.Checked = true;
                     break;
                 default:
-                    radioMiddleLeft.Checked = 
-                    radioMiddleRight.Checked = 
-                    radioTopCenter.Checked = 
-                    radioBottomCenter.Checked = 
-                    radioTopLeft.Checked = 
-                    radioTopRight.Checked = 
-                    radioBottomLeft.Checked = 
-                    radioBottomRight.Checked = 
+                    radioMiddleLeft.Checked =
+                    radioMiddleRight.Checked =
+                    radioTopCenter.Checked =
+                    radioBottomCenter.Checked =
+                    radioTopLeft.Checked =
+                    radioTopRight.Checked =
+                    radioBottomLeft.Checked =
+                    radioBottomRight.Checked =
                     radioCenter.Checked = false;
                     break;
             }
-        }        
-        
+        }
+
         /// <summary>Handles the Click event of the Radio control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>

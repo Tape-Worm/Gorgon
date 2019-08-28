@@ -39,7 +39,7 @@ namespace Gorgon.Editor.UI.Controls
     /// Content plug in developers that require a sub panel to display properties, settings, etc... must inherit this control type on their <see cref="UserControl"/>.
     /// </para>
     /// </remarks>
-    public partial class EditorSubPanelCommon 
+    public partial class EditorSubPanelCommon
         : EditorBaseControl
     {
         #region Variables.

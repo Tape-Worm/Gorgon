@@ -294,7 +294,7 @@ namespace Gorgon.Graphics.Core
             final.SetupConstantBuffers();
             final.SetupSamplers();
             final.SetupViews();
-            
+
             if (final.D3DState.VertexBuffers == null)
             {
                 final.D3DState.VertexBuffers = new GorgonVertexBufferBindings();
@@ -345,20 +345,20 @@ namespace Gorgon.Graphics.Core
             }
 
             VertexBuffer(drawCall.InputLayout, drawCall.VertexBufferBinding);
-            
+
             // Copy over the available constants.
             ConstantBuffers(drawCall.D3DState.PsConstantBuffers);
             SamplerStates(drawCall.D3DState.PsSamplers);
             StateCopy.CopySrvs(_workerCall.D3DState.PsSrvs, drawCall.D3DState.PsSrvs);
             ReadWriteViews(drawCall.ReadWriteViews);
-            
+
             _workerCall.PipelineState = new GorgonStreamOutPipelineState(drawCall.PipelineState.PipelineState);
-            
+
             // We need to copy the D3D states as well as they won't be updated unless we rebuild the pipeline state.
             _workerCall.D3DState.PipelineState.D3DBlendState = drawCall.D3DState.PipelineState.D3DBlendState;
             _workerCall.D3DState.PipelineState.D3DRasterState = drawCall.D3DState.PipelineState.D3DRasterState;
             _workerCall.D3DState.PipelineState.D3DDepthStencilState = drawCall.D3DState.PipelineState.D3DDepthStencilState;
-            
+
             return this;
         }
 
@@ -367,9 +367,9 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <returns>The fluent builder interface.</returns>
         public GorgonStreamOutCallBuilder Clear()
-        {            
+        {
             _workerCall.D3DState.VertexBuffers.Clear();
-            
+
             _workerCall.D3DState.PsConstantBuffers.Clear();
             _workerCall.D3DState.PsSamplers.Clear();
             _workerCall.D3DState.PsSrvs.Clear();
@@ -388,9 +388,9 @@ namespace Gorgon.Graphics.Core
         public GorgonStreamOutCallBuilder()
         {
             _workerCall = new GorgonStreamOutCall
-                          {
-                              PipelineState = new GorgonStreamOutPipelineState(new GorgonPipelineState())
-                          };
+            {
+                PipelineState = new GorgonStreamOutPipelineState(new GorgonPipelineState())
+            };
             _workerCall.SetupConstantBuffers();
             _workerCall.SetupSamplers();
             _workerCall.SetupViews();

@@ -277,10 +277,10 @@ namespace Gorgon.Graphics.Core
             }
 
             var buffer = new GorgonConstantBuffer(graphics, new GorgonConstantBufferInfo(name)
-                                                            {
-                                                                Usage = usage,
-                                                                SizeInBytes = Unsafe.SizeOf<T>()
-                                                            });
+            {
+                Usage = usage,
+                SizeInBytes = Unsafe.SizeOf<T>()
+            });
             buffer.SetData(ref value);
             GorgonConstantBufferView view = buffer.GetView(firstElement, elementCount);
             view._ownsBuffer = true;
@@ -340,10 +340,10 @@ namespace Gorgon.Graphics.Core
             }
 
             var buffer = new GorgonConstantBuffer(graphics, new GorgonConstantBufferInfo(name)
-                                                            {
-                                                                Usage = usage,
-                                                                SizeInBytes = Unsafe.SizeOf<T>() * value.Length
-                                                            });
+            {
+                Usage = usage,
+                SizeInBytes = Unsafe.SizeOf<T>() * value.Length
+            });
             buffer.SetData(value);
             GorgonConstantBufferView view = buffer.GetView(firstElement, elementCount);
             view._ownsBuffer = true;

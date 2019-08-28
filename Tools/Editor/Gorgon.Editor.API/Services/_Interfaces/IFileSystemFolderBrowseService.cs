@@ -26,12 +26,12 @@
 
 namespace Gorgon.Editor.Services
 {
-	/// <summary>
+    /// <summary>
     /// An interface used to browse the file system folder structure.
     /// </summary>
     public interface IFileSystemFolderBrowseService
     {
-		/// <summary>
+        /// <summary>
         /// Function to retrieve a path from the file system.
         /// </summary>
         /// <param name="initialPath">The starting path to select.</param>

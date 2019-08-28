@@ -63,25 +63,25 @@ namespace Gorgon.Graphics.Imaging.Codecs
         : GorgonCodecWic<GorgonJpegEncodingOptions, IGorgonWicDecodingOptions>
     {
         #region Variables.
-		// Supported formats.
-		private readonly BufferFormat[] _supportedFormats =
-		{
+        // Supported formats.
+        private readonly BufferFormat[] _supportedFormats =
+        {
             BufferFormat.R8G8B8A8_UNorm,
             BufferFormat.B8G8R8A8_UNorm,
             BufferFormat.B8G8R8X8_UNorm
         };
 
-		// Image quality for lossy compressed images.
-		private float _imageQuality = 1.0f;
+        // Image quality for lossy compressed images.
+        private float _imageQuality = 1.0f;
         #endregion
 
         #region Properties.
-		/// <summary>
-		/// Property to return the supported pixel formats for this codec.
-		/// </summary>
-		public override IReadOnlyList<BufferFormat> SupportedPixelFormats => _supportedFormats;
+        /// <summary>
+        /// Property to return the supported pixel formats for this codec.
+        /// </summary>
+        public override IReadOnlyList<BufferFormat> SupportedPixelFormats => _supportedFormats;
 
-	    /// <summary>
+        /// <summary>
         /// Property to set or return the quality of an image compressed with lossy compression.
         /// </summary>
         /// <remarks>
@@ -91,7 +91,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         public float ImageQuality
         {
             get => _imageQuality;
-		    set
+            set
             {
                 if (value < 0.0f)
                 {

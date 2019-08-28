@@ -56,65 +56,65 @@ namespace Gorgon.Renderers
     /// </remarks>
     /// <seealso cref="Gorgon2DDeferredLightingEffect"/>
 	public class Gorgon2DLight
-		: IEquatable<Gorgon2DLight>
+        : IEquatable<Gorgon2DLight>
     {
-		#region Properties.
+        #region Properties.
         /// <summary>
         /// Property to set or return the type of light to render.
         /// </summary>
-	    public LightType LightType
-	    {
-	        get;
-	        set;
-	    }
+        public LightType LightType
+        {
+            get;
+            set;
+        }
 
-		/// <summary>
-		/// Property to set or return the direction of the light for directional lighting.
-		/// </summary>
-		/// <remarks>
-		/// This property is ignored when the <see cref="LightType"/> property is set to <see cref="Renderers.LightType.Point"/>.
-		/// </remarks>
-		public DX.Vector3 LightDirection
-		{
-			get;
-		    set;
-		}
+        /// <summary>
+        /// Property to set or return the direction of the light for directional lighting.
+        /// </summary>
+        /// <remarks>
+        /// This property is ignored when the <see cref="LightType"/> property is set to <see cref="Renderers.LightType.Point"/>.
+        /// </remarks>
+        public DX.Vector3 LightDirection
+        {
+            get;
+            set;
+        }
 
-		/// <summary>
-		/// Property to set or return the position for the light.
-		/// </summary>
-		public DX.Vector3 Position
-		{
-			get;
-		    set;
-		}
+        /// <summary>
+        /// Property to set or return the position for the light.
+        /// </summary>
+        public DX.Vector3 Position
+        {
+            get;
+            set;
+        }
 
-		/// <summary>
-		/// Property to set or return the color of the light.
-		/// </summary>
-		public GorgonColor Color
-		{
-			get;
-		    set;
-		}
+        /// <summary>
+        /// Property to set or return the color of the light.
+        /// </summary>
+        public GorgonColor Color
+        {
+            get;
+            set;
+        }
 
-		/// <summary>
-		/// Property to set or return whether to enable specular hilighting.
-		/// </summary>
-		public bool SpecularEnabled
-		{
-			get;
-		    set;
-		}
+        /// <summary>
+        /// Property to set or return whether to enable specular hilighting.
+        /// </summary>
+        public bool SpecularEnabled
+        {
+            get;
+            set;
+        }
 
-		/// <summary>
-		/// Property to set or return the intensity of the specular hilight.
-		/// </summary>
-		public float SpecularPower
-		{
-			get;
-		    set;
-		}
+        /// <summary>
+        /// Property to set or return the intensity of the specular hilight.
+        /// </summary>
+        public float SpecularPower
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Property to set or return how bright the light will be.
@@ -125,17 +125,17 @@ namespace Gorgon.Renderers
             set;
         }
 
-		/// <summary>
-		/// Property to set or return the intensity/falloff for the light.
-		/// </summary>
+        /// <summary>
+        /// Property to set or return the intensity/falloff for the light.
+        /// </summary>
         /// <remarks>
         /// This property does not apply if the <see cref="LightType"/> property is set to <see cref="LightType.Directional"/>.
         /// </remarks>
-		public float Attenuation
-		{
-			get;
-		    set;
-		}
+        public float Attenuation
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Methods.
@@ -175,15 +175,15 @@ namespace Gorgon.Renderers
         /// Initializes a new instance of the <see cref="Gorgon2DLight"/> class.
         /// </summary>
         public Gorgon2DLight()
-		{
-		    Color = GorgonColor.White;
-		    Position = DX.Vector3.Zero;
+        {
+            Color = GorgonColor.White;
+            Position = DX.Vector3.Zero;
             LightDirection = DX.Vector3.Zero;
-		    Attenuation = 1.0f;
-		    SpecularEnabled = false;
-		    SpecularPower = 0.0f;
+            Attenuation = 1.0f;
+            SpecularEnabled = false;
+            SpecularPower = 0.0f;
             Intensity = 1.0f;
-		}
+        }
         #endregion
     }
 }

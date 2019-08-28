@@ -34,7 +34,7 @@ namespace Gorgon.Editor.UI.Controls
     /// <summary>
     /// A control used to select a color value.
     /// </summary>
-    public partial class ColorPicker 
+    public partial class ColorPicker
         : UserControl
     {
         #region Events.

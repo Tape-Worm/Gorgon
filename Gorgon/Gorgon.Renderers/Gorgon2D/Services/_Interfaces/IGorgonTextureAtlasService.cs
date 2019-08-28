@@ -49,10 +49,10 @@ namespace Gorgon.Renderers.Services
     public interface IGorgonTextureAtlasService
     {
         #region Properties.
-		/// <summary>
+        /// <summary>
         /// Property to set or return the amount of padding, in pixels, to place around each sprite.
         /// </summary>
-		int Padding
+        int Padding
         {
             get;
             set;
@@ -81,10 +81,10 @@ namespace Gorgon.Renderers.Services
             set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return the base name for the texture.
         /// </summary>
-		string BaseTextureName
+        string BaseTextureName
         {
             get;
             set;

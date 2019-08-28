@@ -27,26 +27,26 @@
 using System;
 using System.ComponentModel;
 using System.Threading;
-using System.Windows.Forms;
-using DX = SharpDX;
-using Gorgon.Editor.UI;
-using Gorgon.Math;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Gorgon.Editor.ExtractSpriteTool.Properties;
+using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
+using Gorgon.Math;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.ExtractSpriteTool
 {
     /// <summary>
     /// The main view for the tool.
     /// </summary>
-    internal partial class FormExtract 
-		: EditorToolBaseForm, IDataContext<IExtract>
+    internal partial class FormExtract
+        : EditorToolBaseForm, IDataContext<IExtract>
     {
         #region Variables.
         // The renderer for this window.
         private IRenderer _renderer;
-		// State flag for the closing operations.
+        // State flag for the closing operations.
         private int _closeState;
         #endregion
 
@@ -60,7 +60,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         #endregion
 
         #region Methods.
-		/// <summary>
+        /// <summary>
         /// Function to validate the controls on the form.
         /// </summary>
         private void ValidateControls()
@@ -86,7 +86,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
             ButtonPrevArray.Enabled = DataContext.PrevPreviewArrayCommand?.CanExecute(null) ?? false;
             ButtonSendToArrayStart.Enabled = DataContext.SendPreviewArrayToStartCommand?.CanExecute(null) ?? false;
         }
-		
+
         /// <summary>Handles the Click event of the SkipColor control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="T:System.EventArgs"/> instance containing the event data.</param>
@@ -384,10 +384,10 @@ namespace Gorgon.Editor.ExtractSpriteTool
                 return;
             }
 
-            LabelSprite.Text = string.Format(Resources.GOREST_TEXT_SPRITE_PREVIEW, dataContext.CurrentPreviewSprite + 1, dataContext.SpritePreviewCount);			
+            LabelSprite.Text = string.Format(Resources.GOREST_TEXT_SPRITE_PREVIEW, dataContext.CurrentPreviewSprite + 1, dataContext.SpritePreviewCount);
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to update the array label.
         /// </summary>
         /// <param name="dataContext">The current data context.</param>
@@ -439,7 +439,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
                     NumericRowCount.Maximum = DataContext.MaxGridSize.Height;
                     break;
                 case nameof(IExtract.MaxArrayCount):
-                    NumericArrayCount.Maximum = DataContext.MaxArrayCount;                    
+                    NumericArrayCount.Maximum = DataContext.MaxArrayCount;
                     break;
                 case nameof(IExtract.MaxArrayIndex):
                     NumericArrayIndex.Maximum = DataContext.MaxArrayIndex;
@@ -452,7 +452,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
             ValidateControls();
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to unassign events from the data context.
         /// </summary>
         private void UnassignEvents()
@@ -552,7 +552,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
                 return;
             }
 
-			// First state keeps us from causing chaos by hitting the close button when we're waiting for the view model task to complete.
+            // First state keeps us from causing chaos by hitting the close button when we're waiting for the view model task to complete.
             Interlocked.Increment(ref _closeState);
 
             e.Cancel = true;
@@ -563,14 +563,14 @@ namespace Gorgon.Editor.ExtractSpriteTool
 
                 if ((DataContext.ShutdownCommand != null) && (DataContext.ShutdownCommand.CanExecute(null)))
                 {
-                    await DataContext.ShutdownCommand.ExecuteAsync(null);                   
+                    await DataContext.ShutdownCommand.ExecuteAsync(null);
                 }
             }
 
             await Task.Yield();
 
             Interlocked.Increment(ref _closeState);
-            
+
             Close();
         }
 
@@ -628,7 +628,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <summary>Initializes a new instance of the <see cref="FormExtract"/> class.</summary>
         public FormExtract()
         {
-            InitializeComponent();            
+            InitializeComponent();
             PanelRender.MouseWheel += PanelRender_MouseWheel;
         }
         #endregion

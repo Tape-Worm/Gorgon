@@ -194,7 +194,7 @@ namespace Gorgon.Renderers
         {
             GorgonVertexBuffer vertexBuffer = VertexBuffer.VertexBuffer;
             int cacheIndex = _currentVertexIndex - _allocatedVertexCount;
-            
+
             while (_allocatedVertexCount > 0)
             {
                 int vertexCount = _allocatedVertexCount.Min(MaxVertexCount);
@@ -208,12 +208,12 @@ namespace Gorgon.Renderers
                     _vertexBufferIndex = 0;
                     _indexBufferBaseVertexIndex = 0;
                 }
-                
+
                 CopyMode copyMode = _vertexBufferByteOffset == 0 ? CopyMode.Discard : CopyMode.NoOverwrite;
-                
+
                 // Copy a chunk of the cache.
                 vertexBuffer.SetData(_vertexCache, cacheIndex, vertexCount, _vertexBufferByteOffset, copyMode);
-                
+
                 drawCall.VertexStartIndex = _vertexBufferIndex;
                 drawCall.VertexCount = vertexCount;
                 Graphics.Submit(drawCall);
@@ -240,7 +240,7 @@ namespace Gorgon.Renderers
         {
             GorgonVertexBuffer vertexBuffer = VertexBuffer.VertexBuffer;
             int cacheIndex = _currentVertexIndex - _allocatedVertexCount;
-            
+
             while (_allocatedVertexCount > 0)
             {
                 int vertexCount = _allocatedVertexCount.Min(MaxVertexCount);
@@ -256,9 +256,9 @@ namespace Gorgon.Renderers
                     _vertexBufferIndex = 0;
                     _indexBufferBaseVertexIndex = 0;
                 }
-                
+
                 CopyMode copyMode = _vertexBufferByteOffset == 0 ? CopyMode.Discard : CopyMode.NoOverwrite;
-                
+
                 // Copy a chunk of the cache.
                 vertexBuffer.SetData(_vertexCache, cacheIndex, vertexCount, _vertexBufferByteOffset, copyMode);
 

@@ -25,14 +25,14 @@
 #endregion
 
 using System;
+using System.ComponentModel;
 using System.Linq;
-using DX = SharpDX;
+using System.Windows.Forms;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Renderers;
 using Gorgon.Math;
-using System.ComponentModel;
-using System.Windows.Forms;
+using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -45,9 +45,9 @@ namespace Gorgon.Editor.SpriteEditor
         #region Variables.
         // The actual sprite to render.
         private readonly GorgonSprite _workingSprite;
-		// The editor used to update the sprite vertices.
+        // The editor used to update the sprite vertices.
         private readonly ISpriteVertexEditService _vertexEditor;
-		// Perspective correct camera.
+        // Perspective correct camera.
         private readonly IGorgon2DCamera _camera;
         #endregion
 
@@ -72,8 +72,8 @@ namespace Gorgon.Editor.SpriteEditor
         {
             SpriteContent.ManualVertexEditor.Vertices = _vertexEditor.Vertices.ToArray();
 
-            if ((SpriteContent?.ManualVertexEditor == null) 
-                || (!SpriteContent.ManualVertexEditor.IsActive) 
+            if ((SpriteContent?.ManualVertexEditor == null)
+                || (!SpriteContent.ManualVertexEditor.IsActive)
                 || (SpriteContent.ManualVertexEditor.SelectedVertexIndex < 0)
                 || (SpriteContent.ManualVertexEditor.SelectedVertexIndex > 3))
             {
@@ -142,8 +142,8 @@ namespace Gorgon.Editor.SpriteEditor
                     if ((SpriteContent.ManualVertexEditor.CancelCommand != null) && (SpriteContent.ManualVertexEditor.CancelCommand.CanExecute(null)))
                     {
                         SpriteContent.ManualVertexEditor.CancelCommand.Execute(null);
-                    }                    
-                    
+                    }
+
                     if (SpriteContent.ManualVertexEditor.IsActive)
                     {
                         VertexEditor_KeyboardIconClicked(_vertexEditor, EventArgs.Empty);
@@ -159,10 +159,10 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Handles the MouseUp event of the Window control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-        private void Window_MouseUp(object sender, MouseEventArgs e) 
+        private void Window_MouseUp(object sender, MouseEventArgs e)
         {
             _vertexEditor.MousePosition = new DX.Vector2(e.X, e.Y);
-			_vertexEditor.MouseUp(e.Button);
+            _vertexEditor.MouseUp(e.Button);
         }
 
         /// <summary>Handles the MouseDown event of the Window control.</summary>
@@ -245,7 +245,7 @@ namespace Gorgon.Editor.SpriteEditor
                     for (int i = 0; i < _workingSprite.CornerOffsets.Count; ++i)
                     {
                         _workingSprite.CornerOffsets[i] = i < _vertexEditor.Vertices.Count ? new DX.Vector3(_vertexEditor.Vertices[i], 0) : DX.Vector3.Zero;
-                    }                    
+                    }
                     break;
             }
         }
@@ -292,7 +292,7 @@ namespace Gorgon.Editor.SpriteEditor
                 case nameof(ISpriteContent.VertexOffsets):
                     for (int i = 0; i < _workingSprite.CornerOffsets.Count; ++i)
                     {
-                        _workingSprite.CornerOffsets[i] = SpriteContent.VertexOffsets[i];                        
+                        _workingSprite.CornerOffsets[i] = SpriteContent.VertexOffsets[i];
                     }
                     SpriteContent.ManualVertexEditor.Vertices = _workingSprite.CornerOffsets.Select(item => (DX.Vector2)item).ToArray();
                     break;
@@ -426,7 +426,7 @@ namespace Gorgon.Editor.SpriteEditor
                 Scale = DX.Vector2.One,
                 Anchor = DX.Vector2.Zero,
                 Color = GorgonColor.White,
-				Depth = 0.1f
+                Depth = 0.1f
             };
 
             UpdateWorkingSprite();
@@ -436,7 +436,7 @@ namespace Gorgon.Editor.SpriteEditor
             _vertexEditor.VertexSelected += VertexEditor_VertexSelected;
 
             _camera = new Gorgon2DPerspectiveCamera(renderer, new DX.Size2F(swapChain.Width, swapChain.Height));
-        }        
+        }
         #endregion
     }
 }

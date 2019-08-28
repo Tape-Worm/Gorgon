@@ -27,9 +27,9 @@
 using System;
 using System.ComponentModel;
 using ComponentFactory.Krypton.Toolkit;
-using DX = SharpDX;
 using Gorgon.Editor.UI;
 using Gorgon.UI;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -114,9 +114,9 @@ namespace Gorgon.Editor.SpriteEditor
             switch (e.PropertyName)
             {
                 case nameof(IManualRectangleEditor.IsFixedSize):
-					LabelRight.Enabled = LabelBottom.Enabled = 
+                    LabelRight.Enabled = LabelBottom.Enabled =
                     NumericRight.Enabled = NumericBottom.Enabled = !DataContext.IsFixedSize;
-                    break;                
+                    break;
                 case nameof(IManualRectangleEditor.IsActive):
                     if (DataContext.IsActive)
                     {
@@ -239,7 +239,7 @@ namespace Gorgon.Editor.SpriteEditor
 
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.SpriteEditor.FormManualRectInput"/> class.</summary>
-        public FormManualRectangleEdit() => InitializeComponent();        
+        public FormManualRectangleEdit() => InitializeComponent();
         #endregion
     }
 }

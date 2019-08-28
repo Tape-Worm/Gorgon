@@ -78,12 +78,12 @@ namespace Gorgon.Editor.PlugIns
 
             var records = new List<PlugInAssemblyState>();
 
-			// We use this to determine whether the plug in can be loaded into the current platform.
+            // We use this to determine whether the plug in can be loaded into the current platform.
             AssemblyPlatformType currentPlatform = IntPtr.Size == 8 ? AssemblyPlatformType.x64 : AssemblyPlatformType.x86;
 
             foreach (FileInfo file in pluginAssemblyFiles)
             {
-				// If we've already got the assembly loaded into this cache, then there's no need to try and load it.
+                // If we've already got the assembly loaded into this cache, then there's no need to try and load it.
                 if (pluginCache.PlugInAssemblies?.Any(item => string.Equals(item, file.FullName, StringComparison.OrdinalIgnoreCase)) ?? false)
                 {
                     continue;

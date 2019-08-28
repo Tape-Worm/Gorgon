@@ -32,7 +32,7 @@ namespace Gorgon.Editor.ViewModels
     /// The arguments to pass to the <see cref="IFileExplorerVm.DeleteNodeCommand"/>.
     /// </summary>
     internal class DeleteNodeArgs
-		: CancelEventArgs
+        : CancelEventArgs
     {
         /// <summary>
         /// Property to return the path to the node that is being edited.

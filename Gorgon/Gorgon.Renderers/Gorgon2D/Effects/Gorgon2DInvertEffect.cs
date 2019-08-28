@@ -32,69 +32,69 @@ using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
-	/// <summary>
-	/// An effect that renders an inverted image.
-	/// </summary>
-	public class Gorgon2DInvertEffect
-		: Gorgon2DEffect
-	{
-		#region Variables.
-	    // Buffer for the inversion effect.
-		private GorgonConstantBufferView _invertBuffer;
-	    // Flag to invert the alpha channel.
+    /// <summary>
+    /// An effect that renders an inverted image.
+    /// </summary>
+    public class Gorgon2DInvertEffect
+        : Gorgon2DEffect
+    {
+        #region Variables.
+        // Buffer for the inversion effect.
+        private GorgonConstantBufferView _invertBuffer;
+        // Flag to invert the alpha channel.
         private bool _invertAlpha;
         // The pixel shader for the effect.
         private GorgonPixelShader _invertShader;
-	    private Gorgon2DShaderState<GorgonPixelShader> _invertState;
+        private Gorgon2DShaderState<GorgonPixelShader> _invertState;
         // The batch render state.
-	    private Gorgon2DBatchState _batchState;
-		#endregion
+        private Gorgon2DBatchState _batchState;
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to set or return whether to invert the alpha channel.
-		/// </summary>
-		public bool InvertAlpha
-		{
-			get => _invertAlpha;
-		    set
-			{
-				if (_invertAlpha == value)
-				{
-					return;
-				}
-				
-				_invertAlpha = value;
-				_invertBuffer?.Buffer.SetData(ref _invertAlpha);
-			}
-		}
-		#endregion
+        #region Properties.
+        /// <summary>
+        /// Property to set or return whether to invert the alpha channel.
+        /// </summary>
+        public bool InvertAlpha
+        {
+            get => _invertAlpha;
+            set
+            {
+                if (_invertAlpha == value)
+                {
+                    return;
+                }
 
-		#region Methods.
-	    /// <summary>
-	    /// Function called to build a new (or return an existing) 2D batch state.
-	    /// </summary>
-	    /// <param name="passIndex">The index of the current rendering pass.</param>
-	    /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
-	    /// <returns>The 2D batch state.</returns>
-	    protected override Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged)
-	    {
-	        if (statesChanged)
-	        {
-	            _batchState = BatchStateBuilder.Build();
-	        }
+                _invertAlpha = value;
+                _invertBuffer?.Buffer.SetData(ref _invertAlpha);
+            }
+        }
+        #endregion
 
-	        return _batchState;
-	    }
+        #region Methods.
+        /// <summary>
+        /// Function called to build a new (or return an existing) 2D batch state.
+        /// </summary>
+        /// <param name="passIndex">The index of the current rendering pass.</param>
+        /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
+        /// <returns>The 2D batch state.</returns>
+        protected override Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged)
+        {
+            if (statesChanged)
+            {
+                _batchState = BatchStateBuilder.Build();
+            }
 
-	    /// <summary>
+            return _batchState;
+        }
+
+        /// <summary>
         /// Function called when the effect is being initialized.
         /// </summary>
         /// <remarks>
         /// Use this method to set up the effect upon its creation.  For example, this method could be used to create the required shaders for the effect.
         /// <para>When creating a custom effect, use this method to initialize the effect.  Do not put initialization code in the effect constructor.</para>
         /// </remarks>
-	    protected override void OnInitialize()
+        protected override void OnInitialize()
         {
             _invertBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _invertAlpha, "Gorgon2DInvertEffect Constant Buffer");
 
@@ -122,12 +122,12 @@ namespace Gorgon.Renderers
         /// </para>
         /// </remarks>
         protected override void OnBeforeRender(GorgonRenderTargetView output, IGorgon2DCamera camera, bool sizeChanged)
-	    {
-	        if (Graphics.RenderTargets[0] != output)
-	        {
+        {
+            if (Graphics.RenderTargets[0] != output)
+            {
                 Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
-	        }
-	    }
+            }
+        }
 
         /// <summary>
         /// Function called to render a single effect pass.
@@ -147,13 +147,13 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
-	    {
-	        GorgonConstantBufferView buffer = Interlocked.Exchange(ref _invertBuffer, null);
-	        GorgonPixelShader pixelShader = Interlocked.Exchange(ref _invertShader, null);
+        {
+            GorgonConstantBufferView buffer = Interlocked.Exchange(ref _invertBuffer, null);
+            GorgonPixelShader pixelShader = Interlocked.Exchange(ref _invertShader, null);
 
             buffer?.Dispose();
             pixelShader?.Dispose();
-		}
+        }
         #endregion
 
         #region Constructor/Destructor.

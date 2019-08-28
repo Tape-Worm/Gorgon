@@ -30,36 +30,36 @@ using Gorgon.Core;
 
 namespace Gorgon.Collections.Specialized
 {
-	/// <summary>
-	/// A list to contain <see cref="IGorgonNamedObject"/> types.
-	/// </summary>
-	/// <typeparam name="T">The type of object to store in the list. Must implement the <see cref="IGorgonNamedObject"/> interface.</typeparam>
-	/// <remarks>
-	/// <para>
-	/// This is a concrete implementation of the <see cref="GorgonBaseNamedObjectList{T}"/> type.
-	/// </para>
-	/// <para>
-	/// This collection is <b><i>not</i></b> thread safe.
-	/// </para>
-	/// </remarks>
-	public class GorgonNamedObjectList<T>
-		: GorgonBaseNamedObjectList<T>
-		where T : IGorgonNamedObject
-	{
-		#region Properties.
-		/// <summary>
-		/// Property to set or return an item in this list by index.
-		/// </summary>
-		public T this[int index]
-		{
-			get => Items[index];
-			set => Items[index] = value;
-		}
+    /// <summary>
+    /// A list to contain <see cref="IGorgonNamedObject"/> types.
+    /// </summary>
+    /// <typeparam name="T">The type of object to store in the list. Must implement the <see cref="IGorgonNamedObject"/> interface.</typeparam>
+    /// <remarks>
+    /// <para>
+    /// This is a concrete implementation of the <see cref="GorgonBaseNamedObjectList{T}"/> type.
+    /// </para>
+    /// <para>
+    /// This collection is <b><i>not</i></b> thread safe.
+    /// </para>
+    /// </remarks>
+    public class GorgonNamedObjectList<T>
+        : GorgonBaseNamedObjectList<T>
+        where T : IGorgonNamedObject
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to set or return an item in this list by index.
+        /// </summary>
+        public T this[int index]
+        {
+            get => Items[index];
+            set => Items[index] = value;
+        }
 
-		/// <summary>
-		/// Property to return an item in this list by name.
-		/// </summary>
-		public T this[string name] => GetItemByName(name);
+        /// <summary>
+        /// Property to return an item in this list by name.
+        /// </summary>
+        public T this[string name] => GetItemByName(name);
 
         #endregion
 
@@ -88,31 +88,31 @@ namespace Gorgon.Collections.Specialized
         /// <param name="item">Item to insert.</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0.</exception>
         public void Insert(int index, T item)
-		{
-			if (index < 0)
-			{
-				throw new ArgumentOutOfRangeException();
-			}
+        {
+            if (index < 0)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
 
-			Items.Insert(index, item);
-		}
+            Items.Insert(index, item);
+        }
 
-		/// <summary>
-		/// Function to insert a list of items at the specified index.
-		/// </summary>
-		/// <param name="index">Index to insert at.</param>
-		/// <param name="items">The list of items to insert.</param>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0, or greater than/equal to the <see cref="GorgonBaseNamedObjectList{T}.Count"/></exception>
-		public void InsertRange(int index, IEnumerable<T> items)
-		{
-			if ((index < 0)
-				|| (index >= Count))
-			{
-				throw new ArgumentOutOfRangeException();
-			}
+        /// <summary>
+        /// Function to insert a list of items at the specified index.
+        /// </summary>
+        /// <param name="index">Index to insert at.</param>
+        /// <param name="items">The list of items to insert.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0, or greater than/equal to the <see cref="GorgonBaseNamedObjectList{T}.Count"/></exception>
+        public void InsertRange(int index, IEnumerable<T> items)
+        {
+            if ((index < 0)
+                || (index >= Count))
+            {
+                throw new ArgumentOutOfRangeException();
+            }
 
-			InsertItems(index, items);
-		}
+            InsertItems(index, items);
+        }
 
         /// <summary>
         /// Function to remove an item from this list.
@@ -140,11 +140,11 @@ namespace Gorgon.Collections.Specialized
         /// </summary>
         /// <param name="caseSensitive">[Optional] <b>true</b> to use case sensitive keys, <b>false</b> to ignore casing.</param>
         public GorgonNamedObjectList(bool caseSensitive = true)
-			: base(caseSensitive)
-		{
+            : base(caseSensitive)
+        {
 
-		}
-		#endregion
+        }
+        #endregion
 
-	}
+    }
 }

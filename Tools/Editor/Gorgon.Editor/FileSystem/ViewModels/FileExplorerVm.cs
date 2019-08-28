@@ -106,10 +106,10 @@ namespace Gorgon.Editor.ViewModels
         private ISearchService<IFileExplorerNodeVm> _searchSystem;
         // The file scanning service used to determine if a file is associated with a plugin or not.
         private IFileScanService _fileScanner;
-		// Flag to indicate we're in batch mode.
+        // Flag to indicate we're in batch mode.
         private int _batchMode;
-		// The node that was selected in the beginning of batch mode.
-        private IFileExplorerNodeVm _batchSelected;		
+        // The node that was selected in the beginning of batch mode.
+        private IFileExplorerNodeVm _batchSelected;
         #endregion
 
         #region Properties.
@@ -146,7 +146,7 @@ namespace Gorgon.Editor.ViewModels
             private set
             {
                 if ((_selectedNode == value)
-					|| (_batchMode != 0))
+                    || (_batchMode != 0))
                 {
                     return;
                 }
@@ -719,8 +719,8 @@ namespace Gorgon.Editor.ViewModels
 
                 var physicalParent = new DirectoryInfo(parent.PhysicalPath);
                 file = _fileSystemService.CreateEmptyFile(physicalParent, args.Name);
-                                
-                SelectedNode = args.Node = _factory.CreateFileExplorerFileNodeVm(_project, _fileSystemService, parent, file);                
+
+                SelectedNode = args.Node = _factory.CreateFileExplorerFileNodeVm(_project, _fileSystemService, parent, file);
             }
             catch (Exception ex)
             {
@@ -823,7 +823,7 @@ namespace Gorgon.Editor.ViewModels
             // Rebuild dependencies.
             foreach (IContentFile dep in depNodes)
             {
-                SetupDependencyNodes(dep);                
+                SetupDependencyNodes(dep);
             }
         }
 
@@ -1754,7 +1754,7 @@ namespace Gorgon.Editor.ViewModels
                     parentNode.Dependencies.Remove(existingDep);
                 }
 
-                parentNode.Dependencies.Add(depNode);                
+                parentNode.Dependencies.Add(depNode);
             }
         }
 
@@ -1944,7 +1944,7 @@ namespace Gorgon.Editor.ViewModels
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    IFileExplorerNodeVm added = e.NewItems.OfType<IFileExplorerNodeVm>().First();					
+                    IFileExplorerNodeVm added = e.NewItems.OfType<IFileExplorerNodeVm>().First();
                     EnumerateChildren(added);
                     break;
                 case NotifyCollectionChangedAction.Remove:
@@ -2449,7 +2449,7 @@ namespace Gorgon.Editor.ViewModels
                 }
             }
 
-			// Shut down any search items we have open, so we can see the file show up.
+            // Shut down any search items we have open, so we can see the file show up.
             if (SearchResults != null)
             {
                 DoSearch(null);
@@ -2474,7 +2474,7 @@ namespace Gorgon.Editor.ViewModels
                 if (!_nodePathLookup.TryGetValue(directoryName, out dirNode))
                 {
                     throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, directoryName));
-                }                    
+                }
             }
 
             var physicalParent = new DirectoryInfo(dirNode.PhysicalPath);
@@ -2492,7 +2492,7 @@ namespace Gorgon.Editor.ViewModels
 
             IFileExplorerNodeVm selected = SelectedNode;
 
-			// If we're in batch mode, then collapse the directory so we can get things out faster (i.e. not have to update the display).
+            // If we're in batch mode, then collapse the directory so we can get things out faster (i.e. not have to update the display).
             if (_batchMode != 0)
             {
                 dirNode.IsExpanded = false;
@@ -2500,11 +2500,11 @@ namespace Gorgon.Editor.ViewModels
 
             // Add the node to the tree.
             IFileExplorerNodeVm fileNode = _factory.CreateFileExplorerFileNodeVm(_project, _fileSystemService, dirNode, physicalFile);
-            
+
             var result = (IContentFile)fileNode;
             _contentPlugIns.AssignContentPlugIn(result, this, false);
             result.RefreshMetadata();
-            
+
             if (_batchMode == 0)
             {
                 dirNode.IsExpanded = true;
@@ -2565,11 +2565,11 @@ namespace Gorgon.Editor.ViewModels
             var spin = new SpinWait();
             while (Interlocked.Exchange(ref _batchMode, 1) == 1)
             {
-                spin.SpinOnce();				
+                spin.SpinOnce();
 
                 timer.Stop();
 
-				// Time out, we can't get the batch right now.
+                // Time out, we can't get the batch right now.
                 if (timer.ElapsedMilliseconds > 10000)
                 {
                     return false;
@@ -2651,7 +2651,7 @@ namespace Gorgon.Editor.ViewModels
                 throw new IOException(string.Format(Resources.GOREDIT_ERR_PATH_IS_FILE, path));
             }
 
-            int lastSlash = path.LastIndexOf("/", StringComparison.Ordinal);            
+            int lastSlash = path.LastIndexOf("/", StringComparison.Ordinal);
             string directoryName = path.Substring(lastSlash + 1);
             string directoryPath = path.Substring(0, lastSlash).FormatDirectory('/');
             IFileExplorerNodeVm parentDir;
@@ -2669,7 +2669,7 @@ namespace Gorgon.Editor.ViewModels
 
             DirectoryInfo newDir = _fileSystemService.CreateDirectory(new DirectoryInfo(parentDir.PhysicalPath), directoryName);
             _ = _factory.CreateFileExplorerDirectoryNodeVm(_project, _fileSystemService, parentDir, newDir, true);
-            
+
             if (_batchMode == 0)
             {
                 SelectedNode = selectedNode;
@@ -2710,7 +2710,7 @@ namespace Gorgon.Editor.ViewModels
 
             if (path == "/")
             {
-                throw new GorgonException(GorgonResult.AccessDenied);                
+                throw new GorgonException(GorgonResult.AccessDenied);
             }
 
             if (!_nodePathLookup.TryGetValue(path, out IFileExplorerNodeVm node))

@@ -37,78 +37,78 @@ namespace Gorgon.IO.Zip
     /// A file system provider for zip files.
     /// </summary>
     internal class ZipProvider
-		: GorgonFileSystemProvider
+        : GorgonFileSystemProvider
     {
-		#region Variables.
-		/// <summary>
-		/// Header bytes for a zip file.
-		/// </summary>
-		public static IEnumerable<byte> ZipHeader = new byte[] { 0x50, 0x4B, 0x3, 0x4 };
-		#endregion
+        #region Variables.
+        /// <summary>
+        /// Header bytes for a zip file.
+        /// </summary>
+        public static IEnumerable<byte> ZipHeader = new byte[] { 0x50, 0x4B, 0x3, 0x4 };
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to enumerate the files and directories from a physical location and map it to a virtual location.
-		/// </summary>
-		/// <param name="physicalLocation">The physical location containing files and directories to enumerate.</param>
-		/// <param name="mountPoint">A <see cref="IGorgonVirtualDirectory"/> that the directories and files from the physical file system will be mounted into.</param>		
-		/// <returns>A <see cref="GorgonPhysicalFileSystemData"/> object containing information about the directories and files contained within the physical file system.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalLocation"/>, or the <paramref name="mountPoint"/> parameters are <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalLocation"/> parameter is empty.</exception>
-		/// <remarks>
-		/// <para>
-		/// This will return a <see cref="GorgonPhysicalFileSystemData"/> representing the paths to directories and <see cref="IGorgonPhysicalFileInfo"/> objects under the virtual file system. Each file 
-		/// system file and directory is mapped from its <paramref name="physicalLocation"/> on the physical file system to a <paramref name="mountPoint"/> on the virtual file system. For example, if the 
-		/// mount point is set to <c>/MyMount/</c>, and the physical location of a file is <c>c:\SourceFileSystem\MyDirectory\MyTextFile.txt</c>, then the returned value should be 
-		/// <c>/MyMount/MyDirectory/MyTextFile.txt</c>.
-		/// </para>
-		/// <para>
-		/// Implementors of a <see cref="GorgonFileSystemProvider"/> plug in can override this method to read the list of files from another type of file system, like a Zip file.
-		/// </para>
-		/// <para>
-		/// Implementors of a <see cref="GorgonFileSystemProvider"/> should override this method to read the list of directories and files from another type of file system, like a Zip file. 
-		/// The default functionality will only enumerate directories and files from the operating system file system.
-		/// </para>
-		/// </remarks>
-		protected override GorgonPhysicalFileSystemData OnEnumerate(string physicalLocation, IGorgonVirtualDirectory mountPoint)
-		{
+        #region Methods.
+        /// <summary>
+        /// Function to enumerate the files and directories from a physical location and map it to a virtual location.
+        /// </summary>
+        /// <param name="physicalLocation">The physical location containing files and directories to enumerate.</param>
+        /// <param name="mountPoint">A <see cref="IGorgonVirtualDirectory"/> that the directories and files from the physical file system will be mounted into.</param>		
+        /// <returns>A <see cref="GorgonPhysicalFileSystemData"/> object containing information about the directories and files contained within the physical file system.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalLocation"/>, or the <paramref name="mountPoint"/> parameters are <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalLocation"/> parameter is empty.</exception>
+        /// <remarks>
+        /// <para>
+        /// This will return a <see cref="GorgonPhysicalFileSystemData"/> representing the paths to directories and <see cref="IGorgonPhysicalFileInfo"/> objects under the virtual file system. Each file 
+        /// system file and directory is mapped from its <paramref name="physicalLocation"/> on the physical file system to a <paramref name="mountPoint"/> on the virtual file system. For example, if the 
+        /// mount point is set to <c>/MyMount/</c>, and the physical location of a file is <c>c:\SourceFileSystem\MyDirectory\MyTextFile.txt</c>, then the returned value should be 
+        /// <c>/MyMount/MyDirectory/MyTextFile.txt</c>.
+        /// </para>
+        /// <para>
+        /// Implementors of a <see cref="GorgonFileSystemProvider"/> plug in can override this method to read the list of files from another type of file system, like a Zip file.
+        /// </para>
+        /// <para>
+        /// Implementors of a <see cref="GorgonFileSystemProvider"/> should override this method to read the list of directories and files from another type of file system, like a Zip file. 
+        /// The default functionality will only enumerate directories and files from the operating system file system.
+        /// </para>
+        /// </remarks>
+        protected override GorgonPhysicalFileSystemData OnEnumerate(string physicalLocation, IGorgonVirtualDirectory mountPoint)
+        {
             var directories = new List<string>();
             var files = new List<IGorgonPhysicalFileInfo>();
 
-			using (var zipStream = new ZipInputStream(File.Open(physicalLocation, FileMode.Open, FileAccess.Read, FileShare.Read)))
-			{
-				ZipEntry entry;
+            using (var zipStream = new ZipInputStream(File.Open(physicalLocation, FileMode.Open, FileAccess.Read, FileShare.Read)))
+            {
+                ZipEntry entry;
 
-				while ((entry = zipStream.GetNextEntry()) != null)
-				{
-					if (!entry.IsDirectory)
-					{
-						string directoryName = Path.GetDirectoryName(entry.Name).FormatDirectory('/');
+                while ((entry = zipStream.GetNextEntry()) != null)
+                {
+                    if (!entry.IsDirectory)
+                    {
+                        string directoryName = Path.GetDirectoryName(entry.Name).FormatDirectory('/');
 
-						directoryName = mountPoint.FullPath + directoryName;
+                        directoryName = mountPoint.FullPath + directoryName;
 
-						if (string.IsNullOrWhiteSpace(directoryName))
-						{
-							directoryName = "/";
-						}
+                        if (string.IsNullOrWhiteSpace(directoryName))
+                        {
+                            directoryName = "/";
+                        }
 
 
-						if (!directories.Contains(directoryName))
-						{
-							directories.Add(directoryName);
-						}
+                        if (!directories.Contains(directoryName))
+                        {
+                            directories.Add(directoryName);
+                        }
 
-						files.Add(new ZipPhysicalFileInfo(entry, physicalLocation, mountPoint));
-					}
-					else
-					{
-						directories.Add((mountPoint.FullPath + entry.Name).FormatDirectory('/'));
-					}
-				}
-			}
+                        files.Add(new ZipPhysicalFileInfo(entry, physicalLocation, mountPoint));
+                    }
+                    else
+                    {
+                        directories.Add((mountPoint.FullPath + entry.Name).FormatDirectory('/'));
+                    }
+                }
+            }
 
-			return new GorgonPhysicalFileSystemData(directories, files);
-		}
+            return new GorgonPhysicalFileSystemData(directories, files);
+        }
 
         /// <summary>
         /// Function to open a stream to a file on the physical file system from the <see cref="IGorgonVirtualFile"/> passed in.
@@ -152,21 +152,21 @@ namespace Gorgon.IO.Zip
         /// </para>
         /// </remarks>
         protected override bool OnCanReadFile(string physicalPath)
-		{
-		    byte[] headerBytes = new byte[4];
+        {
+            byte[] headerBytes = new byte[4];
 
-			using (FileStream stream = File.Open(physicalPath, FileMode.Open, FileAccess.Read, FileShare.Read))
-			{
-				if (stream.Length <= headerBytes.Length)
-				{
-					return false;
-				}
+            using (FileStream stream = File.Open(physicalPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                if (stream.Length <= headerBytes.Length)
+                {
+                    return false;
+                }
 
-				stream.Read(headerBytes, 0, headerBytes.Length);
-			}
+                stream.Read(headerBytes, 0, headerBytes.Length);
+            }
 
-		    return headerBytes.SequenceEqual(ZipHeader);
-		}
+            return headerBytes.SequenceEqual(ZipHeader);
+        }
         #endregion
 
         #region Constructor/Destructor.

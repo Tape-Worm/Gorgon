@@ -56,7 +56,7 @@ namespace Gorgon.UI
             get => base.Padding;
             set => base.Padding = value;
         }
-        
+
         /// <summary>Gets or sets the current text in the <see cref="TextBox" />.</summary>
         /// <returns>The text displayed in the control.</returns>
         /// <filterpriority>1</filterpriority>
@@ -71,12 +71,12 @@ namespace Gorgon.UI
             }
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return the tooltip text to display on the control.
         /// </summary>
-        [Browsable(true), Category("Appearance"), Description("Sets the text to display in a tooltip for the control."), 
-			Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
-		public string ToolTipText
+        [Browsable(true), Category("Appearance"), Description("Sets the text to display in a tooltip for the control."),
+            Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
+        public string ToolTipText
         {
             get => TipSearch.GetToolTip(TextSearch);
             set
@@ -116,7 +116,7 @@ namespace Gorgon.UI
         /// Property to set or return the color used for the background of the tool tip.
         /// </summary>
         [Browsable(true), Category("Appearance"), Description("Sets the color to use for the tooltip background.")]
-		public Color ToolTipBackColor
+        public Color ToolTipBackColor
         {
             get => TipSearch.BackColor;
             set => TipSearch.BackColor = value;
@@ -151,7 +151,7 @@ namespace Gorgon.UI
                     TextSearch.Select();
                 }
             }
-            
+
             base.Text = TextSearch.Text;
         }
 
@@ -239,7 +239,7 @@ namespace Gorgon.UI
 
         #region Constructor.
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.UI.GorgonSearchBox"/> class.</summary>
-        public GorgonSearchBox() =>InitializeComponent();
+        public GorgonSearchBox() => InitializeComponent();
         #endregion
     }
 }

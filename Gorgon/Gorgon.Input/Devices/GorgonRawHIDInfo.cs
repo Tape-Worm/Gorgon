@@ -29,108 +29,108 @@ using Gorgon.Native;
 
 namespace Gorgon.Input
 {
-	/// <summary>
-	/// Provides capability information about a Raw Input Human Interface Device.
-	/// </summary>
-	public class GorgonRawHIDInfo
-		: IGorgonRawHIDInfo
-	{
-		#region Properties.
-		/// <summary>
-		/// Property to return the device class name.
-		/// </summary>
-		public string DeviceClass
-		{
-			get;
-		}
+    /// <summary>
+    /// Provides capability information about a Raw Input Human Interface Device.
+    /// </summary>
+    public class GorgonRawHIDInfo
+        : IGorgonRawHIDInfo
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to return the device class name.
+        /// </summary>
+        public string DeviceClass
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return a human friendly description of the device.
-		/// </summary>
-		public string Description
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return a human friendly description of the device.
+        /// </summary>
+        public string Description
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the device handle.
-		/// </summary>
-		public IntPtr Handle
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the device handle.
+        /// </summary>
+        public IntPtr Handle
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return human interface device path for the device.
-		/// </summary>
-		public string HIDPath
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return human interface device path for the device.
+        /// </summary>
+        public string HIDPath
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the product ID for the device.
-		/// </summary>
-		public int ProductID
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the product ID for the device.
+        /// </summary>
+        public int ProductID
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the vendor ID for the device.
-		/// </summary>
-		public int VendorID
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the vendor ID for the device.
+        /// </summary>
+        public int VendorID
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the version number for the device.
-		/// </summary>
-		public int Version
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the version number for the device.
+        /// </summary>
+        public int Version
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the top level collection usage value for this device.
-		/// </summary>
-		public HIDUsage Usage
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the top level collection usage value for this device.
+        /// </summary>
+        public HIDUsage Usage
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the top level collection usage page value for this device.
-		/// </summary>
-		public HIDUsagePage UsagePage
-		{
-			get;
-		}
-		#endregion
+        /// <summary>
+        /// Property to return the top level collection usage page value for this device.
+        /// </summary>
+        public HIDUsagePage UsagePage
+        {
+            get;
+        }
+        #endregion
 
-		#region Constructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRawHIDInfo"/> class.
-		/// </summary>
-		/// <param name="deviceHandle">The device handle.</param>
-		/// <param name="hidPath">The hid path.</param>
-		/// <param name="className">Name of the class.</param>
-		/// <param name="description">The description.</param>
-		/// <param name="deviceInfo">The device information.</param>
-		internal GorgonRawHIDInfo(IntPtr deviceHandle, string hidPath, string className, string description, RID_DEVICE_INFO_HID deviceInfo)
-		{
-			Handle = deviceHandle;
-			HIDPath = hidPath;
-			DeviceClass = className;
-			Description = description;
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonRawHIDInfo"/> class.
+        /// </summary>
+        /// <param name="deviceHandle">The device handle.</param>
+        /// <param name="hidPath">The hid path.</param>
+        /// <param name="className">Name of the class.</param>
+        /// <param name="description">The description.</param>
+        /// <param name="deviceInfo">The device information.</param>
+        internal GorgonRawHIDInfo(IntPtr deviceHandle, string hidPath, string className, string description, RID_DEVICE_INFO_HID deviceInfo)
+        {
+            Handle = deviceHandle;
+            HIDPath = hidPath;
+            DeviceClass = className;
+            Description = description;
 
-			ProductID = deviceInfo.dwProductId;
-			VendorID = deviceInfo.dwVendorId;
-			Version = deviceInfo.dwVersionNumber;
-			Usage = (HIDUsage)deviceInfo.usUsage;
-			UsagePage = (HIDUsagePage)deviceInfo.usUsagePage;
-		}
-		#endregion
-	}
+            ProductID = deviceInfo.dwProductId;
+            VendorID = deviceInfo.dwVendorId;
+            Version = deviceInfo.dwVersionNumber;
+            Usage = (HIDUsage)deviceInfo.usUsage;
+            UsagePage = (HIDUsagePage)deviceInfo.usUsagePage;
+        }
+        #endregion
+    }
 }

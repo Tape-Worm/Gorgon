@@ -27,12 +27,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DX = SharpDX;
+using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using Gorgon.Core;
 using Gorgon.Renderers.Properties;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers.Services
 {
@@ -61,7 +61,7 @@ namespace Gorgon.Renderers.Services
         private readonly GorgonGraphics _graphics;
         // The size of the texture to generate.
         private DX.Size2 _textureSize = new DX.Size2(1024, 1024);
-		// The number of array indices in the texture to generate.
+        // The number of array indices in the texture to generate.
         private int _arrayCount;
         #endregion
 
@@ -126,11 +126,11 @@ namespace Gorgon.Renderers.Services
             {
                 h <<= 1;
             }
-			
+
             return new DX.Size2(w, h);
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to retrieve the maximum texture size based on the sprites passed in.
         /// </summary>
         /// <param name="sprites">The sprites to evaluate.</param>
@@ -176,7 +176,7 @@ namespace Gorgon.Renderers.Services
             return maxTextureSize;
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to perform the calculations necessary to determine the sprite regions and array indices on a texture atlas.
         /// </summary>
         /// <param name="sprites">The sprites to evaluate.</param>
@@ -191,7 +191,7 @@ namespace Gorgon.Renderers.Services
             TextureRects newRect = null;
             var textureBounds = new DX.Rectangle(0, 0, maxTextureSize.Width, maxTextureSize.Height);
 
-			
+
 
             // Scan for same texture.
             if (sprites.All(item => item.Texture.Texture == sprites[0].Texture.Texture))
@@ -201,15 +201,15 @@ namespace Gorgon.Renderers.Services
                 {
                     if (!rects.TryGetValue(sprite.TextureArrayIndex, out newRect))
                     {
-						rects[sprite.TextureArrayIndex] = newRect = new TextureRects(new DX.Rectangle(0, 0, sprite.Texture.Texture.Width, sprite.Texture.Texture.Height), sprite.TextureArrayIndex);
+                        rects[sprite.TextureArrayIndex] = newRect = new TextureRects(new DX.Rectangle(0, 0, sprite.Texture.Texture.Width, sprite.Texture.Texture.Height), sprite.TextureArrayIndex);
                     }
-										
+
                     newRect.SpriteRegion[sprite] = sprite.Texture.Texture.ToPixel(sprite.TextureRegion);
                 }
 
                 result.Add(rects);
                 return (result, true);
-            }			
+            }
 
             // Get all texture regions.
             List<(GorgonSprite sprite, DX.Rectangle spriteRegion)> spriteRegions = sprites.Select(item =>
@@ -224,21 +224,21 @@ namespace Gorgon.Renderers.Services
                 return (item, region);
             })
             .OrderByDescending(item => item.region.Height)
-			.ToList();
+            .ToList();
 
             int array = 0;
             result.Add(rects);
 
             while (spriteRegions.Count > 0)
             {
-                SpritePacker.CreateRoot(textureBounds.Width, textureBounds.Height);                
+                SpritePacker.CreateRoot(textureBounds.Width, textureBounds.Height);
                 (GorgonSprite sprite, DX.Rectangle region)[] activeRegions = spriteRegions.ToArray();
 
-				// Pack as many as possible into the current array/texture rect list.
+                // Pack as many as possible into the current array/texture rect list.
                 foreach ((GorgonSprite sprite, DX.Rectangle region) sprite in activeRegions)
                 {
-					// If a sprite can't find into the actual texture size, then stop right away.
-					// Better to not have anything come back than have a single sprite missing out of many.
+                    // If a sprite can't find into the actual texture size, then stop right away.
+                    // Better to not have anything come back than have a single sprite missing out of many.
                     if ((sprite.region.Width > textureBounds.Width) || (sprite.region.Height > textureBounds.Height))
                     {
                         result.Clear();
@@ -329,7 +329,7 @@ namespace Gorgon.Renderers.Services
                                                           .ToArray();
 
             var result = new Dictionary<GorgonSprite, (int textureIndex, DX.Rectangle rect, int arrayindex)>();
-						
+
             (IReadOnlyList<IReadOnlyDictionary<int, TextureRects>> rects, _) = CalculateRegions(filtered, TextureSize, ArrayCount);
 
             for (int i = 0; i < rects.Count; i++)
@@ -338,7 +338,7 @@ namespace Gorgon.Renderers.Services
                 foreach (KeyValuePair<int, TextureRects> item in rectList.Where(item => item.Key < ArrayCount))
                 {
                     foreach (KeyValuePair<GorgonSprite, DX.Rectangle> region in item.Value.SpriteRegion)
-                    {                        
+                    {
                         result[region.Key] = (i, region.Value, item.Value.ArrayIndex);
                     }
                 }
@@ -377,13 +377,13 @@ namespace Gorgon.Renderers.Services
             {
                 throw new ArgumentNullException(nameof(sprites));
             }
-			
+
             // Filter out empty sprites.
             IReadOnlyList<GorgonSprite> filtered = sprites.Where(item => (item.Texture != null) && (!item.TextureRegion.Width.EqualsEpsilon(0)) && (!item.TextureRegion.Height.EqualsEpsilon(0)))
-														  .Distinct()
-														  .ToArray();
+                                                          .Distinct()
+                                                          .ToArray();
 
-			// If we've got all empty sprites, then leave, there's nothing to calculate.
+            // If we've got all empty sprites, then leave, there's nothing to calculate.
             if (filtered.Count == 0)
             {
                 return (DX.Size2.Zero, 0);
@@ -463,7 +463,7 @@ namespace Gorgon.Renderers.Services
             var srvs = new GorgonTexture2DView[textureCount];
             GorgonRenderTarget2DView rtv = null;
             GorgonRenderTargetView original = _graphics.RenderTargets[0];
-            var sprites = new List<(GorgonSprite, GorgonSprite)>(regions.Count);            
+            var sprites = new List<(GorgonSprite, GorgonSprite)>(regions.Count);
             var rtvs = new HashSet<GorgonRenderTargetView>();
             string textureName = $"{(string.IsNullOrWhiteSpace(BaseTextureName) ? "texture_atlas" : BaseTextureName)}_{{0}}";
 
@@ -474,13 +474,13 @@ namespace Gorgon.Renderers.Services
                 {
                     srvs[textureIndex] = GorgonTexture2DView.CreateTexture(_graphics, new GorgonTexture2DInfo(string.Format(textureName, textureIndex))
                     {
-						ArrayCount = ArrayCount,
-						Binding = TextureBinding.ShaderResource | TextureBinding.RenderTarget,
-						Format = textureFormat,
-						Width = TextureSize.Width,
-						Height = TextureSize.Height,
-						Usage = ResourceUsage.Default
-                    });										
+                        ArrayCount = ArrayCount,
+                        Binding = TextureBinding.ShaderResource | TextureBinding.RenderTarget,
+                        Format = textureFormat,
+                        Width = TextureSize.Width,
+                        Height = TextureSize.Height,
+                        Usage = ResourceUsage.Default
+                    });
                 }
 
                 foreach (KeyValuePair<GorgonSprite, (int textureIndex, DX.Rectangle spriteRegion, int arrayIndex)> region in regions)
@@ -511,9 +511,9 @@ namespace Gorgon.Renderers.Services
 
                     sprites.Add((region.Key, new GorgonSprite(region.Key)
                     {
-						Texture = srv,
-						TextureRegion = srv.ToTexel(region.Value.spriteRegion),
-						TextureArrayIndex = region.Value.arrayIndex
+                        Texture = srv,
+                        TextureRegion = srv.ToTexel(region.Value.spriteRegion),
+                        TextureArrayIndex = region.Value.arrayIndex
                     }));
                 }
 
@@ -525,9 +525,9 @@ namespace Gorgon.Renderers.Services
                 {
                     cachedRtv.Dispose();
                 }
-                
+
                 _graphics.SetRenderTarget(original);
-            }			
+            }
         }
         #endregion
 

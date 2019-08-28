@@ -172,7 +172,7 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="progressCallback">The callback method that reports the saving progress to the UI.</param>
         /// <param name="cancelToken">The token used for cancellation of the operation.</param>
         /// <returns>A task for asynchronous operation.</returns>
-        Task SaveToPackFileAsync(FileInfo path, FileWriterPlugIn writer, Action<int, int, bool> progressCallback,  CancellationToken cancelToken);
+        Task SaveToPackFileAsync(FileInfo path, FileWriterPlugIn writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken);
 
         /// <summary>
         /// Function to persist the project metadata to the disk.

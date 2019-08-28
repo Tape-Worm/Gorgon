@@ -37,10 +37,10 @@ namespace Gorgon.Editor.PlugIns
     /// </summary>
     public enum PlugInType
     {
-		/// <summary>
+        /// <summary>
         /// Plug in type is not known.
         /// </summary>
-		Unknown = 0,
+        Unknown = 0,
         /// <summary>
         /// Plug in is used to write out editor files.
         /// </summary>
@@ -49,18 +49,18 @@ namespace Gorgon.Editor.PlugIns
         /// Plug in is used to build content.
         /// </summary>
         Content = 2,
-		/// <summary>
+        /// <summary>
         /// Plug in is a pack file reader.
         /// </summary>
-		Reader = 3,
+        Reader = 3,
         /// <summary>
         /// Plug in is used for a utility.
         /// </summary>
         Tool = 4,
-		/// <summary>
+        /// <summary>
         /// Plug in is used to import content.
         /// </summary>
-		ContentImporter = 5
+        ContentImporter = 5
     }
 
     /// <summary>
@@ -75,10 +75,10 @@ namespace Gorgon.Editor.PlugIns
         #endregion
 
         #region Properties.
-		/// <summary>
+        /// <summary>
         /// Property to return the common services for the application.
         /// </summary>
-		protected IViewModelInjection CommonServices
+        protected IViewModelInjection CommonServices
         {
             get;
             set;
@@ -150,7 +150,7 @@ namespace Gorgon.Editor.PlugIns
         /// </remarks>
         public IReadOnlyList<string> IsPlugInAvailable() => OnGetPlugInAvailability();
 
-		/// <summary>
+        /// <summary>
         /// Function to assign the application common services to the plug in.
         /// </summary>
         /// <param name="commonServices">The common services to pass to the plug in.</param>

@@ -29,57 +29,57 @@ using Gorgon.Core;
 
 namespace Gorgon.Configuration
 {
-	/// <summary>
-	/// An option to be stored in a <see cref="IGorgonOptionBag"/>.
-	/// </summary>
-	public interface IGorgonOption
-		: IGorgonNamedObject
-	{
-		#region Properties.
-		/// <summary>
-		/// Property to return the type of data stored in the option.
-		/// </summary>
-		Type Type
-		{
-			get;
-		}
-		#endregion
+    /// <summary>
+    /// An option to be stored in a <see cref="IGorgonOptionBag"/>.
+    /// </summary>
+    public interface IGorgonOption
+        : IGorgonNamedObject
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to return the type of data stored in the option.
+        /// </summary>
+        Type Type
+        {
+            get;
+        }
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to retrieve the value stored in this option.
-		/// </summary>
-		/// <typeparam name="T">The type for the value.</typeparam>
-		/// <returns>The value, strongly typed.</returns>
-		T GetValue<T>();
+        #region Methods.
+        /// <summary>
+        /// Function to retrieve the value stored in this option.
+        /// </summary>
+        /// <typeparam name="T">The type for the value.</typeparam>
+        /// <returns>The value, strongly typed.</returns>
+        T GetValue<T>();
 
-		/// <summary>
-		/// Function to assign a value for the option.
-		/// </summary>
-		/// <typeparam name="T">The type parmeter for the value.</typeparam>
-		/// <param name="value">The value to assign.</param>
-		void SetValue<T>(T value);
+        /// <summary>
+        /// Function to assign a value for the option.
+        /// </summary>
+        /// <typeparam name="T">The type parmeter for the value.</typeparam>
+        /// <param name="value">The value to assign.</param>
+        void SetValue<T>(T value);
 
-		/// <summary>
-		/// Function to retrieve the default value for this option.
-		/// </summary>
-		/// <typeparam name="T">The type of the value.</typeparam>
-		/// <returns>The value, strongly typed.</returns>
-		T GetDefaultValue<T>();
+        /// <summary>
+        /// Function to retrieve the default value for this option.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <returns>The value, strongly typed.</returns>
+        T GetDefaultValue<T>();
 
-		/// <summary>
-		/// Function to retrieve the minimum allowed value for this option.
-		/// </summary>
-		/// <typeparam name="T">The type of the value.</typeparam>
-		/// <returns>The value, strongly typed.</returns>
-		T GetMinValue<T>();
+        /// <summary>
+        /// Function to retrieve the minimum allowed value for this option.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <returns>The value, strongly typed.</returns>
+        T GetMinValue<T>();
 
-		/// <summary>
-		/// Function to retrieve the maximum allowed value for this option.
-		/// </summary>
-		/// <typeparam name="T">The type of the value.</typeparam>
-		/// <returns>The value, strongly typed.</returns>
-		T GetMaxValue<T>();
-		#endregion
-	}
+        /// <summary>
+        /// Function to retrieve the maximum allowed value for this option.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <returns>The value, strongly typed.</returns>
+        T GetMaxValue<T>();
+        #endregion
+    }
 }

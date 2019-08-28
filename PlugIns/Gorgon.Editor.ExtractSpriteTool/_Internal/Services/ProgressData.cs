@@ -26,16 +26,16 @@
 
 namespace Gorgon.Editor.ExtractSpriteTool
 {
-	/// <summary>
+    /// <summary>
     /// Value type used to relay progress back to a subscriber.
     /// </summary>
     internal readonly struct ProgressData
     {
-		/// <summary>
+        /// <summary>
         /// The current value being processed.
         /// </summary>
         public readonly int Current;
-		/// <summary>
+        /// <summary>
         /// The total number of items to process.
         /// </summary>
         public readonly int Total;

@@ -40,9 +40,9 @@ namespace Gorgon.Editor.ViewModels
         : ViewModelBase<EditorSettingsParameters>, IEditorSettingsVm
     {
         #region Variables.
-		// The message display service.
+        // The message display service.
         private IMessageDisplayService _messageDisplay;
-		// The currently selected category.
+        // The currently selected category.
         private ISettingsCategoryViewModel _current;
         #endregion
 
@@ -91,7 +91,7 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Methods.
-		/// <summary>
+        /// <summary>
         /// Function to change the current category.
         /// </summary>
         /// <param name="id">The ID of the current category.</param>
@@ -129,8 +129,8 @@ namespace Gorgon.Editor.ViewModels
         protected override void OnInitialize(EditorSettingsParameters injectionParameters)
         {
             _messageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(injectionParameters.MessageDisplay), nameof(injectionParameters));
-            Categories = new ObservableCollection<ISettingsCategoryViewModel>(injectionParameters.Categories 
-				?? throw new ArgumentMissingException(nameof(injectionParameters.Categories), nameof(injectionParameters)));
+            Categories = new ObservableCollection<ISettingsCategoryViewModel>(injectionParameters.Categories
+                ?? throw new ArgumentMissingException(nameof(injectionParameters.Categories), nameof(injectionParameters)));
             PlugInsList = injectionParameters.PlugInsList ?? throw new ArgumentMissingException(nameof(injectionParameters.PlugInsList), nameof(injectionParameters));
         }
         #endregion

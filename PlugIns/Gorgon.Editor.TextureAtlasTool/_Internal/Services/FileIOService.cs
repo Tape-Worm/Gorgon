@@ -101,7 +101,7 @@ namespace Gorgon.Editor.TextureAtlasTool
                             texture = LoadSpriteTexture(_fileSystem.GetFile(texturePath));
                             textures[texturePath] = texture;
                         }
-                    }                    
+                    }
 
                     stream = file.OpenRead();
                     result[file] = _defaultSpriteCodec.FromStream(stream, texture);
@@ -205,10 +205,10 @@ namespace Gorgon.Editor.TextureAtlasTool
                         throw new IOException(string.Format(Resources.GORTAG_ERR_IMAGE_OPEN, oldFile.Path));
                     }
                 }
-                
+
                 // Write textures.
                 foreach (GorgonTexture2DView texture in atlas.Textures)
-                {                
+                {
                     image = texture.Texture.ToImage();
                     _fileSystem.WriteFile(texture.Texture.Name, WriteImageFile);
                     image.Dispose();
@@ -253,7 +253,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <param name="spriteCodec">The default sprite codec to use.</param>
         public FileIOService(IContentFileManager fileSystem, IGorgonImageCodec imageCodec, IGorgonSpriteCodec spriteCodec)
         {
-            _fileSystem = fileSystem;            
+            _fileSystem = fileSystem;
             _defaultImageCodec = imageCodec;
             _defaultSpriteCodec = spriteCodec;
         }

@@ -228,10 +228,10 @@ namespace ComputeEngine
                 }
 
                 errors.Add((i, new OutputData
-                               {
-                                   Product = i * i,
-                                   Sum = i + i
-                               }, data));
+                {
+                    Product = i * i,
+                    Sum = i + i
+                }, data));
             }
 
             return errors;

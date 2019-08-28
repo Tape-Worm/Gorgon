@@ -71,28 +71,28 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Properties.
-		/// <summary>
-		/// Property to return the settings for the application.
-		/// </summary>
-		public EditorSettings Settings
+        /// <summary>
+        /// Property to return the settings for the application.
+        /// </summary>
+        public EditorSettings Settings
         {
             get;
             private set;
         }
 
-		/// <summary>
-		/// Property to return a list of content plugins that can create their own content.
-		/// </summary>
-		public ObservableCollection<IContentPlugInMetadata> ContentCreators
+        /// <summary>
+        /// Property to return a list of content plugins that can create their own content.
+        /// </summary>
+        public ObservableCollection<IContentPlugInMetadata> ContentCreators
         {
             get;
             private set;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the view model for the settings view.
         /// </summary>
-		public IEditorSettingsVm SettingsViewModel
+        public IEditorSettingsVm SettingsViewModel
         {
             get;
             private set;
@@ -272,7 +272,7 @@ namespace Gorgon.Editor.ViewModels
             SettingsViewModel = injectionParameters.SettingsVm ?? throw new ArgumentMissingException(nameof(MainParameters.SettingsVm), nameof(injectionParameters));
 
             _directoryLocator = injectionParameters.ViewModelFactory.DirectoryLocator;
-            
+
             ContentCreators = new ObservableCollection<IContentPlugInMetadata>(injectionParameters.ContentCreators ?? throw new ArgumentMissingException(nameof(MainParameters.ContentCreators), nameof(injectionParameters)));
             RecentFiles.OpenProjectCommand = new EditorCommand<RecentItem>(DoOpenRecentAsync, CanOpenRecent);
             NewProject.CreateProjectCommand = new EditorCommand<object>(DoCreateProjectAsync, CanCreateProject);
@@ -375,7 +375,7 @@ namespace Gorgon.Editor.ViewModels
                 if (_messageService.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_NOT_GOREDIT_PROJ, path.FullName)) == MessageResponse.Yes)
                 {
                     HideWaitPanel();
-                    await CreateProjectAsync(path);                    
+                    await CreateProjectAsync(path);
                     return;
                 }
             }
@@ -430,7 +430,7 @@ namespace Gorgon.Editor.ViewModels
                     Message = node.Ellipses(65, true)
                 });
             }
-                        
+
             await Task.Run(() => _viewModelFactory.FileScanService.Scan(projectVm.FileExplorer.RootNode, projectVm.ContentFileManager, UpdateScanProgress, true, true));
 
             // Update the metadata for the most up-to-date info.
@@ -439,8 +439,8 @@ namespace Gorgon.Editor.ViewModels
 
             Settings.LastProjectWorkingDirectory = project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
 
-            RecentItem dupe = RecentFiles.Files.FirstOrDefault(item => string.Equals(Settings.LastProjectWorkingDirectory, 
-                item.FilePath.FormatDirectory(Path.DirectorySeparatorChar), 
+            RecentItem dupe = RecentFiles.Files.FirstOrDefault(item => string.Equals(Settings.LastProjectWorkingDirectory,
+                item.FilePath.FormatDirectory(Path.DirectorySeparatorChar),
                 StringComparison.OrdinalIgnoreCase));
 
             if (dupe != null)
@@ -481,7 +481,7 @@ namespace Gorgon.Editor.ViewModels
                 var projectDir = new DirectoryInfo(recentItem.FilePath);
                 Program.Log.Print($"Opening '{projectDir.FullName}'...", LoggingLevel.Simple);
 
-                ShowWaitPanel(new WaitPanelActivateArgs(string.Format(Resources.GOREDIT_TEXT_OPENING, projectDir.FullName.Ellipses(65, true)), null));                
+                ShowWaitPanel(new WaitPanelActivateArgs(string.Format(Resources.GOREDIT_TEXT_OPENING, projectDir.FullName.Ellipses(65, true)), null));
 
                 await OpenProjectAsync(projectDir, false);
             }
@@ -565,7 +565,7 @@ namespace Gorgon.Editor.ViewModels
                     return;
                 }
 
-                await OpenProjectAsync(target, true);                
+                await OpenProjectAsync(target, true);
             }
             catch (Exception ex)
             {
@@ -602,7 +602,7 @@ namespace Gorgon.Editor.ViewModels
         private async void DoOpenProjectAsync()
         {
             try
-            {               
+            {
                 DirectoryInfo path = _directoryLocator.GetDirectory(GetInitialProjectDirectory(), Resources.GOREDIT_CAPTION_OPEN_PROJECT);
 
                 if (path == null)
@@ -673,7 +673,7 @@ namespace Gorgon.Editor.ViewModels
 
                 Program.Log.Print($"File writer plug in is: {writer.Name}.", LoggingLevel.Verbose);
                 Program.Log.Print($"Saving to '{projectFile.FullName}'...", LoggingLevel.Simple);
-                
+
                 var panelUpdateArgs = new ProgressPanelUpdateArgs
                 {
                     Title = Resources.GOREDIT_TEXT_PLEASE_WAIT,
@@ -769,8 +769,8 @@ namespace Gorgon.Editor.ViewModels
                 CurrentProject = await _viewModelFactory.CreateProjectViewModelAsync(project);
                 Settings.LastProjectWorkingDirectory = project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
 
-                RecentItem dupe = RecentFiles.Files.FirstOrDefault(item => string.Equals(item.FilePath.FormatDirectory(Path.DirectorySeparatorChar), 
-                    Settings.LastProjectWorkingDirectory, 
+                RecentItem dupe = RecentFiles.Files.FirstOrDefault(item => string.Equals(item.FilePath.FormatDirectory(Path.DirectorySeparatorChar),
+                    Settings.LastProjectWorkingDirectory,
                     StringComparison.OrdinalIgnoreCase));
 
                 if (dupe != null)
@@ -863,7 +863,7 @@ namespace Gorgon.Editor.ViewModels
                     return;
                 }
 
-                HideWaitPanel();                
+                HideWaitPanel();
             }
             catch (Exception ex)
             {
@@ -876,9 +876,9 @@ namespace Gorgon.Editor.ViewModels
 
             // We have our content, we can now open it as we normally would.
             if (contentFile != null)
-            {                
+            {
                 CurrentProject.FileExplorer.OpenContentFileCommand.Execute(contentFile);
-            }            
+            }
         }
 
         /// <summary>Function called when the application is closing.</summary>
@@ -908,7 +908,7 @@ namespace Gorgon.Editor.ViewModels
                         Program.Log.LogException(ex);
                     }
                 }
-                
+
                 // Save the project if one is open.
                 if ((CurrentProject?.BeforeCloseCommand != null) && (CurrentProject.BeforeCloseCommand.CanExecute(args)))
                 {

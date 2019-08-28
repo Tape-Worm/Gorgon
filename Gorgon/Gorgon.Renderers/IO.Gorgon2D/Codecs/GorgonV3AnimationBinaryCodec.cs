@@ -27,13 +27,13 @@
 using System;
 using System.IO;
 using System.Linq;
-using DX =  SharpDX;
 using Gorgon.Animation;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.IO
 {
@@ -108,7 +108,7 @@ namespace Gorgon.IO
         {
             // Write out as much info about the texture as we can so we can look it up based on these values when loading.
             textureName = reader.ReadString();
-            
+
             if (string.IsNullOrWhiteSpace(textureName))
             {
                 return null;
@@ -521,10 +521,10 @@ namespace Gorgon.IO
         protected override bool OnIsReadable(Stream stream)
         {
             GorgonChunkFileReader reader = null;
-            
+
             try
             {
-                reader = new GorgonChunkFileReader(stream, new [] { CurrentFileHeader });
+                reader = new GorgonChunkFileReader(stream, new[] { CurrentFileHeader });
                 reader.Open();
                 return IsReadableChunkFile(reader);
             }
@@ -545,7 +545,7 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="renderer">The renderer used for resource handling.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> is <b>null</b>.</exception>
-        public GorgonV3AnimationBinaryCodec(Gorgon2D renderer) 
+        public GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
             : base(renderer, Resources.GOR2DIO_V3_ANIM_BIN_CODEC, Resources.GOR2DIO_V3_ANIM_BIN_CODEC_DESCRIPTION)
         {
         }

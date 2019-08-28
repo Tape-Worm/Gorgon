@@ -30,12 +30,12 @@ using System.Runtime.InteropServices;
 // ReSharper disable InconsistentNaming
 namespace Gorgon.Native
 {
-	[StructLayout(LayoutKind.Sequential)]
-	internal struct CURSORINFO
-	{
-		public int cbSize;
-		public CursorInfoFlags flags;
-		public IntPtr hCursor;
-		public POINT ptScreenPos;
-	}
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct CURSORINFO
+    {
+        public int cbSize;
+        public CursorInfoFlags flags;
+        public IntPtr hCursor;
+        public POINT ptScreenPos;
+    }
 }

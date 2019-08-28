@@ -46,60 +46,60 @@ namespace Gorgon.Graphics.Core
     /// </para>
 	/// </remarks>
     public sealed class GorgonComputeShader
-		: GorgonShader
-	{
+        : GorgonShader
+    {
         #region Variables.
         // The D3D 11 compute shader.
-	    private D3D11.ComputeShader _shader;
+        private D3D11.ComputeShader _shader;
         #endregion
 
-		#region Properties.
-	    /// <summary>
-	    /// Property to return the Direct 3D compute shader.
-	    /// </summary>
-	    internal D3D11.ComputeShader NativeShader => _shader;
+        #region Properties.
+        /// <summary>
+        /// Property to return the Direct 3D compute shader.
+        /// </summary>
+        internal D3D11.ComputeShader NativeShader => _shader;
 
-		/// <summary>
-		/// Property to return the type of shader.
-		/// </summary>
-		public override ShaderType ShaderType => ShaderType.Compute;
-		#endregion
+        /// <summary>
+        /// Property to return the type of shader.
+        /// </summary>
+        public override ShaderType ShaderType => ShaderType.Compute;
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public override void Dispose()
-		{
-		    D3D11.ComputeShader shader = Interlocked.Exchange(ref _shader, null);
+        #region Methods.
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public override void Dispose()
+        {
+            D3D11.ComputeShader shader = Interlocked.Exchange(ref _shader, null);
 
-		    if (shader != null)
-		    {
-		        Graphics.Log.Print($"Destroying {ShaderType} '{Name}' ({ID})", LoggingLevel.Verbose);
+            if (shader != null)
+            {
+                Graphics.Log.Print($"Destroying {ShaderType} '{Name}' ({ID})", LoggingLevel.Verbose);
                 shader.Dispose();
-		    }
-			
-			base.Dispose();
-		}
-		#endregion
+            }
 
-		#region Constructor/Destructor.
-	    /// <summary>
-	    /// Initializes a new instance of the <see cref="GorgonVertexShader" /> class.
-	    /// </summary>
-	    /// <param name="graphics">The graphics interface that owns this object.</param>
-	    /// <param name="name">The name for this shader.</param>
-	    /// <param name="isDebug"><b>true</b> if debug information is included in the byte code, <b>false</b> if not.</param>
-	    /// <param name="byteCode">The byte code for the shader..</param>
-	    internal GorgonComputeShader(GorgonGraphics graphics, string name, bool isDebug, ShaderBytecode byteCode)
-	        : base(graphics, name, isDebug, byteCode)
-	    {
-	        graphics.Log.Print($"Creating {ShaderType} '{name}' ({ID})", LoggingLevel.Verbose);
-	        _shader = new D3D11.ComputeShader(graphics.D3DDevice, byteCode)
-	                  {
-	                      DebugName = name + "_ID3D11ComputeShader"
-	                  };
-	    }
-	    #endregion
-	}
+            base.Dispose();
+        }
+        #endregion
+
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonVertexShader" /> class.
+        /// </summary>
+        /// <param name="graphics">The graphics interface that owns this object.</param>
+        /// <param name="name">The name for this shader.</param>
+        /// <param name="isDebug"><b>true</b> if debug information is included in the byte code, <b>false</b> if not.</param>
+        /// <param name="byteCode">The byte code for the shader..</param>
+        internal GorgonComputeShader(GorgonGraphics graphics, string name, bool isDebug, ShaderBytecode byteCode)
+            : base(graphics, name, isDebug, byteCode)
+        {
+            graphics.Log.Print($"Creating {ShaderType} '{name}' ({ID})", LoggingLevel.Verbose);
+            _shader = new D3D11.ComputeShader(graphics.D3DDevice, byteCode)
+            {
+                DebugName = name + "_ID3D11ComputeShader"
+            };
+        }
+        #endregion
+    }
 }

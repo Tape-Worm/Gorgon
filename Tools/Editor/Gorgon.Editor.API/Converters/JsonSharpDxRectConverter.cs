@@ -25,8 +25,8 @@
 #endregion
 
 using System;
-using DX = SharpDX;
 using Newtonsoft.Json;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.Converters
 {

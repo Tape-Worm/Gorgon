@@ -174,9 +174,9 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             WorkingFile = imageData.workingFile ?? throw new ArgumentNullException(nameof(imageData.workingFile));
-            Image = imageData.image ?? throw new ArgumentNullException(nameof(imageData.image));            
+            Image = imageData.image ?? throw new ArgumentNullException(nameof(imageData.image));
             FormatSupport = formatSupport ?? throw new ArgumentNullException(nameof(formatSupport));
-            ImageIOService = services.ImageIO ?? throw new ArgumentMissingException(nameof(services.ImageIO),nameof(services));
+            ImageIOService = services.ImageIO ?? throw new ArgumentMissingException(nameof(services.ImageIO), nameof(services));
             UndoService = services.UndoService ?? throw new ArgumentMissingException(nameof(services.UndoService), nameof(services));
             ImageUpdater = services.ImageUpdater ?? throw new ArgumentMissingException(nameof(services.ImageUpdater), nameof(services));
             ExternalEditorService = services.ExternalEditorService ?? throw new ArgumentMissingException(nameof(services.ExternalEditorService), nameof(services));

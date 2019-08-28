@@ -32,17 +32,17 @@ using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// A list of texture sampler states to apply to the pipeline.
-	/// </summary>
-	public sealed class GorgonSamplerStates
-		: GorgonArray<GorgonSamplerState>
-	{
-		#region Constants.
-		/// <summary>
-		/// The maximum number of allowed sampler states that can be bound at the same time.
-		/// </summary>
-		public const int MaximumSamplerStateCount = D3D11.CommonShaderStage.SamplerSlotCount;
+    /// <summary>
+    /// A list of texture sampler states to apply to the pipeline.
+    /// </summary>
+    public sealed class GorgonSamplerStates
+        : GorgonArray<GorgonSamplerState>
+    {
+        #region Constants.
+        /// <summary>
+        /// The maximum number of allowed sampler states that can be bound at the same time.
+        /// </summary>
+        public const int MaximumSamplerStateCount = D3D11.CommonShaderStage.SamplerSlotCount;
         #endregion
 
         #region Properties.
@@ -50,9 +50,9 @@ namespace Gorgon.Graphics.Core
         /// Property to return the native samplers.
         /// </summary>
 	    internal D3D11.SamplerState[] Native
-	    {
-	        get;
-	    } = new D3D11.SamplerState[MaximumSamplerStateCount];
+        {
+            get;
+        } = new D3D11.SamplerState[MaximumSamplerStateCount];
         #endregion
 
         #region Methods.
@@ -81,18 +81,18 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="states">[Optional] The list of sampler states to copy into this list.</param>
         public GorgonSamplerStates(IReadOnlyList<GorgonSamplerState> states = null)
-			: base(MaximumSamplerStateCount)
-		{
-		    if (states == null)
-		    {
-		        return;
-		    }
+            : base(MaximumSamplerStateCount)
+        {
+            if (states == null)
+            {
+                return;
+            }
 
-		    for (int i = 0; i < states.Count.Min(MaximumSamplerStateCount); ++i)
-		    {
-		        this[i] = states[i];
-		    }
-		}
-		#endregion
-	}
+            for (int i = 0; i < states.Count.Min(MaximumSamplerStateCount); ++i)
+            {
+                this[i] = states[i];
+            }
+        }
+        #endregion
+    }
 }

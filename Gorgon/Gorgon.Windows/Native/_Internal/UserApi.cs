@@ -32,11 +32,11 @@ using System.Security;
 
 namespace Gorgon.Native
 {
-	/// <summary>
-	/// The win 32 windowing API.
-	/// </summary>
-	[SuppressUnmanagedCodeSecurity]
-	internal static class UserApi
+    /// <summary>
+    /// The win 32 windowing API.
+    /// </summary>
+    [SuppressUnmanagedCodeSecurity]
+    internal static class UserApi
     {
         #region Methods.
         /// <summary>
@@ -46,53 +46,53 @@ namespace Gorgon.Native
         /// <returns>A handle to the window.</returns>
         [SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "0", Justification = "See https://stackoverflow.com/questions/33083725/how-to-declare-point-structure-to-get-rid-of-code-analysis-error")]
         [DllImport("user32.dll")]
-	    public static extern IntPtr WindowFromPoint(Point pnt);
+        public static extern IntPtr WindowFromPoint(Point pnt);
 
-		/// <summary>
-		/// Function to release the captured mouse.
-		/// </summary>
-		/// <returns></returns>
-		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-		[return: MarshalAs(UnmanagedType.Bool)]
-		public static extern bool ReleaseCapture();
+        /// <summary>
+        /// Function to release the captured mouse.
+        /// </summary>
+        /// <returns></returns>
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool ReleaseCapture();
 
-		/// <summary>
-		/// Function to process window messages.
-		/// </summary>
-		/// <remarks>See the MSDN documentation for a detailed description.</remarks>
-		/// <param name="msg">Message block to retrieve.</param>
-		/// <param name="hwnd">Window to retrieve messages from, <b>false</b> for all.</param>
-		/// <param name="wFilterMin">Minimum message.</param>
-		/// <param name="wFilterMax">Maximum message.</param>
-		/// <param name="flags">Flags for the function.</param>
-		/// <returns><b>true</b> if messages are ready for processing, <b>false</b> if not.</returns>
-		[return: MarshalAs(UnmanagedType.Bool)]
-		[DllImport("User32.dll", CharSet = CharSet.Auto)]
-		public static extern bool PeekMessage(out MSG msg, IntPtr hwnd, uint wFilterMin, uint wFilterMax, uint flags);
+        /// <summary>
+        /// Function to process window messages.
+        /// </summary>
+        /// <remarks>See the MSDN documentation for a detailed description.</remarks>
+        /// <param name="msg">Message block to retrieve.</param>
+        /// <param name="hwnd">Window to retrieve messages from, <b>false</b> for all.</param>
+        /// <param name="wFilterMin">Minimum message.</param>
+        /// <param name="wFilterMax">Maximum message.</param>
+        /// <param name="flags">Flags for the function.</param>
+        /// <returns><b>true</b> if messages are ready for processing, <b>false</b> if not.</returns>
+        [return: MarshalAs(UnmanagedType.Bool)]
+        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        public static extern bool PeekMessage(out MSG msg, IntPtr hwnd, uint wFilterMin, uint wFilterMax, uint flags);
 
-		/// <summary>
-		/// Function to send a message to a window.
-		/// </summary>
-		/// <param name="hWnd"></param>
-		/// <param name="msg"></param>
-		/// <param name="wParam"></param>
-		/// <param name="lParam"></param>
-		/// <returns></returns>
-		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-		public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+        /// <summary>
+        /// Function to send a message to a window.
+        /// </summary>
+        /// <param name="hWnd"></param>
+        /// <param name="msg"></param>
+        /// <param name="wParam"></param>
+        /// <param name="lParam"></param>
+        /// <returns></returns>
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
 
-		/// <summary>
-		/// Function to send a message to a window.
-		/// </summary>
-		/// <param name="hWnd"></param>
-		/// <param name="msg"></param>
-		/// <param name="wParam"></param>
-		/// <param name="lParam"></param>
-		/// <returns></returns>
-		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-		public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, ref HDITEM lParam);
+        /// <summary>
+        /// Function to send a message to a window.
+        /// </summary>
+        /// <param name="hWnd"></param>
+        /// <param name="msg"></param>
+        /// <param name="wParam"></param>
+        /// <param name="lParam"></param>
+        /// <returns></returns>
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, ref HDITEM lParam);
 
-		/// <summary>
+        /// <summary>
         /// Function to retrieve the device context for a window.
         /// </summary>
         /// <param name="hwnd">The handle to the window.</param>
@@ -109,14 +109,14 @@ namespace Gorgon.Native
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern int ReleaseDC(IntPtr hwnd, IntPtr dc);
 
-		/// <summary>
+        /// <summary>
         /// Function to retrieve the size of a window.
         /// </summary>
         /// <param name="hwnd">The window handle.</param>
         /// <param name="lpRect">The resulting window boundaries.</param>
         /// <returns><b>true</b> if failed, <b>false</b> if successful.</returns>
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-		[return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetWindowRect(IntPtr hwnd, out RECT lpRect);
         #endregion
 

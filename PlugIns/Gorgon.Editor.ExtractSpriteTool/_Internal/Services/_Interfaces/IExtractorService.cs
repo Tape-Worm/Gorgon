@@ -34,7 +34,7 @@ using Gorgon.Renderers;
 
 namespace Gorgon.Editor.ExtractSpriteTool
 {
-	/// <summary>
+    /// <summary>
     /// The service used to retrieve sprite data from a texture atlas.
     /// </summary>
     internal interface IExtractorService

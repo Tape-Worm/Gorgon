@@ -202,7 +202,7 @@ namespace Gorgon.Editor.Services
             {
                 initialDirectory = new DirectoryInfo(Settings.LastOpenSavePath);
             }
-                        
+
             if (!initialDirectory.Exists)
             {
                 initialDirectory = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));

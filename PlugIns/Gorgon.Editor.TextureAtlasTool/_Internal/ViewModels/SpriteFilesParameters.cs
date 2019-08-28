@@ -32,24 +32,24 @@ using Gorgon.Editor.UI.ViewModels;
 
 namespace Gorgon.Editor.TextureAtlasTool
 {
-	/// <summary>
+    /// <summary>
     /// The parameters for the <see cref="ITextureAtlas"/> view model.
     /// </summary>
     internal class SpriteFilesParameters
         : ViewModelInjection
     {
-		/// <summary>
+        /// <summary>
         /// Property to reeturn the service to search through the content files.
         /// </summary>
-		public ISearchService<IContentFileExplorerSearchEntry> SearchService
+        public ISearchService<IContentFileExplorerSearchEntry> SearchService
         {
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to return the entries for the file system.
         /// </summary>
-		public IReadOnlyList<ContentFileExplorerDirectoryEntry> Entries
+        public IReadOnlyList<ContentFileExplorerDirectoryEntry> Entries
         {
             get;
         }

@@ -25,16 +25,16 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.Data;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using Gorgon.Editor.UI.Views;
-using Gorgon.Editor.Properties;
 using Gorgon.Core;
-using System.Collections;
+using Gorgon.Editor.Properties;
+using Gorgon.Editor.UI.Views;
 using Gorgon.UI;
 
 namespace Gorgon.Editor.UI.Controls
@@ -123,10 +123,10 @@ namespace Gorgon.Editor.UI.Controls
         #endregion
 
         #region Events.
-		/// <summary>
+        /// <summary>
         /// Event triggered when a search term is entered into the search box.
         /// </summary>
-		[Category("Behavior"), Description("Triggered when a search term is entered in the search box.")]
+        [Category("Behavior"), Description("Triggered when a search term is entered in the search box.")]
         public event EventHandler<GorgonSearchEventArgs> Search;
 
         /// <summary>
@@ -140,16 +140,16 @@ namespace Gorgon.Editor.UI.Controls
         /// </summary>
         [Category("Behavior"), Description("Triggered when a file entry is unselected.")]
         public event EventHandler<ContentFileEntrySelectedEventArgs> FileEntryUnselected;
-		#endregion
+        #endregion
 
         #region Variables.
         // The directory font.
         private readonly Font _dirFont;
         // The comparer used to sort the grid.
         private readonly FileComparer _fileComparer;
-		// The list of file explorer entries.
+        // The list of file explorer entries.
         private IReadOnlyList<ContentFileExplorerDirectoryEntry> _entries = new List<ContentFileExplorerDirectoryEntry>();
-		// Cross reference for rows and entries.
+        // Cross reference for rows and entries.
         private readonly Dictionary<DataGridViewRow, ContentFileExplorerFileEntry> _rowFilesXref = new Dictionary<DataGridViewRow, ContentFileExplorerFileEntry>();
         private readonly Dictionary<DataGridViewRow, ContentFileExplorerDirectoryEntry> _rowDirsXref = new Dictionary<DataGridViewRow, ContentFileExplorerDirectoryEntry>();
         private readonly Dictionary<ContentFileExplorerFileEntry, DataGridViewRow> _fileRowsXref = new Dictionary<ContentFileExplorerFileEntry, DataGridViewRow>();
@@ -161,11 +161,11 @@ namespace Gorgon.Editor.UI.Controls
         #endregion
 
         #region Properties.
-		/// <summary>
+        /// <summary>
         /// Property to set or return the list of entries to display.
         /// </summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-		public IReadOnlyList<ContentFileExplorerDirectoryEntry> Entries
+        public IReadOnlyList<ContentFileExplorerDirectoryEntry> Entries
         {
             get => _entries;
             set
@@ -187,11 +187,11 @@ namespace Gorgon.Editor.UI.Controls
             }
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return whether search is available or not.
         /// </summary>
         [Browsable(true), Category("Behavior"), Description("Sets whether search is available or not.")]
-		public bool ShowSearch
+        public bool ShowSearch
         {
             get => TextSearch.Visible;
             set => TextSearch.Visible = value;
@@ -229,7 +229,7 @@ namespace Gorgon.Editor.UI.Controls
             }
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to unassign events tied to the entries.
         /// </summary>
         private void UnassignEvents()
@@ -250,7 +250,7 @@ namespace Gorgon.Editor.UI.Controls
             }
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to populate the grid with the file entries.
         /// </summary>
         private void FillGrid()
@@ -259,7 +259,7 @@ namespace Gorgon.Editor.UI.Controls
             _rowFilesXref.Clear();
             _rowDirsXref.Clear();
             _fileRowsXref.Clear();
-            _dirRowsXref.Clear();			
+            _dirRowsXref.Clear();
 
             if ((_entries == null) || (_entries.Count == 0))
             {
@@ -274,7 +274,7 @@ namespace Gorgon.Editor.UI.Controls
             var rows = new List<DataGridViewRow>();
 
             foreach (ContentFileExplorerDirectoryEntry dirEntry in _entries)
-            {				
+            {
                 DataGridViewRow row = CreateRow(dirEntry);
                 rows.Add(row);
                 _rowDirsXref[row] = dirEntry;
@@ -385,7 +385,7 @@ namespace Gorgon.Editor.UI.Controls
                 Name = "GridHeaderCheckBox",
                 AutoSize = true,
                 Location = rect.Location,
-				TabStop = false                
+                TabStop = false
             };
 
             _checkBoxHeader.Click += CheckboxHeader_Click;
@@ -421,7 +421,7 @@ namespace Gorgon.Editor.UI.Controls
         private void CheckboxHeader_Click(object sender, EventArgs e)
         {
             var checkBox = (CheckBox)sender;
-			
+
             for (int i = 0; i < _entries.Count; ++i)
             {
                 ContentFileExplorerDirectoryEntry row = _entries[i];
@@ -454,7 +454,7 @@ namespace Gorgon.Editor.UI.Controls
             GridFiles.Sort(_fileComparer);
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to determine if a row represents a directory or not.
         /// </summary>
         /// <param name="row">The row to evaluate.</param>
@@ -549,7 +549,7 @@ namespace Gorgon.Editor.UI.Controls
             if (_checkBoxHeader == null)
             {
                 return;
-            }            
+            }
 
             int checkCount = 0;
             int fileCount = 0;
@@ -613,7 +613,7 @@ namespace Gorgon.Editor.UI.Controls
                     return;
                 }
             }
-            
+
             if (fileEntry == null)
             {
                 return;
@@ -657,12 +657,12 @@ namespace Gorgon.Editor.UI.Controls
                                   TextFormatFlags.EndEllipsis | TextFormatFlags.VerticalCenter);
 
             // No icon?  Then draw the generic one.
-            if ((string.IsNullOrWhiteSpace(file.AssociationType)) 
+            if ((string.IsNullOrWhiteSpace(file.AssociationType))
                 || (!_icons.TryGetValue(file.AssociationType, out icon)))
             {
                 e.Graphics.DrawImage(icon, new Rectangle(e.CellBounds.X + e.CellStyle.Padding.Left, e.CellBounds.Y + (e.CellBounds.Height / 2 - 10), 20, 20));
                 DrawText();
-                
+
                 return;
             }
 
@@ -701,10 +701,10 @@ namespace Gorgon.Editor.UI.Controls
             Image image = dir.IsExpanded ? Resources.expanded_8x8 : Resources.collapsed_8x8;
             var scaledSize = new SizeF(image.Width * dpiScaling, image.Height * dpiScaling);
             e.PaintBackground(e.CellBounds, (e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected);
-            e.Graphics.DrawImage(image, new RectangleF(e.CellBounds.X + e.CellBounds.Width / 2 - scaledSize.Width / 2, 
-                e.CellBounds.Y + e.CellBounds.Height / 2 - scaledSize.Height / 2, 
-                scaledSize.Width, 
-                scaledSize.Height));            
+            e.Graphics.DrawImage(image, new RectangleF(e.CellBounds.X + e.CellBounds.Width / 2 - scaledSize.Width / 2,
+                e.CellBounds.Y + e.CellBounds.Height / 2 - scaledSize.Height / 2,
+                scaledSize.Width,
+                scaledSize.Height));
         }
 
         /// <summary>
@@ -736,9 +736,9 @@ namespace Gorgon.Editor.UI.Controls
                 return;
             }
 
-            e.Graphics.DrawImage(Resources.check_8x8, new RectangleF(e.CellBounds.X + e.CellBounds.Width / 2 - checkSize.Width / 2, 
-                                                                        e.CellBounds.Y + e.CellBounds.Height / 2 - checkSize.Height / 2, 
-                                                                        checkSize.Width, 
+            e.Graphics.DrawImage(Resources.check_8x8, new RectangleF(e.CellBounds.X + e.CellBounds.Width / 2 - checkSize.Width / 2,
+                                                                        e.CellBounds.Y + e.CellBounds.Height / 2 - checkSize.Height / 2,
+                                                                        checkSize.Width,
                                                                         checkSize.Height));
         }
 
@@ -800,7 +800,7 @@ namespace Gorgon.Editor.UI.Controls
             }
         }
 
-		/// <summary>
+        /// <summary>
         /// Function used to add unbound row data to the grid.
         /// </summary>
         /// <param name="entry">The values used to populate the cells.</param>
@@ -809,11 +809,11 @@ namespace Gorgon.Editor.UI.Controls
         {
             var newRow = new DataGridViewRow();
             newRow.CreateCells(GridFiles, new object[] {
-				entry.IsExpanded,
-				entry.FullPath,
-				entry.Name,
-				entry.FullPath,
-				true
+                entry.IsExpanded,
+                entry.FullPath,
+                entry.Name,
+                entry.FullPath,
+                true
                 });
             newRow.Visible = entry.IsVisible;
             return newRow;
@@ -858,7 +858,7 @@ namespace Gorgon.Editor.UI.Controls
 
             FillGrid();
 
-			// Set the default sorting.
+            // Set the default sorting.
             ColumnLocation.HeaderCell.SortGlyphDirection = SortOrder.Ascending;
             GridFiles.Sort(_fileComparer);
             GridFiles.Select();

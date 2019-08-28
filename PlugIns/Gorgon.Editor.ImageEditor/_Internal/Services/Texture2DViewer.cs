@@ -25,13 +25,13 @@
 #endregion
 
 using System.Windows.Forms;
-using DX = SharpDX;
 using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Editor.Rendering;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Renderers;
-using Gorgon.Graphics;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -117,7 +117,7 @@ namespace Gorgon.Editor.ImageEditor
         public Texture2DViewer(IGraphicsContext graphicsContext, GorgonSwapChain swapChain, ScrollBar hScroll, ScrollBar vScroll)
             : base(graphicsContext, swapChain, hScroll, vScroll)
         {
-            
+
         }
         #endregion
     }

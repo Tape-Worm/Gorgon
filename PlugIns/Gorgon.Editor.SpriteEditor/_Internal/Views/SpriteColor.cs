@@ -26,9 +26,9 @@
 
 using System;
 using System.ComponentModel;
+using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Graphics;
-using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -39,7 +39,7 @@ namespace Gorgon.Editor.SpriteEditor
         : EditorSubPanelCommon, IDataContext<ISpriteColorEdit>
     {
         #region Variables.
-		// The list of vertices that were selected.
+        // The list of vertices that were selected.
         private readonly GorgonColor[] _selectedColors = new GorgonColor[4];
         #endregion
 
@@ -226,7 +226,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Function to assign a data context to the view as a view model.</summary>
         /// <param name="dataContext">The data context to assign.</param>
         /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
-        public void SetDataContext(ISpriteColorEdit dataContext) 
+        public void SetDataContext(ISpriteColorEdit dataContext)
         {
             InitializeFromDataContext(dataContext);
 

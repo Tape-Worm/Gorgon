@@ -34,81 +34,81 @@ using Gorgon.Math;
 
 namespace Gorgon.Graphics.Imaging.GdiPlus
 {
-	/// <summary>
-	/// Extension methods to use GDI+ <see cref="System.Drawing"/> bitmaps with <see cref="IGorgonImage"/>
-	/// </summary>
-	public static class GdiPlusExtensions
-	{
+    /// <summary>
+    /// Extension methods to use GDI+ <see cref="System.Drawing"/> bitmaps with <see cref="IGorgonImage"/>
+    /// </summary>
+    public static class GdiPlusExtensions
+    {
         /// <summary>
         /// Function to transfer a 32 bit rgba image into a <see cref="IGorgonImageBuffer"/>.
         /// </summary>
         /// <param name="bitmapLock">The lock on the bitmap to transfer from.</param>
         /// <param name="buffer">The buffer to transfer into.</param>
 	    private static void Transfer32Argb(BitmapData bitmapLock, IGorgonImageBuffer buffer)
-	    {
-	        unsafe
-	        {
-	            int* pixels = (int*)bitmapLock.Scan0.ToPointer();
+        {
+            unsafe
+            {
+                int* pixels = (int*)bitmapLock.Scan0.ToPointer();
 
-	            for (int y = 0; y < bitmapLock.Height; y++)
-	            {
-	                // We only need the width here, as our pointer will handle the stride by virtue of being an int.
-	                int* offset = pixels + (y * bitmapLock.Width);
+                for (int y = 0; y < bitmapLock.Height; y++)
+                {
+                    // We only need the width here, as our pointer will handle the stride by virtue of being an int.
+                    int* offset = pixels + (y * bitmapLock.Width);
 
-	                int destOffset = y * buffer.PitchInformation.RowPitch;
-	                for (int x = 0; x < bitmapLock.Width; x++)
-	                {
-	                    // The DXGI format nomenclature is a little confusing as we tend to think of the layout as being highest to 
-	                    // lowest, but in fact, it is lowest to highest.
-	                    // So, we must convert to ABGR even though the DXGI format is RGBA. The memory layout is from lowest 
-	                    // (R at byte 0) to the highest byte (A at byte 3).
-	                    // Thus, R is the lowest byte, and A is the highest: A(24), B(16), G(8), R(0).
-	                    var color = new GorgonColor(*offset);
-	                    int* destBuffer = (int *)(Unsafe.AsPointer(ref buffer.Data[destOffset]));
-	                    *destBuffer = color.ToABGR();
-	                    offset++;
-	                    destOffset += 4;
+                    int destOffset = y * buffer.PitchInformation.RowPitch;
+                    for (int x = 0; x < bitmapLock.Width; x++)
+                    {
+                        // The DXGI format nomenclature is a little confusing as we tend to think of the layout as being highest to 
+                        // lowest, but in fact, it is lowest to highest.
+                        // So, we must convert to ABGR even though the DXGI format is RGBA. The memory layout is from lowest 
+                        // (R at byte 0) to the highest byte (A at byte 3).
+                        // Thus, R is the lowest byte, and A is the highest: A(24), B(16), G(8), R(0).
+                        var color = new GorgonColor(*offset);
+                        int* destBuffer = (int*)(Unsafe.AsPointer(ref buffer.Data[destOffset]));
+                        *destBuffer = color.ToABGR();
+                        offset++;
+                        destOffset += 4;
                     }
-	            }
-	        }
+                }
+            }
         }
 
-	    /// <summary>
-	    /// Function to transfer a 24 bit rgb image into a <see cref="IGorgonImageBuffer"/>.
-	    /// </summary>
-	    /// <param name="bitmapLock">The lock on the bitmap to transfer from.</param>
-	    /// <param name="buffer">The buffer to transfer into.</param>
-	    private static void Transfer24Rgb(BitmapData bitmapLock, IGorgonImageBuffer buffer)
-	    {
-	        unsafe
-	        {
-	            byte* pixels = (byte*)bitmapLock.Scan0.ToPointer();
+        /// <summary>
+        /// Function to transfer a 24 bit rgb image into a <see cref="IGorgonImageBuffer"/>.
+        /// </summary>
+        /// <param name="bitmapLock">The lock on the bitmap to transfer from.</param>
+        /// <param name="buffer">The buffer to transfer into.</param>
+        private static void Transfer24Rgb(BitmapData bitmapLock, IGorgonImageBuffer buffer)
+        {
+            unsafe
+            {
+                byte* pixels = (byte*)bitmapLock.Scan0.ToPointer();
 
-	            for (int y = 0; y < bitmapLock.Height; y++)
-	            {
-	                // We only need the width here, as our pointer will handle the stride by virtue of being an int.
-	                byte* offset = pixels + (y * bitmapLock.Stride);
+                for (int y = 0; y < bitmapLock.Height; y++)
+                {
+                    // We only need the width here, as our pointer will handle the stride by virtue of being an int.
+                    byte* offset = pixels + (y * bitmapLock.Stride);
 
-	                int destOffset = y * buffer.PitchInformation.RowPitch;
-	                for (int x = 0; x < bitmapLock.Width; x++)
-	                {
-	                    // The DXGI format nomenclature is a little confusing as we tend to think of the layout as being highest to 
-	                    // lowest, but in fact, it is lowest to highest.
-	                    // So, we must convert to ABGR even though the DXGI format is RGBA. The memory layout is from lowest 
-	                    // (R at byte 0) to the highest byte (A at byte 3).
-	                    // Thus, R is the lowest byte, and A is the highest: A(24), B(16), G(8), R(0).
-	                    byte b = *offset++;
-	                    byte g = *offset++;
-	                    byte r = *offset++;
+                    int destOffset = y * buffer.PitchInformation.RowPitch;
+                    for (int x = 0; x < bitmapLock.Width; x++)
+                    {
+                        // The DXGI format nomenclature is a little confusing as we tend to think of the layout as being highest to 
+                        // lowest, but in fact, it is lowest to highest.
+                        // So, we must convert to ABGR even though the DXGI format is RGBA. The memory layout is from lowest 
+                        // (R at byte 0) to the highest byte (A at byte 3).
+                        // Thus, R is the lowest byte, and A is the highest: A(24), B(16), G(8), R(0).
+                        byte b = *offset++;
+                        byte g = *offset++;
+                        byte r = *offset++;
 
-	                    var color = new GorgonColor(r / 255.0f, g / 255.0f, b / 255.0f, 1.0f);
-	                    int* destBuffer = (int *)(Unsafe.AsPointer(ref buffer.Data[destOffset]));
-	                    *destBuffer = color.ToABGR();
-	                    destOffset += 4;
-	                }
-	            }
-	        }
-	    }
+                        var color = new GorgonColor(r / 255.0f, g / 255.0f, b / 255.0f, 1.0f);
+                        int* destBuffer = (int*)(Unsafe.AsPointer(ref buffer.Data[destOffset]));
+                        *destBuffer = color.ToABGR();
+                        destOffset += 4;
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Function to convert an individual <see cref="IGorgonImageBuffer"/> to a GDI+ bitmap object.
@@ -171,81 +171,81 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
         /// </para>
         /// </remarks>
 	    public static Bitmap ToBitmap(this IGorgonImageBuffer buffer)
-	    {
-	        if (buffer == null)
-	        {
+        {
+            if (buffer == null)
+            {
                 throw new ArgumentNullException(nameof(buffer));
-	        }
+            }
 
-	        PixelFormat pixelFormat;
-	        bool needsSwizzle = false;
+            PixelFormat pixelFormat;
+            bool needsSwizzle = false;
 
-	        switch (buffer.Format)
-	        {
-	            case BufferFormat.R8G8B8A8_UNorm:
-	            case BufferFormat.R8G8B8A8_UNorm_SRgb:
-	            case BufferFormat.R8G8B8A8_SInt:
-	            case BufferFormat.R8G8B8A8_SNorm:
-	            case BufferFormat.R8G8B8A8_UInt:
-	            case BufferFormat.R8G8B8A8_Typeless:
-	                pixelFormat = PixelFormat.Format32bppArgb;
-	                needsSwizzle = true;
-	                break;
-	            case BufferFormat.B8G8R8A8_UNorm:
-	            case BufferFormat.B8G8R8A8_Typeless:
-	            case BufferFormat.B8G8R8A8_UNorm_SRgb:
-	                pixelFormat = PixelFormat.Format32bppArgb;
-	                break;
+            switch (buffer.Format)
+            {
+                case BufferFormat.R8G8B8A8_UNorm:
+                case BufferFormat.R8G8B8A8_UNorm_SRgb:
+                case BufferFormat.R8G8B8A8_SInt:
+                case BufferFormat.R8G8B8A8_SNorm:
+                case BufferFormat.R8G8B8A8_UInt:
+                case BufferFormat.R8G8B8A8_Typeless:
+                    pixelFormat = PixelFormat.Format32bppArgb;
+                    needsSwizzle = true;
+                    break;
+                case BufferFormat.B8G8R8A8_UNorm:
+                case BufferFormat.B8G8R8A8_Typeless:
+                case BufferFormat.B8G8R8A8_UNorm_SRgb:
+                    pixelFormat = PixelFormat.Format32bppArgb;
+                    break;
                 case BufferFormat.B8G8R8X8_UNorm:
                 case BufferFormat.B8G8R8X8_Typeless:
                 case BufferFormat.B8G8R8X8_UNorm_SRgb:
                     pixelFormat = PixelFormat.Format24bppRgb;
                     break;
-	            default:
-	                throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, buffer.Format));
-	        }
+                default:
+                    throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, buffer.Format));
+            }
 
             var result = new Bitmap(buffer.Width, buffer.Height, pixelFormat);
 
-	        unsafe
-	        {
-	            BitmapData destData = result.LockBits(new Rectangle(0, 0, result.Width, result.Height), ImageLockMode.WriteOnly, pixelFormat);
+            unsafe
+            {
+                BitmapData destData = result.LockBits(new Rectangle(0, 0, result.Width, result.Height), ImageLockMode.WriteOnly, pixelFormat);
 
-	            try
-	            {
-	                byte* srcPtr = (byte *)buffer.Data;
-	                byte* destPtr = (byte*)destData.Scan0;
+                try
+                {
+                    byte* srcPtr = (byte*)buffer.Data;
+                    byte* destPtr = (byte*)destData.Scan0;
 
-	                for (int y = 0; y < buffer.Height; ++y)
-	                {
-	                    byte* src = srcPtr + (y * buffer.PitchInformation.RowPitch);
-	                    byte* dest = destPtr + (y * destData.Stride);
+                    for (int y = 0; y < buffer.Height; ++y)
+                    {
+                        byte* src = srcPtr + (y * buffer.PitchInformation.RowPitch);
+                        byte* dest = destPtr + (y * destData.Stride);
 
-	                    switch (pixelFormat)
-	                    {
-	                        case PixelFormat.Format32bppArgb:
-	                            if (!needsSwizzle)
-	                            {
+                        switch (pixelFormat)
+                        {
+                            case PixelFormat.Format32bppArgb:
+                                if (!needsSwizzle)
+                                {
                                     Unsafe.CopyBlock(dest, src, (uint)(destData.Stride.Min(buffer.PitchInformation.RowPitch)));
-	                                continue;
-	                            }
+                                    continue;
+                                }
 
                                 ImageUtilities.SwizzleScanline(src, buffer.PitchInformation.RowPitch, dest, destData.Stride, buffer.Format, ImageBitFlags.None);
-	                            break;
+                                break;
                             case PixelFormat.Format24bppRgb:
                                 ImageUtilities.Compress24BPPScanLine(src, buffer.PitchInformation.RowPitch, dest, destData.Stride, true);
                                 break;
-	                    }
-	                }
-	            }
-	            finally
-	            {
+                        }
+                    }
+                }
+                finally
+                {
                     result.UnlockBits(destData);
-	            }
-	        }
+                }
+            }
 
-	        return result;
-	    }
+            return result;
+        }
 
         /// <summary>
         /// Function to copy the contents of an individual <see cref="IGorgonImageBuffer"/> to a GDI+ bitmap object.
@@ -311,81 +311,81 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
         /// </para>
         /// </remarks>
 	    public static void CopyTo(this IGorgonImageBuffer buffer, Bitmap bitmap)
-	    {
-	        if (buffer == null)
-	        {
+        {
+            if (buffer == null)
+            {
                 throw new ArgumentNullException(nameof(buffer));
-	        }
+            }
 
-	        if (bitmap == null)
-	        {
+            if (bitmap == null)
+            {
                 throw new ArgumentNullException(nameof(bitmap));
-	        }
+            }
 
-	        if ((bitmap.PixelFormat != PixelFormat.Format32bppArgb)
+            if ((bitmap.PixelFormat != PixelFormat.Format32bppArgb)
                 && (bitmap.PixelFormat != PixelFormat.Format32bppPArgb))
-	        {
-	            throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, bitmap.PixelFormat));
-	        }
+            {
+                throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, bitmap.PixelFormat));
+            }
 
-	        if ((bitmap.Width != buffer.Width) || (bitmap.Height != buffer.Height))
-	        {
+            if ((bitmap.Width != buffer.Width) || (bitmap.Height != buffer.Height))
+            {
                 throw new ArgumentException(string.Format(Resources.GORIMG_ERR_BITMAP_SIZE_NOT_CORRECT, bitmap.Width, bitmap.Height, buffer.Width, buffer.Height));
-	        }
+            }
 
-	        bool needsSwizzle;
+            bool needsSwizzle;
 
-	        switch (buffer.Format)
-	        {
-	            case BufferFormat.R8G8B8A8_UNorm:
-	            case BufferFormat.R8G8B8A8_UNorm_SRgb:
-	            case BufferFormat.R8G8B8A8_SInt:
-	            case BufferFormat.R8G8B8A8_SNorm:
-	            case BufferFormat.R8G8B8A8_UInt:
-	            case BufferFormat.R8G8B8A8_Typeless:
-	                needsSwizzle = true;
-	                break;
-	            case BufferFormat.B8G8R8A8_UNorm:
-	            case BufferFormat.B8G8R8A8_Typeless:
-	            case BufferFormat.B8G8R8A8_UNorm_SRgb:
+            switch (buffer.Format)
+            {
+                case BufferFormat.R8G8B8A8_UNorm:
+                case BufferFormat.R8G8B8A8_UNorm_SRgb:
+                case BufferFormat.R8G8B8A8_SInt:
+                case BufferFormat.R8G8B8A8_SNorm:
+                case BufferFormat.R8G8B8A8_UInt:
+                case BufferFormat.R8G8B8A8_Typeless:
+                    needsSwizzle = true;
+                    break;
+                case BufferFormat.B8G8R8A8_UNorm:
+                case BufferFormat.B8G8R8A8_Typeless:
+                case BufferFormat.B8G8R8A8_UNorm_SRgb:
                 case BufferFormat.B8G8R8X8_UNorm:
                 case BufferFormat.B8G8R8X8_Typeless:
                 case BufferFormat.B8G8R8X8_UNorm_SRgb:
-	                needsSwizzle = false;
+                    needsSwizzle = false;
                     break;
-	            default:
-	                throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, buffer.Format));
-	        }
+                default:
+                    throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, buffer.Format));
+            }
 
-	        unsafe
-	        {
-	            BitmapData destData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, bitmap.PixelFormat);
+            unsafe
+            {
+                BitmapData destData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, bitmap.PixelFormat);
 
-	            try
-	            {
-	                byte* srcPtr = (byte *)buffer.Data;
-	                byte* destPtr = (byte*)destData.Scan0;
+                try
+                {
+                    byte* srcPtr = (byte*)buffer.Data;
+                    byte* destPtr = (byte*)destData.Scan0;
 
-	                for (int y = 0; y < buffer.Height; ++y)
-	                {
-	                    byte* src = srcPtr + (y * buffer.PitchInformation.RowPitch);
-	                    byte* dest = destPtr + (y * destData.Stride);
+                    for (int y = 0; y < buffer.Height; ++y)
+                    {
+                        byte* src = srcPtr + (y * buffer.PitchInformation.RowPitch);
+                        byte* dest = destPtr + (y * destData.Stride);
 
-	                    if (!needsSwizzle)
-	                    {
-	                        Unsafe.CopyBlock(dest, src, (uint)(destData.Stride.Min(buffer.PitchInformation.RowPitch)));
-	                        continue;
-	                    }
+                        if (!needsSwizzle)
+                        {
+                            Unsafe.CopyBlock(dest, src, (uint)(destData.Stride.Min(buffer.PitchInformation.RowPitch)));
+                            continue;
+                        }
 
-	                    ImageUtilities.SwizzleScanline(src, buffer.PitchInformation.RowPitch, dest, destData.Stride, buffer.Format, ImageBitFlags.None);
-	                }
-	            }
-	            finally
-	            {
+                        ImageUtilities.SwizzleScanline(src, buffer.PitchInformation.RowPitch, dest, destData.Stride, buffer.Format, ImageBitFlags.None);
+                    }
+                }
+                finally
+                {
                     bitmap.UnlockBits(destData);
-	            }
-	        }
-	    }
+                }
+            }
+        }
 
         /// <summary>
         /// Function to copy the contents of a GDI+ bitmap object to an individual <see cref="IGorgonImageBuffer"/>.
@@ -451,81 +451,81 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
         /// </para>
         /// </remarks>
 	    public static void CopyTo(this Bitmap bitmap, IGorgonImageBuffer buffer)
-	    {
-	        if (bitmap == null)
-	        {
-	            throw new ArgumentNullException(nameof(bitmap));
-	        }
+        {
+            if (bitmap == null)
+            {
+                throw new ArgumentNullException(nameof(bitmap));
+            }
 
-	        if (buffer == null)
-	        {
+            if (buffer == null)
+            {
                 throw new ArgumentNullException(nameof(buffer));
-	        }
+            }
 
-	        if ((bitmap.PixelFormat != PixelFormat.Format32bppArgb)
+            if ((bitmap.PixelFormat != PixelFormat.Format32bppArgb)
                 && (bitmap.PixelFormat != PixelFormat.Format32bppPArgb))
-	        {
-	            throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, bitmap.PixelFormat));
-	        }
+            {
+                throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, bitmap.PixelFormat));
+            }
 
-	        if ((bitmap.Width != buffer.Width) || (bitmap.Height != buffer.Height))
-	        {
+            if ((bitmap.Width != buffer.Width) || (bitmap.Height != buffer.Height))
+            {
                 throw new ArgumentException(string.Format(Resources.GORIMG_ERR_BITMAP_SIZE_NOT_CORRECT, bitmap.Width, bitmap.Height, buffer.Width, buffer.Height));
-	        }
+            }
 
-	        bool needsSwizzle;
+            bool needsSwizzle;
 
-	        switch (buffer.Format)
-	        {
-	            case BufferFormat.R8G8B8A8_UNorm:
-	            case BufferFormat.R8G8B8A8_UNorm_SRgb:
-	            case BufferFormat.R8G8B8A8_SInt:
-	            case BufferFormat.R8G8B8A8_SNorm:
-	            case BufferFormat.R8G8B8A8_UInt:
-	            case BufferFormat.R8G8B8A8_Typeless:
-	                needsSwizzle = true;
-	                break;
-	            case BufferFormat.B8G8R8A8_UNorm:
-	            case BufferFormat.B8G8R8A8_Typeless:
-	            case BufferFormat.B8G8R8A8_UNorm_SRgb:
+            switch (buffer.Format)
+            {
+                case BufferFormat.R8G8B8A8_UNorm:
+                case BufferFormat.R8G8B8A8_UNorm_SRgb:
+                case BufferFormat.R8G8B8A8_SInt:
+                case BufferFormat.R8G8B8A8_SNorm:
+                case BufferFormat.R8G8B8A8_UInt:
+                case BufferFormat.R8G8B8A8_Typeless:
+                    needsSwizzle = true;
+                    break;
+                case BufferFormat.B8G8R8A8_UNorm:
+                case BufferFormat.B8G8R8A8_Typeless:
+                case BufferFormat.B8G8R8A8_UNorm_SRgb:
                 case BufferFormat.B8G8R8X8_UNorm:
                 case BufferFormat.B8G8R8X8_Typeless:
                 case BufferFormat.B8G8R8X8_UNorm_SRgb:
-	                needsSwizzle = false;
+                    needsSwizzle = false;
                     break;
-	            default:
-	                throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, buffer.Format));
-	        }
+                default:
+                    throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, buffer.Format));
+            }
 
-	        unsafe
-	        {
-	            BitmapData srcData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
+            unsafe
+            {
+                BitmapData srcData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
 
-	            try
-	            {
-	                byte* srcPtr = (byte*)srcData.Scan0;
-	                byte* destPtr = (byte *)buffer.Data;
+                try
+                {
+                    byte* srcPtr = (byte*)srcData.Scan0;
+                    byte* destPtr = (byte*)buffer.Data;
 
-	                for (int y = 0; y < buffer.Height; ++y)
-	                {
-	                    byte* src = srcPtr + (y * srcData.Stride);
-	                    byte* dest = destPtr + (y * buffer.PitchInformation.RowPitch);
+                    for (int y = 0; y < buffer.Height; ++y)
+                    {
+                        byte* src = srcPtr + (y * srcData.Stride);
+                        byte* dest = destPtr + (y * buffer.PitchInformation.RowPitch);
 
-	                    if (!needsSwizzle)
-	                    {
-	                        Unsafe.CopyBlock(dest, src, (uint)(srcData.Stride.Min(buffer.PitchInformation.RowPitch)));
-	                        continue;
-	                    }
+                        if (!needsSwizzle)
+                        {
+                            Unsafe.CopyBlock(dest, src, (uint)(srcData.Stride.Min(buffer.PitchInformation.RowPitch)));
+                            continue;
+                        }
 
-	                    ImageUtilities.SwizzleScanline(src, buffer.PitchInformation.RowPitch, dest, srcData.Stride, buffer.Format, ImageBitFlags.None);
-	                }
-	            }
-	            finally
-	            {
+                        ImageUtilities.SwizzleScanline(src, buffer.PitchInformation.RowPitch, dest, srcData.Stride, buffer.Format, ImageBitFlags.None);
+                    }
+                }
+                finally
+                {
                     bitmap.UnlockBits(srcData);
-	            }
-	        }
-	    }
+                }
+            }
+        }
 
         /// <summary>
         /// Function to convert a <see cref="Bitmap"/> into a <see cref="IGorgonImage"/>.
@@ -560,58 +560,58 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
         /// </para>
         /// </remarks>
         public static IGorgonImage ToGorgonImage(this Bitmap bitmap)
-		{
-			if (bitmap == null)
-			{
-				throw new ArgumentNullException(nameof(bitmap));
-			}
+        {
+            if (bitmap == null)
+            {
+                throw new ArgumentNullException(nameof(bitmap));
+            }
 
-			if ((bitmap.PixelFormat != PixelFormat.Format32bppArgb)
+            if ((bitmap.PixelFormat != PixelFormat.Format32bppArgb)
                 && (bitmap.PixelFormat != PixelFormat.Format32bppPArgb)
                 && (bitmap.PixelFormat != PixelFormat.Format32bppRgb)
                 && (bitmap.PixelFormat != PixelFormat.Format24bppRgb))
-			{
-				throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, bitmap.PixelFormat));
-			}
+            {
+                throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, bitmap.PixelFormat));
+            }
 
-			IGorgonImageInfo info = new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8G8B8A8_UNorm)
-			{
-				Width = bitmap.Width,
-				Height = bitmap.Height
-			};
+            IGorgonImageInfo info = new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8G8B8A8_UNorm)
+            {
+                Width = bitmap.Width,
+                Height = bitmap.Height
+            };
 
-			IGorgonImage result = new GorgonImage(info);
-			BitmapData bitmapLock = null;
+            IGorgonImage result = new GorgonImage(info);
+            BitmapData bitmapLock = null;
 
-			try
-			{
-				bitmapLock = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
+            try
+            {
+                bitmapLock = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
 
-			    if ((bitmap.PixelFormat == PixelFormat.Format32bppArgb)
+                if ((bitmap.PixelFormat == PixelFormat.Format32bppArgb)
                     || (bitmap.PixelFormat == PixelFormat.Format32bppPArgb)
                     || (bitmap.PixelFormat == PixelFormat.Format32bppRgb))
-			    {
-			        Transfer32Argb(bitmapLock, result.Buffers[0]);
-			    }
-			    else 
-			    {
-			        Transfer24Rgb(bitmapLock, result.Buffers[0]);
+                {
+                    Transfer32Argb(bitmapLock, result.Buffers[0]);
                 }
-			}
-			catch
-			{
-				result.Dispose();
-				throw;
-			}
-			finally
-			{
-				if (bitmapLock != null)
-				{
-					bitmap.UnlockBits(bitmapLock);
-				}
-			}
+                else
+                {
+                    Transfer24Rgb(bitmapLock, result.Buffers[0]);
+                }
+            }
+            catch
+            {
+                result.Dispose();
+                throw;
+            }
+            finally
+            {
+                if (bitmapLock != null)
+                {
+                    bitmap.UnlockBits(bitmapLock);
+                }
+            }
 
-			return result;
-		}
-	}
+            return result;
+        }
+    }
 }

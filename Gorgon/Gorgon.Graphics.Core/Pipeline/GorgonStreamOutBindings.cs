@@ -32,32 +32,32 @@ using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// A list of <see cref="GorgonStreamOutBinding"/> values.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// A <see cref="GorgonStreamOutBinding"/> is used to bind a vertex buffer to the GPU pipeline so that it may be used for rendering.
-	/// </para>
-	/// </remarks>
-	public sealed class GorgonStreamOutBindings
-		: GorgonArray<GorgonStreamOutBinding>
-	{
-		#region Constants.
-		/// <summary>
-		/// The maximum number of vertex buffers allow to be bound at the same time.
-		/// </summary>
-		public const int MaximumStreamOutCount = 4;
-		#endregion
+    /// <summary>
+    /// A list of <see cref="GorgonStreamOutBinding"/> values.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A <see cref="GorgonStreamOutBinding"/> is used to bind a vertex buffer to the GPU pipeline so that it may be used for rendering.
+    /// </para>
+    /// </remarks>
+    public sealed class GorgonStreamOutBindings
+        : GorgonArray<GorgonStreamOutBinding>
+    {
+        #region Constants.
+        /// <summary>
+        /// The maximum number of vertex buffers allow to be bound at the same time.
+        /// </summary>
+        public const int MaximumStreamOutCount = 4;
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to return the native items wrapped by this list.
-		/// </summary>
-		internal D3D11.StreamOutputBufferBinding[] Native
-		{
-		    get;
-	    }
+        #region Properties.
+        /// <summary>
+        /// Property to return the native items wrapped by this list.
+        /// </summary>
+        internal D3D11.StreamOutputBufferBinding[] Native
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
@@ -92,7 +92,7 @@ namespace Gorgon.Graphics.Core
 	    internal int IndexOf(GorgonGraphicsResource buffer)
         {
             (int start, int count) = GetDirtyItems(true);
-            
+
             for (int i = 0; i < count; ++i)
             {
                 GorgonStreamOutBinding binding = BackingArray[i + start];
@@ -107,28 +107,28 @@ namespace Gorgon.Graphics.Core
 
             return -1;
         }
-		#endregion
+        #endregion
 
-		#region Constructor
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonStreamOutBindings"/> class.
-		/// </summary>
+        #region Constructor
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonStreamOutBindings"/> class.
+        /// </summary>
         /// <param name="bindings">[Optional] The list of bindings to copy.</param>
-		public GorgonStreamOutBindings(IReadOnlyList<GorgonStreamOutBinding> bindings = null)
-			: base(MaximumStreamOutCount)
-		{
-			Native = new D3D11.StreamOutputBufferBinding[MaximumStreamOutCount];
+        public GorgonStreamOutBindings(IReadOnlyList<GorgonStreamOutBinding> bindings = null)
+            : base(MaximumStreamOutCount)
+        {
+            Native = new D3D11.StreamOutputBufferBinding[MaximumStreamOutCount];
 
-		    if (bindings == null)
-		    {
-		        return;
-		    }
+            if (bindings == null)
+            {
+                return;
+            }
 
-		    for (int i = 0; i < bindings.Count.Min(Length); ++i)
-		    {
-		        this[i] = bindings[i];
-		    }
-		}
-		#endregion
-	}
+            for (int i = 0; i < bindings.Count.Min(Length); ++i)
+            {
+                this[i] = bindings[i];
+            }
+        }
+        #endregion
+    }
 }

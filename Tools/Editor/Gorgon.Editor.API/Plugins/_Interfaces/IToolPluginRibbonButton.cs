@@ -8,7 +8,7 @@ namespace Gorgon.Editor.PlugIns
     /// Defines a button to display on the ribbon bar, in the tools area.
     /// </summary>
     public interface IToolPlugInRibbonButton
-		: IGorgonNamedObject
+        : IGorgonNamedObject
     {
         #region Properties.
         /// <summary>
@@ -76,10 +76,10 @@ namespace Gorgon.Editor.PlugIns
             get;
         }
 
-		/// <summary>
+        /// <summary>
         /// Property to set or return the description for the button.
         /// </summary>
-		string Description
+        string Description
         {
             get;
             set;

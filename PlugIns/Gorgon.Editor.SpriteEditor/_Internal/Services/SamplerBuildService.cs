@@ -33,10 +33,10 @@ namespace Gorgon.Editor.SpriteEditor
     /// The service used to build a sampler.
     /// </summary>
     internal class SamplerBuildService
-		: ISamplerBuildService
+        : ISamplerBuildService
     {
         #region Variables.
-		// The builder used to create the sampler state.
+        // The builder used to create the sampler state.
         private readonly GorgonSamplerStateBuilder _builder;
         #endregion
 
@@ -93,7 +93,7 @@ namespace Gorgon.Editor.SpriteEditor
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the <see cref="SamplerBuildService"/> class.</summary>
         /// <param name="builder">The builder used to create the sampler state.</param>
-        public SamplerBuildService(GorgonSamplerStateBuilder builder) => _builder = builder;        
+        public SamplerBuildService(GorgonSamplerStateBuilder builder) => _builder = builder;
         #endregion
     }
 }

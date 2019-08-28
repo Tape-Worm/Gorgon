@@ -30,31 +30,31 @@ using Gorgon.Core;
 
 namespace Gorgon.Renderers
 {
-	/// <summary>
-	/// An immutable value for alpha testing.
-	/// </summary>
-	/// <remarks>This will define the range of alpha values to clip.  An alpha value that falls between the lower and upper range will not be rendered.</remarks>
-	[StructLayout(LayoutKind.Sequential, Pack = 1, Size = 16)]
-	internal readonly struct AlphaTestData
-		: IEquatable<AlphaTestData>
-	{
-		#region Variables.
-		/// <summary>
-		/// 4 byte compatiable flag for constant buffer.
-		/// </summary>
-		public readonly int IsEnabled;			
+    /// <summary>
+    /// An immutable value for alpha testing.
+    /// </summary>
+    /// <remarks>This will define the range of alpha values to clip.  An alpha value that falls between the lower and upper range will not be rendered.</remarks>
+    [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 16)]
+    internal readonly struct AlphaTestData
+        : IEquatable<AlphaTestData>
+    {
+        #region Variables.
+        /// <summary>
+        /// 4 byte compatiable flag for constant buffer.
+        /// </summary>
+        public readonly int IsEnabled;
 
-		/// <summary>
-		/// Lower alpha value.
-		/// </summary>
-		/// <remarks>If the alpha is higher than this value, it will be clipped.</remarks>
-		public readonly float LowerAlpha;
+        /// <summary>
+        /// Lower alpha value.
+        /// </summary>
+        /// <remarks>If the alpha is higher than this value, it will be clipped.</remarks>
+        public readonly float LowerAlpha;
 
-		/// <summary>
-		/// Upper alpha value.
-		/// </summary>
-		/// <remarks>If the alpha is lower than this value, it will be clipped.</remarks>
-		public readonly float UpperAlpha;
+        /// <summary>
+        /// Upper alpha value.
+        /// </summary>
+        /// <remarks>If the alpha is lower than this value, it will be clipped.</remarks>
+        public readonly float UpperAlpha;
         #endregion
 
         #region Methods.
@@ -95,11 +95,11 @@ namespace Gorgon.Renderers
         /// <param name="isEnabled"><b>true</b> to enable alpha testing, <b>false</b> to disable.</param>
         /// <param name="alphaRange">The alpha range to clip.</param>
         public AlphaTestData(bool isEnabled, GorgonRangeF alphaRange)
-		{
-			IsEnabled = isEnabled ? 1 : 0;
-			LowerAlpha = alphaRange.Minimum;
-			UpperAlpha = alphaRange.Maximum;
-		}
+        {
+            IsEnabled = isEnabled ? 1 : 0;
+            LowerAlpha = alphaRange.Minimum;
+            UpperAlpha = alphaRange.Maximum;
+        }
         #endregion
 
         #region IEquatable<Gorgon2DAlphaTest> Members

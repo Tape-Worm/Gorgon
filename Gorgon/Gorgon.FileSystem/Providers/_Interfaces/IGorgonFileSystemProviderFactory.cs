@@ -77,27 +77,27 @@ namespace Gorgon.IO.Providers
     /// </code>
     /// </example>
     public interface IGorgonFileSystemProviderFactory
-	{
-		/// <summary>
-		/// Function to create a new file system provider.
-		/// </summary>
-		/// <param name="providerPlugInName">The fully qualified type name of the plugin that contains the file system provider.</param>
-		/// <returns>The new file system provider object, or if it was previously created, the previously created instance.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="providerPlugInName"/> is <b>null</b></exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="providerPlugInName"/> is empty.</exception>
-		/// <exception cref="GorgonException">Thrown when the plugin specified by the <paramref name="providerPlugInName"/> parameter was not found.</exception>
-		GorgonFileSystemProvider CreateProvider(string providerPlugInName);
+    {
+        /// <summary>
+        /// Function to create a new file system provider.
+        /// </summary>
+        /// <param name="providerPlugInName">The fully qualified type name of the plugin that contains the file system provider.</param>
+        /// <returns>The new file system provider object, or if it was previously created, the previously created instance.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="providerPlugInName"/> is <b>null</b></exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="providerPlugInName"/> is empty.</exception>
+        /// <exception cref="GorgonException">Thrown when the plugin specified by the <paramref name="providerPlugInName"/> parameter was not found.</exception>
+        GorgonFileSystemProvider CreateProvider(string providerPlugInName);
 
-		/// <summary>
-		/// Function to retrieve all the file system providers from the available plugins in the plugin service.
-		/// </summary>
-		/// <param name="pluginAssembly">[Optional] The name of the assembly to load file system providers from.</param>
-		/// <returns>A list of file system providers</returns>
-		/// <remarks>
-		/// When the <paramref name="pluginAssembly"/> parameter is set to <b>null</b>, then only the file system providers within that assembly will 
-		/// be loaded. Otherwise, all file system providers available in the <see cref="IGorgonPlugInService"/> passed to the object constructor will be created (or have 
-		/// a previously created instance returned).
-		/// </remarks>
-		IReadOnlyList<GorgonFileSystemProvider> CreateProviders(AssemblyName pluginAssembly = null);
-	}
+        /// <summary>
+        /// Function to retrieve all the file system providers from the available plugins in the plugin service.
+        /// </summary>
+        /// <param name="pluginAssembly">[Optional] The name of the assembly to load file system providers from.</param>
+        /// <returns>A list of file system providers</returns>
+        /// <remarks>
+        /// When the <paramref name="pluginAssembly"/> parameter is set to <b>null</b>, then only the file system providers within that assembly will 
+        /// be loaded. Otherwise, all file system providers available in the <see cref="IGorgonPlugInService"/> passed to the object constructor will be created (or have 
+        /// a previously created instance returned).
+        /// </remarks>
+        IReadOnlyList<GorgonFileSystemProvider> CreateProviders(AssemblyName pluginAssembly = null);
+    }
 }

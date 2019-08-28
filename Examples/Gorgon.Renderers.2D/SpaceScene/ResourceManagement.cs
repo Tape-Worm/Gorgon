@@ -30,9 +30,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DX = SharpDX;
+using Gorgon.Animation;
+using Gorgon.Core;
 using Gorgon.Editor;
 using Gorgon.Examples.Properties;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
@@ -41,9 +43,7 @@ using Gorgon.IO.Providers;
 using Gorgon.PlugIns;
 using Gorgon.Renderers;
 using Gorgon.UI;
-using Gorgon.Graphics;
-using Gorgon.Core;
-using Gorgon.Animation;
+using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -58,37 +58,37 @@ namespace Gorgon.Examples
         : IDisposable
     {
         #region Variables.
-		// The graphics interface for the application.
+        // The graphics interface for the application.
         private readonly GorgonGraphics _graphics;
         // The 2D renderer interface for the application.
         private readonly Gorgon2D _renderer;
         // The plug in service for the application.
         private IGorgonPlugInService _plugIns;
-		// The file system where resources are kept.
+        // The file system where resources are kept.
         private IGorgonFileSystem _fileSystem;
-		// The codec for images.
+        // The codec for images.
         private readonly IGorgonImageCodec _imageCodec = new GorgonCodecDds();
-		// The codec for sprites.
+        // The codec for sprites.
         private readonly IGorgonSpriteCodec _spriteCodec;
-		// The list of textures available.
+        // The list of textures available.
         private readonly Dictionary<string, GorgonTexture2DView> _textures = new Dictionary<string, GorgonTexture2DView>(StringComparer.OrdinalIgnoreCase);
         // The list of sprites available.
         private readonly Dictionary<string, GorgonSprite> _sprites = new Dictionary<string, GorgonSprite>(StringComparer.OrdinalIgnoreCase);
-		// The list of shaders.
+        // The list of shaders.
         private readonly Dictionary<string, GorgonPixelShader> _pixelShaders = new Dictionary<string, GorgonPixelShader>(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, GorgonVertexShader> _vertexShaders = new Dictionary<string, GorgonVertexShader>(StringComparer.OrdinalIgnoreCase);
         // The list of 3D models.
         private readonly Dictionary<string, MoveableMesh> _meshes = new Dictionary<string, MoveableMesh>(StringComparer.OrdinalIgnoreCase);
-		// The list of animations.
+        // The list of animations.
         private readonly Dictionary<string, IGorgonAnimation> _animations = new Dictionary<string, IGorgonAnimation>(StringComparer.OrdinalIgnoreCase);
-		// The list of post process renderers.
+        // The list of post process renderers.
         private readonly Dictionary<string, Gorgon2DCompositor> _postProcess = new Dictionary<string, Gorgon2DCompositor>(StringComparer.OrdinalIgnoreCase);
-		// The list of effects used by the application.
+        // The list of effects used by the application.
         private readonly Dictionary<string, Gorgon2DEffect> _effects = new Dictionary<string, Gorgon2DEffect>(StringComparer.OrdinalIgnoreCase);
         #endregion
 
         #region Properties.
-		/// <summary>
+        /// <summary>
         /// Property to return the effects used by the application.
         /// </summary>
         public IReadOnlyDictionary<string, Gorgon2DEffect> Effects => _effects;
@@ -107,27 +107,27 @@ namespace Gorgon.Examples
             private set;
         } = new Dictionary<string, GorgonSprite>();
 
-		/// <summary>
+        /// <summary>
         /// Property to return the loaded pixel shaders.
         /// </summary>
         public IReadOnlyDictionary<string, GorgonPixelShader> PixelShaders => _pixelShaders;
 
-		/// <summary>
+        /// <summary>
         /// Property to return the loaded vertex shaders.
         /// </summary>
         public IReadOnlyDictionary<string, GorgonVertexShader> VertexShaders => _vertexShaders;
 
-		/// <summary>
+        /// <summary>
         /// Property to return the meshes for the 3D entities.
         /// </summary>
         public IReadOnlyDictionary<string, MoveableMesh> Meshes => _meshes;
 
-		/// <summary>
+        /// <summary>
         /// Property to return the animations for all entities.
         /// </summary>
         public IReadOnlyDictionary<string, IGorgonAnimation> Animations => _animations;
 
-		/// <summary>
+        /// <summary>
         /// Propert to return all of the post process compositors.
         /// </summary>
         public IReadOnlyDictionary<string, Gorgon2DCompositor> PostProcessCompositors => _postProcess;
@@ -146,7 +146,7 @@ namespace Gorgon.Examples
             IReadOnlyList<IGorgonVirtualFile> textureFiles = _fileSystem.GetContentItems(path, CommonEditorContentTypes.ImageType);
 
             foreach (IGorgonVirtualFile imagePath in textureFiles)
-            {				
+            {
                 using (Stream stream = imagePath.OpenStream())
                 {
                     IGorgonImage image = _imageCodec.LoadFromStream(stream);
@@ -172,12 +172,12 @@ namespace Gorgon.Examples
             {
                 (GorgonSprite sprite, _) = _fileSystem.LoadSprite(_renderer, spritePath.FullPath);
                 result[spritePath.Name] = sprite;
-            }            
+            }
 
             return result;
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to generate animations for the entities in the application.
         /// </summary>
         private void GenerateAnimations()
@@ -186,11 +186,11 @@ namespace Gorgon.Examples
 
             IGorgonAnimation planetRotation = builder
                 .Clear()
-				.EditRotation()
-				.SetKey(new GorgonKeyVector3(0, new DX.Vector3(0, 0, 180)))
-				.SetKey(new GorgonKeyVector3(600, new DX.Vector3(0, 360, 180)))
-				.EndEdit()
-				.RotationInterpolationMode(TrackInterpolationMode.Linear)				
+                .EditRotation()
+                .SetKey(new GorgonKeyVector3(0, new DX.Vector3(0, 0, 180)))
+                .SetKey(new GorgonKeyVector3(600, new DX.Vector3(0, 360, 180)))
+                .EndEdit()
+                .RotationInterpolationMode(TrackInterpolationMode.Linear)
                 .Build("PlanetRotation");
 
             planetRotation.IsLooped = true;
@@ -212,7 +212,7 @@ namespace Gorgon.Examples
             GorgonSprite[] frames = Sprites.Where(item => item.Key.StartsWith("Fighter_Engine_F", StringComparison.OrdinalIgnoreCase))
                                                       .OrderBy(item => item.Key)
                                                       .Select(item => item.Value)
-													  .ToArray();
+                                                      .ToArray();
 
             IGorgonAnimation engineGlow = builder
                 .Clear()
@@ -267,7 +267,7 @@ namespace Gorgon.Examples
             _effects[nameof(deferredLighting)] = deferredLighting;
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to generate our 3D models for the scene.
         /// </summary>
         /// <remarks>
@@ -278,20 +278,20 @@ namespace Gorgon.Examples
         /// </remarks>
         private void Generate3DModels()
         {
-			// The 3D model for the earth. It has a diffuse/albedo map, a normal map and a specular map.
+            // The 3D model for the earth. It has a diffuse/albedo map, a normal map and a specular map.
             var earthSphere = new IcoSphere(_graphics,
                                             3.0f,
                                             new DX.RectangleF(0, 0, 1, 1),
                                             DX.Vector3.Zero,
                                             3)
             {
-				Rotation = new DX.Vector3(0, 45.0f, 0),		// Start off with a 45 degree rotation on the Y axis so we can see our textures a little better on startup.
-				Position = DX.Vector3.Zero,					// Set our translation to nothing for now, our "planet" type will handle positioning.
-				Material =
+                Rotation = new DX.Vector3(0, 45.0f, 0),     // Start off with a 45 degree rotation on the Y axis so we can see our textures a little better on startup.
+                Position = DX.Vector3.Zero,                 // Set our translation to nothing for now, our "planet" type will handle positioning.
+                Material =
                 {
-					SpecularPower = 0.0f,
-					Albedo = GorgonColor.Gray20,
-					PixelShader = "PlanetPS",				// The 3D model materials are quite simple.  They just reference their resources by name. We do live in the age of super duper 
+                    SpecularPower = 0.0f,
+                    Albedo = GorgonColor.Gray20,
+                    PixelShader = "PlanetPS",				// The 3D model materials are quite simple.  They just reference their resources by name. We do live in the age of super duper 
 					VertexShader = "PlanetVS",				// fast computers, so doing a few lookups is not going to kill our performance. This allows us to weakly reference the resources 
 					Textures =								// which in turn keeps things nicely decoupled.
                     {
@@ -302,31 +302,31 @@ namespace Gorgon.Examples
                 }
             };
 
-			// This will serve as the cloud layer, it'll just sit on top of the other sphere to give the appearance of cloud cover moving over the land.
-			// This will be additively blended with the land sphere above and use another pixel shader that has a slight emissive effect.
+            // This will serve as the cloud layer, it'll just sit on top of the other sphere to give the appearance of cloud cover moving over the land.
+            // This will be additively blended with the land sphere above and use another pixel shader that has a slight emissive effect.
             var earthCloudSphere = new IcoSphere(_graphics,
                                                  3.01f,
                                                  new DX.RectangleF(0, 0, 1, 1),
                                                  DX.Vector3.Zero,
                                                  3)
             {
-				Position = new DX.Vector3(0, 0, -0.2f),		// Offset the clouds. If we render at the same place in Ortho camera mode, then it'll just overwrite, offsetting like this
-				Material =									// ensures that the clouds appear on top.
+                Position = new DX.Vector3(0, 0, -0.2f),     // Offset the clouds. If we render at the same place in Ortho camera mode, then it'll just overwrite, offsetting like this
+                Material =									// ensures that the clouds appear on top.
                 {
-					SpecularPower = 0,
-					Albedo = GorgonColor.Gray20,
+                    SpecularPower = 0,
+                    Albedo = GorgonColor.Gray20,
                     PixelShader = "PlanetCloudPS",
                     VertexShader = "PlanetVS",
-					BlendState = GorgonBlendState.Additive,
-					Textures =
+                    BlendState = GorgonBlendState.Additive,
+                    Textures =
                     {
-						[0] = "earthcloudmap"
+                        [0] = "earthcloudmap"
                     }
                 }
             };
 
             // Validate our references here so we don't have to wait too long to find out if I messed up.
-			// Local functions are one of the best things added to C#. Delphi's had this for centuries.
+            // Local functions are one of the best things added to C#. Delphi's had this for centuries.
             void Validate(Mesh mesh)
             {
                 if (!_vertexShaders.ContainsKey(mesh.Material.VertexShader))
@@ -374,7 +374,7 @@ namespace Gorgon.Examples
             _fileSystem.Mount(path);
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to load all the resources from the file system.
         /// </summary>
         /// <returns>A task for asynchronous operation.</returns>
@@ -386,7 +386,7 @@ namespace Gorgon.Examples
             }
 
             _textures.Clear();
-            IReadOnlyDictionary<string, IGorgonImage> images = await Task.Run(() => LoadImageData("/images/"));			
+            IReadOnlyDictionary<string, IGorgonImage> images = await Task.Run(() => LoadImageData("/images/"));
 
             foreach (KeyValuePair<string, IGorgonImage> image in images)
             {
@@ -409,7 +409,7 @@ namespace Gorgon.Examples
             await Task.Run(() =>
             {
                 _vertexShaders["PlanetVS"] = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics, Resources.Shaders3D, "PrimVS", GorgonGraphics.IsDebugEnabled);
-				_pixelShaders["PlanetPS"] = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Resources.Shaders3D, "PrimPSBump", GorgonGraphics.IsDebugEnabled);
+                _pixelShaders["PlanetPS"] = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Resources.Shaders3D, "PrimPSBump", GorgonGraphics.IsDebugEnabled);
                 _pixelShaders["PlanetCloudPS"] = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Resources.Shaders3D, "PrimPSNoBump", GorgonGraphics.IsDebugEnabled);
             });
 

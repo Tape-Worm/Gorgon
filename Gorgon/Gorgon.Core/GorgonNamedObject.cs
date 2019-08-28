@@ -29,18 +29,18 @@ using Gorgon.Properties;
 
 namespace Gorgon.Core
 {
-	/// <summary>
-	/// Abstract implementation of the <see cref="IGorgonNamedObject"/> interface. 
-	/// </summary>
-	/// <remarks>
-	/// This abstract implementation of <see cref="IGorgonNamedObject"/> is provided as a convenience when an object requires a name.
-	/// </remarks>
-	public abstract class GorgonNamedObject
-		: IGorgonNamedObject
+    /// <summary>
+    /// Abstract implementation of the <see cref="IGorgonNamedObject"/> interface. 
+    /// </summary>
+    /// <remarks>
+    /// This abstract implementation of <see cref="IGorgonNamedObject"/> is provided as a convenience when an object requires a name.
+    /// </remarks>
+    public abstract class GorgonNamedObject
+        : IGorgonNamedObject
     {
         #region Variables.
-		// The name.
-		private string _name;
+        // The name.
+        private string _name;
         #endregion
 
         #region Methods.
@@ -67,33 +67,33 @@ namespace Gorgon.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
         protected GorgonNamedObject(string name)
-		{
-			if (name == null)
-			{
-			    throw new ArgumentNullException(nameof(name));
-			}
+        {
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
 
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentEmptyException(nameof(name));
             }
 
-			_name = name;
-		}
-		#endregion
+            _name = name;
+        }
+        #endregion
 
-		#region IGorgonNamedObject Members
-		/// <summary>
-		/// Property to return the name of this object.
-		/// </summary>
-		/// <remarks>
-		/// Unlike the interface this property is derived from, this property has a protected setter to assign the name at a later stage during an objects initialization. 
-		/// </remarks>
-		public virtual string Name
-		{
-			get => _name;
-			protected set => _name = value;
-		}
-		#endregion
-	}
+        #region IGorgonNamedObject Members
+        /// <summary>
+        /// Property to return the name of this object.
+        /// </summary>
+        /// <remarks>
+        /// Unlike the interface this property is derived from, this property has a protected setter to assign the name at a later stage during an objects initialization. 
+        /// </remarks>
+        public virtual string Name
+        {
+            get => _name;
+            protected set => _name = value;
+        }
+        #endregion
+    }
 }

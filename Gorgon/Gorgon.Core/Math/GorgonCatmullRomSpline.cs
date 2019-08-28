@@ -81,24 +81,24 @@ namespace Gorgon.Math
     /// ]]>
     /// </code>
     /// </example>
-    public class GorgonCatmullRomSpline 
-		: IGorgonSpline
+    public class GorgonCatmullRomSpline
+        : IGorgonSpline
     {
         #region Variables.
-		// Spline coefficients.
+        // Spline coefficients.
         private DX.Matrix _coefficients = DX.Matrix.Identity;
-		// Tangents.
+        // Tangents.
         private DX.Vector4[] _tangents;
         #endregion
 
         #region Properties.
-		/// <summary>
-		/// Property to return the list of points for the spline.
-		/// </summary>
-		/// <remarks>
-		/// When adding or removing points from the spline, a call to the <see cref="IGorgonSpline.UpdateTangents"/> method is required to recalculate the tangents. Otherwise, the spline interpolation will be incorrect.
-		/// </remarks>
-		public IList<DX.Vector4> Points
+        /// <summary>
+        /// Property to return the list of points for the spline.
+        /// </summary>
+        /// <remarks>
+        /// When adding or removing points from the spline, a call to the <see cref="IGorgonSpline.UpdateTangents"/> method is required to recalculate the tangents. Otherwise, the spline interpolation will be incorrect.
+        /// </remarks>
+        public IList<DX.Vector4> Points
         {
             get;
         }
@@ -125,7 +125,7 @@ namespace Gorgon.Math
         {
             DX.Matrix calculations = DX.Matrix.Identity;
 
-			startPointIndex.ValidateRange(nameof(startPointIndex), 0, Points.Count - 1);
+            startPointIndex.ValidateRange(nameof(startPointIndex), 0, Points.Count - 1);
 
             if (delta.EqualsEpsilon(0.0f))
             {
@@ -139,34 +139,34 @@ namespace Gorgon.Math
 
             var deltaCubeSquare = new DX.Vector4(delta * delta * delta, delta * delta, delta * delta, 1.0f);
 
-			DX.Vector4 startPoint = Points[startPointIndex];
-			DX.Vector4 startPointNext = Points[startPointIndex + 1];
-			DX.Vector4 tangent = _tangents[startPointIndex];
-			DX.Vector4 tangentNext = _tangents[startPointIndex + 1];
+            DX.Vector4 startPoint = Points[startPointIndex];
+            DX.Vector4 startPointNext = Points[startPointIndex + 1];
+            DX.Vector4 tangent = _tangents[startPointIndex];
+            DX.Vector4 tangentNext = _tangents[startPointIndex + 1];
 
             calculations.Row1 = startPoint;
             calculations.Row2 = startPointNext;
             calculations.Row3 = tangent;
             calculations.Row4 = tangentNext;
 
-			DX.Matrix.Multiply(ref _coefficients, ref calculations, out DX.Matrix calcResult);
-			DX.Vector4.Transform(ref deltaCubeSquare, ref calcResult, out DX.Vector4 result);
+            DX.Matrix.Multiply(ref _coefficients, ref calculations, out DX.Matrix calcResult);
+            DX.Vector4.Transform(ref deltaCubeSquare, ref calcResult, out DX.Vector4 result);
 
             return result;
         }
 
-		/// <summary>
-		/// Function to return an interpolated point from the spline.
-		/// </summary>
-		/// <param name="delta">Delta value to interpolate.</param>
-		/// <returns>The interpolated value at <paramref name="delta"/>.</returns>
-		/// <remarks>
-		/// The <paramref name="delta"/> parameter is a unit value where 0 is the first point in the spline and 1.0 is the last point in the spline.
-		/// <para>
-		/// If the <paramref name="delta"/> is less than 0, or greater than 1, the value will be wrapped to fit within the 0..1 range.
-		/// </para>
-		/// </remarks>
-		public DX.Vector4 GetInterpolatedValue(float delta)
+        /// <summary>
+        /// Function to return an interpolated point from the spline.
+        /// </summary>
+        /// <param name="delta">Delta value to interpolate.</param>
+        /// <returns>The interpolated value at <paramref name="delta"/>.</returns>
+        /// <remarks>
+        /// The <paramref name="delta"/> parameter is a unit value where 0 is the first point in the spline and 1.0 is the last point in the spline.
+        /// <para>
+        /// If the <paramref name="delta"/> is less than 0, or greater than 1, the value will be wrapped to fit within the 0..1 range.
+        /// </para>
+        /// </remarks>
+        public DX.Vector4 GetInterpolatedValue(float delta)
         {
             // Wrap to 0 and 1.
             while (delta < 0.0f)
@@ -185,35 +185,35 @@ namespace Gorgon.Math
             return GetInterpolatedValue((int)(delta * (Points.Count - 1)), segment - index);
         }
 
-		/// <summary>
-		/// Function to calculate the tangent vectors.
-		/// </summary>
-		/// <remarks>
-		/// This function is used to calculate the tangent vectors from the points provided so that the object can interpolate a point in between the points given. Because this method requires the <see cref="IGorgonSpline.Points"/>, 
-		/// it must be called whenever a change to the <see cref="IGorgonSpline.Points"/> property is made.
-		/// </remarks>
-		public void UpdateTangents()
+        /// <summary>
+        /// Function to calculate the tangent vectors.
+        /// </summary>
+        /// <remarks>
+        /// This function is used to calculate the tangent vectors from the points provided so that the object can interpolate a point in between the points given. Because this method requires the <see cref="IGorgonSpline.Points"/>, 
+        /// it must be called whenever a change to the <see cref="IGorgonSpline.Points"/> property is made.
+        /// </remarks>
+        public void UpdateTangents()
         {
-	        // Need 2 or more points.
+            // Need 2 or more points.
             if (Points.Count < 2)
             {
                 return;
             }
 
             // Closed or open?
-	        bool closed = Points[0] == Points[Points.Count - 1];
+            bool closed = Points[0] == Points[Points.Count - 1];
 
-	        if (_tangents.Length < Points.Count)
-	        {
-		        _tangents = new DX.Vector4[Points.Count * 2];
-	        }
+            if (_tangents.Length < Points.Count)
+            {
+                _tangents = new DX.Vector4[Points.Count * 2];
+            }
 
-	        // Calculate...
+            // Calculate...
             for (int i = 0; i < Points.Count; i++)
             {
                 DX.Vector4 prev;
                 DX.Vector4 next;
-                
+
                 if (i == 0)
                 {
                     prev = Points[1];
@@ -240,8 +240,8 @@ namespace Gorgon.Math
                     }
                 }
 
-				DX.Vector4.Subtract(ref prev, ref next, out DX.Vector4 diff);
-				DX.Vector4.Multiply(ref diff, 0.5f, out diff);
+                DX.Vector4.Subtract(ref prev, ref next, out DX.Vector4 diff);
+                DX.Vector4.Multiply(ref diff, 0.5f, out diff);
                 _tangents[i] = diff;
             }
         }

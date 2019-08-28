@@ -32,67 +32,67 @@ namespace Gorgon.Graphics.Core
     /// Provides the necessary information required to set up a index buffer.
     /// </summary>
     public class GorgonIndexBufferInfo
-		: IGorgonIndexBufferInfo
-	{
-		#region Properties.
-		/// <summary>
-		/// Property to set or return the intended usage for binding to the GPU.
-		/// </summary>
-		public ResourceUsage Usage
-		{
-			get;
-			set;
-		}
+        : IGorgonIndexBufferInfo
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to set or return the intended usage for binding to the GPU.
+        /// </summary>
+        public ResourceUsage Usage
+        {
+            get;
+            set;
+        }
 
-		/// <summary>
-		/// Property to set or return the number of indices to store.
-		/// </summary>
-		/// <remarks>
-		/// This value should be larger than 0, or else an exception will be thrown when the buffer is created.
-		/// </remarks>
-		public int IndexCount
-		{
-			get;
-			set;
-		}
+        /// <summary>
+        /// Property to set or return the number of indices to store.
+        /// </summary>
+        /// <remarks>
+        /// This value should be larger than 0, or else an exception will be thrown when the buffer is created.
+        /// </remarks>
+        public int IndexCount
+        {
+            get;
+            set;
+        }
 
-		/// <summary>
-		/// Property to set or return whether to use 16 bit values for indices.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// Specifying 16 bit indices might improve performance.
-		/// </para>
-		/// <para>
-		/// The default value is <b>true</b>.
-		/// </para>
-		/// </remarks>
-		public bool Use16BitIndices
-		{
-			get;
-			set;
-		}
+        /// <summary>
+        /// Property to set or return whether to use 16 bit values for indices.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Specifying 16 bit indices might improve performance.
+        /// </para>
+        /// <para>
+        /// The default value is <b>true</b>.
+        /// </para>
+        /// </remarks>
+        public bool Use16BitIndices
+        {
+            get;
+            set;
+        }
 
 
-	    /// <summary>
-	    /// Property to return the binding used to bind this buffer to the GPU.
-	    /// </summary>
-	    /// <remarks>
-	    /// The default value is <see cref="VertexIndexBufferBinding.None"/>.
-	    /// </remarks>
-	    public VertexIndexBufferBinding Binding
-	    {
-	        get;
-	        set;
-	    }
+        /// <summary>
+        /// Property to return the binding used to bind this buffer to the GPU.
+        /// </summary>
+        /// <remarks>
+        /// The default value is <see cref="VertexIndexBufferBinding.None"/>.
+        /// </remarks>
+        public VertexIndexBufferBinding Binding
+        {
+            get;
+            set;
+        }
 
-	    /// <summary>
-	    /// Property to return the name of this object.
-	    /// </summary>
-	    public string Name
-	    {
-	        get;
-	    }
+        /// <summary>
+        /// Property to return the name of this object.
+        /// </summary>
+        public string Name
+        {
+            get;
+        }
         #endregion
 
         #region Constructor/Finalizer.
@@ -103,29 +103,29 @@ namespace Gorgon.Graphics.Core
         /// <param name="newName">[Optional] The new name for the buffer.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
         public GorgonIndexBufferInfo(IGorgonIndexBufferInfo info, string newName = null)
-		{
-		    if (info == null)
-		    {
-		        throw new ArgumentNullException(nameof(info));
-		    }
+        {
+            if (info == null)
+            {
+                throw new ArgumentNullException(nameof(info));
+            }
 
-		    Name = string.IsNullOrEmpty(newName) ? info.Name : newName;
-		    Usage = info.Usage;
-			Use16BitIndices = info.Use16BitIndices;
-			IndexCount = info.IndexCount;
-		    Binding = info.Binding;
-		}
+            Name = string.IsNullOrEmpty(newName) ? info.Name : newName;
+            Usage = info.Usage;
+            Use16BitIndices = info.Use16BitIndices;
+            IndexCount = info.IndexCount;
+            Binding = info.Binding;
+        }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonIndexBufferInfo"/> class.
-		/// </summary>
-		/// <param name="name">[Optional] The name of the buffer.</param>
-		public GorgonIndexBufferInfo(string name = null)
-		{
-		    Name = string.IsNullOrEmpty(name) ? GorgonGraphicsResource.GenerateName(GorgonIndexBuffer.NamePrefix) : name;
-			Usage = ResourceUsage.Default;
-			Use16BitIndices = true;
-		}
-		#endregion
-	}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonIndexBufferInfo"/> class.
+        /// </summary>
+        /// <param name="name">[Optional] The name of the buffer.</param>
+        public GorgonIndexBufferInfo(string name = null)
+        {
+            Name = string.IsNullOrEmpty(name) ? GorgonGraphicsResource.GenerateName(GorgonIndexBuffer.NamePrefix) : name;
+            Usage = ResourceUsage.Default;
+            Use16BitIndices = true;
+        }
+        #endregion
+    }
 }

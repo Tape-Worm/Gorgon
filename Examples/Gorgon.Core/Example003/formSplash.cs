@@ -28,17 +28,17 @@ using System.Windows.Forms;
 
 namespace Gorgon.Examples
 {
-	public partial class formSplash : Form
-	{
-		/// <summary>
-		/// Function to update the text label.
-		/// </summary>
-		/// <param name="text">Text to display.</param>
-		public void UpdateText(string text)
-		{
-			labelText.Text = text;
-			labelText.Refresh();
-		}
+    public partial class formSplash : Form
+    {
+        /// <summary>
+        /// Function to update the text label.
+        /// </summary>
+        /// <param name="text">Text to display.</param>
+        public void UpdateText(string text)
+        {
+            labelText.Text = text;
+            labelText.Refresh();
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="formSplash" /> class.

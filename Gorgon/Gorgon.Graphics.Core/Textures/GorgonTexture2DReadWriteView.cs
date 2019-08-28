@@ -34,8 +34,8 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
-using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core
 {
@@ -81,7 +81,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the type of image data.
         /// </summary>
-        ImageType IGorgonImageInfo.ImageType => IsCubeMap ? ImageType.ImageCube : ImageType.Image2D ;
+        ImageType IGorgonImageInfo.ImageType => IsCubeMap ? ImageType.ImageCube : ImageType.Image2D;
 
         /// <summary>
         /// Property to return the depth of an image, in pixels.
@@ -182,7 +182,10 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the texture that is bound to this view.
         /// </summary>
-        public GorgonTexture2D Texture { get; private set; }
+        public GorgonTexture2D Texture
+        {
+            get; private set;
+        }
 
         /// <summary>
         /// Property to return the bounding rectangle for the view.
@@ -272,16 +275,16 @@ namespace Gorgon.Graphics.Core
         private protected override D3D11.ResourceView OnCreateNativeView()
         {
             D3D11.UnorderedAccessViewDescription1 desc = GetDesc2D(Texture);
-            
+
             Graphics.Log.Print($"Creating D3D11 2D texture unordered access view for {Texture.Name}.", LoggingLevel.Verbose);
 
             try
             {
                 // Create our SRV.
                 Native = new D3D11.UnorderedAccessView1(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
-                         {
-                             DebugName = $"'{Texture.Name}'_D3D11UnorderedAccessView1_2D"
-                         };
+                {
+                    DebugName = $"'{Texture.Name}'_D3D11UnorderedAccessView1_2D"
+                };
 
                 Graphics.Log.Print($"Unordered Access 2D View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Array Index: {ArrayIndex}, Array Count: {ArrayCount}",
                                    LoggingLevel.Verbose);
@@ -607,12 +610,12 @@ namespace Gorgon.Graphics.Core
             }
 
             var newInfo = new GorgonTexture2DInfo(info)
-                          {
-                              Usage = info.Usage == ResourceUsage.Staging ? ResourceUsage.Default : info.Usage,
-                              Binding = (((info.Binding & TextureBinding.ReadWriteView) != TextureBinding.ReadWriteView)
+            {
+                Usage = info.Usage == ResourceUsage.Staging ? ResourceUsage.Default : info.Usage,
+                Binding = (((info.Binding & TextureBinding.ReadWriteView) != TextureBinding.ReadWriteView)
                                              ? (info.Binding | TextureBinding.ReadWriteView)
-                                             : info.Binding) & ~TextureBinding.DepthStencil 
-                          };
+                                             : info.Binding) & ~TextureBinding.DepthStencil
+            };
 
             if (initialData != null)
             {
@@ -730,7 +733,7 @@ namespace Gorgon.Graphics.Core
             using (IGorgonImage image = codec.LoadFromStream(stream, size))
             {
                 GorgonTexture2D texture = image.ToTexture2D(graphics, options);
-                GorgonTexture2DReadWriteView view =  texture.GetReadWriteView();
+                GorgonTexture2DReadWriteView view = texture.GetReadWriteView();
                 view.OwnsResource = true;
                 return view;
             }

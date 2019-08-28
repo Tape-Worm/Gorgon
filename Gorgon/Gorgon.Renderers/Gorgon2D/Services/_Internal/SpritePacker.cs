@@ -28,20 +28,20 @@ using DX = SharpDX;
 
 namespace Gorgon.Renderers.Services
 {
-	/// <summary>
-	/// Used to determine where sprites should be packed onto a texture.
-	/// </summary>
-	internal static class SpritePacker
-	{
-		#region Properties.
-		/// <summary>
-		/// Property to return the root node.
-		/// </summary>
-		public static SpriteNode Root
-		{
-			get;
-			private set;
-		}
+    /// <summary>
+    /// Used to determine where sprites should be packed onto a texture.
+    /// </summary>
+    internal static class SpritePacker
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to return the root node.
+        /// </summary>
+        public static SpriteNode Root
+        {
+            get;
+            private set;
+        }
         #endregion
 
         #region Methods.
@@ -61,22 +61,22 @@ namespace Gorgon.Renderers.Services
         /// <param name="dimensions">The sprite dimensions.</param>
         /// <returns>A rectangle for the area on the image that the sprite will be located at, or <b>null</b> if there's no room.</returns>
         public static DX.Rectangle? Add(DX.Size2 dimensions)
-		{
-			if ((dimensions.Width > Root.Region.Width) || (dimensions.Height > Root.Region.Height))
-			{
-				return null;
-			}
+        {
+            if ((dimensions.Width > Root.Region.Width) || (dimensions.Height > Root.Region.Height))
+            {
+                return null;
+            }
 
-			// Do nothing here.
-			if ((dimensions.Width == 0) || (dimensions.Height == 0))
-			{
-				return DX.Rectangle.Empty;
-			}
+            // Do nothing here.
+            if ((dimensions.Width == 0) || (dimensions.Height == 0))
+            {
+                return DX.Rectangle.Empty;
+            }
 
-			SpriteNode newNode = Root.AddNode(dimensions);
+            SpriteNode newNode = Root.AddNode(dimensions);
 
-			return newNode?.Region;
-		}
-		#endregion
-	}
+            return newNode?.Region;
+        }
+        #endregion
+    }
 }
