@@ -176,6 +176,26 @@ namespace Gorgon.Renderers
 
         #region Properties.
         /// <summary>
+        /// Property to set or return the distance on the Z axis for specular hilights.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This sets the number of units on the Z axis that our default camera should be when rendering specular hilights. 
+        /// </para>
+        /// <para>
+        /// This value only applies when a light has <see cref="Gorgon2DLight.SpecularEnabled"/> set to <b>true</b>, and, when <see cref="Gorgon2D.CurrentCamera"/> is set to <b>null</b>.
+        /// </para>
+        /// <para>
+        /// If this value is too small, strange artifacts may appear as the Z value gets closer to the drawing plane (Z = 0.0f).
+        /// </para>
+        /// </remarks>
+        public float DefaultSpecularZDistance
+        {
+            get;
+            set;
+        } = -127.0f;
+
+        /// <summary>
         /// Property to return the list of point lights for rendering.
         /// </summary>
         public IList<Gorgon2DLight> Lights
@@ -431,7 +451,9 @@ namespace Gorgon.Renderers
 			var globals = new GlobalEffectData
             {
                 FlipYNormal = 0,
-                CameraPosition = Renderer.CurrentCamera == null ? DX.Vector3.Zero : camera.Position
+                // If no custom camera is in use, we need to pass in our default viewing information which is normally the output width, and height (by half), and an arbitrary Z value so 
+                // the camera position isn't intersecting with the drawing plane (+ height information). Otherwise, our specular hilight will look really messed up.
+                CameraPosition = Renderer.CurrentCamera == null ? new DX.Vector3(output.Width / 2.0f, output.Height / 2.0f, DefaultSpecularZDistance) : camera.Position
             };
             _globalData.Buffer.SetData(ref globals);
         }

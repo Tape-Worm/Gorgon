@@ -48,10 +48,10 @@ SamplerState _specSampler : register(s2);
 // Function to transform a normal from the normal map using our tangent and bitangent vectors.
 float4 TransformNormal(float4 texel, float3 tangent, float3 biTangent)
 {
-	float3 bump = (texel.xyz * 2.0f) - 1.0f;
+	float3 bump = normalize((texel.xyz * 2.0f) - 1.0f);
 	float3 normal = (normalize(float3(0, 0, bump.z) + (bump.x * tangent + bump.y * biTangent)) + 1.0f) * 0.5f;
 
-	return float4(normal, texel.a);
+	return float4(normal, 1.0f);
 }
 
 #ifdef DEFERRED_LIGHTING
@@ -120,10 +120,10 @@ float3 GetNormalData(float2 uv)
 // Gets the specular value based on the specular map supplied.
 float4 GetSpecularValue(float3 lightDir, float3 normal, float3 toEye, float3 uv, float specularPower)
 {
-	float4 specTexCol = _gorgonTexture.Sample(_specSampler, uv);
-	float3 halfWay = normalize(-lightDir + toEye);
-	float specIntensity = saturate(dot(normal, halfWay));
-	return pow(specIntensity, specularPower) * specTexCol;
+ 	float4 specTexCol = _gorgonTexture.Sample(_specSampler, uv);
+	float3 halfWay = normalize(toEye - lightDir);
+	float nDotH = saturate(dot(normal, halfWay));
+	return pow(nDotH, specularPower) * specTexCol;
 }
 
 // Simulates a point light with attenuationuation falloff and optional specular highlighting.
@@ -145,9 +145,9 @@ float4 PointLight(float3 worldPos, float2 uv)
 
 	if (specularEnabled != 0)
 	{
-		result += diffuseAmount * GetSpecularValue(normalize(worldPos - _lightPosition), normal, normalize(worldPos - _cameraPos), float3(uv.xy, 1), _attribs.x);
+		result += diffuseAmount * GetSpecularValue(normalize(worldPos - _lightPosition), normalize(normal), normalize(worldPos - _cameraPos), float3(uv.xy, 1), _attribs.x);
 	}
-	result.a = color.a;
+	result.a = 1.0f;
 
 	return saturate(result);
 }
@@ -155,25 +155,25 @@ float4 PointLight(float3 worldPos, float2 uv)
 // Simulates a directional light (e.g. the sun) with optional specular highlighting.
 float4 DirectionalLight(float3 worldPos, float2 uv)
 {
-	float4 color = _gorgonTexture.Sample(_gorgonSampler, float3(uv, 0));
-
-	REJECT_ALPHA(color.a);
+	float4 color = _gorgonTexture.Sample(_gorgonSampler, float3(uv, 0));	
 
 	int specularEnabled = int(_attribs.w);
 	float3 normal = GetNormalData(uv);
 	float4 result = float4(0, 0, 0, 1);
-	float3 lightDir = normalize(_dirLightDirection);
+	float3 lightRange = -_dirLightDirection;
+	float3 lightDir = normalize(lightRange);
 	float diffuseAmount;
 	
-	diffuseAmount = saturate(dot(normal, -lightDir));	
+	diffuseAmount = saturate(dot(normal, lightDir));	
 
 	result = color * diffuseAmount * _lightColor * _attribs.z;
 	
 	if (specularEnabled != 0)
 	{
-		result += diffuseAmount * GetSpecularValue(normalize(_dirLightDirection - worldPos), normal, normalize(worldPos - _cameraPos), float3(uv.xy, 1), _attribs.x);
+		// Oddly enough, if we don't normalize _dirLightDirection, our specular shows up correctly, and if we do normalize it, it gets weird at 0x0.
+		result += diffuseAmount * GetSpecularValue(_dirLightDirection, normalize(normal), normalize(worldPos - _cameraPos), float3(uv.xy, 1), _attribs.x);
 	}
-	result.a = color.a;
+	result.a = 1.0f;
 
 	return saturate(result);
 }

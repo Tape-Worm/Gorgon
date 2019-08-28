@@ -460,42 +460,32 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         private void InitializeCachedTempRtvs()
         {
-            BufferFormat[] formats = new[]
-            {
-				BufferFormat.R16G16B16A16_Float,
-				BufferFormat.R8G8B8A8_UNorm,
-				BufferFormat.R8G8B8A8_UNorm_SRgb
-            };
-
             int count = 0;
             int totalSize = 0;
-            foreach (BufferFormat format in formats)
+            int w = 1024;
+            int h = 1024;
+
+            while ((w > 0) && (h > 0))
             {
-                int w = 1024;
-                int h = 1024;
-
-                while ((w > 0) && (h > 0))
+                GorgonRenderTarget2DView rtv = _rtvFactory.Rent(new GorgonTexture2DInfo($"Gorgon_RtvCommon_{w}x{h}_{BufferFormat.R8G8B8A8_UInt}")
                 {
-                    GorgonRenderTarget2DView rtv = _rtvFactory.Rent(new GorgonTexture2DInfo($"Gorgon_RtvCommon_{w}x{h}_{format}")
-                    {
-						ArrayCount = 1,
-						Binding = TextureBinding.ShaderResource | TextureBinding.RenderTarget,
-						Usage = ResourceUsage.Default,
-						Format = format,
-						Width = w,
-						Height = h
-                    });
+					ArrayCount = 1,
+					Binding = TextureBinding.ShaderResource | TextureBinding.RenderTarget,
+					Usage = ResourceUsage.Default,
+					Format = BufferFormat.R8G8B8A8_UInt,
+					Width = w,
+					Height = h
+                });
 
-                    totalSize += rtv.Texture.SizeInBytes;
+                totalSize += rtv.Texture.SizeInBytes;
 
-                    Log.Print($"Caching common render target for {w}x{h} {format} for ~{rtv.Texture.SizeInBytes.FormatMemory()}.", LoggingLevel.Verbose);
+                Log.Print($"Caching common render target for {w}x{h} {BufferFormat.R8G8B8A8_UInt} for ~{rtv.Texture.SizeInBytes.FormatMemory()}.", LoggingLevel.Verbose);
 
-                    _rtvFactory.Return(rtv);
+                _rtvFactory.Return(rtv);
 
-                    w >>= 1;
-                    h >>= 1;
-                    ++count;
-                }
+                w >>= 1;
+                h >>= 1;
+                ++count;
             }
 
             Log.Print($"Cached {count} common render targets for ~{totalSize.FormatMemory()}.", LoggingLevel.Verbose);
