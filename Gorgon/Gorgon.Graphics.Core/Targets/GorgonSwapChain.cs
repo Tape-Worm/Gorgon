@@ -1137,7 +1137,8 @@ namespace Gorgon.Graphics.Core
 
             interval.ValidateRange(nameof(interval), 0, 4, true, true);
 
-            if ((_supportsTearing != 0) && (interval == 0) && (!IsInStandBy))
+            // The tearing flag is only supported by windowed mode. Fullscreen exclusive already has tearing by design.
+            if ((IsWindowed) && (_supportsTearing != 0) && (interval == 0) && (!IsInStandBy))
             {
                 flags |= PresentFlags.AllowTearing;
             }
