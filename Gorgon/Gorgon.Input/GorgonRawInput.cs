@@ -299,7 +299,7 @@ namespace Gorgon.Input
                 _devices.Remove(key);
 
                 // If all devices of this type have been unregistered, unregister with raw input as well.
-                if ((_devices.Count(item => item.Value.DeviceType == device.DeviceType) == 0)
+                if ((!_devices.Any(item => item.Value.DeviceType == device.DeviceType))
                     && (RawInputApi.GetDeviceRegistration(device.DeviceUsage) != null))
                 {
                     RawInputApi.UnregisterRawInputDevice(device.DeviceUsage);

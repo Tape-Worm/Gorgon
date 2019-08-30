@@ -439,7 +439,9 @@ namespace Gorgon.Editor
             try
             {
                 // Get our initial context.
+#pragma warning disable CA2000 // Dispose objects before losing scope
                 SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
+#pragma warning restore CA2000 // Dispose objects before losing scope
 
                 Program.Log.Print("Booting application...", LoggingLevel.All);
 

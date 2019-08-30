@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using Gorgon.Math;
 
 namespace Gorgon.Animation
@@ -107,12 +108,18 @@ namespace Gorgon.Animation
         /// <param name="requestedTime">Track time requested.</param>
         /// <param name="animationLength">The total animation time.</param>
         /// <returns>A tuple containing the previous and next key that falls on or outside of the requested time, the index of the first key and the delta time between the start frame and the requested time.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="track"/> parameter is <b>null</b>.</exception>
         public static (T previous, T next, int prevKeyIndex, float timeDelta) GetNearestKeys<T>(
             IGorgonTrack<T> track,
             float requestedTime,
             float animationLength)
             where T : class, IGorgonKeyFrame
         {
+            if (track == null)
+            {
+                throw new ArgumentNullException(nameof(track));
+            }
+
             // Wrap around for time so that we don't overextend.
             while (requestedTime > animationLength)
             {

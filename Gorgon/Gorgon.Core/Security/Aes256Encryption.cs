@@ -41,8 +41,8 @@ namespace Gorgon.Security
                     int ivLength = reader.ReadInt32();
                     int keyLength = reader.ReadInt32();
 
-                    var iv = new byte[ivLength];
-                    var key = new byte[keyLength];
+                    byte[] iv = new byte[ivLength];
+                    byte[] key = new byte[keyLength];
 
                     if ((iv.Length == 0) || (key.Length == 0))
                     {
@@ -220,9 +220,9 @@ namespace Gorgon.Security
 
                 using (var aes = new AesManaged())
                 {
-                    using (var rfc2898 = new Rfc2898DeriveBytes(password, salt, 100))
+                    using (var hashGen = new Rfc2898DeriveBytes(password, salt, 100, HashAlgorithmName.SHA512))
                     {
-                        return (rfc2898.GetBytes(aes.BlockSize / 8), rfc2898.GetBytes(aes.KeySize / 8));
+                        return (hashGen.GetBytes(aes.BlockSize / 8), hashGen.GetBytes(aes.KeySize / 8));
                     }
                 }
             }
