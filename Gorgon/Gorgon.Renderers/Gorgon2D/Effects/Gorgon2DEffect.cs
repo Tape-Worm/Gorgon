@@ -100,12 +100,6 @@ namespace Gorgon.Renderers
         #region Variables.
         // Flag to indicate that the effect is initialized.
         private bool _isInitialized;
-        // The currently overridden blend state.
-        private GorgonBlendState _blendStateOverride;
-        // The currently overridden raster state.
-        private GorgonRasterState _rasterStateOverride;
-        // The currently overridden depth/stencil state.
-        private GorgonDepthStencilState _depthStencilStateOverride;
         // The recall targets.
         private GorgonRenderTargetView[] _targets;
         // The recall viewports.
@@ -190,17 +184,29 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to return the state used to override the default blend state for the effect.
         /// </summary>
-        protected GorgonBlendState BlendStateOverride => _blendStateOverride;
+        protected GorgonBlendState BlendStateOverride
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// Property to return the state used to override the default depth/stencil state for the effect.
         /// </summary>
-        protected GorgonDepthStencilState DepthStencilStateOverride => _depthStencilStateOverride;
+        protected GorgonDepthStencilState DepthStencilStateOverride
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// Property to return the state used to override the default raster state for the effect.
         /// </summary>
-        protected GorgonRasterState RasterStateOverride => _rasterStateOverride;
+        protected GorgonRasterState RasterStateOverride
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// Property to return the renderer used to render the effect.
@@ -261,9 +267,9 @@ namespace Gorgon.Renderers
 
             OnBeforeRender(output, camera, outputSizeChanged);
 
-            if ((blendStateOverride == _blendStateOverride)
-                && (depthStencilStateOverride == _depthStencilStateOverride)
-                && (rasterStateOverride == _rasterStateOverride))
+            if ((blendStateOverride == BlendStateOverride)
+                && (depthStencilStateOverride == DepthStencilStateOverride)
+                && (rasterStateOverride == RasterStateOverride))
             {
                 return false;
             }
@@ -272,9 +278,9 @@ namespace Gorgon.Renderers
                              .DepthStencilState(depthStencilStateOverride ?? GorgonDepthStencilState.Default)
                              .RasterState(rasterStateOverride ?? GorgonRasterState.Default);
 
-            _blendStateOverride = blendStateOverride;
-            _depthStencilStateOverride = depthStencilStateOverride;
-            _rasterStateOverride = rasterStateOverride;
+            BlendStateOverride = blendStateOverride;
+            DepthStencilStateOverride = depthStencilStateOverride;
+            RasterStateOverride = rasterStateOverride;
 
             return true;
 

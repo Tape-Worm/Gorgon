@@ -284,7 +284,7 @@ namespace Gorgon.Renderers
             _gbufferTargets[2] = Graphics.TemporaryTargets.Rent(_rtvInfo, "Gorgon 2D Buffer - Normals", false);
             GorgonTexture2DView normalSrv = _gbufferTargets[2].GetShaderResourceView();
 
-            if ((_pixelDeferShaderState.ShaderResources[1] != normalSrv)
+            if ((_pixelLitShaderState.ShaderResources[1] != normalSrv)
                 || (_diffuseFilter != DiffuseFiltering)
                 || (_normalFilter != NormalFiltering)
                 || (_specularFilter != SpecularFiltering))

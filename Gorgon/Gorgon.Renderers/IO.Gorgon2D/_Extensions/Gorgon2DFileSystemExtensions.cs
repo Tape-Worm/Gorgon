@@ -43,8 +43,16 @@ namespace Gorgon.IO.Extensions
     /// </summary>
     public static class Gorgon2DFileSystemExtensions
     {
-        // ReSharper disable PossibleMultipleEnumeration
+        #region Variables.
+        // The default texture loading options supplied when a texture is loaded.
+        private readonly static GorgonTexture2DLoadOptions _defaultLoadOptions = new GorgonTexture2DLoadOptions
+        {
+            Binding = TextureBinding.ShaderResource,
+            Usage = ResourceUsage.Default
+        };
+        #endregion
 
+        #region Methods.
         /// <summary>
         /// Function to determine the polygonal sprite codec to use when loading the sprite.
         /// </summary>
@@ -217,13 +225,43 @@ namespace Gorgon.IO.Extensions
         }
 
         /// <summary>
+        /// Function to validate and update texture loading options.
+        /// </summary>
+        /// <param name="name">The name of the texture.</param>
+        /// <param name="options">The options passed in by the user.</param>
+        /// <returns>The updated texture loading options.</returns>
+        private static GorgonTexture2DLoadOptions GetTextureOptions(string name, GorgonTexture2DLoadOptions options)
+        {
+            if (options == null)
+            {
+                options = _defaultLoadOptions;
+            }
+
+            options.Name = name;
+            options.Binding &= ~TextureBinding.DepthStencil;
+            
+            if ((options.Binding & TextureBinding.ShaderResource) != TextureBinding.ShaderResource)
+            {
+                options.Binding |= TextureBinding.ShaderResource;
+            }
+
+            if ((options.Usage != ResourceUsage.Immutable) && (options.Usage != ResourceUsage.Default))
+            {
+                options.Usage = ResourceUsage.Default;
+            }
+
+            return options;
+        }
+
+        /// <summary>
         /// Function to load a <see cref="GorgonSprite"/> from a <see cref="GorgonFileSystem"/>.
         /// </summary>
         /// <param name="fileSystem">The file system to load the sprite from.</param>
         /// <param name="renderer">The renderer for the sprite.</param>
         /// <param name="path">The path to the sprite file in the file system.</param>
-        /// <param name="spriteCodecs">The list of sprite codecs to try and load the sprite with.</param>
-        /// <param name="imageCodecs">The list of image codecs to try and load the sprite texture with.</param>
+        /// <param name="textureOptions">[Optional] Options for the texture loaded associated the sprite.</param>
+        /// <param name="spriteCodecs">[Optional] The list of sprite codecs to try and load the sprite with.</param>
+        /// <param name="imageCodecs">[Optional] The list of image codecs to try and load the sprite texture with.</param>
         /// <returns>The sprite data in the file as a <see cref="GorgonSprite"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileSystem"/>, <paramref name="renderer"/>, or <paramref name="path"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
@@ -264,6 +302,7 @@ namespace Gorgon.IO.Extensions
         public static GorgonSprite LoadSpriteFromFileSystem(this IGorgonFileSystem fileSystem,
                                               Gorgon2D renderer,
                                               string path,
+                                              GorgonTexture2DLoadOptions textureOptions = null,
                                               IEnumerable<IGorgonSpriteCodec> spriteCodecs = null,
                                               IEnumerable<IGorgonImageCodec> imageCodecs = null)
         {
@@ -363,12 +402,7 @@ namespace Gorgon.IO.Extensions
                                                                               textureStream,
                                                                               codec,
                                                                               textureFile.Size,
-                                                                              new GorgonTexture2DLoadOptions
-                                                                              {
-                                                                                  Name = textureFile.FullPath,
-                                                                                  Usage = ResourceUsage.Default,
-                                                                                  Binding = TextureBinding.ShaderResource
-                                                                              });
+                                                                              GetTextureOptions(textureFile.FullPath, textureOptions));
                         }
                     }
 
@@ -388,6 +422,7 @@ namespace Gorgon.IO.Extensions
         /// <param name="fileSystem">The file system to load the sprite from.</param>
         /// <param name="renderer">The renderer for the sprite.</param>
         /// <param name="path">The path to the sprite file in the file system.</param>
+        /// <param name="textureOptions">[Optional] Options for the texture loaded associated the sprite.</param>
         /// <param name="spriteCodecs">The list of polygonal sprite codecs to try and load the sprite with.</param>
         /// <param name="imageCodecs">The list of image codecs to try and load the sprite texture with.</param>
         /// <returns>The sprite data in the file as a <see cref="GorgonSprite"/>.</returns>
@@ -430,6 +465,7 @@ namespace Gorgon.IO.Extensions
         public static GorgonPolySprite LoadPolySpriteFromFileSystem(this GorgonFileSystem fileSystem,
                                               Gorgon2D renderer,
                                               string path,
+                                              GorgonTexture2DLoadOptions textureOptions = null,
                                               IEnumerable<IGorgonPolySpriteCodec> spriteCodecs = null,
                                               IEnumerable<IGorgonImageCodec> imageCodecs = null)
         {
@@ -526,12 +562,7 @@ namespace Gorgon.IO.Extensions
                                                                               textureStream,
                                                                               codec,
                                                                               textureFile.Size,
-                                                                              new GorgonTexture2DLoadOptions
-                                                                              {
-                                                                                  Name = textureFile.FullPath,
-                                                                                  Usage = ResourceUsage.Default,
-                                                                                  Binding = TextureBinding.ShaderResource
-                                                                              });
+                                                                              GetTextureOptions(textureFile.FullPath, textureOptions));
                         }
                     }
 
@@ -551,6 +582,7 @@ namespace Gorgon.IO.Extensions
         /// <param name="fileSystem">The file system to load the animation from.</param>
         /// <param name="renderer">The renderer for the animation.</param>
         /// <param name="path">The path to the animation file in the file system.</param>
+        /// <param name="textureOptions">[Optional] Options for the texture loaded associated the sprite.</param>
         /// <param name="animationCodecs">The list of animation codecs to try and load the animation with.</param>
         /// <param name="imageCodecs">The list of image codecs to try and load the animation texture(s) with.</param>
         /// <returns>The animation data in the file as a <see cref="IGorgonAnimation"/>.</returns>
@@ -593,6 +625,7 @@ namespace Gorgon.IO.Extensions
         public static IGorgonAnimation LoadAnimationFromFileSystem(this GorgonFileSystem fileSystem,
                                               Gorgon2D renderer,
                                               string path,
+                                              GorgonTexture2DLoadOptions textureOptions = null,
                                               IEnumerable<IGorgonAnimationCodec> animationCodecs = null,
                                               IEnumerable<IGorgonImageCodec> imageCodecs = null)
         {
@@ -699,13 +732,7 @@ namespace Gorgon.IO.Extensions
                             textureKey.Value = GorgonTexture2DView.FromStream(renderer.Graphics,
                                                                               textureStream,
                                                                               codec,
-                                                                              textureFile.Size,
-                                                                              new GorgonTexture2DLoadOptions
-                                                                              {
-                                                                                  Name = textureFile.FullPath,
-                                                                                  Usage = ResourceUsage.Default,
-                                                                                  Binding = TextureBinding.ShaderResource
-                                                                              });
+                                                                              textureFile.Size, GetTextureOptions(textureFile.FullPath, textureOptions));
                         }
                     }
 
@@ -725,7 +752,7 @@ namespace Gorgon.IO.Extensions
                 animStream?.Dispose();
             }
         }
-        // ReSharper restore PossibleMultipleEnumeration
+        #endregion
     }
 
 }
