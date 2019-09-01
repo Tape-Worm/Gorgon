@@ -141,6 +141,9 @@
   <data name="GORGFX_ERR_FONT_DEFAULT_CHAR_NOT_VALID" xml:space="preserve">
     <value>The character code 0x{0:x4} used by the default character is not valid.</value>
   </data>
+  <data name="GORGFX_ERR_FONT_EXISTS" xml:space="preserve">
+    <value>A different font with the name '{0}' already exists for this factory.</value>
+  </data>
   <data name="GORGFX_ERR_FONT_FILE_CORRUPT" xml:space="preserve">
     <value>The font file data is corrupt.</value>
   </data>

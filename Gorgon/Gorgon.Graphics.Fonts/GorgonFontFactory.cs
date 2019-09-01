@@ -283,10 +283,12 @@ namespace Gorgon.Graphics.Fonts
         /// <param name="fontInfo">The information used to create the font.</param>
         /// <returns>A new or existing <see cref="GorgonFont"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fontInfo"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <see cref="IGorgonFontInfo.TextureWidth"/> or <see cref="IGorgonFontInfo.TextureHeight"/> parameters exceed the <see cref="IGorgonVideoAdapterInfo.MaxTextureWidth"/> or 
+        /// <exception cref="ArgumentException">Thrown when the <see cref="IGorgonFontInfo.TextureWidth"/> or <see cref="IGorgonFontInfo.TextureHeight"/> parameters exceed the <see cref="IGorgonVideoAdapterInfo.MaxTextureWidth"/> or 
         /// <see cref="IGorgonVideoAdapterInfo.MaxTextureHeight"/> available for the current <see cref="FeatureSet"/>.
         /// <para>-or-</para>
         /// <para>Thrown if the <see cref="IGorgonFontInfo.Characters"/> list does not contain the <see cref="IGorgonFontInfo.DefaultCharacter"/> character.</para>
+        /// <para>-or-</para>
+        /// <para>A font with the same name was already created by the factory, but does not have the same parameters.</para>
         /// </exception>
         /// <remarks>
         /// <para>
@@ -299,8 +301,9 @@ namespace Gorgon.Graphics.Fonts
         /// font family, height and unit of measure.
         /// </para>
         /// <para>
-        /// If a font with the same name was previously created by this factory, then that font will be returned if the <paramref name="fontInfo"/> is the same as the cached version. If no font with the
-        /// same  name or the <paramref name="fontInfo"/> is different, then a new font is generated. If the names are the same, then the new font will replace the old.
+        /// If a font with the same name was previously created by this factory, then that font will be returned if the <paramref name="fontInfo"/> is the same as the cached version. If the font was not 
+        /// found by its name, then a new font will be created. Otherwise, if a cached font with the same name exists, but its <see cref="IGorgonFontInfo"/> is different from the <paramref name="fontInfo"/> 
+        /// passed in, then an exception will be thrown.
         /// </para>
         /// </remarks>
         public GorgonFont GetFont(IGorgonFontInfo fontInfo)
@@ -318,6 +321,11 @@ namespace Gorgon.Graphics.Fonts
                     && (!IsFontDifferent(fontInfo, result.Info)))
                 {
                     return result;
+                }
+
+                if (result != null)
+                {
+                    throw new ArgumentException(string.Format(Resources.GORGFX_ERR_FONT_EXISTS, fontInfo.Name), nameof(fontInfo));
                 }
 
                 if ((fontInfo.TextureWidth > Graphics.VideoAdapter.MaxTextureWidth)
