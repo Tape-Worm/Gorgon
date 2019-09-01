@@ -181,6 +181,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
+        /// Property to return whether this image is premultiplied.
+        /// </summary>
+        bool IsPremultiplied
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the view model for the cropping/resizing settings.
         /// </summary>
         ICropResizeSettings CropOrResizeSettings
@@ -248,6 +256,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Porperty to return the command used to edit the image in an external application.
         /// </summary>
         IEditorCommand<object> EditInAppCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to set the image to use premultiplied alpha.
+        /// </summary>
+        IEditorCommand<bool> PremultipliedAlphaCommand
         {
             get;
         }

@@ -73,6 +73,26 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap alpha_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("alpha_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap alpha_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("alpha_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap arrow_e_24x24 {
             get {
                 object obj = ResourceManager.GetObject("arrow_e_24x24", resourceCulture);
@@ -1039,6 +1059,26 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static System.Drawing.Bitmap left_20x20 {
             get {
                 object obj = ResourceManager.GetObject("left_20x20", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap opacity_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("opacity_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap opactiy_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("opactiy_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

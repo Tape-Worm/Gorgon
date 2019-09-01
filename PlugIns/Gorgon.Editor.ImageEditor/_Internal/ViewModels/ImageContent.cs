@@ -30,6 +30,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -112,6 +113,10 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// The attribute key name for the image codec attribute.
         /// </summary>
         public const string CodecAttr = "ImageCodec";
+        /// <summary>
+        /// The attribute key name for the premultiplied alpha flag.
+        /// </summary>
+        public const string PremultipliedAttr = "PremultipliedAlpha";
         #endregion
 
         #region Variables.
@@ -153,6 +158,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         private IHostedPanelViewModel _currentPanel;
         // The service used to edit the image with an external editor.
         private IImageExternalEditService _externalEditor;
+        // Flag to indicate that the image should use premultiplied alpha.
+        private bool _isPremultiplied;
         #endregion
 
         #region Properties.
@@ -165,6 +172,25 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
         /// <summary>Property to return the type of content.</summary>
         public override string ContentType => CommonEditorContentTypes.ImageType;
+
+        /// <summary>
+        /// Property to return whether this image is premultiplied.
+        /// </summary>
+        public bool IsPremultiplied
+        {
+            get => _isPremultiplied;
+            set
+            {
+                if (value == _isPremultiplied)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _isPremultiplied = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// Property to return the image data.
@@ -488,6 +514,12 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Porperty to return the command used to edit the image in an external application.
         /// </summary>
         public IEditorCommand<object> EditInAppCommand
+        {
+            get;
+        }
+
+        /// <summary>Property to return the command used to set the image to use premultiplied alpha.</summary>
+        public IEditorCommand<bool> PremultipliedAlphaCommand
         {
             get;
         }
@@ -919,7 +951,10 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 inStream.Dispose();
                 outStream.Dispose();
 
+                File.Metadata.Attributes[PremultipliedAttr] = IsPremultiplied.ToString(CultureInfo.InvariantCulture);
+
                 File.Refresh();
+                File.SaveMetadata();
 
                 ContentState = ContentState.Unmodified;
             }
@@ -2058,6 +2093,32 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
         }
 
+        /// <summary>
+        /// Function to determine if the premultiplied alpha can be set.
+        /// </summary>
+        /// <param name="_">The value for the flag (not used here).</param>
+        /// <returns><b>true</b> if premultiplied alpha can be set or not, <b>false</b> if not.</returns>
+        private bool CanSetPremultipliedAlpha(bool _) => (ImageData != null)
+                && (ImageData.FormatInfo.HasAlpha)
+                && (ImageData.CanConvertToFormat(BufferFormat.R8G8B8A8_UNorm));
+
+        /// <summary>
+        /// Function to set whether the image uses premultiplied alpha or not.
+        /// </summary>
+        /// <param name="value"><b>true</b> to set the flag, <b>false</b> to unset it.</param>
+        private void DoSetPremultipliedAlpha(bool value)
+        {
+            try
+            {
+                IsPremultiplied = value;
+                ContentState = ContentState.Modified;
+            }
+            catch (Exception ex)
+            {
+                MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+            }
+        }
+
         /// <summary>Function to determine the action to take when this content is closing.</summary>
         /// <returns>
         ///   <b>true</b> to continue with closing, <b>false</b> to cancel the close request.</returns>
@@ -2106,6 +2167,11 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             _cropResizeSettings.OkCommand = new EditorCommand<object>(DoCropResize, CanCropResize);
             _dimensionSettings.OkCommand = new EditorCommand<object>(DoUpdateImageDimensions, CanUpdateDimensions);
             _mipMapSettings.OkCommand = new EditorCommand<object>(DoGenMips, CanGenMips);
+
+            if (injectionParameters.File.Metadata.Attributes.TryGetValue(PremultipliedAttr, out string premultiplied))
+            {
+                _isPremultiplied = bool.TryParse(premultiplied, out _isPremultiplied);
+            }
 
             BuildCodecList(ImageData);
 
@@ -2349,6 +2415,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             ShowImageDimensionsCommand = new EditorCommand<object>(DoShowImageDimensions, CanShowImageDimensions);
             ShowMipGenerationCommand = new EditorCommand<object>(DoShowMipGeneration, CanShowMipGeneration);
             EditInAppCommand = new EditorCommand<object>(DoEditInApp, () => ImageData != null);
+            PremultipliedAlphaCommand = new EditorCommand<bool>(DoSetPremultipliedAlpha, CanSetPremultipliedAlpha);
         }
         #endregion
     }

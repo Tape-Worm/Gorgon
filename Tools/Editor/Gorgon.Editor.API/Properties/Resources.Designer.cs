@@ -334,6 +334,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; is not an image..
+        /// </summary>
+        internal static string GOREDIT_ERR_NOT_IMAGE {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_NOT_IMAGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The file &apos;{0}&apos; is not a sprite..
         /// </summary>
         internal static string GOREDIT_ERR_NOT_SPRITE {

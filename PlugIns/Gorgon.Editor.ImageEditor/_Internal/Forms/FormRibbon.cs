@@ -315,6 +315,21 @@ namespace Gorgon.Editor.ImageEditor
             ValidateButtons();
         }
 
+
+        /// <summary>Handles the Click event of the ButtonPremultipliedAlpha control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonPremultipliedAlpha_Click(object sender, EventArgs e)
+        {
+            if ((DataContext?.PremultipliedAlphaCommand == null) || (!DataContext.PremultipliedAlphaCommand.CanExecute(true)))
+            {
+                return;
+            }
+
+            DataContext.PremultipliedAlphaCommand.Execute(ButtonPremultipliedAlpha.Checked);
+            ValidateButtons();
+        }
+
         /// <summary>
         /// Function to validate the state of the buttons.
         /// </summary>
@@ -335,6 +350,8 @@ namespace Gorgon.Editor.ImageEditor
             ButtonImageRedo.Enabled = DataContext.RedoCommand?.CanExecute(null) ?? false;
             ButtonExport.Enabled = MenuCodecs.Items.Count > 0;
             ButtonSaveImage.Enabled = DataContext.SaveContentCommand?.CanExecute(SaveReason.UserSave) ?? false;
+            ButtonPremultipliedAlpha.Enabled = DataContext.PremultipliedAlphaCommand?.CanExecute(true) ?? false;
+            ButtonSetAlpha.Enabled = false;
 
             if (DataContext.ChangeImageTypeCommand == null)
             {
@@ -475,6 +492,7 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         private void ResetDataContext()
         {
+            ButtonPremultipliedAlpha.Checked = false;
             RibbonImageContent.Enabled = false;
             ClearCodecs();
             UpdateZoomMenu();
@@ -558,6 +576,8 @@ namespace Gorgon.Editor.ImageEditor
             UpdatePixelFormatMenuSelection(dataContext);
             UpdateZoomMenu();
             UpdateImageTypeMenu(dataContext);
+
+            ButtonPremultipliedAlpha.Checked = dataContext.IsPremultiplied;
         }
 
         /// <summary>Function to assign a data context to the view as a view model.</summary>

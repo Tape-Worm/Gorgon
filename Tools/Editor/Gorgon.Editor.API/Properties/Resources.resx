@@ -344,4 +344,7 @@ These platforms are incompatible and cannot be mixed.</value>
   <data name="GOREDIT_ERR_NO_RENDER_CONTROL" xml:space="preserve">
     <value>No render control is assigned to this control.</value>
   </data>
+  <data name="GOREDIT_ERR_NOT_IMAGE" xml:space="preserve">
+    <value>The file '{0}' is not an image.</value>
+  </data>
 </root>

@@ -144,6 +144,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <Content Include="Resources\alpha_16x16.png" />
+    <Content Include="Resources\alpha_48x48.png" />
+    <None Include="Resources\opactiy_16x16.png" />
+    <None Include="Resources\opacity_48x48.png" />
     <None Include="Resources\remove_plugins_22x22.png" />
     <None Include="Resources\add_plugin_22x22.png" />
     <None Include="Resources\plugins_48x48.png" />
