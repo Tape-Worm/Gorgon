@@ -65,5 +65,35 @@ namespace Gorgon.Editor.ImageEditor
             get;
             set;
         }
+
+        /// <summary>
+        /// Property to set or return the last used alpha value when setting an alpha channel.
+        /// </summary>
+        [JsonProperty]
+        public int AlphaValue
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the last used alpha value minimum when setting an alpha channel.
+        /// </summary>
+        [JsonProperty]
+        public int AlphaRangeMin
+        {
+            get;
+            set;
+        } = 0;
+
+        /// <summary>
+        /// Property to set or return the last used alpha value maximum when setting an alpha channel.
+        /// </summary>
+        [JsonProperty]
+        public int AlphaRangeMax
+        {
+            get;
+            set;
+        } = 255;
     }
 }

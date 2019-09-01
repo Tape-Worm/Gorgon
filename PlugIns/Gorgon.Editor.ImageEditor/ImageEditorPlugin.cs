@@ -299,7 +299,11 @@ namespace Gorgon.Editor.ImageEditor
             var cropResizeSettings = new CropResizeSettings();
             var dimensionSettings = new DimensionSettings();
             var mipSettings = new MipMapSettings();
-            var alphaSettings = new AlphaSettings();
+            var alphaSettings = new AlphaSettings
+            {
+                AlphaValue = _settings.LastAlphaValue,
+                UpdateRange = _settings.LastAlphaRange
+            };
 
             cropResizeSettings.Initialize(CommonServices);
             dimensionSettings.Initialize(new DimensionSettingsParameters(GraphicsContext.Graphics.VideoAdapter, CommonServices));

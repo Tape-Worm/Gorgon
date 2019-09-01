@@ -25,6 +25,7 @@
 #endregion
 
 using System.Collections.ObjectModel;
+using Gorgon.Core;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ImageEditor
@@ -39,6 +40,25 @@ namespace Gorgon.Editor.ImageEditor
         /// Property to set or return the to the directory that was last used for importing/exporting.
         /// </summary>
         string LastImportExportPath
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the last used alpha value when setting the alpha channel on an image.
+        /// </summary>
+        int LastAlphaValue
+        {
+            get;
+            set;
+        }
+
+
+        /// <summary>
+        /// Property to set or return the last used alpha value when setting the alpha channel on an image.
+        /// </summary>
+        GorgonRange LastAlphaRange
         {
             get;
             set;

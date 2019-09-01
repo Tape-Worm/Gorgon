@@ -760,6 +760,65 @@ namespace Gorgon.Graphics.Imaging
         }
 
         /// <summary>
+        /// Function to set the alpha channel for a specific buffer in the image.
+        /// </summary>
+        /// <param name="buffer">The buffer to set the alpha channel on.</param>
+        /// <param name="alphaValue">The value to set.</param>
+        /// <param name="updateAlphaRange">[Optional] The range of alpha values in the buffer that will be updated.</param>
+        /// <returns>The fluent interface for the buffer that was updated.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentException">Thrown if the buffer format is compressed.</exception>
+        /// <remarks>
+        /// <para>
+        /// This will set the alpha channel for the image data in the <paramref name="buffer"/> to a discrete value specified by <paramref name="alphaValue"/>. 
+        /// </para>
+        /// <para>
+        /// If the <paramref name="updateAlphaRange"/> parameter is set, then the alpha values in the <paramref name="buffer"/> will be examined and if the alpha value is less than the minimum range or 
+        /// greater than the maximum range, then the <paramref name="alphaValue"/> will <b>not</b> be set on the alpha channel.
+        /// </para>
+        /// </remarks>
+        public static IGorgonImageBuffer SetAlpha(this IGorgonImageBuffer buffer, float alphaValue, GorgonRangeF? updateAlphaRange = null)
+        {
+            if (buffer == null)
+            {
+                throw new ArgumentNullException(nameof(buffer));
+            }
+
+            // If we don't have an alpha channel, then don't do anything.
+            if (!buffer.FormatInformation.HasAlpha)
+            {
+                return buffer;
+            }
+
+            // We don't support compressed formats.
+            if (buffer.FormatInformation.IsCompressed)
+            {
+                throw new ArgumentException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, buffer.Format), nameof(buffer));
+            }
+
+            if (updateAlphaRange == null)
+            {
+                updateAlphaRange = new GorgonRangeF(0, 1);
+            }            
+
+            unsafe
+            {
+                byte* src = (byte*)buffer.Data;
+                uint alpha = (uint)(alphaValue * 255.0f);
+                uint min = (uint)(updateAlphaRange.Value.Minimum * 255.0f);
+                uint max = (uint)(updateAlphaRange.Value.Maximum * 255.0f);
+
+                for (int y = 0; y < buffer.Height; ++y)
+                {
+                    ImageUtilities.SetAlphaScanline(src, buffer.PitchInformation.RowPitch, src, buffer.PitchInformation.RowPitch, buffer.Format, alpha, min, max);
+                    src += buffer.PitchInformation.RowPitch;
+                }
+            }
+
+            return buffer;
+        }
+
+        /// <summary>
         /// Function to determine if the source format can convert to any of the formats in the destination list.
         /// </summary>
         /// <param name="sourceFormat">The source format to compare.</param>

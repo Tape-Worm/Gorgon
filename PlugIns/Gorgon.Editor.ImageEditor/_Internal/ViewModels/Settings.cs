@@ -30,6 +30,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
+using Gorgon.Core;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
@@ -57,6 +58,8 @@ namespace Gorgon.Editor.ImageEditor
         private ICodecRegistry _codecs;
         // The dialog used to open a codec assembly.
         private IFileDialogService _openCodecDialog;
+        // The range for the alpha setting funtionality.
+        private GorgonRange _alphaRange;
         #endregion
 
         #region Properties.
@@ -70,6 +73,47 @@ namespace Gorgon.Editor.ImageEditor
 
         /// <summary>Gets the name.</summary>
         public string Name => Resources.GORIMG_IMPORT_DESC;
+
+        /// <summary>
+        /// Property to return the last used alpha value when setting the alpha channel on an image.
+        /// </summary>
+        public int LastAlphaValue
+        {
+            get => _settings.AlphaValue;
+            set
+            {
+                if (_settings.AlphaValue == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _settings.AlphaValue = value;
+                OnPropertyChanged();
+            }
+        }
+            
+
+        /// <summary>
+        /// Property to return the last used alpha value when setting the alpha channel on an image.
+        /// </summary>
+        public GorgonRange LastAlphaRange
+        {
+            get => _alphaRange;
+            set
+            {
+                if (_alphaRange.Equals(value))
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                 _alphaRange = new GorgonRange(value.Minimum, value.Maximum);
+                _settings.AlphaRangeMin = value.Minimum;
+                _settings.AlphaRangeMax = value.Maximum;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// Property to set or return the to the directory that was last used for importing/exporting.
@@ -322,7 +366,7 @@ namespace Gorgon.Editor.ImageEditor
             _codecs = injectionParameters.Codecs ?? throw new ArgumentMissingException(nameof(injectionParameters.Codecs), nameof(injectionParameters));
             _openCodecDialog = injectionParameters.CodecFileDialog ?? throw new ArgumentMissingException(nameof(injectionParameters.CodecFileDialog), nameof(injectionParameters));
             _busyService = injectionParameters.BusyService ?? throw new ArgumentMissingException(nameof(injectionParameters.BusyService), nameof(injectionParameters));
-
+            _alphaRange = new GorgonRange(_settings.AlphaRangeMin, _settings.AlphaRangeMax);
             foreach (GorgonImageCodecPlugIn plugin in _codecs.CodecPlugIns)
             {
                 foreach (GorgonImageCodecDescription desc in plugin.Codecs)

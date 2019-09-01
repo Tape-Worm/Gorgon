@@ -77,6 +77,37 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
+        /// The arguments used to undo/redo the alpha set operation.
+        /// </summary>
+        private class SetAlphaUndoArgs
+        {
+            /// <summary>
+            /// The file used to store the undo data.
+            /// </summary>
+            public IGorgonVirtualFile UndoFile;
+
+            /// <summary>
+            /// The alpha value used.
+            /// </summary>
+            public int Alpha;
+
+            /// <summary>
+            /// The minimum/maximum alpha threshold.
+            /// </summary>
+            public GorgonRange MinMax;
+
+            /// <summary>
+            /// The mip level used when setting alpha.
+            /// </summary>
+            public int MipLevel;
+
+            /// <summary>
+            /// The array index (or depth slice) used when setting alpha.
+            /// </summary>
+            public int ArrayIndex;
+        }
+
+        /// <summary>
         /// The arguments used to undo/redo an image import or dimension update.
         /// </summary>
         private class ImportDimensionUndoArgs
@@ -2156,9 +2187,9 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// </summary>
         private void DoSetAlphaValue()
         {
-            ImportDimensionUndoArgs mipGenUndoArgs = null;
+            SetAlphaUndoArgs alphaUndoArgs = null;
 
-            Task UndoAction(ImportDimensionUndoArgs undoArgs, CancellationToken cancelToken)
+            Task UndoAction(SetAlphaUndoArgs undoArgs, CancellationToken cancelToken)
             {
                 Stream inStream = null;
 
@@ -2199,7 +2230,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 return Task.CompletedTask;
             }
 
-            Task RedoAction(ImportDimensionUndoArgs redoArgs, CancellationToken cancelToken)
+            Task RedoAction(SetAlphaUndoArgs redoArgs, CancellationToken cancelToken)
             {
                 Stream redoFileStream = null;
                 IGorgonVirtualFile undoFile = null;
@@ -2214,40 +2245,31 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                     NotifyPropertyChanging(nameof(ImageData));
 
-                    int prevMipCount = MipCount;
-
-                    if (redoArgs?.RedoFile != null)
+                    if (redoArgs == null)
                     {
-                        // Just reuse the image data in the redo cache item.                        
-                        redoFileStream = redoArgs.RedoFile.OpenStream();
-                        (IGorgonImage redoImage, _, _) = _imageIO.LoadImageFile(redoFileStream, _workingFile.Name);
-                        redoFileStream.Dispose();
+                        redoArgs = alphaUndoArgs = new SetAlphaUndoArgs()
+                        {
+                            Alpha = AlphaSettings.AlphaValue,
+                            MinMax = AlphaSettings.UpdateRange,
+                            MipLevel = CurrentMipLevel,
+                            ArrayIndex = ImageType == ImageType.Image3D ? CurrentDepthSlice : CurrentArrayIndex
+                        };
 
-                        ImageData.Dispose();
-                        ImageData = redoImage;
+                        _settings.LastAlphaValue = redoArgs.Alpha;
+                        _settings.LastAlphaRange = redoArgs.MinMax;
+                    }
 
-                        DeleteUndoCacheFile(redoArgs.RedoFile);
-                    }
-                    else
-                    {
-                        newImage = _imageUpdater.SetAlphaValue(ImageData, CurrentMipLevel, ImageType == ImageType.Image3D ? CurrentDepthSlice : CurrentArrayIndex, AlphaSettings.AlphaValue, AlphaSettings.UpdateRange);
-                    }
+                    newImage = _imageUpdater.SetAlphaValue(ImageData, redoArgs.MipLevel, redoArgs.ArrayIndex, redoArgs.Alpha, redoArgs.MinMax);
 
                     // Save the updated data to the working file.
                     _workingFile = _imageIO.SaveImageFile(File.Name, ImageData, ImageData.Format);
                     redoFile = CreateUndoCacheFile();
 
-                    if (redoArgs == null)
-                    {
-                        redoArgs = mipGenUndoArgs = new ImportDimensionUndoArgs();
-                    }
-
                     redoArgs.UndoFile = undoFile;
-                    redoArgs.RedoFile = redoFile;
 
                     ImageData = newImage;
                     NotifyPropertyChanged(nameof(ImageData));
-                    ContentState = ContentState.Modified;
+                    ContentState = ContentState.Modified;                    
 
                     return Task.CompletedTask;
                 }
@@ -2266,7 +2288,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                         DeleteUndoCacheFile(redoFile);
                     }
 
-                    mipGenUndoArgs = null;
+                    alphaUndoArgs = null;
 
                     return Task.FromException(ex);
                 }
@@ -2283,7 +2305,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             // If we had an error, do not record the undo state.
             if (!task.IsFaulted)
             {
-                _undoService.Record(Resources.GORIMG_UNDO_DESC_SET_ALPHA, UndoAction, RedoAction, mipGenUndoArgs, mipGenUndoArgs);
+                _undoService.Record(Resources.GORIMG_UNDO_DESC_SET_ALPHA, UndoAction, RedoAction, alphaUndoArgs, alphaUndoArgs);
                 // Need to call this so the UI can register our updated undo stack.
                 NotifyPropertyChanged(nameof(UndoCommand));
             }

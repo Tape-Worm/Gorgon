@@ -264,9 +264,9 @@ namespace Gorgon.Graphics.Imaging
                 case BufferFormat.R32G32B32A32_UInt:
                 case BufferFormat.R32G32B32A32_SInt:
                     {
-                        uint alphaMask = (format == BufferFormat.R32G32B32_Float)
+                        uint alphaMask = (format == BufferFormat.R32G32B32A32_Float)
                                              ? 0x3F800000
-                                             : ((format == BufferFormat.R32G32B32_SInt) ? 0x7FFFFFFF : 0xFFFFFFFF);
+                                             : ((format == BufferFormat.R32G32B32A32_SInt) ? 0x7FFFFFFF : 0xFFFFFFFF);
 
                         uint* srcPtr = (uint*)src;
                         uint* destPtr = (uint*)dest;
@@ -315,9 +315,6 @@ namespace Gorgon.Graphics.Imaging
 
                         switch (format)
                         {
-                            case BufferFormat.R16G16B16A16_Float:
-                                alphaMask = 0x3C000000;
-                                break;
                             case BufferFormat.R16G16B16A16_SInt:
                             case BufferFormat.R16G16B16A16_SNorm:
                                 alphaMask = 0x7FFF0000;
@@ -564,8 +561,8 @@ namespace Gorgon.Graphics.Imaging
                     case BufferFormat.R32G32B32A32_UInt:
                     case BufferFormat.R32G32B32A32_SInt:
                         {
-                            uint alpha = (format == BufferFormat.R32G32B32_Float) ? 0x3F800000
-                                                : ((format == BufferFormat.R32G32B32_SInt) ? 0x7FFFFFFF : 0xFFFFFFFF);
+                            uint alpha = (format == BufferFormat.R32G32B32A32_Float) ? 0x3F800000
+                                                : ((format == BufferFormat.R32G32B32A32_SInt) ? 0x7FFFFFFF : 0xFFFFFFFF);
 
                             uint* srcPtr = (uint*)src;
                             uint* destPtr = (uint*)dest;
@@ -717,6 +714,223 @@ namespace Gorgon.Graphics.Imaging
             if (dest != src)
             {
                 Unsafe.CopyBlock(dest, src, (uint)size);
+            }
+        }
+
+        /// <summary>
+        /// Function to update a line with opaque alpha substituion.
+        /// </summary>
+        /// <param name="src">The pointer to the source data.</param>
+        /// <param name="srcPitch">The pitch of the source data.</param>
+        /// <param name="dest">The pointer to the destination data.</param>
+        /// <param name="destPitch">The pitch of the destination data.</param>
+        /// <param name="format">Format of the destination buffer.</param>
+        /// <param name="alphaValue">The alpha value to set.</param>
+        /// <param name="minAlpha">The minimum alpha value to overwrite.</param>
+        /// <param name="maxAlpha">The maximum alpha value to overwrite.</param>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="format"/> parameter is Unknown.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="src"/> or the <paramref name="dest"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="srcPitch"/> or the <paramref name="destPitch"/> parameter is less than 0.</exception>
+        /// <remarks>Use this method to copy a single scanline of an image and (optionally) set an opaque constant alpha value.</remarks>
+        public static unsafe void SetAlphaScanline(void* src, int srcPitch, void* dest, int destPitch, BufferFormat format, uint alphaValue, uint minAlpha, uint maxAlpha)
+        {
+            if (src == null)
+            {
+                throw new ArgumentNullException(nameof(src));
+            }
+
+            if (dest == null)
+            {
+                throw new ArgumentNullException(nameof(dest));
+            }
+
+            if (format == BufferFormat.Unknown)
+            {
+                throw new ArgumentException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, format), nameof(format));
+            }
+
+            int size = (src == dest) ? destPitch : (srcPitch.Min(destPitch));
+
+            switch (format)
+            {
+                case BufferFormat.R32G32B32A32_Typeless:
+                case BufferFormat.R32G32B32A32_Float:
+                case BufferFormat.R32G32B32A32_UInt:
+                    {
+                        uint* srcPtr = (uint*)src;
+                        uint* destPtr = (uint*)dest;
+
+                        if (format != BufferFormat.R32G32B32A32_Float)
+                        {
+                            alphaValue &= 0xFFFFFFFF;
+                        }
+
+                        for (int i = 0; i < size; i += 16)
+                        {
+                            uint srcAlpha = *(srcPtr + 3);
+
+                            if ((srcAlpha >= minAlpha) && (srcAlpha <= maxAlpha))
+                            {
+                                *(destPtr + 3) = alphaValue;
+                            }
+
+                            srcPtr += 4;
+                            destPtr += 4;
+                        }
+                    }
+                    return;
+                case BufferFormat.R32G32B32A32_SInt:
+                    {
+                        int* srcPtr = (int*)src;
+                        int* destPtr = (int*)dest;
+                        int min = (int)minAlpha;
+                        int max = (int)maxAlpha;
+
+                        for (int i = 0; i < size; i += 16)
+                        {
+                            int srcAlpha = *(srcPtr + 3);
+
+                            if ((srcAlpha >= minAlpha) && (srcAlpha <= maxAlpha))
+                            {
+                                *(destPtr + 3) = (int)alphaValue;
+                            }
+
+                            srcPtr += 4;
+                            destPtr += 4;
+                        }
+                    }
+                    return;
+                case BufferFormat.R16G16B16A16_Typeless:
+                case BufferFormat.R16G16B16A16_Float:
+                case BufferFormat.R16G16B16A16_UNorm:
+                case BufferFormat.R16G16B16A16_UInt:
+                    {
+                        ushort* srcPtr = (ushort*)src;
+                        ushort* destPtr = (ushort*)dest;
+
+                        if (format != BufferFormat.R16G16B16A16_Float)
+                        {
+                            alphaValue &= 0xFFFF;
+                        }
+
+                        for (int i = 0; i < size; i += 8)
+                        {
+                            ushort srcAlpha = *(srcPtr + 3);
+                            if ((srcAlpha >= minAlpha) && (srcAlpha <= maxAlpha))
+                            {
+                                *(destPtr + 3) = (ushort)alphaValue;
+                            }
+
+                            srcPtr += 4;
+                            destPtr += 4;
+                        }
+                    }
+                    return;
+                case BufferFormat.R16G16B16A16_SNorm:
+                case BufferFormat.R16G16B16A16_SInt:
+                    {                        
+                        short* srcPtr = (short*)src;
+                        short* destPtr = (short*)dest;
+
+                        for (int i = 0; i < size; i += 8)
+                        {
+                            short srcAlpha = *(srcPtr + 3);
+                            if ((srcAlpha >= minAlpha) && (srcAlpha <= maxAlpha))
+                            {
+                                *(destPtr + 3) = (short)alphaValue;
+                            }
+
+                            srcPtr += 4;
+                            destPtr += 4;
+                        }
+                    }
+                    return;
+                case BufferFormat.R10G10B10A2_Typeless:
+                case BufferFormat.R10G10B10A2_UNorm:
+                case BufferFormat.R10G10B10A2_UInt:
+                case BufferFormat.R10G10B10_Xr_Bias_A2_UNorm:
+                    {
+                        uint* srcPtr = (uint*)src;
+                        uint* destPtr = (uint*)dest;
+
+                        for (int i = 0; i < size; i += 4)
+                        {
+                            uint srcAlpha = (((*srcPtr) & 0xC0000000) >> 30) & 3;
+
+                            if ((srcAlpha >= minAlpha) && (srcAlpha <= maxAlpha))
+                            {
+                                uint destValue = (*destPtr) & 0x3FFFFFFF;
+                                *destPtr = destValue | (alphaValue & 3) << 30;
+                            }
+                            ++srcPtr;
+                            ++destPtr;
+                        }
+                    }
+                    return;
+                case BufferFormat.R8G8B8A8_Typeless:
+                case BufferFormat.R8G8B8A8_UNorm:
+                case BufferFormat.R8G8B8A8_UNorm_SRgb:
+                case BufferFormat.R8G8B8A8_UInt:
+                case BufferFormat.B8G8R8A8_Typeless:
+                case BufferFormat.B8G8R8A8_UNorm:
+                case BufferFormat.B8G8R8A8_UNorm_SRgb:
+                    {
+                        uint* srcPtr = (uint*)src;
+                        uint* destPtr = (uint*)dest;
+
+                        for (int i = 0; i < size; i += 4)
+                        {
+                            uint srcAlpha = ((*srcPtr) & 0xFF000000) >> 24;
+
+                            if ((srcAlpha >= minAlpha) && (srcAlpha <= maxAlpha))
+                            {
+                                uint destValue = (*destPtr) & 0xFFFFFF;
+                                *destPtr = destValue | (alphaValue & 0xFF) << 24;
+                            }
+                            ++srcPtr;
+                            ++destPtr;
+                        }
+                    }
+                    break;
+                case BufferFormat.R8G8B8A8_SNorm:
+                case BufferFormat.R8G8B8A8_SInt:
+                    {
+                        int* srcPtr = (int*)src;
+                        int* destPtr = (int*)dest;
+
+                        for (int i = 0; i < size; i += 4)
+                        {
+                            int srcAlpha = ((*srcPtr) & 0x7F000000) >> 24;
+
+                            if ((srcAlpha >= minAlpha) && (srcAlpha <= maxAlpha))
+                            {
+                                int destValue = (*destPtr) & 0xFFFFFF;
+                                *destPtr = destValue | (int)alphaValue << 24;
+                            }
+                            ++srcPtr;
+                            ++destPtr;
+                        }
+                    }
+                    return;
+                case BufferFormat.B4G4R4A4_UNorm:
+                    {
+                        ushort* srcPtr = (ushort*)src;
+                        ushort* destPtr = (ushort*)dest;
+
+                        for (int i = 0; i < size; i += 2)
+                        {
+                            ushort srcAlpha = (ushort)(((*srcPtr) & 0xF000) >> 12);
+
+                            if ((srcAlpha >= minAlpha) && (srcAlpha <= maxAlpha))
+                            {
+                                ushort destValue = (ushort)((*destPtr) & 0xFFF);
+                                *destPtr = (ushort)(destValue | (ushort)((alphaValue & 0xF) << 12));
+                            }
+                            ++srcPtr;
+                            ++destPtr;
+                        }
+                    }
+                    return;
             }
         }
 
