@@ -947,6 +947,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Set alpha value.
+        /// </summary>
+        internal static string GORIMG_UNDO_DESC_SET_ALPHA {
+            get {
+                return ResourceManager.GetString("GORIMG_UNDO_DESC_SET_ALPHA", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap image_16x16 {
@@ -1189,6 +1198,16 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static System.Drawing.Bitmap save_content_48x48 {
             get {
                 object obj = ResourceManager.GetObject("save_content_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Transparency_Pattern {
+            get {
+                object obj = ResourceManager.GetObject("Transparency_Pattern", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

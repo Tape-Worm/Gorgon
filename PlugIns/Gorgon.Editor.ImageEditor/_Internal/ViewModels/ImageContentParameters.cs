@@ -68,6 +68,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
+        /// Property to return the alpha settings view model.
+        /// </summary>
+        public IAlphaSettings AlphaSettings
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the service used to load/save image data.
         /// </summary>
         public IImageIOService ImageIOService
@@ -155,6 +163,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <param name="cropResizeSettings">The crop/resize settings view model.</param>
         /// <param name="dimensionSettings">The image dimensions settings view model.</param>
         /// <param name="mipMapSettings">The mip map generation settings view model.</param>
+        /// <param name="alphaSettings">The set alpha value settings view model.</param>
         /// <param name="imageData">The image data and related information.</param>
         /// <param name="videoAdapter">Information about the current video adapter.</param>
         /// <param name="formatSupport">A list of <see cref="IGorgonFormatSupportInfo"/> objects for each pixel format.</param>
@@ -166,6 +175,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             ICropResizeSettings cropResizeSettings,
             IDimensionSettings dimensionSettings,
             IMipMapSettings mipMapSettings,
+            IAlphaSettings alphaSettings,
             (IGorgonImage image, IGorgonVirtualFile workingFile, BufferFormat originalFormat) imageData,
             IGorgonVideoAdapterInfo videoAdapter,
             IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> formatSupport,
@@ -183,6 +193,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             CropResizeSettings = cropResizeSettings ?? throw new ArgumentNullException(nameof(cropResizeSettings));
             DimensionSettings = dimensionSettings ?? throw new ArgumentNullException(nameof(dimensionSettings));
             MipMapSettings = mipMapSettings ?? throw new ArgumentNullException(nameof(mipMapSettings));
+            AlphaSettings = alphaSettings ?? throw new ArgumentNullException(nameof(alphaSettings));
             VideoAdapterInfo = videoAdapter ?? throw new ArgumentNullException(nameof(videoAdapter));
             OriginalFormat = imageData.originalFormat;
         }

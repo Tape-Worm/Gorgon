@@ -299,6 +299,7 @@ namespace Gorgon.Editor.ImageEditor
             var cropResizeSettings = new CropResizeSettings();
             var dimensionSettings = new DimensionSettings();
             var mipSettings = new MipMapSettings();
+            var alphaSettings = new AlphaSettings();
 
             cropResizeSettings.Initialize(CommonServices);
             dimensionSettings.Initialize(new DimensionSettingsParameters(GraphicsContext.Graphics.VideoAdapter, CommonServices));
@@ -311,6 +312,7 @@ namespace Gorgon.Editor.ImageEditor
                 cropResizeSettings,
                 dimensionSettings,
                 mipSettings,
+                alphaSettings,
                 imageData,
                 GraphicsContext.Graphics.VideoAdapter,
                 GraphicsContext.Graphics.FormatSupport,

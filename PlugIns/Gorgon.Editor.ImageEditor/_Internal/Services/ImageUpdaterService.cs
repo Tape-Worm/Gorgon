@@ -25,6 +25,8 @@
 #endregion
 
 using System.Linq;
+using Gorgon.Core;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.UI;
@@ -451,6 +453,46 @@ namespace Gorgon.Editor.ImageEditor
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Function to set the alpha value for an image.
+        /// </summary>
+        /// <param name="sourceImage">The source image.</param>
+        /// <param name="currentMipLevel">The current mip map level.</param>
+        /// <param name="currentArrayOrDepth">The current array index or depth slice.</param>
+        /// <param name="value">The value to assign.</param>
+        /// <param name="inclusionRange">The range of alpha values to update.</param>
+        /// <returns>A new image with the updated alpha.</returns>
+        public IGorgonImage SetAlphaValue(IGorgonImage sourceImage, int currentMipLevel, int currentArrayOrDepth, int value, GorgonRange inclusionRange)
+        {
+            BufferFormat format = sourceImage.Format;
+            IGorgonImage result = sourceImage.Clone();
+            var range = new GorgonRangeF((inclusionRange.Maximum < inclusionRange.Minimum ? inclusionRange.Maximum : inclusionRange.Minimum) / 255.0f,
+                                        (inclusionRange.Maximum > inclusionRange.Minimum ? inclusionRange.Maximum : inclusionRange.Minimum) / 255.0f);
+
+            if (result.Format != BufferFormat.R8G8B8A8_UNorm)
+            {
+                result.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm);
+            }
+
+            IGorgonImageBuffer buffer = result.Buffers[currentMipLevel, currentArrayOrDepth];
+
+            for (int y = 0; y < buffer.Height; ++y)
+            {
+                for (int x = 0; x < buffer.Width; ++x)
+                {
+                    ref int pixel = ref buffer.Data.ReadAs<int>(y * buffer.PitchInformation.RowPitch + x * buffer.FormatInformation.SizeInBytes);
+                    var color = GorgonColor.FromABGR(pixel);
+                    if ((color.Alpha <= range.Maximum) && (color.Alpha >= range.Minimum))
+                    {
+                        color = new GorgonColor(color, value / 255.0f);
+                        pixel = color.ToABGR();
+                    }
+                }
+            }
+
+            return format != BufferFormat.R8G8B8A8_UNorm ? result.ConvertToFormat(format) : result;
         }
         #endregion
     }

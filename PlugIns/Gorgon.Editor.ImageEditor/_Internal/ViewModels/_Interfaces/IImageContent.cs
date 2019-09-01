@@ -213,6 +213,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
+        /// Property to return the view model for the set alpha settings.
+        /// </summary>
+        IAlphaSettings AlphaSettings
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the currently active panel.
         /// </summary>
         IHostedPanelViewModel CurrentPanel
@@ -248,6 +256,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Property to return the command used to show the mip map generation settings.
         /// </summary>
         IEditorCommand<object> ShowMipGenerationCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to show the set alpha settings.
+        /// </summary>
+        IEditorCommand<object> ShowSetAlphaCommand
         {
             get;
         }

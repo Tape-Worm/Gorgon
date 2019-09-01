@@ -37,6 +37,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Collections;
+using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.Services;
@@ -150,6 +151,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         private IDimensionSettings _dimensionSettings;
         // The view model used to generate mip map levels.
         private IMipMapSettings _mipMapSettings;
+        // The view model used to apply set the alpha value.
+        private IAlphaSettings _alphaSettings;
         // The service used to update the image data.
         private IImageUpdaterService _imageUpdater;
         // Information about the current video adapter.
@@ -436,6 +439,25 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
+        /// Property to return the view model for the set alpha settings.
+        /// </summary>
+        public IAlphaSettings AlphaSettings
+        {
+            get => _alphaSettings;
+            set
+            {
+                if (_alphaSettings == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _alphaSettings = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
         /// Property to return the view model for the dimension editing settings.
         /// </summary>
         public IDimensionSettings DimensionSettings
@@ -506,6 +528,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Property to return the command used to show the mip map generation settings.
         /// </summary>
         public IEditorCommand<object> ShowMipGenerationCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to show the set alpha settings.
+        /// </summary>
+        public IEditorCommand<object> ShowSetAlphaCommand
         {
             get;
         }
@@ -2094,6 +2124,172 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
+        /// Function to determine if the set alpha settings panel can be shown or not.
+        /// </summary>
+        /// <returns></returns>
+        private bool CanShowSetAlphaValue() => (ImageData != null)
+                && (ImageData.FormatInfo.HasAlpha)
+                && (ImageData.CanConvertToFormat(BufferFormat.R8G8B8A8_UNorm));
+
+        /// <summary>
+        /// Function to show the set alpha settings panel.
+        /// </summary>
+        private void DoShowSetAlphaValue()
+        {
+            try
+            {
+                if (CurrentPanel == AlphaSettings)
+                {
+                    return;
+                }
+
+                CurrentPanel = AlphaSettings;
+            }
+            catch (Exception ex)
+            {
+                MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+            }
+        }
+
+        /// <summary>
+        /// Function to set the alpha value for the image.
+        /// </summary>
+        private void DoSetAlphaValue()
+        {
+            ImportDimensionUndoArgs mipGenUndoArgs = null;
+
+            Task UndoAction(ImportDimensionUndoArgs undoArgs, CancellationToken cancelToken)
+            {
+                Stream inStream = null;
+
+                BusyState.SetBusy();
+
+                try
+                {
+                    if (undoArgs.UndoFile == null)
+                    {
+                        return Task.CompletedTask;
+                    }
+
+                    NotifyPropertyChanging(nameof(ImageData));
+
+                    inStream = undoArgs.UndoFile.OpenStream();
+                    (IGorgonImage image, _, _) = _imageIO.LoadImageFile(inStream, _workingFile.Name);
+                    ImageData.Dispose();
+                    ImageData = image;
+
+                    NotifyImageUpdated(nameof(ImageData));
+
+                    inStream.Dispose();
+
+                    // This file will be re-created on redo.
+                    DeleteUndoCacheFile(undoArgs.UndoFile);
+                    undoArgs.UndoFile = null;
+                }
+                catch (Exception ex)
+                {
+                    MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+                }
+                finally
+                {
+                    inStream?.Dispose();
+                    BusyState.SetIdle();
+                }
+
+                return Task.CompletedTask;
+            }
+
+            Task RedoAction(ImportDimensionUndoArgs redoArgs, CancellationToken cancelToken)
+            {
+                Stream redoFileStream = null;
+                IGorgonVirtualFile undoFile = null;
+                IGorgonVirtualFile redoFile = null;
+                IGorgonImage newImage = null;
+
+                try
+                {
+                    BusyState.SetBusy();
+
+                    undoFile = CreateUndoCacheFile();
+
+                    NotifyPropertyChanging(nameof(ImageData));
+
+                    int prevMipCount = MipCount;
+
+                    if (redoArgs?.RedoFile != null)
+                    {
+                        // Just reuse the image data in the redo cache item.                        
+                        redoFileStream = redoArgs.RedoFile.OpenStream();
+                        (IGorgonImage redoImage, _, _) = _imageIO.LoadImageFile(redoFileStream, _workingFile.Name);
+                        redoFileStream.Dispose();
+
+                        ImageData.Dispose();
+                        ImageData = redoImage;
+
+                        DeleteUndoCacheFile(redoArgs.RedoFile);
+                    }
+                    else
+                    {
+                        newImage = _imageUpdater.SetAlphaValue(ImageData, CurrentMipLevel, ImageType == ImageType.Image3D ? CurrentDepthSlice : CurrentArrayIndex, AlphaSettings.AlphaValue, AlphaSettings.UpdateRange);
+                    }
+
+                    // Save the updated data to the working file.
+                    _workingFile = _imageIO.SaveImageFile(File.Name, ImageData, ImageData.Format);
+                    redoFile = CreateUndoCacheFile();
+
+                    if (redoArgs == null)
+                    {
+                        redoArgs = mipGenUndoArgs = new ImportDimensionUndoArgs();
+                    }
+
+                    redoArgs.UndoFile = undoFile;
+                    redoArgs.RedoFile = redoFile;
+
+                    ImageData = newImage;
+                    NotifyPropertyChanged(nameof(ImageData));
+                    ContentState = ContentState.Modified;
+
+                    return Task.CompletedTask;
+                }
+                catch (Exception ex)
+                {
+                    MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+
+                    if (undoFile != null)
+                    {
+                        DeleteUndoCacheFile(undoFile);
+                    }
+
+                    if (redoFile != null)
+                    {
+                        redoFileStream?.Dispose();
+                        DeleteUndoCacheFile(redoFile);
+                    }
+
+                    mipGenUndoArgs = null;
+
+                    return Task.FromException(ex);
+                }
+                finally
+                {
+                    redoFileStream?.Dispose();
+                    BusyState.SetIdle();
+                    CurrentPanel = null;
+                }
+            }
+
+            Task task = RedoAction(null, CancellationToken.None);
+
+            // If we had an error, do not record the undo state.
+            if (!task.IsFaulted)
+            {
+                _undoService.Record(Resources.GORIMG_UNDO_DESC_SET_ALPHA, UndoAction, RedoAction, mipGenUndoArgs, mipGenUndoArgs);
+                // Need to call this so the UI can register our updated undo stack.
+                NotifyPropertyChanged(nameof(UndoCommand));
+            }
+        }
+
+        /// <summary>
         /// Function to determine if the premultiplied alpha can be set.
         /// </summary>
         /// <param name="_">The value for the flag (not used here).</param>
@@ -2153,6 +2349,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             _cropResizeSettings = injectionParameters.CropResizeSettings ?? throw new ArgumentMissingException(nameof(injectionParameters.CropResizeSettings), nameof(injectionParameters));
             _dimensionSettings = injectionParameters.DimensionSettings ?? throw new ArgumentMissingException(nameof(injectionParameters.DimensionSettings), nameof(injectionParameters));
             _mipMapSettings = injectionParameters.MipMapSettings ?? throw new ArgumentMissingException(nameof(injectionParameters.MipMapSettings), nameof(injectionParameters));
+            _alphaSettings = injectionParameters.AlphaSettings ?? throw new ArgumentMissingException(nameof(injectionParameters.AlphaSettings), nameof(injectionParameters));
             _settings = injectionParameters.Settings ?? throw new ArgumentMissingException(nameof(injectionParameters.Settings), nameof(injectionParameters));
             _workingFile = injectionParameters.WorkingFile ?? throw new ArgumentMissingException(nameof(injectionParameters.WorkingFile), nameof(injectionParameters));
             ImageData = injectionParameters.Image ?? throw new ArgumentMissingException(nameof(injectionParameters.Image), nameof(injectionParameters));
@@ -2167,6 +2364,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             _cropResizeSettings.OkCommand = new EditorCommand<object>(DoCropResize, CanCropResize);
             _dimensionSettings.OkCommand = new EditorCommand<object>(DoUpdateImageDimensions, CanUpdateDimensions);
             _mipMapSettings.OkCommand = new EditorCommand<object>(DoGenMips, CanGenMips);
+            _alphaSettings.OkCommand = new EditorCommand<object>(DoSetAlphaValue);
 
             if (injectionParameters.File.Metadata.Attributes.TryGetValue(PremultipliedAttr, out string premultiplied))
             {
@@ -2416,6 +2614,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             ShowMipGenerationCommand = new EditorCommand<object>(DoShowMipGeneration, CanShowMipGeneration);
             EditInAppCommand = new EditorCommand<object>(DoEditInApp, () => ImageData != null);
             PremultipliedAlphaCommand = new EditorCommand<bool>(DoSetPremultipliedAlpha, CanSetPremultipliedAlpha);
+            ShowSetAlphaCommand = new EditorCommand<object>(DoShowSetAlphaValue, CanShowSetAlphaValue);
         }
         #endregion
     }

@@ -64,6 +64,14 @@
     <Compile Include="_Internal\Forms\FormRibbon.Designer.cs">
       <DependentUpon>FormRibbon.cs</DependentUpon>
     </Compile>
+    <Compile Include="_Internal\ViewModels\AlphaSettings.cs" />
+    <Compile Include="_Internal\ViewModels\_Interfaces\IAlphaSettings.cs" />
+    <Compile Include="_Internal\Views\SetAlphaSettings.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="_Internal\Views\SetAlphaSettings.Designer.cs">
+      <DependentUpon>SetAlphaSettings.cs</DependentUpon>
+    </Compile>
     <Compile Include="_Internal\_Interfaces\ICodecRegistry.cs" />
     <Compile Include="_Internal\ImageAnimationController.cs" />
     <Compile Include="ImageImporterPlugin.cs" />
@@ -146,6 +154,7 @@
     <Content Include="Gorgon2.ico" />
     <Content Include="Resources\alpha_16x16.png" />
     <Content Include="Resources\alpha_48x48.png" />
+    <None Include="Resources\Transparency_Pattern.png" />
     <None Include="Resources\opactiy_16x16.png" />
     <None Include="Resources\opacity_48x48.png" />
     <None Include="Resources\remove_plugins_22x22.png" />
@@ -206,6 +215,9 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="_Internal\Views\SetAlphaSettings.resx">
+      <DependentUpon>SetAlphaSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="_Internal\Views\GenMipMapSettings.resx">
       <DependentUpon>GenMipMapSettings.cs</DependentUpon>

@@ -95,6 +95,7 @@
             this.RibbonImageContent.Name = "RibbonImageContent";
             this.RibbonImageContent.RibbonTabs.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab[] {
             this.TabImage});
+            this.RibbonImageContent.SelectedContext = null;
             this.RibbonImageContent.SelectedTab = this.TabImage;
             this.RibbonImageContent.Size = new System.Drawing.Size(1293, 115);
             this.RibbonImageContent.TabIndex = 0;
@@ -286,6 +287,7 @@
             this.ButtonSetAlpha.TextLine2 = "Channel";
             this.ButtonSetAlpha.ToolTipBody = "Sets the alpha channel for the image to a specified value.";
             this.ButtonSetAlpha.ToolTipTitle = "Set Alpha";
+            this.ButtonSetAlpha.Click += new System.EventHandler(this.ButtonSetAlpha_Click);
             // 
             // GroupImageFormat
             // 

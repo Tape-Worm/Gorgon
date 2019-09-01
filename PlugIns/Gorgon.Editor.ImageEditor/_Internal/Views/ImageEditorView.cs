@@ -518,6 +518,7 @@ namespace Gorgon.Editor.ImageEditor
             CropResizeSettings.SetDataContext(dataContext.CropOrResizeSettings);
             DimensionSettings.SetDataContext(dataContext.DimensionSettings);
             GenMipMapSettings.SetDataContext(dataContext.MipMapSettings);
+            SetAlpha.SetDataContext(dataContext.AlphaSettings);
         }
 
         /// <summary>Handles the RenderToBitmap event of the PanelImage control.</summary>
@@ -765,6 +766,7 @@ namespace Gorgon.Editor.ImageEditor
             RegisterChildPanel(typeof(DimensionSettings).FullName, DimensionSettings);
             RegisterChildPanel(typeof(CropResizeSettings).FullName, CropResizeSettings);
             RegisterChildPanel(typeof(MipMapSettings).FullName, GenMipMapSettings);
+            RegisterChildPanel(typeof(AlphaSettings).FullName, SetAlpha);
         }
         #endregion
     }

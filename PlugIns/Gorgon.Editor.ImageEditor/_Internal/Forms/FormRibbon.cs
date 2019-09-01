@@ -161,6 +161,20 @@ namespace Gorgon.Editor.ImageEditor
             DataContext.ShowMipGenerationCommand.Execute(null);
         }
 
+        /// <summary>Handles the Click event of the ButtonSetAlpha control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonSetAlpha_Click(object sender, EventArgs e)
+        {
+            if ((DataContext?.ShowSetAlphaCommand == null)
+                || (!DataContext.ShowSetAlphaCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            DataContext.ShowSetAlphaCommand.Execute(null);
+        }
+
         /// <summary>Handles the Click event of the ButtonDimensions control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -350,8 +364,8 @@ namespace Gorgon.Editor.ImageEditor
             ButtonImageRedo.Enabled = DataContext.RedoCommand?.CanExecute(null) ?? false;
             ButtonExport.Enabled = MenuCodecs.Items.Count > 0;
             ButtonSaveImage.Enabled = DataContext.SaveContentCommand?.CanExecute(SaveReason.UserSave) ?? false;
-            ButtonPremultipliedAlpha.Enabled = DataContext.PremultipliedAlphaCommand?.CanExecute(true) ?? false;
-            ButtonSetAlpha.Enabled = false;
+            ButtonPremultipliedAlpha.Enabled = (DataContext.PremultipliedAlphaCommand?.CanExecute(true) ?? false);
+            ButtonSetAlpha.Enabled = (DataContext.CurrentPanel == null) && (DataContext.ShowSetAlphaCommand?.CanExecute(null) ?? false);
 
             if (DataContext.ChangeImageTypeCommand == null)
             {

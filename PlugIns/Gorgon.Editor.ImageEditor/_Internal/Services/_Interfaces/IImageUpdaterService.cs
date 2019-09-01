@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using Gorgon.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.UI;
 using DX = SharpDX;
@@ -116,5 +117,16 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="currentDepthSlice">The depth slice to extract.</param>
         /// <returns>A new image with the specified depth slice.</returns>
         IGorgonImage GetDepthSliceAsImage(IGorgonImage sourceImage, int currentDepthSlice);
+
+        /// <summary>
+        /// Function to set the alpha value for an image.
+        /// </summary>
+        /// <param name="sourceImage">The source image.</param>
+        /// <param name="currentMipLevel">The current mip map level.</param>
+        /// <param name="currentArrayOrDepth">The current array index or depth slice.</param>
+        /// <param name="value">The value to assign.</param>
+        /// <param name="inclusionRange">The range of alpha values to update.</param>
+        /// <returns>A new image with the updated alpha.</returns>
+        IGorgonImage SetAlphaValue(IGorgonImage sourceImage, int currentMipLevel, int currentArrayOrDepth, int value, GorgonRange inclusionRange);
     }
 }
