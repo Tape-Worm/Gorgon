@@ -692,14 +692,13 @@ namespace Gorgon.Graphics.Imaging
         /// <param name="baseImage">The image to convert.</param>
         /// <returns>A <see cref="IGorgonImage"/> containing the image data with the premultiplied alpha pixel data.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="baseImage"/> is <b>null</b>.</exception>
-        /// <exception cref="ArgumentException">Thrown when the original format could not be converted to <see cref="BufferFormat.R8G8B8A8_UNorm"/>.</exception>
+        /// <exception cref="ArgumentException">Thrown when image format is compressed.</exception>
         /// <remarks>
         /// <para>
         /// Use this to convert an image to a premultiplied format. This takes each Red, Green and Blue element and multiplies them by the Alpha element.
         /// </para>
         /// <para>
-        /// Because this method will only operate on <see cref="BufferFormat.R8G8B8A8_UNorm"/> formattted image data, the image will be converted to that format and converted back to its original format 
-        /// after the alpha is premultiplied. This may cause color fidelity issues. If the image cannot be converted, then an exception will be thrown. 
+        /// If the image does not contain alpha then the method will return right away and no alterations to the image will be performed.
         /// </para>
         /// </remarks>
         public static IGorgonImage ConvertToPremultipliedAlpha(this IGorgonImage baseImage)
@@ -711,9 +710,18 @@ namespace Gorgon.Graphics.Imaging
                 throw new ArgumentNullException(nameof(baseImage));
             }
 
-            try
+            if (!baseImage.FormatInfo.HasAlpha)
             {
-                // Worker image.
+                return baseImage;
+            }
+
+            if (baseImage.FormatInfo.IsCompressed)
+            {
+                throw new ArgumentException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, baseImage.Format), nameof(baseImage));
+            }
+
+            try
+            {                
                 var cloneImageInfo = new GorgonImageInfo(baseImage)
                 {
                     HasPreMultipliedAlpha = true
@@ -721,32 +729,25 @@ namespace Gorgon.Graphics.Imaging
                 newImage = new GorgonImage(cloneImageInfo);
                 baseImage.CopyTo(newImage);
 
-                if (newImage.Format != BufferFormat.R8G8B8A8_UNorm)
-                {
-                    if (!newImage.CanConvertToFormat(BufferFormat.R8G8B8A8_UNorm))
-                    {
-                        throw new ArgumentException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, BufferFormat.R8G8B8A8_UNorm), nameof(baseImage));
-                    }
-
-                    // Clone the image so we can convert it to the correct format.
-                    newImage.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm);
-                }
-
                 unsafe
                 {
-                    int* imagePtr = (int*)(newImage.ImageData);
+                    int arrayOrDepth = newImage.ImageType == ImageType.Image3D ? newImage.Depth : newImage.ArrayCount;
 
-                    for (int i = 0; i < newImage.SizeInBytes; i += newImage.FormatInfo.SizeInBytes)
+                    for (int mip = 0; mip < newImage.MipCount; ++mip)
                     {
-                        var color = GorgonColor.FromABGR(*imagePtr);
-                        color = new GorgonColor(color.Red * color.Alpha, color.Green * color.Alpha, color.Blue * color.Alpha, color.Alpha);
-                        *(imagePtr++) = color.ToABGR();
-                    }
-                }
+                        for (int i = 0; i < arrayOrDepth; ++i)
+                        {
+                            IGorgonImageBuffer buffer = newImage.Buffers[mip, i];
+                            byte* ptr = (byte*)buffer.Data;
+                            int rowPitch = buffer.PitchInformation.RowPitch;
 
-                if (newImage.Format != baseImage.Format)
-                {
-                    newImage.ConvertToFormat(baseImage.Format);
+                            for (int y = 0; y < buffer.Height; ++y)
+                            {
+                                ImageUtilities.SetPremultipliedScanline(ptr, rowPitch, ptr, rowPitch, buffer.Format);
+                                ptr += rowPitch;
+                            }
+                        }
+                    }
                 }
 
                 newImage.CopyTo(baseImage);

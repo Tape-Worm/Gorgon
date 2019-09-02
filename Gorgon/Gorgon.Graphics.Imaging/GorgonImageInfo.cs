@@ -163,7 +163,7 @@ namespace Gorgon.Graphics.Imaging
         public bool HasPreMultipliedAlpha
         {
             get;
-            set;
+            internal set;
         }
         #endregion
 

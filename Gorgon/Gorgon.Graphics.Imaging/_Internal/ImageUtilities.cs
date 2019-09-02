@@ -26,6 +26,7 @@
 
 using System;
 using System.Runtime.CompilerServices;
+using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
@@ -926,6 +927,233 @@ namespace Gorgon.Graphics.Imaging
                                 ushort destValue = (ushort)((*destPtr) & 0xFFF);
                                 *destPtr = (ushort)(destValue | (ushort)((alphaValue & 0xF) << 12));
                             }
+                            ++srcPtr;
+                            ++destPtr;
+                        }
+                    }
+                    return;
+            }
+        }
+
+        /// <summary>
+        /// Function to update a line with premultiplied alpha.
+        /// </summary>
+        /// <param name="src">The pointer to the source data.</param>
+        /// <param name="srcPitch">The pitch of the source data.</param>
+        /// <param name="dest">The pointer to the destination data.</param>
+        /// <param name="destPitch">The pitch of the destination data.</param>
+        /// <param name="format">Format of the destination buffer.</param>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="format"/> parameter is Unknown.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="src"/> or the <paramref name="dest"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="srcPitch"/> or the <paramref name="destPitch"/> parameter is less than 0.</exception>
+        /// <remarks>Use this method to copy a single scanline of an image and (optionally) set an opaque constant alpha value.</remarks>
+        public static unsafe void SetPremultipliedScanline(void* src, int srcPitch, void* dest, int destPitch, BufferFormat format)
+        {
+            if (src == null)
+            {
+                throw new ArgumentNullException(nameof(src));
+            }
+
+            if (dest == null)
+            {
+                throw new ArgumentNullException(nameof(dest));
+            }
+
+            if (format == BufferFormat.Unknown)
+            {
+                throw new ArgumentException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, format), nameof(format));
+            }
+
+            int size = (src == dest) ? destPitch : (srcPitch.Min(destPitch));
+
+            switch (format)
+            {
+                case BufferFormat.R32G32B32A32_SInt:
+                case BufferFormat.R32G32B32A32_Typeless:
+                case BufferFormat.R32G32B32A32_UInt:
+                    {
+                        uint* srcPtr = (uint*)src;
+                        uint* destPtr = (uint*)dest;
+
+                        for (int i = 0; i < size; i += 16)
+                        {
+                            uint srcAlpha = *(srcPtr + 3);
+
+                            if (srcAlpha == 0)
+                            {
+                                srcPtr += 4;
+                                destPtr += 4;
+                                continue;
+                            }
+
+                            uint c1 = *srcPtr / srcAlpha;
+                            uint c2 = (*(srcPtr + 1)) / srcAlpha;
+                            uint c3 = (*(srcPtr + 2)) / srcAlpha;
+
+                            *destPtr = c1;
+                            (*(destPtr + 1)) = c2;
+                            (*(destPtr + 2)) = c3;
+
+                            srcPtr += 4;
+                            destPtr += 4;
+                        }
+                    }
+                    return;
+                case BufferFormat.R32G32B32A32_Float:                
+                    {
+                        float* srcPtr = (float*)src;
+                        float* destPtr = (float*)dest;
+
+                        for (int i = 0; i < size; i += 16)
+                        {
+                            float srcAlpha = *(srcPtr + 3);
+
+                            float c1 = *srcPtr * srcAlpha;
+                            float c2 = (*(srcPtr + 1)) * srcAlpha;
+                            float c3 = (*(srcPtr + 2)) * srcAlpha;
+
+                            *destPtr = c1;
+                            (*(destPtr + 1)) = c2;
+                            (*(destPtr + 2)) = c3;
+
+                            srcPtr += 4;
+                            destPtr += 4;
+                        }
+                    }
+                    return;
+                case BufferFormat.R16G16B16A16_SNorm:
+                case BufferFormat.R16G16B16A16_SInt:
+                case BufferFormat.R16G16B16A16_Typeless:
+                case BufferFormat.R16G16B16A16_UNorm:
+                case BufferFormat.R16G16B16A16_UInt:
+                    {
+                        ushort* srcPtr = (ushort*)src;
+                        ushort* destPtr = (ushort*)dest;
+
+                        for (int i = 0; i < size; i += 8)
+                        {                            
+                            ushort srcAlpha = *(srcPtr + 3);
+
+                            if (srcAlpha == 0)
+                            {
+                                srcPtr += 4;
+                                destPtr += 4;
+                                continue;
+                            }
+
+                            ushort c1 = (ushort)(*srcPtr / srcAlpha);
+                            ushort c2 = (ushort)((*(srcPtr + 1)) / srcAlpha);
+                            ushort c3 = (ushort)((*(srcPtr + 2)) / srcAlpha);
+
+                            *destPtr = c1;
+                            (*(destPtr + 1)) = c2;
+                            (*(destPtr + 2)) = c3;
+
+                            srcPtr += 4;
+                            destPtr += 4;
+                        }
+                    }
+                    return;
+                case BufferFormat.R16G16B16A16_Float:
+                    {
+                        var srcPtr = (DX.Half*)src;
+                        var destPtr = (DX.Half*)dest;
+                        
+                        for (int i = 0; i < size; i += 8)
+                        {
+                            DX.Half srcAlpha = (*(srcPtr + 3));
+
+                            DX.Half c1 = (*srcPtr * srcAlpha);
+                            DX.Half c2 = ((*(srcPtr + 1)) * srcAlpha);
+                            DX.Half c3 = ((*(srcPtr + 2)) * srcAlpha);
+
+                            *destPtr = c1;
+                            (*(destPtr + 1)) = c2;
+                            (*(destPtr + 2)) = c3;
+
+                            srcPtr += 4;
+                            destPtr += 4;
+                        }
+                    }
+                    return;
+                case BufferFormat.R10G10B10A2_Typeless:
+                case BufferFormat.R10G10B10A2_UNorm:
+                case BufferFormat.R10G10B10A2_UInt:
+                case BufferFormat.R10G10B10_Xr_Bias_A2_UNorm:
+                    {
+                        uint* srcPtr = (uint*)src;
+                        uint* destPtr = (uint*)dest;
+
+                        for (int i = 0; i < size; i += 4)
+                        {
+                            uint pixel = *srcPtr;
+                            uint color = pixel & 0x3FFFFFFF;
+                            float srcAlpha = (((pixel & 0xC0000000) >> 30) & 3) / 4.0f;
+
+                            uint c1 = (uint)(((color >> 20) & 0x3FF) * srcAlpha);
+                            uint c2 = (uint)(((color >> 10) & 0x3FF) * srcAlpha);
+                            uint c3 = (uint)((color & 0x3ff) * srcAlpha);
+
+                            color = (c1 << 20) | (c2 << 10) | c3;
+
+                            *destPtr = (pixel & 0xC0000000) | color;
+
+                            ++srcPtr;
+                            ++destPtr;
+                        }
+                    }
+                    return;
+                case BufferFormat.R8G8B8A8_SNorm:
+                case BufferFormat.R8G8B8A8_SInt:
+                case BufferFormat.R8G8B8A8_Typeless:
+                case BufferFormat.R8G8B8A8_UNorm:
+                case BufferFormat.R8G8B8A8_UNorm_SRgb:
+                case BufferFormat.R8G8B8A8_UInt:
+                case BufferFormat.B8G8R8A8_Typeless:
+                case BufferFormat.B8G8R8A8_UNorm:
+                case BufferFormat.B8G8R8A8_UNorm_SRgb:
+                    {                        
+                        uint* srcPtr = (uint*)src;
+                        uint* destPtr = (uint*)dest;
+
+                        for (int i = 0; i < size; i += 4)
+                        {
+                            uint pixel = *srcPtr;
+                            uint color = pixel & 0xFFFFFF;
+                            float srcAlpha = ((pixel & 0xFF000000) >> 24) / 255.0f;
+
+                            uint c1 = (uint)(((color >> 16) & 0xFF) * srcAlpha);
+                            uint c2 = (uint)(((color >> 8) & 0xFF) * srcAlpha);
+                            uint c3 = (uint)((color & 0xFF) * srcAlpha);
+
+                            color = (c1 << 16) | (c2 << 8) | c3;
+
+                            *destPtr = (pixel & 0xFF000000) | color;
+
+                            ++srcPtr;
+                            ++destPtr;
+                        }
+                    }
+                    return;
+                case BufferFormat.B4G4R4A4_UNorm:
+                    {
+                        ushort* srcPtr = (ushort*)src;
+                        ushort* destPtr = (ushort*)dest;
+
+                        for (int i = 0; i < size; i += 4)
+                        {
+                            ushort pixel = *srcPtr;
+                            ushort color = (ushort)(pixel & 0xfff);
+                            float srcAlpha = ((pixel & 0xF000) >> 12) / 16.0f;
+
+                            ushort c1 = (ushort)(((color >> 8) & 0xF) * srcAlpha);
+                            ushort c2 = (ushort)(((color >> 4) & 0xF) * srcAlpha);
+                            ushort c3 = (ushort)((color & 0xF) * srcAlpha);
+
+                            color = (ushort)((c1 << 8) | (c2 << 4) | c3);
+
+                            *destPtr = (ushort)((pixel & 0xF000) | color);
+
                             ++srcPtr;
                             ++destPtr;
                         }
