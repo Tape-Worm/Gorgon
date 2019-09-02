@@ -16,9 +16,7 @@ name: 3.0.$(Rev:r).$(DayOfYear)
 trigger:
   branches:
     include:
-    - master
-    - Staging
-    - BugFixes
+    - master    
     
 steps:
 - task: PowerShell@2
