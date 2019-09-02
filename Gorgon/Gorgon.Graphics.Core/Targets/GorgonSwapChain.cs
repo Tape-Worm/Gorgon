@@ -174,6 +174,8 @@ namespace Gorgon.Graphics.Core
         private readonly GorgonRenderTargetView[] _previousViews = new GorgonRenderTargetView[D3D11.OutputMergerStage.SimultaneousRenderTargetCount];
         // Flag to indicate that tearing support is enabled (for flip mode).
         private readonly int _supportsTearing = 1;
+        // The original size of the window prior to the resize event.
+        private DX.Size2 _originalSize;
         #endregion
 
         #region Events.
@@ -476,6 +478,15 @@ namespace Gorgon.Graphics.Core
         {
             try
             {
+                var newSize = new DX.Size2(ParentForm.ClientSize.Width, ParentForm.ClientSize.Height);
+
+                // If the actual size didn't change, then don't trigger a resize of the swap chain.
+                if (newSize.Equals(_originalSize))
+                {
+                    _resizeState.Resized = false;
+                    return;
+                }
+
                 // When we're done, tell the system that the resize is complete.
                 _resizeState.Resized = true;
 
@@ -496,9 +507,15 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ParentForm_ResizeBegin(object sender, EventArgs e) =>
+        private void ParentForm_ResizeBegin(object sender, EventArgs e)
+        {
             // Set the flag to indicate that we've started a resize operation.
             _resizeState.Resized = false;
+
+            // Capture the original size. If we don't, the swapchain will act as though it's being resized when we move the window. This can cause 
+            // a lot of weirdness if the swap chain size doesn't match the client size of the bound window.
+            _originalSize = new DX.Size2(ParentForm.ClientSize.Width, ParentForm.ClientSize.Height);
+        }
 
         /// <summary>
         /// Handles the Resize event of the Window control.
