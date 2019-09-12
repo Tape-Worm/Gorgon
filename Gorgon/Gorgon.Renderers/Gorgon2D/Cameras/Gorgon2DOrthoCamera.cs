@@ -55,7 +55,7 @@ namespace Gorgon.Renderers
         // The raw view matrix.
         private DX.Matrix _viewMatrix = DX.Matrix.Identity;
         // The position of the camera.
-        private DX.Vector2 _position;
+        private DX.Vector3 _position;
         // Scale.
         private DX.Vector2 _zoom = new DX.Vector2(1.0f);
         // Target position.
@@ -93,18 +93,9 @@ namespace Gorgon.Renderers
         public DX.RectangleF ViewableRegion => new DX.RectangleF(-_viewDimensions.Width * _anchor.X, -_viewDimensions.Height * _anchor.Y, _viewDimensions.Width, _viewDimensions.Height);
 
         /// <summary>
-        /// Property to set or return the position of the camera.
-        /// </summary>
-        DX.Vector3 IGorgon2DCamera.Position
-        {
-            get => new DX.Vector3(Position, 0);
-            set => Position = (DX.Vector2)value;
-        }
-
-        /// <summary>
         /// Property to set or return the camera position.
         /// </summary>
-        public DX.Vector2 Position
+        public DX.Vector3 Position
         {
             get => _position;
             set

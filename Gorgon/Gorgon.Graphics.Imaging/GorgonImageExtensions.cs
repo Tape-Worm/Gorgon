@@ -704,6 +704,7 @@ namespace Gorgon.Graphics.Imaging
         public static IGorgonImage ConvertToPremultipliedAlpha(this IGorgonImage baseImage)
         {
             IGorgonImage newImage = null;
+            GorgonNativeBuffer<byte> imageData = null;
 
             if (baseImage == null)
             {
@@ -726,11 +727,13 @@ namespace Gorgon.Graphics.Imaging
                 {
                     HasPreMultipliedAlpha = true
                 };
-                newImage = new GorgonImage(cloneImageInfo);
-                baseImage.CopyTo(newImage);
+                imageData = new GorgonNativeBuffer<byte>(baseImage.ImageData.Length);
+                baseImage.ImageData.CopyTo(imageData);                
 
                 unsafe
                 {
+                    newImage = new GorgonImage(cloneImageInfo, new GorgonReadOnlyPointer((void*)imageData, imageData.SizeInBytes));
+
                     int arrayOrDepth = newImage.ImageType == ImageType.Image3D ? newImage.Depth : newImage.ArrayCount;
 
                     for (int mip = 0; mip < newImage.MipCount; ++mip)
@@ -756,6 +759,7 @@ namespace Gorgon.Graphics.Imaging
             }
             finally
             {
+                imageData?.Dispose();
                 newImage?.Dispose();
             }
         }
@@ -778,7 +782,7 @@ namespace Gorgon.Graphics.Imaging
         /// greater than the maximum range, then the <paramref name="alphaValue"/> will <b>not</b> be set on the alpha channel.
         /// </para>
         /// </remarks>
-        public static IGorgonImageBuffer SetAlpha(this IGorgonImageBuffer buffer, float alphaValue, GorgonRangeF? updateAlphaRange = null)
+        public static IGorgonImageBuffer SetAlpha(this IGorgonImageBuffer buffer, float alphaValue, GorgonRangeF? updateAlphaRange = null, DX.Rectangle? region = null)
         {
             if (buffer == null)
             {
@@ -800,7 +804,18 @@ namespace Gorgon.Graphics.Imaging
             if (updateAlphaRange == null)
             {
                 updateAlphaRange = new GorgonRangeF(0, 1);
-            }            
+            }
+
+            var fullRect = new DX.Rectangle(0, 0, buffer.Width - 1, buffer.Height - 1);
+
+            if (region == null)
+            {
+                region = fullRect;
+            }
+            else
+            {
+                region = DX.Rectangle.Intersect(region.Value, fullRect);
+            }
 
             unsafe
             {
@@ -808,10 +823,12 @@ namespace Gorgon.Graphics.Imaging
                 uint alpha = (uint)(alphaValue * 255.0f);
                 uint min = (uint)(updateAlphaRange.Value.Minimum * 255.0f);
                 uint max = (uint)(updateAlphaRange.Value.Maximum * 255.0f);
+                int pitch = buffer.PitchInformation.RowPitch / buffer.Width;
 
-                for (int y = 0; y < buffer.Height; ++y)
+                for (int y = region.Value.Top; y <= region.Value.Bottom; ++y)
                 {
-                    ImageUtilities.SetAlphaScanline(src, buffer.PitchInformation.RowPitch, src, buffer.PitchInformation.RowPitch, buffer.Format, alpha, min, max);
+                    byte* horzPtr = src + region.Value.Left * buffer.FormatInformation.SizeInBytes;
+                    ImageUtilities.SetAlphaScanline(horzPtr, region.Value.Width * pitch, horzPtr, region.Value.Width * pitch, buffer.Format, alpha, min, max);
                     src += buffer.PitchInformation.RowPitch;
                 }
             }

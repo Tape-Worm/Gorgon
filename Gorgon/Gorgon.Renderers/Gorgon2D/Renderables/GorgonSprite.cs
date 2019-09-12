@@ -43,6 +43,8 @@ namespace Gorgon.Renderers
         #region Variables.
         // The angle of rotation, in degrees.
         private float _angle;
+        // The absolute anchor position.
+        private DX.Vector2 _absoluteAnchor;
         // The renderable data for this sprite.
         // It is exposed as an internal variable (which goes against C# best practices) for performance reasons (property accesses add up over time).
         internal readonly BatchRenderable Renderable = new BatchRenderable();
@@ -206,8 +208,44 @@ namespace Gorgon.Renderers
                     return;
                 }
 
+                ref DX.Vector2 absAnchor = ref _absoluteAnchor;
+                ref DX.RectangleF bounds = ref Renderable.Bounds;
+
                 anchor = value;
+
+                absAnchor.X = value.X * bounds.Width;
+                absAnchor.Y = value.Y * bounds.Height;
                 Renderable.HasVertexChanges = true;
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the absolute anchor position.
+        /// </summary>
+        /// <remarks>
+        /// Unlike the <see cref="Anchor"/> property, this value is absolute from the upper left corner of the sprite to the lower right corner.
+        /// </remarks>
+        [JsonIgnore]
+        public DX.Vector2 AbsoluteAnchor
+        {
+            get => _absoluteAnchor;
+            set
+            {
+                ref DX.Vector2 absAnchor = ref _absoluteAnchor;
+                if ((absAnchor.X == value.X)
+                    && (absAnchor.Y == value.Y))
+                {
+                    return;
+                }
+
+                ref DX.Vector2 anchor = ref Renderable.Anchor;
+                ref DX.RectangleF bounds = ref Renderable.Bounds;
+                
+                absAnchor = value;
+
+                anchor.X = value.X / bounds.Width;
+                anchor.Y = value.Y / bounds.Height;
+                Renderable.HasTextureChanges = true;    
             }
         }
 

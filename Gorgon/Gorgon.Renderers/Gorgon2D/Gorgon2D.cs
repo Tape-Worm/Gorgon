@@ -186,6 +186,47 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
+        /// Property to set or return the alpha testing range for primitive functions.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Setting this value with a <see cref="GorgonRangeF"/> will exclude any alpha values within the range when rendering, this will improve performance. If this value is <b>null</b>, then alpha 
+        /// testing is disabled and all pixel values will be rendered.
+        /// </para>
+        /// <para>
+        /// Currently, the default is set to a minimum of 0 and a maximum of 0. This means that alpha values with a value of 0 will not be rendered.
+        /// </para>
+        /// <para>
+        /// This applies to methods like <see cref="DrawFilledRectangle(DX.RectangleF, GorgonColor, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float)"/>, 
+        /// <see cref="DrawRectangle(DX.RectangleF, GorgonColor, float, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float)"/>, etc... 
+        /// <see cref="DrawSprite(GorgonSprite)"/> and <see cref="DrawTextSprite(GorgonTextSprite)"/> have their own alpha test ranges and are not affected by this property.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="DrawLine(float, float, float, float, GorgonColor, float, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float, float)"/>
+        /// <seealso cref="DrawRectangle(DX.RectangleF, GorgonColor, float, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float)"/>
+        /// <seealso cref="DrawEllipse(DX.RectangleF, GorgonColor, float, float, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float)"/>
+        /// <seealso cref="DrawArc(DX.RectangleF, GorgonColor, float, float, float, float, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float)"/>        
+        /// <seealso cref="DrawTriangle(in GorgonTriangleVertex, in GorgonTriangleVertex, in GorgonTriangleVertex, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float)"/>
+        /// <seealso cref="DrawFilledRectangle(DX.RectangleF, GorgonColor, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float)"/>
+        /// <seealso cref="DrawFilledEllipse(DX.RectangleF, GorgonColor, float, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float)"/>
+        /// <seealso cref="DrawFilledArc(DX.RectangleF, GorgonColor, float, float, float, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float)"/>
+        public GorgonRangeF? PrimitiveAlphaTestRange
+        {
+            get;
+            set;
+        } = new GorgonRangeF(0, 0);
+
+        /// <summary>
+        /// Property to return whether the renderer is currently rendering.
+        /// </summary>
+        /// <remarks>
+        /// This value will return <b>true</b> if <see cref="Begin"/> was previously called, and <b>false</b> when <see cref="End"/>.
+        /// </remarks>
+        /// <seealso cref="Begin"/>
+        /// <seealso cref="End"/>
+        public bool IsRendering => _beginCalled != 0;
+
+        /// <summary>
         /// Property to return the <see cref="GorgonGraphics"/> interface that owns this renderer.
         /// </summary>
         public GorgonGraphics Graphics
@@ -1356,7 +1397,7 @@ namespace Gorgon.Renderers
             _primitiveRenderable.Bounds = region;
             _primitiveRenderable.ActualVertexCount = 4;
             _primitiveRenderable.IndexCount = 6;
-            _primitiveRenderable.AlphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
+            _primitiveRenderable.AlphaTestData = PrimitiveAlphaTestRange == null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
             _primitiveRenderable.Texture = texture;
             _primitiveRenderable.TextureSampler = textureSampler;
 
@@ -1412,7 +1453,7 @@ namespace Gorgon.Renderers
                 Position = new DX.Vector4(point3.Position, depth, 1.0f),
                 UV = texture != null ? new DX.Vector3(point3.TextureCoordinate, point3.TextureArrayIndex) : DX.Vector3.Zero
             };
-            _primitiveRenderable.AlphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
+            _primitiveRenderable.AlphaTestData = PrimitiveAlphaTestRange == null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
             _primitiveRenderable.Texture = texture ?? _defaultTexture;
             _primitiveRenderable.TextureSampler = textureSampler;
 
@@ -1678,7 +1719,7 @@ namespace Gorgon.Renderers
             _primitiveRenderable.PrimitiveType = PrimitiveType.TriangleList;
             _primitiveRenderable.ActualVertexCount = 4;
             _primitiveRenderable.IndexCount = 6;
-            _primitiveRenderable.AlphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
+            _primitiveRenderable.AlphaTestData = PrimitiveAlphaTestRange == null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
             _primitiveRenderable.Texture = texture;
             _primitiveRenderable.TextureSampler = textureSampler;
 
@@ -1785,7 +1826,7 @@ namespace Gorgon.Renderers
             CheckPrimitiveStateChange(texture, textureSampler);
             _primitiveRenderable.Texture = texture ?? _defaultTexture;
             _primitiveRenderable.TextureSampler = textureSampler;
-            _primitiveRenderable.AlphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
+            _primitiveRenderable.AlphaTestData = PrimitiveAlphaTestRange == null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
 
             RenderBatchOnChange(_primitiveRenderable, false);
 
@@ -1911,7 +1952,7 @@ namespace Gorgon.Renderers
             CheckPrimitiveStateChange(texture, textureSampler);
             _primitiveRenderable.Texture = texture ?? _defaultTexture;
             _primitiveRenderable.TextureSampler = textureSampler;
-            _primitiveRenderable.AlphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
+            _primitiveRenderable.AlphaTestData = PrimitiveAlphaTestRange == null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
 
             RenderBatchOnChange(_primitiveRenderable, false);
 
@@ -2031,7 +2072,7 @@ namespace Gorgon.Renderers
             CheckPrimitiveStateChange(texture, textureSampler);
             _primitiveRenderable.Texture = texture ?? _defaultTexture;
             _primitiveRenderable.TextureSampler = textureSampler;
-            _primitiveRenderable.AlphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
+            _primitiveRenderable.AlphaTestData = PrimitiveAlphaTestRange == null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
 
             RenderBatchOnChange(_primitiveRenderable, false);
 
@@ -2142,7 +2183,7 @@ namespace Gorgon.Renderers
             CheckPrimitiveStateChange(texture, textureSampler);
             _primitiveRenderable.Texture = texture ?? _defaultTexture;
             _primitiveRenderable.TextureSampler = textureSampler;
-            _primitiveRenderable.AlphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
+            _primitiveRenderable.AlphaTestData = PrimitiveAlphaTestRange == null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
 
             RenderBatchOnChange(_primitiveRenderable, false);
 

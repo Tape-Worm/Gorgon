@@ -140,6 +140,24 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
+        /// Property to set or return the angle of rotation in degrees.
+        /// </summary>
+        float Angle
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the camera zoom.
+        /// </summary>
+        DX.Vector2 Zoom
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to return the viewable region for the camera.
         /// </summary>
         /// <remarks>
@@ -157,6 +175,18 @@ namespace Gorgon.Renderers
         Gorgon2D Renderer
         {
             get;
+        }
+
+        /// <summary>
+        /// Property to set or return an anchor for rotation, scaling and positioning.
+        /// </summary>
+        /// <remarks>
+        /// This value is in relative coordinates. That is, 0,0 would be the upper left corner of the <see cref="ViewDimensions"/>, and 1,1 would be lower right corner of the <see cref="ViewDimensions"/>.
+        /// </remarks>
+        DX.Vector2 Anchor
+        {
+            get;
+            set;
         }
         #endregion
 

@@ -184,6 +184,25 @@ namespace Gorgon.Renderers
             SpecularPower = 0.0f;
             Intensity = 1.0f;
         }
+
+        /// <summary>Initializes a new instance of the <see cref="Gorgon2DLight"/> class.</summary>
+        /// <param name="copy">The light data to copy.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="copy"/> parameter is <strong>null</strong>.</exception>
+        public Gorgon2DLight(Gorgon2DLight copy)
+        {
+            if (copy == null)
+            {
+                throw new ArgumentNullException(nameof(copy));
+            }
+
+            Color = copy.Color;
+            Position = copy.Position;
+            LightDirection = copy.LightDirection;
+            Attenuation = copy.Attenuation;
+            SpecularEnabled = copy.SpecularEnabled;
+            SpecularPower = copy.SpecularPower;
+            Intensity = copy.Intensity;
+        }
         #endregion
     }
 }
