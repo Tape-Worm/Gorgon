@@ -523,7 +523,7 @@ namespace GorgonGettingStarted
 			// This is important because if it wasn't able to be bound to a shader, it would not render. Depending 
 			// on the context, you may be required to define the binding yourself.
 			_texture = GorgonTexture2DView.FromFile(_graphics,
-													@"D:\Mike\Code\GitHubRepos\Gorgon\Master_Stage\Resources\Textures\Balls\E0_128x128.png",
+													@"<<THE LOCATION OF YOUR GORGON INSTALL>>\Resources\Textures\Balls\E0_128x128.png",
 													codec);
 
 			// Now we can map this image to our sprite.

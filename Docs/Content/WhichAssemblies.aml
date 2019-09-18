@@ -54,7 +54,7 @@
                       <para>This is a <application>core</application> API, and as such only provides the bare minimum in functionality. External renderers are used to allow more complicated functionality.</para>
                     </alert>
               </entry>
-              <entry><list class="bullet"><listItem>Gorgon.Core.dll</listItem><listItem>Gorgon.Graphics.Imaging.dll</listItem></list></entry>
+              <entry><list class="bullet"><listItem>Gorgon.Core.dll</listItem><listItem>Gorgon.Windows.dll</listItem><listItem>Gorgon.Graphics.Imaging.dll</listItem></list></entry>
             </row>
             <row>
               <entry><para>Gorgon.Graphics.Fonts.dll</para></entry>

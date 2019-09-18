@@ -220,7 +220,7 @@ namespace Gorgon.Renderers
         /// Property to return whether the renderer is currently rendering.
         /// </summary>
         /// <remarks>
-        /// This value will return <b>true</b> if <see cref="Begin"/> was previously called, and <b>false</b> when <see cref="End"/>.
+        /// This value will return <b>true</b> if <see cref="Begin"/> was previously called, and <b>false</b> when <see cref="End"/> is called.
         /// </remarks>
         /// <seealso cref="Begin"/>
         /// <seealso cref="End"/>

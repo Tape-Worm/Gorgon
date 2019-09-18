@@ -64,7 +64,7 @@ using Gorgon.UI;
             <content>
               <para>C#, unlike Visual C++ and Win32, doesn't really give us a <application>good</application> means of handling Idle time for a windows application. It has something called <codeInline>Application.Idle</codeInline>, but it doesn't work 
               quite the way you might expect and has a host of issues when paired with <codeInline>Application.DoEvents</codeInline>. However, in order to do something a little less... boring, we'll need to have the CPU call our functionality over 
-              and over until the application closes. This requires that we hook into the time when window messages are done processing and the applicatino is doing nothing.</para>
+              and over until the application closes. This requires that we hook into the time when window messages are done processing and the application is doing nothing.</para>
               <para>
                 Fortunately, Gorgon has built-in functionality to allow you to hook the idle time for a windows forms application. This is done via 2nd parameter on the <codeEntityReference qualifyHint="true">M:Gorgon.UI.GorgonApplication.Run(System.Windows.Forms.Form,System.Func{System.Boolean})</codeEntityReference> method.               
               </para>

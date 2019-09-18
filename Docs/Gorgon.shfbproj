@@ -108,7 +108,7 @@ The types in here are inherently dangerous to use because they offer little in t
     </NamespaceSummaries>
     <PlugInConfigurations>
       <PlugInConfig id="Assembly Binding Redirection" enabled="True">
-        <configuration useGAC="false">
+        <configuration useGAC="true">
           <assemblyBinding />
           <ignoreIfUnresolved>
             <assemblyIdentity name="BusinessObjects.Licensing.KeycodeDecoder" />
@@ -116,16 +116,6 @@ The types in here are inherently dangerous to use because they offer little in t
             <assemblyIdentity name="SharpDX" />
             <assemblyIdentity name="SharpDX.Mathematics" />
           </ignoreIfUnresolved>
-        </configuration>
-      </PlugInConfig>
-      <PlugInConfig id="Member ID Fix-Ups" enabled="True">
-        <configuration>
-          <expressions>
-            <expression matchExpression="Equals(`0@" replacementValue="Equals(`0@|System.Runtime.InteropServices.InAttribute" matchAsRegEx="false" />
-            <expression matchExpression="SharpDX.Rectangle@" replacementValue="SharpDX.Rectangle@|System.Runtime.InteropServices.InAttribute" matchAsRegEx="false" />
-            <expression matchExpression="System.Nullable{SharpDX.Rectangle}@" replacementValue="System.Nullable{SharpDX.Rectangle}@|System.Runtime.InteropServices.InAttribute" matchAsRegEx="false" />
-            <expression matchExpression="Gorgon.Renderers.GorgonTriangleVertex@" replacementValue="Gorgon.Renderers.GorgonTriangleVertex@|System.Runtime.InteropServices.InAttribute" matchAsRegEx="false" />
-          </expressions>
         </configuration>
       </PlugInConfig>
     </PlugInConfigurations>
