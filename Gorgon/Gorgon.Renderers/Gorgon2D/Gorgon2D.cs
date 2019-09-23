@@ -123,6 +123,8 @@ namespace Gorgon.Renderers
         private GorgonTexture2DView _defaultTexture;
         // The default texture to render.
         private GorgonTexture2DView _blackTexture;
+        // The default texture for normal maps.
+        private GorgonTexture2DView _normalTexture;
         // The buffer that holds the view and projection matrices.
         private CameraController _cameraController;
         // The buffer used to perform alpha testing.
@@ -164,7 +166,17 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to return a black texture to pass to shaders when no texture is specified.
         /// </summary>
-        internal GorgonTexture2DView EmptyBlackTexture => _blackTexture;
+        public GorgonTexture2DView EmptyBlackTexture => _blackTexture;
+
+        /// <summary>
+        /// Property to return an empty white texture to pass to shaders when no texture is specified.
+        /// </summary>
+        public GorgonTexture2DView EmptyWhiteTexture => _defaultTexture;
+
+        /// <summary>
+        /// Property to return an empty normal map texture to pass to shaders when no texture is specified.
+        /// </summary>
+        public GorgonTexture2DView EmptyNormalMapTexture => _normalTexture;
 
         /// <summary>
         /// Property to return the default font used for text rendering if the user did not specify a font with text drawing routines.
@@ -446,6 +458,15 @@ namespace Gorgon.Renderers
                                                                                   });
 
                 _blackTexture = textureResource.GetShaderResourceView();
+
+                textureResource = Resources.normal_2x2.ToTexture2D(Graphics,
+                                                                   new GorgonTexture2DLoadOptions
+                                                                   {
+                                                                       Name = "Empty normal 2x2 texture",
+                                                                       Binding = TextureBinding.ShaderResource,
+                                                                       Usage = ResourceUsage.Immutable
+                                                                   });
+                _normalTexture = textureResource.GetShaderResourceView();
 
                 _alphaTestData = new AlphaTestData(true, GorgonRangeF.Empty);
                 _alphaTest = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _alphaTestData, "Alpha Test Buffer");
@@ -2203,6 +2224,7 @@ namespace Gorgon.Renderers
             BatchRenderer spriteRenderer = Interlocked.Exchange(ref _batchRenderer, null);
             GorgonTexture2DView whiteTexture = Interlocked.Exchange(ref _defaultTexture, null);
             GorgonTexture2DView blackTexture = Interlocked.Exchange(ref _blackTexture, null);
+            GorgonTexture2DView normalTexture = Interlocked.Exchange(ref _normalTexture, null);
             CameraController camController = Interlocked.Exchange(ref _cameraController, null);
             GorgonConstantBufferView world = Interlocked.Exchange(ref _polySpriteDataBuffer, null);
             GorgonConstantBufferView alphaTest = Interlocked.Exchange(ref _alphaTest, null);
@@ -2225,6 +2247,7 @@ namespace Gorgon.Renderers
             camController?.Dispose();
             whiteTexture?.Texture?.Dispose();
             blackTexture?.Texture?.Dispose();
+            normalTexture?.Texture?.Dispose();
             layout?.Dispose();
             polyPShader?.Dispose();
             worldShader?.Dispose();

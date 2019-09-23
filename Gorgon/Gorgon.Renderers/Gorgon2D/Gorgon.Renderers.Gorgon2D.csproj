@@ -133,6 +133,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\normal_2x2.png" />
     <None Include="Resources\ChromaticAberration.hlsl" />
     <Content Include="Resources\HdrBloom.hlsl" />
     <None Include="Resources\black_2x2.png" />

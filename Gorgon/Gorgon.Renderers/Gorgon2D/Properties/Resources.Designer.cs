@@ -543,6 +543,16 @@ namespace Gorgon.Renderers.Properties {
         // Comment stripped.
         // Comment stripped.
         // Comment stripped.
+        internal static System.Drawing.Bitmap normal_2x2 {
+            get {
+                object obj = ResourceManager.GetObject("normal_2x2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
         internal static System.Drawing.Bitmap White_2x2 {
             get {
                 object obj = ResourceManager.GetObject("White_2x2", resourceCulture);
