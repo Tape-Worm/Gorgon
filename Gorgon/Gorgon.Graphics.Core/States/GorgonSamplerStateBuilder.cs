@@ -41,6 +41,10 @@ namespace Gorgon.Graphics.Core
     /// <para>
     /// A sampler state is an immutable object, and as such can only be created by using this object.
     /// </para>
+    /// <para>
+    /// Unlike the other state builders, this builder does not offer the optional use of a <see cref="GorgonStateBuilderPoolAllocator{T}"/>. This is because the state is cached internally and does not need 
+    /// an allocator pool.
+    /// </para>
     /// </remarks>
     /// <seealso cref="GorgonGraphics"/>
     /// <seealso cref="GorgonPipelineState"/>
@@ -82,7 +86,7 @@ namespace Gorgon.Graphics.Core
         /// Function to update the properties of the state from the working copy to the final copy.
         /// </summary>
         /// <returns>The new render state.</returns>
-        protected override GorgonSamplerState OnUpdate() => Graphics.CacheSamplerState(WorkingState);
+        protected override GorgonSamplerState OnCreateState() => Graphics.CacheSamplerState(WorkingState);
 
         /// <summary>
         /// Function to reset the builder to the specified state.

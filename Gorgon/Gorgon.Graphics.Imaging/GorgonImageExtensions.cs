@@ -770,6 +770,7 @@ namespace Gorgon.Graphics.Imaging
         /// <param name="buffer">The buffer to set the alpha channel on.</param>
         /// <param name="alphaValue">The value to set.</param>
         /// <param name="updateAlphaRange">[Optional] The range of alpha values in the buffer that will be updated.</param>
+        /// <param name="region">[Optional] The region in the buffer to update.</param>
         /// <returns>The fluent interface for the buffer that was updated.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentException">Thrown if the buffer format is compressed.</exception>
@@ -780,6 +781,9 @@ namespace Gorgon.Graphics.Imaging
         /// <para>
         /// If the <paramref name="updateAlphaRange"/> parameter is set, then the alpha values in the <paramref name="buffer"/> will be examined and if the alpha value is less than the minimum range or 
         /// greater than the maximum range, then the <paramref name="alphaValue"/> will <b>not</b> be set on the alpha channel.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="region"/> is not specified, then the entire buffer is updated, otherwise only the values within the <paramref name="region"/> are updated. 
         /// </para>
         /// </remarks>
         public static IGorgonImageBuffer SetAlpha(this IGorgonImageBuffer buffer, float alphaValue, GorgonRangeF? updateAlphaRange = null, DX.Rectangle? region = null)

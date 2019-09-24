@@ -35,7 +35,7 @@ namespace Gorgon.Renderers
     /// <seealso cref="Gorgon2DBatchState"/>
     /// <seealso cref="Gorgon2D"/>
     public class Gorgon2DBatchStateBuilder
-        : IGorgonFluentBuilder<Gorgon2DBatchStateBuilder, Gorgon2DBatchState>
+        : IGorgonFluentBuilderAllocator<Gorgon2DBatchStateBuilder, Gorgon2DBatchState, Gorgon2DBatchStatePoolAllocator>
     {
         #region Variables.
         // The state that will be edited.
@@ -206,6 +206,39 @@ namespace Gorgon.Renderers
             _worker.RasterState = builderObject.RasterState;
 
             return this;
+        }
+
+        /// <summary>Function to return the object.</summary>
+        /// <param name="allocator">The allocator used to create an instance of the object</param>
+        /// <returns>The object created or updated by this builder.</returns>
+        /// <remarks>
+        ///   <para>
+        /// Using an <paramref name="allocator" /> can provide different strategies when building objects.  If omitted, the object will be created using the standard <span class="keyword">new</span> keyword.
+        /// </para>
+        ///   <para>
+        /// A custom allocator can be beneficial because it allows us to use a pool for allocating the objects, and thus allows for recycling of objects. This keeps the garbage collector happy by keeping objects
+        /// around for as long as we need them, instead of creating objects that can potentially end up in the large object heap or in Gen 2.
+        /// </para>
+        ///   <para>
+        /// A object requires that at least a vertex shader be bound. If none is present, then the method will throw an exception.
+        /// </para>
+        /// </remarks>
+        public Gorgon2DBatchState Build(Gorgon2DBatchStatePoolAllocator allocator)
+        {
+            if (allocator == null)
+            {
+                return Build();
+            }
+
+            Gorgon2DBatchState state = allocator.Allocate();
+
+            state.PixelShaderState = _worker.PixelShaderState;
+            state.VertexShaderState = _worker.VertexShaderState;
+            state.BlendState = _worker.BlendState;
+            state.DepthStencilState = _worker.DepthStencilState;
+            state.RasterState = _worker.RasterState;
+
+            return state;
         }
         #endregion
     }

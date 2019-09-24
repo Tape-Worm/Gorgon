@@ -135,6 +135,8 @@
     <Compile Include="States\FillMode.cs" />
     <Compile Include="States\GorgonBlendState.cs" />
     <Compile Include="States\GorgonDepthStencilState.cs" />
+    <Compile Include="States\GorgonStateBuilderAllocator.cs" />
+    <Compile Include="States\GorgonStateBuilderPoolAllocator.cs" />
     <Compile Include="States\GorgonStreamOutPipelineStateBuilder .cs" />
     <Compile Include="States\GorgonPipelineStateBuilder.cs" />
     <Compile Include="Pipeline\GorgonVertexBufferBinding.cs" />

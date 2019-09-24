@@ -84,6 +84,7 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Gorgon2D.cs" />
     <Compile Include="Effects\Gorgon2DCompositionPass.cs" />
+    <Compile Include="Renderables\Gorgon2DBatchStatePoolAllocator.cs" />
     <Compile Include="Renderables\GorgonPolySprite.cs" />
     <Compile Include="Renderables\GorgonPolySpriteBuilder.cs" />
     <Compile Include="Renderables\GorgonPolySpriteVertex.cs" />

@@ -754,7 +754,7 @@ namespace Gorgon.Graphics.Core
             DrawCall.SetupConstantBuffers();
             DrawCall.SetupSamplers();
             DrawCall.SetupViews();
-            drawCall.D3DState.PsSamplers[0] = GorgonSamplerState.Default;
+            DrawCall.D3DState.PsSamplers[0] = GorgonSamplerState.Default;
             DrawCall.D3DState.VertexBuffers = new GorgonVertexBufferBindings();
             DrawCall.D3DState.StreamOutBindings = new GorgonStreamOutBindings();
             DrawCall.D3DState.PipelineState = new GorgonPipelineState();

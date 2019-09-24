@@ -46,7 +46,7 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="GorgonPipelineState"/>
     /// <seealso cref="GorgonBlendState"/>
     public class GorgonBlendStateBuilder
-        : GorgonStateBuilderCommon<GorgonBlendStateBuilder, GorgonBlendState>
+        : GorgonStateBuilderAllocator<GorgonBlendStateBuilder, GorgonBlendState>
     {
         #region Methods.
         /// <summary>
@@ -71,7 +71,11 @@ namespace Gorgon.Graphics.Core
         /// Function to update the properties of the state from the working copy to the final copy.
         /// </summary>
         /// <returns>The fluent builder interface.</returns>
-        protected override GorgonBlendState OnUpdate() => new GorgonBlendState(WorkingState);
+        protected override GorgonBlendState OnCreateState() => new GorgonBlendState(WorkingState);
+
+        /// <summary>Function to update the properties of the state, allocated from an allocator, from the working copy.</summary>
+        /// <param name="state">The state to update.</param>
+        protected override void OnUpdate(GorgonBlendState state) => CopyState(WorkingState, state);
 
         /// <summary>
         /// Function to reset the builder to the specified state.
@@ -207,6 +211,7 @@ namespace Gorgon.Graphics.Core
         public GorgonBlendStateBuilder()
             : base(new GorgonBlendState())
         {
+            
         }
         #endregion
     }

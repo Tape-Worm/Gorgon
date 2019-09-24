@@ -50,10 +50,10 @@ namespace Gorgon.Graphics.Core
 
         #region Methods.
         /// <summary>
-        /// Function to update the properties of the state from the working copy to the final copy.
+        /// Function to create a new state with the properties copied from the working copy.
         /// </summary>
         /// <returns>The new render state.</returns>
-        protected abstract TRs OnUpdate();
+        protected abstract TRs OnCreateState();
 
         /// <summary>
         /// Function to reset the builder to the specified state.
@@ -72,7 +72,7 @@ namespace Gorgon.Graphics.Core
         /// Function to return the state.
         /// </summary>
         /// <returns>The state created or updated by this builder.</returns>
-        public TRs Build() => OnUpdate();
+        public TRs Build() => OnCreateState();
 
         /// <summary>
         /// Function to reset the builder to the specified state.

@@ -52,7 +52,7 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="GorgonPipelineState"/>
     /// <seealso cref="GorgonRasterState"/>
     public class GorgonRasterStateBuilder
-        : GorgonStateBuilderCommon<GorgonRasterStateBuilder, GorgonRasterState>
+        : GorgonStateBuilderAllocator<GorgonRasterStateBuilder, GorgonRasterState>
     {
         #region Methods.
         /// <summary>
@@ -81,7 +81,11 @@ namespace Gorgon.Graphics.Core
         /// Function to update the properties of the state from the working copy to the final copy.
         /// </summary>
         /// <returns>The fluent builder interface.</returns>
-        protected override GorgonRasterState OnUpdate() => new GorgonRasterState(WorkingState);
+        protected override GorgonRasterState OnCreateState() => new GorgonRasterState(WorkingState);
+        
+        /// <summary>Function to update the properties of the state, allocated from an allocator, from the working copy.</summary>
+        /// <param name="state">The state to update.</param>
+        protected override void OnUpdate(GorgonRasterState state) => CopyState(WorkingState, state);
 
         /// <summary>
         /// Function to reset the builder to the specified state.
