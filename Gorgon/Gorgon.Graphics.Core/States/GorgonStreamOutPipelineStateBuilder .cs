@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
+using Gorgon.Memory;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -58,7 +59,7 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="GorgonStreamOutCall"/>
     /// <seealso cref="GorgonStreamOutPipelineState"/>
     public class GorgonStreamOutPipelineStateBuilder
-        : IGorgonGraphicsObject, IGorgonFluentBuilder<GorgonStreamOutPipelineStateBuilder, GorgonStreamOutPipelineState>
+        : IGorgonGraphicsObject, IGorgonFluentBuilderAllocator<GorgonStreamOutPipelineStateBuilder, GorgonStreamOutPipelineState, IGorgonAllocator<GorgonStreamOutPipelineState>>
     {
         #region Variables.
         // The working state.
@@ -262,8 +263,35 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Function to build a pipeline state.
         /// </summary>
+        /// <param name="allocator">The allocator used to create an instance of the object</param>
+        /// <returns>The object created or updated by this builder.</returns>
+        /// <remarks>
+        ///   <para>
+        /// Using an <paramref name="allocator" /> can provide different strategies when building objects.  If omitted, the object will be created using the standard <span class="keyword">new</span> keyword.
+        /// </para>
+        ///   <para>
+        /// A custom allocator can be beneficial because it allows us to use a pool for allocating the objects, and thus allows for recycling of objects. This keeps the garbage collector happy by keeping objects
+        /// around for as long as we need them, instead of creating objects that can potentially end up in the large object heap or in Gen 2.
+        /// </para>
+        /// </remarks>
+        public GorgonStreamOutPipelineState Build(IGorgonAllocator<GorgonStreamOutPipelineState> allocator)
+        {
+            if (allocator == null)
+            {
+                return new GorgonStreamOutPipelineState(Graphics.CachePipelineState(_workState.PipelineState));
+            }
+
+            // Caches the state info.
+            void CacheState(GorgonStreamOutPipelineState state) => Graphics.CachePipelineState(state.PipelineState);
+            
+            return allocator.Allocate(CacheState);
+        }
+
+        /// <summary>
+        /// Function to build a pipeline state.
+        /// </summary>
         /// <returns>A new pipeline state.</returns>
-        public GorgonStreamOutPipelineState Build() => new GorgonStreamOutPipelineState(Graphics.CachePipelineState(_workState.PipelineState));
+        public GorgonStreamOutPipelineState Build() => Build(null);
         #endregion
 
         #region Constructor.

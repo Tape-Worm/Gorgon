@@ -30,6 +30,7 @@ using System.Runtime.InteropServices;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
+using Gorgon.Memory;
 using Gorgon.Renderers.Properties;
 using DX = SharpDX;
 
@@ -142,8 +143,6 @@ namespace Gorgon.Renderers
         private GorgonTexture2DView _sceneSrv;
         // A builder used to create shader states.
         private readonly Gorgon2DShaderStateBuilder<GorgonPixelShader> _shaderBuilder = new Gorgon2DShaderStateBuilder<GorgonPixelShader>();
-        // A builder used to create states for 2D batch rendering.
-        private readonly Gorgon2DBatchStateBuilder _batchBuilder = new Gorgon2DBatchStateBuilder();
         // Information used to build render targets.
         private readonly GorgonTexture2DInfo _targetInfo;
         // The bloom intensity level.
@@ -162,6 +161,16 @@ namespace Gorgon.Renderers
         private (GorgonRenderTarget2DView up, GorgonRenderTarget2DView down)[] _sampleTargets;
         // The states that apply to each down sample target.
         private Gorgon2DBatchState[] _sampleTargetStates;
+        // Pool allocator for the batch states.
+        private readonly Gorgon2DBatchStatePoolAllocator _batchAllocator = new Gorgon2DBatchStatePoolAllocator(16);
+        // Pool allocator for the batch states.
+        private readonly Gorgon2DBatchStatePoolAllocator _batchSamplingAllocator = new Gorgon2DBatchStatePoolAllocator(32);
+        // Pool allocator for the final pixel shader states.
+        private readonly GorgonRingPool<Gorgon2DShaderState<GorgonPixelShader>> _shaderStateAllocator =
+                new GorgonRingPool<Gorgon2DShaderState<GorgonPixelShader>>(16, () => new Gorgon2DShaderState<GorgonPixelShader>());
+        // Pool allocator for the up/down sampling shader states.
+        private readonly GorgonRingPool<Gorgon2DShaderState<GorgonPixelShader>> _samplingStateAllocator =
+                new GorgonRingPool<Gorgon2DShaderState<GorgonPixelShader>>(32, () => new Gorgon2DShaderState<GorgonPixelShader>());
         #endregion
 
         #region Properties.
@@ -392,15 +401,16 @@ namespace Gorgon.Renderers
                 // Update our batch state if our target has changed.
                 if (_sampleTargets[i].down != targets.down)
                 {
-                    _sampleTargetStates[i] = _batchBuilder.Clear()
+                    _sampleTargetStates[i] = BatchStateBuilder.Clear()
                                                         .BlendState(GorgonBlendState.NoBlending)
                                                         .PixelShaderState(_shaderBuilder.Clear()
                                                                                         .Shader(_upSampleShader)
                                                                                         .SamplerState(GorgonSamplerState.Default, 1)
                                                                                         .ShaderResource(src, 1)
                                                                                         .ConstantBuffer(_settingsBuffer, 1)
-                                                                                        .ConstantBuffer(_textureSettingsBuffer, 2))
-                                                        .Build();
+                                                                                        .ConstantBuffer(_textureSettingsBuffer, 2)
+                                                                                        .Build(_samplingStateAllocator))
+                                                        .Build(_batchSamplingAllocator);
                 }
 
                 _sampleTargets[i] = targets;
@@ -487,9 +497,12 @@ namespace Gorgon.Renderers
             switch (passIndex)
             {
                 case 0:
+                    // This state shouldn't change that often in typical use cases, so we'll not bother with an allocator here.
                     if ((statesChanged) || (_pass0State == null))
                     {
-                        _pass0State = BatchStateBuilder.Build();
+                        _pass0State = BatchStateBuilder
+                                            .ResetShader(ShaderType.Pixel)
+                                            .Build();
                     }
 
                     return _pass0State;
@@ -500,7 +513,8 @@ namespace Gorgon.Renderers
                         return _finalPassBatchState;
                     }
 
-                    _finalPassBatchState = _batchBuilder
+                    // This guy changes frequently, so we'll use an allocator to ensure our GCs are kept minimal.
+                    _finalPassBatchState = BatchStateBuilder
                                                     .Clear()
                                                     .BlendState(GorgonBlendState.NoBlending)
                                                     .PixelShaderState(_shaderBuilder.Clear()
@@ -510,8 +524,9 @@ namespace Gorgon.Renderers
                                                                                     .SamplerState(GorgonSamplerState.Default, 2)
                                                                                     .ShaderResource(DirtTexture ?? EmptyTexture, 2)
                                                                                     .ConstantBuffer(_settingsBuffer, 1)
-                                                                                    .ConstantBuffer(_textureSettingsBuffer, 2))
-                                                    .Build();
+                                                                                    .ConstantBuffer(_textureSettingsBuffer, 2)
+                                                                                    .Build(_shaderStateAllocator))
+                                                    .Build(_batchAllocator);
                     return _finalPassBatchState;
                 default:
                     return Gorgon2DBatchState.NoBlend;
@@ -620,19 +635,21 @@ namespace Gorgon.Renderers
             _upSampleShader = GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics, Resources.HdrBloom, "UpSampleBlur", GorgonGraphics.IsDebugEnabled);
             _finalPassShader = GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics, Resources.HdrBloom, "FinalPass", GorgonGraphics.IsDebugEnabled);
 
-            _filterBatchState = _batchBuilder
+            _filterBatchState = BatchStateBuilder
                                             .PixelShaderState(_shaderBuilder.Shader(_filterShader)
                                                                             .ConstantBuffer(_settingsBuffer, 1)
-                                                                            .ConstantBuffer(_textureSettingsBuffer, 2))
+                                                                            .ConstantBuffer(_textureSettingsBuffer, 2)
+                                                                            .Build())
                                             .BlendState(GorgonBlendState.NoBlending)
                                             .Build();
 
 
-            _downSampleBatchState = _batchBuilder
+            _downSampleBatchState = BatchStateBuilder
                                             .Clear()
                                             .PixelShaderState(_shaderBuilder.Clear()
                                                                             .Shader(_downSampleShader)
-                                                                            .ConstantBuffer(_textureSettingsBuffer, 2))
+                                                                            .ConstantBuffer(_textureSettingsBuffer, 2)
+                                                                            .Build())
                                             .BlendState(GorgonBlendState.NoBlending)
                                             .Build();
         }

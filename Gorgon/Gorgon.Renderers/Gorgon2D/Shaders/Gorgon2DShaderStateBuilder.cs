@@ -31,6 +31,7 @@ using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
+using Gorgon.Memory;
 using Gorgon.Renderers.Properties;
 
 namespace Gorgon.Renderers
@@ -52,7 +53,7 @@ namespace Gorgon.Renderers
     [SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
         Justification = "Seriously?  This doesn't even KEEP any IDisposable items, and there's nothing that can be disposed in the object itself. This suggestion is useless.")]
     public class Gorgon2DShaderStateBuilder<T>
-        : IGorgonFluentBuilder<Gorgon2DShaderStateBuilder<T>, Gorgon2DShaderState<T>>
+        : IGorgonFluentBuilderAllocator<Gorgon2DShaderStateBuilder<T>, Gorgon2DShaderState<T>, IGorgonAllocator<Gorgon2DShaderState<T>>>
         where T : GorgonShader
     {
         #region Variables.
@@ -225,19 +226,7 @@ namespace Gorgon.Renderers
         /// Function to return the object.
         /// </summary>
         /// <returns>The object created or updated by this builder.</returns>
-        public Gorgon2DShaderState<T> Build()
-        {
-            var shader = new Gorgon2DShaderState<T>
-            {
-                Shader = _workingShader.Shader
-            };
-
-            Copy(shader.RwConstantBuffers, _workingShader.RwConstantBuffers, 0);
-            Copy(shader.RwSrvs, _workingShader.RwSrvs, 0);
-            Copy(shader.RwSamplers, _workingShader.RwSamplers, 0);
-
-            return shader;
-        }
+        public Gorgon2DShaderState<T> Build() => Build(null);
 
         /// <summary>
         /// Function to clear the builder to a default state.
@@ -272,6 +261,40 @@ namespace Gorgon.Renderers
             _workingShader.Shader = builderObject.Shader;
 
             return this;
+        }
+
+        /// <summary>
+        /// Function to return the object.
+        /// </summary>
+        /// <param name="allocator">The allocator used to create an instance of the object</param>
+        /// <returns>The object created or updated by this builder.</returns>
+        /// <remarks>
+        ///   <para>
+        /// Using an <paramref name="allocator" /> can provide different strategies when building objects.  If omitted, the object will be created using the standard <span class="keyword">new</span> keyword.
+        /// </para>
+        ///   <para>
+        /// A custom allocator can be beneficial because it allows us to use a pool for allocating the objects, and thus allows for recycling of objects. This keeps the garbage collector happy by keeping objects
+        /// around for as long as we need them, instead of creating objects that can potentially end up in the large object heap or in Gen 2.
+        /// </para>
+        /// </remarks>
+        public Gorgon2DShaderState<T> Build(IGorgonAllocator<Gorgon2DShaderState<T>> allocator)
+        {
+            Gorgon2DShaderState<T> shader;
+
+            if (allocator == null)
+            {
+                shader = new Gorgon2DShaderState<T>();
+            }
+            else
+            {
+                shader = allocator.Allocate();
+            }
+
+            Copy(shader.RwConstantBuffers, _workingShader.RwConstantBuffers, 0);
+            Copy(shader.RwSrvs, _workingShader.RwSrvs, 0);
+            Copy(shader.RwSamplers, _workingShader.RwSamplers, 0);
+            shader.Shader = _workingShader.Shader;
+            return shader;
         }
         #endregion
     }

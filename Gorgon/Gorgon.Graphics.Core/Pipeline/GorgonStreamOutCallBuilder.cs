@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
+using Gorgon.Memory;
 using SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -71,7 +72,7 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="GorgonVertexBuffer"/>
     /// <seealso cref="VertexBufferBinding"/>
     public sealed class GorgonStreamOutCallBuilder
-        : IGorgonFluentBuilderAllocator<GorgonStreamOutCallBuilder, GorgonStreamOutCall, GorgonStreamOutCallPoolAllocator>
+        : IGorgonFluentBuilderAllocator<GorgonStreamOutCallBuilder, GorgonStreamOutCall, IGorgonAllocator<GorgonStreamOutCall>>
     {
         #region Variables.
         // The worker call used to build up the object.
@@ -288,7 +289,7 @@ namespace Gorgon.Graphics.Core
         /// A stream out call requires that at least a vertex shader be bound. If none is present, then the method will throw an exception.
         /// </para>
         /// </remarks>
-        public GorgonStreamOutCall Build(GorgonStreamOutCallPoolAllocator allocator)
+        public GorgonStreamOutCall Build(IGorgonAllocator<GorgonStreamOutCall> allocator)
         {
             GorgonStreamOutCall final = allocator == null ? new GorgonStreamOutCall() : allocator.Allocate();
             final.SetupConstantBuffers();

@@ -51,7 +51,7 @@ namespace Gorgon.Graphics.Core
     /// </remarks>
     /// <seealso cref="GorgonGraphics"/>
     public abstract class GorgonDrawCallBuilderCommon<TB, TDc>
-        : IGorgonFluentBuilderAllocator<TB, TDc, GorgonDrawCallPoolAllocator<TDc>>
+        : IGorgonFluentBuilderAllocator<TB, TDc, IGorgonAllocator<TDc>>
         where TB : GorgonDrawCallBuilderCommon<TB, TDc>
         where TDc : GorgonDrawCallCommon
     {
@@ -71,7 +71,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="allocator">The allocator to use when creating draw call objects.</param>
         /// <returns>A new draw call.</returns>
-        protected abstract TDc OnCreate(GorgonRingPool<TDc> allocator);
+        protected abstract TDc OnCreate(IGorgonAllocator<TDc> allocator);
 
         /// <summary>
         /// Function to update the properties of the draw call from the working copy to the final copy.
@@ -622,7 +622,7 @@ namespace Gorgon.Graphics.Core
         /// A draw call requires that at least a vertex shader be bound. If none is present, then the method will throw an exception.
         /// </para>
         /// </remarks>
-        public TDc Build(GorgonDrawCallPoolAllocator<TDc> allocator)
+        public TDc Build(IGorgonAllocator<TDc> allocator)
         {
             TDc final = OnCreate(allocator);
 

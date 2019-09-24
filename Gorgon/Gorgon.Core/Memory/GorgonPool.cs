@@ -52,6 +52,7 @@ namespace Gorgon.Memory
     /// </para>
     /// </remarks>
 	public class GorgonPool<T>
+        : IGorgonAllocator<T>
         where T : class
     {
         #region Variables.

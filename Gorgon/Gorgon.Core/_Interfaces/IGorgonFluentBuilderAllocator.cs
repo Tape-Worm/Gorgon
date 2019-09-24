@@ -47,7 +47,7 @@ namespace Gorgon.Core
         : IGorgonFluentBuilder<TB, TBo>
         where TB : class
         where TBo : class
-        where TBa : GorgonRingPool<TBo>
+        where TBa : IGorgonAllocator<TBo>
     {
         /// <summary>
         /// Function to return the object.
@@ -61,9 +61,6 @@ namespace Gorgon.Core
         /// <para>
         /// A custom allocator can be beneficial because it allows us to use a pool for allocating the objects, and thus allows for recycling of objects. This keeps the garbage collector happy by keeping objects
         /// around for as long as we need them, instead of creating objects that can potentially end up in the large object heap or in Gen 2.
-        /// </para>
-        /// <para>
-        /// A object requires that at least a vertex shader be bound. If none is present, then the method will throw an exception.
         /// </para>
         /// </remarks>
         TBo Build(TBa allocator);

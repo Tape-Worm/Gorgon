@@ -133,6 +133,7 @@
     <Compile Include="Memory\GorgonPool.cs" />
     <Compile Include="Memory\GorgonLinearPool.cs" />
     <Compile Include="Memory\GorgonRingPool.cs" />
+    <Compile Include="Memory\_Interfaces\IGorgonAllocator.cs" />
     <Compile Include="Native\GorgonIntPtrEqualityComparer.cs" />
     <Compile Include="Native\GorgonNativeBuffer.cs" />
     <Compile Include="Native\GorgonReadOnlyPointer.cs" />

@@ -26,6 +26,7 @@
 
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
+using Gorgon.Memory;
 
 namespace Gorgon.Renderers
 {
@@ -35,7 +36,7 @@ namespace Gorgon.Renderers
     /// <seealso cref="Gorgon2DBatchState"/>
     /// <seealso cref="Gorgon2D"/>
     public class Gorgon2DBatchStateBuilder
-        : IGorgonFluentBuilderAllocator<Gorgon2DBatchStateBuilder, Gorgon2DBatchState, Gorgon2DBatchStatePoolAllocator>
+        : IGorgonFluentBuilderAllocator<Gorgon2DBatchStateBuilder, Gorgon2DBatchState, IGorgonAllocator<Gorgon2DBatchState>>
     {
         #region Variables.
         // The state that will be edited.
@@ -188,6 +189,26 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
+        /// Function to reset the specified shader type to the default state.
+        /// </summary>
+        /// <param name="shaderType">The type of shader to reset.</param>
+        /// <returns>The fluent builder interface.</returns>
+        public Gorgon2DBatchStateBuilder ResetShader(ShaderType shaderType)
+        {
+            switch (shaderType)
+            {
+                case ShaderType.Vertex:
+                    _worker.VertexShaderState = null;
+                    break;
+                case ShaderType.Pixel:
+                    _worker.PixelShaderState = null;
+                    break;
+            }
+
+            return this;
+        }
+
+        /// <summary>
         /// Function to reset the builder to the specified object state.
         /// </summary>
         /// <param name="builderObject">[Optional] The specified object state to copy.</param>
@@ -219,11 +240,8 @@ namespace Gorgon.Renderers
         /// A custom allocator can be beneficial because it allows us to use a pool for allocating the objects, and thus allows for recycling of objects. This keeps the garbage collector happy by keeping objects
         /// around for as long as we need them, instead of creating objects that can potentially end up in the large object heap or in Gen 2.
         /// </para>
-        ///   <para>
-        /// A object requires that at least a vertex shader be bound. If none is present, then the method will throw an exception.
-        /// </para>
         /// </remarks>
-        public Gorgon2DBatchState Build(Gorgon2DBatchStatePoolAllocator allocator)
+        public Gorgon2DBatchState Build(IGorgonAllocator<Gorgon2DBatchState> allocator)
         {
             if (allocator == null)
             {

@@ -23,6 +23,7 @@ namespace Gorgon.Memory
     /// </para>
     /// </remarks>
     public class GorgonRingPool<T>
+        : IGorgonAllocator<T>
         where T : class
     {
         #region Variables.
@@ -68,7 +69,7 @@ namespace Gorgon.Memory
         /// <returns>A reference to the object in the pool.</returns>
         /// <remarks>
         /// <para>
-        /// This method returns the object from the pool by reference. Thus applications must use a ref local to assign the object or make any changes to that object. 
+        /// This method returns the object from the pool.
         /// </para>
         /// <para>
         /// Applications can check to ensure that there is enough free space in the pool to allocate another object by checking the <see cref="AvailableSlots"/> property prior to calling this method. 
@@ -81,7 +82,7 @@ namespace Gorgon.Memory
         /// </remarks>
         /// <seealso cref="AvailableSlots"/>
         /// <seealso cref="Reset"/>
-        public ref T Allocate(Action<T> initializer = null)
+        public T Allocate(Action<T> initializer = null)
         {
             int nextIndex = Interlocked.Increment(ref _currentItem);
 
@@ -103,7 +104,7 @@ namespace Gorgon.Memory
                 initializer?.Invoke(item);
             }
 
-            return ref _items[nextIndex];
+            return _items[nextIndex];
         }
 
         /// <summary>

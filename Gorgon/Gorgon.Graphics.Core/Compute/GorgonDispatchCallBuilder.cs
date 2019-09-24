@@ -37,7 +37,7 @@ namespace Gorgon.Graphics.Core
     /// </summary>
     /// <seealso cref="GorgonDispatchCall"/>
     public class GorgonDispatchCallBuilder
-        : IGorgonFluentBuilderAllocator<GorgonDispatchCallBuilder, GorgonDispatchCall, GorgonRingPool<GorgonDispatchCall>>
+        : IGorgonFluentBuilderAllocator<GorgonDispatchCallBuilder, GorgonDispatchCall, IGorgonAllocator<GorgonDispatchCall>>
     {
         #region Variables.
         // The dispatch call being edited.
@@ -227,7 +227,7 @@ namespace Gorgon.Graphics.Core
         /// A dispatch call requires that at least a vertex shader be bound. If none is present, then the method will throw an exception.
         /// </para>
         /// </remarks>
-        public GorgonDispatchCall Build(GorgonRingPool<GorgonDispatchCall> allocator)
+        public GorgonDispatchCall Build(IGorgonAllocator<GorgonDispatchCall> allocator)
         {
             var final = new GorgonDispatchCall();
             final.Setup();
