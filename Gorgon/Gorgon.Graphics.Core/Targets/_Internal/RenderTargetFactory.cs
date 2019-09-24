@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using Gorgon.Diagnostics;
+using Gorgon.Memory;
 using Gorgon.Timing;
 
 namespace Gorgon.Graphics.Core
@@ -73,6 +74,8 @@ namespace Gorgon.Graphics.Core
         private readonly List<GorgonRenderTarget2DView> _cleanupList = new List<GorgonRenderTarget2DView>();
         // The timer used to expire the render targets.
         private readonly IGorgonTimer _expiryTimer;
+        // An allocator for creating texture info objects.
+        private readonly GorgonRingPool<GorgonTexture2DInfo> _textureInfoAllocator = new GorgonRingPool<GorgonTexture2DInfo>(100, () => new GorgonTexture2DInfo());
         #endregion
 
         #region Properties.
@@ -160,10 +163,11 @@ namespace Gorgon.Graphics.Core
         /// Function to rent a render target from the factory.
         /// </summary>
         /// <param name="targetInfo">The information about the render target to retrieve.</param>
-        /// <param name="name">[Optional] A user defined name for a new render target.</param>
+        /// <param name="name">A unique user defined name for a new render target.</param>
         /// <param name="clearOnRetrieve">[Optional] <b>true</b> to clear the render target when retrieved, or <b>false</b> to leave the contents as-is.</param>
         /// <returns>The requested render target.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="targetInfo"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="targetInfo"/>, or the <paramref name="name"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
         /// <remarks>
         /// <para>
         /// All calls to this method should be paired with a call to the <see cref="Return"/> method.  Failure to do so may result in a leak.
@@ -179,27 +183,28 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// </note>
         /// </remarks>
-        public GorgonRenderTarget2DView Rent(IGorgonTexture2DInfo targetInfo, string name = null, bool clearOnRetrieve = true)
+        public GorgonRenderTarget2DView Rent(IGorgonTexture2DInfo targetInfo, string name, bool clearOnRetrieve = true)
         {
+            name.ValidateString(nameof(name));
             targetInfo.ValidateObject(nameof(targetInfo));
 
             ExpireTargets();
 
-            // Ensure the information is valid.
-            targetInfo = new GorgonTexture2DInfo(targetInfo, string.IsNullOrWhiteSpace(name) ? $"TempTarget_{_srvs.Count}_{targetInfo.Name}" : name)
-            {
-                Binding = targetInfo.Binding | TextureBinding.RenderTarget,
-                Usage = ResourceUsage.Default
-            };
+            // Ensure the information is valid.            
+            GorgonTexture2DInfo newInfo = _textureInfoAllocator.Allocate();
+            newInfo.Copy(name, targetInfo);
+            newInfo.Binding = targetInfo.Binding | TextureBinding.RenderTarget | TextureBinding.ShaderResource;
+            newInfo.Usage = ResourceUsage.Default;
 
             for (int i = 0; i < _renderTargets.Count; ++i)
             {
                 GorgonRenderTarget2DView rtv = _renderTargets[i];
                 GorgonTexture2D target = _renderTargets[i].Texture;
 
-                if ((!_rented.Contains(rtv)) && (target.Width == targetInfo.Width) && (target.Height == targetInfo.Height) && (target.MipLevels == targetInfo.MipLevels)
-                    && (target.ArrayCount == targetInfo.ArrayCount) && (target.Format == targetInfo.Format) && (target.Binding == targetInfo.Binding)
-                    && (target.MultisampleInfo.Equals(targetInfo.MultisampleInfo)) && (targetInfo.IsCubeMap == target.IsCubeMap))
+                if ((!_rented.Contains(rtv)) && (target.Width == newInfo.Width) && (target.Height == newInfo.Height) && (target.MipLevels == newInfo.MipLevels)
+                    && (target.ArrayCount == newInfo.ArrayCount) && (target.Format == newInfo.Format) && (target.Binding == newInfo.Binding)
+                    && (target.MultisampleInfo.Equals(newInfo.MultisampleInfo)) && (newInfo.IsCubeMap == target.IsCubeMap)
+                    && (string.Equals(newInfo.Name, rtv.Texture.Name, StringComparison.OrdinalIgnoreCase)))
                 {
                     if (clearOnRetrieve)
                     {
@@ -218,7 +223,7 @@ namespace Gorgon.Graphics.Core
                 _expiryTimer.Reset();
             }
 
-            var newRtv = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, targetInfo);
+            var newRtv = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, newInfo);
             // Cache a default shader resource view (the texture holds the cache, we hold a separate one so we can clean it up later).
             _srvs.Add(newRtv.GetShaderResourceView());
             newRtv.OwnerFactory = this;

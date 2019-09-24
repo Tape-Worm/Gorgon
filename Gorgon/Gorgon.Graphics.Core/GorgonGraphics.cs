@@ -456,42 +456,6 @@ namespace Gorgon.Graphics.Core
 
         #region Methods.
         /// <summary>
-        /// Function to initialize the cache for some common render target views.
-        /// </summary>
-        private void InitializeCachedTempRtvs()
-        {
-            int count = 0;
-            int totalSize = 0;
-            int w = 1024;
-            int h = 1024;
-
-            while ((w > 0) && (h > 0))
-            {
-                GorgonRenderTarget2DView rtv = _rtvFactory.Rent(new GorgonTexture2DInfo($"Gorgon_RtvCommon_{w}x{h}_{BufferFormat.R8G8B8A8_UInt}")
-                {
-                    ArrayCount = 1,
-                    Binding = TextureBinding.ShaderResource | TextureBinding.RenderTarget,
-                    Usage = ResourceUsage.Default,
-                    Format = BufferFormat.R8G8B8A8_UInt,
-                    Width = w,
-                    Height = h
-                });
-
-                totalSize += rtv.Texture.SizeInBytes;
-
-                Log.Print($"Caching common render target for {w}x{h} {BufferFormat.R8G8B8A8_UInt} for ~{rtv.Texture.SizeInBytes.FormatMemory()}.", LoggingLevel.Verbose);
-
-                _rtvFactory.Return(rtv);
-
-                w >>= 1;
-                h >>= 1;
-                ++count;
-            }
-
-            Log.Print($"Cached {count} common render targets for ~{totalSize.FormatMemory()}.", LoggingLevel.Verbose);
-        }
-
-        /// <summary>
         /// Function to initialize the cached sampler states with the predefined states provided on the sampler state class.
         /// </summary>
         private void InitializeCachedSamplers()
@@ -3294,8 +3258,6 @@ namespace Gorgon.Graphics.Core
                                                        });
 
             _rtvFactory = new RenderTargetFactory(this);
-
-            InitializeCachedTempRtvs();
 
             Log.Print("Gorgon Graphics initialized.", LoggingLevel.Simple);
         }

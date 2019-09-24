@@ -78,6 +78,7 @@ namespace Gorgon.Graphics.Core
         public string Name
         {
             get;
+            private set;
         }
 
         /// <summary>
@@ -202,6 +203,27 @@ namespace Gorgon.Graphics.Core
         }
         #endregion
 
+        #region Methods.
+        /// <summary>
+        /// Function to copy another information object to this object with a new name.
+        /// </summary>
+        /// <param name="name">The name of the object.</param>
+        /// <param name="info">The destination for the copied data.</param>
+        internal void Copy(string name, IGorgonTexture2DInfo info)
+        {
+            Name = name;
+            Format = info.Format;
+            ArrayCount = info.ArrayCount;
+            Binding = info.Binding;
+            Height = info.Height;
+            IsCubeMap = info.IsCubeMap;
+            MipLevels = info.MipLevels;
+            MultisampleInfo = info.MultisampleInfo;
+            Usage = info.Usage;
+            Width = info.Width;
+        }
+        #endregion
+
         #region Constructor/Finalizer.
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonTexture2DInfo"/> class.
@@ -216,16 +238,7 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentNullException(nameof(info));
             }
 
-            Name = string.IsNullOrEmpty(newName) ? info.Name : newName;
-            Format = info.Format;
-            ArrayCount = info.ArrayCount;
-            Binding = info.Binding;
-            Height = info.Height;
-            IsCubeMap = info.IsCubeMap;
-            MipLevels = info.MipLevels;
-            MultisampleInfo = info.MultisampleInfo;
-            Usage = info.Usage;
-            Width = info.Width;
+            Copy(string.IsNullOrEmpty(newName) ? info.Name : newName, info);
         }
 
         /// <summary>

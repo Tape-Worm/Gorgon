@@ -144,6 +144,8 @@ namespace Gorgon.Renderers
         // A builder used to create shader states.
         private readonly Gorgon2DShaderStateBuilder<GorgonPixelShader> _shaderBuilder = new Gorgon2DShaderStateBuilder<GorgonPixelShader>();
         // Information used to build render targets.
+        private readonly GorgonTexture2DInfo _sceneTargetInfo;
+        private readonly GorgonTexture2DInfo _blurTargetInfo;
         private readonly GorgonTexture2DInfo _targetInfo;
         // The bloom intensity level.
         private float _intensity = 1;
@@ -267,26 +269,6 @@ namespace Gorgon.Renderers
 
         #region Methods.
         /// <summary>
-        /// Function called after a pass is finished rendering.
-        /// </summary>
-        /// <param name="passIndex">The index of the pass that was rendered.</param>
-        /// <param name="output">The final render target that will receive the rendering from the effect.</param>
-        /// <remarks>
-        /// <para>
-        /// Applications can use this to clean up and/or restore any states after the pass completes.
-        /// </para>
-        /// </remarks>
-        protected override void OnAfterRenderPass(int passIndex, GorgonRenderTargetView output)
-        {
-            switch (passIndex)
-            {
-                case 1:
-                    ReturnSampleTargets();
-                    break;
-            }
-        }
-
-        /// <summary>
         /// Function to return the down/upsampling targets to the pool.
         /// </summary>
         private void ReturnSampleTargets()
@@ -305,17 +287,6 @@ namespace Gorgon.Renderers
 
                 Graphics.TemporaryTargets.Return(down);
             }
-        }
-
-        /// <summary>
-        /// Function to return the render targets back to the temporary target pool.
-        /// </summary>
-        private void ReturnTargets()
-        {
-            ReturnSampleTargets();
-
-            Graphics.TemporaryTargets.Return(_blurRtv);
-            Graphics.TemporaryTargets.Return(_sceneRtv);
         }
 
         /// <summary>
@@ -544,19 +515,36 @@ namespace Gorgon.Renderers
         /// </remarks>
         protected override void OnBeforeRender(GorgonRenderTargetView output, IGorgon2DCamera camera, bool sizeChanged)
         {
+            // Function to resize static render targets should we require it.
+            void UpdateStaticRenderTargets(int width, int height)
+            {
+                _sceneSrv?.Dispose();
+                _blurSrv?.Dispose();
+                _sceneRtv?.Dispose();
+                _blurRtv?.Dispose();
+
+                _blurTargetInfo.Width = _sceneTargetInfo.Width = width;
+                _blurTargetInfo.Height = _sceneTargetInfo.Height = height;
+
+                _sceneRtv = GorgonRenderTarget2DView.CreateRenderTarget(Graphics, _sceneTargetInfo);
+                _blurRtv = GorgonRenderTarget2DView.CreateRenderTarget(Graphics, _blurTargetInfo);
+
+                _sceneSrv = _sceneRtv.GetShaderResourceView();
+                _blurSrv = _blurRtv.GetShaderResourceView();
+            }
+
             // Allocate a render target that matches the size of our output.
             // We will render our data into this.
-            _targetInfo.Width = output.Width;
-            _targetInfo.Height = output.Height;
-            _sceneRtv = Graphics.TemporaryTargets.Rent(_targetInfo, "Bloom Source Image");
+
+            if ((_sceneTargetInfo.Width != output.Width) || (_sceneTargetInfo.Height != output.Height))
+            {
+                UpdateStaticRenderTargets(output.Width, output.Height);
+            }
+
             _sceneRtv.Clear(GorgonColor.Black);
-            _sceneSrv = _sceneRtv.GetShaderResourceView();
 
             _targetInfo.Width = (_sceneSrv.Width >> 1).Max(1);
             _targetInfo.Height = (_sceneSrv.Height >> 1).Max(1);
-
-            _blurRtv = Graphics.TemporaryTargets.Rent(_targetInfo, "Blurred/Filtered Target", false);
-            _blurSrv = _blurRtv.GetShaderResourceView();
         }
 
         /// <summary>Function called prior to rendering a pass.</summary>
@@ -570,7 +558,7 @@ namespace Gorgon.Renderers
             if ((_blurAmount.EqualsEpsilon(0)) || (_intensity.EqualsEpsilon(0)))
             {
                 // Return the targets back to the pool.
-                ReturnTargets();
+                ReturnSampleTargets();
                 return PassContinuationState.Stop;
             }
 
@@ -614,10 +602,25 @@ namespace Gorgon.Renderers
             }
         }
 
-        /// <summary>Function called after rendering is complete.</summary>
+        /// <summary>
+        /// Function called after a pass is finished rendering.
+        /// </summary>
+        /// <param name="passIndex">The index of the pass that was rendered.</param>
         /// <param name="output">The final render target that will receive the rendering from the effect.</param>
-        /// <remarks>Applications can use this to clean up and/or restore any states when rendering is finished. This is an ideal method to copy any rendering imagery to the final output render target.</remarks>
-        protected override void OnAfterRender(GorgonRenderTargetView output) => ReturnTargets();
+        /// <remarks>
+        /// <para>
+        /// Applications can use this to clean up and/or restore any states after the pass completes.
+        /// </para>
+        /// </remarks>
+        protected override void OnAfterRenderPass(int passIndex, GorgonRenderTargetView output)
+        {
+            switch (passIndex)
+            {
+                case 1:
+                    ReturnSampleTargets();
+                    break;
+            }
+        }
 
         /// <summary>Function called to initialize the effect.</summary>
         /// <remarks>Applications must implement this method to ensure that any required resources are created, and configured for the effect.</remarks>
@@ -661,7 +664,8 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="renderer">The renderer used to render this effect.</param>
         public Gorgon2DBloomEffect(Gorgon2D renderer)
-            : base(renderer, Resources.GOR2D_EFFECT_BLOOM, Resources.GOR2D_EFFECT_BLOOM_DESC, 3) =>
+            : base(renderer, Resources.GOR2D_EFFECT_BLOOM, Resources.GOR2D_EFFECT_BLOOM_DESC, 3)
+        {
             // Set up common properties for our targets.
             _targetInfo = new GorgonTexture2DInfo
             {
@@ -669,6 +673,10 @@ namespace Gorgon.Renderers
                 Usage = ResourceUsage.Default,
                 Binding = TextureBinding.ShaderResource | TextureBinding.RenderTarget
             };
+
+            _sceneTargetInfo = new GorgonTexture2DInfo(_targetInfo, "Bloom Source Image");
+            _blurTargetInfo = new GorgonTexture2DInfo(_targetInfo, "Blurred/Filtered Target");
+        }    
         #endregion
     }
 }
