@@ -75,7 +75,7 @@ namespace Gorgon.Animation
         }
 
         /// <summary>
-        /// Property to set or return the length of the animation (in seconds).
+        /// Property to return the length of the animation (in seconds).
         /// </summary>
         float Length
         {

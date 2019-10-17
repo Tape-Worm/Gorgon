@@ -32,13 +32,14 @@ float4 ChromaticAberration(GorgonSpriteVertex vertex) : SV_Target
 	float3 sum = 0;
 	float3 filteredSum = 0;	
 
-	for (int i = 0; i < sampleCount; ++i)
+	[unroll(16)]
+    for (int i = 0; i < sampleCount; ++i)
 	{
 		float t = (i + 0.5f) / sampleCount;
 		// Instead of spitting out the r, g and b of our input texture, we'll use a look up texture to define which color channel
 		// is split out, and then multiply that by our input texture color value. This allows us to use sampling to give us color 
 		// shifts instead of harsh edges.
-		float3 specLutTexel = _specLut.SampleLevel(_specLutSampler, float2(t, 0), 0).rgb;
+		float3 specLutTexel = _specLut.SampleLevel(_specLutSampler, t, 0).rgb;
 		float3 chromTexel = _gorgonTexture.SampleLevel(_gorgonSampler, float3(start, 0), 0).rgb;
 
 		sum += specLutTexel * chromTexel;

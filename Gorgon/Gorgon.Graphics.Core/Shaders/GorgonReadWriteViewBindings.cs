@@ -138,11 +138,6 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         protected override void OnClear()
         {
-            for (int i = 0; i < Length; ++i)
-            {
-                this[i] = GorgonReadWriteViewBinding.Empty;
-            }
-
             Array.Clear(Native, 0, Native.Length);
             Array.Clear(Counts, 0, Counts.Length);
         }

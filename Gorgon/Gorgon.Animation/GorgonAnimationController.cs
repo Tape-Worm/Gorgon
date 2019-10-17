@@ -296,10 +296,11 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to update the currently playing animation time and bound properties.
         /// </summary>
-        /// <remarks>
+        /// <param name="timingDelta">[Optional] The delta time for a frame to be rendered.</param>
+        /// <remarks>        
         /// <para>
-        /// This will update the animation time using the <see cref="GorgonTiming.Delta">Delta</see> time.  Note that the animation time is not affected by
-        /// <see cref="GorgonTiming.ScaledDelta">ScaledDelta</see>.
+        /// If the <paramref name="timingDelta"/> is not <b>null</b>, then the value passed will represent the amount of time it takes the GPU to render a frame. This is useful for fixed timestep 
+        /// animations. If it is left as <b>null</b>, then <see cref="GorgonTiming.Delta"/> on the <see cref="GorgonTiming"/> class is used for variable timestep.
         /// </para>
         /// <para>
         /// Users should call this method once per frame in order to update the current state of the playing (by calling <see cref="Play(T,IGorgonAnimation)"/> animation.  If no animation is playing,
@@ -307,14 +308,14 @@ namespace Gorgon.Animation
         /// </para>
         /// </remarks>
         /// <seealso cref="GorgonTiming"/>
-        public void Update()
+        public void Update(float? timingDelta = null)
         {
             if (State != AnimationState.Playing)
             {
                 return;
             }
 
-            float increment = (CurrentAnimation.Speed * GorgonTiming.Delta);
+            float increment = (CurrentAnimation.Speed * (timingDelta ?? GorgonTiming.Delta));
 
             // Push the animation time forward (or backward, depending on the Speed modifier).
             Time += increment;

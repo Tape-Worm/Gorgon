@@ -49,15 +49,15 @@ namespace Gorgon.Collections
                 throw new ArgumentNullException(nameof(children));
             }
 
-            var stack = new Queue<T>();
+            var queue = new Queue<T>();
             foreach (T child in children)
             {
-                stack.Enqueue(child);
+                queue.Enqueue(child);
             }
 
-            while (stack.Count > 0)
+            while (queue.Count > 0)
             {
-                T node = stack.Dequeue();
+                T node = queue.Dequeue();
 
                 yield return node;
 
@@ -70,7 +70,7 @@ namespace Gorgon.Collections
 
                 foreach (T child in subChildren)
                 {
-                    stack.Enqueue(child);
+                    queue.Enqueue(child);
                 }
             }
         }

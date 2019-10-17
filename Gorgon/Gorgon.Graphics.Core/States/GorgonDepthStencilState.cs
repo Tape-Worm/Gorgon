@@ -97,6 +97,60 @@ namespace Gorgon.Graphics.Core
         };
 
         /// <summary>
+        /// Depth/stencil enabled. With a comparison of less than or equal for the depth buffer.
+        /// </summary>
+        /// <remarks>
+        /// This value is suitable for 2D operations because sprites don't have any depth, and not having an equals operator will cause overlapping sprites to overwrite instead of merge together.
+        /// </remarks>
+        public static readonly GorgonDepthStencilState DepthLessEqualStencilEnabled = new GorgonDepthStencilState
+        {
+            IsDepthEnabled = true,
+            IsStencilEnabled = true,
+            IsDepthWriteEnabled = true,
+            DepthComparison = Comparison.LessEqual
+        };
+
+        /// <summary>
+        /// Depth/stencil enabled, depth write disbled. With a comparison of less than or equal for the depth buffer.
+        /// </summary>
+        /// <remarks>
+        /// This value is suitable for 2D operations because sprites don't have any depth, and not having an equals operator will cause overlapping sprites to overwrite instead of merge together.
+        /// </remarks>
+        public static readonly GorgonDepthStencilState DepthLessEqualStencilEnabledNoWrite = new GorgonDepthStencilState
+        {
+            IsDepthEnabled = true,
+            IsStencilEnabled = true,
+            IsDepthWriteEnabled = false,
+            DepthComparison = Comparison.LessEqual
+        };
+
+        /// <summary>
+        /// Depth only enabled. With a comparison of less than or equal for the depth buffer.
+        /// </summary>
+        /// <remarks>
+        /// This value is suitable for 2D operations because sprites don't have any depth, and not having an equals operator will cause overlapping sprites to overwrite instead of merge together.
+        /// </remarks>
+        public static readonly GorgonDepthStencilState DepthLessEqualEnabled = new GorgonDepthStencilState
+        {
+            IsDepthEnabled = true,
+            IsDepthWriteEnabled = true,
+            DepthComparison = Comparison.LessEqual
+        };
+
+        /// <summary>
+        /// Depth only enabled, depth write disabled. With a comparison of less than or equal for the depth buffer.
+        /// </summary>
+        /// <remarks>
+        /// This value is suitable for 2D operations because sprites don't have any depth, and not having an equals operator will cause overlapping sprites to overwrite instead of merge together.
+        /// </remarks>
+        public static readonly GorgonDepthStencilState DepthLessEqualEnabledNoWrite = new GorgonDepthStencilState
+        {
+            IsDepthEnabled = true,
+            IsDepthWriteEnabled = false,
+            DepthComparison = Comparison.LessEqual
+        };
+
+        /// <summary>
         /// Stencil only enabled.
         /// </summary>
         public static readonly GorgonDepthStencilState StencilEnabled = new GorgonDepthStencilState

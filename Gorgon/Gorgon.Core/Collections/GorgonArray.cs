@@ -98,11 +98,8 @@ namespace Gorgon.Collections
                     return;
                 }
 
-                T oldValue = BackingArray[index];
                 BackingArray[index] = value;
                 _dirtyIndices |= 1 << index;
-
-                OnItemSet(index, value, oldValue);
             }
         }
         #endregion
@@ -122,16 +119,6 @@ namespace Gorgon.Collections
         /// </summary>
         /// <param name="dirtyIndex">The index that is considered dirty.</param>
 	    protected virtual void OnDirtyItemCleaned(int dirtyIndex)
-        {
-        }
-
-        /// <summary>
-        /// Function called when an item is assigned to an index.
-        /// </summary>
-        /// <param name="index">The index of the item that was assigned.</param>
-        /// <param name="value">The value that was assigned.</param>
-        /// <param name="oldItem">The previous item in the slot.</param>
-        protected virtual void OnItemSet(int index, T value, T oldItem)
         {
         }
 

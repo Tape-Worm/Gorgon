@@ -541,7 +541,7 @@ namespace Gorgon.Renderers
                 UpdateStaticRenderTargets(output.Width, output.Height);
             }
 
-            _sceneRtv.Clear(GorgonColor.Black);
+            _sceneRtv.Clear(GorgonColor.BlackTransparent);
 
             _targetInfo.Width = (_sceneSrv.Width >> 1).Max(1);
             _targetInfo.Height = (_sceneSrv.Height >> 1).Max(1);
