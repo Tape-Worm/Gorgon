@@ -47,7 +47,7 @@ namespace Gorgon.Animation
     /// The track for this key frame does not use interpolation. This means that there is no smooth transition between values and each value is "snapped" to when animating.
     /// </para>
     /// </remarks>
-    /// <seealso cref="IGorgonTrack{T}"/>
+    /// <seealso cref="IGorgonAnimationTrack{T}"/>
 	public class GorgonKeyTexture2D
         : IGorgonKeyFrame
     {
@@ -109,12 +109,24 @@ namespace Gorgon.Animation
         /// Function to clone the key.
         /// </summary>
         /// <returns>The cloned key.</returns>
-        public IGorgonKeyFrame Clone() => new GorgonKeyTexture2D(Time, Value, _textureCoordinates, _textureArrayIndex);
+        public IGorgonKeyFrame Clone() => new GorgonKeyTexture2D(this);
         #endregion
 
         #region Constructor/Destructor.
+        /// <summary>Initializes a new instance of the <see cref="GorgonKeyTexture2D"/> class.</summary>
+        /// <param name="key">The key to copy.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="key"/> parameter is <b>null</b>.</exception>
+        public GorgonKeyTexture2D(GorgonKeyTexture2D key)
+        {
+            Time = key?.Time ?? throw new ArgumentNullException(nameof(key));
+            Value = key.Value;
+            TextureName = key.TextureName ?? string.Empty;
+            _textureCoordinates = key._textureCoordinates;
+            _textureArrayIndex = key._textureArrayIndex;
+        }
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonKeyTexture2D" /> struct.
+        /// Initializes a new instance of the <see cref="GorgonKeyTexture2D" /> class.
         /// </summary>
         /// <param name="time">The time for the key frame.</param>
         /// <param name="textureName">The name of the texture that should be applied to the key frame.</param>
@@ -147,7 +159,7 @@ namespace Gorgon.Animation
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonKeyTexture2D" /> struct.
+        /// Initializes a new instance of the <see cref="GorgonKeyTexture2D" /> class.
         /// </summary>
         /// <param name="time">The time for the key frame.</param>
         /// <param name="value">The value to apply to the key frame.</param>

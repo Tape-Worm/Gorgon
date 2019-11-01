@@ -158,7 +158,7 @@ namespace Gorgon.IO
                 return;
             }
 
-            var data = (byte*)pointer;
+            byte* data = (byte*)pointer;
 
             while (size > 0)
             {

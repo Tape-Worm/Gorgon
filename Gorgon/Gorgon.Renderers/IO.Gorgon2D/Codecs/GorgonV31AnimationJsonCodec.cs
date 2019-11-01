@@ -27,14 +27,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
-using DX = SharpDX;
 using Newtonsoft.Json;
 
 namespace Gorgon.IO
@@ -42,19 +40,11 @@ namespace Gorgon.IO
     /// <summary>
     /// A codec used to read/write animations as a JSON formatted string value.
     /// </summary>
-    public class GorgonV3AnimationJsonCodec
+    public class GorgonV31AnimationJsonCodec
         : GorgonAnimationCodecCommon
     {
         #region Constants.
-        /// <summary>
-        /// The ID for the file header for the previous version of the animation format.
-        /// </summary>
-        internal static readonly ulong FileHeader30 = "GORANM30".ChunkID();
 
-        /// <summary>
-        /// The previous version for animation serialization.
-        /// </summary>
-        internal static readonly Version Version30 = new Version(3, 0);
         #endregion
 
         #region Properties.
@@ -66,12 +56,12 @@ namespace Gorgon.IO
         /// <summary>
         /// Property to return whether or not the codec can encode animation data.
         /// </summary>
-        public override bool CanEncode => false;
+        public override bool CanEncode => true;
 
         /// <summary>
         /// Property to return the version of animation data that the codec supports.
         /// </summary>
-        public override Version Version => Version30;
+        public override Version Version => CurrentVersion;
         #endregion
 
         #region Methods.
@@ -105,7 +95,7 @@ namespace Gorgon.IO
                 {
                     ulong? id = (ulong?)reader.ReadAsDecimal();
 
-                    if ((id == null) || (id != FileHeader30))
+                    if ((id == null) || (id != CurrentFileHeader))
                     {
                         return false;
                     }
@@ -296,11 +286,11 @@ namespace Gorgon.IO
         /// <param name="converter">The converter used to convert the data from JSON.</param>
         /// <param name="interpolation">The interpolation mode for the track.</param>
         /// <returns>A list of 3D vector key frames.</returns>
-        private static List<GorgonKeySingle> ReadFloat(JsonReader reader, JsonVector3KeyConverter converter, out TrackInterpolationMode interpolation)
+        private static List<GorgonKeyVector3> ReadVector3(JsonReader reader, JsonVector3KeyConverter converter, out TrackInterpolationMode interpolation)
         {
-            List<GorgonKeySingle> ReadSingleKeys()
+            List<GorgonKeyVector3> ReadVec3Keys()
             {
-                var keys = new List<GorgonKeySingle>();
+                var keys = new List<GorgonKeyVector3>();
                 Type vec3Type = typeof(GorgonKeyVector3);
 
                 while ((reader.Read()) && (reader.TokenType != JsonToken.EndArray))
@@ -310,68 +300,13 @@ namespace Gorgon.IO
                         continue;
                     }
 
-                    GorgonKeyVector3 vec3 = converter.ReadJson(reader, vec3Type, null, false, null);
-                    keys.Add(new GorgonKeySingle(vec3.Time, vec3.Value.Z));
+                    keys.Add(converter.ReadJson(reader, vec3Type, null, false, null));
                 }
 
                 return keys;
             }
 
-            List<GorgonKeySingle> positions = null;
-            interpolation = TrackInterpolationMode.None;
-
-            while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
-            {
-                if (reader.TokenType != JsonToken.PropertyName)
-                {
-                    continue;
-                }
-
-                string propName = reader.Value.ToString().ToUpperInvariant();
-
-                switch (propName)
-                {
-                    case "INTERPOLATIONMODE":
-                        interpolation = (TrackInterpolationMode)(reader.ReadAsInt32() ?? 0);
-                        break;
-                    case "KEYFRAMES":
-                        positions = ReadSingleKeys();
-                        break;
-                }
-            }
-
-            return positions;
-        }
-
-        /// <summary>
-        /// Function to read a track containing 3D vector data.
-        /// </summary>
-        /// <param name="reader">The JSON reader.</param>
-        /// <param name="converter">The converter used to convert the data from JSON.</param>
-        /// <param name="interpolation">The interpolation mode for the track.</param>
-        /// <returns>A list of 3D vector key frames.</returns>
-        private static List<GorgonKeyVector2> ReadVector2(JsonReader reader, JsonVector3KeyConverter converter, out TrackInterpolationMode interpolation)
-        {
-            List<GorgonKeyVector2> ReadVec3Keys()
-            {
-                var keys = new List<GorgonKeyVector2>();
-                Type vec3Type = typeof(GorgonKeyVector3);
-
-                while ((reader.Read()) && (reader.TokenType != JsonToken.EndArray))
-                {
-                    if (reader.TokenType != JsonToken.StartObject)
-                    {
-                        continue;
-                    }
-
-                    GorgonKeyVector3 vec3 = converter.ReadJson(reader, vec3Type, null, false, null);
-                    keys.Add(new GorgonKeyVector2(vec3.Time, (DX.Vector2)vec3.Value));
-                }
-
-                return keys;
-            }
-
-            List<GorgonKeyVector2> positions = null;
+            List<GorgonKeyVector3> positions = null;
             interpolation = TrackInterpolationMode.None;
 
             while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
@@ -396,6 +331,7 @@ namespace Gorgon.IO
 
             return positions;
         }
+
 
         /// <summary>
         /// Function to convert a JSON formatted string into a <see cref="IGorgonAnimation"/> object.
@@ -440,10 +376,10 @@ namespace Gorgon.IO
             TrackInterpolationMode colorInterp = TrackInterpolationMode.None;
             TrackInterpolationMode boundInterp = TrackInterpolationMode.None;
 
-            List<GorgonKeyVector2> positions = null;
-            List<GorgonKeySingle> rotations = null;
-            List<GorgonKeyVector2> scales = null;
-            List<GorgonKeyVector2> sizes = null;
+            List<GorgonKeyVector3> positions = null;
+            List<GorgonKeyVector3> rotations = null;
+            List<GorgonKeyVector3> scales = null;
+            List<GorgonKeyVector3> sizes = null;
             List<GorgonKeyGorgonColor> colors = null;
             List<GorgonKeyRectangle> bounds = null;
             List<GorgonKeyTexture2D> textures = null;
@@ -468,16 +404,16 @@ namespace Gorgon.IO
                     switch (propName)
                     {
                         case "POSITIONS":
-                            positions = ReadVector2(reader, vec3Converter, out posInterp);
+                            positions = ReadVector3(reader, vec3Converter, out posInterp);
                             break;
                         case "SCALES":
-                            scales = ReadVector2(reader, vec3Converter, out scaleInterp);
+                            scales = ReadVector3(reader, vec3Converter, out scaleInterp);
                             break;
                         case "ROTATIONS":
-                            rotations = ReadFloat(reader, vec3Converter, out rotInterp);
+                            rotations = ReadVector3(reader, vec3Converter, out rotInterp);
                             break;
                         case "SIZE":
-                            sizes = ReadVector2(reader, vec3Converter, out sizeInterp);
+                            sizes = ReadVector3(reader, vec3Converter, out sizeInterp);
                             break;
                         case "BOUNDS":
                             bounds = ReadRects(reader, rectConverter, out boundInterp);
@@ -509,60 +445,60 @@ namespace Gorgon.IO
             {
                 throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_JSON_NOT_ANIM);
             }
-
+            /*
             var builder = new GorgonAnimationBuilder();
 
             if ((positions != null) && (positions.Count > 0))
             {
-                builder.EditVector2("Position")
-                       .SetInterpolationMode(posInterp)
+                builder.PositionInterpolationMode(posInterp)
+                       .EditPositions()
                        .SetKeys(positions)
                        .EndEdit();
             }
 
             if ((scales != null) && (scales.Count > 0))
             {
-                builder.EditVector2("Scale")
-                       .SetInterpolationMode(scaleInterp)
+                builder.ScaleInterpolationMode(scaleInterp)
+                       .EditScale()
                        .SetKeys(scales)
                        .EndEdit();
             }
 
             if ((rotations != null) && (rotations.Count > 0))
             {
-                builder.EditSingle("Angle")
-                       .SetInterpolationMode(rotInterp)
+                builder.RotationInterpolationMode(rotInterp)
+                       .EditRotation()
                        .SetKeys(rotations)
                        .EndEdit();
             }
 
             if ((sizes != null) && (sizes.Count > 0))
             {
-                builder.EditVector2("Size")
-                       .SetInterpolationMode(sizeInterp)
+                builder.SizeInterpolationMode(sizeInterp)
+                       .EditSize()
                        .SetKeys(sizes)
                        .EndEdit();
             }
 
             if ((colors != null) && (colors.Count > 0))
             {
-                builder.EditColor("Color")
-                       .SetInterpolationMode(colorInterp)
+                builder.ColorInterpolationMode(colorInterp)
+                       .EditColors()
                        .SetKeys(colors)
                        .EndEdit();
             }
 
             if ((bounds != null) && (bounds.Count > 0))
             {
-                builder.EditRectangle("Bounds")
-                       .SetInterpolationMode(boundInterp)
+                builder.RotationInterpolationMode(boundInterp)
+                       .EditRectangularBounds()
                        .SetKeys(bounds)
                        .EndEdit();
             }
 
             if ((textures != null) && (textures.Count > 0))
             {
-                builder.Edit2DTexture("Texture")
+                builder.Edit2DTexture()
                        .SetKeys(textures)
                        .EndEdit();
             }
@@ -573,7 +509,8 @@ namespace Gorgon.IO
             result.IsLooped = isLooped;
             result.Speed = 1.0f;
 
-            return result;
+            return result;*/
+            return null;
         }
 
         /// <summary>
@@ -581,8 +518,13 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="animation">The animation to serialize into the stream.</param>
         /// <param name="stream">The stream that will contain the animation.</param>
-        /// <exception cref="NotSupportedException">This operation is not supported.</exception>
-        protected override void OnSaveToStream(IGorgonAnimation animation, Stream stream) => throw new NotSupportedException();
+        protected override void OnSaveToStream(IGorgonAnimation animation, Stream stream)
+        {
+            using (var writer = new StreamWriter(stream, Encoding.UTF8, 1024, true))
+            {
+                writer.Write(animation.ToJson());
+            }
+        }
 
         /// <summary>
         /// Function to read the animation data from a stream.
@@ -635,8 +577,8 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="renderer">The renderer used for resource handling.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> is <b>null</b>.</exception>
-        public GorgonV3AnimationJsonCodec(Gorgon2D renderer)
-            : base(renderer, Resources.GOR2DIO_V3_ANIM_JSON_CODEC, Resources.GOR2DIO_V3_ANIM_JSON_CODEC_DESCRIPTION)
+        public GorgonV31AnimationJsonCodec(Gorgon2D renderer)
+            : base(renderer, Resources.GOR2DIO_V3_1_ANIM_JSON_CODEC, Resources.GOR2DIO_V3_1_ANIM_JSON_CODEC_DESCRIPTION)
         {
         }
         #endregion

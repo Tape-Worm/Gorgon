@@ -41,7 +41,7 @@ namespace Gorgon.Animation
     /// for every time index.
     /// </para>
     /// </remarks>
-    /// <seealso cref="IGorgonTrack{T}"/>
+    /// <seealso cref="IGorgonAnimationTrack{T}"/>
     public class GorgonKeyRectangle
         : IGorgonKeyFrame
     {
@@ -78,10 +78,19 @@ namespace Gorgon.Animation
         /// Function to clone an object.
         /// </summary>
         /// <returns>The cloned object.</returns>
-        public IGorgonKeyFrame Clone() => new GorgonKeyRectangle(Time, Value);
+        public IGorgonKeyFrame Clone() => new GorgonKeyRectangle(this);
         #endregion
 
         #region Constructor/Finalizer.
+        /// <summary>Initializes a new instance of the <see cref="GorgonKeyRectangle"/> class.</summary>
+        /// <param name="key">The key to copy.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="key"/> parameter is <b>null</b>.</exception>
+        public GorgonKeyRectangle(GorgonKeyRectangle key)
+        {
+            Time = key?.Time ?? throw new ArgumentNullException(nameof(key));
+            Value = key.Value;
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonKeyRectangle" /> class.
         /// </summary>

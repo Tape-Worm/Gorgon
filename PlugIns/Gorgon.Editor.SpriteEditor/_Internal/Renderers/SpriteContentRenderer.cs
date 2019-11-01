@@ -388,29 +388,29 @@ namespace Gorgon.Editor.SpriteEditor
 
             if (!targetAlpha.EqualsEpsilon(currentAlpha))
             {
-                builder.EditColors()
-                    .SetKey(new GorgonKeyGorgonColor(0, new GorgonColor(GorgonColor.White, currentAlpha)))
-                    .SetKey(new GorgonKeyGorgonColor(maxTime, new GorgonColor(GorgonColor.White, targetAlpha)))
-                    .EndEdit()
-                    .ColorInterpolationMode(TrackInterpolationMode.Spline);
+                builder.EditSingle("Opacity")
+                    .SetKey(new GorgonKeySingle(0, currentAlpha))
+                    .SetKey(new GorgonKeySingle(maxTime, targetAlpha))
+                    .SetInterpolationMode(TrackInterpolationMode.Spline)
+                    .EndEdit();
             }
 
             if ((!currentScroll.X.EqualsEpsilon(x)) || (!currentScroll.Y.EqualsEpsilon(y)))
             {
-                builder.EditPositions()
-                        .SetKey(new GorgonKeyVector3(0, currentScroll))
-                        .SetKey(new GorgonKeyVector3(maxTime, new DX.Vector2(x, y)))
-                        .EndEdit()
-                        .PositionInterpolationMode(TrackInterpolationMode.Spline);
+                builder.EditVector2("ScrollOffset")
+                        .SetKey(new GorgonKeyVector2(0, currentScroll))
+                        .SetKey(new GorgonKeyVector2(maxTime, new DX.Vector2(x, y)))
+                        .SetInterpolationMode(TrackInterpolationMode.Spline)
+                        .EndEdit();                        
             }
 
             if (!currentZoomScale.EqualsEpsilon(newZoomScale))
             {
-                builder.EditScale()
-                    .SetKey(new GorgonKeyVector3(0, new DX.Vector3(currentZoomScale)))
-                    .SetKey(new GorgonKeyVector3(maxTime, new DX.Vector3(newZoomScale)))
-                    .EndEdit()
-                    .ScaleInterpolationMode(TrackInterpolationMode.Spline);
+                builder.EditSingle("Zoom")
+                    .SetKey(new GorgonKeySingle(0, currentZoomScale))
+                    .SetKey(new GorgonKeySingle(maxTime, newZoomScale))
+                    .SetInterpolationMode(TrackInterpolationMode.Spline)
+                    .EndEdit();                    
             }
 
             _animation = builder.Build("Sprite Renderer Transition Animation");

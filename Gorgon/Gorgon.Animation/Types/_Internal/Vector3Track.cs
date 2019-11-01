@@ -36,7 +36,7 @@ namespace Gorgon.Animation
     /// A track that stores 3D vectors representing various properties in an animation.
     /// </summary>
     internal class Vector3Track
-        : GorgonNamedObject, IGorgonTrack<GorgonKeyVector3>
+        : GorgonNamedObject, IGorgonAnimationTrack<GorgonKeyVector3>
     {
         #region Variables.
         // The interpolation mode for the track.
@@ -46,6 +46,9 @@ namespace Gorgon.Animation
         #endregion
 
         #region Properties.
+        /// <summary>Property to return the type of key frame data stored in this track.</summary>
+        public AnimationTrackKeyType KeyFrameDataType => AnimationTrackKeyType.Vector3;
+
         /// <summary>
         /// Property to return the type of interpolation supported by the track.
         /// </summary>

@@ -202,6 +202,18 @@ Invalid version '{0}'.</value>
   <data name="GOR2DIO_V2_CODEC_DESCRIPTION" xml:space="preserve">
     <value>Gorgon sprite codec for version 2.0 of Gorgon.</value>
   </data>
+  <data name="GOR2DIO_V3_1_ANIM_BIN_CODEC" xml:space="preserve">
+    <value>Gorgon Animation v3.1 Binary Codec</value>
+  </data>
+  <data name="GOR2DIO_V3_1_ANIM_BIN_CODEC_DESCRIPTION" xml:space="preserve">
+    <value>Gorgon v3.1 animation codec for reading and writing animations as binary data.</value>
+  </data>
+  <data name="GOR2DIO_V3_1_ANIM_JSON_CODEC" xml:space="preserve">
+    <value>Gorgon Animation v3.1 JSON Codec</value>
+  </data>
+  <data name="GOR2DIO_V3_1_ANIM_JSON_CODEC_DESCRIPTION" xml:space="preserve">
+    <value>Gorgon v3.1 animation codec for reading and writing animations as JSON data.</value>
+  </data>
   <data name="GOR2DIO_V3_ANIM_BIN_CODEC" xml:space="preserve">
     <value>Gorgon Animation v3 Binary Codec</value>
   </data>

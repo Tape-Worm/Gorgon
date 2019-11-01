@@ -26,7 +26,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Gorgon.Animation.Properties;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Math;
@@ -37,7 +36,7 @@ namespace Gorgon.Animation
     /// A track that stores <see cref="GorgonColor"/> values representing color in an animation.
     /// </summary>
     internal class ColorTrack
-        : GorgonNamedObject, IGorgonTrack<GorgonKeyGorgonColor>
+        : GorgonNamedObject, IGorgonAnimationTrack<GorgonKeyGorgonColor>
     {
         #region Variables.
         // The interpolation mode for the track.
@@ -47,6 +46,9 @@ namespace Gorgon.Animation
         #endregion
 
         #region Properties.
+        /// <summary>Property to return the type of key frame data stored in this track.</summary>
+        public AnimationTrackKeyType KeyFrameDataType => AnimationTrackKeyType.Color;
+
         /// <summary>
         /// Property to return the type of interpolation supported by the track.
         /// </summary>
@@ -129,8 +131,9 @@ namespace Gorgon.Animation
         /// Initializes a new instance of the <see cref="ColorTrack"/> class.
         /// </summary>
         /// <param name="keyFrames">The list of key frames for the track.</param>
-        internal ColorTrack(IReadOnlyList<GorgonKeyGorgonColor> keyFrames)
-            : base(Resources.GORANM_NAME_COLOR)
+        /// <param name="name">The name of the track.</param>
+        internal ColorTrack(IReadOnlyList<GorgonKeyGorgonColor> keyFrames, string name)
+            : base(name)
         {
             KeyFrames = keyFrames;
 

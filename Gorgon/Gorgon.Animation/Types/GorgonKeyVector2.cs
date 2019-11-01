@@ -20,17 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Wednesday, October 3, 2012 9:16:10 PM
+// Created: Wednesday, October 3, 2012 9:13:59 PM
 // 
 #endregion
 
 using System;
-using Gorgon.Graphics;
+using DX = SharpDX;
 
 namespace Gorgon.Animation
 {
     /// <summary>
-    /// An animation key frame for a <see cref="GorgonColor"/> value.
+    /// An animation key frame for a SharpDX <c>Vector2</c> type.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -42,22 +42,17 @@ namespace Gorgon.Animation
     /// </para>
     /// </remarks>
     /// <seealso cref="IGorgonAnimationTrack{T}"/>
-    public class GorgonKeyGorgonColor
+	public class GorgonKeyVector2
         : IGorgonKeyFrame
     {
         #region Variables.
-        // The value for the key frame.
-        private GorgonColor _value;
+        // The value for the key.
+        private DX.Vector2 _value;
         #endregion
 
         #region Properties.
         /// <summary>
-        /// Property to set or return the value to store in the key frame.
-        /// </summary>
-        public ref GorgonColor Value => ref _value;
-
-        /// <summary>
-        /// Property to return the time for the key frame in the animation.
+        /// Property to return the time at which the key frame is stored.
         /// </summary>
         public float Time
         {
@@ -65,12 +60,17 @@ namespace Gorgon.Animation
         }
 
         /// <summary>
+        /// Property to set or return the value for the key frame.
+        /// </summary>
+        public ref DX.Vector2 Value => ref _value;
+
+        /// <summary>
         /// Property to return the type of data for this key frame.
         /// </summary>
         public Type DataType
         {
             get;
-        } = typeof(GorgonColor);
+        } = typeof(DX.Vector2);
         #endregion
 
         #region Methods.
@@ -78,28 +78,28 @@ namespace Gorgon.Animation
         /// Function to clone an object.
         /// </summary>
         /// <returns>The cloned object.</returns>
-        public IGorgonKeyFrame Clone() => new GorgonKeyGorgonColor(this);
+        public IGorgonKeyFrame Clone() => new GorgonKeyVector2(this);
         #endregion
 
         #region Constructor/Destructor.
-        /// <summary>Initializes a new instance of the <see cref="GorgonKeyRectangle"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="GorgonKeyVector2"/> class.</summary>
         /// <param name="key">The key to copy.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="key"/> parameter is <b>null</b>.</exception>
-        public GorgonKeyGorgonColor(GorgonKeyGorgonColor key)
+        public GorgonKeyVector2(GorgonKeyVector2 key)
         {
             Time = key?.Time ?? throw new ArgumentNullException(nameof(key));
             Value = key.Value;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonKeyGorgonColor" /> class.
+        /// Initializes a new instance of the <see cref="GorgonKeyVector2" /> class.
         /// </summary>
         /// <param name="time">The time for the key frame.</param>
         /// <param name="value">The value to apply to the key frame.</param>
-        public GorgonKeyGorgonColor(float time, GorgonColor value)
+        public GorgonKeyVector2(float time, DX.Vector2 value)
         {
             Time = time;
-            _value = value;
+            Value = value;
         }
         #endregion
     }

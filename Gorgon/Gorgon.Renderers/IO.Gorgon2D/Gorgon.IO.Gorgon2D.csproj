@@ -62,7 +62,7 @@
     <Compile Include="Codecs\GorgonPolySpriteCodecCommon.cs" />
     <Compile Include="Codecs\GorgonSpriteCodecCommon.cs" />
     <Compile Include="Codecs\GorgonSpriteCodecPlugin.cs" />
-    <Compile Include="Codecs\GorgonV3AnimationBinaryCodec.cs" />
+    <Compile Include="Codecs\GorgonV31AnimationJsonCodec.cs" />
     <Compile Include="Codecs\GorgonV3AnimationJsonCodec.cs" />
     <Compile Include="Codecs\GorgonV1AnimationCodec.cs" />
     <Compile Include="Codecs\GorgonV3PolySpriteBinaryCodec.cs" />
@@ -81,6 +81,10 @@
     <Compile Include="Codecs\_Internal\JsonTexture2DConverter.cs" />
     <Compile Include="Codecs\_Internal\JsonGorgonColorConverter.cs" />
     <Compile Include="Codecs\_Internal\JsonGorgonColorKeyConverter.cs" />
+    <Compile Include="Codecs\_Internal\JsonSingleKeyConverter.cs" />
+    <Compile Include="Codecs\_Internal\JsonVector2KeyConverter.cs" />
+    <Compile Include="Codecs\_Internal\JsonVector4Converter.cs" />
+    <Compile Include="Codecs\_Internal\JsonVector4KeyConverter.cs" />
     <Compile Include="Codecs\_Internal\JsonVector3KeyConverter.cs" />
     <Compile Include="Codecs\_Internal\JsonTextureKeyConverter.cs" />
     <Compile Include="Codecs\_Internal\JsonVector2Converter.cs" />

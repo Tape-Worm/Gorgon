@@ -180,4 +180,10 @@
   <data name="GORANM_NAME_SIZE" xml:space="preserve">
     <value>Size</value>
   </data>
+  <data name="GORANM_ERR_TRACK_TYPE_NOT_VALID" xml:space="preserve">
+    <value>The type '{0}' is not a valid track data type.</value>
+  </data>
+  <data name="GORANM_TOSTR_TRACKREG" xml:space="preserve">
+    <value>Track '{0}', Type: {1}</value>
+  </data>
 </root>

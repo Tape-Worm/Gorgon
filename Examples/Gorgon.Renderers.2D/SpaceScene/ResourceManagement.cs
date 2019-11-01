@@ -186,11 +186,11 @@ namespace Gorgon.Examples
 
             IGorgonAnimation planetRotation = builder
                 .Clear()
-                .EditRotation()
+                .EditVector3("Rotation")
                 .SetKey(new GorgonKeyVector3(0, new DX.Vector3(0, 0, 180)))
                 .SetKey(new GorgonKeyVector3(600, new DX.Vector3(0, 360, 180)))
+                .SetInterpolationMode(TrackInterpolationMode.Linear)
                 .EndEdit()
-                .RotationInterpolationMode(TrackInterpolationMode.Linear)
                 .Build("PlanetRotation");
 
             planetRotation.IsLooped = true;
@@ -198,12 +198,12 @@ namespace Gorgon.Examples
 
             IGorgonAnimation cloudRotation = builder
                 .Clear()
-                .EditRotation()
+                .EditVector3("Rotation")
                 .SetKey(new GorgonKeyVector3(0, new DX.Vector3(0, 0, 180)))
                 .SetKey(new GorgonKeyVector3(600, new DX.Vector3(100, 180, 180)))
                 .SetKey(new GorgonKeyVector3(1200, new DX.Vector3(0, 360, 180)))
-                .EndEdit()
-                .RotationInterpolationMode(TrackInterpolationMode.Linear)
+                .SetInterpolationMode(TrackInterpolationMode.Linear)
+                .EndEdit()                
                 .Build("CloudRotation");
 
             cloudRotation.IsLooped = true;
@@ -216,13 +216,12 @@ namespace Gorgon.Examples
 
             IGorgonAnimation engineGlow = builder
                 .Clear()
-                .Edit2DTexture()
+                .Edit2DTexture("Texture")
                 .SetKey(new GorgonKeyTexture2D(0, frames[0].Texture, frames[0].TextureRegion, frames[0].TextureArrayIndex))
                 .SetKey(new GorgonKeyTexture2D(0.1f, frames[1].Texture, frames[1].TextureRegion, frames[1].TextureArrayIndex))
                 .SetKey(new GorgonKeyTexture2D(0.2f, frames[2].Texture, frames[2].TextureRegion, frames[2].TextureArrayIndex))
                 .SetKey(new GorgonKeyTexture2D(0.3f, frames[1].Texture, frames[1].TextureRegion, frames[1].TextureArrayIndex))
                 .EndEdit()
-                .RotationInterpolationMode(TrackInterpolationMode.Linear)
                 .Build("EngineGlow");
             engineGlow.IsLooped = true;
             _animations[engineGlow.Name] = engineGlow;

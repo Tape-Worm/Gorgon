@@ -30,7 +30,7 @@ using System.Collections.Generic;
 namespace Gorgon.Animation
 {
     /// <summary>
-    /// A builder for building keys on a <see cref="IGorgonTrack{T}"/>.
+    /// A builder for building keys on a <see cref="IGorgonAnimationTrack{T}"/>.
     /// </summary>
     /// <typeparam name="T">The type of keyframe, must implement <see cref="IGorgonKeyFrame"/> and be a reference type.</typeparam>
     /// <seealso cref="IGorgonKeyFrame"/>
@@ -85,6 +85,18 @@ namespace Gorgon.Animation
         /// <returns>The fluent interface for this builder.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="key"/> is <b>null</b>.</exception>
         IGorgonTrackKeyBuilder<T> DeleteKey(T key);
+
+        /// <summary>
+        /// Function to set the interpolation mode for this track.
+        /// </summary>
+        /// <param name="mode">The interpolation mode to assign to the track.</param>
+        /// <returns>The fluent interface for this builder.</returns>
+        /// <remarks>
+        /// <para>
+        /// Not all track types provide interpolation modes, in those cases, this value will be ignored.
+        /// </para>
+        /// </remarks>
+        IGorgonTrackKeyBuilder<T> SetInterpolationMode(TrackInterpolationMode mode);
 
         /// <summary>
         /// Function to end editing of the track.

@@ -19,7 +19,7 @@ namespace Gorgon.IO.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -310,6 +310,42 @@ namespace Gorgon.IO.Properties {
         internal static string GOR2DIO_V2_CODEC_DESCRIPTION {
             get {
                 return ResourceManager.GetString("GOR2DIO_V2_CODEC_DESCRIPTION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon Animation v3.1 Binary Codec.
+        /// </summary>
+        internal static string GOR2DIO_V3_1_ANIM_BIN_CODEC {
+            get {
+                return ResourceManager.GetString("GOR2DIO_V3_1_ANIM_BIN_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon v3.1 animation codec for reading and writing animations as binary data..
+        /// </summary>
+        internal static string GOR2DIO_V3_1_ANIM_BIN_CODEC_DESCRIPTION {
+            get {
+                return ResourceManager.GetString("GOR2DIO_V3_1_ANIM_BIN_CODEC_DESCRIPTION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon Animation v3.1 JSON Codec.
+        /// </summary>
+        internal static string GOR2DIO_V3_1_ANIM_JSON_CODEC {
+            get {
+                return ResourceManager.GetString("GOR2DIO_V3_1_ANIM_JSON_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon v3.1 animation codec for reading and writing animations as JSON data..
+        /// </summary>
+        internal static string GOR2DIO_V3_1_ANIM_JSON_CODEC_DESCRIPTION {
+            get {
+                return ResourceManager.GetString("GOR2DIO_V3_1_ANIM_JSON_CODEC_DESCRIPTION", resourceCulture);
             }
         }
         

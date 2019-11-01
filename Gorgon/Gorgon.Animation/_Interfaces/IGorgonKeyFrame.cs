@@ -42,7 +42,7 @@ namespace Gorgon.Animation
     /// for every time index.
     /// </para>
     /// </remarks>
-    /// <seealso cref="IGorgonTrack{T}"/>
+    /// <seealso cref="IGorgonAnimationTrack{T}"/>
     public interface IGorgonKeyFrame
         : IGorgonCloneable<IGorgonKeyFrame>
     {

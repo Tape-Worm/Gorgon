@@ -124,6 +124,15 @@ namespace Gorgon.Animation.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The type &apos;{0}&apos; is not a valid track data type..
+        /// </summary>
+        internal static string GORANM_ERR_TRACK_TYPE_NOT_VALID {
+            get {
+                return ResourceManager.GetString("GORANM_ERR_TRACK_TYPE_NOT_VALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There&apos;s already a key frame at the time &apos;{0}&apos;.
         /// </summary>
         internal static string GORANM_KEY_EXISTS_AT_TIME {
@@ -210,6 +219,15 @@ namespace Gorgon.Animation.Properties {
         internal static string GORANM_NAME_TEXTURE_2D {
             get {
                 return ResourceManager.GetString("GORANM_NAME_TEXTURE_2D", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Track &apos;{0}&apos;, Type: {1}.
+        /// </summary>
+        internal static string GORANM_TOSTR_TRACKREG {
+            get {
+                return ResourceManager.GetString("GORANM_TOSTR_TRACKREG", resourceCulture);
             }
         }
         

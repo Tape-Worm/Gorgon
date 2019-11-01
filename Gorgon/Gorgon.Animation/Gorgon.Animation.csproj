@@ -60,13 +60,19 @@
     <Compile Include="Types\GorgonKeyRectangle.cs" />
     <Compile Include="Types\GorgonKeyGorgonColor.cs" />
     <Compile Include="Types\GorgonKeyTexture2D.cs" />
+    <Compile Include="Types\GorgonKeySingle.cs" />
+    <Compile Include="Types\GorgonKeyVector2.cs" />
+    <Compile Include="Types\GorgonKeyVector4.cs" />
     <Compile Include="Types\_Internal\Texture2DViewTrack.cs" />
     <Compile Include="Types\_Internal\RectBoundsTrack.cs" />
     <Compile Include="Types\_Internal\ColorTrack.cs" />
     <Compile Include="Types\_Internal\TrackKeyBuilder.cs" />
+    <Compile Include="Types\_Internal\SingleTrack.cs" />
+    <Compile Include="Types\_Internal\Vector2Track.cs" />
+    <Compile Include="Types\_Internal\Vector4Track.cs" />
     <Compile Include="Types\_Internal\Vector3Track.cs" />
     <Compile Include="Types\GorgonKeyVector3.cs" />
-    <Compile Include="Types\_Interfaces\IGorgonTrack.cs" />
+    <Compile Include="Types\_Interfaces\IGorgonAnimationTrack.cs" />
     <Compile Include="_Interfaces\IGorgonAnimation.cs" />
     <Compile Include="_Interfaces\IGorgonTrackKeyBuilder.cs" />
     <Compile Include="_Internal\AnimationData.cs" />
@@ -81,6 +87,7 @@
     <Compile Include="_Internal\KeyframeIndexComparer.cs" />
     <Compile Include="_Internal\TrackKeyBuilder.cs" />
     <Compile Include="_Internal\TrackKeyProcessor.cs" />
+    <Compile Include="Types\GorgonTrackRegistration.cs" />
     <Compile Include="_Internal\TweenKey.cs" />
   </ItemGroup>
   <ItemGroup>

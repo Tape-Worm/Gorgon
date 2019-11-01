@@ -25,9 +25,12 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Gorgon.Animation.Properties;
 using Gorgon.Core;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
 using Gorgon.Math;
 
 namespace Gorgon.Animation
@@ -44,155 +47,442 @@ namespace Gorgon.Animation
         : IGorgonFluentBuilder<GorgonAnimationBuilder, IGorgonAnimation>
     {
         #region Variables.
-        // The builder for the positions track.
-        private readonly TrackKeyBuilder<GorgonKeyVector3> _trackPositions;
-        // The builder for the scaling track.
-        private readonly TrackKeyBuilder<GorgonKeyVector3> _trackScale;
-        // The builder for the rotation track.
-        private readonly TrackKeyBuilder<GorgonKeyVector3> _trackRotation;
-        // The builder for the colors track.
-        private readonly TrackKeyBuilder<GorgonKeyGorgonColor> _trackColors;
-        // The builder for the rectangular boundaries track.
-        private readonly TrackKeyBuilder<GorgonKeyRectangle> _trackRectBounds;
-        // The builder for the size track.
-        private readonly TrackKeyBuilder<GorgonKeyVector3> _trackSize;
-        // The builder for 2D texture values.
-        private readonly TrackKeyBuilder<GorgonKeyTexture2D> _trackTexture2D;
-        // The interpolation mode for the position track.
-        private TrackInterpolationMode _positionMode = TrackInterpolationMode.Linear;
-        // The interpolation mode for the scaling track.
-        private TrackInterpolationMode _scaleMode = TrackInterpolationMode.Linear;
-        // The interpolation mode for the rotation track.
-        private TrackInterpolationMode _rotationMode = TrackInterpolationMode.Linear;
-        // The interpolation mode for the color track.
-        private TrackInterpolationMode _colorMode = TrackInterpolationMode.Linear;
-        // The interpolation mode for the rectangle bounds track.
-        private TrackInterpolationMode _rectBoundsMode = TrackInterpolationMode.Linear;
-        // The interpolation mode for the size track.
-        private TrackInterpolationMode _sizeMode = TrackInterpolationMode.Linear;
+        // A list of builders for single floating point value tracks.
+        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeySingle>> _singleTracks = new Dictionary<string, TrackKeyBuilder<GorgonKeySingle>>(StringComparer.OrdinalIgnoreCase);
+        // A list of builders for vector 2 tracks.
+        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyVector2>> _vector2Tracks = new Dictionary<string, TrackKeyBuilder<GorgonKeyVector2>>(StringComparer.OrdinalIgnoreCase);
+        // A list of builders for vector 3 tracks.
+        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyVector3>> _vector3Tracks = new Dictionary<string, TrackKeyBuilder<GorgonKeyVector3>>(StringComparer.OrdinalIgnoreCase);
+        // A list of builders for vector 4 tracks.
+        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyVector4>> _vector4Tracks = new Dictionary<string, TrackKeyBuilder<GorgonKeyVector4>>(StringComparer.OrdinalIgnoreCase);
+        // A list of builders for rectangle tracks.
+        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyRectangle>> _rectangleTracks = new Dictionary<string, TrackKeyBuilder<GorgonKeyRectangle>>(StringComparer.OrdinalIgnoreCase);
+        // A list of builders for rectangle tracks.
+        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyGorgonColor>> _colorTracks = new Dictionary<string, TrackKeyBuilder<GorgonKeyGorgonColor>>(StringComparer.OrdinalIgnoreCase);
+        // A list of builders for texture tracks.
+        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyTexture2D>> _textureTracks = new Dictionary<string, TrackKeyBuilder<GorgonKeyTexture2D>>(StringComparer.OrdinalIgnoreCase);
         #endregion
 
-        #region Methods.
+        #region Methods.       
         /// <summary>
-        /// Function to edit the <see cref="IGorgonAnimation.PositionTrack">position track</see> of an animation.
+        /// Function to edit a track that uses single floating point values for its key frame values.
         /// </summary>
-        /// <returns>A <see cref="IGorgonTrackKeyBuilder{GorgonKeyVector3}"/> fluent interface for building track keys.</returns>
-        public IGorgonTrackKeyBuilder<GorgonKeyVector3> EditPositions() => _trackPositions;
-
-        /// <summary>
-        /// Function to edit the <see cref="IGorgonAnimation.ScaleTrack">scaling track</see> of an animation.
-        /// </summary>
-        /// <returns>A <see cref="IGorgonTrackKeyBuilder{GorgonKeyVector3}"/> fluent interface for building track keys.</returns>
-        public IGorgonTrackKeyBuilder<GorgonKeyVector3> EditScale() => _trackScale;
-
-        /// <summary>
-        /// Function to edit the <see cref="IGorgonAnimation.RotationTrack">rotation track</see> of an animation.
-        /// </summary>
-        /// <returns>A <see cref="IGorgonTrackKeyBuilder{GorgonKeyVector3}"/> fluent interface for building track keys.</returns>
+        /// <param name="name">The name of the track to edit.</param>
+        /// <returns>The builder used to update the requested animation track.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
         /// <remarks>
         /// <para>
-        /// The values for the key frame use a 3 component vector representing the X, Y, and Z axis of rotation. Each axis is in degrees.
+        /// If no track exists with the specified <paramref name="name"/>, then a new track is created.
         /// </para>
         /// </remarks>
-        public IGorgonTrackKeyBuilder<GorgonKeyVector3> EditRotation() => _trackRotation;
+        public IGorgonTrackKeyBuilder<GorgonKeySingle> EditSingle(string name)
+        {
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentEmptyException(nameof(name));
+            }
+
+            if (!_singleTracks.TryGetValue(name, out TrackKeyBuilder<GorgonKeySingle> result))
+            {
+                result = _singleTracks[name] = new TrackKeyBuilder<GorgonKeySingle>(this);
+            }
+
+            return result;
+        }
 
         /// <summary>
-        /// Function to edit the <see cref="IGorgonAnimation.ColorTrack">color track</see> of an animation.
+        /// Function to edit a track that uses 2D vectors for its key frame values.
         /// </summary>
-        /// <returns>A <see cref="IGorgonTrackKeyBuilder{GorgonKeyGorgonColor}"/> fluent interface for building track keys.</returns>
-        public IGorgonTrackKeyBuilder<GorgonKeyGorgonColor> EditColors() => _trackColors;
-
-        /// <summary>
-        /// Function to edit the <see cref="IGorgonAnimation.RectBoundsTrack">rectangular boundaries track</see> of an animation.
-        /// </summary>
-        /// <returns>A <see cref="IGorgonTrackKeyBuilder{GorgonKeyRectangle}"/> fluent interface for building track keys.</returns>
+        /// <param name="name">The name of the track to edit.</param>
+        /// <returns>The builder used to update the requested animation track.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
         /// <remarks>
         /// <para>
-        /// Some controllers will not use this track, while others may only use the width/height.
+        /// If no track exists with the specified <paramref name="name"/>, then a new track is created.
         /// </para>
         /// </remarks>
-        public IGorgonTrackKeyBuilder<GorgonKeyRectangle> EditRectangularBounds() => _trackRectBounds;
+        public IGorgonTrackKeyBuilder<GorgonKeyVector2> EditVector2(string name)
+        {
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentEmptyException(nameof(name));
+            }
+
+            if (!_vector2Tracks.TryGetValue(name, out TrackKeyBuilder<GorgonKeyVector2> result))
+            {
+                result = _vector2Tracks[name] = new TrackKeyBuilder<GorgonKeyVector2>(this);
+            }
+
+            return result;
+        }
 
         /// <summary>
-        /// Function to edit the <see cref="IGorgonAnimation.SizeTrack">size track</see> of an animation.
+        /// Function to edit a track that uses 3D vectors for its key frame values.
         /// </summary>
-        /// <returns>A <see cref="IGorgonTrackKeyBuilder{GorgonKeyVector3}"/> fluent interface for building track keys.</returns>
+        /// <param name="name">The name of the track to edit.</param>
+        /// <returns>The builder used to update the requested animation track.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
         /// <remarks>
         /// <para>
-        /// Some controllers will not use this track, while others may only use the width/height.
+        /// If no track exists with the specified <paramref name="name"/>, then a new track is created.
         /// </para>
         /// </remarks>
-        public IGorgonTrackKeyBuilder<GorgonKeyVector3> EditSize() => _trackSize;
-
-        /// <summary>
-        /// Function to edit the <see cref="IGorgonAnimation.Texture2DTrack">rectangular boundaries track</see> of an animation.
-        /// </summary>
-        /// <returns>A <see cref="IGorgonTrackKeyBuilder{GorgonKeyTexture2D}"/> fluent interface for building track keys.</returns>
-        public IGorgonTrackKeyBuilder<GorgonKeyTexture2D> Edit2DTexture() => _trackTexture2D;
-
-        /// <summary>
-        /// Function to change the interpolation mode of the <see cref="IGorgonAnimation.PositionTrack"/>.
-        /// </summary>
-        /// <param name="mode">The interpolation mode to apply.</param>
-        /// <returns>The fluent interface for this builder.</returns>
-        public GorgonAnimationBuilder PositionInterpolationMode(TrackInterpolationMode mode)
+        public IGorgonTrackKeyBuilder<GorgonKeyVector3> EditVector3(string name)
         {
-            _positionMode = mode;
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentEmptyException(nameof(name));
+            }
+
+            if (!_vector3Tracks.TryGetValue(name, out TrackKeyBuilder<GorgonKeyVector3> result))
+            {
+                result = _vector3Tracks[name] = new TrackKeyBuilder<GorgonKeyVector3>(this);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Function to edit a track that uses 4D vectors for its key frame values.
+        /// </summary>
+        /// <param name="name">The name of the track to edit.</param>
+        /// <returns>The builder used to update the requested animation track.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+        /// <remarks>
+        /// <para>
+        /// If no track exists with the specified <paramref name="name"/>, then a new track is created.
+        /// </para>
+        /// </remarks>
+        public IGorgonTrackKeyBuilder<GorgonKeyVector4> EditVector4(string name)
+        {
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentEmptyException(nameof(name));
+            }
+
+            if (!_vector4Tracks.TryGetValue(name, out TrackKeyBuilder<GorgonKeyVector4> result))
+            {
+                result = _vector4Tracks[name] = new TrackKeyBuilder<GorgonKeyVector4>(this);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Function to edit a track that uses SharpDX <c>RectangleF</c> values for its key frame values.
+        /// </summary>
+        /// <param name="name">The name of the track to edit.</param>
+        /// <returns>The builder used to update the requested animation track.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+        /// <remarks>
+        /// <para>
+        /// If no track exists with the specified <paramref name="name"/>, then a new track is created.
+        /// </para>
+        /// </remarks>
+        public IGorgonTrackKeyBuilder<GorgonKeyRectangle> EditRectangle(string name)
+        {
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentEmptyException(nameof(name));
+            }
+
+            if (!_rectangleTracks.TryGetValue(name, out TrackKeyBuilder<GorgonKeyRectangle> result))
+            {
+                result = _rectangleTracks[name] = new TrackKeyBuilder<GorgonKeyRectangle>(this);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Function to edit a track that uses <see cref="GorgonColor"/> values for its key frame values.
+        /// </summary>
+        /// <param name="name">The name of the track to edit.</param>
+        /// <returns>The builder used to update the requested animation track.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+        /// <remarks>
+        /// <para>
+        /// If no track exists with the specified <paramref name="name"/>, then a new track is created.
+        /// </para>
+        /// </remarks>
+        public IGorgonTrackKeyBuilder<GorgonKeyGorgonColor> EditColor(string name)
+        {
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentEmptyException(nameof(name));
+            }
+
+            if (!_colorTracks.TryGetValue(name, out TrackKeyBuilder<GorgonKeyGorgonColor> result))
+            {
+                result = _colorTracks[name] = new TrackKeyBuilder<GorgonKeyGorgonColor>(this);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Function to edit a track that updates a <see cref="GorgonTexture2DView"/>, texture coordinates, and/or texture array indices for its key frame values.
+        /// </summary>
+        /// <param name="name">The name of the track to edit.</param>
+        /// <returns>The builder used to update the requested animation track.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+        /// <remarks>
+        /// <para>
+        /// If no track exists with the specified <paramref name="name"/>, then a new track is created.
+        /// </para>
+        /// </remarks>
+        public IGorgonTrackKeyBuilder<GorgonKeyTexture2D> Edit2DTexture(string name)
+        {
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentEmptyException(nameof(name));
+            }
+
+            if (!_textureTracks.TryGetValue(name, out TrackKeyBuilder<GorgonKeyTexture2D> result))
+            {
+                result = _textureTracks[name] = new TrackKeyBuilder<GorgonKeyTexture2D>(this);
+            }
+
+            return result;
+        }
+
+
+        /// <summary>
+        /// Function to delete a track that updates a single floating point value for its key frame values.
+        /// </summary>
+        /// <param name="name">The name of the track to delete.</param>
+        /// <returns>The fluent builder for the animation.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+        /// <exception cref="KeyNotFoundException">Thrown if the track with the name specified does not exist.</exception>
+        public GorgonAnimationBuilder DeleteSingle(string name)
+        {
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentEmptyException(nameof(name));
+            }
+
+            if (!_singleTracks.Remove(name))
+            {
+                throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name));
+            }
+
+            return this;
+        }
+
+
+        /// <summary>
+        /// Function to delete a track that updates a 2D vector value for its key frame values.
+        /// </summary>
+        /// <param name="name">The name of the track to delete.</param>
+        /// <returns>The fluent builder for the animation.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+        /// <exception cref="KeyNotFoundException">Thrown if the track with the name specified does not exist.</exception>
+        public GorgonAnimationBuilder DeleteVector2(string name)
+        {
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentEmptyException(nameof(name));
+            }
+
+            if (!_vector2Tracks.Remove(name))
+            {
+                throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name));
+            }
+
             return this;
         }
 
         /// <summary>
-        /// Function to change the interpolation mode of the <see cref="IGorgonAnimation.RotationTrack"/>.
+        /// Function to delete a track that updates a 3D vector value for its key frame values.
         /// </summary>
-        /// <param name="mode">The interpolation mode to apply.</param>
-        /// <returns>The fluent interface for this builder.</returns>
-        public GorgonAnimationBuilder RotationInterpolationMode(TrackInterpolationMode mode)
+        /// <param name="name">The name of the track to delete.</param>
+        /// <returns>The fluent builder for the animation.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+        /// <exception cref="KeyNotFoundException">Thrown if the track with the name specified does not exist.</exception>
+        public GorgonAnimationBuilder DeleteVector3(string name)
         {
-            _rotationMode = mode;
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentEmptyException(nameof(name));
+            }
+
+            if (!_vector3Tracks.Remove(name))
+            {
+                throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name));
+            }
+
             return this;
         }
 
         /// <summary>
-        /// Function to change the interpolation mode of the <see cref="IGorgonAnimation.ScaleTrack"/>.
+        /// Function to delete a track that updates a 4D vector value for its key frame values.
         /// </summary>
-        /// <param name="mode">The interpolation mode to apply.</param>
-        /// <returns>The fluent interface for this builder.</returns>
-        public GorgonAnimationBuilder ScaleInterpolationMode(TrackInterpolationMode mode)
+        /// <param name="name">The name of the track to delete.</param>
+        /// <returns>The fluent builder for the animation.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+        /// <exception cref="KeyNotFoundException">Thrown if the track with the name specified does not exist.</exception>
+        public GorgonAnimationBuilder DeleteVector4(string name)
         {
-            _scaleMode = mode;
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentEmptyException(nameof(name));
+            }
+
+            if (!_vector4Tracks.Remove(name))
+            {
+                throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name));
+            }
+
             return this;
         }
 
         /// <summary>
-        /// Function to change the interpolation mode of the <see cref="IGorgonAnimation.ColorTrack"/>.
+        /// Function to delete a track that updates a SharpDX <c>RectangleF</c> value for its key frame values.
         /// </summary>
-        /// <param name="mode">The interpolation mode to apply.</param>
-        /// <returns>The fluent interface for this builder.</returns>
-        public GorgonAnimationBuilder ColorInterpolationMode(TrackInterpolationMode mode)
+        /// <param name="name">The name of the track to delete.</param>
+        /// <returns>The fluent builder for the animation.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+        /// <exception cref="KeyNotFoundException">Thrown if the track with the name specified does not exist.</exception>
+        public GorgonAnimationBuilder DeleteRectangle(string name)
         {
-            _colorMode = mode;
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentEmptyException(nameof(name));
+            }
+
+            if (!_rectangleTracks.Remove(name))
+            {
+                throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name));
+            }
+
             return this;
         }
 
         /// <summary>
-        /// Function to change the interpolation mode of the <see cref="IGorgonAnimation.RectBoundsTrack"/>.
+        /// Function to delete a track that updates a <see cref="GorgonColor"/> value for its key frame values.
         /// </summary>
-        /// <param name="mode">The interpolation mode to apply.</param>
-        /// <returns>The fluent interface for this builder.</returns>
-        public GorgonAnimationBuilder RectBoundsInterpolationMode(TrackInterpolationMode mode)
+        /// <param name="name">The name of the track to delete.</param>
+        /// <returns>The fluent builder for the animation.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+        /// <exception cref="KeyNotFoundException">Thrown if the track with the name specified does not exist.</exception>
+        public GorgonAnimationBuilder DeleteColor(string name)
         {
-            _rectBoundsMode = mode;
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentEmptyException(nameof(name));
+            }
+
+            if (!_colorTracks.Remove(name))
+            {
+                throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name));
+            }
+
             return this;
         }
 
         /// <summary>
-        /// Function to change the interpolation mode of the <see cref="IGorgonAnimation.SizeTrack"/>.
+        /// Function to delete a track that updates a <see cref="GorgonTexture2DView"/>, texture coordinates, and/or texture array indices for its key frame values.
         /// </summary>
-        /// <param name="mode">The interpolation mode to apply.</param>
-        /// <returns>The fluent interface for this builder.</returns>
-        public GorgonAnimationBuilder SizeInterpolationMode(TrackInterpolationMode mode)
+        /// <param name="name">The name of the track to delete.</param>
+        /// <returns>The fluent builder for the animation.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+        /// <exception cref="KeyNotFoundException">Thrown if the track with the name specified does not exist.</exception>
+        public GorgonAnimationBuilder Delete2DTexture(string name)
         {
-            _sizeMode = mode;
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentEmptyException(nameof(name));
+            }
+
+            if (!_textureTracks.Remove(name))
+            {
+                throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name));
+            }
+
             return this;
         }
 
@@ -221,43 +511,90 @@ namespace Gorgon.Animation
 
             if (length == null)
             {
-                length = _trackPositions.Keys.Cast<IGorgonKeyFrame>()
-                                        .Concat(_trackColors.Keys)
-                                        .Concat(_trackRectBounds.Keys)
-                                        .Concat(_trackSize.Keys)
-                                        .Concat(_trackTexture2D.Keys)
-                                        .Concat(_trackRotation.Keys)
-                                        .Concat(_trackScale.Keys)
-                                        .Max(item => item.Time);
+                length = _singleTracks.SelectMany(item => item.Value.Keys.Cast<IGorgonKeyFrame>())
+                                    .Concat(_vector2Tracks.SelectMany(item => item.Value.Keys))
+                                    .Concat(_vector3Tracks.SelectMany(item => item.Value.Keys))
+                                    .Concat(_vector4Tracks.SelectMany(item => item.Value.Keys))
+                                    .Concat(_rectangleTracks.SelectMany(item => item.Value.Keys))
+                                    .Concat(_colorTracks.SelectMany(item => item.Value.Keys))
+                                    .Concat(_textureTracks.SelectMany(item => item.Value.Keys))
+                                    .Max(item => item.Time);
+            }
+
+            var singles = new Dictionary<string, IGorgonAnimationTrack<GorgonKeySingle>>(StringComparer.OrdinalIgnoreCase);
+            var vec2 = new Dictionary<string, IGorgonAnimationTrack<GorgonKeyVector2>>(StringComparer.OrdinalIgnoreCase);
+            var vec3 = new Dictionary<string, IGorgonAnimationTrack<GorgonKeyVector3>>(StringComparer.OrdinalIgnoreCase);
+            var vec4 = new Dictionary<string, IGorgonAnimationTrack<GorgonKeyVector4>>(StringComparer.OrdinalIgnoreCase);
+            var rect = new Dictionary<string, IGorgonAnimationTrack<GorgonKeyRectangle>>(StringComparer.OrdinalIgnoreCase);
+            var color = new Dictionary<string, IGorgonAnimationTrack<GorgonKeyGorgonColor>>(StringComparer.OrdinalIgnoreCase);
+            var texture = new Dictionary<string, IGorgonAnimationTrack<GorgonKeyTexture2D>>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (KeyValuePair<string, TrackKeyBuilder<GorgonKeySingle>> builder in _singleTracks)
+            {
+                singles[builder.Key] = new SingleTrack(builder.Value.GetSortedKeys(length.Value), builder.Key)
+                {
+                    InterpolationMode = builder.Value.InterpolationMode
+                };
+            }
+
+            foreach (KeyValuePair<string, TrackKeyBuilder<GorgonKeyVector2>> builder in _vector2Tracks)
+            {
+                vec2[builder.Key] = new Vector2Track(builder.Value.GetSortedKeys(length.Value), builder.Key)
+                {
+                    InterpolationMode = builder.Value.InterpolationMode
+                };
+            }
+
+            foreach (KeyValuePair<string, TrackKeyBuilder<GorgonKeyVector3>> builder in _vector3Tracks)
+            {
+                vec3[builder.Key] = new Vector3Track(builder.Value.GetSortedKeys(length.Value), builder.Key)
+                {
+                    InterpolationMode = builder.Value.InterpolationMode
+                };
+            }
+
+            foreach (KeyValuePair<string, TrackKeyBuilder<GorgonKeyVector4>> builder in _vector4Tracks)
+            {
+                vec4[builder.Key] = new Vector4Track(builder.Value.GetSortedKeys(length.Value), builder.Key)
+                {
+                    InterpolationMode = builder.Value.InterpolationMode
+                };
+            }
+
+            foreach (KeyValuePair<string, TrackKeyBuilder<GorgonKeyRectangle>> builder in _rectangleTracks)
+            {
+                rect[builder.Key] = new RectBoundsTrack(builder.Value.GetSortedKeys(length.Value), builder.Key)
+                {
+                    InterpolationMode = builder.Value.InterpolationMode
+                };
+            }
+
+            foreach (KeyValuePair<string, TrackKeyBuilder<GorgonKeyGorgonColor>> builder in _colorTracks)
+            {
+                color[builder.Key] = new ColorTrack(builder.Value.GetSortedKeys(length.Value), builder.Key)
+                {
+                    InterpolationMode = builder.Value.InterpolationMode
+                };
+            }
+
+            foreach (KeyValuePair<string, TrackKeyBuilder<GorgonKeyTexture2D>> builder in _textureTracks)
+            {
+                texture[builder.Key] = new Texture2DViewTrack(builder.Value.GetSortedKeys(length.Value), builder.Key)
+                {
+                    // Textures don't use interpolation.
+                    InterpolationMode = TrackInterpolationMode.None
+                };
             }
 
             return new AnimationData(name, length.Value)
             {
-                PositionTrack = new Vector3Track(_trackPositions.GetSortedKeys(length.Value), Resources.GORANM_NAME_POSITION)
-                {
-                    InterpolationMode = _positionMode
-                },
-                ColorTrack = new ColorTrack(_trackColors.GetSortedKeys(length.Value))
-                {
-                    InterpolationMode = _colorMode
-                },
-                RectBoundsTrack = new RectBoundsTrack(_trackRectBounds.GetSortedKeys(length.Value))
-                {
-                    InterpolationMode = _rectBoundsMode
-                },
-                SizeTrack = new Vector3Track(_trackSize.GetSortedKeys(length.Value), Resources.GORANM_NAME_SIZE)
-                {
-                    InterpolationMode = _sizeMode
-                },
-                Texture2DTrack = new Texture2DViewTrack(_trackTexture2D.GetSortedKeys(length.Value)),
-                ScaleTrack = new Vector3Track(_trackScale.GetSortedKeys(length.Value), Resources.GORANM_NAME_SCALE)
-                {
-                    InterpolationMode = _scaleMode
-                },
-                RotationTrack = new Vector3Track(_trackRotation.GetSortedKeys(length.Value), Resources.GORANM_NAME_ROTATION)
-                {
-                    InterpolationMode = _rotationMode
-                }
+                SingleTracks = singles,
+                ColorTracks = color,
+                RectangleTracks = rect,
+                Texture2DTracks = texture,
+                Vector2Tracks = vec2,
+                Vector3Tracks = vec3,
+                Vector4Tracks = vec4
             };
         }
 
@@ -280,24 +617,61 @@ namespace Gorgon.Animation
                 return this;
             }
 
-            _positionMode = builderObject.PositionTrack.InterpolationMode;
-            _colorMode = builderObject.ColorTrack.InterpolationMode;
-            _rectBoundsMode = builderObject.RectBoundsTrack.InterpolationMode;
-            _rotationMode = builderObject.RotationTrack.InterpolationMode;
-            _scaleMode = builderObject.ScaleTrack.InterpolationMode;
-            _sizeMode = builderObject.SizeTrack.InterpolationMode;
+            foreach (KeyValuePair<string, IGorgonAnimationTrack<GorgonKeySingle>> track in builderObject.SingleTracks)
+            {
+                var trackBuilder = new TrackKeyBuilder<GorgonKeySingle>(this);
+                trackBuilder.SetInterpolationMode(track.Value.InterpolationMode);
+                trackBuilder.Keys.AddRange(track.Value.KeyFrames.Select(item => new GorgonKeySingle(item)));
+                _singleTracks[track.Key] = trackBuilder;
+            }
 
-            _trackPositions.Keys.AddRange(builderObject.PositionTrack.KeyFrames.Select(item => new GorgonKeyVector3(item.Time, item.Value)));
-            _trackScale.Keys.AddRange(builderObject.ScaleTrack.KeyFrames.Select(item => new GorgonKeyVector3(item.Time, item.Value)));
-            _trackRotation.Keys.AddRange(builderObject.RotationTrack.KeyFrames.Select(item => new GorgonKeyVector3(item.Time, item.Value)));
-            _trackSize.Keys.AddRange(builderObject.SizeTrack.KeyFrames.Select(item => new GorgonKeyVector3(item.Time, item.Value)));
-            _trackColors.Keys.AddRange(builderObject.ColorTrack.KeyFrames.Select(item => new GorgonKeyGorgonColor(item.Time, item.Value)));
-            _trackRectBounds.Keys.AddRange(builderObject.RectBoundsTrack.KeyFrames.Select(item => new GorgonKeyRectangle(item.Time, item.Value)));
-            _trackTexture2D.Keys.AddRange(builderObject.Texture2DTrack.KeyFrames.Select(item => new GorgonKeyTexture2D(item.Time,
-                                                                                                                       item.Value,
-                                                                                                                       item.TextureCoordinates,
-                                                                                                                       item.TextureArrayIndex)));
+            foreach (KeyValuePair<string, IGorgonAnimationTrack<GorgonKeyVector2>> track in builderObject.Vector2Tracks)
+            {
+                var trackBuilder = new TrackKeyBuilder<GorgonKeyVector2>(this);
+                trackBuilder.SetInterpolationMode(track.Value.InterpolationMode);
+                trackBuilder.Keys.AddRange(track.Value.KeyFrames.Select(item => new GorgonKeyVector2(item)));
+                _vector2Tracks[track.Key] = trackBuilder;
+            }
 
+            foreach (KeyValuePair<string, IGorgonAnimationTrack<GorgonKeyVector3>> track in builderObject.Vector3Tracks)
+            {
+                var trackBuilder = new TrackKeyBuilder<GorgonKeyVector3>(this);
+                trackBuilder.SetInterpolationMode(track.Value.InterpolationMode);
+                trackBuilder.Keys.AddRange(track.Value.KeyFrames.Select(item => new GorgonKeyVector3(item)));
+                _vector3Tracks[track.Key] = trackBuilder;
+            }
+
+            foreach (KeyValuePair<string, IGorgonAnimationTrack<GorgonKeyVector4>> track in builderObject.Vector4Tracks)
+            {
+                var trackBuilder = new TrackKeyBuilder<GorgonKeyVector4>(this);
+                trackBuilder.SetInterpolationMode(track.Value.InterpolationMode);
+                trackBuilder.Keys.AddRange(track.Value.KeyFrames.Select(item => new GorgonKeyVector4(item)));
+                _vector4Tracks[track.Key] = trackBuilder;
+            }
+
+            foreach (KeyValuePair<string, IGorgonAnimationTrack<GorgonKeyRectangle>> track in builderObject.RectangleTracks)
+            {
+                var trackBuilder = new TrackKeyBuilder<GorgonKeyRectangle>(this);
+                trackBuilder.SetInterpolationMode(track.Value.InterpolationMode);
+                trackBuilder.Keys.AddRange(track.Value.KeyFrames.Select(item => new GorgonKeyRectangle(item)));
+                _rectangleTracks[track.Key] = trackBuilder;
+            }
+
+            foreach (KeyValuePair<string, IGorgonAnimationTrack<GorgonKeyGorgonColor>> track in builderObject.ColorTracks)
+            {
+                var trackBuilder = new TrackKeyBuilder<GorgonKeyGorgonColor>(this);
+                trackBuilder.SetInterpolationMode(track.Value.InterpolationMode);
+                trackBuilder.Keys.AddRange(track.Value.KeyFrames.Select(item => new GorgonKeyGorgonColor(item)));
+                _colorTracks[track.Key] = trackBuilder;
+            }
+
+            foreach (KeyValuePair<string, IGorgonAnimationTrack<GorgonKeyTexture2D>> track in builderObject.Texture2DTracks)
+            {
+                var trackBuilder = new TrackKeyBuilder<GorgonKeyTexture2D>(this);
+                trackBuilder.SetInterpolationMode(track.Value.InterpolationMode);
+                trackBuilder.Keys.AddRange(track.Value.KeyFrames.Select(item => new GorgonKeyTexture2D(item)));
+                _textureTracks[track.Key] = trackBuilder;
+            }
 
             return this;
         }
@@ -308,20 +682,13 @@ namespace Gorgon.Animation
         /// <returns>The fluent builder interface.</returns>
         public GorgonAnimationBuilder Clear()
         {
-            _positionMode = TrackInterpolationMode.Linear;
-            _colorMode = TrackInterpolationMode.Linear;
-            _rectBoundsMode = TrackInterpolationMode.Linear;
-            _scaleMode = TrackInterpolationMode.Linear;
-            _rotationMode = TrackInterpolationMode.Linear;
-            _sizeMode = TrackInterpolationMode.Linear;
-
-            _trackRectBounds.Clear();
-            _trackPositions.Clear();
-            _trackColors.Clear();
-            _trackTexture2D.Clear();
-            _trackScale.Clear();
-            _trackRotation.Clear();
-            _trackSize.Clear();
+            _singleTracks.Clear();
+            _vector2Tracks.Clear();
+            _vector3Tracks.Clear();
+            _vector4Tracks.Clear();
+            _rectangleTracks.Clear();
+            _colorTracks.Clear();
+            _textureTracks.Clear();
 
             return this;
         }
@@ -340,31 +707,16 @@ namespace Gorgon.Animation
         /// </remarks>
         IGorgonAnimation IGorgonFluentBuilder<GorgonAnimationBuilder, IGorgonAnimation>.Build()
         {
-            float maxTime = _trackPositions.Keys.Cast<IGorgonKeyFrame>()
-                .Concat(_trackColors.Keys)
-                .Concat(_trackRectBounds.Keys)
-                .Concat(_trackRotation.Keys)
-                .Concat(_trackScale.Keys)
-                .Concat(_trackSize.Keys)
-                .Concat(_trackTexture2D.Keys).Max(item => item.Time);
+            float maxTime = _singleTracks.SelectMany(item => item.Value.Keys.Cast<IGorgonKeyFrame>())
+                .Concat(_vector2Tracks.SelectMany(item => item.Value.Keys))
+                .Concat(_vector3Tracks.SelectMany(item => item.Value.Keys))
+                .Concat(_vector4Tracks.SelectMany(item => item.Value.Keys))
+                .Concat(_rectangleTracks.SelectMany(item => item.Value.Keys))
+                .Concat(_colorTracks.SelectMany(item => item.Value.Keys))
+                .Concat(_textureTracks.SelectMany(item => item.Value.Keys))
+                .Max(item => item.Time);
 
             return Build($"Animation_{Guid.NewGuid():N}", maxTime.Max(0));
-        }
-        #endregion
-
-        #region Constructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonAnimationBuilder"/> class.
-        /// </summary>
-        public GorgonAnimationBuilder()
-        {
-            _trackPositions = new TrackKeyBuilder<GorgonKeyVector3>(this);
-            _trackColors = new TrackKeyBuilder<GorgonKeyGorgonColor>(this);
-            _trackRectBounds = new TrackKeyBuilder<GorgonKeyRectangle>(this);
-            _trackTexture2D = new TrackKeyBuilder<GorgonKeyTexture2D>(this);
-            _trackScale = new TrackKeyBuilder<GorgonKeyVector3>(this);
-            _trackSize = new TrackKeyBuilder<GorgonKeyVector3>(this);
-            _trackRotation = new TrackKeyBuilder<GorgonKeyVector3>(this);
         }
         #endregion
     }

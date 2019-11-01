@@ -65,13 +65,13 @@ namespace Gorgon.IO
                 return DX.Size2F.Zero;
             }
 
-            var w = (float)(reader.ReadAsDouble() ?? 0);
+            float w = (float)(reader.ReadAsDouble() ?? 0);
             if (!reader.Read())
             {
                 return new DX.Size2F(w, 0);
             }
 
-            var h = (float)(reader.ReadAsDouble() ?? 0);
+            float h = (float)(reader.ReadAsDouble() ?? 0);
             reader.Read();
 
             return new DX.Size2F(w, h);

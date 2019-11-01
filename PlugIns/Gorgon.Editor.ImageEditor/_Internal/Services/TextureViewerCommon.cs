@@ -633,9 +633,9 @@ namespace Gorgon.Editor.ImageEditor
 
             _pixelShader = OnGetPixelShader(_context.Graphics, Resources.ImageViewShaders);
 
-            _animations[AnimationType.Fade] = _animBuilder.EditColors()
-                .SetKey(new GorgonKeyGorgonColor(0, new GorgonColor(GorgonColor.White, 0)))
-                .SetKey(new GorgonKeyGorgonColor(0.35f, GorgonColor.White))
+            _animations[AnimationType.Fade] = _animBuilder.EditSingle("Opacity")
+                .SetKey(new GorgonKeySingle(0, 0))
+                .SetKey(new GorgonKeySingle(0.35f, 1.0f))
                 .EndEdit()
                 .Build(nameof(AnimationType.Fade));
 
@@ -700,9 +700,9 @@ namespace Gorgon.Editor.ImageEditor
             if (ZoomLevel != zoomLevel)
             {
                 _animations[AnimationType.Zoom] = _animBuilder
-                    .Clear()
-                    .RectBoundsInterpolationMode(TrackInterpolationMode.Spline)
-                    .EditRectangularBounds()
+                    .Clear()                    
+                    .EditRectangle("TextureBounds")
+                    .SetInterpolationMode(TrackInterpolationMode.Spline)
                     .SetKey(new GorgonKeyRectangle(0, old))
                     .SetKey(new GorgonKeyRectangle(animTime, newBounds))
                     .EndEdit()

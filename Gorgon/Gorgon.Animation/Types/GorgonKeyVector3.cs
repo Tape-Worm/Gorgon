@@ -41,7 +41,7 @@ namespace Gorgon.Animation
     /// for every time index.
     /// </para>
     /// </remarks>
-    /// <seealso cref="IGorgonTrack{T}"/>
+    /// <seealso cref="IGorgonAnimationTrack{T}"/>
 	public class GorgonKeyVector3
         : IGorgonKeyFrame
     {
@@ -78,12 +78,21 @@ namespace Gorgon.Animation
         /// Function to clone an object.
         /// </summary>
         /// <returns>The cloned object.</returns>
-        public IGorgonKeyFrame Clone() => new GorgonKeyVector3(Time, Value);
+        public IGorgonKeyFrame Clone() => new GorgonKeyVector3(this);
         #endregion
 
         #region Constructor/Destructor.
+        /// <summary>Initializes a new instance of the <see cref="GorgonKeyVector3"/> class.</summary>
+        /// <param name="key">The key to copy.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="key"/> parameter is <b>null</b>.</exception>
+        public GorgonKeyVector3(GorgonKeyVector3 key)
+        {
+            Time = key?.Time ?? throw new ArgumentNullException(nameof(key));
+            Value = key.Value;
+        }
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonKeyVector3" /> struct.
+        /// Initializes a new instance of the <see cref="GorgonKeyVector3" /> class.
         /// </summary>
         /// <param name="time">The time for the key frame.</param>
         /// <param name="value">The value to apply to the key frame.</param>
@@ -94,7 +103,7 @@ namespace Gorgon.Animation
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonKeyVector3" /> struct.
+        /// Initializes a new instance of the <see cref="GorgonKeyVector3" /> class.
         /// </summary>
         /// <param name="time">The time for the key frame.</param>
         /// <param name="value">The value to apply to the key frame.</param>

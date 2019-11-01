@@ -37,54 +37,86 @@ namespace Gorgon.Editor.ImageEditor
     internal class ImageAnimationController
         : GorgonAnimationController<ITextureViewerService>
     {
-        /// <summary>Function called when the color needs to be updated on the object.</summary>
-        /// <param name="animObject">The object being animated.</param>
-        /// <param name="color">The new color.</param>
-        protected override void OnColorUpdate(ITextureViewerService animObject, GorgonColor color) => animObject.Alpha = color.Alpha;
+        // The track used to animate opacity for the texture.
+        private static GorgonTrackRegistration _opacityTrack = new GorgonTrackRegistration("Opacity", AnimationTrackKeyType.Single);
+        // The track used to animate the texture coordinate boundaries.
+        private static GorgonTrackRegistration _textureBoundsTrack = new GorgonTrackRegistration("TextureBounds", AnimationTrackKeyType.Rectangle);
 
-        /// <summary>Function called when a position needs to be updated on the object.</summary>
-        /// <param name="animObject">The object being animated.</param>
-        /// <param name="position">The new position.</param>
-        protected override void OnPositionUpdate(ITextureViewerService animObject, Vector3 position)
+        /// <summary>Function called when a single floating point value needs to be updated on the animated object.</summary>
+        /// <param name="track">The track currently being processed.</param>
+        /// <param name="animObject">The object to update.</param>
+        /// <param name="value">The value to apply.</param>
+        protected override void OnSingleValueUpdate(GorgonTrackRegistration track, ITextureViewerService animObject, float value)
+        {
+            if (_opacityTrack.ID != track.ID)
+            {
+                return;
+            }
+
+            animObject.Alpha = value;
+        }
+
+        /// <summary>Function called when a 2D vector value needs to be updated on the animated object.</summary>
+        /// <param name="track">The track currently being processed.</param>
+        /// <param name="animObject">The object to update.</param>
+        /// <param name="value">The value to apply.</param>
+        protected override void OnVector2ValueUpdate(GorgonTrackRegistration track, ITextureViewerService animObject, Vector2 value)
+        {        
+        }
+
+        /// <summary>Function called when a 3D vector value needs to be updated on the animated object.</summary>
+        /// <param name="track">The track currently being processed.</param>
+        /// <param name="animObject">The object to update.</param>
+        /// <param name="value">The value to apply.</param>
+        protected override void OnVector3ValueUpdate(GorgonTrackRegistration track, ITextureViewerService animObject, Vector3 value)
         {
         }
 
-        /// <summary>Function called when the size needs to be updated on the object.</summary>
-        /// <param name="animObject">The object being animated.</param>
-        /// <param name="size">The new size.</param>
-        protected override void OnSizeUpdate(ITextureViewerService animObject, Vector3 size)
+        /// <summary>Function called when a 4D vector value needs to be updated on the animated object.</summary>
+        /// <param name="track">The track currently being processed.</param>
+        /// <param name="animObject">The object to update.</param>
+        /// <param name="value">The value to apply.</param>
+        protected override void OnVector4ValueUpdate(GorgonTrackRegistration track, ITextureViewerService animObject, Vector4 value)
         {
         }
 
-        /// <summary>Function called when a rectangle boundary needs to be updated on the object.</summary>
-        /// <param name="animObject">The object being animated.</param>
-        /// <param name="bounds">The new bounds.</param>
-        protected override void OnRectBoundsUpdate(ITextureViewerService animObject, RectangleF bounds) => animObject.TextureBounds = bounds;
-
-        /// <summary>Function called when the angle of rotation needs to be updated on the object.</summary>
-        /// <param name="animObject">The object being animated.</param>
-        /// <param name="rotation">The new angle of rotation, in degrees, on the x, y and z axes.</param>
-        protected override void OnRotationUpdate(ITextureViewerService animObject, Vector3 rotation)
+        /// <summary>Function called when a <see cref="T:Gorgon.Graphics.GorgonColor"/> value needs to be updated on the animated object.</summary>
+        /// <param name="track">The track currently being processed.</param>
+        /// <param name="animObject">The object to update.</param>
+        /// <param name="value">The value to apply.</param>
+        protected override void OnColorUpdate(GorgonTrackRegistration track, ITextureViewerService animObject, GorgonColor value)
         {
-
         }
 
-        /// <summary>Function called when a scale needs to be updated on the object.</summary>
-        /// <param name="animObject">The object being animated.</param>
-        /// <param name="scale">The new scale.</param>
-        protected override void OnScaleUpdate(ITextureViewerService animObject, Vector3 scale)
+        /// <summary>Function called when a SharpDX <c>RectangleF</c> value needs to be updated on the animated object.</summary>
+        /// <param name="track">The track currently being processed.</param>
+        /// <param name="animObject">The object to update.</param>
+        /// <param name="value">The value to apply.</param>
+        protected override void OnRectangleUpdate(GorgonTrackRegistration track, ITextureViewerService animObject, RectangleF value)
         {
+            if (track.ID != _textureBoundsTrack.ID)
+            {
+                return;
+            }
 
+            animObject.TextureBounds = value;
         }
 
-        /// <summary></summary>
-        /// <param name="animObject"></param>
-        /// <param name="texture"></param>
-        /// <param name="textureCoordinates"></param>
-        /// <param name="textureArrayIndex"></param>
-        protected override void OnTexture2DUpdate(ITextureViewerService animObject, GorgonTexture2DView texture, RectangleF textureCoordinates, int textureArrayIndex)
+        /// <summary>Function called when a texture needs to be updated on the object.</summary>
+        /// <param name="track">The track currently being processed.</param>
+        /// <param name="animObject">The object to update.</param>
+        /// <param name="texture">The texture to switch to.</param>
+        /// <param name="textureCoordinates">The new texture coordinates to apply.</param>
+        /// <param name="textureArrayIndex">The texture array index.</param>
+        protected override void OnTexture2DUpdate(GorgonTrackRegistration track, ITextureViewerService animObject, GorgonTexture2DView texture, RectangleF textureCoordinates, int textureArrayIndex)
         {
+        }
 
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ImageEditor.ImageAnimationController"/> class.</summary>
+        public ImageAnimationController()
+        {
+            RegisterTrack(_opacityTrack);
+            RegisterTrack(_textureBoundsTrack);
         }
     }
 }

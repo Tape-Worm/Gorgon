@@ -69,7 +69,10 @@ namespace Gorgon.IO
                 Converters =
                                {
                                    new JsonTextureKeyConverter(null),
+                                   new JsonSingleKeyConverter(),
+                                   new JsonVector2KeyConverter(),
                                    new JsonVector3KeyConverter(),
+                                   new JsonVector4KeyConverter(),
                                    new JsonGorgonColorKeyConverter(),
                                    new JsonRectKeyConverter()
                                }

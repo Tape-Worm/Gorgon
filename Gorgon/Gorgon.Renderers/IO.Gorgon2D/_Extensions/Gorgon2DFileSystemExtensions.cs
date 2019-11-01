@@ -665,7 +665,8 @@ namespace Gorgon.IO.Extensions
                 // Use all built-in codecs if we haven't asked for any.
                 animationCodecs = new IGorgonAnimationCodec[]
                                {
-                                   new GorgonV3AnimationBinaryCodec(renderer),
+#warning TODO: Renable this.
+                                   //new GorgonV3AnimationBinaryCodec(renderer),
                                    new GorgonV3AnimationJsonCodec(renderer),
                                    new GorgonV1AnimationCodec(renderer)
                                };
@@ -701,7 +702,7 @@ namespace Gorgon.IO.Extensions
                 IGorgonAnimation animation = animationCodec.FromStream(animStream, (int)file.Size);
 
                 // We have no textures to update, leave.
-                if (animation.Texture2DTrack.KeyFrames.Count == 0)
+                if (animation.Texture2DTracks.All(item => item.Value.KeyFrames.Count == 0))
                 {
                     return animation;
                 }
@@ -711,37 +712,40 @@ namespace Gorgon.IO.Extensions
                 // V1 sprite animations need texture coordinate correction.
                 bool needsCoordinateFix = animationCodec is GorgonV1AnimationCodec;
 
-                foreach (GorgonKeyTexture2D textureKey in animation.Texture2DTrack.KeyFrames)
+                foreach (KeyValuePair<string, IGorgonAnimationTrack<GorgonKeyTexture2D>> track in animation.Texture2DTracks)
                 {
-                    // Let's try and load the texture into memory.
-                    // This does this by:
-                    // 1. Checking to see if a texture resource with the name specified is already available in memory.
-                    // 2. Checking the local directory of the file to see if the texture is there.
-                    // 3. A file system wide search.
-
-                    // ReSharper disable once InvertIf
-                    (IGorgonImageCodec codec, IGorgonVirtualFile textureFile, bool loaded) =
-                        LocateTextureCodecAndFile(fileSystem, file.Directory, renderer, textureKey.TextureName, imageCodecs);
-
-                    // We have not loaded the texture yet.  Do so now.
-                    // ReSharper disable once InvertIf
-                    if ((!loaded) && (textureFile != null) && (codec != null))
+                    foreach (GorgonKeyTexture2D textureKey in track.Value.KeyFrames)
                     {
-                        using (Stream textureStream = textureFile.OpenStream())
+                        // Let's try and load the texture into memory.
+                        // This does this by:
+                        // 1. Checking to see if a texture resource with the name specified is already available in memory.
+                        // 2. Checking the local directory of the file to see if the texture is there.
+                        // 3. A file system wide search.
+
+                        // ReSharper disable once InvertIf
+                        (IGorgonImageCodec codec, IGorgonVirtualFile textureFile, bool loaded) =
+                            LocateTextureCodecAndFile(fileSystem, file.Directory, renderer, textureKey.TextureName, imageCodecs);
+
+                        // We have not loaded the texture yet.  Do so now.
+                        // ReSharper disable once InvertIf
+                        if ((!loaded) && (textureFile != null) && (codec != null))
                         {
-                            textureKey.Value = GorgonTexture2DView.FromStream(renderer.Graphics,
-                                                                              textureStream,
-                                                                              codec,
-                                                                              textureFile.Size, GetTextureOptions(textureFile.FullPath, textureOptions));
+                            using (Stream textureStream = textureFile.OpenStream())
+                            {
+                                textureKey.Value = GorgonTexture2DView.FromStream(renderer.Graphics,
+                                                                                  textureStream,
+                                                                                  codec,
+                                                                                  textureFile.Size, GetTextureOptions(textureFile.FullPath, textureOptions));
+                            }
                         }
-                    }
 
-                    if ((needsCoordinateFix) && (textureKey.Value != null))
-                    {
-                        textureKey.TextureCoordinates = new RectangleF(textureKey.TextureCoordinates.X / textureKey.Value.Width,
-                                                                       textureKey.TextureCoordinates.Y / textureKey.Value.Height,
-                                                                       textureKey.TextureCoordinates.Width / textureKey.Value.Width,
-                                                                       textureKey.TextureCoordinates.Height / textureKey.Value.Height);
+                        if ((needsCoordinateFix) && (textureKey.Value != null))
+                        {
+                            textureKey.TextureCoordinates = new RectangleF(textureKey.TextureCoordinates.X / textureKey.Value.Width,
+                                                                           textureKey.TextureCoordinates.Y / textureKey.Value.Height,
+                                                                           textureKey.TextureCoordinates.Width / textureKey.Value.Width,
+                                                                           textureKey.TextureCoordinates.Height / textureKey.Value.Height);
+                        }
                     }
                 }
 

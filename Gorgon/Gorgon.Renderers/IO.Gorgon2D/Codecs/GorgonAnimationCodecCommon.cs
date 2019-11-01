@@ -46,12 +46,12 @@ namespace Gorgon.IO
         /// <summary>
         /// The ID for the file header for the most current version of the animation format.
         /// </summary>
-        public static readonly ulong CurrentFileHeader = "GORANM30".ChunkID();
+        public static readonly ulong CurrentFileHeader = "GORANM31".ChunkID();
 
         /// <summary>
         /// The highest currently supported version for animation serialization.
         /// </summary>
-        public static readonly Version CurrentVersion = new Version(3, 0);
+        public static readonly Version CurrentVersion = new Version(3, 1);
         #endregion
 
         #region Properties.

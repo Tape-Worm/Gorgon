@@ -24,7 +24,9 @@
 // 
 #endregion
 
+using System.Collections.Generic;
 using Gorgon.Core;
+using Gorgon.Graphics;
 using Newtonsoft.Json;
 
 namespace Gorgon.Animation
@@ -34,7 +36,7 @@ namespace Gorgon.Animation
     /// </summary>
     /// <remarks>
     /// <para>
-    /// An animation is composed of multiple <see cref="IGorgonTrack{T}">tracks</see> that represent various properties on an object that can be changed over time. Each track is itself composed of multiple
+    /// An animation is composed of multiple <see cref="IGorgonAnimationTrack{T}">tracks</see> that represent various properties on an object that can be changed over time. Each track is itself composed of multiple
     /// markers in time called <see cref="IGorgonKeyFrame">key frames</see>. These markers indicate what the value of a property should be at a given time.
     /// </para>
     /// <para>
@@ -48,7 +50,7 @@ namespace Gorgon.Animation
     /// In order to play an animation, a <see cref="GorgonAnimationController{T}"/> must be used.
     /// </para>
     /// </remarks>
-    /// <seealso cref="IGorgonTrack{T}"/>
+    /// <seealso cref="IGorgonAnimationTrack{T}"/>
     /// <seealso cref="IGorgonKeyFrame"/>
     /// <seealso cref="GorgonAnimationBuilder"/>
     public interface IGorgonAnimation
@@ -92,72 +94,64 @@ namespace Gorgon.Animation
         }
 
         /// <summary>
-        /// Property to return the track used to update positioning of an object.
+        /// Property to return the tracks used to update any values using a single floating point value.
         /// </summary>
-        [JsonProperty("positions")]
-        IGorgonTrack<GorgonKeyVector3> PositionTrack
+        [JsonProperty("singletracks")]
+        IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeySingle>> SingleTracks
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the track used to update the rotation of an object.
+        /// Property to return the tracks used to update any values using a 2D vector.
         /// </summary>
-        /// <remarks>
-        /// <para>
-        /// The rotation track is made up of <see cref="GorgonKeyVector3"/> key frame types where the X, Y and Z values represent the x axis, y axis and z axis of rotation. All values are in degrees.
-        /// </para>
-        /// <para>
-        /// Note that not all controller types will use every axis when rotating. 
-        /// </para>
-        /// </remarks>
-        [JsonProperty("rotations")]
-        IGorgonTrack<GorgonKeyVector3> RotationTrack
+        [JsonProperty("vector2tracks")]
+        IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeyVector2>> Vector2Tracks
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the track used to update the scale of an object.
+        /// Property to return the track used to update any values using a 3D vector.
         /// </summary>
-        [JsonProperty("scales")]
-        IGorgonTrack<GorgonKeyVector3> ScaleTrack
+        [JsonProperty("vector3tracks")]
+        IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeyVector3>> Vector3Tracks
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the track used to update the color of an object.
+        /// Property to return the track used to update any values using a 4D vector.
         /// </summary>
-        [JsonProperty("colors")]
-        IGorgonTrack<GorgonKeyGorgonColor> ColorTrack
+        [JsonProperty("vector4tracks")]
+        IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeyVector4>> Vector4Tracks
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the track used for rectangular boundaries of an object.
+        /// Property to return the track used to update any values using a <see cref="GorgonColor"/>.
         /// </summary>
-        [JsonProperty("bounds")]
-        IGorgonTrack<GorgonKeyRectangle> RectBoundsTrack
+        [JsonProperty("colortracks")]
+        IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeyGorgonColor>> ColorTracks
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the track used for the size of an object.
+        /// Property to return the track used to update any values using a SharpDX <c>RectangleF</c>.
         /// </summary>
-        [JsonProperty("size")]
-        IGorgonTrack<GorgonKeyVector3> SizeTrack
+        [JsonProperty("recttracks")]
+        IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeyRectangle>> RectangleTracks
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the track used for updating a 2D texture on an object.
+        /// Property to return the tracks used for updating a 2D texture on an object.
         /// </summary>
         [JsonProperty("textures")]
-        IGorgonTrack<GorgonKeyTexture2D> Texture2DTrack
+        IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeyTexture2D>> Texture2DTracks
         {
             get;
         }

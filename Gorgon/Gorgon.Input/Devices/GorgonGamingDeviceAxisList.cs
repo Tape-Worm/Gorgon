@@ -27,6 +27,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Gorgon.Input.Properties;
 
@@ -58,9 +59,11 @@ namespace Gorgon.Input
         /// </summary>
         public T this[GamingDeviceAxis axis] => _infoList[axis];
 
+
         /// <summary>
         /// Gets the <see cref="GorgonGamingDeviceAxisInfo"/> at the specified index in the axis list.
         /// </summary>
+        [SuppressMessage("Design", "CA1065:Do not raise exceptions in unexpected locations", Justification = "What else would you expect me to do?  If an index is out of range, it should tell the user it's out of range.")]
         public T this[int index]
         {
             get

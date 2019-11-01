@@ -190,15 +190,15 @@ namespace Gorgon.IO
                 writer.CloseChunk();
 
                 // Write out position track.
-                if (animation.PositionTrack.KeyFrames.Count > 0)
+                if (animation.Vector3.KeyFrames.Count > 0)
                 {
                     binWriter = writer.OpenChunk(PositionData);
-                    binWriter.WriteValue(animation.PositionTrack.InterpolationMode);
-                    binWriter.Write(animation.PositionTrack.KeyFrames.Count);
+                    binWriter.WriteValue(animation.Vector3.InterpolationMode);
+                    binWriter.Write(animation.Vector3.KeyFrames.Count);
 
-                    for (int i = 0; i < animation.PositionTrack.KeyFrames.Count; ++i)
+                    for (int i = 0; i < animation.Vector3.KeyFrames.Count; ++i)
                     {
-                        GorgonKeyVector3 key = animation.PositionTrack.KeyFrames[i];
+                        GorgonKeyVector3 key = animation.Vector3.KeyFrames[i];
                         binWriter.Write(key.Time);
                         binWriter.WriteValue(ref key.Value);
                     }

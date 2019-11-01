@@ -37,52 +37,95 @@ namespace Gorgon.Editor.SpriteEditor
     internal class ImageAnimationController
         : GorgonAnimationController<SpriteContentRenderer>
     {
-        /// <summary>Function called when the color needs to be updated on the object.</summary>
-        /// <param name="animObject">The object being animated.</param>
-        /// <param name="color">The new color.</param>
-        protected override void OnColorUpdate(SpriteContentRenderer animObject, GorgonColor color) => animObject.TextureAlpha = color.Alpha;
+        // Track holding opacity values.
+        private static readonly GorgonTrackRegistration _opacityTrack = new GorgonTrackRegistration("Opacity", AnimationTrackKeyType.Single);
+        // Track holding zooming values.
+        private static readonly GorgonTrackRegistration _zoomTrack = new GorgonTrackRegistration("Zoom", AnimationTrackKeyType.Single);
+        // Track holding position values.
+        private static readonly GorgonTrackRegistration _scrollTrack = new GorgonTrackRegistration("ScrollOffset", AnimationTrackKeyType.Single);
 
-        /// <summary>Function called when a position needs to be updated on the object.</summary>
-        /// <param name="animObject">The object being animated.</param>
-        /// <param name="position">The new position.</param>
-        protected override void OnPositionUpdate(SpriteContentRenderer animObject, Vector3 position) => animObject.ScrollOffset = new Vector2(position.X, position.Y);
-
-        /// <summary>Function called when a rectangle boundary needs to be updated on the object.</summary>
-        /// <param name="animObject">The object being animated.</param>
-        /// <param name="bounds">The new bounds.</param>
-        protected override void OnRectBoundsUpdate(SpriteContentRenderer animObject, RectangleF bounds)
+        /// <summary>Function called when a single floating point value needs to be updated on the animated object.</summary>
+        /// <param name="track">The track currently being processed.</param>
+        /// <param name="animObject">The object to update.</param>
+        /// <param name="value">The value to apply.</param>
+        protected override void OnSingleValueUpdate(GorgonTrackRegistration track, SpriteContentRenderer animObject, float value)
         {
+            if (track.ID == _opacityTrack.ID)
+            {
+                animObject.TextureAlpha = value;
+                return;
+            }
 
+            if (track.ID != _zoomTrack.ID)
+            {
+                return;
+            }
+
+            animObject.ZoomScaleValue = value;
         }
 
-        /// <summary>Function called when the size needs to be updated on the object.</summary>
-        /// <param name="animObject">The object being animated.</param>
-        /// <param name="size">The new size.</param>
-        protected override void OnSizeUpdate(SpriteContentRenderer animObject, Vector3 size)
+        /// <summary>Function called when a 2D vector value needs to be updated on the animated object.</summary>
+        /// <param name="track">The track currently being processed.</param>
+        /// <param name="animObject">The object to update.</param>
+        /// <param name="value">The value to apply.</param>
+        protected override void OnVector2ValueUpdate(GorgonTrackRegistration track, SpriteContentRenderer animObject, Vector2 value)
+        {
+            if (track.ID != _scrollTrack.ID)
+            {
+                return;
+            }
+
+            animObject.ScrollOffset = value;
+        }
+
+        /// <summary>Function called when a 3D vector value needs to be updated on the animated object.</summary>
+        /// <param name="track">The track currently being processed.</param>
+        /// <param name="animObject">The object to update.</param>
+        /// <param name="value">The value to apply.</param>
+        protected override void OnVector3ValueUpdate(GorgonTrackRegistration track, SpriteContentRenderer animObject, Vector3 value)
         {
         }
 
-        /// <summary>Function called when the angle of rotation needs to be updated on the object.</summary>
-        /// <param name="animObject">The object being animated.</param>
-        /// <param name="rotation">The new angle of rotation, in degrees, on the x, y and z axes.</param>
-        protected override void OnRotationUpdate(SpriteContentRenderer animObject, Vector3 rotation)
+        /// <summary>Function called when a 4D vector value needs to be updated on the animated object.</summary>
+        /// <param name="track">The track currently being processed.</param>
+        /// <param name="animObject">The object to update.</param>
+        /// <param name="value">The value to apply.</param>
+        protected override void OnVector4ValueUpdate(GorgonTrackRegistration track, SpriteContentRenderer animObject, Vector4 value)
         {
-
         }
 
-        /// <summary>Function called when a scale needs to be updated on the object.</summary>
-        /// <param name="animObject">The object being animated.</param>
-        /// <param name="scale">The new scale.</param>
-        protected override void OnScaleUpdate(SpriteContentRenderer animObject, Vector3 scale) => animObject.ZoomScaleValue = scale.X;
-
-        /// <summary></summary>
-        /// <param name="animObject"></param>
-        /// <param name="texture"></param>
-        /// <param name="textureCoordinates"></param>
-        /// <param name="textureArrayIndex"></param>
-        protected override void OnTexture2DUpdate(SpriteContentRenderer animObject, GorgonTexture2DView texture, RectangleF textureCoordinates, int textureArrayIndex)
+        /// <summary>Function called when a <see cref="T:Gorgon.Graphics.GorgonColor"/> value needs to be updated on the animated object.</summary>
+        /// <param name="track">The track currently being processed.</param>
+        /// <param name="animObject">The object to update.</param>
+        /// <param name="value">The value to apply.</param>
+        protected override void OnColorUpdate(GorgonTrackRegistration track, SpriteContentRenderer animObject, GorgonColor value)
         {
+        }
 
+        /// <summary>Function called when a SharpDX <c>RectangleF</c> value needs to be updated on the animated object.</summary>
+        /// <param name="track">The track currently being processed.</param>
+        /// <param name="animObject">The object to update.</param>
+        /// <param name="value">The value to apply.</param>
+        protected override void OnRectangleUpdate(GorgonTrackRegistration track, SpriteContentRenderer animObject, RectangleF value)
+        {
+        }
+
+        /// <summary>Function called when a texture needs to be updated on the object.</summary>
+        /// <param name="track">The track currently being processed.</param>
+        /// <param name="animObject">The object to update.</param>
+        /// <param name="texture">The texture to switch to.</param>
+        /// <param name="textureCoordinates">The new texture coordinates to apply.</param>
+        /// <param name="textureArrayIndex">The texture array index.</param>
+        protected override void OnTexture2DUpdate(GorgonTrackRegistration track, SpriteContentRenderer animObject, GorgonTexture2DView texture, RectangleF textureCoordinates, int textureArrayIndex)
+        {
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.SpriteEditor.ImageAnimationController"/> class.</summary>
+        public ImageAnimationController()
+        {
+            RegisterTrack(_opacityTrack);
+            RegisterTrack(_zoomTrack);
+            RegisterTrack(_scrollTrack);
         }
     }
 }

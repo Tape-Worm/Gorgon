@@ -62,7 +62,7 @@ namespace Gorgon.Animation
     /// </para>
     /// </remarks>
     /// <seealso cref="IGorgonKeyFrame"/>
-    public interface IGorgonTrack<out T>
+    public interface IGorgonAnimationTrack<out T>
         : IGorgonNamedObject
         where T : IGorgonKeyFrame
     {
@@ -95,6 +95,15 @@ namespace Gorgon.Animation
         {
             get;
             set;
+        }
+
+        /// <summary>
+        /// Property to return the type of key frame data stored in this track.
+        /// </summary>
+        [JsonIgnore]
+        AnimationTrackKeyType KeyFrameDataType
+        {
+            get;
         }
 
         /// <summary>

@@ -33,10 +33,10 @@ using DX = SharpDX;
 namespace Gorgon.Animation
 {
     /// <summary>
-    /// A track that stores rectangular bounding values representing object 2D bounds in an animation.
+    /// A track that stores 4D vectors representing various properties in an animation.
     /// </summary>
-    internal class RectBoundsTrack
-        : GorgonNamedObject, IGorgonAnimationTrack<GorgonKeyRectangle>
+    internal class Vector4Track
+        : GorgonNamedObject, IGorgonAnimationTrack<GorgonKeyVector4>
     {
         #region Variables.
         // The interpolation mode for the track.
@@ -47,7 +47,7 @@ namespace Gorgon.Animation
 
         #region Properties.
         /// <summary>Property to return the type of key frame data stored in this track.</summary>
-        public AnimationTrackKeyType KeyFrameDataType => AnimationTrackKeyType.Rectangle;
+        public AnimationTrackKeyType KeyFrameDataType => AnimationTrackKeyType.Vector4;
 
         /// <summary>
         /// Property to return the type of interpolation supported by the track.
@@ -82,13 +82,12 @@ namespace Gorgon.Animation
         /// <summary>
         /// Property to return the key frames for the track.
         /// </summary>
-        public IReadOnlyList<GorgonKeyRectangle> KeyFrames
+        public IReadOnlyList<GorgonKeyVector4> KeyFrames
         {
             get;
         }
         #endregion
 
-        #region Methods.
         /// <summary>
         /// Function to retrieve the value at the specified time index.
         /// </summary>
@@ -99,7 +98,7 @@ namespace Gorgon.Animation
         /// The value returned by this method may or may not be interpolated based on the value in <see cref="InterpolationMode"/>.  
         /// </para>
         /// </remarks>
-        public GorgonKeyRectangle GetValueAtTime(float timeIndex)
+        public GorgonKeyVector4 GetValueAtTime(float timeIndex)
         {
             if (KeyFrames.Count == 0)
             {
@@ -111,7 +110,7 @@ namespace Gorgon.Animation
                 return KeyFrames[0];
             }
 
-            GorgonKeyRectangle result = KeyFrames.FirstOrDefault(item => item.Time == timeIndex);
+            GorgonKeyVector4 result = KeyFrames.FirstOrDefault(item => item.Time == timeIndex);
 
             if (result != null)
             {
@@ -120,19 +119,18 @@ namespace Gorgon.Animation
 
             float highestTime = KeyFrames.Max(item => item.Time);
 
-            TrackKeyProcessor.TryUpdateRectBounds(highestTime, this, timeIndex, out DX.RectangleF rect);
+            TrackKeyProcessor.TryUpdateVector4(highestTime, this, timeIndex, out DX.Vector4 vec);
 
-            return new GorgonKeyRectangle(timeIndex, rect);
+            return new GorgonKeyVector4(timeIndex, vec);
         }
-        #endregion
 
         #region Constructor/Finalizer.
         /// <summary>
-        /// Initializes a new instance of the <see cref="RectBoundsTrack"/> class.
+        /// Initializes a new instance of the <see cref="Vector3Track"/> class.
         /// </summary>
         /// <param name="keyFrames">The list of key frames for the track.</param>
         /// <param name="name">The name of the track.</param>
-        internal RectBoundsTrack(IReadOnlyList<GorgonKeyRectangle> keyFrames, string name)
+        internal Vector4Track(IReadOnlyList<GorgonKeyVector4> keyFrames, string name)
             : base(name)
         {
             KeyFrames = keyFrames;
@@ -140,10 +138,7 @@ namespace Gorgon.Animation
             // Build the spline for the track.
             for (int i = 0; i < keyFrames.Count; ++i)
             {
-                _splineController.Points.Add(new DX.Vector4(keyFrames[i].Value.X,
-                                                            keyFrames[i].Value.Y,
-                                                            keyFrames[i].Value.Width,
-                                                            keyFrames[i].Value.Height));
+                _splineController.Points.Add(keyFrames[i].Value);
             }
 
             _splineController.UpdateTangents();

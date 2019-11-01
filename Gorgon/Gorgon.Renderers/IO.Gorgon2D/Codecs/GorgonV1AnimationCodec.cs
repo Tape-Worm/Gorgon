@@ -446,66 +446,74 @@ namespace Gorgon.IO
                         continue;
                     }
 
+                    TrackInterpolationMode interpMode = TrackInterpolationMode.None;
+
                     // We only use the following tracks, everything else can be skipped.
                     switch (trackName.ToUpperInvariant())
                     {
                         case "POSITION":
-                            builder.PositionInterpolationMode((TrackInterpolationMode)reader.ReadInt32());
+                            interpMode = (TrackInterpolationMode)reader.ReadInt32();
                             IReadOnlyList<(float time, DX.Vector2 position)> positions = ReadVec2(reader, keyCount);
                             if (positions.Count > 0)
                             {
-                                builder.EditPositions()
-                                       .SetKeys(positions.Select(item => new GorgonKeyVector3(item.time, item.position)))
+                                builder.EditVector2("Position")
+                                       .SetInterpolationMode(interpMode)
+                                       .SetKeys(positions.Select(item => new GorgonKeyVector2(item.time, item.position)))
                                        .EndEdit();
                             }
                             break;
                         case "SCALE":
-                            builder.ScaleInterpolationMode((TrackInterpolationMode)reader.ReadInt32());
+                            interpMode = (TrackInterpolationMode)reader.ReadInt32();
                             IReadOnlyList<(float time, DX.Vector2 scale)> scales = ReadVec2(reader, keyCount);
                             if (scales.Count > 0)
                             {
-                                builder.EditScale()
-                                       .SetKeys(scales.Select(item => new GorgonKeyVector3(item.time, new DX.Vector3(item.scale, 1.0f))))
+                                builder.EditVector2("Scale")
+                                       .SetInterpolationMode(interpMode)
+                                       .SetKeys(scales.Select(item => new GorgonKeyVector2(item.time, item.scale)))
                                        .EndEdit();
                             }
                             break;
                         case "SIZE":
-                            builder.ScaleInterpolationMode((TrackInterpolationMode)reader.ReadInt32());
+                            interpMode = (TrackInterpolationMode)reader.ReadInt32();
                             IReadOnlyList<(float time, DX.Vector2 sizes)> bounds = ReadVec2(reader, keyCount);
                             if (bounds.Count > 0)
                             {
-                                builder.EditRectangularBounds()
-                                       .SetKeys(bounds.Select(item => new GorgonKeyRectangle(item.time, new DX.RectangleF(0, 0, item.sizes.X, item.sizes.Y))))
+                                builder.EditVector2("Size")
+                                       .SetInterpolationMode(interpMode)
+                                       .SetKeys(bounds.Select(item => new GorgonKeyVector2(item.time, item.sizes)))
                                        .EndEdit();
                             }
                             break;
                         case "ROTATION":
-                            builder.RotationInterpolationMode((TrackInterpolationMode)reader.ReadInt32());
+                            interpMode = (TrackInterpolationMode)reader.ReadInt32();
                             IReadOnlyList<(float time, float angle)> angles = ReadFloat(reader, keyCount);
                             if (angles.Count > 0)
                             {
-                                builder.EditRotation()
-                                       .SetKeys(angles.Select(item => new GorgonKeyVector3(item.time, new DX.Vector3(0, 0, item.angle))))
+                                builder.EditSingle("Angle")
+                                       .SetInterpolationMode(interpMode)
+                                       .SetKeys(angles.Select(item => new GorgonKeySingle(item.time, item.angle)))
                                        .EndEdit();
                             }
                             break;
                         case "COLOR":
-                            builder.ColorInterpolationMode((TrackInterpolationMode)reader.ReadInt32());
+                            interpMode = (TrackInterpolationMode)reader.ReadInt32();
                             IReadOnlyList<(float time, int argb)> colors = ReadInt32(reader, keyCount);
                             if (colors.Count > 0)
                             {
-                                builder.EditColors()
+                                builder.EditColor("Color")
+                                       .SetInterpolationMode(interpMode)
                                        .SetKeys(colors.Select(item => new GorgonKeyGorgonColor(item.time, new GorgonColor(item.argb))))
                                        .EndEdit();
                             }
                             break;
                         case "OPACITY":
-                            builder.ColorInterpolationMode((TrackInterpolationMode)reader.ReadInt32());
+                            interpMode = (TrackInterpolationMode)reader.ReadInt32();
                             IReadOnlyList<(float time, int argb)> opacities = ReadInt32(reader, keyCount);
                             if (opacities.Count > 0)
                             {
-                                builder.EditColors()
-                                       .SetKeys(opacities.Select(item => new GorgonKeyGorgonColor(item.time, new GorgonColor(1, 1, 1, item.argb / 255.0f))))
+                                builder.EditSingle("Opacity")
+                                       .SetInterpolationMode(interpMode)
+                                       .SetKeys(opacities.Select(item => new GorgonKeySingle(item.time, item.argb / 255.0f)))
                                        .EndEdit();
                             }
                             break;
@@ -514,7 +522,7 @@ namespace Gorgon.IO
                             IReadOnlyList<(float time, GorgonTexture2DView texture, DX.RectangleF uv, string name)> textures = ReadTexture(reader, keyCount);
                             if (textures.Count > 0)
                             {
-                                builder.Edit2DTexture()
+                                builder.Edit2DTexture("Texture")
                                        .SetKeys(textures.Select(item => item.texture == null
                                                                             ? new GorgonKeyTexture2D(item.time, item.name, item.uv, 0)
                                                                             : new GorgonKeyTexture2D(item.time, item.texture, item.uv, 0)))
@@ -527,6 +535,16 @@ namespace Gorgon.IO
                             break;
                         case "SCALEDWIDTH":
                         case "SCALEDHEIGHT":
+                            interpMode = (TrackInterpolationMode)reader.ReadInt32();
+                            IReadOnlyList<(float time, DX.Vector2 sizes)> scaledSize = ReadVec2(reader, keyCount);
+                            if (scaledSize.Count > 0)
+                            {
+                                builder.EditVector2("Size")
+                                       .SetInterpolationMode(interpMode)
+                                       .SetKeys(scaledSize.Select(item => new GorgonKeyVector2(item.time, item.sizes)))
+                                       .EndEdit();
+                            }
+                            break;
                         case "WIDTH":
                         case "HEIGHT":
                             ReadFloat(reader, keyCount);
@@ -538,12 +556,12 @@ namespace Gorgon.IO
                             ReadVec2(reader, keyCount);
                             break;
                         case "UNIFORMSCALE":
-                            builder.ScaleInterpolationMode((TrackInterpolationMode)reader.ReadInt32());
+                            interpMode = (TrackInterpolationMode)reader.ReadInt32();
                             IReadOnlyList<(float time, float scale)> uniScales = ReadFloat(reader, keyCount);
                             if (uniScales.Count > 0)
                             {
-                                builder.EditScale()
-                                       .SetKeys(uniScales.Select(item => new GorgonKeyVector3(item.time, new DX.Vector3(item.scale, item.scale, 1.0f))))
+                                builder.EditVector2("Scale")
+                                       .SetKeys(uniScales.Select(item => new GorgonKeyVector2(item.time, new DX.Vector2(item.scale))))
                                        .EndEdit();
                             }
                             break;
@@ -661,20 +679,17 @@ namespace Gorgon.IO
 
                 int transformKeyCount = reader.ReadInt32();
                 bool interpSet = false;
+                TrackInterpolationMode interpolationMode = TrackInterpolationMode.None;
 
                 for (int j = 0; j < transformKeyCount; ++j)
                 {
-                    float time = reader.ReadSingle() / 1000.0f; // Stored as milliseconds.
-                    var interpolationMode = (TrackInterpolationMode)reader.ReadInt32();
+                    float time = reader.ReadSingle() / 1000.0f; // Stored as milliseconds.                    
 
                     if (!interpSet)
                     {
                         // The old animations tied scale, position, rotation and size keys together, and interpolation was per key. We'll just use 
                         // the first interpolation value going forward.
-                        builder.PositionInterpolationMode(interpolationMode)
-                               .ScaleInterpolationMode(interpolationMode)
-                               .RotationInterpolationMode(interpolationMode)
-                               .RectBoundsInterpolationMode(interpolationMode);
+                        interpolationMode = (TrackInterpolationMode)reader.ReadInt32();
                         interpSet = true;
                     }
 
@@ -687,34 +702,37 @@ namespace Gorgon.IO
                     // This is an "image offset"... but honestly, I have no idea what it's used for.
                     reader.ReadValue<DX.Vector2>();
 
-                    builder.EditPositions()
-                           .SetKey(new GorgonKeyVector3(time, position))
+                    builder.EditVector2("Position")
+                           .SetKey(new GorgonKeyVector2(time, position))
+                           .SetInterpolationMode(interpolationMode)
                            .EndEdit()
-                           .EditScale()
-                           .SetKey(new GorgonKeyVector3(time, new DX.Vector3(scale, 1.0f)))
+                           .EditVector2("Scale")
+                           .SetKey(new GorgonKeyVector2(time, scale))
+                           .SetInterpolationMode(interpolationMode)
                            .EndEdit()
-                           .EditRotation()
-                           .SetKey(new GorgonKeyVector3(time, new DX.Vector3(0, 0, angle)))
+                           .EditSingle("Angle")
+                           .SetKey(new GorgonKeySingle(time, angle))
+                           .SetInterpolationMode(interpolationMode)
                            .EndEdit()
-                           .EditRectangularBounds()
-                           .SetKey(new GorgonKeyRectangle(time, new DX.Size2F(size.X, size.Y)))
+                           .EditVector2("Size")
+                           .SetKey(new GorgonKeyVector2(time, size))
+                           .SetInterpolationMode(interpolationMode)
                            .EndEdit();
-
                 }
 
                 interpSet = false;
                 int colorKeyCount = reader.ReadInt32();
+                interpolationMode = TrackInterpolationMode.None;
 
                 for (int j = 0; j < colorKeyCount; ++j)
                 {
                     float time = reader.ReadSingle() / 1000.0f;
-                    var interpolationMode = (TrackInterpolationMode)reader.ReadInt32();
 
                     if (!interpSet)
                     {
                         // The old animations tied scale, position, rotation and size keys together, and interpolation was per key. We'll just use 
                         // the first interpolation value going forward.
-                        builder.ColorInterpolationMode(interpolationMode);
+                        interpolationMode = (TrackInterpolationMode)reader.ReadInt32();
                         interpSet = true;
                     }
 
@@ -722,8 +740,9 @@ namespace Gorgon.IO
                     // We don't use alpha mask value.
                     reader.ReadInt32();
 
-                    builder.EditColors()
+                    builder.EditColor("Color")
                            .SetKey(new GorgonKeyGorgonColor(time, color))
+                           .SetInterpolationMode(interpolationMode)
                            .EndEdit();
                 }
 
@@ -754,7 +773,7 @@ namespace Gorgon.IO
                         continue;
                     }
 
-                    builder.Edit2DTexture()
+                    builder.Edit2DTexture("Texture")
                            .SetKey(new GorgonKeyTexture2D(time,
                                                           view,
                                                           new DX.RectangleF(imageOffset.X / texture.Width,

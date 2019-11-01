@@ -155,11 +155,11 @@ namespace Gorgon.Configuration
                 case TypeCode.Decimal:
                     {
                         // Convert to a decimal first, just because it's the largest primitive number format.
-                        var convertedValue = (decimal)Convert.ChangeType(newValue, typeof(decimal));
+                        decimal convertedValue = (decimal)Convert.ChangeType(newValue, typeof(decimal));
 
                         if (_minValue != null)
                         {
-                            var minValue = (decimal)Convert.ChangeType(_minValue, typeof(decimal));
+                            decimal minValue = (decimal)Convert.ChangeType(_minValue, typeof(decimal));
 
                             if (convertedValue < minValue)
                             {
@@ -169,7 +169,7 @@ namespace Gorgon.Configuration
 
                         if (_maxValue != null)
                         {
-                            var maxValue = (decimal)Convert.ChangeType(_maxValue, typeof(decimal));
+                            decimal maxValue = (decimal)Convert.ChangeType(_maxValue, typeof(decimal));
 
                             if (convertedValue > maxValue)
                             {

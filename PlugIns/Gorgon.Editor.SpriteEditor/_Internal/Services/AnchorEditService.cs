@@ -299,7 +299,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             var builder = new GorgonAnimationBuilder();
 
-            _animation = builder.EditColors()
+            _animation = builder.EditColor("Color")
                 .SetKey(new GorgonKeyGorgonColor(0.0f, GorgonColor.White))
                 .SetKey(new GorgonKeyGorgonColor(2.0f, new GorgonColor(GorgonColor.White, 0.3f)))
                 .SetKey(new GorgonKeyGorgonColor(4.0f, new GorgonColor(GorgonColor.LightRed, 0.6f)))

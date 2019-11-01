@@ -26,7 +26,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Gorgon.Animation.Properties;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -38,9 +37,12 @@ namespace Gorgon.Animation
     /// A track that stores 2D texture values to apply to an object in an animation.
     /// </summary>
     internal class Texture2DViewTrack
-        : GorgonNamedObject, IGorgonTrack<GorgonKeyTexture2D>
+        : GorgonNamedObject, IGorgonAnimationTrack<GorgonKeyTexture2D>
     {
         #region Properties.
+        /// <summary>Property to return the type of key frame data stored in this track.</summary>
+        public AnimationTrackKeyType KeyFrameDataType => AnimationTrackKeyType.Texture2D;
+
         /// <summary>
         /// Property to return the type of interpolation supported by the track.
         /// </summary>
@@ -107,7 +109,7 @@ namespace Gorgon.Animation
 
             float highestTime = KeyFrames.Max(item => item.Time);
 
-            TrackKeyProcessor.TryUpdateTexture2D(highestTime, timeIndex, this, out GorgonTexture2DView view, out DX.RectangleF texCoords, out int arrayIndex);
+            TrackKeyProcessor.TryUpdateTexture2D(highestTime, this, timeIndex, out GorgonTexture2DView view, out DX.RectangleF texCoords, out int arrayIndex);
 
             return new GorgonKeyTexture2D(timeIndex, view, texCoords, arrayIndex);
         }
@@ -118,8 +120,9 @@ namespace Gorgon.Animation
         /// Initializes a new instance of the <see cref="Texture2DViewTrack"/> class.
         /// </summary>
         /// <param name="keyFrames">The list of key frames for the track.</param>
-        internal Texture2DViewTrack(IReadOnlyList<GorgonKeyTexture2D> keyFrames)
-            : base(Resources.GORANM_NAME_TEXTURE_2D) => KeyFrames = keyFrames;
+        /// <param name="name">The name of the track.</param>
+        internal Texture2DViewTrack(IReadOnlyList<GorgonKeyTexture2D> keyFrames, string name)
+            : base(name) => KeyFrames = keyFrames;
         #endregion
     }
 }

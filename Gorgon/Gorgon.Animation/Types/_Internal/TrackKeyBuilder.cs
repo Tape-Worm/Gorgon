@@ -24,6 +24,15 @@ namespace Gorgon.Animation
 
         #region Properties.
         /// <summary>
+        /// Property to return the interpolation mode for the track.
+        /// </summary>
+        public TrackInterpolationMode InterpolationMode
+        {
+            get;
+            private set;
+        } = TrackInterpolationMode.Linear;
+
+        /// <summary>
         /// Property to return the list of keys for the builder.
         /// </summary>
         public List<T> Keys
@@ -203,6 +212,16 @@ namespace Gorgon.Animation
         /// <returns>The <see cref="GorgonAnimationBuilder"/> for the animation containing the track being edited.</returns>
         /// <seealso cref="GorgonAnimationBuilder"/>
         public GorgonAnimationBuilder EndEdit() => _parent;
+
+        /// <summary>Function to set the interpolation mode for this track.</summary>
+        /// <param name="mode">The interpolation mode to assign to the track.</param>
+        /// <returns>The fluent interface for this builder.</returns>
+        /// <remarks>Not all track types provide interpolation modes, in those cases, this value will be ignored.</remarks>
+        public IGorgonTrackKeyBuilder<T> SetInterpolationMode(TrackInterpolationMode mode)
+        {
+            InterpolationMode = mode;
+            return this;
+        }
         #endregion
 
         #region Constructor/Finalizer.
@@ -213,7 +232,7 @@ namespace Gorgon.Animation
         public TrackKeyBuilder(GorgonAnimationBuilder parent)
         {
             _parent = parent;
-            _comparer = new KeyframeIndexComparer<T>();
+            _comparer = new KeyframeIndexComparer<T>();            
         }
         #endregion
     }

@@ -270,7 +270,7 @@ namespace Gorgon.Examples
             {
                 GorgonSprite sprite = upFrames[i];
 
-                animBuilder.Edit2DTexture()
+                animBuilder.Edit2DTexture("Texture")
                             .SetKey(new GorgonKeyTexture2D(time, sprite.Texture, sprite.TextureRegion, 0))
                             .EndEdit();
 
@@ -282,7 +282,7 @@ namespace Gorgon.Examples
             {
                 GorgonSprite sprite = upFrames[i];
 
-                animBuilder.Edit2DTexture()
+                animBuilder.Edit2DTexture("Texture")
                             .SetKey(new GorgonKeyTexture2D(time, sprite.Texture, sprite.TextureRegion, 0))
                             .EndEdit();
 
@@ -298,7 +298,7 @@ namespace Gorgon.Examples
             animBuilder.Clear();
             foreach (GorgonSprite sprite in turnFrames)
             {
-                animBuilder.Edit2DTexture()
+                animBuilder.Edit2DTexture("Texture")
                             .SetKey(new GorgonKeyTexture2D(time, sprite.Texture, sprite.TextureRegion, 0))
                             .EndEdit();
 
@@ -312,7 +312,7 @@ namespace Gorgon.Examples
             for (int i = 0; i < walkLeftFrames.Length; ++i)
             {
                 GorgonSprite sprite = walkLeftFrames[i];
-                animBuilder.Edit2DTexture()
+                animBuilder.Edit2DTexture("Texture")
                             .SetKey(new GorgonKeyTexture2D(time, sprite.Texture, sprite.TextureRegion, 0))
                             .EndEdit();
 

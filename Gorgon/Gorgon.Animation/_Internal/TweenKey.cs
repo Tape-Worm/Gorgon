@@ -44,7 +44,7 @@ namespace Gorgon.Animation
         /// <param name="startIndex">The starting index to search from.</param>
         /// <param name="endIndex">The end index to search up to.</param>
         /// <returns>A tuple containing the previous and next key frame value, and the index of the previous key.</returns>
-        private static (T prev, T next, int prevKeyIndex) PrevNextSearch<T>(float requestedTime, IGorgonTrack<T> track, int startIndex, int endIndex)
+        private static (T prev, T next, int prevKeyIndex) PrevNextSearch<T>(float requestedTime, IGorgonAnimationTrack<T> track, int startIndex, int endIndex)
             where T : class, IGorgonKeyFrame
         {
             while (true)
@@ -110,7 +110,7 @@ namespace Gorgon.Animation
         /// <returns>A tuple containing the previous and next key that falls on or outside of the requested time, the index of the first key and the delta time between the start frame and the requested time.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="track"/> parameter is <b>null</b>.</exception>
         public static (T previous, T next, int prevKeyIndex, float timeDelta) GetNearestKeys<T>(
-            IGorgonTrack<T> track,
+            IGorgonAnimationTrack<T> track,
             float requestedTime,
             float animationLength)
             where T : class, IGorgonKeyFrame

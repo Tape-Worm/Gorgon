@@ -156,7 +156,7 @@ namespace Gorgon.IO
                 return;
             }
 
-            var bytePtr = (byte*)pointer;
+            byte* bytePtr = (byte*)pointer;
 
             while (size > 0)
             {

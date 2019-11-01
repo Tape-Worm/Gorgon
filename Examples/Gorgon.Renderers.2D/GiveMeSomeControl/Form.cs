@@ -117,7 +117,7 @@ namespace Gorgon.Examples
         {
             var builder = new GorgonAnimationBuilder();
 
-            IGorgonTrackKeyBuilder<GorgonKeyTexture2D> track = builder.Edit2DTexture();
+            IGorgonTrackKeyBuilder<GorgonKeyTexture2D> track = builder.Edit2DTexture("Texture");
 
             float time = 0;
             int frameCount = 0;

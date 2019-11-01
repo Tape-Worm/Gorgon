@@ -25,7 +25,9 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using Gorgon.Core;
+using Gorgon.Graphics;
 using Gorgon.Math;
 
 namespace Gorgon.Animation
@@ -45,7 +47,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Property to return the editable track used to update positioning of an object.
         /// </summary>
-        protected internal IGorgonTrack<GorgonKeyVector3> PositionTrack
+        protected internal IGorgonAnimationTrack<GorgonKeyVector3> PositionTrack
         {
             get;
             set;
@@ -67,7 +69,7 @@ namespace Gorgon.Animation
         /// <para>
         /// </para>
         /// </remarks>
-        protected internal IGorgonTrack<GorgonKeyVector3> RotationTrack
+        protected internal IGorgonAnimationTrack<GorgonKeyVector3> RotationTrack
         {
             get;
             set;
@@ -81,7 +83,7 @@ namespace Gorgon.Animation
         /// This track is read/write and should only be used by a corresponding <see cref="IGorgonTrackKeyBuilder{T}"/>. Any other usage is not supported and will have unintended side effects.
         /// </para>
         /// </remarks>
-        protected internal IGorgonTrack<GorgonKeyVector3> ScaleTrack
+        protected internal IGorgonAnimationTrack<GorgonKeyVector3> ScaleTrack
         {
             get;
             set;
@@ -95,7 +97,7 @@ namespace Gorgon.Animation
         /// This track is read/write and should only be used by a corresponding <see cref="IGorgonTrackKeyBuilder{T}"/>. Any other usage is not supported and will have unintended side effects.
         /// </para>
         /// </remarks>
-        protected internal IGorgonTrack<GorgonKeyGorgonColor> ColorTrack
+        protected internal IGorgonAnimationTrack<GorgonKeyGorgonColor> ColorTrack
         {
             get;
             set;
@@ -109,7 +111,7 @@ namespace Gorgon.Animation
         /// This track is read/write and should only be used by a corresponding <see cref="IGorgonTrackKeyBuilder{T}"/>. Any other usage is not supported and will have unintended side effects.
         /// </para>
         /// </remarks>
-        protected internal IGorgonTrack<GorgonKeyRectangle> RectBoundsTrack
+        protected internal IGorgonAnimationTrack<GorgonKeyRectangle> RectBoundsTrack
         {
             get;
             set;
@@ -123,7 +125,7 @@ namespace Gorgon.Animation
         /// This track is read/write and should only be used by a corresponding <see cref="IGorgonTrackKeyBuilder{T}"/>. Any other usage is not supported and will have unintended side effects.
         /// </para>
         /// </remarks>
-        protected internal IGorgonTrack<GorgonKeyVector3> SizeTrack
+        protected internal IGorgonAnimationTrack<GorgonKeyVector3> SizeTrack
         {
             get;
             set;
@@ -137,7 +139,7 @@ namespace Gorgon.Animation
         /// This track is read/write and should only be used by a corresponding <see cref="IGorgonTrackKeyBuilder{T}"/>. Any other usage is not supported and will have unintended side effects.
         /// </para>
         /// </remarks>
-        protected internal IGorgonTrack<GorgonKeyTexture2D> Texture2DTrack
+        protected internal IGorgonAnimationTrack<GorgonKeyTexture2D> Texture2DTrack
         {
             get;
             set;
@@ -179,48 +181,54 @@ namespace Gorgon.Animation
             set;
         }
 
-        /// <summary>
-        /// Property to return the track used to update positioning of an object.
-        /// </summary>
-        IGorgonTrack<GorgonKeyVector3> IGorgonAnimation.PositionTrack => PositionTrack;
+        /// <summary>Property to set or return the tracks used to update any values using a single floating point value.</summary>
+        public IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeySingle>> SingleTracks
+        {
+            get;
+            set;
+        }
 
-        /// <summary>
-        /// Property to return the track used to update the rotation of an object.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// The rotation track is made up of <see cref="GorgonKeyVector3"/> key frame types where the X, Y and Z values represent the x axis, y axis and z axis of rotation. All values are in degrees.
-        /// </para>
-        /// <para>
-        /// Note that not all controller types will use every axis when rotating. 
-        /// </para>
-        /// </remarks>
-        IGorgonTrack<GorgonKeyVector3> IGorgonAnimation.RotationTrack => RotationTrack;
+        /// <summary>Property to set or return the tracks used to update any values using a 2D vector.</summary>
+        public IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeyVector2>> Vector2Tracks
+        {
+            get;
+            set;
+        }
 
-        /// <summary>
-        /// Property to return the track used to update the scale of an object.
-        /// </summary>
-        IGorgonTrack<GorgonKeyVector3> IGorgonAnimation.ScaleTrack => ScaleTrack;
+        /// <summary>Property to set or return the track used to update any values using a 3D vector.</summary>
+        public IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeyVector3>> Vector3Tracks
+        {
+            get;
+            set;
+        }
 
-        /// <summary>
-        /// Property to return the track used to update the color of an object.
-        /// </summary>
-        IGorgonTrack<GorgonKeyGorgonColor> IGorgonAnimation.ColorTrack => ColorTrack;
+        /// <summary>Property to set or return the track used to update any values using a 4D vector.</summary>
+        public IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeyVector4>> Vector4Tracks
+        {
+            get;
+            set;
+        }
 
-        /// <summary>
-        /// Property to return the track used for rectangular boundaries of an object.
-        /// </summary>
-        IGorgonTrack<GorgonKeyRectangle> IGorgonAnimation.RectBoundsTrack => RectBoundsTrack;
+        /// <summary>Property to set or return the track used to update any values using a <see cref="GorgonColor"/>.</summary>
+        public IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeyGorgonColor>> ColorTracks
+        {
+            get;
+            set;
+        }
 
-        /// <summary>
-        /// Property to return the track used for rectangular boundaries of an object.
-        /// </summary>
-        IGorgonTrack<GorgonKeyVector3> IGorgonAnimation.SizeTrack => SizeTrack;
+        /// <summary>Property to set or return the track used to update any values using a SharpDX <c>RectangleF</c>.</summary>
+        public IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeyRectangle>> RectangleTracks
+        {
+            get;
+            set;
+        }
 
-        /// <summary>
-        /// Property to return the track used for updating a 2D texture on an object.
-        /// </summary>
-        IGorgonTrack<GorgonKeyTexture2D> IGorgonAnimation.Texture2DTrack => Texture2DTrack;
+        /// <summary>Property to set or return the tracks used for updating a 2D texture on an object.</summary>
+        public IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeyTexture2D>> Texture2DTracks
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Constructor/Destructor.
