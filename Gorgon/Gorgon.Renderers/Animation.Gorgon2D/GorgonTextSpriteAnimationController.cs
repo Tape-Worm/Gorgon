@@ -58,24 +58,45 @@ namespace Gorgon.Animation
         : GorgonAnimationController<GorgonTextSprite>
     {
         #region Variables.
-        // The tracks available for animation on a text sprite.
+        /// <summary>
+        /// The track registration for the angle of rotation for the sprite.
+        /// </summary>
+        public static readonly GorgonTrackRegistration AngleTrack = new GorgonTrackRegistration(nameof(GorgonTextSprite.Angle), AnimationTrackKeyType.Single);
+        /// <summary>
+        /// The track registration for the depth value of the sprite.
+        /// </summary>
+        public static readonly GorgonTrackRegistration DepthTrack = new GorgonTrackRegistration(nameof(GorgonTextSprite.Depth), AnimationTrackKeyType.Single);
+        /// <summary>
+        /// The track registration for the opacity of the sprite.
+        /// </summary>
+        public static readonly GorgonTrackRegistration OpacityTrack = new GorgonTrackRegistration("Opacity", AnimationTrackKeyType.Single);
 
-        // Single precision floating point tracks.
-        private readonly GorgonTrackRegistration _angleTrack = new GorgonTrackRegistration(nameof(GorgonTextSprite.Angle), AnimationTrackKeyType.Single);
-        private readonly GorgonTrackRegistration _depthTrack = new GorgonTrackRegistration(nameof(GorgonTextSprite.Depth), AnimationTrackKeyType.Single);
-        private readonly GorgonTrackRegistration _opacityTrack = new GorgonTrackRegistration("Opacity", AnimationTrackKeyType.Single);
+        /// <summary>
+        /// The track registration for the position of the sprite.
+        /// </summary>
+        public static readonly GorgonTrackRegistration PositionTrack = new GorgonTrackRegistration(nameof(GorgonTextSprite.Position), AnimationTrackKeyType.Vector2);
+        /// <summary>
+        /// The track registration for the anchor point, in relative coordinates, of the sprite.
+        /// </summary>
+        public static readonly GorgonTrackRegistration AnchorTrack = new GorgonTrackRegistration(nameof(GorgonTextSprite.Anchor), AnimationTrackKeyType.Vector2);
+        /// <summary>
+        /// The track registration for the scale, using relative values, of the sprite.
+        /// </summary>
+        public static readonly GorgonTrackRegistration ScaleTrack = new GorgonTrackRegistration(nameof(GorgonTextSprite.Scale), AnimationTrackKeyType.Vector2);
+        /// <summary>
+        /// The track registration for the scale, using absolute values, of the sprite.
+        /// </summary>
+        public static readonly GorgonTrackRegistration ScaledSizeTrack = new GorgonTrackRegistration(nameof(GorgonTextSprite.ScaledSize), AnimationTrackKeyType.Vector2);
 
-        // 2D vector tracks.
-        private readonly GorgonTrackRegistration _positionTrack = new GorgonTrackRegistration(nameof(GorgonTextSprite.Position), AnimationTrackKeyType.Vector2);
-        private readonly GorgonTrackRegistration _anchorTrack = new GorgonTrackRegistration(nameof(GorgonTextSprite.Anchor), AnimationTrackKeyType.Vector2);
-        private readonly GorgonTrackRegistration _scaleTrack = new GorgonTrackRegistration(nameof(GorgonTextSprite.Scale), AnimationTrackKeyType.Vector2);
-        private readonly GorgonTrackRegistration _scaledSizeTrack = new GorgonTrackRegistration(nameof(GorgonTextSprite.ScaledSize), AnimationTrackKeyType.Vector2);
+        /// <summary>
+        /// The track registration for the position, and depth of the sprite.
+        /// </summary>
+        public static readonly GorgonTrackRegistration Position3DTrack = new GorgonTrackRegistration(nameof(GorgonTextSprite.Position), AnimationTrackKeyType.Vector3);
 
-        // 3D vector tracks.
-        private readonly GorgonTrackRegistration _position3DTrack = new GorgonTrackRegistration(nameof(GorgonTextSprite.Position), AnimationTrackKeyType.Vector3);
-
-        // Color tracks.
-        private readonly GorgonTrackRegistration _colorTrack = new GorgonTrackRegistration(nameof(GorgonTextSprite.Color), AnimationTrackKeyType.Color);
+        /// <summary>
+        /// The track registration for the color on a sprite.
+        /// </summary>
+        public static readonly GorgonTrackRegistration ColorTrack = new GorgonTrackRegistration(nameof(GorgonTextSprite.Color), AnimationTrackKeyType.Color);
         #endregion
 
         #region Methods.
@@ -85,19 +106,19 @@ namespace Gorgon.Animation
         /// <param name="value">The value to apply.</param>
         protected override void OnSingleValueUpdate(GorgonTrackRegistration track, GorgonTextSprite animObject, float value)
         {
-            if (track.ID == _angleTrack.ID)
+            if (track.ID == AngleTrack.ID)
             {
                 animObject.Angle = value;
                 return;
             }
 
-            if (track.ID == _depthTrack.ID)
+            if (track.ID == DepthTrack.ID)
             {
                 animObject.Depth = value;
                 return;
             }
 
-            if (track.ID != _opacityTrack.ID)
+            if (track.ID != OpacityTrack.ID)
             {
                 return;
             }
@@ -111,25 +132,25 @@ namespace Gorgon.Animation
         /// <param name="value">The value to apply.</param>
         protected override void OnVector2ValueUpdate(GorgonTrackRegistration track, GorgonTextSprite animObject, DX.Vector2 value)
         {
-            if (track.ID == _positionTrack.ID)
+            if (track.ID == PositionTrack.ID)
             {
                 animObject.Position = value;
                 return;
             }
 
-            if (track.ID == _anchorTrack.ID)
+            if (track.ID == AnchorTrack.ID)
             {
                 animObject.Anchor = value;
                 return;
             }
 
-            if (track.ID == _scaleTrack.ID)
+            if (track.ID == ScaleTrack.ID)
             {
                 animObject.Scale = value;
                 return;
             }
 
-            if (track.ID != _scaledSizeTrack.ID)
+            if (track.ID != ScaledSizeTrack.ID)
             {                
                 return;
             }
@@ -143,7 +164,7 @@ namespace Gorgon.Animation
         /// <param name="value">The value to apply.</param>
         protected override void OnVector3ValueUpdate(GorgonTrackRegistration track, GorgonTextSprite animObject, DX.Vector3 value)
         {
-            if (track.ID != _position3DTrack.ID)
+            if (track.ID != Position3DTrack.ID)
             {
                 return;
             }
@@ -167,7 +188,7 @@ namespace Gorgon.Animation
         /// <param name="value">The value to apply.</param>
         protected override void OnColorUpdate(GorgonTrackRegistration track, GorgonTextSprite animObject, GorgonColor value)
         {
-            if (track.ID != _colorTrack.ID)
+            if (track.ID != ColorTrack.ID)
             {
                 return;
             }
@@ -198,15 +219,15 @@ namespace Gorgon.Animation
         /// <summary>Initializes a new instance of the <see cref="GorgonTextSpriteAnimationController"/> class.</summary>
         public GorgonTextSpriteAnimationController()
         {
-            RegisterTrack(_angleTrack);
-            RegisterTrack(_depthTrack);
-            RegisterTrack(_opacityTrack);
-            RegisterTrack(_positionTrack);
-            RegisterTrack(_anchorTrack);
-            RegisterTrack(_scaleTrack);
-            RegisterTrack(_scaledSizeTrack);
-            RegisterTrack(_position3DTrack);
-            RegisterTrack(_colorTrack);
+            RegisterTrack(AngleTrack);
+            RegisterTrack(DepthTrack);
+            RegisterTrack(OpacityTrack);
+            RegisterTrack(PositionTrack);
+            RegisterTrack(AnchorTrack);
+            RegisterTrack(ScaleTrack);
+            RegisterTrack(ScaledSizeTrack);
+            RegisterTrack(Position3DTrack);
+            RegisterTrack(ColorTrack);
         }
         #endregion
     }

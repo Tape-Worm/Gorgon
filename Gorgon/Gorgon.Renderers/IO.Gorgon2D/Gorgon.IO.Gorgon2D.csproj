@@ -63,6 +63,7 @@
     <Compile Include="Codecs\GorgonSpriteCodecCommon.cs" />
     <Compile Include="Codecs\GorgonSpriteCodecPlugin.cs" />
     <Compile Include="Codecs\GorgonV31AnimationJsonCodec.cs" />
+    <Compile Include="Codecs\GorgonV3AnimationBinaryCodec.cs" />
     <Compile Include="Codecs\GorgonV3AnimationJsonCodec.cs" />
     <Compile Include="Codecs\GorgonV1AnimationCodec.cs" />
     <Compile Include="Codecs\GorgonV3PolySpriteBinaryCodec.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="Codecs\_Internal\v2\GorgonChunkReader.cs" />
     <Compile Include="Codecs\GorgonAnimationCodecPlugin.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Codecs\GorgonV31AnimationBinaryCodec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

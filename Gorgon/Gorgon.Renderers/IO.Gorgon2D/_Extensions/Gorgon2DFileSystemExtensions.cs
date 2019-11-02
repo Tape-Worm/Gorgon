@@ -665,8 +665,9 @@ namespace Gorgon.IO.Extensions
                 // Use all built-in codecs if we haven't asked for any.
                 animationCodecs = new IGorgonAnimationCodec[]
                                {
-#warning TODO: Renable this.
-                                   //new GorgonV3AnimationBinaryCodec(renderer),
+                                   new GorgonV31AnimationBinaryCodec(renderer),
+                                   new GorgonV31AnimationJsonCodec(renderer),
+                                   new GorgonV3AnimationBinaryCodec(renderer),
                                    new GorgonV3AnimationJsonCodec(renderer),
                                    new GorgonV1AnimationCodec(renderer)
                                };

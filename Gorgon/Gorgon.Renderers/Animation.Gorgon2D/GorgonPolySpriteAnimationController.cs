@@ -58,30 +58,62 @@ namespace Gorgon.Animation
         : GorgonAnimationController<GorgonPolySprite>
     {
         #region Variables.
-        // The tracks available for animation on a sprite.
+        /// <summary>
+        /// The track registration for the angle of rotation for the sprite.
+        /// </summary>
+        public static readonly GorgonTrackRegistration AngleTrack = new GorgonTrackRegistration(nameof(GorgonPolySprite.Angle), AnimationTrackKeyType.Single);
+        /// <summary>
+        /// The track registration for the depth value of the sprite.
+        /// </summary>
+        public static readonly GorgonTrackRegistration DepthTrack = new GorgonTrackRegistration(nameof(GorgonPolySprite.Depth), AnimationTrackKeyType.Single);
+        /// <summary>
+        /// The track registration for the texture array index for the sprite.
+        /// </summary>
+        public static readonly GorgonTrackRegistration TextureArrayIndexTrack = new GorgonTrackRegistration(nameof(GorgonPolySprite.TextureArrayIndex), AnimationTrackKeyType.Single);
+        /// <summary>
+        /// The track registration for the opacity of the sprite.
+        /// </summary>
+        public static readonly GorgonTrackRegistration OpacityTrack = new GorgonTrackRegistration("Opacity", AnimationTrackKeyType.Single);
 
-        // Single precision floating point tracks.
-        private readonly GorgonTrackRegistration _angleTrack = new GorgonTrackRegistration(nameof(GorgonPolySprite.Angle), AnimationTrackKeyType.Single);
-        private readonly GorgonTrackRegistration _depthTrack = new GorgonTrackRegistration(nameof(GorgonPolySprite.Depth), AnimationTrackKeyType.Single);
-        private readonly GorgonTrackRegistration _textureArrayIndexTrack = new GorgonTrackRegistration(nameof(GorgonPolySprite.TextureArrayIndex), AnimationTrackKeyType.Single);
-        private readonly GorgonTrackRegistration _opacityTrack = new GorgonTrackRegistration("Opacity", AnimationTrackKeyType.Single);
+        /// <summary>
+        /// The track registration for the position of the sprite.
+        /// </summary>
+        public static readonly GorgonTrackRegistration PositionTrack = new GorgonTrackRegistration(nameof(GorgonPolySprite.Position), AnimationTrackKeyType.Vector2);
+        /// <summary>
+        /// The track registration for the anchor point, in relative coordinates, of the sprite.
+        /// </summary>
+        public static readonly GorgonTrackRegistration AnchorTrack = new GorgonTrackRegistration(nameof(GorgonPolySprite.Anchor), AnimationTrackKeyType.Vector2);
+        /// <summary>
+        /// The track registration for the scale, using relative values, of the sprite.
+        /// </summary>
+        public static readonly GorgonTrackRegistration ScaleTrack = new GorgonTrackRegistration(nameof(GorgonPolySprite.Scale), AnimationTrackKeyType.Vector2);
+        /// <summary>
+        /// The track registration for the scale, using absolute values, of the sprite.
+        /// </summary>
+        public static readonly GorgonTrackRegistration ScaledSizeTrack = new GorgonTrackRegistration(nameof(GorgonPolySprite.ScaledSize), AnimationTrackKeyType.Vector2);
+        /// <summary>
+        /// The track registration for the scale of the texture coordinates for the sprite.
+        /// </summary>
+        public static readonly GorgonTrackRegistration TextureScaleTrack = new GorgonTrackRegistration(nameof(GorgonPolySprite.TextureScale), AnimationTrackKeyType.Vector2);
+        /// <summary>
+        /// The track registration for the offset of the texture coordinates for the sprite.
+        /// </summary>
+        public static readonly GorgonTrackRegistration TextureOffsetTrack = new GorgonTrackRegistration(nameof(GorgonPolySprite.TextureOffset), AnimationTrackKeyType.Vector2);
 
-        // 2D vector tracks.
-        private readonly GorgonTrackRegistration _positionTrack = new GorgonTrackRegistration(nameof(GorgonPolySprite.Position), AnimationTrackKeyType.Vector2);
-        private readonly GorgonTrackRegistration _anchorTrack = new GorgonTrackRegistration(nameof(GorgonPolySprite.Anchor), AnimationTrackKeyType.Vector2);
-        private readonly GorgonTrackRegistration _scaleTrack = new GorgonTrackRegistration(nameof(GorgonPolySprite.Scale), AnimationTrackKeyType.Vector2);
-        private readonly GorgonTrackRegistration _scaledSizeTrack = new GorgonTrackRegistration(nameof(GorgonPolySprite.ScaledSize), AnimationTrackKeyType.Vector2);
-        private readonly GorgonTrackRegistration _texScaleTrack = new GorgonTrackRegistration(nameof(GorgonPolySprite.TextureScale), AnimationTrackKeyType.Vector2);
-        private readonly GorgonTrackRegistration _texOffsetTrack = new GorgonTrackRegistration(nameof(GorgonPolySprite.TextureOffset), AnimationTrackKeyType.Vector2);
+        /// <summary>
+        /// The track registration for the position, and depth of the sprite.
+        /// </summary>
+        public static readonly GorgonTrackRegistration Position3DTrack = new GorgonTrackRegistration(nameof(GorgonPolySprite.Position), AnimationTrackKeyType.Vector3);
 
-        // 3D vector tracks.
-        private readonly GorgonTrackRegistration _position3DTrack = new GorgonTrackRegistration(nameof(GorgonPolySprite.Position), AnimationTrackKeyType.Vector3);
+        /// <summary>
+        /// The track registration for the color on a sprite.
+        /// </summary>
+        public static readonly GorgonTrackRegistration ColorTrack = new GorgonTrackRegistration(nameof(GorgonPolySprite.Color), AnimationTrackKeyType.Color);
 
-        // Color tracks.
-        private readonly GorgonTrackRegistration _colorTrack = new GorgonTrackRegistration(nameof(GorgonPolySprite.Color), AnimationTrackKeyType.Color);
-
-        // Texture tracks.
-        private readonly GorgonTrackRegistration _textureTrack = new GorgonTrackRegistration(nameof(GorgonPolySprite.Texture), AnimationTrackKeyType.Texture2D);
+        /// <summary>
+        /// The track registration for the texture, texture coordinates, and texture array index on a sprite.
+        /// </summary>
+        public static readonly GorgonTrackRegistration TextureTrack = new GorgonTrackRegistration(nameof(GorgonPolySprite.Texture), AnimationTrackKeyType.Texture2D);
         #endregion
 
         /// <summary>Function called when a single floating point value needs to be updated on the animated object.</summary>
@@ -90,25 +122,25 @@ namespace Gorgon.Animation
         /// <param name="value">The value to apply.</param>        
         protected override void OnSingleValueUpdate(GorgonTrackRegistration track, GorgonPolySprite animObject, float value)
         {
-            if (track.ID == _angleTrack.ID)
+            if (track.ID == AngleTrack.ID)
             {
                 animObject.Angle = value;
                 return;
             }
 
-            if (track.ID == _depthTrack.ID)
+            if (track.ID == DepthTrack.ID)
             {
                 animObject.Depth = value;
                 return;
             }
 
-            if (track.ID == _textureArrayIndexTrack.ID)
+            if (track.ID == TextureArrayIndexTrack.ID)
             {
                 animObject.TextureArrayIndex = (int)value;
                 return;
             }
 
-            if (track.ID != _opacityTrack.ID)
+            if (track.ID != OpacityTrack.ID)
             {
                 return;
             }
@@ -122,37 +154,37 @@ namespace Gorgon.Animation
         /// <param name="value">The value to apply.</param>
         protected override void OnVector2ValueUpdate(GorgonTrackRegistration track, GorgonPolySprite animObject, DX.Vector2 value)
         {
-            if (track.ID == _positionTrack.ID)
+            if (track.ID == PositionTrack.ID)
             {
                 animObject.Position = value;
                 return;
             }
 
-            if (track.ID == _anchorTrack.ID)
+            if (track.ID == AnchorTrack.ID)
             {
                 animObject.Anchor = value;
                 return;
             }
 
-            if (track.ID == _scaleTrack.ID)
+            if (track.ID == ScaleTrack.ID)
             {
                 animObject.Scale = value;
                 return;
             }
 
-            if (track.ID == _texOffsetTrack.ID)
+            if (track.ID == TextureOffsetTrack.ID)
             {
                 animObject.TextureOffset = value;
                 return;
             }
 
-            if (track.ID == _texScaleTrack.ID)
+            if (track.ID == TextureScaleTrack.ID)
             {
                 animObject.TextureScale = value;
                 return;
             }
 
-            if (track.ID != _scaledSizeTrack.ID)
+            if (track.ID != ScaledSizeTrack.ID)
             {                
                 return;
             }
@@ -168,7 +200,7 @@ namespace Gorgon.Animation
         /// <param name="textureArrayIndex">The texture array index.</param>
         protected override void OnTexture2DUpdate(GorgonTrackRegistration track, GorgonPolySprite animObject, GorgonTexture2DView texture, DX.RectangleF textureCoordinates, int textureArrayIndex)
         {
-            if (track.ID != _textureTrack.ID)
+            if (track.ID != TextureTrack.ID)
             {
                 return;
             }
@@ -185,7 +217,7 @@ namespace Gorgon.Animation
         /// <param name="value">The value to apply.</param>
         protected override void OnColorUpdate(GorgonTrackRegistration track, GorgonPolySprite animObject, GorgonColor value)
         {
-            if (track.ID != _colorTrack.ID)
+            if (track.ID != ColorTrack.ID)
             {                
                 return;
             }
@@ -199,7 +231,7 @@ namespace Gorgon.Animation
         /// <param name="value">The value to apply.</param>
         protected override void OnVector3ValueUpdate(GorgonTrackRegistration track, GorgonPolySprite animObject, DX.Vector3 value)
         {
-            if (track.ID != _position3DTrack.ID)
+            if (track.ID != Position3DTrack.ID)
             {
                 return;
             }
@@ -229,19 +261,19 @@ namespace Gorgon.Animation
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Animation.GorgonPolySpriteAnimationController"/> class.</summary>
         public GorgonPolySpriteAnimationController()
         {
-            RegisterTrack(_angleTrack);
-            RegisterTrack(_depthTrack);
-            RegisterTrack(_textureArrayIndexTrack);
-            RegisterTrack(_opacityTrack);
-            RegisterTrack(_positionTrack);
-            RegisterTrack(_anchorTrack);
-            RegisterTrack(_scaleTrack);
-            RegisterTrack(_scaledSizeTrack);
-            RegisterTrack(_texOffsetTrack);
-            RegisterTrack(_texScaleTrack);
-            RegisterTrack(_position3DTrack);
-            RegisterTrack(_colorTrack);
-            RegisterTrack(_textureTrack);
+            RegisterTrack(AngleTrack);
+            RegisterTrack(DepthTrack);
+            RegisterTrack(TextureArrayIndexTrack);
+            RegisterTrack(OpacityTrack);
+            RegisterTrack(PositionTrack);
+            RegisterTrack(AnchorTrack);
+            RegisterTrack(ScaleTrack);
+            RegisterTrack(ScaledSizeTrack);
+            RegisterTrack(TextureOffsetTrack);
+            RegisterTrack(TextureScaleTrack);
+            RegisterTrack(Position3DTrack);
+            RegisterTrack(ColorTrack);
+            RegisterTrack(TextureTrack);
         }
     }
 }

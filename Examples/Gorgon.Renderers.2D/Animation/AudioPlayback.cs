@@ -83,7 +83,7 @@ namespace Gorgon.Examples
                 await _currentPlayback;
                 return;
             }
-
+                        
             _tokenSource = new CancellationTokenSource();
             _currentPlayback = Task.Run(() =>
                                {
@@ -104,15 +104,16 @@ namespace Gorgon.Examples
 
                                    try
                                    {
+                                       var waiter = new SpinWait();
                                        while ((!_tokenSource.Token.IsCancellationRequested) && (!source.IsDisposed) && (source.State.BuffersQueued > 0))
                                        {
-                                           Thread.Sleep(10);
+                                           waiter.SpinOnce();
                                        }
 
                                        source.Stop();
                                    }
                                    finally
-                                   {
+                                   {                                       
                                        buffer.Stream?.Dispose();
                                        source.Dispose();
                                        stream?.Dispose();
@@ -121,6 +122,9 @@ namespace Gorgon.Examples
 
             await _currentPlayback;
             _currentPlayback = null;
+            CancellationTokenSource tokenSource = Interlocked.Exchange(ref _tokenSource, null);
+            tokenSource?.Dispose();
+            tokenSource = null;
         }
 
         /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>

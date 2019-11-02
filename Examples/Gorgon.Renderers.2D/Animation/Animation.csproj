@@ -144,6 +144,10 @@
       <Project>{4bb4ef41-1f32-4c50-bcbf-43c02f9600bd}</Project>
       <Name>Gorgon.Renderers.Gorgon2D</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Renderers\IO.Gorgon2D\Gorgon.IO.Gorgon2D.csproj">
+      <Project>{e5506a64-62c5-4aa3-adcb-766ab0cd5528}</Project>
+      <Name>Gorgon.IO.Gorgon2D</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Gorgon\Gorgon.Windows\Gorgon.Windows.csproj">
       <Project>{a19cb981-2d25-4316-9542-1d2bd7064f2b}</Project>
       <Name>Gorgon.Windows</Name>

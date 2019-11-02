@@ -89,12 +89,12 @@ namespace Gorgon.IO
         /// <summary>
         /// Property to return whether or not the codec can encode animation data.
         /// </summary>
-        public override bool CanEncode => true;
+        public override bool CanEncode => false;
 
         /// <summary>
         /// Property to return the version of animation data that the codec supports.
         /// </summary>
-        public override Version Version => CurrentVersion;
+        public override Version Version => GorgonV3AnimationJsonCodec.Version30;
         #endregion
 
         #region Methods.
@@ -169,174 +169,8 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="animation">The animation to serialize into the stream.</param>
         /// <param name="stream">The stream that will contain the animation.</param>
-        protected override void OnSaveToStream(IGorgonAnimation animation, Stream stream)
-        {
-            var writer = new GorgonChunkFileWriter(stream, CurrentFileHeader);
-            GorgonBinaryWriter binWriter = null;
-
-            try
-            {
-                writer.Open();
-                binWriter = writer.OpenChunk(VersionData);
-                binWriter.Write((byte)Version.Major);
-                binWriter.Write((byte)Version.Minor);
-                writer.CloseChunk();
-
-                binWriter = writer.OpenChunk(AnimationData);
-                binWriter.Write(animation.Name);
-                binWriter.Write(animation.Length);
-                binWriter.Write(animation.IsLooped);
-                binWriter.Write(animation.LoopCount);
-                writer.CloseChunk();
-
-                // Write out position track.
-                if (animation.Vector3.KeyFrames.Count > 0)
-                {
-                    binWriter = writer.OpenChunk(PositionData);
-                    binWriter.WriteValue(animation.Vector3.InterpolationMode);
-                    binWriter.Write(animation.Vector3.KeyFrames.Count);
-
-                    for (int i = 0; i < animation.Vector3.KeyFrames.Count; ++i)
-                    {
-                        GorgonKeyVector3 key = animation.Vector3.KeyFrames[i];
-                        binWriter.Write(key.Time);
-                        binWriter.WriteValue(ref key.Value);
-                    }
-
-                    writer.CloseChunk();
-                }
-
-                // Write out position track.
-                if (animation.ScaleTrack.KeyFrames.Count > 0)
-                {
-                    binWriter = writer.OpenChunk(ScaleData);
-                    binWriter.WriteValue(animation.ScaleTrack.InterpolationMode);
-                    binWriter.Write(animation.ScaleTrack.KeyFrames.Count);
-
-                    for (int i = 0; i < animation.ScaleTrack.KeyFrames.Count; ++i)
-                    {
-                        GorgonKeyVector3 key = animation.ScaleTrack.KeyFrames[i];
-                        binWriter.Write(key.Time);
-                        binWriter.WriteValue(ref key.Value);
-                    }
-
-                    writer.CloseChunk();
-                }
-
-                // Write out rotation track.
-                if (animation.RotationTrack.KeyFrames.Count > 0)
-                {
-                    binWriter = writer.OpenChunk(RotationData);
-                    binWriter.WriteValue(animation.RotationTrack.InterpolationMode);
-                    binWriter.Write(animation.RotationTrack.KeyFrames.Count);
-
-                    for (int i = 0; i < animation.RotationTrack.KeyFrames.Count; ++i)
-                    {
-                        GorgonKeyVector3 key = animation.RotationTrack.KeyFrames[i];
-                        binWriter.Write(key.Time);
-                        binWriter.WriteValue(ref key.Value);
-                    }
-
-                    writer.CloseChunk();
-                }
-
-                // Write out size track.
-                if (animation.SizeTrack.KeyFrames.Count > 0)
-                {
-                    binWriter = writer.OpenChunk(SizeData);
-                    binWriter.WriteValue(animation.SizeTrack.InterpolationMode);
-                    binWriter.Write(animation.SizeTrack.KeyFrames.Count);
-
-                    for (int i = 0; i < animation.SizeTrack.KeyFrames.Count; ++i)
-                    {
-                        GorgonKeyVector3 key = animation.SizeTrack.KeyFrames[i];
-                        binWriter.Write(key.Time);
-                        binWriter.WriteValue(ref key.Value);
-                    }
-
-                    writer.CloseChunk();
-                }
-
-                // Write out bounds track.
-                if (animation.RectBoundsTrack.KeyFrames.Count > 0)
-                {
-                    binWriter = writer.OpenChunk(BoundsData);
-                    binWriter.WriteValue(animation.RectBoundsTrack.InterpolationMode);
-                    binWriter.Write(animation.RectBoundsTrack.KeyFrames.Count);
-
-                    for (int i = 0; i < animation.RectBoundsTrack.KeyFrames.Count; ++i)
-                    {
-                        GorgonKeyRectangle key = animation.RectBoundsTrack.KeyFrames[i];
-                        binWriter.Write(key.Time);
-                        binWriter.WriteValue(ref key.Value);
-                    }
-
-                    writer.CloseChunk();
-                }
-
-                // Write out colors track.
-                if (animation.ColorTrack.KeyFrames.Count > 0)
-                {
-                    binWriter = writer.OpenChunk(ColorData);
-                    binWriter.WriteValue(animation.ColorTrack.InterpolationMode);
-                    binWriter.Write(animation.ColorTrack.KeyFrames.Count);
-
-                    for (int i = 0; i < animation.ColorTrack.KeyFrames.Count; ++i)
-                    {
-                        GorgonKeyGorgonColor key = animation.ColorTrack.KeyFrames[i];
-                        binWriter.Write(key.Time);
-                        binWriter.WriteValue(ref key.Value);
-                    }
-
-                    writer.CloseChunk();
-                }
-
-                if (animation.Texture2DTrack.KeyFrames.Count == 0)
-                {
-                    return;
-                }
-
-                binWriter = writer.OpenChunk(TextureData);
-                binWriter.Write(animation.Texture2DTrack.KeyFrames.Count);
-
-                for (int i = 0; i < animation.Texture2DTrack.KeyFrames.Count; ++i)
-                {
-                    GorgonKeyTexture2D key = animation.Texture2DTrack.KeyFrames[i];
-
-                    binWriter.Write(key.Time);
-
-                    if (key.Value == null)
-                    {
-                        binWriter.WriteValue<byte>(0);
-                    }
-                    else
-                    {
-                        binWriter.WriteValue<byte>(1);
-                        binWriter.Write(key.Value.Texture.Name);
-                        binWriter.Write(key.Value.Texture.Width);
-                        binWriter.Write(key.Value.Texture.Height);
-                        binWriter.WriteValue(key.Value.Texture.Format);
-                        binWriter.Write(key.Value.Texture.ArrayCount);
-                        binWriter.Write(key.Value.Texture.MipLevels);
-                        binWriter.Write(key.Value.ArrayIndex);
-                        binWriter.Write(key.Value.ArrayCount);
-                        binWriter.Write(key.Value.MipSlice);
-                        binWriter.Write(key.Value.MipCount);
-                        binWriter.WriteValue(key.Value.Format);
-                    }
-
-                    binWriter.WriteValue(ref key.TextureCoordinates);
-                    binWriter.Write(key.TextureArrayIndex);
-                }
-
-                writer.CloseChunk();
-            }
-            finally
-            {
-                binWriter?.Dispose();
-                writer.Close();
-            }
-        }
+        /// <exception cref="NotSupportedException">This operation is not supported.</exception>
+        protected override void OnSaveToStream(IGorgonAnimation animation, Stream stream) => throw new NotSupportedException();
 
         /// <summary>
         /// Function to read the animation data from a stream.
@@ -370,13 +204,14 @@ namespace Gorgon.IO
                 if (reader.Chunks.Contains(PositionData))
                 {
                     binReader = reader.OpenChunk(PositionData);
-                    builder.PositionInterpolationMode(binReader.ReadValue<TrackInterpolationMode>());
+                    TrackInterpolationMode interpolation =  binReader.ReadValue<TrackInterpolationMode>();
                     keyCount = binReader.ReadInt32();
 
-                    IGorgonTrackKeyBuilder<GorgonKeyVector3> track = builder.EditPositions();
+                    IGorgonTrackKeyBuilder<GorgonKeyVector2> track = builder.EditVector2("Position")
+                                                                            .SetInterpolationMode(interpolation);
                     for (int i = 0; i < keyCount; ++i)
                     {
-                        track.SetKey(new GorgonKeyVector3(binReader.ReadSingle(), binReader.ReadValue<DX.Vector3>()));
+                        track.SetKey(new GorgonKeyVector2(binReader.ReadSingle(), (DX.Vector2)binReader.ReadValue<DX.Vector3>()));
                     }
                     track.EndEdit();
                     reader.CloseChunk();
@@ -385,13 +220,14 @@ namespace Gorgon.IO
                 if (reader.Chunks.Contains(ScaleData))
                 {
                     binReader = reader.OpenChunk(ScaleData);
-                    builder.ScaleInterpolationMode(binReader.ReadValue<TrackInterpolationMode>());
+                    TrackInterpolationMode interpolation = binReader.ReadValue<TrackInterpolationMode>();
                     keyCount = binReader.ReadInt32();
 
-                    IGorgonTrackKeyBuilder<GorgonKeyVector3> track = builder.EditScale();
+                    IGorgonTrackKeyBuilder<GorgonKeyVector2> track = builder.EditVector2("Scale")
+                                                                            .SetInterpolationMode(interpolation);
                     for (int i = 0; i < keyCount; ++i)
                     {
-                        track.SetKey(new GorgonKeyVector3(binReader.ReadSingle(), binReader.ReadValue<DX.Vector3>()));
+                        track.SetKey(new GorgonKeyVector2(binReader.ReadSingle(), (DX.Vector2)binReader.ReadValue<DX.Vector3>()));
                     }
                     track.EndEdit();
                     reader.CloseChunk();
@@ -400,13 +236,13 @@ namespace Gorgon.IO
                 if (reader.Chunks.Contains(RotationData))
                 {
                     binReader = reader.OpenChunk(RotationData);
-                    builder.RotationInterpolationMode(binReader.ReadValue<TrackInterpolationMode>());
+                    TrackInterpolationMode interpolatino = binReader.ReadValue<TrackInterpolationMode>();
                     keyCount = binReader.ReadInt32();
 
-                    IGorgonTrackKeyBuilder<GorgonKeyVector3> track = builder.EditRotation();
+                    IGorgonTrackKeyBuilder<GorgonKeySingle> track = builder.EditSingle("Angle");
                     for (int i = 0; i < keyCount; ++i)
                     {
-                        track.SetKey(new GorgonKeyVector3(binReader.ReadSingle(), binReader.ReadValue<DX.Vector3>()));
+                        track.SetKey(new GorgonKeySingle(binReader.ReadSingle(), binReader.ReadValue<DX.Vector3>().Z));
                     }
                     track.EndEdit();
                     reader.CloseChunk();
@@ -415,13 +251,14 @@ namespace Gorgon.IO
                 if (reader.Chunks.Contains(SizeData))
                 {
                     binReader = reader.OpenChunk(SizeData);
-                    builder.SizeInterpolationMode(binReader.ReadValue<TrackInterpolationMode>());
+                    TrackInterpolationMode interpolation = binReader.ReadValue<TrackInterpolationMode>();
                     keyCount = binReader.ReadInt32();
 
-                    IGorgonTrackKeyBuilder<GorgonKeyVector3> track = builder.EditSize();
+                    IGorgonTrackKeyBuilder<GorgonKeyVector2> track = builder.EditVector2("Size")
+                                                                            .SetInterpolationMode(interpolation);
                     for (int i = 0; i < keyCount; ++i)
                     {
-                        track.SetKey(new GorgonKeyVector3(binReader.ReadSingle(), binReader.ReadValue<DX.Vector3>()));
+                        track.SetKey(new GorgonKeyVector2(binReader.ReadSingle(), (DX.Vector2)binReader.ReadValue<DX.Vector3>()));
                     }
                     track.EndEdit();
                     reader.CloseChunk();
@@ -430,10 +267,11 @@ namespace Gorgon.IO
                 if (reader.Chunks.Contains(BoundsData))
                 {
                     binReader = reader.OpenChunk(BoundsData);
-                    builder.RotationInterpolationMode(binReader.ReadValue<TrackInterpolationMode>());
+                    TrackInterpolationMode interpolation = binReader.ReadValue<TrackInterpolationMode>();
                     keyCount = binReader.ReadInt32();
 
-                    IGorgonTrackKeyBuilder<GorgonKeyRectangle> track = builder.EditRectangularBounds();
+                    IGorgonTrackKeyBuilder<GorgonKeyRectangle> track = builder.EditRectangle("Bounds")
+                                                                              .SetInterpolationMode(interpolation);
                     for (int i = 0; i < keyCount; ++i)
                     {
                         track.SetKey(new GorgonKeyRectangle(binReader.ReadSingle(), binReader.ReadValue<DX.RectangleF>()));
@@ -445,10 +283,11 @@ namespace Gorgon.IO
                 if (reader.Chunks.Contains(ColorData))
                 {
                     binReader = reader.OpenChunk(ColorData);
-                    builder.RotationInterpolationMode(binReader.ReadValue<TrackInterpolationMode>());
+                    TrackInterpolationMode interpolation = binReader.ReadValue<TrackInterpolationMode>();
                     keyCount = binReader.ReadInt32();
 
-                    IGorgonTrackKeyBuilder<GorgonKeyGorgonColor> track = builder.EditColors();
+                    IGorgonTrackKeyBuilder<GorgonKeyGorgonColor> track = builder.EditColor("Color")
+                                                                                .SetInterpolationMode(interpolation);
                     for (int i = 0; i < keyCount; ++i)
                     {
                         track.SetKey(new GorgonKeyGorgonColor(binReader.ReadSingle(), binReader.ReadValue<GorgonColor>()));
@@ -469,7 +308,7 @@ namespace Gorgon.IO
                 binReader = reader.OpenChunk(TextureData);
                 keyCount = binReader.ReadInt32();
 
-                IGorgonTrackKeyBuilder<GorgonKeyTexture2D> textureTrack = builder.Edit2DTexture();
+                IGorgonTrackKeyBuilder<GorgonKeyTexture2D> textureTrack = builder.Edit2DTexture("Texture");
                 for (int i = 0; i < keyCount; ++i)
                 {
                     float time = binReader.ReadSingle();
@@ -524,7 +363,7 @@ namespace Gorgon.IO
 
             try
             {
-                reader = new GorgonChunkFileReader(stream, new[] { CurrentFileHeader });
+                reader = new GorgonChunkFileReader(stream, new[] { GorgonV3AnimationJsonCodec.FileHeader30 });
                 reader.Open();
                 return IsReadableChunkFile(reader);
             }

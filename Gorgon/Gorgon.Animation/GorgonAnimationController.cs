@@ -107,8 +107,8 @@ namespace Gorgon.Animation
         private AnimationState _state = AnimationState.Stopped;
         // The list of registered track names.
         private readonly List<GorgonTrackRegistration> _trackNames = new List<GorgonTrackRegistration>();
-        // A list of key frame types for track data.
-        private static readonly AnimationTrackKeyType[] _trackKeyTypes = (AnimationTrackKeyType[])Enum.GetValues(typeof(AnimationTrackKeyType));
+        // The list of registered track names that can be played with a given animation.
+        private readonly List<GorgonTrackRegistration> _playableTracks = new List<GorgonTrackRegistration>();
         #endregion
 
         #region Properties.
@@ -208,13 +208,73 @@ namespace Gorgon.Animation
 
         #region Methods.
         /// <summary>
+        /// Function to build up the playable track list.
+        /// </summary>
+        /// <param name="animation">The animation to evaluate.</param>
+        private void BuildPlayableTracks(IGorgonAnimation animation)
+        {
+            _playableTracks.Clear();
+
+            for (int i = 0; i < _trackNames.Count; ++i)
+            {
+                GorgonTrackRegistration registration = _trackNames[i];
+
+                switch (registration.KeyType)
+                {
+                    case AnimationTrackKeyType.Single:
+                        if (animation.SingleTracks.ContainsKey(registration.TrackName))
+                        {
+                            _playableTracks.Add(registration);
+                        }
+                        break;
+                    case AnimationTrackKeyType.Vector2:
+                        if (animation.Vector2Tracks.ContainsKey(registration.TrackName))
+                        {
+                            _playableTracks.Add(registration);
+                        }
+                        break;
+                    case AnimationTrackKeyType.Vector3:
+                        if (animation.Vector3Tracks.ContainsKey(registration.TrackName))
+                        {
+                            _playableTracks.Add(registration);
+                        }
+                        break;
+                    case AnimationTrackKeyType.Vector4:
+                        if (animation.Vector4Tracks.ContainsKey(registration.TrackName))
+                        {
+                            _playableTracks.Add(registration);
+                        }
+                        break;
+                    case AnimationTrackKeyType.Rectangle:
+                        if (animation.RectangleTracks.ContainsKey(registration.TrackName))
+                        {
+                            _playableTracks.Add(registration);
+                        }
+                        break;
+                    case AnimationTrackKeyType.Color:
+                        if (animation.ColorTracks.ContainsKey(registration.TrackName))
+                        {
+                            _playableTracks.Add(registration);
+                        }
+                        break;
+                    case AnimationTrackKeyType.Texture2D:
+                        if (animation.Texture2DTracks.ContainsKey(registration.TrackName))
+                        {
+                            _playableTracks.Add(registration);
+                        }
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
         /// Function to update the animation.
         /// </summary>
         private void NotifyAnimation()
         {
-            for (int i = 0; i < _trackNames.Count; ++i)
+            for (int i = 0; i < _playableTracks.Count; ++i)
             {
-                GorgonTrackRegistration registration = _trackNames[i];
+                GorgonTrackRegistration registration = _playableTracks[i];
 
                 switch (registration.KeyType)
                 {
@@ -429,7 +489,9 @@ namespace Gorgon.Animation
             if (animation == CurrentAnimation)
             {
                 return;
-            }            
+            }
+
+            BuildPlayableTracks(animation);
 
             // Stop the current animation.
             if (CurrentAnimation != null)
@@ -497,6 +559,7 @@ namespace Gorgon.Animation
                 return;
             }
 
+            _playableTracks.Clear();
             State = AnimationState.Stopped;
             _loopCount = 0;
             _animatedObject = null;
