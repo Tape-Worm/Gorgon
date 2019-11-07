@@ -160,7 +160,7 @@ namespace Gorgon.Examples
             {
                 // Don't bother recording the current state, we're going to be updating it shortly, so it'd be redundant.
                 _displacement.Strength = strength;
-                _displacement.Render((passIndex, _, __) => DrawDisplacement(passIndex),
+                _displacement.Render((passIndex, _) => DrawDisplacement(passIndex),
                                      _postTarget2);
             }
             else
@@ -190,7 +190,7 @@ namespace Gorgon.Examples
             // If we didn't blur (radius = 0), then just use the original view.
             if (_gaussBlur.BlurRadius > 0)
             {
-                _gaussBlur.Render((_, __, outputSize) =>
+                _gaussBlur.Render((_, outputSize) =>
                                   {
                                       _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, outputSize.Width, outputSize.Height),
                                                                     GorgonColor.White,
@@ -208,7 +208,7 @@ namespace Gorgon.Examples
                 offset = new DX.Vector2(GorgonRandom.RandomSingle(-2.0f, 2.0f), GorgonRandom.RandomSingle(-1.5f, 1.5f));
             }
 
-            _oldFilm.Render((_, __, size) =>
+            _oldFilm.Render((_, size) =>
                                 _renderer.DrawFilledRectangle(new DX.RectangleF(offset.X, offset.Y, size.Width, size.Height),
                                                               GorgonColor.White,
                                                               _postView2,

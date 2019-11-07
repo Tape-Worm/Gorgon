@@ -260,11 +260,11 @@ namespace Gorgon.Renderers
             _blurRtvInfo.Width = _renderTargetSize.Width;
             _blurRtvInfo.Height = _renderTargetSize.Height;
 
-            _hPass = Graphics.TemporaryTargets.Rent(_blurRtvInfo, clearOnRetrieve: false);
+            _hPass = Graphics.TemporaryTargets.Rent(_blurRtvInfo, "Blur_HPass", clearOnRetrieve: false);
 
             _hPassView = _hPass.GetShaderResourceView();
 
-            _vPass = Graphics.TemporaryTargets.Rent(_blurRtvInfo, clearOnRetrieve: false);
+            _vPass = Graphics.TemporaryTargets.Rent(_blurRtvInfo, "Blur_VPass", clearOnRetrieve: false);
             _vPassView = _vPass.GetShaderResourceView();
         }
 
@@ -367,15 +367,15 @@ namespace Gorgon.Renderers
         /// Applications must implement this in order to see any results from the effect.
         /// </para>
         /// </remarks>
-        protected override void OnRenderPass(int passIndex, Action<int, int, DX.Size2> renderMethod, GorgonRenderTargetView output)
+        protected override void OnRenderPass(int passIndex, Action<int, DX.Size2> renderMethod, GorgonRenderTargetView output)
         {
             switch (passIndex)
             {
                 case 0:
-                    renderMethod(passIndex, PassCount, new DX.Size2(_vPassView.Width, _vPassView.Height));
+                    renderMethod(passIndex, new DX.Size2(_vPassView.Width, _vPassView.Height));
                     break;
                 case 1:
-                    BlitTexture(_hPassView, new DX.Size2(_hPass.Width, _hPass.Height));
+                    Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _vPassView.Width, _vPassView.Height), GorgonColor.White, _hPassView, new DX.RectangleF(0, 0, 1, 1));
                     break;
             }
         }
@@ -516,7 +516,7 @@ namespace Gorgon.Renderers
             }
 
             Renderer.Begin(Gorgon2DBatchState.NoBlend);
-            BlitTexture(_vPassView, new DX.Size2(output.Width, output.Height));
+            Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height), GorgonColor.White, _vPassView, new DX.RectangleF(0, 0, 1, 1));
             Renderer.End();
 
             FreeTargets();

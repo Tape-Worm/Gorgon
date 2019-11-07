@@ -583,12 +583,12 @@ namespace Gorgon.Renderers
         /// <param name="renderMethod">The method used to render a scene for the effect.</param>
         /// <param name="output">The render target that will receive the final render data.</param>
         /// <remarks>Applications must implement this in order to see any results from the effect.</remarks>
-        protected override void OnRenderPass(int passIndex, Action<int, int, DX.Size2> renderMethod, GorgonRenderTargetView output)
+        protected override void OnRenderPass(int passIndex, Action<int, DX.Size2> renderMethod, GorgonRenderTargetView output)
         {
             switch (passIndex)
             {
                 case 0:
-                    renderMethod(passIndex, PassCount, new DX.Size2(_sceneRtv.Width, _sceneRtv.Height));
+                    renderMethod(passIndex, new DX.Size2(_sceneRtv.Width, _sceneRtv.Height));
                     break;
                 case 1:
                     // Cancel the previous batch operation. We will be handling this internally.

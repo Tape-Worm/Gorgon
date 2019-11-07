@@ -86,14 +86,11 @@ namespace Gorgon.Renderers
         ///         <description>The current pass index being rendered.</description>
         ///     </item>
         ///     <item>
-        ///         <description>Total number of passes in the effect.</description>
-        ///     </item>
-        ///     <item>
         ///         <description>The size of the current render target.</description>
         ///     </item>
         /// </list>
         /// </remarks>
-        public Action<GorgonTexture2DView, int, int, DX.Size2> RenderMethod
+        public Action<GorgonTexture2DView, int, DX.Size2> RenderMethod
         {
             get;
             set;

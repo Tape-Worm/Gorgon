@@ -173,7 +173,7 @@ namespace Gorgon.Examples
                 return;
             }
 
-            DeferredLighter.Render((pass, count, size) =>
+            DeferredLighter.Render((pass, size) =>
             {
                 for (int i = 0; i < _litSprites.Count; ++i)
                 {

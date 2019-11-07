@@ -355,7 +355,7 @@ namespace Gorgon.Examples
                            ClearColor = GorgonColor.White
                        })
                        .RenderPass("Sobel Blend Pass",
-                                   (sobelTexture, pass, passCount, size) =>
+                                   (sobelTexture, pass, size) =>
                                    {
                                        // This is a custom pass that does nothing but rendering.  No effect is applied here, just straight rendering to
                                        // the currently active render target.
@@ -367,7 +367,7 @@ namespace Gorgon.Examples
                        .Pass(new Gorgon2DCompositionPass("Olde Film", _oldFilmEffect)
                        {
                            BlendOverride = GorgonBlendState.Additive,
-                           RenderMethod = (prevEffect, passIndex, passCount, size) =>
+                           RenderMethod = (prevEffect, passIndex, size) =>
                                           {
                                                     // Here we can override the method used to render to the effect. 
                                                     // In this case, we're animating our old film content to shake and darken at defined intervals.

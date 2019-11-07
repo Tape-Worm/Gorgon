@@ -162,7 +162,7 @@ ESC - Quit.";
             //       should re-blur when the blur amount has changed.  This way we end up having to send out fewer draw calls/frame.
             for (int i = 0; i < _bgBlurAmount; ++i)
             {
-                _gaussBlur.Render((pass, count, size) =>
+                _gaussBlur.Render((pass, size) =>
                                   {
                                       // Draw our layer.
                                       _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, size.Width, size.Height),

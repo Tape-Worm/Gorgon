@@ -128,7 +128,7 @@ namespace Gorgon.Renderers
         /// Applications must implement this in order to see any results from the effect.
         /// </para>
         /// </remarks>
-        protected override void OnRenderPass(int passIndex, Action<int, int, Size2> renderMethod, GorgonRenderTargetView output) => renderMethod(passIndex, PassCount, new Size2(output.Width, output.Height));
+        protected override void OnRenderPass(int passIndex, Action<int, Size2> renderMethod, GorgonRenderTargetView output) => renderMethod(passIndex, new Size2(output.Width, output.Height));
         #endregion
 
         #region Constructor/Destructor.

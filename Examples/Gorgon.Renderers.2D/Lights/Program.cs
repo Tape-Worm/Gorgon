@@ -83,9 +83,8 @@ namespace Gorgon.Examples
         /// Function to draw the scene that needs lighting.
         /// </summary>
         /// <param name="pass">Not used.</param>
-        /// <param name="passCount">Not used.</param>
         /// <param name="outputSize">The size of the output render target.</param>
-        private static void DrawLitScene(int pass, int passCount, DX.Size2 outputSize)
+        private static void DrawLitScene(int pass, DX.Size2 outputSize)
         {
             _logoSprite.Position = new DX.Vector2(outputSize.Width / 2.0f, outputSize.Height / 2.0f);
             _renderer.DrawSprite(_logoSprite);

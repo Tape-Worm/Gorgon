@@ -239,11 +239,11 @@ namespace Gorgon.Renderers
         private void RenderEffectPass(Gorgon2DCompositionPass pass, GorgonRenderTargetView currentTarget, GorgonTexture2DView currentTexture)
         {
             // The callback method for rendering the effect.
-            void RenderAction(int passIndex, int passCount, DX.Size2 size)
+            void RenderAction(int passIndex, DX.Size2 size)
             {
                 if (pass.RenderMethod != null)
                 {
-                    pass.RenderMethod(currentTexture, passIndex, passCount, size);
+                    pass.RenderMethod(currentTexture, passIndex, size);
                 }
                 else
                 {
@@ -296,7 +296,7 @@ namespace Gorgon.Renderers
             }
 
             Renderer.Begin(_noEffectBatchState, pass.Camera);
-            pass.RenderMethod(currentTexture, 0, 0, new DX.Size2(currentTarget.Width, currentTarget.Height));
+            pass.RenderMethod(currentTexture, 0, new DX.Size2(currentTarget.Width, currentTarget.Height));
             Renderer.End();
         }
 
@@ -572,15 +572,12 @@ namespace Gorgon.Renderers
         ///         <description>The current pass index being rendered.</description>
         ///     </item>
         ///     <item>
-        ///         <description>Total number of passes in the effect.</description>
-        ///     </item>
-        ///     <item>
         ///         <description>The size of the current render target.</description>
         ///     </item>
         /// </list>
         /// </para>
         /// </remarks>
-        public Gorgon2DCompositor RenderPass(string name, Action<GorgonTexture2DView, int, int, DX.Size2> renderMethod)
+        public Gorgon2DCompositor RenderPass(string name, Action<GorgonTexture2DView, int, DX.Size2> renderMethod)
         {
             if (name == null)
             {

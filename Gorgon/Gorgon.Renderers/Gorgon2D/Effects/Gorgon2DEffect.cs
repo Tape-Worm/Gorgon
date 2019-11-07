@@ -56,42 +56,6 @@ namespace Gorgon.Renderers
     }
 
     /// <summary>
-    /// Flags to indicate which states are recorded by the effect.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// This is a bit flag enum, so multiple states can be recorded by ORing the values together.
-    /// </para>
-    /// </remarks>
-    [Flags]
-    public enum RecordedState
-    {
-        /// <summary>
-        /// Do not record any states.
-        /// <para>
-        /// This flag is mutally exclusive.
-        /// </para>
-        /// </summary>
-        None = 0,
-        /// <summary>
-        /// Record render target states.
-        /// </summary>
-        RenderTargets = 1,
-        /// <summary>
-        /// Record depth/stencil state.
-        /// </summary>
-        DepthStencil = 2,
-        /// <summary>
-        /// Record viewport state.
-        /// </summary>
-        Viewports = 4,
-        /// <summary>
-        /// Record all states.
-        /// </summary>
-        All = RenderTargets | DepthStencil | Viewports
-    }
-
-    /// <summary>
     /// A base class used to implement special effects for 2D rendering.
     /// </summary>
     public abstract class Gorgon2DEffect
@@ -100,14 +64,6 @@ namespace Gorgon.Renderers
         #region Variables.
         // Flag to indicate that the effect is initialized.
         private bool _isInitialized;
-        // The recall targets.
-        private GorgonRenderTargetView[] _targets;
-        // The recall viewports.
-        private DX.ViewportF[] _viewports;
-        // The enumerator for render targets.
-        private readonly IEnumerable<GorgonRenderTargetView> _targetEnumerator;
-        // The enumerator for viewports.
-        private readonly IEnumerable<DX.ViewportF> _viewportEnumerator;
         // The previous size of the output.
         private DX.Size2 _prevOutputSize;
         #endregion
@@ -120,34 +76,6 @@ namespace Gorgon.Renderers
         /// This will keep D3D from complaining about a missing texture.
         /// </remarks>
         protected GorgonTexture2DView EmptyTexture => Renderer.EmptyBlackTexture;
-
-        /// <summary>
-        /// Property to return the list of recorded render targets.
-        /// </summary>
-        protected IReadOnlyList<GorgonRenderTargetView> RecordedRenderTargets => _targets;
-
-        /// <summary>
-        /// Property to return the recorded depth/stencil.
-        /// </summary>
-        protected GorgonDepthStencil2DView RecordedDepthStencil
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the list of recorded viewports.
-        /// </summary>
-        protected IReadOnlyList<DX.ViewportF> RecordedViewports => _viewports;
-
-        /// <summary>
-        /// Property to return the currently recorded states.
-        /// </summary>
-        protected RecordedState RecordedStates
-        {
-            get;
-            private set;
-        }
 
         /// <summary>
         /// Property to return the batch state builder used to create custom batch states.
@@ -382,7 +310,7 @@ namespace Gorgon.Renderers
         /// Applications must implement this in order to see any results from the effect.
         /// </para>
         /// </remarks>
-        protected virtual void OnRenderPass(int passIndex, Action<int, int, DX.Size2> renderMethod, GorgonRenderTargetView output)
+        protected virtual void OnRenderPass(int passIndex, Action<int, DX.Size2> renderMethod, GorgonRenderTargetView output)
         {
         }
 
@@ -406,13 +334,10 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderMethod"/>, or the <paramref name="output"/> parameter is <b>null</b>.</exception>
         /// <remarks>
         /// <para>
-        /// The <paramref name="renderMethod"/> is a callback to a method with 3 parameters:
+        /// The <paramref name="renderMethod"/> is a callback to a method with 2 parameters:
         /// <list type="number">
         ///     <item>
         ///         <description>The current pass index.</description>
-        ///     </item>
-        ///     <item>
-        ///         <description>The total number of passes.</description>
         ///     </item>
         ///     <item>
         ///         <description>The size of the current render target.</description>
@@ -443,7 +368,7 @@ namespace Gorgon.Renderers
         /// </para>
         /// </para>
         /// </remarks>
-        public void Render(Action<int, int, DX.Size2> renderMethod,
+        public void Render(Action<int, DX.Size2> renderMethod,
                            GorgonRenderTargetView output,
                            GorgonBlendState blendStateOverride = null,
                            GorgonDepthStencilState depthStencilStateOverride = null,
@@ -478,172 +403,6 @@ namespace Gorgon.Renderers
             }
 
             OnAfterRender(output);
-        }
-
-        /// <summary>
-        /// Function to render a texture to the current render target using the current effect.
-        /// </summary>
-        /// <param name="texture">The texture to render.</param>
-        /// <param name="outputSize">The size of the output render target that the blit will render into.</param>
-        /// <param name="destinationRegion">[Optional] The region that the texture will be drawn into.</param>
-        /// <param name="textureCoordinates">[Optional] The texture coordinates to use with the texture.</param>
-        /// <param name="samplerStateOverride">[Optional] An override for the current texture sampler.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is <b>null</b>.</exception>
-        /// <remarks>
-        /// <para>
-        /// This method is a convenience method that will render a texture to the current set render target in slot 0. 
-        /// </para>
-        /// <para>
-        /// If the <paramref name="destinationRegion"/> parameter is omitted, then the texture will be rendered to the full size of the current render target.  If it is provided, then texture will be rendered to the
-        /// location specified, and with the width and height specified.
-        /// </para>
-        /// <para>
-        /// If the <paramref name="textureCoordinates"/> parameter is omitted, then the full size of the texture is rendered.
-        /// </para>
-        /// <para>
-        /// If the <paramref name="samplerStateOverride"/> parameter is omitted, then the <see cref="GorgonSamplerState.Default"/> is used.  When provided, this will alter how the pixel shader samples our
-        /// texture in slot 0.
-        /// </para>
-        /// <para>
-        /// <note type="important">
-        /// <para>
-        /// For performance reasons, any exceptions thrown by this method will only be thrown when Gorgon is compiled as DEBUG.
-        /// </para>
-        /// </note>
-        /// </para>
-        /// </remarks>
-        /// <seealso cref="GorgonBlendState"/>
-        /// <seealso cref="GorgonDepthStencilState"/>
-        /// <seealso cref="GorgonRasterState"/>
-        /// <seealso cref="Gorgon2DOrthoCamera"/>
-        /// <seealso cref="Gorgon2DPerspectiveCamera"/>
-        protected void BlitTexture(GorgonTexture2DView texture,
-                                   DX.Size2 outputSize,
-                                     DX.RectangleF? destinationRegion = null,
-                                     DX.RectangleF? textureCoordinates = null,
-                                     GorgonSamplerState samplerStateOverride = null)
-        {
-            texture.ValidateObject(nameof(texture));
-
-            if (destinationRegion == null)
-            {
-                destinationRegion = new DX.RectangleF(0, 0, outputSize.Width, outputSize.Height);
-            }
-
-            if (textureCoordinates == null)
-            {
-                textureCoordinates = new DX.RectangleF(0, 0, 1, 1);
-            }
-
-            Renderer.DrawFilledRectangle(destinationRegion.Value, GorgonColor.White, texture, textureCoordinates, textureSampler: samplerStateOverride);
-        }
-
-        /// <summary>
-        /// Function to remember the current state of the graphics interface so that it can be reset after rendering.
-        /// </summary>
-        /// <param name="states">The states to record.</param>
-        /// <remarks>
-        /// <para>
-        /// Applications should use this in order to remember the current set of render targets, depth/stencil or set of view ports on the <see cref="GorgonGraphics"/> interface prior to rendering a scene.
-        /// When this method is called, it should be paired with a call to <see cref="RecallState"/> in order to restore the state.
-        /// </para>
-        /// <para>
-        /// The <paramref name="states"/> parameter indicates which state to record based on the value from <see cref="RecordedState"/> enumeration. This enumeration is a bit flag, and the values can be
-        /// combined via OR so that multiple states are stored.
-        /// </para>
-        /// </remarks>
-        /// <seealso cref="RecordedState"/>
-        /// <seealso cref="GorgonGraphics"/>
-        public void RecordState(RecordedState states)
-        {
-            if (states == RecordedState.None)
-            {
-                RecordedStates = RecordedState.None;
-                RecordedDepthStencil = null;
-                Array.Clear(_targets, 0, _targets.Length);
-                Array.Clear(_viewports, 0, _viewports.Length);
-                return;
-            }
-
-            if ((states & RecordedState.RenderTargets) == RecordedState.RenderTargets)
-            {
-                int targetCount = _targetEnumerator.Count();
-
-                if (_targets.Length != targetCount)
-                {
-                    Array.Resize(ref _targets, targetCount);
-                }
-
-                for (int i = 0; i < targetCount; ++i)
-                {
-                    _targets[i] = Graphics.RenderTargets[i];
-                }
-            }
-
-            if ((states & RecordedState.Viewports) == RecordedState.Viewports)
-            {
-                int viewportCount = _viewportEnumerator.Count();
-
-                if (_viewports.Length != viewportCount)
-                {
-                    Array.Resize(ref _viewports, viewportCount);
-                }
-
-                for (int i = 0; i < viewportCount; i++)
-                {
-                    _viewports[i] = Graphics.Viewports[i];
-                }
-            }
-
-            if ((states & RecordedState.DepthStencil) == RecordedState.DepthStencil)
-            {
-                RecordedDepthStencil = Graphics.DepthStencilView;
-            }
-
-            RecordedStates = states;
-        }
-
-        /// <summary>
-        /// Function to recall the previous state of the graphics interface so that it can be reset after rendering.
-        /// </summary>
-        /// <param name="state">[Optional] The state(s) to recall.</param>
-        public void RecallState(RecordedState state = RecordedState.All)
-        {
-            if (RecordedStates == RecordedState.None)
-            {
-                return;
-            }
-
-            // Restore our states.
-            bool resetDepthStencil = (((RecordedStates & RecordedState.DepthStencil) == RecordedState.DepthStencil)
-                                      && ((state & RecordedState.DepthStencil) == RecordedState.DepthStencil));
-
-            if (((RecordedStates & RecordedState.RenderTargets) == RecordedState.RenderTargets)
-                && ((state & RecordedState.RenderTargets) == RecordedState.RenderTargets))
-            {
-                Graphics.SetRenderTargets(_targets, resetDepthStencil ? RecordedDepthStencil : Graphics.DepthStencilView);
-                RecordedStates &= ~RecordedState.RenderTargets;
-
-                if (resetDepthStencil)
-                {
-                    RecordedStates &= ~RecordedState.DepthStencil;
-                }
-            }
-            else if (((RecordedStates & RecordedState.DepthStencil) == RecordedState.DepthStencil)
-                     && ((state & RecordedState.DepthStencil) == RecordedState.DepthStencil))
-            {
-                Graphics.SetDepthStencil(RecordedDepthStencil);
-                RecordedStates &= ~RecordedState.DepthStencil;
-            }
-
-            if (((RecordedStates & RecordedState.Viewports) != RecordedState.Viewports)
-                || ((state & RecordedState.Viewports) != RecordedState.Viewports))
-            {
-                return;
-            }
-
-            Graphics.SetViewports(_viewports);
-            RecordedStates &= ~RecordedState.Viewports;
         }
 
         /// <summary>
@@ -691,15 +450,9 @@ namespace Gorgon.Renderers
         {
             Renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
 
-            _targets = new GorgonRenderTargetView[1];
-            _viewports = new DX.ViewportF[1];
-
             // Ensure no less than 1 pass.
             PassCount = passCount.Max(1);
             Description = effectDescription ?? string.Empty;
-
-            _targetEnumerator = Graphics.RenderTargets.TakeWhile(item => item != null);
-            _viewportEnumerator = Graphics.Viewports.TakeWhile(item => (!item.Width.EqualsEpsilon(0)) && (!item.Height.EqualsEpsilon(0)));
         }
         #endregion
     }

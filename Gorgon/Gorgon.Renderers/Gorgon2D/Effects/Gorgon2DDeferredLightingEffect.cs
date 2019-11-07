@@ -478,11 +478,11 @@ namespace Gorgon.Renderers
         /// Applications must implement this in order to see any results from the effect.
         /// </para>
         /// </remarks>
-        protected override void OnRenderPass(int passIndex, Action<int, int, DX.Size2> renderMethod, GorgonRenderTargetView output)
+        protected override void OnRenderPass(int passIndex, Action<int, DX.Size2> renderMethod, GorgonRenderTargetView output)
         {
             if (passIndex == 0)
             {
-                renderMethod(passIndex, PassCount, new DX.Size2(output.Width, output.Height));
+                renderMethod(passIndex, new DX.Size2(output.Width, output.Height));
                 return;
             }
 

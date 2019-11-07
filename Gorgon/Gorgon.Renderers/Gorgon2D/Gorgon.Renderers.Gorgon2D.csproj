@@ -80,6 +80,7 @@
     <Compile Include="Effects\Gorgon2DSobelEdgeDetectEffect.cs" />
     <Compile Include="Effects\Gorgon2DWaveEffect.cs" />
     <Compile Include="Effects\Gorgon2DLight.cs" />
+    <Compile Include="Effects\TestEffectDesign.cs" />
     <Compile Include="Effects\_Interfaces\IGorgon2DTextureDrawEffect.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Gorgon2D.cs" />

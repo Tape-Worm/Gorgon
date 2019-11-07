@@ -190,7 +190,7 @@ namespace Gorgon.Renderers
         /// <param name="renderMethod">The method used to render a scene for the effect.</param>
         /// <param name="output">The render target that will receive the final render data.</param>
         /// <remarks>Applications must implement this in order to see any results from the effect.</remarks>
-        protected override void OnRenderPass(int passIndex, Action<int, int, DX.Size2> renderMethod, GorgonRenderTargetView output) => renderMethod(passIndex, PassCount, new DX.Size2(output.Width, output.Height));
+        protected override void OnRenderPass(int passIndex, Action<int, DX.Size2> renderMethod, GorgonRenderTargetView output) => renderMethod(passIndex, new DX.Size2(output.Width, output.Height));
 
         /// <summary>Function called to initialize the effect.</summary>
         /// <remarks>Applications must implement this method to ensure that any required resources are created, and configured for the effect.</remarks>
