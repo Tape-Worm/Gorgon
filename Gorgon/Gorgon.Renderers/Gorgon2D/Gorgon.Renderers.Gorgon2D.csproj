@@ -64,10 +64,7 @@
     <Compile Include="Cameras\Gorgon2DPerspectiveCamera.cs" />
     <Compile Include="Cameras\_Internal\CameraController.cs" />
     <Compile Include="Effects\Gorgon2D1BitEffect.cs" />
-    <Compile Include="Effects\Gorgon2DBloomEffect.cs" />
     <Compile Include="Effects\Gorgon2DBurnDodgeEffect.cs" />
-    <Compile Include="Effects\Gorgon2DChromaticAberrationEffect.cs" />
-    <Compile Include="Effects\Gorgon2DDeferredLightingEffect.cs" />
     <Compile Include="Effects\Gorgon2DDisplacementEffect.cs" />
     <Compile Include="Effects\Gorgon2DEffect.cs" />
     <Compile Include="Effects\Gorgon2DGaussBlurEffect.cs" />
@@ -75,16 +72,13 @@
     <Compile Include="Effects\Gorgon2DInvertEffect.cs" />
     <Compile Include="Effects\Gorgon2DOldFilmEffect.cs" />
     <Compile Include="Effects\Gorgon2DPosterizeEffect.cs" />
-    <Compile Include="Effects\Gorgon2DCompositor.cs" />
     <Compile Include="Effects\Gorgon2DSharpenEmbossEffect.cs" />
     <Compile Include="Effects\Gorgon2DSobelEdgeDetectEffect.cs" />
     <Compile Include="Effects\Gorgon2DWaveEffect.cs" />
-    <Compile Include="Effects\Gorgon2DLight.cs" />
-    <Compile Include="Effects\TestEffectDesign.cs" />
-    <Compile Include="Effects\_Interfaces\IGorgon2DTextureDrawEffect.cs" />
+    <Compile Include="Effects\_Interfaces\IGorgon2DEffectBuilders.cs" />
+    <Compile Include="Effects\_Internal\EffectBuilders.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Gorgon2D.cs" />
-    <Compile Include="Effects\Gorgon2DCompositionPass.cs" />
     <Compile Include="Renderables\Gorgon2DBatchStatePoolAllocator.cs" />
     <Compile Include="Renderables\GorgonPolySprite.cs" />
     <Compile Include="Renderables\GorgonPolySpriteBuilder.cs" />
@@ -121,6 +115,7 @@
     <Compile Include="Shaders\Gorgon2DShaderState.cs" />
     <Compile Include="Shaders\Gorgon2DShaderStateBuilder.cs" />
     <Compile Include="Services\_Interfaces\IGorgonTextureAtlasService.cs" />
+    <Compile Include="Shaders\Gorgon2DShaderStatePoolAllocator.cs" />
     <Compile Include="_Interfaces\IGorgon2DFluent.cs" />
     <Compile Include="_Internal\_Triangulator\CyclicalList.cs" />
     <Compile Include="_Internal\DrawCallFactory.cs" />

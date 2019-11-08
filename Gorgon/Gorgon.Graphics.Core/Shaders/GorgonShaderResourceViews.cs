@@ -195,14 +195,12 @@ namespace Gorgon.Graphics.Core
 
             if (index > 63)
             {
-                _indexMask2 &= ~((ulong)(1 << (index - 63)));
+                _indexMask2 &= ~((ulong)(1 << (index - 64)));
             }
             else
             {
                 _indexMask1 &= ~((ulong)(1 << index));
             }
-
-            _dirtyItems = (0, 0);
         }
         #endregion
 

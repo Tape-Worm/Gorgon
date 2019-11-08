@@ -27,6 +27,7 @@
 using System;
 using System.Threading;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Properties;
@@ -56,6 +57,8 @@ namespace Gorgon.Renderers
         private float _displacementStrength = 0.25f;
         // The batch state.
         private Gorgon2DBatchState _batchState;
+        // The original render target prior to rendering.
+        private GorgonRenderTargetView _originalTarget;
         #endregion
 
         #region Properties.
@@ -114,14 +117,8 @@ namespace Gorgon.Renderers
                                                                               });
             _displacementView = _displacementTarget.GetShaderResourceView();
 
-            // We store this in the 1st slot so we can read back from it when necessary.
-            _displacementState = PixelShaderBuilder
-                                  .ShaderResource(_displacementView, 1)
-                                  .Build();
-
-            _batchState = BatchStateBuilder
-                          .PixelShaderState(_displacementState)
-                          .Build();
+            _displacementState = null;
+            _batchState = null;
 
             _isUpdated = true;
         }
@@ -143,15 +140,6 @@ namespace Gorgon.Renderers
                                                                                         });
 
             _displacementShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderDisplacementDecoder");
-            _displacementState = PixelShaderBuilder
-                                  .Shader(_displacementShader)
-                                  .ConstantBuffer(_displacementSettingsBuffer, 1)
-                                  .Build();
-
-            _batchState = BatchStateBuilder
-                          .PixelShaderState(_displacementState)
-                          .BlendState(GorgonBlendState.NoBlending)
-                          .Build();
         }
 
         /// <summary>
@@ -209,45 +197,44 @@ namespace Gorgon.Renderers
         /// <seealso cref="PassContinuationState"/>
         protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, IGorgon2DCamera camera)
         {
-            if (_displacementTarget == null)
+            if (passIndex == 0)
             {
-                return PassContinuationState.Stop;
+                _displacementTarget.Clear(GorgonColor.BlackTransparent);
             }
 
-            switch (passIndex)
-            {
-                case 0:
-                    _displacementTarget.Clear(GorgonColor.BlackTransparent);
-                    Graphics.SetRenderTarget(_displacementTarget, Graphics.DepthStencilView);
-                    break;
-                case 1:
-                    Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
-                    break;
-            }
+            Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
 
             return PassContinuationState.Continue;
         }
 
         /// <summary>
-        /// Function called to render a single effect pass.
-        /// </summary>
-        /// <param name="passIndex">The index of the pass being rendered.</param>
-        /// <param name="renderMethod">The method used to render a scene for the effect.</param>
-        /// <param name="output">The render target that will receive the final render data.</param>
-        /// <remarks>
-        /// <para>
-        /// Applications must implement this in order to see any results from the effect.
-        /// </para>
-        /// </remarks>
-        protected override void OnRenderPass(int passIndex, Action<int, DX.Size2> renderMethod, GorgonRenderTargetView output) => renderMethod(passIndex, new DX.Size2(output.Width, output.Height));
-
-        /// <summary>
         /// Function called to build a new (or return an existing) 2D batch state.
         /// </summary>
         /// <param name="passIndex">The index of the current rendering pass.</param>
+        /// <param name="builders">The builder types that will manage the state of the effect.</param>
         /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
         /// <returns>The 2D batch state.</returns>
-        protected override Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged) => passIndex == 0 ? null : _batchState;
+        protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
+        {
+            if ((_batchState == null) || (statesChanged))
+            {
+                if (_displacementState == null)
+                {
+                    _displacementState = builders.PixelShaderBuilder.Clear()
+                                          .Shader(_displacementShader)
+                                          .ConstantBuffer(_displacementSettingsBuffer, 1)
+                                          .ShaderResource(_displacementView, 1)
+                                          .Build(PixelShaderAllocator);
+                }
+
+                _batchState = builders.BatchBuilder.Clear()
+                              .PixelShaderState(_displacementState)
+                              .BlendState(GorgonBlendState.NoBlending)
+                              .Build(BatchStateAllocator);
+            }
+
+            return passIndex == 0 ? null : _batchState;
+        }
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources
@@ -267,6 +254,43 @@ namespace Gorgon.Renderers
 
             displacementBuffer?.Dispose();
             shader?.Dispose();
+        }
+
+        /// <summary>
+        /// Function to begin rendering the effect.
+        /// </summary>
+        public void Begin()
+        {
+            _originalTarget = Graphics.RenderTargets[0];
+
+            if (_originalTarget == null)
+            {
+                return;
+            }            
+
+            BeginRender(_originalTarget, null, null, null, null);
+        }
+
+        public void RenderBackgroundPass(GorgonTexture2DView texture)
+        {
+            texture.ValidateObject(nameof(texture));
+
+            BeginPass(1, _originalTarget);
+            Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _originalTarget.Width, _originalTarget.Height), GorgonColor.White, texture, new DX.RectangleF(0, 0, 1, 1));
+            EndPass(1, _originalTarget);
+        }
+
+        public void BeginDisplacementPass() => BeginPass(0, _displacementTarget);
+
+        public void EndDisplacementPass() => EndPass(0, _displacementTarget);
+
+        /// <summary>
+        /// Function to end the effect rendering.
+        /// </summary>
+        public void End()
+        {
+            EndRender(_originalTarget);
+            _originalTarget = null;
         }
         #endregion
 

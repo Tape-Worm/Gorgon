@@ -418,6 +418,24 @@ namespace Gorgon.Renderers.Properties {
         // Comment stripped.
         // Comment stripped.
         // Comment stripped.
+        internal static string GOR2D_ERR_EFFECT_BEGIN_RENDER_CALLED {
+            get {
+                return ResourceManager.GetString("GOR2D_ERR_EFFECT_BEGIN_RENDER_CALLED", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        internal static string GOR2D_ERR_EFFECT_BEGIN_RENDER_NOT_CALLED {
+            get {
+                return ResourceManager.GetString("GOR2D_ERR_EFFECT_BEGIN_RENDER_NOT_CALLED", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
         internal static string GOR2D_ERR_EFFECT_BLUR_KERNEL_SIZE_INVALID {
             get {
                 return ResourceManager.GetString("GOR2D_ERR_EFFECT_BLUR_KERNEL_SIZE_INVALID", resourceCulture);
@@ -439,6 +457,15 @@ namespace Gorgon.Renderers.Properties {
         internal static string GOR2D_ERR_EFFECT_DISPLACEMENT_UNSUPPORTED_FORMAT {
             get {
                 return ResourceManager.GetString("GOR2D_ERR_EFFECT_DISPLACEMENT_UNSUPPORTED_FORMAT", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        internal static string GOR2D_ERR_EFFECT_PASS_RENDER_CALLED {
+            get {
+                return ResourceManager.GetString("GOR2D_ERR_EFFECT_PASS_RENDER_CALLED", resourceCulture);
             }
         }
         

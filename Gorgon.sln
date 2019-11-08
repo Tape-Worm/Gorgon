@@ -169,6 +169,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaceScene", "Examples\Gorg
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentInterface", "Examples\Gorgon.Renderers.2D\FluentInterface\FluentInterface.csproj", "{3AC09A65-F30F-4F37-ADCF-CFF7A858F5FB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestNewEffects", "Test\TestNewEffects\TestNewEffects.csproj", "{8B067948-ED24-4524-93B8-EB2301AE29FC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -443,6 +445,10 @@ Global
 		{3AC09A65-F30F-4F37-ADCF-CFF7A858F5FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3AC09A65-F30F-4F37-ADCF-CFF7A858F5FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3AC09A65-F30F-4F37-ADCF-CFF7A858F5FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B067948-ED24-4524-93B8-EB2301AE29FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B067948-ED24-4524-93B8-EB2301AE29FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B067948-ED24-4524-93B8-EB2301AE29FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B067948-ED24-4524-93B8-EB2301AE29FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

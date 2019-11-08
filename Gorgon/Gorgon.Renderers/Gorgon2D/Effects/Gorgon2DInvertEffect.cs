@@ -75,13 +75,24 @@ namespace Gorgon.Renderers
         /// Function called to build a new (or return an existing) 2D batch state.
         /// </summary>
         /// <param name="passIndex">The index of the current rendering pass.</param>
+        /// <param name="builders">The builder types that will manage the state of the effect.</param>
         /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
         /// <returns>The 2D batch state.</returns>
-        protected override Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged)
+        protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
         {
-            if (statesChanged)
+            if ((_batchState == null) || (statesChanged))
             {
-                _batchState = BatchStateBuilder.Build();
+                if (_invertState == null)
+                {
+                    _invertState = builders.PixelShaderBuilder
+                              .ConstantBuffer(_invertBuffer, 1)
+                              .Shader(_invertShader)
+                              .Build();
+                }
+
+                _batchState = builders.BatchBuilder
+                              .PixelShaderState(_invertState)
+                              .Build(BatchStateAllocator);
             }
 
             return _batchState;
@@ -97,16 +108,7 @@ namespace Gorgon.Renderers
         protected override void OnInitialize()
         {
             _invertBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _invertAlpha, "Gorgon2DInvertEffect Constant Buffer");
-
             _invertShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderInvert");
-            _invertState = PixelShaderBuilder
-                      .ConstantBuffer(_invertBuffer, 1)
-                      .Shader(_invertShader)
-                      .Build();
-
-            _batchState = BatchStateBuilder
-                          .PixelShaderState(_invertState)
-                          .Build();
         }
 
         /// <summary>
@@ -130,19 +132,6 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
-        /// Function called to render a single effect pass.
-        /// </summary>
-        /// <param name="passIndex">The index of the pass being rendered.</param>
-        /// <param name="renderMethod">The method used to render a scene for the effect.</param>
-        /// <param name="output">The render target that will receive the final render data.</param>
-        /// <remarks>
-        /// <para>
-        /// Applications must implement this in order to see any results from the effect.
-        /// </para>
-        /// </remarks>
-        protected override void OnRenderPass(int passIndex, Action<int, DX.Size2> renderMethod, GorgonRenderTargetView output) => renderMethod(passIndex, new DX.Size2(output.Width, output.Height));
-
-        /// <summary>
         /// Releases unmanaged and - optionally - managed resources
         /// </summary>
         /// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
@@ -153,6 +142,42 @@ namespace Gorgon.Renderers
 
             buffer?.Dispose();
             pixelShader?.Dispose();
+        }
+
+        /// <summary>
+        /// Function to begin rendering the effect.
+        /// </summary>
+        /// <param name="blendState">[Optional] A user defined blend state to apply when rendering.</param>
+        /// <param name="depthStencilState">[Optional] A user defined depth/stencil state to apply when rendering.</param>
+        /// <param name="rasterState">[Optional] A user defined rasterizer state to apply when rendering.</param>
+        /// <param name="camera">[Optional] The camera to use when rendering.</param>
+        public void Begin(GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, IGorgon2DCamera camera = null)
+        {
+            GorgonRenderTargetView target = Graphics.RenderTargets[0];
+
+            if (target == null)
+            {
+                return;
+            }
+
+            BeginRender(target, blendState, depthStencilState, rasterState, camera);
+            BeginPass(0, target);
+        }
+
+        /// <summary>
+        /// Function to end the effect rendering.
+        /// </summary>
+        public void End()
+        {
+            GorgonRenderTargetView target = Graphics.RenderTargets[0];
+
+            if (target == null)
+            {
+                return;
+            }
+
+            EndPass(0, target);
+            EndRender(target);
         }
         #endregion
 

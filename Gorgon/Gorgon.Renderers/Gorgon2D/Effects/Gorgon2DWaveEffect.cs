@@ -232,14 +232,6 @@ namespace Gorgon.Renderers
 
             Macros.Add(new GorgonShaderMacro("WAVE_EFFECT"));
             _waveShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderWaveEffect");
-            _waveState = PixelShaderBuilder
-                          .Shader(_waveShader)
-                          .ConstantBuffer(_waveBuffer, 1)
-                          .Build();
-
-            _batchState = BatchStateBuilder
-                          .PixelShaderState(_waveState)
-                          .Build();
         }
 
         /// <summary>
@@ -266,29 +258,6 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
-        /// Function called prior to rendering a pass.
-        /// </summary>
-        /// <param name="passIndex">The index of the pass to render.</param>
-        /// <param name="output">The final render target that will receive the rendering from the effect.</param>
-        /// <param name="camera">The currently active camera.</param>
-        /// <returns>A <see cref="PassContinuationState"/> to instruct the effect on how to proceed.</returns>
-        /// <remarks>
-        /// <para>
-        /// Applications can use this to set up per-pass states and other configuration settings prior to executing a single render pass.
-        /// </para>
-        /// </remarks>
-        /// <seealso cref="PassContinuationState"/>
-        protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, IGorgon2DCamera camera)
-        {
-            if (Graphics.RenderTargets[0] != output)
-            {
-                Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
-            }
-
-            return PassContinuationState.Continue;
-        }
-
-        /// <summary>
         /// Releases unmanaged and - optionally - managed resources
         /// </summary>
         /// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
@@ -310,30 +279,64 @@ namespace Gorgon.Renderers
         /// Function called to build a new (or return an existing) 2D batch state.
         /// </summary>
         /// <param name="passIndex">The index of the current rendering pass.</param>
+        /// <param name="builders">The builder types that will manage the state of the effect.</param>
         /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
         /// <returns>The 2D batch state.</returns>
-        protected override Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged)
+        protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
         {
-            if (statesChanged)
+            if ((_batchState == null) || (statesChanged))
             {
-                _batchState = BatchStateBuilder.Build();
+                if (_waveState == null)
+                {
+                    _waveState = builders.PixelShaderBuilder
+                                  .Shader(_waveShader)
+                                  .ConstantBuffer(_waveBuffer, 1)
+                                  .Build();
+                }
+
+                _batchState = builders.BatchBuilder
+                              .PixelShaderState(_waveState)
+                              .Build();
             }
 
             return _batchState;
         }
 
         /// <summary>
-        /// Function called to render a single effect pass.
+        /// Function to begin rendering the effect.
         /// </summary>
-        /// <param name="passIndex">The index of the pass being rendered.</param>
-        /// <param name="renderMethod">The method used to render a scene for the effect.</param>
-        /// <param name="output">The render target that will receive the final render data.</param>
-        /// <remarks>
-        /// <para>
-        /// Applications must implement this in order to see any results from the effect.
-        /// </para>
-        /// </remarks>
-        protected override void OnRenderPass(int passIndex, Action<int, DX.Size2> renderMethod, GorgonRenderTargetView output) => renderMethod(passIndex, new DX.Size2(output.Width, output.Height));
+        /// <param name="blendState">[Optional] A user defined blend state to apply when rendering.</param>
+        /// <param name="depthStencilState">[Optional] A user defined depth/stencil state to apply when rendering.</param>
+        /// <param name="rasterState">[Optional] A user defined rasterizer state to apply when rendering.</param>
+        /// <param name="camera">[Optional] The camera to use when rendering.</param>
+        public void Begin(GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, IGorgon2DCamera camera = null)
+        {
+            GorgonRenderTargetView target = Graphics.RenderTargets[0];
+
+            if (target == null)
+            {
+                return;
+            }
+
+            BeginRender(target, blendState, depthStencilState, rasterState, camera);
+            BeginPass(0, target);
+        }
+
+        /// <summary>
+        /// Function to end the effect rendering.
+        /// </summary>
+        public void End()
+        {
+            GorgonRenderTargetView target = Graphics.RenderTargets[0];
+
+            if (target == null)
+            {
+                return;
+            }
+
+            EndPass(0, target);
+            EndRender(target);
+        }
         #endregion
 
         #region Constructor/Destructor.

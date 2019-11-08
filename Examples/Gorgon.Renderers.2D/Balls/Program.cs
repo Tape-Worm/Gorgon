@@ -307,14 +307,7 @@ namespace Gorgon.Examples
             {
                 // This will blur the ball render target, and copy the results back into the ball render target texture.
                 // This way we can recycle the texture to blur even more on the next iteration.
-                _blur.Render((_, outputSize) =>
-                                 // The output size width and height must be used here so the ball render target is 
-                                 // shrunk down to the size of the blur internal render targets.
-                                 _2D.DrawFilledRectangle(new DX.RectangleF(0, 0, outputSize.Width, outputSize.Height),
-                                                         GorgonColor.White,
-                                                         _ballTargetView,
-                                                         new DX.RectangleF(0, 0, 1, 1)),
-                             _ballTarget);
+                _blur.Render(_ballTargetView, _ballTarget);
             }
 
             // Once we have the target blurred to our satisfaction, we need to send that target to our screen target.
@@ -488,6 +481,7 @@ namespace Gorgon.Examples
                     BlurRenderTargetsSize = new DX.Size2(512, 512),
                     BlurRadius = 0
                 };
+                _blur.Precache();
 
                 _mainScreen.BeforeSwapChainResized += (sender, args) =>
                                                       {

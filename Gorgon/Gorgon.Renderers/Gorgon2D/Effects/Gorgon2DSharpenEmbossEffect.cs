@@ -55,9 +55,29 @@ namespace Gorgon.Renderers
         private float _amount = 0.5f;
         // Flag to indicate that the parameters were updated.
         private bool _isUpdated = true;
+        // The texture size used to calculate the emboss/sharpen edges.
+        private DX.Size2F _textureSize = new DX.Size2F(512.0f, 512.0f);
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to set or return the offset of the shapren/embossing edges.
+        /// </summary>
+        public DX.Size2F TextureSize
+        {
+            get => _textureSize;
+            set
+            {
+                if (_textureSize == value)
+                {
+                    return;
+                }
+
+                _textureSize = value;
+                _isUpdated = true;
+            }
+        }
+
         /// <summary>
         /// Property to set or return whether to use embossing instead of sharpening.
         /// </summary>
@@ -103,35 +123,43 @@ namespace Gorgon.Renderers
             });
             _sharpenShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderSharpen");
             _embossShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderEmboss");
-
-            _sharpenState = PixelShaderBuilder
-                             .ConstantBuffer(_sharpenEmbossBuffer, 1)
-                             .Shader(_sharpenShader)
-                             .Build();
-
-            _embossState = PixelShaderBuilder
-                            .Shader(_embossShader)
-                            .Build();
-
         }
 
         /// <summary>
         /// Function called to build a new (or return an existing) 2D batch state.
         /// </summary>
         /// <param name="passIndex">The index of the current rendering pass.</param>
+        /// <param name="builders">The builder types that will manage the state of the effect.</param>
         /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
         /// <returns>The 2D batch state.</returns>
-        protected override Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged)
+        protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
         {
             // ReSharper disable once InvertIf
-            if (statesChanged)
+            if ((_sharpenBatchState == null) || (_embossBatchState == null) || (statesChanged))
             {
-                _sharpenBatchState = BatchStateBuilder
-                                     .PixelShaderState(_sharpenState)
+                if (_sharpenState == null)
+                {
+                    _sharpenState = builders.PixelShaderBuilder
+                                     .ConstantBuffer(_sharpenEmbossBuffer, 1)
+                                     .Shader(_sharpenShader)
                                      .Build();
-                _embossBatchState = BatchStateBuilder
-                                    .PixelShaderState(_embossState)
+                }
+
+                if (_embossState == null)
+                {
+                    _embossState = builders.PixelShaderBuilder
+                                    .ConstantBuffer(_sharpenEmbossBuffer, 1)
+                                    .Shader(_embossShader)
                                     .Build();
+                }
+
+
+                _sharpenBatchState = builders.BatchBuilder
+                                     .PixelShaderState(_sharpenState)
+                                     .Build(BatchStateAllocator);
+                _embossBatchState = builders.BatchBuilder
+                                    .PixelShaderState(_embossState)
+                                    .Build(BatchStateAllocator);
             }
 
             return UseEmbossing ? _embossBatchState : _sharpenBatchState;
@@ -151,35 +179,16 @@ namespace Gorgon.Renderers
         /// </remarks>
         protected override void OnBeforeRender(GorgonRenderTargetView output, IGorgon2DCamera camera, bool sizeChanged)
         {
-            if (Graphics.RenderTargets[0] != output)
-            {
-                Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
-                _isUpdated = true;
-            }
-
-            if ((!_isUpdated) && (!sizeChanged))
+            if (!_isUpdated)
             {
                 return;
             }
 
-            var settings = new DX.Vector3(1.0f / output.Width, 1.0f / output.Height, _amount);
+            var settings = new DX.Vector3(1.0f / _textureSize.Width, 1.0f / _textureSize.Height, _amount);
 
             _sharpenEmbossBuffer.Buffer.SetData(ref settings);
             _isUpdated = false;
         }
-
-        /// <summary>
-        /// Function called to render a single effect pass.
-        /// </summary>
-        /// <param name="passIndex">The index of the pass being rendered.</param>
-        /// <param name="renderMethod">The method used to render a scene for the effect.</param>
-        /// <param name="output">The render target that will receive the final render data.</param>
-        /// <remarks>
-        /// <para>
-        /// Applications must implement this in order to see any results from the effect.
-        /// </para>
-        /// </remarks>
-        protected override void OnRenderPass(int passIndex, Action<int, DX.Size2> renderMethod, GorgonRenderTargetView output) => renderMethod(passIndex, new DX.Size2(output.Width, output.Height));
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources
@@ -194,6 +203,42 @@ namespace Gorgon.Renderers
             buffer?.Dispose();
             shader1?.Dispose();
             shader2?.Dispose();
+        }
+
+        /// <summary>
+        /// Function to begin rendering the effect.
+        /// </summary>
+        /// <param name="blendState">[Optional] A user defined blend state to apply when rendering.</param>
+        /// <param name="depthStencilState">[Optional] A user defined depth/stencil state to apply when rendering.</param>
+        /// <param name="rasterState">[Optional] A user defined rasterizer state to apply when rendering.</param>
+        /// <param name="camera">[Optional] The camera to use when rendering.</param>
+        public void Begin(GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, IGorgon2DCamera camera = null)
+        {
+            GorgonRenderTargetView target = Graphics.RenderTargets[0];
+
+            if (target == null)
+            {
+                return;
+            }
+
+            BeginRender(target, blendState, depthStencilState, rasterState, camera);
+            BeginPass(0, target);
+        }
+
+        /// <summary>
+        /// Function to end the effect rendering.
+        /// </summary>
+        public void End()
+        {
+            GorgonRenderTargetView target = Graphics.RenderTargets[0];
+
+            if (target == null)
+            {
+                return;
+            }
+
+            EndPass(0, target);
+            EndRender(target);
         }
         #endregion
 
