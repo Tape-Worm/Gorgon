@@ -94,7 +94,7 @@ namespace Gorgon.Graphics.Core
         /// Function to rent a render target from the factory.
         /// </summary>
         /// <param name="targetInfo">The information about the render target to retrieve.</param>
-        /// <param name="name">A user defined name for a new render target.</param>
+        /// <param name="name">A unique user defined name for a new render target.</param>
         /// <param name="clearOnRetrieve">[Optional] <b>true</b> to clear the render target when retrieved, or <b>false</b> to leave the contents as-is.</param>
         /// <returns>The requested render target.</returns>
         /// <remarks>
