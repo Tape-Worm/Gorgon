@@ -201,8 +201,6 @@ namespace Gorgon.Graphics.Core
             {
                 _indexMask1 &= ~((ulong)(1 << index));
             }
-
-            _dirtyItems = (0, 0);
         }
         #endregion
 
