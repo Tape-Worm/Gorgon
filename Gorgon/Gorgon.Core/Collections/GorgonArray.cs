@@ -245,7 +245,6 @@ namespace Gorgon.Collections
             T oldValue = BackingArray[index];
             BackingArray[index] = default;
             _dirtyIndices &= ~(1 << index);
-            _dirtyItems = (0, 0);
 
             OnItemReset(index, oldValue);
         }

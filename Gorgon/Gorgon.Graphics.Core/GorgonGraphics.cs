@@ -270,6 +270,9 @@ namespace Gorgon.Graphics.Core
 
         // A factory for creating temporary render targets.
         private RenderTargetFactory _rtvFactory;
+
+        // A list of potential hazard indices.
+        private readonly List<int> _potentialHazards = new List<int>(128);
         #endregion
 
         #region Properties.
@@ -1164,6 +1167,25 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
+        /// Function to retrieve the list of potential resource hazard indices.
+        /// </summary>
+        /// <typeparam name="T">The type of resource.</typeparam>
+        /// <param name="list">The list of resources to evaluate.</param>
+        private void GetPotentialHazards<T>(IGorgonReadOnlyArray<T> list)
+            where T : IEquatable<T>
+        {
+            _potentialHazards.Clear();
+
+            for (int i = 0; i < list.Count; ++i)
+            {
+                if (list[i] != null)
+                {
+                    _potentialHazards.Add(i);
+                }
+            }
+        }
+
+        /// <summary>
         /// Function to fix the render target view resource sharing hazards prior to setting the rtv.
         /// </summary>
         /// <param name="rtViews">The render target views being assigned.</param>
@@ -1233,11 +1255,11 @@ namespace Gorgon.Graphics.Core
 
                     if (lastSrvs != null)
                     {
-                        (int srvStart, int srvCount) = lastSrvs.GetDirtyItems(true);
+                        GetPotentialHazards(lastSrvs);
 
-                        for (int j = srvStart; j < srvStart + srvCount; ++j)
+                        for (int j = 0; j < _potentialHazards.Count; ++j)
                         {
-                            GorgonGraphicsResource resource = lastSrvs[j]?.Resource;
+                            GorgonGraphicsResource resource = lastSrvs[_potentialHazards[j]].Resource;
 
                             // Buffers and 1D textures cannot be render targets (imposed by Gorgon), so no need to check.
                             if ((resource == null) || (resource.ResourceType == GraphicsResourceType.Buffer) || (resource.ResourceType == GraphicsResourceType.Texture1D))
@@ -1263,11 +1285,11 @@ namespace Gorgon.Graphics.Core
                         continue;
                     }
 
-                    (int uavStart, int uavCount) = lastUavs.GetDirtyItems(true);
+                    GetPotentialHazards(lastUavs);                   
 
-                    for (int j = uavStart; j < uavStart + uavCount; ++j)
-                    {
-                        GorgonGraphicsResource resource = lastUavs[j].ReadWriteView?.Resource;
+                    for (int j = 0; j < _potentialHazards.Count; ++j)
+                    {                        
+                        GorgonGraphicsResource resource = lastUavs[_potentialHazards[j]].ReadWriteView?.Resource;
 
                         // If we have a resource, and it's attached to either the render target or depth/stencil being bound, 
                         // then reset it on the shader stage to avoid a hazard.
@@ -1390,11 +1412,11 @@ namespace Gorgon.Graphics.Core
                         continue;
                     }
 
-                    (int uavStart, int uavCount) = uavs.GetDirtyItems();
+                    GetPotentialHazards(uavs);
 
-                    for (int j = uavStart; j < uavStart + uavCount; ++j)
+                    for (int j = 0; j < _potentialHazards.Count; ++j)
                     {
-                        GorgonGraphicsResource uav = uavs[j].ReadWriteView?.Resource;
+                        GorgonGraphicsResource uav = uavs[_potentialHazards[j]].ReadWriteView?.Resource;
 
                         if ((uav == null) || (uav != srv))
                         {
