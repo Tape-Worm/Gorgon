@@ -79,13 +79,17 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="dirtyIndex">The index that is considered dirty.</param>
         /// <param name="value">The dirty value.</param>
-        protected override void OnDirtyItemAdded(int dirtyIndex, GorgonVertexBufferBinding value) => Native[dirtyIndex] = value.ToVertexBufferBinding();
-
-        /// <summary>
-        /// Function called when a dirty item was not found, and is removed from the dirty list.
-        /// </summary>
-        /// <param name="dirtyIndex">The index that is considered dirty.</param>
-        protected override void OnDirtyItemCleaned(int dirtyIndex) => Native[dirtyIndex] = default;
+        protected override void OnAssignDirtyItem(int dirtyIndex, GorgonVertexBufferBinding value)
+        {
+            if (value.Equals(GorgonVertexBufferBinding.Empty))
+            {
+                Native[dirtyIndex] = default;
+            }
+            else
+            {
+                Native[dirtyIndex] = value.ToVertexBufferBinding();
+            }
+        }
 
         /// <summary>
         /// Function called when the array is cleared.

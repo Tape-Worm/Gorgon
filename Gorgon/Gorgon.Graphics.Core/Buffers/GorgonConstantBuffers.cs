@@ -83,22 +83,11 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="dirtyIndex">The index that is considered dirty.</param>
         /// <param name="value">The dirty value.</param>
-        protected override void OnDirtyItemAdded(int dirtyIndex, GorgonConstantBufferView value)
+        protected override void OnAssignDirtyItem(int dirtyIndex, GorgonConstantBufferView value)
         {
             Native[dirtyIndex] = value?.Buffer.Native;
             ViewStart[dirtyIndex] = value?.StartElement * 16 ?? 0;
             ViewCount[dirtyIndex] = value?.ElementCount * 16 ?? 0;
-        }
-
-        /// <summary>
-        /// Function called when a dirty item was not found, and is removed from the dirty list.
-        /// </summary>
-        /// <param name="dirtyIndex">The index that is considered dirty.</param>
-        protected override void OnDirtyItemCleaned(int dirtyIndex)
-        {
-            Native[dirtyIndex] = null;
-            ViewStart[dirtyIndex] = 0;
-            ViewCount[dirtyIndex] = 0;
         }
 
         /// <summary>

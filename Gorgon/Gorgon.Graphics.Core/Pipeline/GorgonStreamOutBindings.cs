@@ -66,13 +66,17 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="dirtyIndex">The index that is considered dirty.</param>
         /// <param name="value">The dirty value.</param>
-        protected override void OnDirtyItemAdded(int dirtyIndex, GorgonStreamOutBinding value) => Native[dirtyIndex] = new D3D11.StreamOutputBufferBinding(value.Buffer?.Native, value.Offset);
+        protected override void OnAssignDirtyItem(int dirtyIndex, GorgonStreamOutBinding value)
+        {
+            D3D11.StreamOutputBufferBinding binding = default;
 
-        /// <summary>
-        /// Function called when a dirty item was not found, and is removed from the dirty list.
-        /// </summary>
-        /// <param name="dirtyIndex">The index that is considered dirty.</param>
-        protected override void OnDirtyItemCleaned(int dirtyIndex) => Native[dirtyIndex] = default;
+            if (value.Buffer != null)
+            {
+                binding = new D3D11.StreamOutputBufferBinding(value.Buffer?.Native, value.Offset);
+            }
+
+            Native[dirtyIndex] = binding;
+        }
 
         /// <summary>
         /// Function called when the array is cleared.
