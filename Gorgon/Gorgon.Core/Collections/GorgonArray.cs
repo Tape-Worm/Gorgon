@@ -106,19 +106,11 @@ namespace Gorgon.Collections
 
         #region Methods.
         /// <summary>
-        /// Function called when a dirty item is found and added.
+        /// Function called when a dirty item is assigned.
         /// </summary>
         /// <param name="dirtyIndex">The index that is considered dirty.</param>
         /// <param name="value">The dirty value.</param>
-	    protected virtual void OnDirtyItemAdded(int dirtyIndex, T value)
-        {
-        }
-
-        /// <summary>
-        /// Function called when a dirty item was not found, and is removed from the dirty list.
-        /// </summary>
-        /// <param name="dirtyIndex">The index that is considered dirty.</param>
-	    protected virtual void OnDirtyItemCleaned(int dirtyIndex)
+	    protected virtual void OnAssignDirtyItem(int dirtyIndex, T value)
         {
         }
 
@@ -193,7 +185,15 @@ namespace Gorgon.Collections
                 {
                     if (startSlot > -1)
                     {
-                        OnDirtyItemCleaned(dirtyIndex++);
+                        // We need to re-assign dirty items regardless of whether the mask states that it's dirty or 
+                        // not. The reason being that in a situation where the list has multiple items that are the same 
+                        // but some items in between are not, the native slots for the in between items will not be updated 
+                        // correctly. This can lead to the native array being out of sync.
+                        //
+                        // For example, if the list has slots 1, 2, and 3 assigned, but slot 2 is not actually dirty (its 
+                        // value was the same on assignment), it can lead to slots 1 and 3 being updated in the native list, 
+                        // but slot 2 would not be updated, and this can lead to the wrong value being used in slot 2.
+                        OnAssignDirtyItem(dirtyIndex++, BackingArray[i]);
 
                         // Our slots must not be contigious. So, increment the count. If we don't we'll end up 
                         // with an incorrect count for our range. For example, if slots 1,2 and 6 were changed, 
@@ -212,7 +212,7 @@ namespace Gorgon.Collections
                     startSlot = i;
                 }
 
-                OnDirtyItemAdded(dirtyIndex++, BackingArray[i]);
+                OnAssignDirtyItem(dirtyIndex++, BackingArray[i]);
 
                 ++count;
 

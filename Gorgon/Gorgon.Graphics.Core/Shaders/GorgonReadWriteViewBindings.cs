@@ -117,20 +117,10 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="dirtyIndex">The index that is considered dirty.</param>
         /// <param name="value">The dirty value.</param>
-        protected override void OnDirtyItemAdded(int dirtyIndex, GorgonReadWriteViewBinding value)
+        protected override void OnAssignDirtyItem(int dirtyIndex, GorgonReadWriteViewBinding value)
         {
             Native[dirtyIndex] = value.ReadWriteView?.Native;
-            Counts[dirtyIndex] = value.InitialCount;
-        }
-
-        /// <summary>
-        /// Function called when a dirty item was not found, and is removed from the dirty list.
-        /// </summary>
-        /// <param name="dirtyIndex">The index that is considered dirty.</param>
-        protected override void OnDirtyItemCleaned(int dirtyIndex)
-        {
-            Native[dirtyIndex] = null;
-            Counts[dirtyIndex] = 0;
+            Counts[dirtyIndex] = value.ReadWriteView == null ? 0 : value.InitialCount;
         }
 
         /// <summary>
