@@ -87,14 +87,7 @@ namespace Gorgon.Examples
 
                 for (int i = 0; i < 8; ++i)
                 {
-                    _gaussBlur.Render((pass, size) =>
-                                      {
-                                          _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, size.Width, size.Height),
-                                                                        GorgonColor.White,
-                                                                        resultTexture,
-                                                                        new DX.RectangleF(0, 0, 1, 1));
-                                      },
-                                      rtv);
+                    _gaussBlur.Render(resultTexture, rtv);
                 }
 
                 // Reset our colors.

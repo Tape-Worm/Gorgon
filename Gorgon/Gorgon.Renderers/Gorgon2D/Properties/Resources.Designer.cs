@@ -139,6 +139,35 @@ namespace Gorgon.Renderers.Properties {
         // Comment stripped.
         // Comment stripped.
         // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        internal static string GBuffer {
+            get {
+                return ResourceManager.GetString("GBuffer", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
         internal static string GOR2D_EFFECT_1BIT {
             get {
                 return ResourceManager.GetString("GOR2D_EFFECT_1BIT", resourceCulture);
@@ -265,6 +294,24 @@ namespace Gorgon.Renderers.Properties {
         // Comment stripped.
         // Comment stripped.
         // Comment stripped.
+        internal static string GOR2D_EFFECT_GBUFFER {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_GBUFFER", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        internal static string GOR2D_EFFECT_GBUFFER_DESC {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_GBUFFER_DESC", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
         internal static string GOR2D_EFFECT_GRAYSCALE {
             get {
                 return ResourceManager.GetString("GOR2D_EFFECT_GRAYSCALE", resourceCulture);
@@ -295,6 +342,24 @@ namespace Gorgon.Renderers.Properties {
         internal static string GOR2D_EFFECT_INVERT_DESC {
             get {
                 return ResourceManager.GetString("GOR2D_EFFECT_INVERT_DESC", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        internal static string GOR2D_EFFECT_LIGHTING {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_LIGHTING", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        internal static string GOR2D_EFFECT_LIGHTING_DESC {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_LIGHTING_DESC", resourceCulture);
             }
         }
         
@@ -541,6 +606,11 @@ namespace Gorgon.Renderers.Properties {
             }
         }
         
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
         // Comment stripped.
         // Comment stripped.
         // Comment stripped.

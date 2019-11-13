@@ -46,7 +46,7 @@ namespace Gorgon.Renderers
     /// </para>
     /// </remarks>
     public class Gorgon2DOldFilmEffect
-        : Gorgon2DEffect
+        : Gorgon2DEffect, IGorgon2DCompositorEffect
     {
         #region Constants.
         /// <summary>
@@ -368,6 +368,15 @@ namespace Gorgon.Renderers
             get;
             set;
         }
+
+        /// <summary>
+        /// Property to set or return the offset that can be used to simulate shaking.
+        /// </summary>
+        public DX.Vector2 ShakeOffset
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Methods.
@@ -450,7 +459,6 @@ namespace Gorgon.Renderers
         /// Function called prior to rendering.
         /// </summary>
         /// <param name="output">The final render target that will receive the rendering from the effect.</param>
-        /// <param name="camera">The currently active camera.</param>
         /// <param name="sizeChanged"><b>true</b> if the output size changed since the last render, or <b>false</b> if it's the same.</param>
         /// <remarks>
         /// <para>
@@ -458,7 +466,7 @@ namespace Gorgon.Renderers
         /// targets (if applicable).
         /// </para>
         /// </remarks>
-        protected override void OnBeforeRender(GorgonRenderTargetView output, IGorgon2DCamera camera, bool sizeChanged)
+        protected override void OnBeforeRender(GorgonRenderTargetView output, bool sizeChanged)
         {
             if (Graphics.RenderTargets[0] != output)
             {
@@ -660,14 +668,14 @@ namespace Gorgon.Renderers
         /// </note>
         /// </para>
         /// </remarks>
-        public void Render(GorgonTexture2DView texture, GorgonRenderTarget2DView output)
+        public void Render(GorgonTexture2DView texture, GorgonRenderTargetView output)
         {
             BeginRender(output);
 
             switch (BeginPass(0, output))
             {
                 case PassContinuationState.Continue:
-                    Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height), GorgonColor.White, texture, new DX.RectangleF(0, 0, 1, 1));                    
+                    Renderer.DrawFilledRectangle(new DX.RectangleF(ShakeOffset.X, ShakeOffset.Y, output.Width, output.Height), GorgonColor.White, texture, new DX.RectangleF(0, 0, 1, 1));                    
                     break;
                 default:
                     EndRender(null);

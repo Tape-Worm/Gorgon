@@ -51,10 +51,10 @@ namespace Gorgon.Renderers
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This light type is for use with the <see cref="Gorgon2DDeferredLightingEffect"/>.
+    /// This light type is for use with the <see cref="Gorgon2DLightingEffect"/>.
     /// </para>
     /// </remarks>
-    /// <seealso cref="Gorgon2DDeferredLightingEffect"/>
+    /// <seealso cref="Gorgon2DLightingEffect"/>
 	public class Gorgon2DLight
         : IEquatable<Gorgon2DLight>
     {

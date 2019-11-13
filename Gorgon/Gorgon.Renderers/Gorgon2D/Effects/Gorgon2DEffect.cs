@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Properties;
@@ -59,6 +58,28 @@ namespace Gorgon.Renderers
     /// <summary>
     /// A base class used to implement special effects for 2D rendering.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This class allows developers to build special effects utilizing shaders and various states by wrapping them in a custom object to simplify rendering with the aforementioned shaders and states. 
+    /// </para>
+    /// <para>
+    /// Effects can operate in any way the developer deems appropriate as long as the internal code executes in the correct order. In Gorgon, the predefined effects such as Guassian Blur operate in 
+    /// one of 3 modes: Immediate, Render texture, or both. The immediate mode works in the same way as the <see cref="Gorgon2D"/> renderer, by calling a Begin and End method and rendering the various 
+    /// graphics types in between the Begin/End calls. The Render Texture mode will take a <see cref="GorgonTexture2DView"/> (often the output of a render target) and render it into a 
+    /// <see cref="GorgonRenderTargetView"/>. This mode would usually be used in post processing.
+    /// </para>
+    /// <para>
+    /// Rendering in an effect is usually done in 1 or more passes. With each pass usually building on the result of the previous pass. Developers are free to expose each pass to the end user for 
+    /// custom rendering at each stage, wrap up the passes into a single method, or whatever they may deem appropriate. 
+    /// </para>
+    /// <para>
+    /// To create a custom effect, applications should inherit this class and override the appropriate methods to set up state, and perform rendering pass(es). Gorgon has multiple predefined effects 
+    /// that developers can examine for reference.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="Gorgon2D"/>
+    /// <seealso cref="GorgonTexture2DView"/>
+    /// <seealso cref="GorgonRenderTargetView"/>
     public abstract class Gorgon2DEffect
         : GorgonNamedObject, IDisposable, IGorgonGraphicsObject
     {
@@ -77,28 +98,34 @@ namespace Gorgon.Renderers
         private static string _currentEffect;
         // Flag to indicate that a pass render has started.
         private bool _isRenderingPass;
+        // The state used to override the default blend state for the effect.
+        private GorgonBlendState _blendStateOverride;
+        // The state used to override the default depth/stencil state for the effect.
+        private GorgonDepthStencilState _depthStencilStateOverride;
+        // The state used to override the default raster state for the effect.
+        private GorgonRasterState _rasterStateOverride;
         #endregion
 
         #region Properties.
         /// <summary>
         /// Property to return the allocator to use with batch states.
         /// </summary>
+        /// <remarks>
+        /// Allocators are used to reuse objects to limit garbage collection pressure. These should be used in cases where there's states are being updated every frame, or even multiple times 
+        /// per frame.
+        /// </remarks>
         protected Gorgon2DBatchStatePoolAllocator BatchStateAllocator
         {
             get;
         } = new Gorgon2DBatchStatePoolAllocator(64);
 
         /// <summary>
-        /// Property to return a texture to pass to shaders when no texture is desired.
-        /// </summary>
-        /// <remarks>
-        /// This will keep D3D from complaining about a missing texture.
-        /// </remarks>
-        protected GorgonTexture2DView EmptyTexture => Renderer.EmptyBlackTexture;
-
-        /// <summary>
         /// Property to return the allocator to use with pixel shader states.
         /// </summary>
+        /// <remarks>
+        /// Allocators are used to reuse objects to limit garbage collection pressure. These should be used in cases where there's states are being updated every frame, or even multiple times 
+        /// per frame.
+        /// </remarks>
         protected Gorgon2DShaderStatePoolAllocator<GorgonPixelShader> PixelShaderAllocator
         {
             get;
@@ -107,6 +134,10 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to return the allocator to use with vertex shader states.
         /// </summary>
+        /// <remarks>
+        /// Allocators are used to reuse objects to limit garbage collection pressure. These should be used in cases where there's states are being updated every frame, or even multiple times 
+        /// per frame.
+        /// </remarks>
         protected Gorgon2DShaderStatePoolAllocator<GorgonVertexShader> VertexShaderAllocator
         {
             get;
@@ -115,45 +146,13 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to return the macros to apply to the shader.
         /// </summary>
+        /// <remarks>
+        /// A list of <see cref="GorgonShaderMacro"/> values to send to any pixel/vertex shaders used by the effect. These can be used to turn on/off pieces of the shader code when compiling.
+        /// </remarks>
         protected List<GorgonShaderMacro> Macros
         {
             get;
         } = new List<GorgonShaderMacro>();
-
-        /// <summary>
-        /// Property to return the vertex shader state builder used to create our vertex shader(s) for the effect.
-        /// </summary>
-        protected Gorgon2DShaderStateBuilder<GorgonVertexShader> VertexShaderBuilder
-        {
-            get;
-        } = new Gorgon2DShaderStateBuilder<GorgonVertexShader>();
-
-        /// <summary>
-        /// Property to return the state used to override the default blend state for the effect.
-        /// </summary>
-        protected GorgonBlendState BlendStateOverride
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the state used to override the default depth/stencil state for the effect.
-        /// </summary>
-        protected GorgonDepthStencilState DepthStencilStateOverride
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the state used to override the default raster state for the effect.
-        /// </summary>
-        protected GorgonRasterState RasterStateOverride
-        {
-            get;
-            private set;
-        }
 
         /// <summary>
         /// Property to return the renderer used to render the effect.
@@ -171,7 +170,10 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to return the number of passes required to render the effect.
         /// </summary>
-        public int PassCount
+        /// <remarks>
+        /// This is merely for information, passes may or may not be exposed to the end user by the effect author.
+        /// </remarks>
+        public virtual int PassCount
         {
             get;
         }
@@ -196,9 +198,9 @@ namespace Gorgon.Renderers
         private bool SetupStates(GorgonBlendState blendStateOverride, GorgonDepthStencilState depthStencilStateOverride, GorgonRasterState rasterStateOverride)
         {
 
-            if ((blendStateOverride == BlendStateOverride)
-                && (depthStencilStateOverride == DepthStencilStateOverride)
-                && (rasterStateOverride == RasterStateOverride))
+            if ((blendStateOverride == _blendStateOverride)
+                && (depthStencilStateOverride == _depthStencilStateOverride)
+                && (rasterStateOverride == _rasterStateOverride))
             {
                 return false;
             }
@@ -207,9 +209,9 @@ namespace Gorgon.Renderers
                                         .DepthStencilState(depthStencilStateOverride ?? GorgonDepthStencilState.Default)
                                         .RasterState(rasterStateOverride ?? GorgonRasterState.Default);
 
-            BlendStateOverride = blendStateOverride;
-            DepthStencilStateOverride = depthStencilStateOverride;
-            RasterStateOverride = rasterStateOverride;
+            _blendStateOverride = blendStateOverride;
+            _depthStencilStateOverride = depthStencilStateOverride;
+            _rasterStateOverride = rasterStateOverride;
 
             return true;
         }
@@ -219,8 +221,17 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <typeparam name="T">The type of shader. Must inherit from <see cref="GorgonShader"/>.</typeparam>
         /// <param name="shaderSource">The source code for the shader.</param>
-        /// <param name="entryPoint">The entry point function in the shader to execute.</param>
-        /// <returns>A new shader.</returns>
+        /// <param name="entryPoint">The entry point function in the shader to execute.</param>        
+        /// <returns>A new shader of type <typeparamref name="T"/>.</returns>        
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="shaderSource"/>, or the <paramref name="entryPoint"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="shaderSource"/>, or the <paramref name="entryPoint"/> parameter is empty.</exception>
+        /// <exception cref="GorgonException">Thrown if the shader fails to compile.</exception>
+        /// <remarks>
+        /// <para>
+        /// This is convenience method used to compile a shader from source code. Users may wish to use the <see cref="GorgonShaderFactory"/> class for more robust functionality.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonShaderFactory"/>
         protected T CompileShader<T>(string shaderSource, string entryPoint)
             where T : GorgonShader => GorgonShaderFactory.Compile<T>(Graphics, shaderSource, entryPoint, GorgonGraphics.IsDebugEnabled, Macros);
 
@@ -229,7 +240,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <remarks>
         /// <para>
-        /// Applications must implement this method to ensure that any required resources are created, and configured for the effect.
+        /// This method is called to allow the effect to initialize. Developers must override this method to compile shaders, constant buffers, etc... and set up any initial values for the effect.
         /// </para>
         /// </remarks>
         protected abstract void OnInitialize();
@@ -244,15 +255,17 @@ namespace Gorgon.Renderers
         /// Function called prior to rendering.
         /// </summary>
         /// <param name="output">The final render target that will receive the rendering from the effect.</param>
-        /// <param name="camera">The currently active camera.</param>
         /// <param name="sizeChanged"><b>true</b> if the output size changed since the last render, or <b>false</b> if it's the same.</param>
         /// <remarks>
         /// <para>
-        /// Applications can use this to set up common states and other configuration settings prior to executing the render passes. This is an ideal method to initialize and resize your internal render
-        /// targets (if applicable).
+        /// This method is called prior to rendering the effect (before any passes). It allows an effect to do any required effect set up that's not specific to a pass. For example, this method could 
+        /// be used to send a view matrix to a shader via a constant buffer since the view matrix will unlikely change between passes.
+        /// </para>
+        /// <para>
+        /// Developers should override this method to perform any required setup prior to rendering a pass.
         /// </para>
         /// </remarks>
-        protected virtual void OnBeforeRender(GorgonRenderTargetView output, IGorgon2DCamera camera, bool sizeChanged)
+        protected virtual void OnBeforeRender(GorgonRenderTargetView output, bool sizeChanged)
         {
         }
 
@@ -262,7 +275,8 @@ namespace Gorgon.Renderers
         /// <param name="output">The final render target that will receive the rendering from the effect.</param>
         /// <remarks>
         /// <para>
-        /// Applications can use this to clean up and/or restore any states when rendering is finished. This is an ideal method to copy any rendering imagery to the final output render target.
+        /// This method is called after all passes are finished and the effect is ready to complete its rendering. Developers should override this method to finalize any custom rendering. For example 
+        /// an effect author can use this method to render the final output of an effect to the final render target.
         /// </para>
         /// </remarks>
         protected virtual void OnAfterRender(GorgonRenderTargetView output)
@@ -278,11 +292,22 @@ namespace Gorgon.Renderers
         /// <returns>A <see cref="PassContinuationState"/> to instruct the effect on how to proceed.</returns>
         /// <remarks>
         /// <para>
-        /// Applications can use this to set up per-pass states and other configuration settings prior to executing a single render pass.
+        /// This method is called prior to rendering a single pass. It allows per-pass configuration to be done prior to the actual rendering. Developers should override this method if shader data 
+        /// needs to be updated on every pass.
+        /// </para>
+        /// <para>
+        /// The return value is a <see cref="PassContinuationState"/> which allows developers to skip specific passes if criteria isn't met, or stop rendering altogether.
+        /// </para>
+        /// <para>
+        /// <note type="important">
+        /// <para>
+        /// The <see cref="Gorgon2D"/>.<see cref="Gorgon2D.Begin(Gorgon2DBatchState, IGorgon2DCamera)"/> method is already called prior to this method. Developers must not call 
+        /// <see cref="Gorgon2D.Begin(Gorgon2DBatchState, IGorgon2DCamera)"/> while rendering a pass, or else an exception will be thrown. 
+        /// </para>
+        /// </note>
         /// </para>
         /// </remarks>
         /// <seealso cref="PassContinuationState"/>
-
         protected virtual PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, IGorgon2DCamera camera) => PassContinuationState.Continue;
 
         /// <summary>
@@ -292,25 +317,18 @@ namespace Gorgon.Renderers
         /// <param name="output">The final render target that will receive the rendering from the effect.</param>
         /// <remarks>
         /// <para>
-        /// Applications can use this to clean up and/or restore any states after the pass completes.
+        /// This method is called after rendering a single pass. Developers may use this to perform any clean up required, or any last minute rendering at the end of a pass.
+        /// </para>
+        /// <para>
+        /// <note type="important">
+        /// <para>
+        /// The <see cref="Gorgon2D"/>.<see cref="Gorgon2D.End()"/> method is already called prior to this method. Developers are free to use <see cref="Gorgon2D.Begin"/> and 
+        /// <see cref="Gorgon2D.End"/> to perform any last minute rendering (e.g. blending multiple targets together into the <paramref name="output"/>).
+        /// </para>
+        /// </note>
         /// </para>
         /// </remarks>
         protected virtual void OnAfterRenderPass(int passIndex, GorgonRenderTargetView output)
-        {
-        }
-
-        /// <summary>
-        /// Function called to render a single effect pass.
-        /// </summary>
-        /// <param name="passIndex">The index of the pass being rendered.</param>
-        /// <param name="output">The render target that will receive the final render data.</param>
-        /// <remarks>
-        /// <para>
-        /// Applications must implement this in order to see any results from the effect.
-        /// </para>
-        /// </remarks>
-        [Obsolete("Donut call")]
-        protected virtual void OnRenderPass(int passIndex, GorgonRenderTargetView output)
         {
         }
 
@@ -321,6 +339,18 @@ namespace Gorgon.Renderers
         /// <param name="builders">The builder types that will manage the state of the effect.</param>
         /// <param name="defaultStatesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
         /// <returns>The 2D batch state.</returns>
+        /// <remarks>
+        /// <para>
+        /// This method is responsible for initializing and setting up a rendering state for a pass. State changes (e.g. blend states change, additonal textures needed, etc...) are also handled 
+        /// by this method. Note that the <paramref name="defaultStatesChanged"/> parameter indicates that the user has changed the default effect states when initially rendering (i.e. not per pass).
+        /// </para>
+        /// <para>
+        /// Developers must take care with this method when creating state objects. Constant discarding and creating of states can get expensive as the garbage collector needs to kick in and release 
+        /// the memory occupied by the states. To help alleviate constant state changes between passes, of the allocator properties in this class may be used to reuse state objects. The rule of thumb 
+        /// however is to create a state once, and then just return that state and only recreate when absolutely necessary. Sometimes that's never, other times it's when the swap chain resizes, and 
+        /// other times it may be on every pass. These conditions depend on the requirements of the effect.
+        /// </para>
+        /// </remarks>
         protected abstract Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool defaultStatesChanged);
 
         /// <summary>
@@ -330,10 +360,25 @@ namespace Gorgon.Renderers
         /// <param name="blendState">[Optional] The blend state to apply.</param>
         /// <param name="depthStencilState">[Optional] The depth stencil state to apply.</param>
         /// <param name="rasterState">[Optional] The raster state to apply.</param>
-        /// <param name="camera">[Optional] The camera to use while rendering.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="output"/> parameter is <b>null</b>.</exception>
         /// <exception cref="GorgonException">Thrown if this method is has been called once before and called again without calling <see cref="EndRender"/>.</exception>
         /// <remarks>
+        /// <para>
+        /// When the effect is ready to begin rendering, developers must call this method <b>first</b> and ensure there's a matching call to <see cref="EndRender"/>. This informs the effect that 
+        /// its default states need to be initialized (if not done so prior to calling), handle any render target output size changes, and call any required setup from the effect via the 
+        /// <see cref="OnBeforeRender(GorgonRenderTargetView, bool)"/> method.
+        /// </para>
+        /// <para>
+        /// The optional parameters allow effect authors to pass in user defined states from outside of the effect so that end users may customize rendering. In Gorgon's predefined effects, the 
+        /// immediate mode (Begin/End) effects take these parameters, while render target rendering does not.
+        /// </para>
+        /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// Nesting BeginRender calls is <b>not</b> supported. 
+        /// </para>
+        /// </note>
+        /// </para>
         /// <para>
         /// <note type="important">
         /// <para>
@@ -342,7 +387,7 @@ namespace Gorgon.Renderers
         /// </note>
         /// </para>
         /// </remarks>
-        protected void BeginRender(GorgonRenderTargetView output, GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, IGorgon2DCamera camera = null)
+        protected void BeginRender(GorgonRenderTargetView output, GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null)
         {
             output.ValidateObject(nameof(output));
 
@@ -367,7 +412,7 @@ namespace Gorgon.Renderers
                 outputSizeChanged = true;
             }
 
-            OnBeforeRender(output, camera, outputSizeChanged);
+            OnBeforeRender(output, outputSizeChanged);
 
             // Setup user defined states passed in for rendering.
             _needsStateUpdate = SetupStates(blendState, depthStencilState, rasterState);
@@ -386,13 +431,33 @@ namespace Gorgon.Renderers
         /// <para>Thrown if <see cref="BeginRender"/> was not called prior to calling this method.</para>
         /// </exception>
         /// <remarks>
-        /// <para>
-        /// <note type="important">
-        /// <para>
-        /// For performance reasons, some exceptions thrown by this method will only be thrown when Gorgon is compiled as DEBUG.
-        /// </para>
-        /// </note>
-        /// </para>
+        ///     <para>
+        ///     When the effect is ready to begin rendering a single pass, developers <b>must</b> call this method and ensure there's a matching call to <see cref="EndPass"/>. This method will begin by 
+        ///     configuring the states via <see cref="OnGetBatchState(int, IGorgon2DEffectBuilders, bool)"/> for rendering the current effect pass, and by initializing batch rendering via the 
+        ///     <see cref="Gorgon2D.Begin(Gorgon2DBatchState, IGorgon2DCamera)"/> method. It will also call the <see cref="OnBeforeRenderPass(int, GorgonRenderTargetView, IGorgon2DCamera)"/> method so 
+        ///     effects can do per-pass configuration as needed.
+        ///     </para>
+        ///     
+        ///     <para>
+        ///     The return value indicates whether the pass may continue on to the next pass, skip the next pass, or stop rendering altogether. These are usually in response to invalid input, or to flags 
+        ///     turning off specific functionality. The exact operation is left up to the effect author.
+        ///     </para>
+        ///     
+        ///     <para>
+        ///         <note type="warning">
+        ///             <para>
+        ///             Nesting BeginPass calls is <b>not</b> supported. 
+        ///             </para>
+        ///         </note>
+        ///     </para>
+        ///     
+        ///     <para>
+        ///         <note type="important">
+        ///             <para>
+        ///             For performance reasons, some exceptions thrown by this method will only be thrown when Gorgon is compiled as DEBUG.
+        ///             </para>
+        ///         </note>
+        ///     </para>
         /// </remarks>
         /// <seealso cref="BeginRender"/>
         protected PassContinuationState BeginPass(int index, GorgonRenderTargetView output, IGorgon2DCamera camera = null)
@@ -436,6 +501,11 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is less than 0, or not less than <see cref="PassCount"/>.</exception>
         /// <exception cref="GorgonException">Thrown if <see cref="BeginRender"/> was not called prior to calling this method.</exception>
         /// <remarks>
+        /// <para>
+        /// This is called to notify the effect that the pass is now finished rendering and that we can move on to a new pass (or finish rendering completely if that's what's required). This method is 
+        /// responsible for calling the <see cref="Gorgon2D.End"/> method to finish 2D rendering, and will call the <see cref="OnAfterRender(GorgonRenderTargetView)"/> to perform any last minute clean 
+        /// up, or last minute rendering for the pass.
+        /// </para>
         /// <para>
         /// <note type="important">
         /// <para>
@@ -489,13 +559,24 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="output">The final output target.</param>
         /// <remarks>
-        /// <para>
-        /// <note type="important">
-        /// <para>
-        /// For performance reasons, any exceptions thrown by this method will only be thrown when Gorgon is compiled as DEBUG.
-        /// </para>
-        /// </note>
-        /// </para>
+        ///     <para>
+        ///     This informs the effect that rendering is done. It will trigger the <see cref="OnAfterRender(GorgonRenderTargetView)"/> method so that effect authors can perform any last minute rendering, 
+        ///     or clean up. The method <b>must</b> be called whenever <see cref="BeginRender(GorgonRenderTargetView, GorgonBlendState, GorgonDepthStencilState, GorgonRasterState)"/> is called or else an 
+        ///     exception will be thrown.
+        ///     </para>
+        ///     
+        ///     <para>
+        ///     <b>Null</b> can be passed to the <paramref name="output"/> method to indicate that the <see cref="OnAfterRender(GorgonRenderTargetView)"/> method should not be called, this is usually done 
+        ///     when a pass is stopped prematurely via one of the <see cref="PassContinuationState"/> values.
+        ///     </para>
+        ///     
+        ///     <para>
+        ///         <note type="important">
+        ///             <para>
+        ///             For performance reasons, any exceptions thrown by this method will only be thrown when Gorgon is compiled as DEBUG.
+        ///             </para>
+        ///         </note>
+        ///     </para>
         /// </remarks>
         protected void EndRender(GorgonRenderTargetView output)
         {
@@ -529,108 +610,6 @@ namespace Gorgon.Renderers
             {
                 _currentEffect = null;
             }
-        }
-
-        /// <summary>
-        /// Function called to render the effect.
-        /// </summary>
-        /// <param name="renderMethod">The method used to render the scene that will be used in the effect.</param>
-        /// <param name="output">The render target that will receive the results of rendering the effect.</param>
-        /// <param name="blendStateOverride">[Optional] An override for the current blending state.</param>
-        /// <param name="depthStencilStateOverride">[Optional] An override for the current depth/stencil state.</param>
-        /// <param name="rasterStateOverride">[Optional] An override for the current raster state.</param>
-        /// <param name="camera">[Optional] The camera to use when rendering.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderMethod"/>, or the <paramref name="output"/> parameter is <b>null</b>.</exception>
-        /// <remarks>
-        /// <para>
-        /// The <paramref name="renderMethod"/> is a callback to a method with 2 parameters:
-        /// <list type="number">
-        ///     <item>
-        ///         <description>The current pass index.</description>
-        ///     </item>
-        ///     <item>
-        ///         <description>The size of the current render target.</description>
-        ///     </item>
-        /// </list>
-        /// Users should pass a method that will render the items they want to use with this effect.
-        /// </para>
-        /// <para>
-        /// <para>
-        /// If the <paramref name="blendStateOverride"/>, parameter is omitted, then the <see cref="GorgonBlendState.Default"/> is used. When provided, this will override the current blending state.
-        /// </para>
-        /// <para>
-        /// If the <paramref name="depthStencilStateOverride"/> parameter is omitted, then the <see cref="GorgonDepthStencilState.Default"/> is used. When provided, this will override the current
-        /// depth/stencil state.
-        /// </para>
-        /// <para>
-        /// If the <paramref name="rasterStateOverride"/> parameter is omitted, then the <see cref="GorgonRasterState.Default"/> is used. When provided, this will override the current raster state.
-        /// </para>
-        /// <para>
-        /// The <paramref name="camera"/> parameter is used to render the texture using a different view, and optionally, a different coordinate set.  
-        /// </para>
-        /// <para>
-        /// <note type="important">
-        /// <para>
-        /// For performance reasons, any exceptions thrown by this method will only be thrown when Gorgon is compiled as DEBUG.
-        /// </para>
-        /// </note>
-        /// </para>
-        /// </para>
-        /// </remarks>
-        [Obsolete("Donut use")]
-        public void Render(Action<int, DX.Size2> renderMethod,
-                           GorgonRenderTargetView output,
-                           GorgonBlendState blendStateOverride = null,
-                           GorgonDepthStencilState depthStencilStateOverride = null,
-                           GorgonRasterState rasterStateOverride = null,
-                           IGorgon2DCamera camera = null)
-        {
-            renderMethod.ValidateObject(nameof(renderMethod));
-            output.ValidateObject(nameof(output));
-
-            if (!_isInitialized)
-            {
-                OnInitialize();
-                _isInitialized = true;
-            }
-
-            bool outputSizeChanged = false;
-
-            if ((_prevOutputSize.Width != output.Width)
-                || (_prevOutputSize.Height != output.Height))
-            {
-                _prevOutputSize = new DX.Size2(output.Width, output.Height);
-                outputSizeChanged = true;
-            }
-
-            OnBeforeRender(output, camera, outputSizeChanged);
-
-            // Setup user defined states passed in for rendering.
-            bool stateChanged = SetupStates(blendStateOverride, depthStencilStateOverride, rasterStateOverride);
-
-            for (int i = 0; i < PassCount; ++i)
-            {
-                // Batch state should be cached on the implementation side, otherwise the GC could be impacted by a lot of dead objects per frame.
-                Gorgon2DBatchState batchState = OnGetBatchState(i, _effectBuilders, stateChanged);
-                
-                switch (OnBeforeRenderPass(i, output, camera))
-                {
-                    case PassContinuationState.Continue:
-                        Renderer.Begin(batchState, camera);
-                        //OnRenderPass(i, renderMethod, output);
-                        Renderer.End();
-                        
-                        OnAfterRenderPass(i, output);
-                        break;
-                    case PassContinuationState.Skip:
-                        continue;
-                    default:
-                        OnAfterRender(output);
-                        return;
-                }
-            }
-
-            OnAfterRender(output);
         }
 
         /// <summary>

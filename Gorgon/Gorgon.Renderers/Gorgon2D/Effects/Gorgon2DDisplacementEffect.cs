@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -49,6 +48,8 @@ namespace Gorgon.Renderers
         private GorgonRenderTarget2DView _displacementTarget;
         // The displacement texture view.
         private GorgonTexture2DView _displacementView;
+        // The background texture view to distort.
+        private GorgonTexture2DView _backgroundView;
         // The constant buffer for displacement settings.
         private GorgonConstantBufferView _displacementSettingsBuffer;
         // Flag to indicate that the parameters have been updated.
@@ -157,7 +158,6 @@ namespace Gorgon.Renderers
         /// Function called prior to rendering.
         /// </summary>
         /// <param name="output">The final render target that will receive the rendering from the effect.</param>
-        /// <param name="camera">The currently active camera.</param>
         /// <param name="sizeChanged"><b>true</b> if the output size changed since the last render, or <b>false</b> if it's the same.</param>
         /// <remarks>
         /// <para>
@@ -165,7 +165,7 @@ namespace Gorgon.Renderers
         /// targets (if applicable).
         /// </para>
         /// </remarks>
-        protected override void OnBeforeRender(GorgonRenderTargetView output, IGorgon2DCamera camera, bool sizeChanged)
+        protected override void OnBeforeRender(GorgonRenderTargetView output, bool sizeChanged)
         {
             if ((_displacementView == null) || (sizeChanged))
             {
@@ -259,36 +259,39 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Function to begin rendering the effect.
         /// </summary>
-        public void Begin()
+        /// <param name="backgroundTexture">The texture that will be distorted by the displacement.</param>
+        /// <param name="blendState">[Optional] A user defined blend state to apply when rendering.</param>
+        /// <param name="depthStencilState">[Optional] A user defined depth/stencil state to apply when rendering.</param>
+        /// <param name="rasterState">[Optional] A user defined rasterizer state to apply when rendering.</param>
+        /// <param name="camera">[Optional] The camera to use when rendering.</param>
+        public void Begin(GorgonTexture2DView backgroundTexture, GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, IGorgon2DCamera camera = null)
         {
+            backgroundTexture.ValidateObject(nameof(backgroundTexture));
+
             _originalTarget = Graphics.RenderTargets[0];
 
             if (_originalTarget == null)
             {
                 return;
-            }            
+            }
 
-            BeginRender(_originalTarget, null, null, null, null);
+            _backgroundView = backgroundTexture;
+
+            BeginRender(_originalTarget, blendState, depthStencilState, rasterState);
+            BeginPass(0, _displacementTarget, camera);
         }
-
-        public void RenderBackgroundPass(GorgonTexture2DView texture)
-        {
-            texture.ValidateObject(nameof(texture));
-
-            BeginPass(1, _originalTarget);
-            Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _originalTarget.Width, _originalTarget.Height), GorgonColor.White, texture, new DX.RectangleF(0, 0, 1, 1));
-            EndPass(1, _originalTarget);
-        }
-
-        public void BeginDisplacementPass() => BeginPass(0, _displacementTarget);
-
-        public void EndDisplacementPass() => EndPass(0, _displacementTarget);
 
         /// <summary>
         /// Function to end the effect rendering.
         /// </summary>
         public void End()
         {
+            EndPass(0, _displacementTarget);
+
+            BeginPass(1, _originalTarget);
+            Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _originalTarget.Width, _originalTarget.Height), GorgonColor.White, _backgroundView, new DX.RectangleF(0, 0, 1, 1));
+            EndPass(1, _originalTarget);
+
             EndRender(_originalTarget);
             _originalTarget = null;
         }

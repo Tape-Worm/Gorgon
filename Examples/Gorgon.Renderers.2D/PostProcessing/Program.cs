@@ -94,7 +94,7 @@ namespace Gorgon.Examples
         // The offset of the mouse cursor when dragging started.
         private static DX.Vector2 _dragOffset;
         // The starting position of the drag.
-        private static DX.Vector2 _dragStart;
+        private static DX.Vector2 _dragStart;        
         #endregion
 
         #region Methods.
@@ -121,11 +121,7 @@ namespace Gorgon.Examples
         {
             _screen.RenderTargetView.Clear(GorgonColor.White);
 
-            _compositor.Render(_screen.RenderTargetView,
-                               () => _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _screen.Width, _screen.Height),
-                                                                   GorgonColor.White,
-                                                                   _images[_currentImage],
-                                                                   new DX.RectangleF(0, 0, 1, 1)));
+            _compositor.Render(_images[_currentImage], _screen.RenderTargetView);
 
             _renderer.Begin();
 
@@ -164,12 +160,22 @@ namespace Gorgon.Examples
                 _renderer.DrawString(_dragButton.Text, pos.TopLeft, color: _dragButton.ForeColor);
             }
 
-            // This effect requires a time value to animate.  
-            _oldFilmEffect.Time = GorgonTiming.SecondsSinceStart;
-
             _renderer.End();
 
             Present();
+
+            // This effect requires a time value to animate.  
+            _oldFilmEffect.Time = GorgonTiming.SecondsSinceStart;
+
+            // Shake the old film for a few seconds.
+            if ((_compositor["Olde Film"].Enabled) && ((GorgonTiming.SecondsSinceStart % 10) >= 6))
+            {
+                _oldFilmEffect.ShakeOffset = new DX.Vector2(GorgonRandom.RandomSingle(-2, 2), GorgonRandom.RandomSingle(-2, 2));
+            }
+            else
+            {
+                _oldFilmEffect.ShakeOffset = DX.Vector2.Zero;
+            }
 
             return true;
         }
@@ -225,7 +231,7 @@ namespace Gorgon.Examples
                     _buttons[i].Click -= Button_Click;
                 }
 
-                _buttons[i] = new Button(_compositor.Passes[i]);
+                _buttons[i] = new Button(_compositor[i]);
                 DX.Size2F size = _renderer.DefaultFont.MeasureText(_buttons[i].Text, false);
                 maxWidth = maxWidth.Max(size.Width);
                 _buttons[i].Bounds = new DX.RectangleF(0, position.Y, 0, size.Height);
@@ -338,67 +344,43 @@ namespace Gorgon.Examples
             // Set up each pass for the compositor.
             // As you can see, we're not strictly limited to using our 2D effect objects, we can define custom passes as well.
             // And, we can also define how existing effects are rendered for things like animation and such.
-            _compositor.EffectPass("Chromatic Aberration", _chromatic)
+            _compositor.RenderingPass("Rendering Pass", (renderer, texture, target) =>
+                       {
+                           renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, target.Width, target.Height),
+                                                      GorgonColor.White,
+                                                      texture,
+                                                      new DX.RectangleF(0, 0, 1, 1));
+                           
+                           var midPoint = new DX.Vector2(target.Width * 0.5f, target.Height * 0.5f);
+
+                           for (int i = 160; i >= 100; --i)
+                           {
+                               var region = new DX.RectangleF(midPoint.X - i * 0.5f, midPoint.Y - i * 0.5f, i, i);
+
+                               renderer.DrawFilledEllipse(region, GorgonColor.Lerp(GorgonColor.RedPure, GorgonColor.YellowPure, 1.0f - ((i - 100) / 60.0f)));
+                           }
+                       })
                        .EffectPass("1-Bit Color", _1BitEffect)
-                       .EffectPass("Blur", _blurEffect)
                        .EffectPass("Grayscale", _grayScaleEffect)
+                       .EffectPass("Emboss", _embossEffect)
+                       .EffectPass("Sharpen", _sharpenEffect)
+                       .EffectPass("Blur", _blurEffect)
                        .EffectPass("Posterize", _posterizeEffect)
                        .EffectPass("Burn", _burnEffect)
                        .EffectPass("Dodge", _dodgeEffect)
-                       .EffectPass("Invert", _invertEffect)
-                       .EffectPass("Sharpen", _sharpenEffect)
-                       .EffectPass("Emboss", _embossEffect)
+                       .EffectPass("Sobel Edge Detection", _sobelEffect)
                        .EffectPass("Bloom", _bloomEffect)
-                       .Pass(new Gorgon2DCompositionPass("Sobel Edge Detection", _sobelEffect)
-                       {
-                           BlendOverride = GorgonBlendState.Default,
-                           ClearColor = GorgonColor.White
-                       })
-                       .RenderPass("Sobel Blend Pass",
-                                   (sobelTexture, pass, size) =>
-                                   {
-                                       // This is a custom pass that does nothing but rendering.  No effect is applied here, just straight rendering to
-                                       // the currently active render target.
-                                       var rectPosition = new DX.RectangleF(0, 0, size.Width, size.Height);
-                                       var texCoords = new DX.RectangleF(0, 0, 1, 1);
-                                       _renderer.DrawFilledRectangle(rectPosition, GorgonColor.White, _images[_currentImage], texCoords);
-                                       _renderer.DrawFilledRectangle(rectPosition, GorgonColor.White, sobelTexture, texCoords);
-                                   })
-                       .Pass(new Gorgon2DCompositionPass("Olde Film", _oldFilmEffect)
-                       {
-                           BlendOverride = GorgonBlendState.Additive,
-                           RenderMethod = (prevEffect, passIndex, size) =>
-                                          {
-                                                    // Here we can override the method used to render to the effect. 
-                                                    // In this case, we're animating our old film content to shake and darken at defined intervals.
-                                                    // If we do not override this, the compositor would just blit the previous texture to the 
-                                                    // current render target.
-                                                    var rectPosition = new DX.RectangleF(0, 0, size.Width, size.Height);
-                                              var texCoords = new DX.RectangleF(0, 0, 1, 1);
-                                              GorgonColor color = GorgonColor.White;
-
-                                              if ((GorgonTiming.SecondsSinceStart % 10) >= 4)
-                                              {
-                                                  rectPosition.Inflate(GorgonRandom.RandomSingle(1, 5), GorgonRandom.RandomSingle(1, 5));
-                                                  float value = GorgonRandom.RandomSingle(0.5f, 0.89f);
-                                                  color = new GorgonColor(value, value, value, 1.0f);
-                                              }
-
-                                              _renderer.DrawFilledRectangle(rectPosition, color, prevEffect, texCoords);
-                                          }
-
-                       })
+                       .EffectPass("Olde Film", _oldFilmEffect)
+                       .EffectPass("Chromatic Aberration", _chromatic)
+                       .EffectPass("Invert", _invertEffect)
                        .InitialClearColor(GorgonColor.White)
                        .FinalClearColor(GorgonColor.White);
 
-            _compositor.Passes["Chromatic Aberration"].Enabled = false;
-            _compositor.Passes["Bloom"].Enabled = false;
-            _compositor.Passes["Posterize"].Enabled = false;
-            _compositor.Passes["Grayscale"].Enabled = false;
-            _compositor.Passes["1-Bit Color"].Enabled = false;
-            _compositor.Passes["Emboss"].Enabled = false;
-            _compositor.Passes["Dodge"].Enabled = false;
-            _compositor.Passes["Olde Film"].Enabled = false;
+            foreach (IGorgon2DCompositorPass pass in _compositor)
+            {
+                pass.Enabled = false;
+            }
+            _compositor["Rendering Pass"].Enabled = true;
         }
 
         /// <summary>
@@ -453,7 +435,7 @@ namespace Gorgon.Examples
                 InitializeEffects();
 
                 // Set up our quick and dirty GUI.
-                _buttons = new Button[_compositor.Passes.Count];
+                _buttons = new Button[_compositor.Count];
                 LayoutGUI();
 
                 // Select a random image to start
@@ -653,10 +635,19 @@ namespace Gorgon.Examples
 
                 if (_compositor != null)
                 {
-                    foreach (Gorgon2DCompositionPass pass in _compositor.Passes)
-                    {
-                        pass.Effect?.Dispose();
-                    }
+                    _blurEffect?.Dispose();        
+                    _grayScaleEffect?.Dispose();
+                    _posterizeEffect?.Dispose();
+                    _1BitEffect?.Dispose();
+                    _burnEffect?.Dispose();
+                    _dodgeEffect?.Dispose();
+                    _invertEffect?.Dispose();
+                    _sharpenEffect?.Dispose();
+                    _embossEffect?.Dispose();
+                    _sobelEffect?.Dispose();
+                    _oldFilmEffect?.Dispose();
+                    _bloomEffect?.Dispose();
+                    _chromatic?.Dispose();
                     _compositor.Dispose();
                 }
 

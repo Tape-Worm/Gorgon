@@ -1665,7 +1665,7 @@ namespace Gorgon.Graphics.Core
 
             for (int i = start; i < end; ++i)
             {
-                destList[i] = srcList[i];
+                destList[i] = srcList[i];                
             }
         }
 

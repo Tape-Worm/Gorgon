@@ -45,7 +45,8 @@ using DX = SharpDX;
 namespace Gorgon.Examples
 {
     /// <summary>
-    /// TODO
+    /// This example shows many of the features present in Gorgon to show how they could be used to build a 2D top down game with special effects.
+    /// It employs the 2D rendering system, lighting effect, bloom effect, post processing and even 3D using the core graphics API.
     /// 
     /// Due to the effects employed, this example requires a fair bit of video RAM and a fairly fast GPU. 
     /// </summary>
@@ -294,7 +295,8 @@ namespace Gorgon.Examples
 
                 // Retrieve the list of video adapters. We can do this on a background thread because there's no interaction between other threads and the 
                 // underlying D3D backend yet.
-                IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = await Task.Run(() => GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log));
+                //IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = await Task.Run(() => GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log));
+                IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = await Task.Run(() => GorgonGraphics.EnumerateAdapters());
 
                 if (videoDevices.Count == 0)
                 {

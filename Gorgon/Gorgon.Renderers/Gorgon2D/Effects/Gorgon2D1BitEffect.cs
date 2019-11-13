@@ -27,10 +27,11 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;
+using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Properties;
-using DX = SharpDX;
+using Gorgon.Graphics;
 
 namespace Gorgon.Renderers
 {
@@ -44,7 +45,7 @@ namespace Gorgon.Renderers
     /// </para>
     /// </remarks>
     public class Gorgon2D1BitEffect
-        : Gorgon2DEffect
+        : Gorgon2DEffect, IGorgon2DCompositorEffect
     {
         #region Value Types.
         /// <summary>
@@ -207,7 +208,6 @@ namespace Gorgon.Renderers
         /// Function called prior to rendering.
         /// </summary>
         /// <param name="output">The final render target that will receive the rendering from the effect.</param>
-        /// <param name="camera">The currently active camera.</param>
         /// <param name="sizeChanged"><b>true</b> if the output size changed since the last render, or <b>false</b> if it's the same.</param>
         /// <remarks>
         /// <para>
@@ -215,7 +215,7 @@ namespace Gorgon.Renderers
         /// targets (if applicable).
         /// </para>
         /// </remarks>
-        protected override void OnBeforeRender(GorgonRenderTargetView output, IGorgon2DCamera camera, bool sizeChanged)
+        protected override void OnBeforeRender(GorgonRenderTargetView output, bool sizeChanged)
         {
             if (!_isUpdated)
             {
@@ -284,8 +284,8 @@ namespace Gorgon.Renderers
                 return;
             }
 
-            BeginRender(target, blendState, depthStencilState, rasterState, camera);
-            BeginPass(0, target);
+            BeginRender(target, blendState, depthStencilState, rasterState);
+            BeginPass(0, target, camera);
         }
 
         /// <summary>
@@ -302,6 +302,29 @@ namespace Gorgon.Renderers
 
             EndPass(0, target);
             EndRender(target);
+        }
+
+        /// <summary>
+        /// Function to render an effect under the <see cref="Gorgon2DCompositor"/>.
+        /// </summary>
+        /// <param name="texture">The texture to render into the next target.</param>
+        /// <param name="output">The render target that will receive the final output.</param>
+        public void Render(GorgonTexture2DView texture, GorgonRenderTargetView output)
+        {
+            if ((texture == null) || (output == null))
+            {
+                return;
+            }
+
+            Graphics.SetRenderTarget(output);
+
+            Begin(GorgonBlendState.Default, GorgonDepthStencilState.Default, GorgonRasterState.Default, null);
+
+            Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height),
+                                            GorgonColor.White,
+                                            texture,
+                                            new DX.RectangleF(0, 0, 1, 1));
+            End();
         }
         #endregion
 

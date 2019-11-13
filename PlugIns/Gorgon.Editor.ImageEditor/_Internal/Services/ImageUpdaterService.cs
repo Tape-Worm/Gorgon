@@ -26,7 +26,6 @@
 
 using System.Linq;
 using Gorgon.Core;
-using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.UI;

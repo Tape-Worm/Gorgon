@@ -32,7 +32,6 @@ using Gorgon.Core;
 using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
-using Gorgon.Graphics.Imaging;
 
 namespace Gorgon.Editor.ImageEditor
 {

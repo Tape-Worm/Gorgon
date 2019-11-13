@@ -40,7 +40,7 @@ namespace Gorgon.Renderers
     /// A gaussian blur effect.
     /// </summary>
     public class Gorgon2DGaussBlurEffect
-        : Gorgon2DEffect
+        : Gorgon2DEffect, IGorgon2DCompositorEffect
     {
         #region Variables.
         // The shader used for blurring.
@@ -456,7 +456,6 @@ namespace Gorgon.Renderers
         /// Function called prior to rendering.
         /// </summary>
         /// <param name="output">The final render target that will receive the rendering from the effect.</param>
-        /// <param name="camera">The currently active camera.</param>
         /// <param name="sizeChanged"><b>true</b> if the output size changed since the last render, or <b>false</b> if it's the same.</param>
         /// <remarks>
         /// <para>
@@ -464,7 +463,7 @@ namespace Gorgon.Renderers
         /// targets (if applicable).
         /// </para>
         /// </remarks>
-        protected override void OnBeforeRender(GorgonRenderTargetView output, IGorgon2DCamera camera, bool sizeChanged)
+        protected override void OnBeforeRender(GorgonRenderTargetView output, bool sizeChanged)
         {
             if (_needKernelUpdate)
             {
@@ -579,7 +578,7 @@ namespace Gorgon.Renderers
         /// </note>
         /// </para>
         /// </remarks>
-        public void Render(GorgonTexture2DView texture, GorgonRenderTarget2DView output) 
+        public void Render(GorgonTexture2DView texture, GorgonRenderTargetView output) 
         {
             BeginRender(output);
 

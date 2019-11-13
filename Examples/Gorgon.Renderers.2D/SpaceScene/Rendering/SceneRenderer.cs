@@ -130,15 +130,6 @@ namespace Gorgon.Examples
             GorgonRenderTarget2DView sceneBuffer = _graphics.TemporaryTargets.Rent(_screen, "Work Buffer", true);
             GorgonTexture2DView sceneSrv = sceneBuffer.GetShaderResourceView();
 
-            void FlipSceneToPostProcessBuffer()
-            {
-                _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _screen.Width, _screen.Height),
-                    GorgonColor.White,
-                    sceneSrv,
-                    new DX.RectangleF(0, 0, 1, 1),
-                    textureSampler: GorgonSamplerState.Default);
-            }
-
             _graphics.SetRenderTarget(sceneBuffer);
 
             ApplyLightingToLayers();
@@ -182,9 +173,7 @@ namespace Gorgon.Examples
                     }
                     else
                     {
-                        compositor
-                            .FinalBlendState(GorgonBlendState.Default)
-                            .Render(_screen, FlipSceneToPostProcessBuffer);
+                        compositor.Render(sceneSrv, _screen);
                     }
                 }
             }

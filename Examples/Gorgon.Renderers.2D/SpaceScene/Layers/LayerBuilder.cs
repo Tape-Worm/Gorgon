@@ -162,13 +162,14 @@ namespace Gorgon.Examples
         {
             var ship = new SpritesLayer(renderer)
             {
-                DeferredLighter = resources.Effects["deferredLighting"] as Gorgon2DDeferredLightingEffect,
+                DeferredLighter = resources.Effects["deferredLighting"] as Gorgon2DLightingEffect,
+                GBuffer = resources.Effects["gbuffer"] as Gorgon2DGBuffer,
                 Sprites =
                 {
                     new SpriteEntity("BigShip")
                     {
                         Sprite = resources.Sprites["BigShip"],
-                        Color = GorgonColor.Gray20, // Make this a bit darker so that we can light it using per-pixel lighting.
+                        Color = GorgonColor.White, // Make this a bit darker so that we can light it using per-pixel lighting.
                         Rotation = -95.0f,
                         IsLit = true,
                         Visible = false
@@ -176,7 +177,7 @@ namespace Gorgon.Examples
                     new SpriteEntity("BigShip_Illum")
                     {
                         Sprite = resources.Sprites["BigShip_Illum"],
-                        Color = GorgonColor.YellowPure * 0.70f,
+                        Color = GorgonColor.YellowPure,
                         Rotation = -95.0f,
                         IsLit = false,
                         Visible = false,
@@ -185,7 +186,7 @@ namespace Gorgon.Examples
                     new SpriteEntity("EngineGlow")
                     {
                         Sprite = resources.Sprites["Fighter_Engine_F0"],
-                        Color = new GorgonColor(GorgonColor.CyanPure * 0.75f, 0),
+                        Color = new GorgonColor(GorgonColor.CyanPure, 0),
                         Rotation = -45.0f,
                         Anchor = new DX.Vector2(0.5f, -1.5f),
                         Animation = resources.Animations["EngineGlow"]
@@ -193,7 +194,7 @@ namespace Gorgon.Examples
                     new SpriteEntity("Fighter")
                     {
                         Sprite = resources.Sprites["Fighter"],
-                        Color = GorgonColor.Gray20, // Make this a bit darker so that we can light it using per-pixel lighting.
+                        Color = GorgonColor.White, // Make this a bit darker so that we can light it using per-pixel lighting.
                         Rotation = -45.0f,
                         IsLit = true
                     }

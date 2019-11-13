@@ -20,34 +20,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: February 5, 2019 7:46:30 PM
+// Created: November 14, 2019 3:49:40 PM
 // 
 #endregion
 
 using Gorgon.Core;
-using Gorgon.Editor.UI;
+using Gorgon.Graphics;
 
-namespace Gorgon.Editor.ImageEditor.ViewModels
+namespace Gorgon.Renderers
 {
     /// <summary>
-    /// The view model for the set alpha settings view.
+    /// Information about a single pass in a <see cref="Gorgon2DCompositor"/>.
     /// </summary>
-    internal interface IAlphaSettings
-        : IHostedPanelViewModel
+    public interface IGorgon2DCompositorPass
+        : IGorgonNamedObject
     {
         /// <summary>
-        /// Property to set or return the alpha value to set.
+        /// Property to set or return the color to use when clearing the active render target.
         /// </summary>
-        int AlphaValue
+        /// <remarks>
+        /// <para>
+        ///  If this value is set to <b>null</b>, then the current target will not be cleared.
+        /// </para>
+        /// <para>
+        /// The default value is <b>null</b>.
+        /// </para>
+        /// </remarks>
+        GorgonColor? ClearColor
         {
             get;
             set;
         }
 
         /// <summary>
-        /// Property to set or return the lower and upper bounds of the alpha range to update.
+        /// Property to set or return whether the effect is enabled or not.
         /// </summary>
-        GorgonRange UpdateRange
+        bool Enabled
         {
             get;
             set;

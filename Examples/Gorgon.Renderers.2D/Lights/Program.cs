@@ -67,7 +67,7 @@ namespace Gorgon.Examples
         // Sprite used to draw our logo.
         private static GorgonSprite _torchSprite;
         // Our lighting effect.
-        private static Gorgon2DDeferredLightingEffect _lightEffect;
+        private static Gorgon2DLightingEffect _lightEffect;
         // Flag to indicate the direction of light brightness.
         private static bool _lightBrightDir = true;
         // The actual light color value.
@@ -79,17 +79,6 @@ namespace Gorgon.Examples
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function to draw the scene that needs lighting.
-        /// </summary>
-        /// <param name="pass">Not used.</param>
-        /// <param name="outputSize">The size of the output render target.</param>
-        private static void DrawLitScene(int pass, DX.Size2 outputSize)
-        {
-            _logoSprite.Position = new DX.Vector2(outputSize.Width / 2.0f, outputSize.Height / 2.0f);
-            _renderer.DrawSprite(_logoSprite);
-        }
-
         /// <summary>
         /// Function called when the application goes into an idle state.
         /// </summary>
@@ -133,7 +122,10 @@ namespace Gorgon.Examples
             _screen.RenderTargetView.Clear(GorgonColor.Black);
 
             // Render the lit sprite.
-            _lightEffect.Render(DrawLitScene, _finalTarget);
+            _lightEffect.Begin(2, 1);
+            _logoSprite.Position = new DX.Vector2(_finalTarget.Width / 2.0f, _finalTarget.Height / 2.0f);
+            _renderer.DrawSprite(_logoSprite);
+            _lightEffect.End();
 
             // Blit our final texture to the main screen.
             _graphics.SetRenderTarget(_screen.RenderTargetView);
@@ -247,7 +239,11 @@ namespace Gorgon.Examples
                 };
 
                 // Create the effect that will light up our sprite(s).
-                _lightEffect = new Gorgon2DDeferredLightingEffect(_renderer);
+                _lightEffect = new Gorgon2DLightingEffect(_renderer)
+                {
+                    SpecularZDistance = -50,
+                    AmbientColor = GorgonColor.Black
+                };
 
                 _lightEffect.Lights.Add(new Gorgon2DLight
                 {
@@ -263,8 +259,7 @@ namespace Gorgon.Examples
                     Color = GorgonColor.White,
                     Intensity = 0.075f,
                     LightType = LightType.Directional,
-                    SpecularEnabled = false,
-                    Position = new DX.Vector3(0, 0, -200),
+                    SpecularEnabled = false,                    
                     LightDirection = new DX.Vector3(0, 0, 1)
                 });
 
@@ -299,7 +294,7 @@ namespace Gorgon.Examples
                     _lightEffect.Lights[0].Position =
                         !e.Shift
                             ? new DX.Vector3(_lightEffect.Lights[0].Position.X, _lightEffect.Lights[0].Position.Y, _lightEffect.Lights[0].Position.Z + 1.0f)
-                            : new DX.Vector3(_lightEffect.Lights[0].Position.X, _lightEffect.Lights[0].Position.Y, _lightEffect.Lights[0].Position.Z - 1.0f);
+                            : new DX.Vector3(_lightEffect.Lights[0].Position.X, _lightEffect.Lights[0].Position.Y, _lightEffect.Lights[0].Position.Z - 1.0f);                    
                     break;
             }
         }

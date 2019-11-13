@@ -170,11 +170,7 @@ namespace Gorgon.Examples
                 {
                     int imageIndex = index = i % 2;
                     int targetIndex = index == 0 ? 1 : 0;
-                    _blurEffect.Render((_, ___) => _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _blurredTarget[0].Width, _blurredTarget[0].Height),
-                                                                                     GorgonColor.White,
-                                                                                     _blurredImage[imageIndex],
-                                                                                     new DX.RectangleF(0, 0, 1, 1)),
-                                       _blurredTarget[targetIndex]);
+                    _blurEffect.Render(_blurredImage[imageIndex], _blurredTarget[targetIndex]);
                 }
             }
 

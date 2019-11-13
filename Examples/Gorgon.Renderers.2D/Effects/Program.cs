@@ -107,7 +107,7 @@ namespace Gorgon.Examples
             {
                 // For this effect, we first draw whatever items we wish to use for displacing the image data.
                 case 0:
-                    DrawDisplacementSprite();
+                    
                     break;
                 // Then, we draw the background that will have the displaced pixels.
                 case 1:
@@ -118,8 +118,6 @@ namespace Gorgon.Examples
             // Function to draw the sprite that will displace the background image.
             void DrawDisplacementSprite()
             {
-                _shipSprite.Color = GorgonColor.White;
-                _renderer.DrawSprite(_shipSprite);
             }
 
             // Function to draw the displacement background.
@@ -157,11 +155,14 @@ namespace Gorgon.Examples
             float strength = _cloakController.CloakAmount;
 
             if (strength > 0.0f)
-            {
-                // Don't bother recording the current state, we're going to be updating it shortly, so it'd be redundant.
+            {                
+                _graphics.SetRenderTarget(_postTarget2);
+
                 _displacement.Strength = strength;
-                _displacement.Render((passIndex, _) => DrawDisplacement(passIndex),
-                                     _postTarget2);
+                _displacement.Begin(_postView1);
+                _shipSprite.Color = GorgonColor.White;
+                _renderer.DrawSprite(_shipSprite);
+                _displacement.End();
             }
             else
             {
@@ -190,30 +191,18 @@ namespace Gorgon.Examples
             // If we didn't blur (radius = 0), then just use the original view.
             if (_gaussBlur.BlurRadius > 0)
             {
-                _gaussBlur.Render((_, outputSize) =>
-                                  {
-                                      _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, outputSize.Width, outputSize.Height),
-                                                                    GorgonColor.White,
-                                                                    _postView2,
-                                                                    new DX.RectangleF(0, 0, 1, 1));
-                                  },
-                                  _postTarget2);
+                _gaussBlur.Render(_postView2, _postTarget2);
             }
 
             // Render as an old film effect.
             _oldFilm.Time = GorgonTiming.SecondsSinceStart * 2;
-            DX.Vector2 offset = DX.Vector2.Zero;
+            _oldFilm.ShakeOffset = DX.Vector2.Zero;
             if (GorgonRandom.RandomInt32(0, 100) > 95)
             {
-                offset = new DX.Vector2(GorgonRandom.RandomSingle(-2.0f, 2.0f), GorgonRandom.RandomSingle(-1.5f, 1.5f));
+                _oldFilm.ShakeOffset = new DX.Vector2(GorgonRandom.RandomSingle(-2.0f, 2.0f), GorgonRandom.RandomSingle(-1.5f, 1.5f));
             }
 
-            _oldFilm.Render((_, size) =>
-                                _renderer.DrawFilledRectangle(new DX.RectangleF(offset.X, offset.Y, size.Width, size.Height),
-                                                              GorgonColor.White,
-                                                              _postView2,
-                                                              new DX.RectangleF(0, 0, 1, 1)),
-                            _postTarget1);
+            _oldFilm.Render(_postView2, _postTarget1);
 
             // Send to our screen.
             _screen.RenderTargetView.Clear(GorgonColor.Black);

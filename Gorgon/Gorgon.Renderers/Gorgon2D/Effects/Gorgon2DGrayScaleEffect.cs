@@ -24,11 +24,11 @@
 // 
 #endregion
 
-using System;
 using System.Threading;
+using DX = SharpDX;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Properties;
-using SharpDX;
+using Gorgon.Graphics;
 
 namespace Gorgon.Renderers
 {
@@ -36,7 +36,7 @@ namespace Gorgon.Renderers
     /// An effect that renders as gray scale.
     /// </summary>
     public class Gorgon2DGrayScaleEffect
-        : Gorgon2DEffect
+        : Gorgon2DEffect, IGorgon2DCompositorEffect
     {
         #region Variables.
         // The batch state to use when rendering.
@@ -116,8 +116,8 @@ namespace Gorgon.Renderers
                 return;
             }
 
-            BeginRender(target, blendState, depthStencilState, rasterState, camera);
-            BeginPass(0, target);
+            BeginRender(target, blendState, depthStencilState, rasterState);
+            BeginPass(0, target, camera);
         }
 
         /// <summary>
@@ -134,6 +134,27 @@ namespace Gorgon.Renderers
 
             EndPass(0, target);
             EndRender(target);
+        }
+
+        /// <summary>Function to render an effect under the <see cref="T:Gorgon.Renderers.Gorgon2DCompositor"/>.</summary>
+        /// <param name="texture">The texture to render into the next target.</param>
+        /// <param name="output">The render target that will receive the final output.</param>
+        public void Render(GorgonTexture2DView texture, GorgonRenderTargetView output)
+        {
+            if ((texture == null) || (output == null))
+            {
+                return;
+            }
+
+            Graphics.SetRenderTarget(output);
+
+            Begin(GorgonBlendState.Default, GorgonDepthStencilState.Default, GorgonRasterState.Default, null);
+
+            Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height),
+                                            GorgonColor.White,
+                                            texture,
+                                            new DX.RectangleF(0, 0, 1, 1));
+            End();
         }
         #endregion
 

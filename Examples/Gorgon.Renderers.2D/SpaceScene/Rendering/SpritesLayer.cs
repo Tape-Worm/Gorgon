@@ -63,9 +63,18 @@ namespace Gorgon.Examples
         } = new List<SpriteEntity>();
 
         /// <summary>
+        /// Property to set or return the gbuffer for lighting.
+        /// </summary>
+        public Gorgon2DGBuffer GBuffer
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to set or return the deferred lighting effect.
         /// </summary>
-        public Gorgon2DDeferredLightingEffect DeferredLighter
+        public Gorgon2DLightingEffect DeferredLighter
         {
             get;
             set;
@@ -168,18 +177,28 @@ namespace Gorgon.Examples
             Renderer.End();
 
             // Draw lighting pass.
-            if ((DeferredLighter == null) || (_litSprites.Count == 0))
+            if ((DeferredLighter == null) || (DeferredLighter.Lights.Count == 0) || (_litSprites.Count == 0))
             {
                 return;
             }
 
-            DeferredLighter.Render((pass, size) =>
+            GorgonRenderTargetView rtv = Graphics.RenderTargets[0];
+
+            if ((GBuffer.Diffuse.Width != rtv.Width)
+                || (GBuffer.Diffuse.Height != rtv.Height))
             {
-                for (int i = 0; i < _litSprites.Count; ++i)
-                {
-                    Renderer.DrawSprite(_litSprites[i]);
-                }
-            }, Graphics.RenderTargets[0], camera: Camera);
+                GBuffer.Resize(rtv.Width, rtv.Height);
+            }
+
+            GBuffer.ClearGBuffer();
+            GBuffer.Begin(2, 1, camera: Camera);
+            for (int i = 0; i < _litSprites.Count; ++i)
+            {
+                Renderer.DrawSprite(_litSprites[i]);
+            }
+            GBuffer.End();
+
+            DeferredLighter.Render(GBuffer, rtv, Camera);
         }
 
         /// <summary>Function used to load in resources required by the layer.</summary>

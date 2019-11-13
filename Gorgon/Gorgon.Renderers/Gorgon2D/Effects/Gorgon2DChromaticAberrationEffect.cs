@@ -26,6 +26,7 @@
 
 using System;
 using System.Threading;
+using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
@@ -59,7 +60,7 @@ namespace Gorgon.Renderers
     /// <seealso cref="LookupTexture"/>
     /// <seealso cref="FullScreen"/>
     public class Gorgon2DChromaticAberrationEffect
-        : Gorgon2DEffect
+        : Gorgon2DEffect, IGorgon2DCompositorEffect
     {
         #region Variables.
         // The default texture to use for look up.
@@ -70,14 +71,18 @@ namespace Gorgon.Renderers
         private GorgonConstantBufferView _settings;
         // The pixel shader for the effect.
         private GorgonPixelShader _chromeAbShader;
+        // The shader state for the chromatic aberration effect.
+        private Gorgon2DShaderState<GorgonPixelShader> _chromeAbShaderState;
         // A simplified version of the effect.
         private GorgonPixelShader _simpleChromeAbShader;
         // The batch state for the effect.
         private Gorgon2DBatchState _chromeAbBatchState;
         // Flag to indicate that the simple shader is in use.
         private bool _useSimple;
-        // The builder used to create shader states.
-        private readonly Gorgon2DShaderStateBuilder<GorgonPixelShader> _shaderStateBuilder = new Gorgon2DShaderStateBuilder<GorgonPixelShader>();
+        // The look up texture to use.
+        private GorgonTexture1DView _lookupTexture;
+        // Flag to indicate whether to aberrate the entire screen, or just the corners.
+        private bool _fullScreen;
         #endregion
 
         #region Properties.
@@ -89,8 +94,17 @@ namespace Gorgon.Renderers
         /// </remarks>
         public GorgonTexture1DView LookupTexture
         {
-            get;
-            set;
+            get => _lookupTexture;
+            set
+            {
+                if (_lookupTexture == value)
+                {
+                    return;
+                }
+
+                _lookupTexture = value;
+                _chromeAbShaderState = null;
+            }
         }
 
         /// <summary>
@@ -114,8 +128,17 @@ namespace Gorgon.Renderers
         /// </remarks>
         public bool FullScreen
         {
-            get;
-            set;
+            get => _fullScreen;
+            set
+            {
+                if (_fullScreen == value)
+                {
+                    return;
+                }
+
+                _fullScreen = value;
+                _chromeAbShaderState = null;
+            }
         }
         #endregion
 
@@ -138,27 +161,34 @@ namespace Gorgon.Renderers
 
         /// <summary>Function called to build a new (or return an existing) 2D batch state.</summary>
         /// <param name="passIndex">The index of the current rendering pass.</param>
+        /// <param name="builders">The builder types that will manage the state of the effect.</param>
         /// <param name="statesChanged">
         ///   <b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
         /// <returns>The 2D batch state.</returns>
-        protected override Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged)
+        protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
         {
             if ((_useSimple != FullScreen)
                 || ((LookupTexture == null) && (_currentLut != _defaultLut))
-                || ((LookupTexture != null) && (LookupTexture != _currentLut)))
+                || ((LookupTexture != null) && (LookupTexture != _currentLut))
+                || (_chromeAbBatchState == null)
+                || (_chromeAbShaderState == null))
             {
-                GorgonPixelShader current = FullScreen ? _simpleChromeAbShader : _chromeAbShader;
-                _currentLut = LookupTexture ?? _defaultLut;
+                if (_chromeAbShaderState == null)
+                {
+                    _currentLut = LookupTexture ?? _defaultLut;
+                    _chromeAbShaderState = builders.PixelShaderBuilder.Clear()
+                                                                      .Shader(FullScreen ? _simpleChromeAbShader : _chromeAbShader)
+                                                                      .ShaderResource(FullScreen ? null : _currentLut, 1)
+                                                                      .SamplerState(FullScreen ? null : GorgonSamplerState.Default, 1)
+                                                                      .ConstantBuffer(_settings, 1)
+                                                                      .Build(PixelShaderAllocator);
+                }
 
-                _chromeAbBatchState = BatchStateBuilder.Clear()
-                                                        .BlendState(GorgonBlendState.NoBlending)
-                                                        .PixelShaderState(_shaderStateBuilder
-                                                                                        .Clear()
-                                                                                        .Shader(current)
-                                                                                        .ShaderResource(!FullScreen ? _currentLut : null, 1)
-                                                                                        .SamplerState(!FullScreen ? GorgonSamplerState.Default : null, 1)
-                                                                                        .ConstantBuffer(_settings, 1))
-                                                        .Build();
+
+                _chromeAbBatchState = builders.BatchBuilder.Clear()
+                                                           .BlendState(GorgonBlendState.NoBlending)
+                                                           .PixelShaderState(_chromeAbShaderState)
+                                                           .Build(BatchStateAllocator);
 
                 _useSimple = FullScreen;
             }
@@ -184,13 +214,6 @@ namespace Gorgon.Renderers
 
             return PassContinuationState.Continue;
         }
-
-        /// <summary>Function called to render a single effect pass.</summary>
-        /// <param name="passIndex">The index of the pass being rendered.</param>
-        /// <param name="renderMethod">The method used to render a scene for the effect.</param>
-        /// <param name="output">The render target that will receive the final render data.</param>
-        /// <remarks>Applications must implement this in order to see any results from the effect.</remarks>
-        protected override void OnRenderPass(int passIndex, Action<int, DX.Size2> renderMethod, GorgonRenderTargetView output) => renderMethod(passIndex, new DX.Size2(output.Width, output.Height));
 
         /// <summary>Function called to initialize the effect.</summary>
         /// <remarks>Applications must implement this method to ensure that any required resources are created, and configured for the effect.</remarks>
@@ -222,6 +245,33 @@ namespace Gorgon.Renderers
                 SizeInBytes = DX.Vector4.SizeInBytes,
                 Usage = ResourceUsage.Default
             });
+        }
+
+        /// <summary>
+        /// Function to render the specified texture with chromatic aberration into the specified output.
+        /// </summary>
+        /// <param name="texture">The texture to apply the effect to.</param>
+        /// <param name="output">The render target that will received the result of the effect.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="texture"/>, or the <paramref name="output"/> parameter is <b>null</b>.</exception>
+        /// <remarks>
+        /// <para>
+        /// <note type="important">
+        /// <para>
+        /// For performance reasons, any exceptions thrown by this method will only be thrown when Gorgon is compiled as DEBUG.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public void Render(GorgonTexture2DView texture, GorgonRenderTargetView output)
+        {
+            texture.ValidateObject(nameof(texture));
+            output.ValidateObject(nameof(output));
+
+            BeginRender(output);
+            BeginPass(0, output);
+            Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height), GorgonColor.White, texture, new DX.RectangleF(0, 0, 1, 1));
+            EndPass(0, output);
+            EndRender(output);
         }
         #endregion
 

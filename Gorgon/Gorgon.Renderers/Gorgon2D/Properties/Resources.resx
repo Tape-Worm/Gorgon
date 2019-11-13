@@ -130,6 +130,9 @@
   <data name="FilmGrain" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\FilmGrain.hlsl;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="GBuffer" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\GBuffer.hlsl;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="GOR2D_EFFECT_1BIT" xml:space="preserve">
     <value>1-bit Effect</value>
   </data>
@@ -172,6 +175,12 @@
   <data name="GOR2D_EFFECT_GAUSS_BLUT_DESC" xml:space="preserve">
     <value>Blurs a texture using a gaussian blurring technique and sends the blurred data to the effect output.</value>
   </data>
+  <data name="GOR2D_EFFECT_GBUFFER" xml:space="preserve">
+    <value>GBuffer</value>
+  </data>
+  <data name="GOR2D_EFFECT_GBUFFER_DESC" xml:space="preserve">
+    <value>GBuffer for rendering multi target effects.</value>
+  </data>
   <data name="GOR2D_EFFECT_GRAYSCALE" xml:space="preserve">
     <value>Grayscale Effect</value>
   </data>
@@ -183,6 +192,12 @@
   </data>
   <data name="GOR2D_EFFECT_INVERT_DESC" xml:space="preserve">
     <value>Inverts the colors of an image.</value>
+  </data>
+  <data name="GOR2D_EFFECT_LIGHTING" xml:space="preserve">
+    <value>2D Lighting Effect</value>
+  </data>
+  <data name="GOR2D_EFFECT_LIGHTING_DESC" xml:space="preserve">
+    <value>Provides per pixel lighting to a 2D scene.</value>
   </data>
   <data name="GOR2D_EFFECT_POSTERIZE" xml:space="preserve">
     <value>Posterize Effect</value>

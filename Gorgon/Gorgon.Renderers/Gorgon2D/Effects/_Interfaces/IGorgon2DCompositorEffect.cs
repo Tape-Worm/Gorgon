@@ -20,37 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: February 5, 2019 7:46:30 PM
+// Created: November 13, 2019 12:21:01 AM
 // 
 #endregion
 
-using Gorgon.Core;
-using Gorgon.Editor.UI;
+using Gorgon.Graphics.Core;
 
-namespace Gorgon.Editor.ImageEditor.ViewModels
+namespace Gorgon.Renderers
 {
     /// <summary>
-    /// The view model for the set alpha settings view.
+    /// Defines an effect that can be used in a <see cref="Gorgon2DCompositor"/>.
     /// </summary>
-    internal interface IAlphaSettings
-        : IHostedPanelViewModel
+    public interface IGorgon2DCompositorEffect
     {
         /// <summary>
-        /// Property to set or return the alpha value to set.
+        /// Function to render an effect under the <see cref="Gorgon2DCompositor"/>.
         /// </summary>
-        int AlphaValue
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the lower and upper bounds of the alpha range to update.
-        /// </summary>
-        GorgonRange UpdateRange
-        {
-            get;
-            set;
-        }
+        /// <param name="texture">The texture to render into the next target.</param>
+        /// <param name="output">The render target that will receive the final output.</param>
+        void Render(GorgonTexture2DView texture, GorgonRenderTargetView output);    
     }
 }
