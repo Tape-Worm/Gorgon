@@ -295,8 +295,7 @@ namespace Gorgon.Examples
 
                 // Retrieve the list of video adapters. We can do this on a background thread because there's no interaction between other threads and the 
                 // underlying D3D backend yet.
-                //IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = await Task.Run(() => GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log));
-                IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = await Task.Run(() => GorgonGraphics.EnumerateAdapters());
+                IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = await Task.Run(() => GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log));                
 
                 if (videoDevices.Count == 0)
                 {
