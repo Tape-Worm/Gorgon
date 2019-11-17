@@ -44,8 +44,6 @@ namespace Gorgon.Examples
     {
         #region Variables.
         // The list of sprites that are lit.
-        private List<GorgonSprite> _litSprites = new List<GorgonSprite>();
-        // The list of sprites that are lit.
         private List<Gorgon2DBatchState> _states = new List<Gorgon2DBatchState>();
         // The list of sprites organized by name.
         private Dictionary<string, SpriteEntity> _spriteByName = new Dictionary<string, SpriteEntity>();
@@ -109,6 +107,7 @@ namespace Gorgon.Examples
 
             return true;
         }
+
         /// <summary>Function called to update items per frame on the layer.</summary>
         protected override void OnUpdate()
         {
@@ -123,7 +122,6 @@ namespace Gorgon.Examples
             }
 
             _drawList.Clear();
-            _litSprites.Clear();
 
             for (int i = 0; i < Sprites.Count; i++)
             {
@@ -133,10 +131,7 @@ namespace Gorgon.Examples
 
                 sprite.Position = transformed / ParallaxLevel;
 
-                if ((!DoCullingPass(i, sprite)) && (sprite.IsLit))
-                {
-                    _litSprites.Add(sprite.Sprite);
-                }
+                DoCullingPass(i, sprite);
             }
         }
 
@@ -150,18 +145,62 @@ namespace Gorgon.Examples
                 return;
             }
 
-            Renderer.Begin(camera: Camera);
+            bool needStateChange = true;
+            bool wasLit = false;
+
+            GorgonRenderTargetView rtv = Graphics.RenderTargets[0];
+
+            if (rtv == null)
+            {
+                return;
+            }
+
+            if ((GBuffer != null) && 
+                ((GBuffer.Diffuse.Width != rtv.Width) || (GBuffer.Diffuse.Height != rtv.Height)))
+            {
+                GBuffer.Resize(rtv.Width, rtv.Height);
+            }                       
+
             for (int i = 0; i < _drawList.Count; ++i)
             {
                 (int spriteIndex, SpriteEntity entity) = _drawList[i];
-
                 GorgonSprite sprite = entity.Sprite;
                 Gorgon2DBatchState currentState = _states[spriteIndex];
 
-                if ((i == 0) || (lastState != currentState))
+                needStateChange = (i == 0) || (lastState != currentState) || (wasLit != entity.IsLit);
+
+                if (needStateChange)
                 {
-                    Renderer.End();
-                    Renderer.Begin(currentState, Camera);
+                    if ((!entity.IsLit) || (GBuffer == null))
+                    {
+                        if ((wasLit) && (GBuffer != null))
+                        {
+                            GBuffer.End();
+                            if ((DeferredLighter != null) && (DeferredLighter.Lights.Count > 0))
+                            {
+                                DeferredLighter.Render(GBuffer, rtv, Camera);
+                            }
+                        }
+                        Renderer.End();
+                        Renderer.Begin(currentState, camera: Camera);
+                    }
+                    else
+                    {
+                        if (wasLit)
+                        {
+                            GBuffer.End();                            
+                            if ((DeferredLighter != null) && (DeferredLighter.Lights.Count > 0))
+                            {
+                                DeferredLighter.Render(GBuffer, rtv, Camera);
+                            }
+                        }
+                        Renderer.End();
+                        GBuffer.ClearGBuffer();
+                        GBuffer.Begin(2, 1, currentState?.BlendState, currentState?.DepthStencilState, camera: Camera);
+                    }
+
+                    wasLit = entity.IsLit;
+                    needStateChange = false;
                     lastState = currentState;
                 }
 
@@ -174,31 +213,13 @@ namespace Gorgon.Examples
 
                 Renderer.DrawSprite(sprite);
             }
+
+            GBuffer?.End();
+            if ((wasLit) && (DeferredLighter != null) && (DeferredLighter.Lights.Count > 0))
+            {
+                DeferredLighter.Render(GBuffer, rtv, Camera);
+            }
             Renderer.End();
-
-            // Draw lighting pass.
-            if ((DeferredLighter == null) || (DeferredLighter.Lights.Count == 0) || (_litSprites.Count == 0))
-            {
-                return;
-            }
-
-            GorgonRenderTargetView rtv = Graphics.RenderTargets[0];
-
-            if ((GBuffer.Diffuse.Width != rtv.Width)
-                || (GBuffer.Diffuse.Height != rtv.Height))
-            {
-                GBuffer.Resize(rtv.Width, rtv.Height);
-            }
-
-            GBuffer.ClearGBuffer();
-            GBuffer.Begin(2, 1, camera: Camera);
-            for (int i = 0; i < _litSprites.Count; ++i)
-            {
-                Renderer.DrawSprite(_litSprites[i]);
-            }
-            GBuffer.End();
-
-            DeferredLighter.Render(GBuffer, rtv, Camera);
         }
 
         /// <summary>Function used to load in resources required by the layer.</summary>
@@ -218,8 +239,8 @@ namespace Gorgon.Examples
                 }
 
                 batchStates.Add(blendState, builder.Clear()
-                                                    .BlendState(blendState)
-                                                    .Build());
+                                                   .BlendState(blendState)
+                                                   .Build());
             }
 
             foreach (SpriteEntity entity in Sprites)
@@ -236,11 +257,6 @@ namespace Gorgon.Examples
                 }
 
                 _spriteByName.Add(entity.Name, entity);
-
-                if (entity.IsLit)
-                {
-                    _litSprites.Add(entity.Sprite);
-                }
             }
         }
 

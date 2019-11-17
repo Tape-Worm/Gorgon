@@ -158,7 +158,7 @@ namespace Gorgon.Examples
                         continue;
                     }
 
-                    sceneBuffer.Clear(GorgonColor.Black);
+                    sceneBuffer.Clear(GorgonColor.BlackTransparent);
                     _graphics.SetRenderTarget(sceneBuffer);
 
                     // Render the data.

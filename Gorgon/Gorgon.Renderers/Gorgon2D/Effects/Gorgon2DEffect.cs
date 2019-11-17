@@ -499,7 +499,6 @@ namespace Gorgon.Renderers
         /// <param name="index">The index of the pass.</param>
         /// <param name="output">The final output target.</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is less than 0, or not less than <see cref="PassCount"/>.</exception>
-        /// <exception cref="GorgonException">Thrown if <see cref="BeginRender"/> was not called prior to calling this method.</exception>
         /// <remarks>
         /// <para>
         /// This is called to notify the effect that the pass is now finished rendering and that we can move on to a new pass (or finish rendering completely if that's what's required). This method is 
@@ -519,12 +518,7 @@ namespace Gorgon.Renderers
         {
             index.ValidateRange(nameof(index), 0, PassCount);
 
-            if (_currentEffect == null)
-            {
-                throw new GorgonException(GorgonResult.NotInitialized, Resources.GOR2D_ERR_EFFECT_BEGIN_RENDER_NOT_CALLED);
-            }
-
-            if (!_isRenderingPass)
+            if ((!_isRenderingPass) || (_currentEffect == null))
             {
                 return;
             }

@@ -30,6 +30,7 @@ using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Properties;
+using System.Threading;
 
 namespace Gorgon.Renderers
 {
@@ -67,6 +68,8 @@ namespace Gorgon.Renderers
         private GorgonRenderTargetView _originalTarget;
         // Flag to indicate whether the effect has been initialized or not.
         private bool _initialized;
+        // The macro sent to the shader to enable using array indices.
+        private readonly GorgonShaderMacro _useArrayMacro = new GorgonShaderMacro("USE_ARRAY");
 
         // The texture information for the main GBuffer targets.
         private readonly GorgonTexture2DInfo _mainInfo = new GorgonTexture2DInfo("GBuffer")
@@ -162,8 +165,6 @@ namespace Gorgon.Renderers
         /// <param name="camera">The camera used to transform the lights to camera space.</param>
         private void OnBeginRender(GorgonBlendState blendState, GorgonDepthStencilState depthStencilState, GorgonRasterState rasterState, IGorgon2DCamera camera)
         {
-            _originalTarget = Graphics.RenderTargets[0];
-
             BeginRender(_target[0], blendState, depthStencilState, rasterState);
             BeginPass(0, _target[0], camera);
         }
@@ -174,9 +175,12 @@ namespace Gorgon.Renderers
         protected override void Dispose(bool disposing)
         {
             UnloadGBuffer();
+
+            GorgonConstantBufferView paramsBuffer = Interlocked.Exchange(ref _params, null);
+            GorgonPixelShader pixelShader = Interlocked.Exchange(ref _pixelShader, null);
             
-            _params?.Dispose();
-            _pixelShader?.Dispose();
+            paramsBuffer?.Dispose();
+            pixelShader?.Dispose();
         }
 
         /// <summary>Function called to build a new (or return an existing) 2D batch state.</summary>
@@ -210,7 +214,7 @@ namespace Gorgon.Renderers
                 Macros.Clear();
                 if (_useArray)
                 {
-                    Macros.Add(new GorgonShaderMacro("USE_ARRAY"));
+                    Macros.Add(_useArrayMacro);
                 }
 
                 _pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Resources.GBuffer, "GorgonPixelShaderGBuffer", GorgonGraphics.IsDebugEnabled, Macros);
@@ -262,6 +266,8 @@ namespace Gorgon.Renderers
         /// </remarks>
         protected override void OnBeforeRender(GorgonRenderTargetView output, bool sizeChanged)
         {
+            _originalTarget = Graphics.RenderTargets[0];
+
             if (sizeChanged)
             {
                 Resize(output.Width, output.Height);
@@ -269,6 +275,14 @@ namespace Gorgon.Renderers
 
             Graphics.SetRenderTargets(_target, Graphics.DepthStencilView);
         }
+
+        /// <summary>Function called after rendering is complete.</summary>
+        /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+        /// <remarks>
+        /// This method is called after all passes are finished and the effect is ready to complete its rendering. Developers should override this method to finalize any custom rendering. For example
+        /// an effect author can use this method to render the final output of an effect to the final render target.
+        /// </remarks>
+        protected override void OnAfterRender(GorgonRenderTargetView output) => Graphics.SetRenderTarget(_originalTarget, Graphics.DepthStencilView);
 
         /// <summary>Function called to initialize the effect.</summary>
         /// <remarks>
@@ -400,9 +414,7 @@ namespace Gorgon.Renderers
         public void End()
         {
             EndPass(0, _target[0]);
-            EndRender(_target[0]);
-                        
-            Graphics.SetRenderTarget(_originalTarget, Graphics.DepthStencilView);
+            EndRender(_target[0]);                        
         }
         #endregion
 

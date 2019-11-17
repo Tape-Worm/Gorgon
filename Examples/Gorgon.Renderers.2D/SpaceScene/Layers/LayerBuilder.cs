@@ -169,7 +169,7 @@ namespace Gorgon.Examples
                     new SpriteEntity("BigShip")
                     {
                         Sprite = resources.Sprites["BigShip"],
-                        Color = GorgonColor.White, // Make this a bit darker so that we can light it using per-pixel lighting.
+                        Color = GorgonColor.White,
                         Rotation = -95.0f,
                         IsLit = true,
                         Visible = false
@@ -177,7 +177,7 @@ namespace Gorgon.Examples
                     new SpriteEntity("BigShip_Illum")
                     {
                         Sprite = resources.Sprites["BigShip_Illum"],
-                        Color = GorgonColor.YellowPure,
+                        Color = GorgonColor.YellowPure * 0.7f,
                         Rotation = -95.0f,
                         IsLit = false,
                         Visible = false,
@@ -194,7 +194,7 @@ namespace Gorgon.Examples
                     new SpriteEntity("Fighter")
                     {
                         Sprite = resources.Sprites["Fighter"],
-                        Color = GorgonColor.White, // Make this a bit darker so that we can light it using per-pixel lighting.
+                        Color = GorgonColor.White,
                         Rotation = -45.0f,
                         IsLit = true
                     }

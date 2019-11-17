@@ -261,7 +261,7 @@ namespace Gorgon.Examples
 
             var deferredLighting = new Gorgon2DLightingEffect(_renderer);
             var gbuffer = new Gorgon2DGBuffer(_renderer, 1280, 800);
-            deferredLighting.AmbientColor = new GorgonColor(0.03f, 0.03f, 0.03f, 1.0f);
+            deferredLighting.AmbientColor = new GorgonColor(0.025f, 0.025f, 0.025f, 1.0f);
             _effects[nameof(bloom)] = bloom;
             _effects[nameof(chromatic)] = chromatic;
             _effects[nameof(deferredLighting)] = deferredLighting;

@@ -158,16 +158,13 @@ namespace Gorgon.Renderers
         private readonly LightData[] _lightData = new LightData[MaxLightCount];
         // The last light count.
         private int _lastLightCount;
-        // The global data for the effect.
-        private GlobalEffectData _globalData = new GlobalEffectData
-        {
-            AmbientColor = GorgonColor.Gray10
-        };
-
         // The macro to pass in when using array indices instead of separate textures.
         private readonly GorgonShaderMacro _arrayMacro = new GorgonShaderMacro("USE_ARRAY");
         // The data to pass to the effect.
-        private GlobalEffectData _effectData;
+        private GlobalEffectData _effectData = new GlobalEffectData
+        {
+            AmbientColor = GorgonColor.Black
+        };
         // Flag to indicate whether separate textures are being used or array indices.
         private bool _usingArray;
         // The currently active render target view.
@@ -203,7 +200,11 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the global ambient color.
         /// </summary>
-        public ref GorgonColor AmbientColor => ref _globalData.AmbientColor;
+        public GorgonColor AmbientColor
+        {
+            get => _effectData.AmbientColor;
+            set => _effectData.AmbientColor = value;
+        }
 
         /// <summary>
         /// Property to return the list of point lights for rendering.
@@ -253,13 +254,14 @@ namespace Gorgon.Renderers
         /// <param name="depthStencilState">A user defined depth/stencil state to apply when rendering.</param>
         /// <param name="rasterState">A user defined rasterizer state to apply when rendering.</param>
         /// <param name="camera">The camera used to transform the lights to camera space.</param>
-        private void OnBeginRender(GorgonBlendState blendState, GorgonDepthStencilState depthStencilState, GorgonRasterState rasterState, IGorgon2DCamera camera)
+        /// <returns>A flag indicate whether to continue rendering or not.</returns>
+        private PassContinuationState OnBeginRender(GorgonBlendState blendState, GorgonDepthStencilState depthStencilState, GorgonRasterState rasterState, IGorgon2DCamera camera)
         {
             DX.Matrix viewMatrix = DX.Matrix.Identity;
 
             if (Lights.Count == 0)
             {
-                return;
+                return PassContinuationState.Stop;
             }
 
             if (camera != null)
@@ -283,7 +285,7 @@ namespace Gorgon.Renderers
 
             _lightBuffer.Buffer.SetData(_lightData, count: Lights.Count);
 
-            BeginPass(0, _currentRtv);
+            return BeginPass(0, _currentRtv);
         }
 
         /// <summary>
@@ -294,7 +296,11 @@ namespace Gorgon.Renderers
         /// <param name="camera">The camera used to transform the lights to camera space.</param>
         private void OnRender(GorgonTexture2DView diffuse, GorgonRenderTargetView output, IGorgon2DCamera camera)
         {
-            OnBeginRender(null, null, null, camera);
+            if (OnBeginRender(null, null, null, camera) != PassContinuationState.Continue)
+            {
+                return;
+            }
+
             Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height),
                                         GorgonColor.White,
                                         diffuse,
@@ -423,8 +429,6 @@ namespace Gorgon.Renderers
         protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, IGorgon2DCamera camera)
         {
             var cameraPos = new DX.Vector4(output.Width * 0.5f, output.Height * 0.5f, SpecularZDistance, 0);
-
-            _effectData.AmbientColor = AmbientColor;
 
             // If no custom camera is in use, we need to pass in our default viewing information which is normally the output width, and height (by half), and an arbitrary Z value so 
             // the camera position isn't intersecting with the drawing plane (+ height information). Otherwise, our specular hilight will look really messed up.
