@@ -62,6 +62,7 @@ namespace Gorgon.IO.Providers
     public interface IGorgonFileSystemProvider
         : IGorgonNamedObject
     {
+        #region Properties.
         /// <summary>
         /// Property to return the path to the provider assembly (if applicable).
         /// </summary>
@@ -114,6 +115,24 @@ namespace Gorgon.IO.Providers
         {
             get;
         }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to return the virtual file system path from a physical file system path.
+        /// </summary>
+        /// <param name="physicalPath">Physical path to the file/folder.</param>
+        /// <param name="mountPoint">The mount point used to map the physical path.</param>
+        /// <returns>The virtual file system path.</returns>
+        string MapToVirtualPath(string physicalPath, GorgonFileSystemMountPoint mountPoint);
+
+        /// <summary>
+        /// Function to return the physical file system path from a virtual file system path.
+        /// </summary>
+        /// <param name="virtualPath">Virtual path to the file/folder.</param>
+        /// <param name="mountPoint">The mount point used to map the physical path.</param>
+        /// <returns>The physical file system path.</returns>
+        string MapToPhysicalPath(string virtualPath, GorgonFileSystemMountPoint mountPoint);
 
         /// <summary>
         /// Function to enumerate the files and directories from a physical location and map it to a virtual location.
@@ -168,5 +187,6 @@ namespace Gorgon.IO.Providers
         /// </para>
         /// </remarks>
         bool CanReadFileSystem(string physicalPath);
+        #endregion
     }
 }

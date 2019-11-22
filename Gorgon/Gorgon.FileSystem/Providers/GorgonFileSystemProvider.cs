@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.IO.Properties;
@@ -265,6 +266,58 @@ namespace Gorgon.IO.Providers
         /// </para>
         /// </remarks>
         protected virtual GorgonPhysicalFileSystemData OnEnumerate(string physicalLocation, IGorgonVirtualDirectory mountPoint) => new GorgonPhysicalFileSystemData(EnumerateDirectories(physicalLocation, mountPoint), EnumerateFiles(physicalLocation, mountPoint));
+
+        /// <summary>
+        /// Function to return the physical file system path from a virtual file system path.
+        /// </summary>
+        /// <param name="virtualPath">Virtual path to the file/folder.</param>
+        /// <param name="mountPoint">The mount point used to map the physical path.</param>
+        /// <returns>The physical file system path.</returns>
+        protected virtual string OnGetPhysicalPath(string virtualPath, GorgonFileSystemMountPoint mountPoint)
+        {
+            var result = new StringBuilder(virtualPath, 256);
+
+            result.Replace("/", GorgonFileSystem.PhysicalDirSeparator);
+            result.Insert(0, mountPoint.PhysicalPath.FormatDirectory(GorgonFileSystem.PhysicalDirSeparator[0]));
+
+            return result.ToString();
+        }
+
+        /// <summary>
+        /// Function to return the virtual file system path from a physical file system path.
+        /// </summary>
+        /// <param name="physicalPath">Physical path to the file/folder.</param>
+        /// <param name="mountPoint">The mount point used to map the physical path.</param>
+        /// <returns>The virtual file system path.</returns>
+        public string MapToVirtualPath(string physicalPath, GorgonFileSystemMountPoint mountPoint) => MapToVirtualPath(physicalPath, mountPoint.PhysicalPath, mountPoint.MountLocation);
+
+        /// <summary>
+        /// Function to return the physical file system path from a virtual file system path.
+        /// </summary>
+        /// <param name="virtualPath">Virtual path to the file/folder.</param>
+        /// <param name="mountPoint">The mount point used to map the physical path.</param>
+        /// <returns>The physical file system path.</returns>
+        public string MapToPhysicalPath(string virtualPath, GorgonFileSystemMountPoint mountPoint)
+        {
+            if ((string.IsNullOrWhiteSpace(virtualPath))
+                || (string.IsNullOrWhiteSpace(mountPoint.PhysicalPath))
+                || (string.IsNullOrWhiteSpace(mountPoint.MountLocation)))
+            {
+                return string.Empty;
+            }
+
+            if (virtualPath.StartsWith("/", StringComparison.OrdinalIgnoreCase))
+            {
+                virtualPath = virtualPath.Substring(1);
+            }
+
+            if (string.IsNullOrWhiteSpace(virtualPath))
+            {
+                return mountPoint.PhysicalPath;
+            }
+
+            return OnGetPhysicalPath(virtualPath, mountPoint);
+        }
 
         /// <summary>
         /// Function to enumerate the files and directories from a physical location and map it to a virtual location.

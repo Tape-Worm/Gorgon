@@ -335,6 +335,50 @@ namespace Gorgon.IO
         void Refresh();
 
         /// <summary>
+        /// Function to reload all the files and directories within, and optionally, under the specified directory.
+        /// </summary> 
+        /// <param name="path">The path to the directory to refresh.</param>
+        /// <remarks>
+        /// <para>
+        /// Any files or directories sharing the same path as those in the <see cref="IGorgonFileSystemWriter{T}"/> will be restored if they were deleted. This is because the physical file systems (other 
+        /// than the write area) are never changed. For example:
+        /// <para>
+        /// <code language="csharp">
+        /// <![CDATA[
+        /// // Let's assume this contains a file called "MyBudget.xls"
+        /// fileSystem.Mount(@"C:\MountDirectory\", "/");
+        /// 
+        /// // Copy an external file into out mounted directory.
+        /// File.Copy(@"C:\OtherData\MyBudget.xls", "C:\MountDirectory\Files\");
+        /// 
+        /// // Get the file...
+        /// IGorgonVirtualFile file = fileSystem.GetFile("/Files/MyBudget.xls");
+        /// 
+        /// // The file does not exist yet because the file system has no idea that it's been added.
+        /// if (file == null)
+        /// {
+        ///    Console.WriteLine("File does not exist.");
+        /// }
+        /// 
+        /// // Now refresh the file system...
+        /// fileSystem.Refresh("/Files/");
+        /// 
+        /// // Get the file... again.
+        /// IGorgonVirtualFile file = fileSystem.GetFile("/Files/MyBudget.xls");
+        /// 
+        /// // The file will now show up in the directory.
+        /// if (file != null)
+        /// {
+        ///    Console.WriteLine("File exists.");
+        /// }
+        /// ]]>
+        /// </code>
+        /// </para>
+        /// </para>
+        /// </remarks>
+        void Refresh(string path);
+
+        /// <summary>
         /// Function to unmount the mounted virtual file system directories and files specified by the mount point.
         /// </summary>
         /// <param name="mountPoint">The mount point to unmount.</param>
@@ -347,7 +391,7 @@ namespace Gorgon.IO
         /// When passing the <paramref name="mountPoint"/> parameter, users should pass the return value from the <see cref="Mount"/> method.
         /// </para>
         /// <para>
-        /// Since the mount order overrides any existing directories or files with the same paths, those files/directories will not be restored. A user should call the <see cref="Refresh"/> method if they 
+        /// Since the mount order overrides any existing directories or files with the same paths, those files/directories will not be restored. A user should call the <see cref="Refresh()"/> method if they 
         /// wish to restore any file/directory entries.
         /// </para>
         /// </remarks>
@@ -371,7 +415,7 @@ namespace Gorgon.IO
         /// Unlike the <see cref="O:Gorgon.IO.IGorgonFileSystem.Unmount">Unmount</see> overloads, this method will unmount all mount points with the specified <paramref name="physicalPath"/> and <paramref name="mountLocation"/>.
         /// </para>
         /// <para>
-        /// Since the mount order overrides any existing directories or files with the same paths, those files/directories will not be restored. A user should call the <see cref="Refresh"/> method if they 
+        /// Since the mount order overrides any existing directories or files with the same paths, those files/directories will not be restored. A user should call the <see cref="Refresh()"/> method if they 
         /// wish to restore any file/directory entries.
         /// </para>
         /// </remarks>
@@ -395,7 +439,7 @@ namespace Gorgon.IO
         /// Unlike the <see cref="O:Gorgon.IO.IGorgonFileSystem.Unmount">Unmount</see> overloads, this method will unmount all mount points containing the path specified by the <paramref name="physicalPath"/>.
         /// </para>
         /// <para>
-        /// Since the mount order overrides any existing directories or files with the same paths, those files/directories will not be restored. A user should call the <see cref="Refresh"/> method if they 
+        /// Since the mount order overrides any existing directories or files with the same paths, those files/directories will not be restored. A user should call the <see cref="Refresh()"/> method if they 
         /// wish to restore any file/directory entries.
         /// </para>
         /// </remarks>

@@ -206,6 +206,18 @@ namespace Gorgon.IO.Providers
 
             return OnOpenFileStream(file);
         }
+
+        /// <summary>Function to return the virtual file system path from a physical file system path.</summary>
+        /// <param name="physicalPath">Physical path to the file/folder.</param>
+        /// <param name="mountPoint">The mount point used to map the physical path.</param>
+        /// <returns>The virtual file system path.</returns>        
+        public string MapToVirtualPath(string physicalPath, GorgonFileSystemMountPoint mountPoint) => physicalPath;
+
+        /// <summary>Function to return the physical file system path from a virtual file system path.</summary>
+        /// <param name="virtualPath">Virtual path to the file/folder.</param>
+        /// <param name="mountPoint">The mount point used to map the physical path.</param>
+        /// <returns>The physical file system path.</returns>
+        public string MapToPhysicalPath(string virtualPath, GorgonFileSystemMountPoint mountPoint) => virtualPath;
         #endregion
 
         #region Constructor/Finalizer.

@@ -110,6 +110,12 @@ namespace Gorgon.IO.Zip
             return new GorgonPhysicalFileSystemData(directories, files);
         }
 
+        /// <summary>Function to return the physical file system path from a virtual file system path.</summary>
+        /// <param name="virtualPath">Virtual path to the file/folder.</param>
+        /// <param name="mountPoint">The mount point used to map the physical path.</param>
+        /// <returns>The physical file system path.</returns>
+        protected override string OnGetPhysicalPath(string virtualPath, GorgonFileSystemMountPoint mountPoint) => mountPoint.PhysicalPath;
+
         /// <summary>
         /// Function to open a stream to a file on the physical file system from the <see cref="IGorgonVirtualFile"/> passed in.
         /// </summary>

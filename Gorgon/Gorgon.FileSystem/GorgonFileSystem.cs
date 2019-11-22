@@ -827,6 +827,119 @@ namespace Gorgon.IO
         public IGorgonVirtualDirectory GetDirectory(string path) => InternalGetDirectory(path);
 
         /// <summary>
+        /// Function to reload all the files and directories within, and optionally, under the specified directory.
+        /// </summary> 
+        /// <param name="path">The path to the directory to refresh.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+        /// <exception cref="DirectoryNotFoundException">Thrown when the <paramref name="path"/> points to a directory that does not exist.</exception>
+        /// <remarks>
+        /// <para>
+        /// Any files or directories sharing the same path as those in the <see cref="IGorgonFileSystemWriter{T}"/> will be restored if they were deleted. This is because the physical file systems (other 
+        /// than the write area) are never changed. For example:
+        /// <para>
+        /// <code language="csharp">
+        /// <![CDATA[
+        /// // Let's assume this contains a file called "MyBudget.xls"
+        /// fileSystem.Mount(@"C:\MountDirectory\", "/");
+        /// 
+        /// // Copy an external file into out mounted directory.
+        /// File.Copy(@"C:\OtherData\MyBudget.xls", "C:\MountDirectory\Files\");
+        /// 
+        /// // Get the file...
+        /// IGorgonVirtualFile file = fileSystem.GetFile("/Files/MyBudget.xls");
+        /// 
+        /// // The file does not exist yet because the file system has no idea that it's been added.
+        /// if (file == null)
+        /// {
+        ///    Console.WriteLine("File does not exist.");
+        /// }
+        /// 
+        /// // Now refresh the file system...
+        /// fileSystem.Refresh("/Files/");
+        /// 
+        /// // Get the file... again.
+        /// IGorgonVirtualFile file = fileSystem.GetFile("/Files/MyBudget.xls");
+        /// 
+        /// // The file will now show up in the directory.
+        /// if (file != null)
+        /// {
+        ///    Console.WriteLine("File exists.");
+        /// }
+        /// ]]>
+        /// </code>
+        /// </para>
+        /// </para>
+        /// </remarks>
+        public void Refresh(string path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentEmptyException(nameof(path));
+            }
+
+            VirtualDirectory directory = InternalGetDirectory(path);
+
+            if (directory == null)
+            {
+                throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path));
+            }
+
+            if (path == "/")
+            {
+                Refresh();
+                return;
+            }
+
+            directory.Directories.Clear();
+            directory.Files.Clear();
+
+            string physicalPath = directory.MountPoint.Provider.MapToPhysicalPath(path, directory.MountPoint).FormatDirectory(PhysicalDirSeparator[0]);
+
+            if (string.Equals(physicalPath, directory.MountPoint.PhysicalPath, StringComparison.OrdinalIgnoreCase))
+            {
+                Refresh();
+                return;
+            }
+
+            GorgonPhysicalFileSystemData fsData = directory.MountPoint.Provider.Enumerate(physicalPath, directory);
+
+            if ((fsData.Directories.Count == 0) && (fsData.Files.Count == 0))
+            {
+                return;
+            }
+
+            foreach (string dirPath in fsData.Directories)
+            {
+                InternalRootDirectory.Directories.Add(directory.MountPoint, dirPath);
+            }
+
+            foreach (IGorgonPhysicalFileInfo file in fsData.Files)
+            {
+                string directoryName = Path.GetDirectoryName(file.VirtualPath).FormatDirectory('/');
+
+                if (!directoryName.StartsWith("/"))
+                {
+                    directoryName += "/";
+                }
+
+                VirtualDirectory subDirectory = InternalGetDirectory(directoryName);
+
+                if (subDirectory == null)
+                {
+                    throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, directoryName));
+                }
+
+                subDirectory.Files.Add(directory.MountPoint, file);
+            }
+        }
+
+        /// <summary>
         /// Function to reload all the files and directories in the file system.
         /// </summary> 
         /// <remarks>
@@ -896,7 +1009,7 @@ namespace Gorgon.IO
         /// When passing the <paramref name="mountPoint"/> parameter, users should pass the return value from the <see cref="IGorgonFileSystem.Mount"/> method.
         /// </para>
         /// <para>
-        /// Since the mount order overrides any existing directories or files with the same paths, those files/directories will not be restored. A user should call the <see cref="IGorgonFileSystem.Refresh"/> method if they 
+        /// Since the mount order overrides any existing directories or files with the same paths, those files/directories will not be restored. A user should call the <see cref="IGorgonFileSystem.Refresh()"/> method if they 
         /// wish to restore any file/directory entries.
         /// </para>
         /// </remarks>
@@ -1001,7 +1114,7 @@ namespace Gorgon.IO
         /// Unlike the <see cref="O:Gorgon.IO.IGorgonFileSystem.Unmount">Unmount</see> overloads, this method will unmount all mount points with the specified <paramref name="physicalPath"/> and <paramref name="mountLocation"/>.
         /// </para>
         /// <para>
-        /// Since the mount order overrides any existing directories or files with the same paths, those files/directories will not be restored. A user should call the <see cref="IGorgonFileSystem.Refresh"/> method if they 
+        /// Since the mount order overrides any existing directories or files with the same paths, those files/directories will not be restored. A user should call the <see cref="IGorgonFileSystem.Refresh()"/> method if they 
         /// wish to restore any file/directory entries.
         /// </para>
         /// </remarks>
@@ -1042,7 +1155,7 @@ namespace Gorgon.IO
         /// Unlike the <see cref="O:Gorgon.IO.IGorgonFileSystem.Unmount">Unmount</see> overloads, this method will unmount all mount points containing the path specified by the <paramref name="physicalPath"/>.
         /// </para>
         /// <para>
-        /// Since the mount order overrides any existing directories or files with the same paths, those files/directories will not be restored. A user should call the <see cref="IGorgonFileSystem.Refresh"/> method if they 
+        /// Since the mount order overrides any existing directories or files with the same paths, those files/directories will not be restored. A user should call the <see cref="IGorgonFileSystem.Refresh()"/> method if they 
         /// wish to restore any file/directory entries.
         /// </para>
         /// </remarks>

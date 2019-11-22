@@ -368,17 +368,17 @@ namespace Gorgon.IO
         /// </para>
         /// <para>
         /// When a directory is removed from the <see cref="IGorgonFileSystemWriter{T}.FileSystem"/>, it will be removed all mounted file systems. However, the actual directory in the physical file systems will not be touched and the 
-        /// deleted directory may be restored with a call to <see cref="IGorgonFileSystem.Refresh"/>. 
+        /// deleted directory may be restored with a call to <see cref="IGorgonFileSystem.Refresh()"/>. 
         /// </para>
         /// <para>
         /// <note type="important">
         /// <para>
-        /// When restoring files with <see cref="IGorgonFileSystem.Refresh"/>, only the file system object will be updated. The method will not restore any deleted directories in the <see cref="IGorgonFileSystemWriter{T}.WriteLocation"/>.
+        /// When restoring files with <see cref="IGorgonFileSystem.Refresh()"/>, only the file system object will be updated. The method will not restore any deleted directories in the <see cref="IGorgonFileSystemWriter{T}.WriteLocation"/>.
         /// </para>
         /// </note>
         /// </para>
         /// </remarks>
-        /// <seealso cref="IGorgonFileSystem.Refresh"/>
+        /// <seealso cref="IGorgonFileSystem.Refresh()"/>
         public void DeleteDirectory(string path)
         {
             if (path == null)
@@ -425,12 +425,12 @@ namespace Gorgon.IO
         /// </para>
         /// <para>
         /// When a file is removed from the <see cref="IGorgonFileSystemWriter{T}.FileSystem"/>, it will be removed all mounted file systems. However, the actual file in the physical file systems will not be touched and the 
-        /// deleted file may be restored with a call to <see cref="IGorgonFileSystem.Refresh"/>. 
+        /// deleted file may be restored with a call to <see cref="IGorgonFileSystem.Refresh()"/>. 
         /// </para>
         /// <para>
         /// <note type="important">
         /// <para>
-        /// When restoring files with <see cref="IGorgonFileSystem.Refresh"/>, only the file system object will be updated. The method will not restore any deleted files in the <see cref="IGorgonFileSystemWriter{T}.WriteLocation"/>.
+        /// When restoring files with <see cref="IGorgonFileSystem.Refresh()"/>, only the file system object will be updated. The method will not restore any deleted files in the <see cref="IGorgonFileSystemWriter{T}.WriteLocation"/>.
         /// </para>
         /// </note>
         /// </para>
@@ -582,7 +582,7 @@ namespace Gorgon.IO
         /// <para>
         /// If another physical file system has files or directories with the same path as one in the write area, then they will be removed from the file system as well since the last mounted file system 
         /// (including the write area) will override the previous entries. To refresh and retrieve those items from the currently mounted file systems after unmounting the write area, call the 
-        /// <see cref="IGorgonFileSystem.Refresh"/> method.
+        /// <see cref="IGorgonFileSystem.Refresh()"/> method.
         /// </para>
         /// </remarks>
         public void Unmount()
