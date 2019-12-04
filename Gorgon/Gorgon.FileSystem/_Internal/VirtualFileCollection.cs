@@ -189,12 +189,12 @@ namespace Gorgon.IO
         }
 
         /// <summary>
-        /// Function to return the internal enumerable for this collection.
+        /// Function to return the concrete file types for this collection.
         /// </summary>
         /// <returns>
         /// The <see cref="IEnumerable{T}"/> for this collection.
         /// </returns>
-        internal IEnumerable<VirtualFile> InternalEnumerable() => _files.Select(item => item.Value);
+        public IEnumerable<VirtualFile> GetVirtualFiles() => _files.Select(item => item.Value);
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
@@ -202,7 +202,7 @@ namespace Gorgon.IO
         /// <returns>
         /// A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
         /// </returns>
-        public IEnumerator<IGorgonVirtualFile> GetEnumerator() => _files.Select(fileEntry => fileEntry.Value).GetEnumerator();
+        public IEnumerator<IGorgonVirtualFile> GetEnumerator() => GetVirtualFiles().GetEnumerator();
 
         /// <summary>
         /// Returns an enumerator that iterates through a collection.

@@ -382,9 +382,9 @@ namespace Gorgon.Editor.ImageEditor
             // Copy to a working file.
             using (Stream outStream = ScratchArea.OpenStream(name, FileMode.Create))
             {
-                file.CopyTo(outStream);
-                workFile = ScratchArea.FileSystem.GetFile(name);
+                file.CopyTo(outStream);                
             }
+            workFile = ScratchArea.FileSystem.GetFile(name);
 
             _log.Print($"{workFile.FullPath} is now the working file for the image editor.", LoggingLevel.Intermediate);
 

@@ -57,5 +57,13 @@ namespace Gorgon.Editor.UI.ViewModels
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the clipboard handler for the view model.
+        /// </summary>
+        IClipboardHandler Clipboard
+        {
+            get;
+        }
     }
 }

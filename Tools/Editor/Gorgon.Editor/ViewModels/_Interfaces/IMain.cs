@@ -56,7 +56,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the current clipboard context.
         /// </summary>
-        IClipboardHandler ClipboardContext
+        Olde_IClipboardHandler ClipboardContext
         {
             get;
         }

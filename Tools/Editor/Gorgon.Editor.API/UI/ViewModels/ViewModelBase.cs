@@ -40,6 +40,11 @@ namespace Gorgon.Editor.UI
         : PropertyMonitor, IViewModel
         where T : class, IViewModelInjection
     {
+        #region Variables.
+        // The clipboard handler for the view model.
+        private IClipboardHandler _clipboard;
+        #endregion
+
         #region Events.
         /// <summary>
         /// Event triggered when a wait overlay panel needs to be activated.
@@ -70,6 +75,23 @@ namespace Gorgon.Editor.UI
         {
             get;
             private set;
+        }
+
+        /// <summary>Property to return the clipboard handler for this view model.</summary>
+        public IClipboardHandler Clipboard
+        {
+            get => _clipboard;
+            private set
+            {
+                if (_clipboard == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _clipboard = value;
+                OnPropertyChanged();
+            }
         }
         #endregion
 
@@ -206,8 +228,9 @@ namespace Gorgon.Editor.UI
             {
                 throw new ArgumentNullException(nameof(injectionParameters));
             }
-
+            
             Log = injectionParameters.Log ?? GorgonLog.NullLog;
+            Clipboard = injectionParameters.Clipboard;
 
             OnInitialize(injectionParameters);
         }

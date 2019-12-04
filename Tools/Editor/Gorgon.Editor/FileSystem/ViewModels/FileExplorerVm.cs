@@ -51,7 +51,7 @@ namespace Gorgon.Editor.ViewModels
     /// The file explorer view model.
     /// </summary>
     internal class FileExplorerVm
-        : ViewModelBase<FileExplorerParameters>, IFileExplorerVm, IClipboardHandler, IContentFileManager
+        : ViewModelBase<FileExplorerParameters>, IFileExplorerVm, Olde_IClipboardHandler, IContentFileManager
     {
         #region Events.
         // Event triggered when the clipboard is updated from the file explorer.
@@ -60,7 +60,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Event triggered when data is stored or cleared on the clipboard.
         /// </summary>
-        event EventHandler IClipboardHandler.DataUpdated
+        event EventHandler Olde_IClipboardHandler.DataUpdated
         {
             add => ClipboardUpdated += value;
             remove => ClipboardUpdated -= value;
@@ -1986,19 +1986,19 @@ namespace Gorgon.Editor.ViewModels
         /// Function to return whether or not the item can use the cut functionality for the clipboard.
         /// </summary>
         /// <returns><b>true</b> if the clipboard handler can cut an item, <b>false</b> if not.</returns>
-        bool IClipboardHandler.CanCut() => (SelectedNode != null) && (SelectedNode.AllowDelete) && ((SearchResults?.Count ?? 0) == 0) && (SelectedNode.NodeType != NodeType.Link);
+        bool Olde_IClipboardHandler.CanCut() => (SelectedNode != null) && (SelectedNode.AllowDelete) && ((SearchResults?.Count ?? 0) == 0) && (SelectedNode.NodeType != NodeType.Link);
 
         /// <summary>
         /// Function to return whether or not the item can use the copy functionality for the clipboard.
         /// </summary>
         /// <returns><b>true</b> if the clipboard handler can copy an item, <b>false</b> if not.</returns>
-        bool IClipboardHandler.CanCopy() => SelectedNode != null && ((SearchResults?.Count ?? 0) == 0) && (SelectedNode.NodeType != NodeType.Link);
+        bool Olde_IClipboardHandler.CanCopy() => SelectedNode != null && ((SearchResults?.Count ?? 0) == 0) && (SelectedNode.NodeType != NodeType.Link);
 
         /// <summary>
         /// Function to return whether or not the item can use the paste functionality for the clipboard.
         /// </summary>
         /// <returns><b>true</b> if the clipboard handler can paste an item, <b>false</b> if not.</returns>
-        bool IClipboardHandler.CanPaste()
+        bool Olde_IClipboardHandler.CanPaste()
         {
             if ((_searchResults != null) || (!_clipboard.IsType<FileSystemClipboardData>()))
             {
@@ -2032,7 +2032,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to store an item to copy onto the clipboard for cutting.
         /// </summary>
-        void IClipboardHandler.Cut()
+        void Olde_IClipboardHandler.Cut()
         {
             EventHandler handler = ClipboardUpdated;
 
@@ -2057,7 +2057,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to store an item to copy onto the clipboard.
         /// </summary>
-        void IClipboardHandler.Copy()
+        void Olde_IClipboardHandler.Copy()
         {
             EventHandler handler = ClipboardUpdated;
 
@@ -2082,7 +2082,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to paste an item from the clipboard.
         /// </summary>
-        async void IClipboardHandler.Paste()
+        async void Olde_IClipboardHandler.Paste()
         {
             EventHandler handler = ClipboardUpdated;
 
@@ -2146,7 +2146,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="dragData">The drag/drop data.</param>
         /// <param name="afterDrop">[Optional] The method to execute after the drop operation is completed.</param>
-        async void IDragDropHandler<IFileExplorerNodeDragData>.Drop(IFileExplorerNodeDragData dragData, Action afterDrop)
+        async void Olde_IDragDropHandler<IFileExplorerNodeDragData>.Drop(IFileExplorerNodeDragData dragData, Action afterDrop)
         {
             try
             {
@@ -2176,7 +2176,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="dragData">The drag/drop data.</param>
         /// <returns>System.Boolean.</returns>
-        bool IDragDropHandler<IFileExplorerNodeDragData>.CanDrop(IFileExplorerNodeDragData dragData)
+        bool Olde_IDragDropHandler<IFileExplorerNodeDragData>.CanDrop(IFileExplorerNodeDragData dragData)
         {
             try
             {
@@ -2194,7 +2194,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="dragData">The drag/drop data.</param>
         /// <param name="afterDrop">[Optional] The method to execute after the drop operation is completed.</param>
-        async void IDragDropHandler<IExplorerFilesDragData>.Drop(IExplorerFilesDragData dragData, Action afterDrop)
+        async void Olde_IDragDropHandler<IExplorerFilesDragData>.Drop(IExplorerFilesDragData dragData, Action afterDrop)
         {
             try
             {
@@ -2231,7 +2231,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="dragData">The drag/drop data.</param>
         /// <returns>System.Boolean.</returns>
-        bool IDragDropHandler<IExplorerFilesDragData>.CanDrop(IExplorerFilesDragData dragData)
+        bool Olde_IDragDropHandler<IExplorerFilesDragData>.CanDrop(IExplorerFilesDragData dragData)
         {
             try
             {

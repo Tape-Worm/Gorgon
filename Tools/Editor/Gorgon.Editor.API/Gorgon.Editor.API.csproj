@@ -105,13 +105,15 @@
       <DependentUpon>EditorSubPanelCommon.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Controls\_Interfaces\IContentFileExplorerSearchEntry.cs" />
-    <Compile Include="UI\ExplorerFilesDragData.cs" />
+    <Compile Include="UI\DarkFormsRenderer.cs" />
+    <Compile Include="UI\__OLDE__\Olde_ExplorerFilesDragData.cs" />
     <Compile Include="UI\Forms\FormName.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI\Forms\FormName.Designer.cs">
       <DependentUpon>FormName.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\GetClipboardDataTypeArgs.cs" />
     <Compile Include="UI\ViewModels\ViewModelInjection.cs" />
     <Compile Include="UI\Views\EditorToolBaseForm.cs">
       <SubType>Form</SubType>
@@ -146,7 +148,8 @@
     <Compile Include="UI\ZoomLevels.cs" />
     <Compile Include="UI\_Extensions\ZoomLevelExtensions.cs" />
     <Compile Include="UI\_Interfaces\IContentFileDragData.cs" />
-    <Compile Include="UI\_Interfaces\IDragDropHandler.cs" />
+    <Compile Include="UI\_Interfaces\IClipboardHandler.cs" />
+    <Compile Include="UI\__OLDE__\Olde_IDragDropHandler.cs" />
     <Compile Include="UI\_Interfaces\IEditorContent.cs" />
     <Compile Include="EditorCommonResources.cs" />
     <Compile Include="Plugins\ContentPlugin.cs" />
@@ -194,14 +197,14 @@
     <Compile Include="UI\Views\EditorBaseControl.Designer.cs">
       <DependentUpon>EditorBaseControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\_Interfaces\IClipboardHandler.cs" />
+    <Compile Include="UI\__OLDE__\Olde_IClipboardHandler.cs" />
     <Compile Include="UI\_Interfaces\IEditorAsyncCommand.cs" />
     <Compile Include="UI\_Interfaces\IEditorCommand.cs" />
     <Compile Include="UI\ViewModels\ViewModelBase.cs" />
     <Compile Include="UI\ViewModels\_Interfaces\IViewModel.cs" />
     <Compile Include="UI\Views\_Interfaces\IDataContext.cs" />
     <Compile Include="Services\_Interfaces\IEditorContentImporter.cs" />
-    <Compile Include="UI\_Interfaces\IExplorerFilesDragData.cs" />
+    <Compile Include="UI\__OLDE__\Olde_IExplorerFilesDragData.cs" />
     <Compile Include="UI\_Interfaces\IRibbonMerger.cs" />
     <Compile Include="UI\_Interfaces\ISettingsPanelViewModel.cs" />
     <Compile Include="UI\ViewModels\_Interfaces\IUndoCommand.cs" />
@@ -295,7 +298,7 @@
       <Version>5.472.1251</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
-      <Version>2.9.4</Version>
+      <Version>2.9.8</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -312,7 +315,7 @@
       <Version>4.3.1</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
-      <Version>4.5.2</Version>
+      <Version>4.7.0</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

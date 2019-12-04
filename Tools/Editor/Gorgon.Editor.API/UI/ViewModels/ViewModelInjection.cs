@@ -60,6 +60,12 @@ namespace Gorgon.Editor.UI.ViewModels
             get;
         }
 
+        /// <summary>Property to return the clipboard handler for the view model.</summary>
+        public IClipboardHandler Clipboard
+        {
+            get;
+        }
+
         /// <summary>Initializes a new instance of the <see cref="ViewModelInjection"/> class.</summary>
         /// <param name="copy">The objects to copy.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="copy"/> parameter is <b>null</b>.</exception>
@@ -79,12 +85,14 @@ namespace Gorgon.Editor.UI.ViewModels
         /// <param name="log">The log for the application.</param>
         /// <param name="busyService">The busy service for the application.</param>
         /// <param name="messageService">The message display service for the application..</param>
+        /// <param name="clipboardHandler">The clipboard handler for the view model.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public ViewModelInjection(IGorgonLog log, IBusyStateService busyService, IMessageDisplayService messageService)
+        public ViewModelInjection(IGorgonLog log, IBusyStateService busyService, IMessageDisplayService messageService, IClipboardHandler clipboardHandler)
         {
             Log = log ?? throw new ArgumentNullException(nameof(log));
             BusyService = busyService ?? throw new ArgumentNullException(nameof(busyService));
             MessageDisplay = messageService ?? throw new ArgumentNullException(nameof(messageService));
+            Clipboard = clipboardHandler;
         }
     }
 }

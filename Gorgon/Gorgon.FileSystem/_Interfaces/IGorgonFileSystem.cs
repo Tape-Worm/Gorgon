@@ -474,8 +474,8 @@ namespace Gorgon.IO
         /// <see cref="IGorgonFileSystemProviderFactory"/> instance.
         /// </para>
         /// <para>
-        /// The <paramref name="physicalPath"/> is usually a file or a directory on the operating system file system. But in some cases, this physical location may point to somewhere completely virtual 
-        /// (e.g. <see cref="GorgonFileSystemRamDiskProvider"/>). In order to mount data from those file systems, a provider-specific prefix must be prefixed to the parameter (see provider documentation 
+        /// The <paramref name="physicalPath"/> is usually a file or a directory on the operating system file system. But in some cases, this physical location may point to somewhere completely virtual. 
+        /// In order to mount data from those file systems, a provider-specific prefix must be prefixed to the parameter (see provider documentation 
         /// for the correct prefix). This prefix must always begin with <c>::\\</c>.
         /// </para>
         /// <para>

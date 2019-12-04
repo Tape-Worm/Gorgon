@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,33 +20,49 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: September 27, 2018 10:58:50 PM
+// Created: January 2, 2020 1:14:24 PM
 // 
 #endregion
 
-
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Gorgon.Core;
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.IO
 {
     /// <summary>
-    /// Defines functionality used to handle dragging and dropping.
+    /// Event arguments for the <see cref="IGorgonFileSystemWriter{T}.VirtualFileOpened"/> event.
     /// </summary>
-    /// <typeparam name="T">The type of data being dragged and dropped.</typeparam>
-    public interface IDragDropHandler<in T>
+    public class VirtualFileOpenedEventArgs
+        : EventArgs
     {
         /// <summary>
-        /// Function to determine if an object can be dropped.
+        /// Property to return the virtual file that represents the physical file.
         /// </summary>
-        /// <param name="dragData">The drag/drop data.</param>
-        /// <returns><b>true</b> if the data can be dropped, <b>false</b> if not.</returns>
-        bool CanDrop(T dragData);
+        public IGorgonVirtualFile VirtualFile
+        {
+            get;
+        }
 
         /// <summary>
-        /// Function to drop the payload for a drag drop operation.
+        /// Property to return the stream for the file.
         /// </summary>
-        /// <param name="dragData">The drag/drop data.</param>
-        /// <param name="afterDrop">[Optional] The method to execute after the drop operation is completed.</param>
-        void Drop(T dragData, Action afterDrop = null);
+        public Stream Stream
+        {
+            get;
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="VirtualFileOpenedEventArgs"/> class.</summary>
+        /// <param name="file">The virtual file that was opened.</param>
+        /// <param name="stream">The stream for the opened file.</param>
+        internal VirtualFileOpenedEventArgs(IGorgonVirtualFile file, Stream stream)
+        {
+            VirtualFile = file;
+            Stream = stream;
+        }
     }
 }

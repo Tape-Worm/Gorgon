@@ -57,6 +57,16 @@ namespace Gorgon.Editor.UI
         event EventHandler ProgressDeactivated;
         #endregion
 
+        #region Properties.
+        /// <summary>
+        /// Property to return the clipboard handler for this view model.
+        /// </summary>
+        IClipboardHandler Clipboard
+        {
+            get;
+        }
+        #endregion
+
         #region Methods.
         /// <summary>
         /// Function to notify when a property has been changed.

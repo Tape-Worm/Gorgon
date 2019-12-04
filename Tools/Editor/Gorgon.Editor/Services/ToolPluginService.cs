@@ -136,7 +136,7 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentNullException(nameof(pluginDir));
             }
 
-            IReadOnlyList<PlugInAssemblyState> assemblies = pluginCache.ValidateAndLoadAssemblies(pluginDir.GetFiles("*.dll"), Program.Log);
+            IReadOnlyList<PlugInAssemblyState> assemblies = pluginCache.ValidateAndLoadAssemblies(pluginDir.GetFiles("*.dll").Select(item => item.FullName), Program.Log);
 
             if (assemblies.Count > 0)
             {

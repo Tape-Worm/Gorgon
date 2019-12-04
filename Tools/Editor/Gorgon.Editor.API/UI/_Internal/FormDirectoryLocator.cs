@@ -29,7 +29,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using ComponentFactory.Krypton.Toolkit;
 using Gorgon.Math;
 using Gorgon.UI;
 
@@ -39,7 +38,7 @@ namespace Gorgon.Editor.UI
     /// A locator dialog to find a workspace directory.
     /// </summary>
     internal partial class FormDirectoryLocator
-        : KryptonForm
+        : Form
     {
         #region Events.
         /// <summary>

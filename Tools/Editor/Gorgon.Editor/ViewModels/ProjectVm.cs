@@ -46,7 +46,7 @@ namespace Gorgon.Editor.ViewModels
     /// The view model for the project editor interface.
     /// </summary>
     internal class ProjectVm
-        : ViewModelBase<ProjectVmParameters>, IProjectVm, IDragDropHandler<IContentFile>
+        : ViewModelBase<ProjectVmParameters>, IProjectVm, Olde_IDragDropHandler<IContentFile>
     {
         #region Constants.
         // The version of the window layout XML.
@@ -69,7 +69,7 @@ namespace Gorgon.Editor.ViewModels
         // The file explorer view model.
         private IFileExplorerVm _fileExplorer;
         // The current clipboard handler context.
-        private IClipboardHandler _clipboardContext;
+        private Olde_IClipboardHandler _clipboardContext;
         // The application project manager.
         private IProjectManager _projectManager;
         // The content plugin service.
@@ -202,7 +202,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to set or return the active clipboard handler context.
         /// </summary>
-        public IClipboardHandler ClipboardContext
+        public Olde_IClipboardHandler ClipboardContext
         {
             get => _clipboardContext;
             set
@@ -1013,12 +1013,12 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="dragData">The drag/drop data.</param>
         /// <returns>
         ///   <c>true</c> if this instance can drop the specified drag data; otherwise, <c>false</c>.</returns>
-        bool IDragDropHandler<IContentFile>.CanDrop(IContentFile dragData) => (dragData != null) && (!dragData.IsOpen) && (CanOpenContent(dragData));
+        bool Olde_IDragDropHandler<IContentFile>.CanDrop(IContentFile dragData) => (dragData != null) && (!dragData.IsOpen) && (CanOpenContent(dragData));
 
         /// <summary>Function to drop the payload for a drag drop operation.</summary>
         /// <param name="dragData">The drag/drop data.</param>
         /// <param name="afterDrop">[Optional] The method to execute after the drop operation is completed.</param>
-        void IDragDropHandler<IContentFile>.Drop(IContentFile dragData, Action afterDrop) => DoOpenContent(dragData);
+        void Olde_IDragDropHandler<IContentFile>.Drop(IContentFile dragData, Action afterDrop) => DoOpenContent(dragData);
         #endregion
 
         #region Constructor.

@@ -29,10 +29,10 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormName));
-            this.TextName = new Gorgon.UI.GorgonCueTextBox();
-            this.ButtonOK = new ComponentFactory.Krypton.Toolkit.KryptonButton();
-            this.ButtonCancel = new ComponentFactory.Krypton.Toolkit.KryptonButton();
+            this.ButtonOK = new System.Windows.Forms.Button();
+            this.ButtonCancel = new System.Windows.Forms.Button();
             this.PanelLocateText = new System.Windows.Forms.Panel();
+            this.TextName = new Gorgon.UI.GorgonCueTextBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.PanelLocateText.SuspendLayout();
@@ -40,11 +40,61 @@
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
+            // ButtonOK
+            // 
+            this.ButtonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ButtonOK.AutoSize = true;
+            this.ButtonOK.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
+            this.ButtonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.ButtonOK.Enabled = false;
+            this.ButtonOK.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+            this.ButtonOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.SteelBlue;
+            this.ButtonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Orange;
+            this.ButtonOK.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ButtonOK.Location = new System.Drawing.Point(283, 4);
+            this.ButtonOK.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            this.ButtonOK.Name = "ButtonOK";
+            this.ButtonOK.Size = new System.Drawing.Size(80, 29);
+            this.ButtonOK.TabIndex = 0;
+            this.ButtonOK.Text = "&OK";
+            this.ButtonOK.UseVisualStyleBackColor = false;
+            // 
+            // ButtonCancel
+            // 
+            this.ButtonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ButtonCancel.AutoSize = true;
+            this.ButtonCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
+            this.ButtonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.ButtonCancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+            this.ButtonCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.SteelBlue;
+            this.ButtonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Orange;
+            this.ButtonCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ButtonCancel.Location = new System.Drawing.Point(369, 4);
+            this.ButtonCancel.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            this.ButtonCancel.Name = "ButtonCancel";
+            this.ButtonCancel.Size = new System.Drawing.Size(80, 29);
+            this.ButtonCancel.TabIndex = 1;
+            this.ButtonCancel.Text = "&Cancel";
+            this.ButtonCancel.UseVisualStyleBackColor = false;
+            // 
+            // PanelLocateText
+            // 
+            this.PanelLocateText.AutoSize = true;
+            this.PanelLocateText.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.PanelLocateText.Controls.Add(this.TextName);
+            this.PanelLocateText.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PanelLocateText.Location = new System.Drawing.Point(0, 0);
+            this.PanelLocateText.Margin = new System.Windows.Forms.Padding(0);
+            this.PanelLocateText.Name = "PanelLocateText";
+            this.PanelLocateText.Padding = new System.Windows.Forms.Padding(0, 0, 0, 1);
+            this.PanelLocateText.Size = new System.Drawing.Size(464, 26);
+            this.PanelLocateText.TabIndex = 0;
+            // 
             // TextName
             // 
             this.TextName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.TextName.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.TextName.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
             this.TextName.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.TextName.CueText = "Enter a name for the {0}...";
             this.TextName.Font = new System.Drawing.Font("Segoe UI", 12F);
@@ -59,46 +109,6 @@
             this.TextName.Leave += new System.EventHandler(this.TextName_Leave);
             this.TextName.MouseEnter += new System.EventHandler(this.TextName_MouseEnter);
             this.TextName.MouseLeave += new System.EventHandler(this.TextName_MouseLeave);
-            // 
-            // ButtonOK
-            // 
-            this.ButtonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.ButtonOK.AutoSize = true;
-            this.ButtonOK.ButtonStyle = ComponentFactory.Krypton.Toolkit.ButtonStyle.Custom2;
-            this.ButtonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.ButtonOK.Enabled = false;
-            this.ButtonOK.Location = new System.Drawing.Point(259, 5);
-            this.ButtonOK.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
-            this.ButtonOK.Name = "ButtonOK";
-            this.ButtonOK.Size = new System.Drawing.Size(92, 29);
-            this.ButtonOK.TabIndex = 0;
-            this.ButtonOK.Values.Text = "&OK";
-            // 
-            // ButtonCancel
-            // 
-            this.ButtonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.ButtonCancel.AutoSize = true;
-            this.ButtonCancel.ButtonStyle = ComponentFactory.Krypton.Toolkit.ButtonStyle.Custom2;
-            this.ButtonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.ButtonCancel.Location = new System.Drawing.Point(357, 5);
-            this.ButtonCancel.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
-            this.ButtonCancel.Name = "ButtonCancel";
-            this.ButtonCancel.Size = new System.Drawing.Size(92, 29);
-            this.ButtonCancel.TabIndex = 1;
-            this.ButtonCancel.Values.Text = "&Cancel";
-            // 
-            // PanelLocateText
-            // 
-            this.PanelLocateText.AutoSize = true;
-            this.PanelLocateText.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.PanelLocateText.Controls.Add(this.TextName);
-            this.PanelLocateText.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PanelLocateText.Location = new System.Drawing.Point(0, 0);
-            this.PanelLocateText.Margin = new System.Windows.Forms.Padding(0);
-            this.PanelLocateText.Name = "PanelLocateText";
-            this.PanelLocateText.Padding = new System.Windows.Forms.Padding(0, 0, 0, 1);
-            this.PanelLocateText.Size = new System.Drawing.Size(464, 26);
-            this.PanelLocateText.TabIndex = 0;
             // 
             // tableLayoutPanel1
             // 
@@ -133,12 +143,12 @@
             this.AcceptButton = this.ButtonOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
             this.CancelButton = this.ButtonCancel;
             this.ClientSize = new System.Drawing.Size(464, 71);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.ForeColor = System.Drawing.Color.White;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -160,8 +170,8 @@
         #endregion
 
         private Gorgon.UI.GorgonCueTextBox TextName;
-        private ComponentFactory.Krypton.Toolkit.KryptonButton ButtonOK;
-        private ComponentFactory.Krypton.Toolkit.KryptonButton ButtonCancel;
+        private System.Windows.Forms.Button ButtonOK;
+        private System.Windows.Forms.Button ButtonCancel;
         private System.Windows.Forms.Panel PanelLocateText;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Panel panel1;

@@ -59,7 +59,6 @@
             this.DimensionSettings = new Gorgon.Editor.ImageEditor.ImageDimensionSettings();
             this.CropResizeSettings = new Gorgon.Editor.ImageEditor.ImageResizeSettings();
             this.ButtonCenter = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.PresentationPanel)).BeginInit();
             this.PresentationPanel.SuspendLayout();
             this.PanelBottomBar.SuspendLayout();
             this.PanelImageViewControls.SuspendLayout();
@@ -483,7 +482,6 @@
             this.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.PanelImage_PreviewKeyDown);
             this.Controls.SetChildIndex(this.PanelBottomBar, 0);
             this.Controls.SetChildIndex(this.PresentationPanel, 0);
-            ((System.ComponentModel.ISupportInitialize)(this.PresentationPanel)).EndInit();
             this.PresentationPanel.ResumeLayout(false);
             this.PanelBottomBar.ResumeLayout(false);
             this.PanelBottomBar.PerformLayout();

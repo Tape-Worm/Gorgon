@@ -96,7 +96,7 @@ namespace Gorgon.Editor.ImageEditor
         public override string ContentTypeID => CommonEditorContentTypes.ImageType;
 
         /// <summary>Property to return the friendly (i.e shown on the UI) name for the type of content.</summary>
-        public string ContentType => string.Empty;
+        public string ContentType => Resources.GORSPR_CONTENT_TYPE;
         #endregion
 
         #region Methods.

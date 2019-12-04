@@ -231,7 +231,7 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         /// <param name="e">The event parameters for the drag/drop event.</param>
         /// <returns>The data in the drag operation, or <b>null</b> if the data cannot be dragged and dropped onto this control.</returns>
-        private IExplorerFilesDragData GetExplorerDragDropData(DragEventArgs e)
+        private Olde_IExplorerFilesDragData GetExplorerDragDropData(DragEventArgs e)
         {
             e.Effect = DragDropEffects.None;
 
@@ -250,7 +250,7 @@ namespace Gorgon.Editor.ImageEditor
                 return null;
             }
 
-            IExplorerFilesDragData result = new ExplorerFilesDragData(dragData);
+            Olde_IExplorerFilesDragData result = new Olde_ExplorerFilesDragData(dragData);
 
             if (!DataContext.CanDrop(result))
             {
@@ -274,7 +274,7 @@ namespace Gorgon.Editor.ImageEditor
                 return;
             }
 
-            IExplorerFilesDragData explorerFiles = GetExplorerDragDropData(e);
+            Olde_IExplorerFilesDragData explorerFiles = GetExplorerDragDropData(e);
 
             if (explorerFiles != null)
             {
@@ -297,7 +297,7 @@ namespace Gorgon.Editor.ImageEditor
                 return;
             }
 
-            IExplorerFilesDragData explorerFiles = GetExplorerDragDropData(e);
+            Olde_IExplorerFilesDragData explorerFiles = GetExplorerDragDropData(e);
 
             if ((explorerFiles != null) && (e.Effect != DragDropEffects.None))
             {

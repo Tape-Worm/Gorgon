@@ -59,15 +59,22 @@
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="GorgonCopyCallbackOptions.cs" />
     <Compile Include="GorgonFileSystem.cs" />
-    <Compile Include="GorgonFileSystemRamDiskWriter.cs" />
     <Compile Include="GorgonFileSystemWriter.cs" />
-    <Compile Include="GorgonWriterCopyProgress.cs" />
-    <Compile Include="Providers\GorgonFileSystemRamDiskProvider.cs" />
+    <Compile Include="ImportedEventArgs.cs" />
+    <Compile Include="VirtualFileCopiedMovedEventArgs.cs" />
+    <Compile Include="VirtualDirectoryCopiedMovedEventArgs.cs" />
+    <Compile Include="VirtualFileRenamedEventArgs.cs" />
+    <Compile Include="VirtualDirectoryRenamedEventArgs.cs" />
+    <Compile Include="VirtualFileDeletedEventArgs.cs" />
+    <Compile Include="VirtualFileClosedEventArgs.cs" />
+    <Compile Include="VirtualFileOpenedEventArgs.cs" />
+    <Compile Include="VirtualDirectoryDeletedEventArgs.cs" />
+    <Compile Include="VirtualDirectoryAddedEventArgs.cs" />
+    <Compile Include="_Interfaces\IGorgonFileSystemNotifier.cs" />
     <Compile Include="_Interfaces\IGorgonVirtualFile.cs" />
     <Compile Include="_Internal\FileSystemWriteStream.cs" />
-    <Compile Include="_Internal\RamDiskFileSystem.cs" />
-    <Compile Include="_Internal\RamDiskWriterStream.cs" />
     <Compile Include="_Internal\VirtualDirectory.cs" />
     <Compile Include="_Internal\VirtualDirectoryCollection.cs" />
     <Compile Include="_Internal\VirtualFile.cs" />
@@ -108,7 +115,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
-      <Version>2.9.4</Version>
+      <Version>2.9.8</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -119,7 +126,7 @@
       <Version>4.3.1</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
-      <Version>4.5.2</Version>
+      <Version>4.7.0</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

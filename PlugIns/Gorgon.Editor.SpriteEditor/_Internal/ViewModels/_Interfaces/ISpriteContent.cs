@@ -49,7 +49,7 @@ namespace Gorgon.Editor.SpriteEditor
     /// The view model for sprite content.
     /// </summary>
     internal interface ISpriteContent
-        : IEditorContent, IUndoHandler, IDragDropHandler<IContentFileDragData>
+        : IEditorContent, IUndoHandler, Olde_IDragDropHandler<IContentFileDragData>
     {
         #region Properties.
         /// <summary>

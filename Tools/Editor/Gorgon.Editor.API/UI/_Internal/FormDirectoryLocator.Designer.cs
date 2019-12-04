@@ -55,17 +55,65 @@ namespace Gorgon.Editor.UI
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormDirectoryLocator));
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.ButtonCancel = new System.Windows.Forms.Button();
+            this.ButtonOK = new System.Windows.Forms.Button();
             this.WorkspaceBrowser = new Gorgon.UI.GorgonFolderBrowser();
-            this.panel1 = new ComponentFactory.Krypton.Toolkit.KryptonPanel();
-            this.ButtonCancel = new ComponentFactory.Krypton.Toolkit.KryptonButton();
-            this.ButtonOK = new ComponentFactory.Krypton.Toolkit.KryptonButton();
-            ((System.ComponentModel.ISupportInitialize)(this.panel1)).BeginInit();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
+            // panel1
+            // 
+            this.panel1.AutoSize = true;
+            this.panel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.panel1.Controls.Add(this.ButtonCancel);
+            this.panel1.Controls.Add(this.ButtonOK);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel1.Location = new System.Drawing.Point(0, 404);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(624, 37);
+            this.panel1.TabIndex = 1;
+            // 
+            // ButtonCancel
+            // 
+            this.ButtonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ButtonCancel.AutoSize = true;
+            this.ButtonCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
+            this.ButtonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.ButtonCancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+            this.ButtonCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Orange;
+            this.ButtonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
+            this.ButtonCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ButtonCancel.ForeColor = System.Drawing.Color.White;
+            this.ButtonCancel.Location = new System.Drawing.Point(529, 5);
+            this.ButtonCancel.Name = "ButtonCancel";
+            this.ButtonCancel.Size = new System.Drawing.Size(83, 29);
+            this.ButtonCancel.TabIndex = 7;
+            this.ButtonCancel.Text = "&Cancel";
+            this.ButtonCancel.UseVisualStyleBackColor = false;
+            // 
+            // ButtonOK
+            // 
+            this.ButtonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ButtonOK.AutoSize = true;
+            this.ButtonOK.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
+            this.ButtonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.ButtonOK.Enabled = false;
+            this.ButtonOK.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+            this.ButtonOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Orange;
+            this.ButtonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
+            this.ButtonOK.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ButtonOK.ForeColor = System.Drawing.Color.White;
+            this.ButtonOK.Location = new System.Drawing.Point(440, 5);
+            this.ButtonOK.Name = "ButtonOK";
+            this.ButtonOK.Size = new System.Drawing.Size(83, 29);
+            this.ButtonOK.TabIndex = 6;
+            this.ButtonOK.Text = "&OK";
+            this.ButtonOK.UseVisualStyleBackColor = false;
+            // 
             // WorkspaceBrowser
             // 
-            this.WorkspaceBrowser.BackColor = System.Drawing.Color.Transparent;
+            this.WorkspaceBrowser.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
             this.WorkspaceBrowser.CaptionFont = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.WorkspaceBrowser.CdRomImage = global::Gorgon.Editor.Properties.Resources.drive_cdrom_48x48;
             this.WorkspaceBrowser.DirectoryImage = global::Gorgon.Editor.Properties.Resources.folder_48x48;
@@ -81,66 +129,30 @@ namespace Gorgon.Editor.UI
             this.WorkspaceBrowser.NetworkDriveImage = global::Gorgon.Editor.Properties.Resources.drive_network_48x48;
             this.WorkspaceBrowser.RamDriveImage = global::Gorgon.Editor.Properties.Resources.drive_ram_48x48;
             this.WorkspaceBrowser.RemovableDriveImage = global::Gorgon.Editor.Properties.Resources.drive_remove_48x48;
-            this.WorkspaceBrowser.Size = new System.Drawing.Size(624, 401);
+            this.WorkspaceBrowser.Size = new System.Drawing.Size(624, 404);
             this.WorkspaceBrowser.TabIndex = 3;
             this.WorkspaceBrowser.FolderSelected += new System.EventHandler<Gorgon.UI.FolderSelectedArgs>(this.WorkspaceBrowser_FolderSelected);
             this.WorkspaceBrowser.FolderEntered += new System.EventHandler<Gorgon.UI.FolderSelectedArgs>(this.WorkspaceBrowser_FolderEntered);
-            // 
-            // panel1
-            // 
-            this.panel1.AutoSize = true;
-            this.panel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.panel1.Controls.Add(this.ButtonCancel);
-            this.panel1.Controls.Add(this.ButtonOK);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 401);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(624, 40);
-            this.panel1.TabIndex = 1;
-            // 
-            // ButtonCancel
-            // 
-            this.ButtonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.ButtonCancel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ButtonCancel.ButtonStyle = ComponentFactory.Krypton.Toolkit.ButtonStyle.Custom2;
-            this.ButtonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.ButtonCancel.Location = new System.Drawing.Point(514, 5);
-            this.ButtonCancel.Name = "ButtonCancel";
-            this.ButtonCancel.Size = new System.Drawing.Size(98, 32);
-            this.ButtonCancel.TabIndex = 7;
-            this.ButtonCancel.Values.Text = "&Cancel";
-            // 
-            // ButtonOK
-            // 
-            this.ButtonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.ButtonOK.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ButtonOK.ButtonStyle = ComponentFactory.Krypton.Toolkit.ButtonStyle.Custom2;
-            this.ButtonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.ButtonOK.Enabled = false;
-            this.ButtonOK.Location = new System.Drawing.Point(410, 5);
-            this.ButtonOK.Name = "ButtonOK";
-            this.ButtonOK.Size = new System.Drawing.Size(98, 32);
-            this.ButtonOK.TabIndex = 6;
-            this.ButtonOK.Values.Text = "&OK";
             // 
             // FormDirectoryLocator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
             this.CancelButton = this.ButtonCancel;
             this.ClientSize = new System.Drawing.Size(624, 441);
             this.Controls.Add(this.WorkspaceBrowser);
             this.Controls.Add(this.panel1);
             this.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.ForeColor = System.Drawing.Color.White;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FormDirectoryLocator";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            ((System.ComponentModel.ISupportInitialize)(this.panel1)).EndInit();
             this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -148,8 +160,8 @@ namespace Gorgon.Editor.UI
 
         #endregion
         private Gorgon.UI.GorgonFolderBrowser WorkspaceBrowser;
-        private ComponentFactory.Krypton.Toolkit.KryptonPanel panel1;
-        private ComponentFactory.Krypton.Toolkit.KryptonButton ButtonCancel;
-        private ComponentFactory.Krypton.Toolkit.KryptonButton ButtonOK;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Button ButtonCancel;
+        private System.Windows.Forms.Button ButtonOK;
     }
 }

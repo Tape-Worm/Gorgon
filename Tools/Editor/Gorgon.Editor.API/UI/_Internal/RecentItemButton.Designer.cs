@@ -130,7 +130,7 @@
             // 
             this.PanelFileDate.AutoSize = true;
             this.PanelFileDate.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.PanelFileDate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
+            this.PanelFileDate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
             this.PanelFileDate.Controls.Add(this.LabelDateTime);
             this.PanelFileDate.Cursor = System.Windows.Forms.Cursors.Hand;
             this.PanelFileDate.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -193,7 +193,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
             this.Controls.Add(this.ButtonDelete);
             this.Controls.Add(this.TableItem);
             this.Controls.Add(this.PanelFileDate);

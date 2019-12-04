@@ -75,11 +75,11 @@ namespace Gorgon.Editor.Views
         // Font used for open items.
         private Font _openFont;
         // The context handler for clipboard operations.
-        private IClipboardHandler _clipboardContext;
+        private Olde_IClipboardHandler _clipboardContext;
         // A drag and drop handler interface.
-        private IDragDropHandler<IFileExplorerNodeDragData> _nodeDragDropHandler;
+        private Olde_IDragDropHandler<IFileExplorerNodeDragData> _nodeDragDropHandler;
         // A drag and drop handler interface.
-        private IDragDropHandler<ViewModels.IExplorerFilesDragData> _explorerDragDropHandler;
+        private Olde_IDragDropHandler<ViewModels.IExplorerFilesDragData> _explorerDragDropHandler;
         // The drag hilight background color.
         private Color _dragBackColor;
         // The drag hilight foreground color.
@@ -2384,7 +2384,7 @@ namespace Gorgon.Editor.Views
 
                 DataContext?.OnUnload();
 
-                _clipboardContext = dataContext as IClipboardHandler;
+                _clipboardContext = dataContext as Olde_IClipboardHandler;
                 _nodeDragDropHandler = dataContext;
                 _explorerDragDropHandler = dataContext;
 

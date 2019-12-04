@@ -55,9 +55,10 @@
             // panel2
             // 
             this.panel2.AutoSize = true;
-            this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(75)))), ((int)(((byte)(75)))));
+            this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
             this.panel2.Controls.Add(this.LabelCaption);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.ForeColor = System.Drawing.Color.White;
             this.panel2.Location = new System.Drawing.Point(2, 0);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(537, 21);
@@ -90,18 +91,19 @@
             this.ButtonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ButtonOK.AutoSize = true;
             this.ButtonOK.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ButtonOK.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
             this.ButtonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.ButtonOK.FlatAppearance.BorderColor = System.Drawing.Color.Gray;
+            this.ButtonOK.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
             this.ButtonOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.DarkOrange;
             this.ButtonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
             this.ButtonOK.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ButtonOK.Location = new System.Drawing.Point(330, 3);
-            this.ButtonOK.MinimumSize = new System.Drawing.Size(100, 30);
+            this.ButtonOK.Location = new System.Drawing.Point(364, 3);
+            this.ButtonOK.MinimumSize = new System.Drawing.Size(83, 30);
             this.ButtonOK.Name = "ButtonOK";
-            this.ButtonOK.Size = new System.Drawing.Size(100, 30);
+            this.ButtonOK.Size = new System.Drawing.Size(83, 30);
             this.ButtonOK.TabIndex = 0;
             this.ButtonOK.Text = "OK";
-            this.ButtonOK.UseVisualStyleBackColor = true;
+            this.ButtonOK.UseVisualStyleBackColor = false;
             this.ButtonOK.Click += new System.EventHandler(this.ButtonOK_Click);
             // 
             // ButtonCancel
@@ -109,18 +111,19 @@
             this.ButtonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ButtonCancel.AutoSize = true;
             this.ButtonCancel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ButtonCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
             this.ButtonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.ButtonCancel.FlatAppearance.BorderColor = System.Drawing.Color.Gray;
+            this.ButtonCancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
             this.ButtonCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.DarkOrange;
             this.ButtonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
             this.ButtonCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ButtonCancel.Location = new System.Drawing.Point(436, 3);
-            this.ButtonCancel.MinimumSize = new System.Drawing.Size(100, 30);
+            this.ButtonCancel.Location = new System.Drawing.Point(453, 3);
+            this.ButtonCancel.MinimumSize = new System.Drawing.Size(83, 30);
             this.ButtonCancel.Name = "ButtonCancel";
-            this.ButtonCancel.Size = new System.Drawing.Size(100, 30);
+            this.ButtonCancel.Size = new System.Drawing.Size(83, 30);
             this.ButtonCancel.TabIndex = 1;
             this.ButtonCancel.Text = "Cancel";
-            this.ButtonCancel.UseVisualStyleBackColor = true;
+            this.ButtonCancel.UseVisualStyleBackColor = false;
             this.ButtonCancel.Click += new System.EventHandler(this.ButtonCancel_Click);
             // 
             // PanelBody
@@ -140,7 +143,7 @@
             this.Controls.Add(this.PanelConfirmCancel);
             this.Controls.Add(this.PanelCaptionBorder);
             this.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.Name = "GorgonEditorSubPanelCommon";
+            this.Name = "EditorSubPanelCommon";
             this.Size = new System.Drawing.Size(539, 493);
             this.PanelCaptionBorder.ResumeLayout(false);
             this.PanelCaptionBorder.PerformLayout();

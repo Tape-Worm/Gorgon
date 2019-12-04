@@ -33,6 +33,7 @@ namespace Gorgon.IO.Providers
     /// </summary>
     public interface IGorgonPhysicalFileInfo
     {
+        #region Properties.
         /// <summary>
         /// Property to return the full path to the physical file.
         /// </summary>
@@ -132,5 +133,13 @@ namespace Gorgon.IO.Providers
         {
             get;
         }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to refresh the file information.
+        /// </summary>
+        void Refresh();
+        #endregion
     }
 }

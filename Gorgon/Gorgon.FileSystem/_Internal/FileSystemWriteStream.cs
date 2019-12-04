@@ -24,8 +24,8 @@
 // 
 #endregion
 
+using System;
 using System.IO;
-using Gorgon.IO.Providers;
 
 namespace Gorgon.IO
 {
@@ -35,34 +35,39 @@ namespace Gorgon.IO
     internal class FileSystemWriteStream
         : FileStream
     {
-        #region Variables.
-        // The virtual file entry to update when the stream is closed.
-        private VirtualFile _virtualFile;
-        // The mount point for the writable area.
-        private readonly GorgonFileSystemMountPoint _mountPoint;
+        #region Properties.
+        /// <summary>
+        /// Property to set or return the callback to execute once the stream is closed.
+        /// </summary>
+        public Action<FileStream> OnCloseCallback
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Methods.
         /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="T:System.IO.FileStream"/> and optionally releases the managed resources.
+        /// Releases the unmanaged resources used by the <see cref="FileStream"/> and optionally releases the managed resources.
         /// </summary>
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources. </param>
         protected override void Dispose(bool disposing)
         {
-            if ((disposing) && (_virtualFile != null) && (CanWrite))
+            try
             {
-                var info = new FileInfo(_virtualFile.PhysicalFile.FullPath);
-                _virtualFile.PhysicalFile = new PhysicalFileInfo(info, _virtualFile.FullPath);
-
-                if (_virtualFile.MountPoint != _mountPoint)
+                if (disposing)
                 {
-                    _virtualFile.MountPoint = _mountPoint;
+                    Flush();
+                    OnCloseCallback?.Invoke(this);
                 }
+
+                base.Dispose(disposing);
             }
-
-            _virtualFile = null;
-
-            base.Dispose(disposing);
+            finally
+            {
+                // Always unhook the callback to avoid leakage.
+                OnCloseCallback = null;
+            }
         }
         #endregion
 
@@ -70,18 +75,14 @@ namespace Gorgon.IO
         /// <summary>
         /// Initializes a new instance of the <see cref="FileSystemWriteStream"/> class.
         /// </summary>
-        /// <param name="mountPoint">The mount point where the writable file is stored.</param>
         /// <param name="writePath">The path to the writable file.</param>
-        /// <param name="file">The virtual file being written.</param>
         /// <param name="fileMode">The file mode to use to open the file.</param>
-        public FileSystemWriteStream(GorgonFileSystemMountPoint mountPoint, string writePath, VirtualFile file, FileMode fileMode)
+        public FileSystemWriteStream(string writePath, FileMode fileMode)
             : base(writePath,
                    fileMode,
                    fileMode == FileMode.Open ? FileAccess.Read : fileMode == FileMode.OpenOrCreate ? FileAccess.ReadWrite : FileAccess.Write,
                    fileMode == FileMode.Open ? FileShare.Read : FileShare.None)
         {
-            _mountPoint = mountPoint;
-            _virtualFile = file;
         }
         #endregion
     }

@@ -24,7 +24,7 @@
 // 
 #endregion
 
-using System;
+using System.ComponentModel;
 
 namespace Gorgon.Editor.UI
 {
@@ -32,47 +32,46 @@ namespace Gorgon.Editor.UI
     /// Defines an interface that can handle clipboard functionality.
     /// </summary>
     public interface IClipboardHandler
+        : INotifyPropertyChanged, INotifyPropertyChanging
     {
-        #region Events.
         /// <summary>
-        /// Event triggered when data is stored or cleared on the clipboard.
+        /// Property to return whether the clipboard has data or not.
         /// </summary>
-        event EventHandler DataUpdated;
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to store an item to copy onto the clipboard for cutting.
-        /// </summary>
-        void Cut();
+        bool HasData
+        {
+            get;
+        }
 
         /// <summary>
-        /// Function to store an item to copy onto the clipboard.
+        /// Property to return the command that returns the type of data present on the clipboard (if any).
         /// </summary>
-        void Copy();
+        IEditorCommand<GetClipboardDataTypeArgs> GetClipboardDataTypeCommand
+        {
+            get;
+        }
 
         /// <summary>
-        /// Function to paste an item from the clipboard.
+        /// Property to return the command used to clear the clipboard.
         /// </summary>
-        void Paste();
+        IEditorCommand<object> ClearCommand
+        {
+            get;
+        }
 
         /// <summary>
-        /// Function to return whether or not the item can use the cut functionality for the clipboard.
+        /// Property to return the command used to copy data into the clipboard.
         /// </summary>
-        /// <returns><b>true</b> if the clipboard handler can cut an item, <b>false</b> if not.</returns>
-        bool CanCut();
+        IEditorCommand<object> CopyDataCommand
+        {
+            get;
+        }
 
         /// <summary>
-        /// Function to return whether or not the item can use the copy functionality for the clipboard.
+        /// Property to return the command used to paste data from the clipboard.
         /// </summary>
-        /// <returns><b>true</b> if the clipboard handler can copy an item, <b>false</b> if not.</returns>
-        bool CanCopy();
-
-        /// <summary>
-        /// Function to return whether or not the item can use the paste functionality for the clipboard.
-        /// </summary>
-        /// <returns><b>true</b> if the clipboard handler can paste an item, <b>false</b> if not.</returns>
-        bool CanPaste();
-        #endregion
+        IEditorAsyncCommand<object> PasteDataCommand
+        {
+            get;
+        }
     }
 }

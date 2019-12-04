@@ -42,7 +42,8 @@ namespace Gorgon.IO
     /// </para>
     /// <para>
     /// Directories can be created by creating a <see cref="IGorgonFileSystemWriter{T}"/> instance and calling its <see cref="IGorgonFileSystemWriter{T}.CreateDirectory"/>. Likewise, if you wish to delete 
-    /// a directory, call the <see cref="IGorgonFileSystemWriter{T}.DeleteDirectory"/> method on the <see cref="IGorgonFileSystemWriter{T}"/> object.
+    /// a directory, call the <see cref="IGorgonFileSystemWriter{T}.DeleteDirectory(string, Action{string}, System.Threading.CancellationToken?)"/> method on the <see cref="IGorgonFileSystemWriter{T}"/> 
+    /// object.
     /// </para>
     /// </remarks>
     internal class VirtualDirectory
@@ -55,6 +56,7 @@ namespace Gorgon.IO
         public string Name
         {
             get;
+            internal set;
         }
 
         /// <summary>
@@ -145,6 +147,11 @@ namespace Gorgon.IO
         public IEnumerable<IGorgonVirtualDirectory> GetParents()
         {
             IGorgonVirtualDirectory parent = Parent;
+
+            if (parent == null)
+            {
+                yield break;
+            }
 
             while (parent != null)
             {

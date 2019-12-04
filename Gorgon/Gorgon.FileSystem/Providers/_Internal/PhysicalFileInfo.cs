@@ -26,6 +26,7 @@
 
 using System;
 using System.IO;
+using System.Text;
 
 namespace Gorgon.IO.Providers
 {
@@ -35,14 +36,20 @@ namespace Gorgon.IO.Providers
     internal class PhysicalFileInfo
         : IGorgonPhysicalFileInfo
     {
+        #region Variables.
+        // File information.
+        private readonly FileInfo _fileInfo;
+        // The physical root directory for the file.
+        private readonly string _physicalRoot;
+        // The buffer used to update the virtual path.
+        private readonly StringBuilder _pathBuffer = new StringBuilder();
+        #endregion
+
         #region Properties.
         /// <summary>
         /// Property to return the full path to the physical file.
         /// </summary>
-        public string FullPath
-        {
-            get;
-        }
+        public string FullPath => _fileInfo.FullName;
 
         /// <summary>
         /// Property to return the name of the file.
@@ -50,18 +57,12 @@ namespace Gorgon.IO.Providers
         /// <remarks>
         /// This is the file name and extension for the file without the directory.
         /// </remarks>
-        public string Name
-        {
-            get;
-        }
+        public string Name => _fileInfo.Name;
 
         /// <summary>
         /// Property to return the date of creation for the file.
         /// </summary>
-        public DateTime CreateDate
-        {
-            get;
-        }
+        public DateTime CreateDate => _fileInfo.CreationTime;
 
         /// <summary>
         /// Property to return the date of when the file was last modified.
@@ -69,10 +70,7 @@ namespace Gorgon.IO.Providers
         /// <remarks>
         /// Some providers will not support a last modified date on files, and in those cases, the provider should return the <see cref="IGorgonPhysicalFileInfo.CreateDate"/> here.
         /// </remarks>
-        public DateTime LastModifiedDate
-        {
-            get;
-        }
+        public DateTime LastModifiedDate => _fileInfo.LastWriteTime;
 
         /// <summary>
         /// Property to return the offset, in bytes, of the file within a packed file.
@@ -80,18 +78,12 @@ namespace Gorgon.IO.Providers
         /// <remarks>
         /// This value will always be 0 for a file located on the physical file system of the operating system.
         /// </remarks>
-        public long Offset
-        {
-            get;
-        }
+        public long Offset => 0;
 
         /// <summary>
         /// Property to return the length of the file, in bytes.
         /// </summary>
-        public long Length
-        {
-            get;
-        }
+        public long Length => _fileInfo.Length;
 
         /// <summary>
         /// Property to return the virtual path for the file.
@@ -102,6 +94,7 @@ namespace Gorgon.IO.Providers
         public string VirtualPath
         {
             get;
+            private set;
         }
 
         /// <summary>
@@ -131,41 +124,48 @@ namespace Gorgon.IO.Providers
         public bool IsEncrypted => false;
         #endregion
 
+        #region Methods.
+        /// <summary>Function to refresh the file information.</summary>
+        public void Refresh()
+        {
+            _fileInfo.Refresh();
+
+            // Rebuild the virtual path name.
+            _pathBuffer.Length = 0;
+            _pathBuffer.Append(_fileInfo.DirectoryName.FormatDirectory(Path.DirectorySeparatorChar));
+            _pathBuffer.Remove(0, _physicalRoot.Length - 1);
+            _pathBuffer.Replace(Path.DirectorySeparatorChar, '/');
+            _pathBuffer.Append(_fileInfo.Name);
+
+            VirtualPath = _pathBuffer.ToString() ;
+        }
+        #endregion
+
         #region Constructor.
         /// <summary>
         /// Initializes a new instance of the <see cref="PhysicalFileInfo" /> class.
         /// </summary>
+        /// <param name="mountPoint">The mount point of the file system.</param>
         /// <param name="fullPhysicalPath">The full path.</param>
-        /// <param name="createDate">The create date.</param>
-        /// <param name="length">The length.</param>
-        /// <param name="virtualPath">The virtual path.</param>
-        /// <param name="offset">[Optional] Offset of the file within a packed file system.</param>
-        /// <param name="lastModDate">[Optional] The last modified date.</param>
-        public PhysicalFileInfo(string fullPhysicalPath, DateTime createDate, long length, string virtualPath, long offset = 0, DateTime? lastModDate = null)
+        public PhysicalFileInfo(GorgonFileSystemMountPoint mountPoint, string fullPhysicalPath)
         {
-            FullPath = fullPhysicalPath;
-            Name = Path.GetFileName(fullPhysicalPath).FormatFileName();
-            Offset = offset;
-            CreateDate = createDate;
-            LastModifiedDate = lastModDate ?? createDate;
-            Length = length;
-            VirtualPath = virtualPath;
+            _physicalRoot = mountPoint.PhysicalPath.FormatDirectory(Path.DirectorySeparatorChar);
+            _fileInfo = new FileInfo(fullPhysicalPath);
+            Refresh();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PhysicalFileInfo"/> type.
         /// </summary>
         /// <param name="file">The file information to evaluate.</param>
-        /// <param name="virtualPath">The virtual path.</param>
-        public PhysicalFileInfo(FileInfo file, string virtualPath)
+        /// <param name="physicalRoot">The physical root directory for the file.</param>
+        /// <param name="virtualPath">The virtual path for the file.</param>
+        public PhysicalFileInfo(FileInfo file, string physicalRoot, string virtualPath)
         {
-            FullPath = file.FullName;
-            Name = file.Name;
-            CreateDate = file.CreationTime;
-            LastModifiedDate = file.LastWriteTime;
-            Length = file.Length;
+            _physicalRoot = physicalRoot;
+            _fileInfo = file;
             VirtualPath = virtualPath;
-        }
+        }        
         #endregion
     }
 }

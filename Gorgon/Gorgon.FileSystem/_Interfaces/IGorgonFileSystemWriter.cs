@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -105,6 +106,57 @@ namespace Gorgon.IO
     public interface IGorgonFileSystemWriter<out T>
         where T : Stream
     {
+        #region Events.
+        /// <summary>
+        /// Event triggered when a virtual directory has been added to the file system.
+        /// </summary>
+        event EventHandler<VirtualDirectoryAddedEventArgs> VirtualDirectoryAdded;
+        /// <summary>
+        /// Event triggered when a virtual directory has been deleted from the file system.
+        /// </summary>
+        event EventHandler<VirtualDirectoryDeletedEventArgs> VirtualDirectoryDeleted;
+        /// <summary>
+        /// Event triggered when a virtual directory has been renamed.
+        /// </summary>
+        event EventHandler<VirtualDirectoryRenamedEventArgs> VirtualDirectoryRenamed;
+        /// <summary>
+        /// Event triggered when a virtual directory has been copied.
+        /// </summary>
+        event EventHandler<VirtualDirectoryCopiedMovedEventArgs> VirtualDirectoryCopied;
+        /// <summary>
+        /// Event triggered when a virtual directory has been moved.
+        /// </summary>
+        event EventHandler<VirtualDirectoryCopiedMovedEventArgs> VirtualDirectoryMoved;
+        /// <summary>
+        /// Event triggered when directories, and files has been imported.
+        /// </summary>
+        event EventHandler<ImportedEventArgs> Imported;
+        /// <summary>
+        /// Event triggered when a virtual file has been deleted from the file system.
+        /// </summary>
+        event EventHandler<VirtualFileDeletedEventArgs> VirtualFileDeleted;
+        /// <summary>
+        /// Event triggered when a virtual file has been opened for writing on the file system.
+        /// </summary>
+        event EventHandler<VirtualFileOpenedEventArgs> VirtualFileOpened;
+        /// <summary>
+        /// Event triggered when a virtual file has had its write stream closed.
+        /// </summary>
+        event EventHandler<VirtualFileClosedEventArgs> VirtualFileClosed;
+        /// <summary>
+        /// Event triggered when a virtual file has been renamed.
+        /// </summary>
+        event EventHandler<VirtualFileRenamedEventArgs> VirtualFileRenamed;
+        /// <summary>
+        /// Event triggered when virtual files were copied.
+        /// </summary>
+        event EventHandler<VirtualFileCopiedMovedEventArgs> VirtualFileCopied;
+        /// <summary>
+        /// Event triggered when virtual files were moved.
+        /// </summary>
+        event EventHandler<VirtualFileCopiedMovedEventArgs> VirtualFileMoved;
+        #endregion
+
         #region Properties.
         /// <summary>
         /// Property to return the location on the physical file system to use as the writable area for a <see cref="IGorgonFileSystem"/>.
@@ -128,80 +180,10 @@ namespace Gorgon.IO
 
         #region Methods.
         /// <summary>
-        /// Function to copy the contents of a file system to the writable area.
-        /// </summary> 
-        /// <param name="sourceFileSystem">The <see cref="IGorgonFileSystem"/> to copy.</param>
-        /// <param name="copyProgress">A method callback used to track the progress of the copy operation.</param>
-        /// <param name="allowOverwrite">[Optional] <b>true</b> to allow overwriting of files that already exist in the file system with the same path, <b>false</b> to throw an exception when a file with the same path is encountered.</param>
-        /// <returns>A <see cref="ValueTuple{T1, T2}"/> containing the number of directories (<c>item1</c>) and the number of files (<c>item2</c>) copied, or <b>null</b> if the operation was cancelled.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceFileSystem"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="IOException">Thrown when the a file exists in <see cref="FileSystem"/>, and the <paramref name="allowOverwrite"/> parameter is set to <b>false</b>.</exception>
-        /// <remarks>
-        /// <para>
-        /// This copies all the file and directory information from one file system, into the <see cref="FileSystem"/> linked to this writer. 
-        /// </para>
-        /// <para>
-        /// When the <paramref name="allowOverwrite"/> is set to <b>false</b>, and a <see cref="IGorgonVirtualFile"/> already exists with the same path as another <see cref="IGorgonVirtualFile"/> in the 
-        /// <paramref name="sourceFileSystem"/>, then an exception will be raised.
-        /// </para>
-        /// </remarks>
-        (int DirectoryCount, int FileCount)? CopyFrom(IGorgonFileSystem sourceFileSystem, Func<GorgonWriterCopyProgress, bool> copyProgress = null, bool allowOverwrite = true);
-
-        /// <summary>
-        /// Function to asynchronously copy the contents of a file system to the writable area.
-        /// </summary>
-        /// <param name="sourceFileSystem">The <see cref="IGorgonFileSystem"/> to copy.</param>
-        /// <param name="cancelToken">The <see cref="CancellationToken"/> used to cancel an in progress copy.</param>
-        /// <param name="copyProgress">A method callback used to track the progress of the copy operation.</param>
-        /// <param name="allowOverwrite">[Optional] <b>true</b> to allow overwriting of files that already exist in the file system with the same path, <b>false</b> to throw an exception when a file with the same path is encountered.</param>
-        /// <returns>A <see cref="ValueTuple{T1,T2}"/> containing the number of directories (<c>item1</c>) and the number of files (<c>item2</c>) copied, or <b>null</b> if the operation was cancelled.</returns>
-        /// <remarks>
-        /// <para>
-        /// This copies all the file and directory information from one file system, into the <see cref="FileSystem"/> linked to this writer. 
-        /// </para>
-        /// <para>
-        /// When the <paramref name="allowOverwrite"/> is set to <b>false</b>, and a <see cref="IGorgonVirtualFile"/> already exists with the same path as another <see cref="IGorgonVirtualFile"/> in the 
-        /// <paramref name="sourceFileSystem"/>, then an exception will be raised.
-        /// </para>
-        /// <para>
-        /// This version of the copy method allows for an asynchronous copy of a set of a files and directories from another <see cref="IGorgonFileSystem"/>. This method should be used when there is a large 
-        /// amount of data to transfer between the file systems.
-        /// </para>
-        /// <para>
-        /// Unlike the <see cref="CopyFrom"/> method, this method will report the progress of the copy through the <paramref name="copyProgress"/> callback. This callback is a method that takes a 
-        /// <see cref="GorgonWriterCopyProgress"/> value as a parameter that will report the current state, and will return a <see cref="bool"/> to indicate whether to continue the copy or not (<b>true</b> to 
-        /// continue, <b>false</b> to stop). 
-        /// </para>
-        /// <para>
-        /// <note type="warning">
-        /// <para>
-        /// The <paramref name="copyProgress"/> method does not switch back to the UI context. Ensure that you invoke any operations that update a UI on the appropriate thread (e.g <c>BeginInvoke</c> on a 
-        /// WinForms UI element or <c>Dispatcher</c> on a WPF element).
-        /// </para>
-        /// </note>
-        /// </para>
-        /// <para>
-        /// This method also allows for cancellation of the copy operation by passing a <see cref="CancellationToken"/> to the <paramref name="cancelToken"/> parameter.
-        /// </para>
-        /// </remarks>
-        Task<(int DirectoryCount, int FileCount)?> CopyFromAsync(IGorgonFileSystem sourceFileSystem, CancellationToken cancelToken, Func<GorgonWriterCopyProgress, bool> copyProgress = null, bool allowOverwrite = true);
-
-        /// <summary>
         /// Function to create a new directory in the writable area on the physical file system.
         /// </summary>
         /// <param name="path">Path to the directory (or directories) to create.</param>
         /// <returns>A <see cref="IGorgonVirtualDirectory"/> representing the final directory in the <paramref name="path"/>.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> is <b>null</b>.</exception>
-        /// <exception cref="ArgumentException">
-        /// Thrown when the <paramref name="path"/> is empty.
-        /// <para>-or-</para>
-        /// <para>Thrown if the <paramref name="path"/> does not contain any meaningful names.</para>
-        /// </exception>
-        /// <exception cref="IOException">
-        /// Thrown when a part of the <paramref name="path"/> has the same name as a file name in the parent of the directory being created.
-        /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="path"/> is set to the root directory: <c>/</c>.</para>
-        /// </exception>
         /// <remarks>
         /// <para>
         /// This will create a new directory within the physical file system directory specified by the <see cref="WriteLocation"/>. If the <paramref name="path"/> contains multiple directories that don't 
@@ -216,35 +198,304 @@ namespace Gorgon.IO
         /// If the directory already exists (either in the <see cref="IGorgonFileSystem"/> or on the physical file system), then nothing will be done and the existing directory will be returned from the 
         /// method.
         /// </para>
+        /// <para>
+        /// Calling this method will trigger the <see cref="VirtualDirectoryAdded"/> event.
+        /// </para>
         /// </remarks>
         IGorgonVirtualDirectory CreateDirectory(string path);
 
         /// <summary>
-        /// Function to delete a directory from the writable area.
+        /// Function to delete a directory from the writeable area with progress functionality.
         /// </summary>
-        /// <param name="path">Path to the directory to delete.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> is empty.</exception>
-        /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by the <paramref name="path"/> could not be found.</exception>
+        /// <param name="path">The path of the directory to delete.</param>
+        /// <param name="onDelete">[Optional] The callback method to execute when a directory, or file is deleted.</param>
+        /// <param name="cancelToken">[Optional] The token used to determine if the operation should be canceled or not.</param>
         /// <remarks>
         /// <para>
-        /// This will delete a directory, its sub directories, and any files under this directory and sub directories. It will remove all references to those files and directories from the <see cref="FileSystem"/>, 
-        /// and will delete these items from the <see cref="WriteLocation"/> if they exist in that location.
+        /// This will delete a directory, its sub directories, and any files under this directory and sub directories. It will remove all references to those files and directories from the <see cref="IGorgonFileSystemWriter{T}.FileSystem"/>, 
+        /// and will delete these items from the <see cref="IGorgonFileSystemWriter{T}.WriteLocation"/> if they exist in that location.
         /// </para>
         /// <para>
-        /// When a directory is removed from the <see cref="FileSystem"/>, it will be removed all mounted file systems. However, the actual directory in the physical file systems will not be touched and the 
-        /// deleted directory may be restored with a call to <see cref="IGorgonFileSystem.Refresh()"/>. 
+        /// When a directory is removed from the <see cref="FileSystem"/>, only the directory in the <see cref="WriteLocation"/> is physically removed. The items in the other file system mount points will be removed 
+        /// from the mounted directory list(s), but not from the other mount points. That is, anything mounted outside of the write location will be preserved and can be re-added to the directory list(s) by calling 
+        /// <see cref="IGorgonFileSystem.Refresh()"/>.
+        /// </para>
+        /// <para>
+        /// This method provides the means to receive feedback during the deletion operation, and a means to cancel the operation. This is useful in cases where a UI is present and a delete operation can take a long time to return 
+        /// to the user. The callback method takes a single string parameter which represents the full path to the directory,subdirectory, or file being deleted. 
+        /// </para>
+        /// <para>
+        /// If the <paramref name="path"/> is set to the root of the file system (<c>/</c>), then the entire file system will be deleted, but the root directory will always remain.
         /// </para>
         /// <para>
         /// <note type="important">
         /// <para>
-        /// When restoring files with <see cref="IGorgonFileSystem.Refresh()"/>, only the file system object will be updated. The method will not restore any deleted directories in the <see cref="WriteLocation"/>.
+        /// When restoring files with <see cref="IGorgonFileSystem.Refresh()"/>, only the file system object will be updated. The method will not restore any deleted directories in the <see cref="IGorgonFileSystemWriter{T}.WriteLocation"/>.
         /// </para>
         /// </note>
         /// </para>
+        /// <para>
+        /// This method will use the delete callback action passed to the constructor (if supplied) to perform custom deletion of file system items. If no action is provided, then the files and directories 
+        /// deleted by this method are erased and cannot be recovered easily.
+        /// </para>
+        /// <para>
+        /// Calling this method will trigger the <see cref="VirtualDirectoryDeleted"/> event.
+        /// </para>
         /// </remarks>
-        /// <seealso cref="IGorgonFileSystem.Refresh()"/>
-        void DeleteDirectory(string path);
+        /// <seealso cref="IGorgonFileSystem.Refresh()"/>        
+        void DeleteDirectory(string path, Action<string> onDelete = null, CancellationToken? cancelToken = null);
+
+        /// <summary>
+        /// Function to delete a file from the file system.
+        /// </summary>
+        /// <param name="path">The path to the file to delete.</param>
+        /// <remarks>
+        /// <para>
+        /// This will delete a single file from the file system, and physically remove it from the <see cref="IGorgonFileSystemWriter{T}.WriteLocation"/>. 
+        /// </para>
+        /// <para>
+        /// When a file is removed from the <see cref="FileSystem"/>, only the file in the <see cref="WriteLocation"/> is physically removed. The items in the other file system mount points will be removed 
+        /// from the mounted directory list(s), but not from the other mount point physical locations. That is, anything mounted outside of the write location will be preserved and can be re-added to the 
+        /// directory list(s) by calling <see cref="IGorgonFileSystem.Refresh()"/>.
+        /// </para>
+        /// <para>
+        /// <note type="important">
+        /// <para>
+        /// When restoring files with <see cref="IGorgonFileSystem.Refresh()"/>, only the file system object will be updated. The method will not restore any deleted files in the 
+        /// <see cref="IGorgonFileSystemWriter{T}.WriteLocation"/>.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// <para>
+        /// This method will use the delete callback action passed to the constructor (if supplied) to perform custom deletion of file system items. If no action is provided, then the files and directories 
+        /// deleted by this method are erased and cannot be recovered easily.
+        /// </para>
+        /// <para>
+        /// Calling this method will trigger the <see cref="VirtualFileDeleted"/> event.
+        /// </para>
+        /// </remarks>
+        void DeleteFile(string path);
+
+        /// <summary>
+        /// Function to delete multiple files from the file system.
+        /// </summary>
+        /// <param name="paths">The path to the files to delete.</param>
+        /// <param name="onDelete">[Optional] The callback method to execute when a directory, or file is deleted.</param>
+        /// <param name="cancelToken">[Optional] The token used to determine if the operation should be canceled or not.</param>
+        /// <remarks>
+        /// <para>
+        /// This will delete multiple files from the file system, and physically remove them from the <see cref="IGorgonFileSystemWriter{T}.WriteLocation"/>. 
+        /// </para>
+        /// <para>
+        /// This method provides the means to receive feedback during the deletion operation, and a means to cancel the operation. This is useful in cases where a UI is present and a delete operation can 
+        /// take a long time to return to the user. The callback method takes a single string parameter which represents the full path to the file being deleted. 
+        /// </para>
+        /// <para>
+        /// When a file is removed from the <see cref="FileSystem"/>, only the file in the <see cref="WriteLocation"/> is physically removed. The items in the other file system mount points will be removed 
+        /// from the mounted directory list(s), but not from the other mount point physical locations. That is, anything mounted outside of the write location will be preserved and can be re-added to the 
+        /// directory list(s) by calling <see cref="IGorgonFileSystem.Refresh()"/>.
+        /// </para>
+        /// <para>
+        /// <note type="important">
+        /// <para>
+        /// When restoring files with <see cref="IGorgonFileSystem.Refresh()"/>, only the file system object will be updated. The method will not restore any deleted files in the 
+        /// <see cref="IGorgonFileSystemWriter{T}.WriteLocation"/>.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// <para>
+        /// This method will use the delete callback action passed to the constructor (if supplied) to perform custom deletion of file system items. If no action is provided, then the files and directories 
+        /// deleted by this method are erased and cannot be recovered easily.
+        /// </para>
+        /// <para>
+        /// Calling this method will trigger the <see cref="VirtualFileDeleted"/> event.
+        /// </para>
+        /// </remarks>
+        void DeleteFiles(IEnumerable<string> paths, Action<string> onDelete = null, CancellationToken? cancelToken = null);
+
+        /// <summary>
+        /// Function to rename a directory.
+        /// </summary>
+        /// <param name="path">The path to the directory to rename.</param>
+        /// <param name="newName">The new name of the directory.</param>
+        /// <remarks>
+        /// <para>
+        /// This will change the name of the specified directory in the <paramref name="path"/> to the name specified by <paramref name="newName"/>. The <paramref name="newName"/> must only contain the name 
+        /// of the directory, and no path information. This <paramref name="newName"/> must also not already exist as a file or directory name in the same <paramref name="path"/>.
+        /// </para>
+        /// <para>
+        /// Calling this method will trigger the <see cref="VirtualDirectoryRenamed"/> event.
+        /// </para>
+        /// </remarks>
+        void RenameDirectory(string path, string newName);
+
+        /// <summary>
+        /// Function to rename a file.
+        /// </summary>
+        /// <param name="path">The path to the file to rename.</param>
+        /// <param name="newName">The new name of the file.</param>
+        /// <remarks>
+        /// <para>
+        /// This will change the name of the specified file in the <paramref name="path"/> to the name specified by <paramref name="newName"/>. The <paramref name="newName"/> must only contain the name 
+        /// of the file, and no path information. This <paramref name="newName"/> must also not already exist as a file or directory name in the same <paramref name="path"/>.
+        /// </para>
+        /// <para>
+        /// Calling this method will trigger the <see cref="VirtualFileRenamed"/> event.
+        /// </para>
+        /// </remarks>
+        void RenameFile(string path, string newName);
+
+        /// <summary>
+        /// Function to copy files to another directory.
+        /// </summary>
+        /// <param name="filePaths">The path to the files to copy.</param>
+        /// <param name="destDirectoryPath">The destination directory path that will receive the copied data.</param>
+        /// <param name="options">[Optional] The options used to report progress, support cancelation, etc...</param>
+        /// <remarks>
+        /// <para>
+        /// This method copies a file, or files, to a new directory path. 
+        /// </para>
+        /// <para>
+        /// When the <paramref name="options"/> parameter is specified, callback methods can be used to show progress of the copy operation, handle file naming conflicts and provide cancellation support. 
+        /// These callbacks are useful in scenarios where a UI component is necessary to show progress, and/or prompts to allow the user to decide on how to handle a file naming conflict when copying 
+        /// files. The cancellation support is useful in an asynchronous scenario where it's desirable to allow the user to cancel the operation, or cancellation is required due to other conditions.
+        /// </para>
+        /// <para>
+        /// Calling this method will trigger the <see cref="VirtualFileCopied"/> event.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonCopyCallbackOptions"/>
+        void CopyFiles(IEnumerable<string> filePaths, string destDirectoryPath, GorgonCopyCallbackOptions options = null);
+
+        /// <summary>
+        /// Function to move files to another directory.
+        /// </summary>
+        /// <param name="filePaths">The path to the files to file.</param>
+        /// <param name="destDirectoryPath">The destination directory path that will receive the moved data.</param>
+        /// <param name="options">[Optional] The options used to report progress, support cancelation, etc...</param>
+        /// <remarks>
+        /// <para>
+        /// This method moves a file, or files, to a new directory path.
+        /// </para>
+        /// <para>
+        /// When the <paramref name="options"/> parameter is specified, callback methods can be used to show progress of the copy operation, handle file naming conflicts and provide cancellation support. 
+        /// These callbacks are useful in scenarios where a UI component is necessary to show progress, and/or prompts to allow the user to decide on how to handle a file naming conflict when copying 
+        /// files. The cancellation support is useful in an asynchronous scenario where it's desirable to allow the user to cancel the operation, or cancellation is required due to other conditions.
+        /// </para>
+        /// <para>
+        /// Calling this method will trigger the <see cref="VirtualFileMoved"/> event.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonCopyCallbackOptions"/>
+        void MoveFiles(IEnumerable<string> filePaths, string destDirectoryPath, GorgonCopyCallbackOptions options = null);
+
+        /// <summary>
+        /// Function to copy a directory to another directory.
+        /// </summary>
+        /// <param name="directoryPath">The path to the directory to copy.</param>
+        /// <param name="destDirectoryPath">The destination directory path that will receive the copied data.</param>
+        /// <param name="options">[Optional] The options used to report progress, support cancelation, etc...</param>
+        /// <remarks>
+        /// <para>
+        /// This method copies a directory, its sub directories and all files under those directories to a new directory path. 
+        /// </para>
+        /// <para>
+        /// When the <paramref name="options"/> parameter is specified, callback methods can be used to show progress of the copy operation, handle file naming conflicts and provide cancellation support. 
+        /// These callbacks are useful in scenarios where a UI component is necessary to show progress, and/or prompts to allow the user to decide on how to handle a file naming conflict when copying 
+        /// files. The cancellation support is useful in an asynchronous scenario where it's desirable to allow the user to cancel the operation, or cancellation is required due to other conditions.
+        /// </para>
+        /// <para>
+        /// Calling this method will trigger the <see cref="VirtualDirectoryCopied"/> event.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonCopyCallbackOptions"/>
+        void CopyDirectory(string directoryPath, string destDirectoryPath, GorgonCopyCallbackOptions options = null);
+
+        /// <summary>
+        /// Function to move a directory to another directory.
+        /// </summary>
+        /// <param name="directoryPath">The path to the directory to move.</param>
+        /// <param name="destDirectoryPath">The destination directory path that will receive the moved data.</param>
+        /// <param name="options">[Optional] The options used to report progress, support cancelation, etc...</param>
+        /// <remarks>
+        /// <para>
+        /// This method moves a directory, its sub directories and all files under those directories to a new directory path. 
+        /// </para>
+        /// <para>
+        /// When the <paramref name="options"/> parameter is specified, callback methods can be used to show progress of the copy operation, handle file naming conflicts and provide cancellation support. 
+        /// These callbacks are useful in scenarios where a UI component is necessary to show progress, and/or prompts to allow the user to decide on how to handle a file naming conflict when copying 
+        /// files. The cancellation support is useful in an asynchronous scenario where it's desirable to allow the user to cancel the operation, or cancellation is required due to other conditions.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="directoryPath"/>, and the <paramref name="destDirectoryPath"/> point to the same location, then this method will return immediately without doing anything. 
+        /// </para>
+        /// <para>
+        /// When moving a directory the <paramref name="directoryPath"/> must not be an ancestor of the <paramref name="destDirectoryPath"/>, and the <paramref name="directoryPath"/> must not be the root 
+        /// (<c>/</c>) directory. An exception will be thrown if either condition is true.
+        /// </para>
+        /// <para>
+        /// Calling this method will trigger the <see cref="VirtualDirectoryMoved"/> event.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonCopyCallbackOptions"/>
+        void MoveDirectory(string directoryPath, string destDirectoryPath, GorgonCopyCallbackOptions options = null);
+
+        /// <summary>
+        /// Function to export a directory from the virtual file system to a directory on the physical file system.
+        /// </summary>
+        /// <param name="directoryPath">The path to the directory to export.</param>
+        /// <param name="destDirectoryPath">The destination directory path on the physical file system that will receive the exported data.</param>
+        /// <param name="options">[Optional] The options used to report progress, support cancelation, etc...</param>
+        /// <remarks>
+        /// <para>
+        /// This method exports the virtual directory, its sub directories and all files under those directories to a directory on the physical file system. 
+        /// </para>
+        /// <para>
+        /// When the <paramref name="options"/> parameter is specified, callback methods can be used to show progress of the copy operation, handle file naming conflicts and provide cancellation support. 
+        /// These callbacks are useful in scenarios where a UI component is necessary to show progress, and/or prompts to allow the user to decide on how to handle a file naming conflict when copying 
+        /// files. The cancellation support is useful in an asynchronous scenario where it's desirable to allow the user to cancel the operation, or cancellation is required due to other conditions.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonCopyCallbackOptions"/>
+        void ExportDirectory(string directoryPath, string destDirectoryPath, GorgonCopyCallbackOptions options = null);
+
+        /// <summary>
+        /// Function to import files/directories from the physical file system to a directory on the virtual file system.
+        /// </summary>
+        /// <param name="paths">The paths to the files/directories on the physical file system to import.</param>
+        /// <param name="destDirectoryPath">The destination directory path in the virtual file system that will receive the imported data.</param>
+        /// <param name="options">[Optional] The options used to report progress, support cancelation, etc...</param>
+        /// <remarks>
+        /// <para>
+        /// This method imports files, and directories from the physical file system into a directory on the virtual file system.
+        /// </para>
+        /// <para>
+        /// When the <paramref name="options"/> parameter is specified, callback methods can be used to show progress of the copy operation, handle file naming conflicts and provide cancellation support. 
+        /// These callbacks are useful in scenarios where a UI component is necessary to show progress, and/or prompts to allow the user to decide on how to handle a file naming conflict when copying 
+        /// files. The cancellation support is useful in an asynchronous scenario where it's desirable to allow the user to cancel the operation, or cancellation is required due to other conditions.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonCopyCallbackOptions"/>
+        void Import(IReadOnlyList<string> paths, string destDirectoryPath, GorgonCopyCallbackOptions options = null);
+
+        /// <summary>
+        /// Function to export files from the virtual file system to a directory on the physical file system.
+        /// </summary>
+        /// <param name="filePaths">The path to the files to export.</param>
+        /// <param name="destDirectoryPath">The destination directory path on the physical file system that will receive the exported data.</param>
+        /// <param name="options">[Optional] The options used to report progress, support cancelation, etc...</param>
+        /// <remarks>
+        /// <para>
+        /// This method exports the specified files to a directory on the physical file system. 
+        /// </para>
+        /// <para>
+        /// When the <paramref name="options"/> parameter is specified, callback methods can be used to show progress of the copy operation, handle file naming conflicts and provide cancellation support. 
+        /// These callbacks are useful in scenarios where a UI component is necessary to show progress, and/or prompts to allow the user to decide on how to handle a file naming conflict when copying 
+        /// files. The cancellation support is useful in an asynchronous scenario where it's desirable to allow the user to cancel the operation, or cancellation is required due to other conditions.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonCopyCallbackOptions"/>
+        void ExportFiles(IEnumerable<string> filePaths, string destDirectoryPath, GorgonCopyCallbackOptions options = null);
 
         /// <summary>
         /// Function to open a file for reading or for writing.
@@ -252,13 +503,6 @@ namespace Gorgon.IO
         /// <param name="path">The path to the file to read/write.</param>
         /// <param name="mode">The mode to determine how to read/write the file.</param>
         /// <returns>An open <see cref="FileStream"/> to the file.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> is empty.
-        /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="path"/> does not contain a file name.</para>
-        /// </exception>
-        /// <exception cref="FileNotFoundException">Thrown when the file referenced by the <paramref name="path"/> was not found and the <paramref name="mode"/> is set to <see cref="FileMode.Open"/> or <see cref="FileMode.Truncate"/>.</exception>
-        /// <exception cref="DirectoryNotFoundException">Thrown when the directory in the <paramref name="path"/> was not found.</exception>
         /// <remarks>
         /// <para>
         /// This will open a file for reading or writing depending on the value passed to the <paramref name="mode"/> parameter. See the <see cref="FileMode"/> enumeration for more information about how these modes 
@@ -271,34 +515,12 @@ namespace Gorgon.IO
         /// <para>
         /// If the <paramref name="path"/> has a directory, for example <c><![CDATA[/MyDirectory/MyFile.txt]]></c>, and the directory <c><![CDATA[/MyDirectory]]></c> does not exist, an exception will be thrown.
         /// </para>
+        /// <para>
+        /// Calling this method will trigger the <see cref="VirtualFileOpened"/> event, and when the file stream is closed the <see cref="VirtualFileClosed"/> event.
+        /// </para>
         /// </remarks>
         /// <seealso cref="FileMode"/>
         T OpenStream(string path, FileMode mode);
-
-        /// <summary>
-        /// Function to delete a file from the file system.
-        /// </summary>
-        /// <param name="path">The path to the file to delete.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> is empty.</exception>
-        /// <exception cref="FileNotFoundException">Thrown when the file referenced by the <paramref name="path"/> was not found.</exception>
-        /// <remarks>
-        /// <para>
-        /// This will remove the <see cref="IGorgonVirtualFile"/> from the <see cref="FileSystem"/>, and will delete the physical file from the <see cref="WriteLocation"/> if it exists there.
-        /// </para>
-        /// <para>
-        /// When a file is removed from the <see cref="FileSystem"/>, it will be removed all mounted file systems. However, the actual file in the physical file systems will not be touched and the 
-        /// deleted file may be restored with a call to <see cref="IGorgonFileSystem.Refresh()"/>. 
-        /// </para>
-        /// <para>
-        /// <note type="important">
-        /// <para>
-        /// When restoring files with <see cref="IGorgonFileSystem.Refresh()"/>, only the file system object will be updated. The method will not restore any deleted files in the <see cref="WriteLocation"/>.
-        /// </para>
-        /// </note>
-        /// </para>
-        /// </remarks>
-        void DeleteFile(string path);
 
         /// <summary>
         /// Function to mount the directory specified by <see cref="WriteLocation"/> into the file system.

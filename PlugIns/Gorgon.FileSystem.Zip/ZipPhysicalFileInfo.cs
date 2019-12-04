@@ -133,6 +133,14 @@ namespace Gorgon.IO.Zip
         }
         #endregion
 
+        #region Methods.
+        /// <summary>Function to refresh the file information.</summary>
+        public void Refresh()
+        {
+            // We don't need to refresh a packed file.
+        }
+        #endregion
+
         #region Constructor.
         /// <summary>
         /// Initializes a new instance of the <see cref="ZipPhysicalFileInfo" /> class.

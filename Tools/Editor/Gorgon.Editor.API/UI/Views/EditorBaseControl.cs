@@ -24,11 +24,9 @@
 // 
 #endregion
 
-using System;
+
 using System.ComponentModel;
-using System.Drawing;
 using System.Windows.Forms;
-using ComponentFactory.Krypton.Toolkit;
 
 namespace Gorgon.Editor.UI.Views
 {
@@ -38,11 +36,6 @@ namespace Gorgon.Editor.UI.Views
     public partial class EditorBaseControl
         : UserControl
     {
-        #region Variables.
-        // The theme palette.
-        private IPalette _palette;
-        #endregion
-
         #region Properties.
         /// <summary>
         /// Property to return whether or not the control is being used in a designer.
@@ -54,56 +47,6 @@ namespace Gorgon.Editor.UI.Views
         }
         #endregion
 
-        #region Methods.
-        /// <summary>
-        /// Handles the GlobalPaletteChanged event of the KryptonManager control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void KryptonManager_GlobalPaletteChanged(object sender, EventArgs e)
-        {
-            if (_palette != null)
-            {
-                _palette.PalettePaint -= Palette_PalettePaint;
-            }
-
-            _palette = KryptonManager.CurrentGlobalPalette;
-
-            if (_palette != null)
-            {
-                _palette.PalettePaint += Palette_PalettePaint;
-            }
-
-            Invalidate();
-        }
-
-        /// <summary>Raises the <see cref="E:System.Windows.Forms.Control.Paint" /> event.</summary>
-        /// <param name="e">A <see cref="T:System.Windows.Forms.PaintEventArgs" /> that contains the event data. </param>
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            base.OnPaint(e);
-
-            if (_palette == null)
-            {
-                return;
-            }
-
-            PaletteState state = Enabled ? PaletteState.Normal : PaletteState.Disabled;
-            Color backColor = _palette.GetBackColor1(PaletteBackStyle.ControlClient, state);
-            using (var backBrush = new SolidBrush(backColor))
-            {
-                e.Graphics.FillRectangle(backBrush, e.ClipRectangle);
-            }
-        }
-
-        /// <summary>
-        /// Handles the PalettePaint event of the Palette control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="PaletteLayoutEventArgs"/> instance containing the event data.</param>
-        private void Palette_PalettePaint(object sender, PaletteLayoutEventArgs e) => Invalidate();
-        #endregion
-
         #region Constructor/Finalizer.
         /// <summary>
         /// Initializes a new instance of the <see cref="EditorBaseControl"/> class.
@@ -111,19 +54,7 @@ namespace Gorgon.Editor.UI.Views
         public EditorBaseControl()
         {
             IsDesignTime = LicenseManager.UsageMode == LicenseUsageMode.Designtime;
-
-            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw, true);
-
             InitializeComponent();
-
-            _palette = KryptonManager.CurrentGlobalPalette;
-
-            if (_palette != null)
-            {
-                _palette.PalettePaint += Palette_PalettePaint;
-            }
-
-            KryptonManager.GlobalPaletteChanged += KryptonManager_GlobalPaletteChanged;
         }
         #endregion
     }

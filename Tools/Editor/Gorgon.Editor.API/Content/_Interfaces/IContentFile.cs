@@ -160,6 +160,7 @@ namespace Gorgon.Editor.Content
         /// </summary>
         /// <param name="append">[Optional] <b>true</b> to append data to the end of the file, or <b>false</b> to overwrite.</param>
         /// <returns>A stream to write the file data into.</returns>
+        [Obsolete("This is on the file system writer, do not use.")]
         Stream OpenWrite(bool append = false);
 
         /// <summary>

@@ -122,7 +122,7 @@ namespace Gorgon.Editor.UI.Views
         /// Property to return the panel that will be used for presentation of the content.
         /// </summary>
         [Browsable(false)]
-        public KryptonPanel PresentationPanel => PanelPresenter;
+        public Panel PresentationPanel => PanelPresenter;
 
         /// <summary>Property to return the graphics context.</summary>
         [Browsable(false)]
@@ -281,7 +281,7 @@ namespace Gorgon.Editor.UI.Views
         /// <param name="e">The event parameters for the drag/drop event.</param>
         /// <param name="handler">The drag/drop handler used to handle the drag drop information.</param>
         /// <returns>The data in the drag operation, or <b>null</b> if the data cannot be dragged and dropped onto this control.</returns>
-        protected IContentFileDragData GetDragDropData(DragEventArgs e, IDragDropHandler<IContentFileDragData> handler)
+        protected IContentFileDragData GetDragDropData(DragEventArgs e, Olde_IDragDropHandler<IContentFileDragData> handler)
         {
             if (handler == null)
             {

@@ -31,6 +31,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.IO.Properties;
@@ -113,7 +114,7 @@ namespace Gorgon.IO
     /// </code>
     /// </example>
     public class GorgonFileSystem
-        : IGorgonFileSystem
+        : IGorgonFileSystem, IGorgonFileSystemNotifier
     {
         #region Variables.
         /// <summary>
@@ -129,6 +130,8 @@ namespace Gorgon.IO
         private readonly IGorgonLog _log;
         // A list of mount points grouped by provider.
         private readonly HashSet<GorgonFileSystemMountPoint> _mountProviders;
+        // A read/write version of the RootDirectory property.
+        private readonly VirtualDirectory _rootDirectory;
         #endregion
 
         #region Properties.
@@ -167,14 +170,6 @@ namespace Gorgon.IO
         }
 
         /// <summary>
-        /// A read/write version of the RootDirectory property.
-        /// </summary>
-        internal VirtualDirectory InternalRootDirectory
-        {
-            get;
-        }
-
-        /// <summary>
         /// Property to return the root directory for the file system.
         /// </summary>
         /// <remarks>
@@ -190,7 +185,7 @@ namespace Gorgon.IO
         /// </note>
         /// </para>
         /// </remarks>
-        public IGorgonVirtualDirectory RootDirectory => InternalRootDirectory;
+        public IGorgonVirtualDirectory RootDirectory => _rootDirectory;
         #endregion
 
         #region Methods.
@@ -315,11 +310,11 @@ namespace Gorgon.IO
             }
 
             // Find existing mount point.
-            VirtualDirectory mountDirectory = InternalGetDirectory(mountPoint.MountLocation);
+            VirtualDirectory mountDirectory = GetVirtualDirectory(mountPoint.MountLocation);
 
             if (mountDirectory == null)
             {
-                mountDirectory = InternalRootDirectory.Directories.Add(mountPoint, mountPoint.MountLocation);
+                mountDirectory = _rootDirectory.Directories.Add(mountPoint, mountPoint.MountLocation);
             }
             else
             {
@@ -333,14 +328,14 @@ namespace Gorgon.IO
             // Process the directories.
             foreach (string directory in data.Directories)
             {
-                VirtualDirectory existingDirectory = InternalGetDirectory(directory);
+                VirtualDirectory existingDirectory = GetVirtualDirectory(directory);
 
                 // If the directory path already exists for another provider, then override it with the 
                 // provider we're currently loading. All directories and files will be overridden by the last 
                 // provider loaded if they already exist.
                 if (existingDirectory == null)
                 {
-                    InternalRootDirectory.Directories.Add(mountPoint, directory);
+                    _rootDirectory.Directories.Add(mountPoint, directory);
                 }
                 else
                 {
@@ -353,16 +348,16 @@ namespace Gorgon.IO
             }
 
             // Process the files.
-            foreach (IGorgonPhysicalFileInfo file in data.Files)
+            foreach (IGorgonPhysicalFileInfo fileInfo in data.Files)
             {
-                string directoryName = Path.GetDirectoryName(file.VirtualPath).FormatDirectory('/');
+                string directoryName = Path.GetDirectoryName(fileInfo.VirtualPath).FormatDirectory('/');
 
                 if (!directoryName.StartsWith("/"))
                 {
                     directoryName += "/";
                 }
 
-                VirtualDirectory directory = InternalGetDirectory(directoryName);
+                VirtualDirectory directory = GetVirtualDirectory(directoryName);
 
                 if (directory == null)
                 {
@@ -371,18 +366,18 @@ namespace Gorgon.IO
 
 
                 // Update the file information to the most recent provider.
-                if (!directory.Files.TryGetValue(file.Name, out VirtualFile virtualFile))
+                if (!directory.Files.TryGetValue(fileInfo.Name, out VirtualFile virtualFile))
                 {
-                    directory.Files.Add(mountPoint, file);
+                    directory.Files.Add(mountPoint, fileInfo);
                 }
                 else
                 {
-                    _log.Print($"\"{file.FullPath}\" already exists in provider: " +
+                    _log.Print($"\"{fileInfo.FullPath}\" already exists in provider: " +
                                $"\"{virtualFile.MountPoint.Provider.Description}\". Changing provider to \"{mountPoint.Provider.Description}\"",
                                LoggingLevel.Verbose);
 
                     virtualFile.MountPoint = mountPoint;
-                    virtualFile.PhysicalFile = file;
+                    virtualFile.PhysicalFile = fileInfo;
                 }
             }
 
@@ -421,51 +416,15 @@ namespace Gorgon.IO
         {
             IEnumerable<VirtualDirectory> directories = FlattenDirectoryHierarchy(directory, "*");
 
-            foreach (VirtualFile file in directory.Files.InternalEnumerable().Where(item => IsPatternMatch(item, searchMask)))
+            foreach (VirtualFile file in directory.Files.GetVirtualFiles().Where(item => IsPatternMatch(item, searchMask)))
             {
                 yield return file;
             }
 
-            foreach (VirtualFile file in directories.SelectMany(subDirectory => subDirectory.Files.InternalEnumerable().Where(item => IsPatternMatch(item, searchMask))))
+            foreach (VirtualFile file in directories.SelectMany(subDirectory => subDirectory.Files.GetVirtualFiles()
+                                                                                                  .Where(item => IsPatternMatch(item, searchMask))))
             {
                 yield return file;
-            }
-        }
-
-        /// <summary>
-        /// Function to flatten a directory hierarchy.
-        /// </summary>
-        /// <param name="directory">The directory to start searching in.</param>
-        /// <param name="searchMask">The pattern mask to search on.</param>
-        /// <returns>An enumerable containing the flattened list.</returns>
-        internal static IEnumerable<VirtualDirectory> FlattenDirectoryHierarchy(VirtualDirectory directory, string searchMask)
-        {
-            IEnumerable<VirtualDirectory> directories = directory.Directories.InternalEnumerable();
-
-            if (!string.Equals(searchMask, "*", StringComparison.OrdinalIgnoreCase))
-            {
-                directories = directories.Where(item => IsPatternMatch(item, searchMask));
-            }
-
-            var stack = new Queue<VirtualDirectory>(directories);
-
-            while (stack.Count > 0)
-            {
-                VirtualDirectory current = stack.Dequeue();
-
-                yield return current;
-
-                directories = current.Directories.InternalEnumerable();
-
-                if (!string.Equals(searchMask, "*", StringComparison.OrdinalIgnoreCase))
-                {
-                    directories = directories.Where(item => IsPatternMatch(item, searchMask));
-                }
-
-                foreach (VirtualDirectory subDirectory in directories)
-                {
-                    stack.Enqueue(subDirectory);
-                }
             }
         }
 
@@ -476,7 +435,7 @@ namespace Gorgon.IO
         /// <param name="directoryMask">The mask to use when filtering entries.</param>
         /// <param name="recursive">true to recursively evaluate directories, false to just evaluate the top directory.</param>
         /// <returns>An <see cref="IEnumerable{T}"/> containing <see cref="VirtualDirectory"/> objects.</returns>
-        internal IEnumerable<VirtualDirectory> InternalFindDirectories(string path, string directoryMask, bool recursive)
+        private IEnumerable<VirtualDirectory> FindVirtualDirectories(string path, string directoryMask, bool recursive)
         {
             if (path == null)
             {
@@ -488,7 +447,7 @@ namespace Gorgon.IO
                 throw new ArgumentEmptyException(nameof(path));
             }
 
-            VirtualDirectory startDirectory = InternalGetDirectory(path);
+            VirtualDirectory startDirectory = GetVirtualDirectory(path);
             if (startDirectory == null)
             {
                 throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path));
@@ -496,8 +455,8 @@ namespace Gorgon.IO
 
             return !recursive
                        ? (string.Equals(directoryMask, "*", StringComparison.OrdinalIgnoreCase)
-                              ? startDirectory.Directories.InternalEnumerable()
-                              : startDirectory.Directories.InternalEnumerable()
+                              ? startDirectory.Directories.GetVirtualDirectories()
+                              : startDirectory.Directories.GetVirtualDirectories()
                                               .Where(item => IsPatternMatch(item, directoryMask)))
                        : FlattenDirectoryHierarchy(startDirectory, directoryMask);
         }
@@ -509,7 +468,7 @@ namespace Gorgon.IO
         /// <param name="fileMask">The mask to use when filtering entries.</param>
         /// <param name="recursive">true to recursively evaluate directories, false to just evaluate the top directory.</param>
         /// <returns>An <see cref="IEnumerable{T}"/> containing <see cref="VirtualFile"/> objects.</returns>
-        internal IEnumerable<VirtualFile> InternalFindFiles(string path, string fileMask, bool recursive)
+        private IEnumerable<VirtualFile> FindVirtualFiles(string path, string fileMask, bool recursive)
         {
             if (path == null)
             {
@@ -521,7 +480,7 @@ namespace Gorgon.IO
                 throw new ArgumentEmptyException(nameof(path));
             }
 
-            VirtualDirectory start = InternalGetDirectory(path);
+            VirtualDirectory start = GetVirtualDirectory(path);
 
             if (start == null)
             {
@@ -530,8 +489,8 @@ namespace Gorgon.IO
 
             return !recursive
                        ? (string.Equals(fileMask, "*", StringComparison.OrdinalIgnoreCase)
-                              ? start.Files.InternalEnumerable()
-                              : start.Files.InternalEnumerable().Where(item => IsPatternMatch(item, fileMask)))
+                              ? start.Files.GetVirtualFiles()
+                              : start.Files.GetVirtualFiles().Where(item => IsPatternMatch(item, fileMask)))
                        : FlattenFileHierarchy(start, fileMask);
         }
 
@@ -540,7 +499,7 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="path">The path to the file entry.</param>
         /// <returns>The file entry if found, null if not.</returns>
-        internal VirtualFile InternalGetFile(string path)
+        private VirtualFile GetVirtualFile(string path)
         {
             if (path == null)
             {
@@ -571,7 +530,7 @@ namespace Gorgon.IO
             }
 
             // Start search.
-            VirtualDirectory search = InternalGetDirectory(directory);
+            VirtualDirectory search = GetVirtualDirectory(directory);
 
             return search == null ? null : search.Files.Contains(filename) ? search.Files[filename] : null;
         }
@@ -581,7 +540,7 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="path">The path to the directory entry.</param>
         /// <returns>The directory entry if found, null if not.</returns>
-        internal VirtualDirectory InternalGetDirectory(string path)
+        private VirtualDirectory GetVirtualDirectory(string path)
         {
             if (path == null)
             {
@@ -603,7 +562,7 @@ namespace Gorgon.IO
             // Optimization to deal with the root path.
             if (path == "/")
             {
-                return InternalRootDirectory;
+                return _rootDirectory;
             }
 
             string[] directories = path.Split(new[]
@@ -616,7 +575,7 @@ namespace Gorgon.IO
                 return null;
             }
 
-            VirtualDirectory directory = InternalRootDirectory;
+            VirtualDirectory directory = _rootDirectory;
 
             // ReSharper disable once ForCanBeConvertedToForeach
             for (int i = 0; i < directories.Length; i++)
@@ -634,6 +593,194 @@ namespace Gorgon.IO
             }
 
             return directory;
+        }
+        
+        /// <summary>
+        /// Function to flatten a directory hierarchy.
+        /// </summary>
+        /// <param name="directory">The directory to start searching in.</param>
+        /// <param name="searchMask">The pattern mask to search on.</param>
+        /// <returns>An enumerable containing the flattened list.</returns>
+        internal static IEnumerable<VirtualDirectory> FlattenDirectoryHierarchy(VirtualDirectory directory, string searchMask)
+        {
+            IEnumerable<VirtualDirectory> directories = directory.Directories.GetVirtualDirectories()
+                                                                             .Traverse(d => d.Directories.GetVirtualDirectories());
+
+            if (!string.Equals(searchMask, "*", StringComparison.OrdinalIgnoreCase))
+            {
+                directories = directories.Where(item => IsPatternMatch(item, searchMask));
+            }
+
+            return directories;
+        }
+
+        /// <summary>Function to notify a file system that a new directory has been added.</summary>
+        /// <param name="mountPoint">The mountpoint that triggered the update.</param>
+        /// <param name="path">The path to the new directory.</param>
+        /// <returns>The new (or existing) virtual directory corresponding to the physical path.</returns>
+        IGorgonVirtualDirectory IGorgonFileSystemNotifier.NotifyDirectoryAdded(GorgonFileSystemMountPoint mountPoint, string path)
+        {
+            VirtualDirectory dir = _rootDirectory.Directories.Add(mountPoint, path);
+
+            if (dir.MountPoint != mountPoint)
+            {
+                dir.MountPoint = mountPoint;
+            }
+
+            return dir;
+        }
+
+        /// <summary>
+        /// Function to notify a file system that a directory as been deleted.
+        /// </summary>        
+        /// <param name="directoryPath">The path to the directory that was deleted.</param>
+        void IGorgonFileSystemNotifier.NotifyDirectoryDeleted(string directoryPath)
+        {
+            VirtualDirectory dir = GetVirtualDirectory(directoryPath);
+
+            if (dir == null)
+            {
+                return;
+            }
+
+            // If this is a root directory, then just clear everything.
+            if (dir.Parent == null)
+            {
+                _rootDirectory.Directories.Clear();
+                _rootDirectory.Files.Clear();
+                return;
+            }
+
+            dir.Parent.Directories.Remove(dir);
+        }
+
+        /// <summary>
+        /// Function to notify a file system that a directory has been renamed.
+        /// </summary>
+        /// <param name="mountPoint">The mount point for the directory.</param>
+        /// <param name="oldPath">The path to the directory that was renamed.</param>
+        /// <param name="physicalPath">The physical path for the directory.</param>
+        /// <param name="newName">The new name for the directory.</param>
+        void IGorgonFileSystemNotifier.NotifyDirectoryRenamed(GorgonFileSystemMountPoint mountPoint, string oldPath, string physicalPath, string newName)
+        {
+            VirtualDirectory dir = GetVirtualDirectory(oldPath);
+
+            if (dir?.Parent == null)
+            {
+                return;
+            }
+
+            // Function to update the physical file information for each file in a directory.
+            void UpdatePhysicalFileInfo(GorgonFileSystemMountPoint mountPoint, VirtualDirectory directory)
+            {
+                string physicalPath = mountPoint.Provider.MapToPhysicalPath(directory.FullPath, mountPoint);
+                IReadOnlyDictionary<string, IGorgonPhysicalFileInfo> files = mountPoint.Provider.EnumerateFiles(physicalPath, dir);
+
+                // Update the physical file information on the files.
+                foreach (KeyValuePair<string, IGorgonPhysicalFileInfo> fileInfo in files)
+                {
+                    if (!directory.Files.TryGetValue(fileInfo.Value.Name, out VirtualFile file))
+                    {
+                        // This shouldn't happen. 
+                        _log.Print($"The file '{fileInfo.Value.Name}' was not found in the directory '{directory.FullPath}'.", LoggingLevel.All);
+                        continue;
+                    }
+
+                    file.PhysicalFile = fileInfo.Value;
+
+                    if (file.MountPoint != mountPoint)
+                    {
+                        file.MountPoint = mountPoint;
+                    }
+                }
+            }
+
+            // Remove it from the list so the dictionary keys are fixed up.
+            dir.Parent.Directories.Remove(dir);
+
+            // Assign the new name.
+            dir.Name = newName;
+            if (dir.MountPoint != mountPoint)
+            {
+                dir.MountPoint = mountPoint;
+            }
+
+            UpdatePhysicalFileInfo(mountPoint, dir);
+
+            // All files have a physical link, and since that physical link is no longer valid, we need to update the physical path for each file under
+            // the directory and any subdirectories.
+            foreach (VirtualDirectory subDir in dir.Directories.Traverse(d => d.Directories))
+            {
+                if (subDir.MountPoint != mountPoint)
+                {
+                    subDir.MountPoint = mountPoint;
+                }
+
+                UpdatePhysicalFileInfo(mountPoint, subDir);
+            }
+
+            // Re-add to the list after it's been updated.
+            dir.Parent.Directories.Add(dir);
+        }
+
+        /// <summary>
+        /// Function to notify a file system that a file has been renamed.
+        /// </summary>
+        /// <param name="mountPoint">The mount point for the file.</param>
+        /// <param name="oldPath">The path to the file that was renamed.</param>        
+        /// <param name="fileInfo">Physical file information for the renamed file.</param>
+        void IGorgonFileSystemNotifier.NotifyFileRenamed(GorgonFileSystemMountPoint mountPoint, string oldPath, IGorgonPhysicalFileInfo fileInfo)
+        {
+            VirtualFile file = GetVirtualFile(oldPath);
+
+            if (file.MountPoint != mountPoint)
+            {
+                file.MountPoint = mountPoint;
+            }
+
+            file.PhysicalFile = fileInfo;
+        }
+
+        /// <summary>
+        /// Function to notify a file system that a file has been deleted.
+        /// </summary>
+        /// <param name="filePath">The path to the file that was deleted.</param>
+        void IGorgonFileSystemNotifier.NotifyFileDeleted(string filePath)
+        {
+            VirtualFile file = GetVirtualFile(filePath);
+
+            if (file == null)
+            {
+                return;
+            }
+
+            file.Directory.Files.Remove(file);
+        }
+
+        /// <summary>Function to notify a file system that a previously opened write stream has been closed.</summary>
+        /// <param name="mountPoint">The mountpoint that triggered the update.</param>
+        /// <param name="fileInfo">The information about the physical file.</param>
+        /// <returns>The file that was updated.</returns>
+        IGorgonVirtualFile IGorgonFileSystemNotifier.NotifyFileWriteStreamClosed(GorgonFileSystemMountPoint mountPoint, IGorgonPhysicalFileInfo fileInfo)
+        {
+            VirtualFile file = GetVirtualFile(fileInfo.VirtualPath);
+
+            if (file == null)
+            {
+                string directoryPath = Path.GetDirectoryName(fileInfo.VirtualPath);
+                VirtualDirectory directory = GetVirtualDirectory(directoryPath);
+                
+                return directory.Files.Add(mountPoint, fileInfo);
+            }
+
+            file.PhysicalFile = fileInfo;
+
+            if (file.MountPoint != mountPoint)
+            {
+                file.MountPoint = mountPoint;
+            }
+
+            return file;
         }
 
         /// <summary>
@@ -664,7 +811,7 @@ namespace Gorgon.IO
         /// </note>
         /// </para>
         /// </remarks>
-        public IEnumerable<IGorgonVirtualDirectory> FindDirectories(string path, string directoryMask, bool recursive = true) => InternalFindDirectories(path, directoryMask, recursive);
+        public IEnumerable<IGorgonVirtualDirectory> FindDirectories(string path, string directoryMask, bool recursive = true) => FindVirtualDirectories(path, directoryMask, recursive);
 
         /// <summary>
         /// Function to find all the directories with the name specified by the directory mask.
@@ -692,7 +839,7 @@ namespace Gorgon.IO
         /// </para>
         /// </remarks>
         /// <seealso cref="FindDirectories(string,string,bool)"/>
-        public IEnumerable<IGorgonVirtualDirectory> FindDirectories(string directoryMask, bool recursive = true) => InternalFindDirectories("/", directoryMask, recursive);
+        public IEnumerable<IGorgonVirtualDirectory> FindDirectories(string directoryMask, bool recursive = true) => FindVirtualDirectories("/", directoryMask, recursive);
 
         /// <summary>
         /// Function to find all the files with the name specified by the file mask.
@@ -722,7 +869,7 @@ namespace Gorgon.IO
         /// </note>
         /// </para>
         /// </remarks>
-        public IEnumerable<IGorgonVirtualFile> FindFiles(string path, string fileMask, bool recursive = true) => InternalFindFiles(path, fileMask, recursive);
+        public IEnumerable<IGorgonVirtualFile> FindFiles(string path, string fileMask, bool recursive = true) => FindVirtualFiles(path, fileMask, recursive);
 
         /// <summary>
         /// Function to find all the files with the name specified by the file mask.
@@ -749,7 +896,7 @@ namespace Gorgon.IO
         /// </note>
         /// </para>
         /// </remarks>
-        public IEnumerable<IGorgonVirtualFile> FindFiles(string fileMask, bool recursive = true) => InternalFindFiles("/", fileMask, recursive);
+        public IEnumerable<IGorgonVirtualFile> FindFiles(string fileMask, bool recursive = true) => FindVirtualFiles("/", fileMask, recursive);
 
         /// <summary>
         /// Function to retrieve a <see cref="IGorgonVirtualFile"/> from the file system.
@@ -788,7 +935,7 @@ namespace Gorgon.IO
         /// ]]>
         /// </code>
         /// </example>
-        public IGorgonVirtualFile GetFile(string path) => InternalGetFile(path);
+        public IGorgonVirtualFile GetFile(string path) => GetVirtualFile(path);
 
         /// <summary>
         /// Function to retrieve a directory from the file system.
@@ -824,7 +971,7 @@ namespace Gorgon.IO
         /// ]]>
         /// </code>
         /// </example>
-        public IGorgonVirtualDirectory GetDirectory(string path) => InternalGetDirectory(path);
+        public IGorgonVirtualDirectory GetDirectory(string path) => GetVirtualDirectory(path);
 
         /// <summary>
         /// Function to reload all the files and directories within, and optionally, under the specified directory.
@@ -883,7 +1030,7 @@ namespace Gorgon.IO
                 throw new ArgumentEmptyException(nameof(path));
             }
 
-            VirtualDirectory directory = InternalGetDirectory(path);
+            VirtualDirectory directory = GetVirtualDirectory(path);
 
             if (directory == null)
             {
@@ -916,7 +1063,7 @@ namespace Gorgon.IO
 
             foreach (string dirPath in fsData.Directories)
             {
-                InternalRootDirectory.Directories.Add(directory.MountPoint, dirPath);
+                _rootDirectory.Directories.Add(directory.MountPoint, dirPath);
             }
 
             foreach (IGorgonPhysicalFileInfo file in fsData.Files)
@@ -928,7 +1075,7 @@ namespace Gorgon.IO
                     directoryName += "/";
                 }
 
-                VirtualDirectory subDirectory = InternalGetDirectory(directoryName);
+                VirtualDirectory subDirectory = GetVirtualDirectory(directoryName);
 
                 if (subDirectory == null)
                 {
@@ -984,8 +1131,8 @@ namespace Gorgon.IO
                 (string physicalPath, string mountLocation)[] mountPoints = _mountProviders.Select(item => (item.PhysicalPath, item.MountLocation)).ToArray();
 
                 // Unload everything at once.
-                InternalRootDirectory.Directories.Clear();
-                InternalRootDirectory.Files.Clear();
+                _rootDirectory.Directories.Clear();
+                _rootDirectory.Files.Clear();
                 _mountProviders.Clear();
 
                 // Refresh the mount points so we can capture the most up to date data.
@@ -1026,7 +1173,7 @@ namespace Gorgon.IO
                 }
 
                 // Find the directory for the mount point.
-                VirtualDirectory mountPointDirectory = InternalGetDirectory(mountPoint.MountLocation);
+                VirtualDirectory mountPointDirectory = GetVirtualDirectory(mountPoint.MountLocation);
 
                 // If we don't have the directory in the file system, then we have nothing to remove.
                 if (mountPointDirectory == null)
@@ -1034,7 +1181,7 @@ namespace Gorgon.IO
                     return;
                 }
 
-                IEnumerable<VirtualFile> files = InternalFindFiles(mountPoint.MountLocation, "*", true)
+                IEnumerable<VirtualFile> files = FindVirtualFiles(mountPoint.MountLocation, "*", true)
                     .Where(item => item.MountPoint.Equals(mountPoint))
                     .ToArray();
 
@@ -1044,7 +1191,7 @@ namespace Gorgon.IO
                 }
 
                 // Find all directories and files that are related to the provider.
-                IEnumerable<VirtualDirectory> directories = InternalFindDirectories(mountPoint.MountLocation, "*", true)
+                IEnumerable<VirtualDirectory> directories = FindVirtualDirectories(mountPoint.MountLocation, "*", true)
                     .Where(item => item.MountPoint.Equals(mountPoint))
                     .OrderByDescending(item => item.FullPath)
                     .ThenByDescending(item => item.FullPath.Length)
@@ -1202,8 +1349,8 @@ namespace Gorgon.IO
         /// <see cref="IGorgonFileSystemProviderFactory"/> instance.
         /// </para>
         /// <para>
-        /// The <paramref name="physicalPath"/> is usually a file or a directory on the operating system file system. But in some cases, this physical location may point to somewhere completely virtual 
-        /// (e.g. <see cref="GorgonFileSystemRamDiskProvider"/>). In order to mount data from those file systems, a provider-specific prefix must be prefixed to the parameter (see provider documentation 
+        /// The <paramref name="physicalPath"/> is usually a file or a directory on the operating system file system. But in some cases, this physical location may point to somewhere completely virtual. 
+        /// In order to mount data from those file systems, a provider-specific prefix must be prefixed to the parameter (see provider documentation 
         /// for the correct prefix). This prefix must always begin with <c>::\\</c>.
         /// </para>
         /// <para>
@@ -1350,7 +1497,7 @@ namespace Gorgon.IO
 
             DefaultProvider = new GorgonFileSystemProvider();
 
-            InternalRootDirectory = new VirtualDirectory(default, this, null, "/");
+            _rootDirectory = new VirtualDirectory(default, this, null, "/");
         }
         #endregion
     }

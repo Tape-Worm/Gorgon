@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,45 +20,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: February 21, 2019 12:00:20 AM
+// Created: January 2, 2020 1:14:24 PM
 // 
 #endregion
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Gorgon.Core;
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.IO
 {
     /// <summary>
-    /// The files dragged in from explorer into a view.
+    /// Event arguments for the <see cref="IGorgonFileSystemWriter{T}.VirtualDirectoryDeleted"/> event.
     /// </summary>
-    public class ExplorerFilesDragData
-        : IExplorerFilesDragData
+    public class VirtualDirectoryDeletedEventArgs
+        : EventArgs
     {
-        #region Properties.
-        /// <summary>Property to return the list of files being imported from explorer.</summary>
-        public IReadOnlyList<string> Files
+        /// <summary>
+        /// Property to return the virtual directories that were deleted.
+        /// </summary>
+        public IReadOnlyList<IGorgonVirtualDirectory> VirtualDirectories
         {
             get;
         }
 
-        /// <summary>Property to set or return whether to cancel the drag/drop operation.</summary>
-        public bool Cancel
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Methods.
-
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="ExplorerFilesDragData"/> class.</summary>
-        /// <param name="files">The files.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="files"/> parameter is <strong>null</strong>.</exception>
-        public ExplorerFilesDragData(IReadOnlyList<string> files) => Files = files ?? throw new ArgumentNullException(nameof(files));
-        #endregion
+        /// <summary>Initializes a new instance of the <see cref="VirtualDirectoryDeletedEventArgs"/> class.</summary>
+        /// <param name="directories">The list of virtual directories that were deleted.</param>
+        internal VirtualDirectoryDeletedEventArgs(IReadOnlyList<IGorgonVirtualDirectory> directories) => VirtualDirectories = directories;
     }
 }

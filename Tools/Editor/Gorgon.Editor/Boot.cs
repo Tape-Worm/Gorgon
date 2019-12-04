@@ -453,7 +453,7 @@ namespace Gorgon.Editor
                 EditorCommonResources.LoadResources();
 
                 _folderBrowser = new FileSystemFolderBrowseService();
-                _commonServices = new ViewModelInjection(Program.Log, new WaitCursorBusyState(), new MessageBoxService());
+                _commonServices = new ViewModelInjection(Program.Log, new WaitCursorBusyState(), new MessageBoxService(), null);
                 _pluginCache = new GorgonMefPlugInCache(Program.Log);
                 _graphicsContext = GraphicsContext.Create(Program.Log);
 

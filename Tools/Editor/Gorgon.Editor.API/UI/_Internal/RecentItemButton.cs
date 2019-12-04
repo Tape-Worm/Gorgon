@@ -176,20 +176,21 @@ namespace Gorgon.Editor.UI
                 ButtonDelete.Visible = true;
                 if (_isMouseDown)
                 {
-                    BackColor = Color.FromKnownColor(KnownColor.DarkOrange);
+                    BackColor = DarkFormsRenderer.FocusedBackground;
                 }
                 else
                 {
-                    BackColor = Color.FromKnownColor(KnownColor.SteelBlue);
+                    BackColor = DarkFormsRenderer.MenuHilightBackground;
                 }
+
+                PanelFileDate.BackColor = Color.FromArgb((int)(BackColor.R * 0.75f), (int)(BackColor.G * 0.75f), (int)(BackColor.B * 0.75f));
             }
             else
             {
                 ButtonDelete.Visible = false;
-                BackColor = Color.FromArgb(64, 64, 64);
-            }
-
-            PanelFileDate.BackColor = Color.FromArgb((int)(BackColor.R * 0.75f), (int)(BackColor.G * 0.75f), (int)(BackColor.B * 0.75f));
+                BackColor = DarkFormsRenderer.DarkBackground;
+                PanelFileDate.BackColor = DarkFormsRenderer.WindowBackground;
+            }            
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>

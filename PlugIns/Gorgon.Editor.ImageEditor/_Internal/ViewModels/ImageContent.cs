@@ -2528,7 +2528,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <param name="dragData">The drag/drop data.</param>
         /// <returns>
         ///   <b>true</b> if the data can be dropped, <b>false</b> if not.</returns>
-        public bool CanDrop(IExplorerFilesDragData dragData)
+        public bool CanDrop(Olde_IExplorerFilesDragData dragData)
         {
             // Only perform special operations if the dragged type is an image, otherwise, fall back.
             if ((dragData?.Files == null)
@@ -2559,7 +2559,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <summary>Function to drop the payload for a drag drop operation.</summary>
         /// <param name="dragData">The drag/drop data.</param>
         /// <param name="afterDrop">[Optional] The method to execute after the drop operation is completed.</param>
-        public void Drop(IExplorerFilesDragData dragData, Action afterDrop = null)
+        public void Drop(Olde_IExplorerFilesDragData dragData, Action afterDrop = null)
         {
             IGorgonImage importImage = null;
             BufferFormat originalFormat;

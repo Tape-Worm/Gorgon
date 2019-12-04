@@ -93,7 +93,7 @@ namespace Gorgon.IO
         /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="item"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentException">Thrown when this collection already contains a directory with the same name as the <paramref name="item"/> parameter.</exception>
-        private void Add(VirtualDirectory item)
+        public void Add(VirtualDirectory item)
         {
             if (item == null)
             {
@@ -154,7 +154,7 @@ namespace Gorgon.IO
         /// <returns>
         /// A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
         /// </returns>
-        public IEnumerator<IGorgonVirtualDirectory> GetEnumerator()
+        IEnumerator<IGorgonVirtualDirectory> IEnumerable<IGorgonVirtualDirectory>.GetEnumerator()
         {
             // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (KeyValuePair<string, VirtualDirectory> directory in _directories)
@@ -169,7 +169,7 @@ namespace Gorgon.IO
         /// <returns>
         /// A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
         /// </returns>
-        internal IEnumerator<VirtualDirectory> InternalGetEnumerator()
+        public IEnumerator<VirtualDirectory> GetEnumerator()
         {
             // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (KeyValuePair<string, VirtualDirectory> directory in _directories)
@@ -179,12 +179,12 @@ namespace Gorgon.IO
         }
 
         /// <summary>
-        /// Function to return the internal enumerable for this collection.
+        /// Function to return the concrete virtual directories for for this collection.
         /// </summary>
         /// <returns>
         /// The <see cref="IEnumerable{T}"/> for this collection.
         /// </returns>
-        internal IEnumerable<VirtualDirectory> InternalEnumerable() => _directories.Select(item => item.Value);
+        public IEnumerable<VirtualDirectory> GetVirtualDirectories() => _directories.Select(item => item.Value);
 
         /// <summary>
         /// Returns an enumerator that iterates through a collection.
@@ -225,7 +225,6 @@ namespace Gorgon.IO
             foreach (string item in directories)
             {
                 // If there's a file with the same name as the directory, then we can't continue.
-                // This should never happen, but if an archive is corrupt, there's always a weird possibility that this could become an issue.
                 if (directory.Files.Contains(item))
                 {
                     throw new IOException(string.Format(Resources.GORFS_ERR_FILE_EXISTS, directory.Files[item].FullPath));

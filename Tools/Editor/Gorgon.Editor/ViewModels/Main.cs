@@ -170,7 +170,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the current clipboard context.
         /// </summary>
-        public IClipboardHandler ClipboardContext => CurrentProject?.ClipboardContext;
+        public Olde_IClipboardHandler ClipboardContext => CurrentProject?.ClipboardContext;
 
         /// <summary>
         /// Property to return the command used to open a project.

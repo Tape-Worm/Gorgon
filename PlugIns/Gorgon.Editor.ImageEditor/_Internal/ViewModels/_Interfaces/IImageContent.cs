@@ -38,7 +38,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
     /// The image content view model.
     /// </summary>
     internal interface IImageContent
-        : IEditorContent, IUndoHandler, IDragDropHandler<IContentFileDragData>, IDragDropHandler<IExplorerFilesDragData>
+        : IEditorContent, IUndoHandler, Olde_IDragDropHandler<IContentFileDragData>, Olde_IDragDropHandler<Olde_IExplorerFilesDragData>
     {
         #region Properties.
         /// <summary>

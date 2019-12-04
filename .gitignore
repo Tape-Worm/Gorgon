@@ -27,6 +27,8 @@ Test/*
 Artifacts/
 *.snk
 Tools/Backup/
+__OLDE__/
+OLDE/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/

@@ -28,6 +28,7 @@ using System;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Services;
+using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.ViewModels;
 
 namespace Gorgon.Editor.ViewModels
@@ -78,6 +79,15 @@ namespace Gorgon.Editor.ViewModels
 
         /// <summary>Property to return the service used to show message dialogs.</summary>
         public IMessageDisplayService MessageDisplay => ViewModelFactory.MessageDisplay;
+
+        /// <summary>
+        /// Property to set or return the clipboard handler for the view model.
+        /// </summary>
+        public IClipboardHandler Clipboard
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewModelCommonParameters"/> class.

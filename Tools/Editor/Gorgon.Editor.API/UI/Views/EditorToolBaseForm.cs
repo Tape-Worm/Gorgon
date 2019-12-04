@@ -47,7 +47,7 @@ namespace Gorgon.Editor.UI.Views
     /// </para>
     /// </remarks>
     public partial class EditorToolBaseForm
-        : KryptonForm
+        : Form
     {
         #region Variables.
         // The control that will receive rendering output.

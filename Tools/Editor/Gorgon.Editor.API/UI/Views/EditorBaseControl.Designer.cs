@@ -20,15 +20,6 @@ namespace Gorgon.Editor.UI.Views
                 components.Dispose();
             }
 
-            if (disposing)
-            {
-                KryptonManager.GlobalPaletteChanged -= KryptonManager_GlobalPaletteChanged;
-
-                if (_palette != null)
-                {
-                    _palette.PalettePaint -= Palette_PalettePaint;
-                }
-            }
             base.Dispose(disposing);
         }
 
@@ -47,7 +38,8 @@ namespace Gorgon.Editor.UI.Views
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+            this.ForeColor = System.Drawing.Color.White;
             this.Name = "EditorBaseControl";
             this.ResumeLayout(false);
 

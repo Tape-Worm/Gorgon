@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using Gorgon.Core;
 using Gorgon.Editor.PlugIns;
 using Newtonsoft.Json;
 
@@ -43,6 +44,16 @@ namespace Gorgon.Editor.Metadata
         #endregion
 
         #region Properties.        
+        /// <summary>
+        /// Property to return the ID for the item.
+        /// </summary>
+        [JsonProperty]
+        public string ID
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// Property to set or return the name of the plugin associated with the metadata file path.
         /// </summary>
@@ -89,15 +100,7 @@ namespace Gorgon.Editor.Metadata
             get => _contentMetadata;
             set
             {
-                if (value == null)
-                {
-                    PlugInName = null;
-                }
-                else
-                {
-                    PlugInName = value.PlugInName;
-                }
-
+                PlugInName = value?.PlugInName;
                 _contentMetadata = value;
             }
         }
@@ -108,6 +111,7 @@ namespace Gorgon.Editor.Metadata
         /// <param name="metadata">The metadata to copy.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="metadata"/> parameter is <b>null</b>.</exception>
         public ProjectItemMetadata(ProjectItemMetadata metadata)
+            : this()
         {
             if (metadata == null)
             {
@@ -126,9 +130,7 @@ namespace Gorgon.Editor.Metadata
         /// <summary>
         /// Initializes a new instance of the <see cref="ProjectItemMetadata"/> class.
         /// </summary>
-        public ProjectItemMetadata()
-        {
-        }
+        public ProjectItemMetadata() => ID = Guid.NewGuid().ToString("N");
         #endregion
     }
 }

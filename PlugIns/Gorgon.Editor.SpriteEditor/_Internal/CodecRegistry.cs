@@ -95,7 +95,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             _log.Print("Loading sprite codecs...", LoggingLevel.Intermediate);
 
-            IReadOnlyList<PlugInAssemblyState> assemblies = _pluginCache.ValidateAndLoadAssemblies(settings.CodecPlugInPaths.Select(item => new FileInfo(item.Value)), _log);
+            IReadOnlyList<PlugInAssemblyState> assemblies = _pluginCache.ValidateAndLoadAssemblies(settings.CodecPlugInPaths.Select(item => item.Value), _log);
 
             if (assemblies.Count == 0)
             {
@@ -180,7 +180,7 @@ namespace Gorgon.Editor.SpriteEditor
             var result = new List<GorgonSpriteCodecPlugIn>();
             _log.Print("Loading sprite codecs...", LoggingLevel.Intermediate);
 
-            IReadOnlyList<PlugInAssemblyState> assemblies = _pluginCache.ValidateAndLoadAssemblies(new[] { new FileInfo(path) }, _log);
+            IReadOnlyList<PlugInAssemblyState> assemblies = _pluginCache.ValidateAndLoadAssemblies(new[] { path }, _log);
 
             if (assemblies.Count == 0)
             {

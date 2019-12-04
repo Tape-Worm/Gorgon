@@ -465,6 +465,24 @@ namespace Gorgon.UI
         /// </summary>
         [Browsable(false)]
         public bool IsErrorPaneOpen => PanelError.Visible;
+
+        /// <summary>
+        /// Property to set or return the background color.
+        /// </summary>
+        [Browsable(true), Category("Appearance"), Description("Sets the background color for the control."), DefaultValue(typeof(Color), "Empty")]
+        public new Color BackColor
+        {
+            get
+            {
+                if ((Parent != null) && (base.BackColor == Color.Empty))
+                {
+                    return Parent.BackColor;
+                }
+
+                return base.BackColor;
+            }
+            set => base.BackColor = value;
+        }
         #endregion
 
         #region Methods.

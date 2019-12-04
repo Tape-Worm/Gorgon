@@ -113,7 +113,7 @@ namespace Gorgon.Editor.Views
         // The page used to host the preview window.
         private KryptonPage _previewPage;
         // The drag drop handler to use for handling content files dropped on to the project surface.
-        private IDragDropHandler<IContentFile> _dragDropHandler;
+        private Olde_IDragDropHandler<IContentFile> _dragDropHandler;
         // The current content control.
         private ContentBaseControl _contentControl;
         // The graphics context for the application.
@@ -360,7 +360,7 @@ namespace Gorgon.Editor.Views
 
             FileExplorer.SetDataContext(dataContext.FileExplorer);
             Preview.SetDataContext(dataContext.ContentPreviewer);
-            _dragDropHandler = dataContext as IDragDropHandler<IContentFile>;
+            _dragDropHandler = dataContext as Olde_IDragDropHandler<IContentFile>;
         }
 
         /// <summary>
@@ -398,7 +398,7 @@ namespace Gorgon.Editor.Views
         {
             if (DataContext != null)
             {
-                DataContext.ClipboardContext = DataContext.FileExplorer as IClipboardHandler;
+                DataContext.ClipboardContext = DataContext.FileExplorer as Olde_IClipboardHandler;
             }
         }
 
@@ -421,7 +421,7 @@ namespace Gorgon.Editor.Views
         {
             if (DataContext != null)
             {
-                DataContext.ClipboardContext = DataContext.CurrentContent as IClipboardHandler;
+                DataContext.ClipboardContext = DataContext.CurrentContent as Olde_IClipboardHandler;
             }
         }
 
@@ -430,7 +430,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void PanelContent_Leave(object sender, EventArgs e)
         {
-            if ((DataContext?.CurrentContent is IClipboardHandler currentHandler) && (currentHandler == DataContext.ClipboardContext))
+            if ((DataContext?.CurrentContent is Olde_IClipboardHandler currentHandler) && (currentHandler == DataContext.ClipboardContext))
             {
                 DataContext.ClipboardContext = null;
             }

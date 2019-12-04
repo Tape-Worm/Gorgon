@@ -240,7 +240,7 @@ namespace Gorgon.Examples
 
                 // Create our virtual file system.
                 _fileSystem = new GorgonFileSystem(Program.Log);
-                _writer = new GorgonFileSystemWriter(_fileSystem, Program.WriteDirectory.FullName);
+                _writer = new GorgonFileSystemWriter(_fileSystem, _fileSystem, Program.WriteDirectory.FullName);
 
                 LoadText();
 

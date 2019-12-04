@@ -82,7 +82,7 @@ namespace Gorgon.Editor
         // The current synchronization context.
         private readonly SynchronizationContext _syncContext;
         // The context for a clipboard handler object.
-        private IClipboardHandler _clipboardContext;
+        private Olde_IClipboardHandler _clipboardContext;
         // The flag to indicate that the application is already closing.
         private CloseStates _closeFlag;
         // The ribbon merger for the main ribbon.

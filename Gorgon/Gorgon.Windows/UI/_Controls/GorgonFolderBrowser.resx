@@ -408,45 +408,6 @@
   <data name="&gt;&gt;ButtonDeleteDir.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
-  <data name="&gt;&gt;PanelError.Name" xml:space="preserve">
-    <value>PanelError</value>
-  </data>
-  <data name="&gt;&gt;PanelError.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;PanelError.Parent" xml:space="preserve">
-    <value>PanelDirectories</value>
-  </data>
-  <data name="&gt;&gt;PanelError.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="PanelDirectories.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Fill</value>
-  </data>
-  <data name="PanelDirectories.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 51</value>
-  </data>
-  <data name="PanelDirectories.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>3, 2, 3, 2</value>
-  </data>
-  <data name="PanelDirectories.Size" type="System.Drawing.Size, System.Drawing">
-    <value>640, 374</value>
-  </data>
-  <data name="PanelDirectories.TabIndex" type="System.Int32, mscorlib">
-    <value>3</value>
-  </data>
-  <data name="&gt;&gt;PanelDirectories.Name" xml:space="preserve">
-    <value>PanelDirectories</value>
-  </data>
-  <data name="&gt;&gt;PanelDirectories.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;PanelDirectories.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;PanelDirectories.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
   <data name="PanelError.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Right</value>
   </data>
@@ -526,6 +487,33 @@
     <value>PanelDirectories</value>
   </data>
   <data name="&gt;&gt;PanelError.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="PanelDirectories.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="PanelDirectories.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 51</value>
+  </data>
+  <data name="PanelDirectories.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 2, 3, 2</value>
+  </data>
+  <data name="PanelDirectories.Size" type="System.Drawing.Size, System.Drawing">
+    <value>640, 374</value>
+  </data>
+  <data name="PanelDirectories.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;PanelDirectories.Name" xml:space="preserve">
+    <value>PanelDirectories</value>
+  </data>
+  <data name="&gt;&gt;PanelDirectories.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;PanelDirectories.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;PanelDirectories.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
   <data name="LabelError.AutoSize" type="System.Boolean, mscorlib">
@@ -681,11 +669,98 @@
   <data name="PanelDirectoryName.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
     <value>GrowAndShrink</value>
   </data>
+  <data name="&gt;&gt;PanelBackground.Name" xml:space="preserve">
+    <value>PanelBackground</value>
+  </data>
+  <data name="&gt;&gt;PanelBackground.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;PanelBackground.Parent" xml:space="preserve">
+    <value>PanelDirectoryName</value>
+  </data>
+  <data name="&gt;&gt;PanelBackground.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="PanelDirectoryName.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Top</value>
+  </data>
+  <data name="PanelDirectoryName.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 30</value>
+  </data>
+  <data name="PanelDirectoryName.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 1, 0, 1</value>
+  </data>
+  <data name="PanelDirectoryName.Size" type="System.Drawing.Size, System.Drawing">
+    <value>640, 21</value>
+  </data>
+  <data name="PanelDirectoryName.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;PanelDirectoryName.Name" xml:space="preserve">
+    <value>PanelDirectoryName</value>
+  </data>
+  <data name="&gt;&gt;PanelDirectoryName.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;PanelDirectoryName.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;PanelDirectoryName.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
   <data name="PanelBackground.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="PanelBackground.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
     <value>GrowAndShrink</value>
+  </data>
+  <data name="&gt;&gt;ButtonDirUp.Name" xml:space="preserve">
+    <value>ButtonDirUp</value>
+  </data>
+  <data name="&gt;&gt;ButtonDirUp.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;ButtonDirUp.Parent" xml:space="preserve">
+    <value>PanelBackground</value>
+  </data>
+  <data name="&gt;&gt;ButtonDirUp.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;TextDirectory.Name" xml:space="preserve">
+    <value>TextDirectory</value>
+  </data>
+  <data name="&gt;&gt;TextDirectory.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;TextDirectory.Parent" xml:space="preserve">
+    <value>PanelBackground</value>
+  </data>
+  <data name="&gt;&gt;TextDirectory.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="PanelBackground.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Top</value>
+  </data>
+  <data name="PanelBackground.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 1</value>
+  </data>
+  <data name="PanelBackground.Size" type="System.Drawing.Size, System.Drawing">
+    <value>640, 19</value>
+  </data>
+  <data name="PanelBackground.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;PanelBackground.Name" xml:space="preserve">
+    <value>PanelBackground</value>
+  </data>
+  <data name="&gt;&gt;PanelBackground.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;PanelBackground.Parent" xml:space="preserve">
+    <value>PanelDirectoryName</value>
+  </data>
+  <data name="&gt;&gt;PanelBackground.ZOrder" xml:space="preserve">
+    <value>0</value>
   </data>
   <data name="ButtonDirUp.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Right</value>
@@ -744,57 +819,6 @@
   <data name="&gt;&gt;TextDirectory.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
-  <data name="PanelBackground.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Top</value>
-  </data>
-  <data name="PanelBackground.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 1</value>
-  </data>
-  <data name="PanelBackground.Size" type="System.Drawing.Size, System.Drawing">
-    <value>640, 19</value>
-  </data>
-  <data name="PanelBackground.TabIndex" type="System.Int32, mscorlib">
-    <value>4</value>
-  </data>
-  <data name="&gt;&gt;PanelBackground.Name" xml:space="preserve">
-    <value>PanelBackground</value>
-  </data>
-  <data name="&gt;&gt;PanelBackground.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;PanelBackground.Parent" xml:space="preserve">
-    <value>PanelDirectoryName</value>
-  </data>
-  <data name="&gt;&gt;PanelBackground.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="PanelDirectoryName.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Top</value>
-  </data>
-  <data name="PanelDirectoryName.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 30</value>
-  </data>
-  <data name="PanelDirectoryName.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>0, 1, 0, 1</value>
-  </data>
-  <data name="PanelDirectoryName.Size" type="System.Drawing.Size, System.Drawing">
-    <value>640, 21</value>
-  </data>
-  <data name="PanelDirectoryName.TabIndex" type="System.Int32, mscorlib">
-    <value>4</value>
-  </data>
-  <data name="&gt;&gt;PanelDirectoryName.Name" xml:space="preserve">
-    <value>PanelDirectoryName</value>
-  </data>
-  <data name="&gt;&gt;PanelDirectoryName.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;PanelDirectoryName.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;PanelDirectoryName.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
   <metadata name="Tip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>108, 17</value>
   </metadata>
@@ -828,6 +852,12 @@
   <data name="&gt;&gt;ColumnDirectoryDate.Type" xml:space="preserve">
     <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="&gt;&gt;ColumnSize.Name" xml:space="preserve">
+    <value>ColumnSize</value>
+  </data>
+  <data name="&gt;&gt;ColumnSize.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="&gt;&gt;Images.Name" xml:space="preserve">
     <value>Images</value>
   </data>
@@ -845,12 +875,6 @@
   </data>
   <data name="&gt;&gt;DefaultImages.Type" xml:space="preserve">
     <value>System.Windows.Forms.ImageList, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;ColumnSize.Name" xml:space="preserve">
-    <value>ColumnSize</value>
-  </data>
-  <data name="&gt;&gt;ColumnSize.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>GorgonFolderBrowser</value>

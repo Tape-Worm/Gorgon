@@ -134,6 +134,14 @@ namespace Gorgon.IO.GorPack
         public bool IsEncrypted => false;
         #endregion
 
+        #region Methods.
+        /// <summary>Function to refresh the file information.</summary>
+        public void Refresh()
+        {
+            // We don't need to refresh a packed file.
+        }
+        #endregion
+
         #region Constructor.
         /// <summary>
         /// Initializes a new instance of the <see cref="GorPackPhysicalFileInfo" /> class.
@@ -163,7 +171,7 @@ namespace Gorgon.IO.GorPack
             Length = size;
             VirtualPath = virtualPath;
             CompressedLength = compressedSize;
-        }
+        }        
         #endregion
     }
 }

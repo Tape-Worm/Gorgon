@@ -94,7 +94,6 @@ namespace Gorgon.Editor.SpriteEditor
 			this.ButtonPrevArrayIndex = new System.Windows.Forms.Button();
 			this.ButtonNextArrayIndex = new System.Windows.Forms.Button();
 			this.LabelArrayIndex = new System.Windows.Forms.Label();
-			((System.ComponentModel.ISupportInitialize)(this.PresentationPanel)).BeginInit();
 			this.PresentationPanel.SuspendLayout();
 			this.TableViewControls.SuspendLayout();
 			this.PanelRenderWindow.SuspendLayout();
@@ -372,7 +371,6 @@ namespace Gorgon.Editor.SpriteEditor
 			this.Size = new System.Drawing.Size(948, 686);
 			this.Controls.SetChildIndex(this.PanelBottomBar, 0);
 			this.Controls.SetChildIndex(this.PresentationPanel, 0);
-			((System.ComponentModel.ISupportInitialize)(this.PresentationPanel)).EndInit();
 			this.PresentationPanel.ResumeLayout(false);
 			this.TableViewControls.ResumeLayout(false);
 			this.TableViewControls.PerformLayout();

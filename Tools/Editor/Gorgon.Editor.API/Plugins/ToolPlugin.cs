@@ -109,7 +109,7 @@ namespace Gorgon.Editor.PlugIns
 
             var scratchArea = new GorgonFileSystem(CommonServices.Log);
             scratchArea.Mount(scratchPath);
-            return new GorgonFileSystemWriter(scratchArea, scratchPath);
+            return new GorgonFileSystemWriter(scratchArea, scratchArea, scratchPath);
         }
 
         /// <summary>

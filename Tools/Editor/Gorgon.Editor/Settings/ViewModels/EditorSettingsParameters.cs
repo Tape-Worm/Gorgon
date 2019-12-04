@@ -72,6 +72,12 @@ namespace Gorgon.Editor.ViewModels
             private set;
         }
 
+        /// <summary>Property to return the clipboard handler for the view model.</summary>
+        /// <remarks>
+        /// This property is not applicable for this type and will always be <b>null</b>.
+        /// </remarks>
+        public IClipboardHandler Clipboard => null;
+
         /// <summary>Initializes a new instance of the <see cref="EditorSettingsParameters"/> class.</summary>
         /// <param name="factory">The view model factory.</param>
         /// <param name="categories">The list of settings categories.</param>

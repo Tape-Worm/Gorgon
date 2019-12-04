@@ -32,16 +32,21 @@ using Gorgon.Editor.Properties;
 namespace Gorgon.Editor.Services
 {
     /// <summary>
-    /// The clipboard service used to assign or retrieve data from the windows clipboard.
+    /// The clipboard service used to assign or retrieve data from the internal clipboard.
     /// </summary>
     public class ClipboardService
         : IClipboardService
     {
+        #region Variables.
+        // The data stored on the clipboard.
+        private object _data;
+        #endregion
+
         #region Properties.
         /// <summary>
         /// Property to return whether or not there is data on the clipboard.
         /// </summary>
-        public bool HasData => Clipboard.GetDataObject() != null;
+        public bool HasData => _data != null;
         #endregion
 
         #region Methods.
@@ -59,22 +64,32 @@ namespace Gorgon.Editor.Services
         /// </remarks>
         public T GetData<T>()
         {
-            IDataObject dataObject = Clipboard.GetDataObject();
-
             Type type = typeof(T);
-            if ((dataObject == null)
-                || (!dataObject.GetDataPresent(type)))
+
+            if (_data == null)
             {
                 throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_CLIPBOARD_NO_DATA_OF_TYPE, type.FullName));
             }
 
-            return (T)dataObject.GetData(type);
+            Type objectType = _data.GetType();
+
+            if ((type != objectType)
+                && (!type.IsInstanceOfType(_data))
+                && (!type.IsAssignableFrom(objectType))
+                && (!objectType.IsAssignableFrom(type))
+                && (!type.IsSubclassOf(objectType))
+                && (!objectType.IsSubclassOf(type)))
+            {
+                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_CLIPBOARD_NO_DATA_OF_TYPE, type.FullName));                
+            }
+
+            return (T)_data;
         }
 
         /// <summary>
         /// Function to clear the clipboard contents.
         /// </summary>
-        public void Clear() => Clipboard.Clear();
+        public void Clear() => _data = null;
 
         /// <summary>
         /// Function to return whether or not the data on the clipboard is of the type specified.
@@ -88,16 +103,21 @@ namespace Gorgon.Editor.Services
         /// </remarks>
         public bool IsType<T>()
         {
-            IDataObject dataObject = Clipboard.GetDataObject();
+            Type type = typeof(T);
 
-            if (dataObject == null)
+            if (_data == null)
             {
                 return false;
             }
 
-            Type type = typeof(T);
+            Type objectType = _data.GetType();
 
-            return dataObject.GetDataPresent(type);
+            return ((type == objectType)
+                || (type.IsInstanceOfType(_data))
+                || (type.IsAssignableFrom(objectType))
+                || (objectType.IsAssignableFrom(type))
+                || (type.IsSubclassOf(objectType))
+                || (objectType.IsSubclassOf(type)));
         }
 
         /// <summary>
@@ -111,13 +131,8 @@ namespace Gorgon.Editor.Services
                 return;
             }
 
-            Clipboard.SetDataObject(item, false);
+            _data = item;
         }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.Services.ClipboardService"/> class.</summary>
-        public ClipboardService() => Clipboard.Clear();
         #endregion
     }
 }

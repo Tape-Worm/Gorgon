@@ -28,7 +28,6 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using ComponentFactory.Krypton.Toolkit;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
 
@@ -43,7 +42,7 @@ namespace Gorgon.Editor.UI.Forms
     /// </para>
     /// </remarks>
     public partial class FormName
-        : KryptonForm
+        : Form
     {
         #region Variables.
         // The object type to be displayed in the textbox cue.
