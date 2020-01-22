@@ -128,7 +128,15 @@ namespace Gorgon.IO
         /// </summary>
         event EventHandler<VirtualDirectoryCopiedMovedEventArgs> VirtualDirectoryMoved;
         /// <summary>
-        /// Event triggered when directories, and files has been imported.
+        /// Event triggered before a phsyical file is imported into the file system.
+        /// </summary>
+        event EventHandler<BeforeFileImportArgs> BeforeFileImport;
+        /// <summary>
+        /// Event triggered after a physical file is imported into the file system.
+        /// </summary>
+        event EventHandler<AfterFileImportArgs> AfterFileImport;
+        /// <summary>
+        /// Event triggered when directories, and files have been imported.
         /// </summary>
         event EventHandler<ImportedEventArgs> Imported;
         /// <summary>

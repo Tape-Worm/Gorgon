@@ -1005,7 +1005,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 workFile = await Task.Run(() => _imageIO.SaveImageFile(Guid.NewGuid().ToString("N"), ImageData, CurrentPixelFormat));
 
                 inStream = workFile.OpenStream();
-                outStream = File.OpenWrite();
+#warning FIX ME
+                //outStream = File.OpenWrite();
 
                 await inStream.CopyToAsync(outStream);
 

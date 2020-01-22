@@ -48,14 +48,14 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// </summary>
         /// <param name="files">The files that hold the sprite data.</param>
         /// <returns>A list of sprites and their associated files.</returns>
-        IReadOnlyDictionary<IContentFile, GorgonSprite> LoadSprites(IEnumerable<IContentFile> files);
+        IReadOnlyDictionary<OLDE_IContentFile, GorgonSprite> LoadSprites(IEnumerable<OLDE_IContentFile> files);
 
         /// <summary>
         /// Function to save the atlas data.
         /// </summary>
         /// <param name="spriteFiles">The original sprite files.</param>
         /// <param name="atlas">The atlas data to save.</param>
-        void SaveAtlas(IReadOnlyDictionary<IContentFile, GorgonSprite> spriteFiles, GorgonTextureAtlas atlas);
+        void SaveAtlas(IReadOnlyDictionary<OLDE_IContentFile, GorgonSprite> spriteFiles, GorgonTextureAtlas atlas);
 
         /// <summary>
         /// Function to determine if there are any existing files that match the texture names or sprite names.

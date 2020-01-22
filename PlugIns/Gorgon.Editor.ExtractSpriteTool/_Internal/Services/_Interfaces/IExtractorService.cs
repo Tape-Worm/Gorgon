@@ -63,6 +63,6 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <param name="baseFileName">The base file name.</param>
         /// <param name="sprites">The sprites to save.</param>
         /// <param name="textureFile">The texture file associated with the sprites.</param>
-        void SaveSprites(string path, string baseFileName, IEnumerable<GorgonSprite> sprites, IContentFile textureFile);
+        void SaveSprites(string path, string baseFileName, IEnumerable<GorgonSprite> sprites, OLDE_IContentFile textureFile);
     }
 }

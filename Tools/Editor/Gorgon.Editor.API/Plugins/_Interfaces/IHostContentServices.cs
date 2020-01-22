@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,35 +20,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: January 4, 2019 10:58:00 AM
+// Created: January 22, 2020 10:34:16 PM
 // 
 #endregion
 
-using System.ComponentModel;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Gorgon.Core;
+using Gorgon.Editor.Services;
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.Editor.PlugIns
 {
     /// <summary>
-    /// Arguments for the <see cref="OLDE_IEditorContent.CloseContentCommand"/>.
+    /// A list of services passed from the host application to content plug ins.
     /// </summary>
-    public class CloseContentArgs
-        : CancelEventArgs
+    public interface IHostContentServices
+        : IHostToolServices
     {
-        #region Properties.
         /// <summary>
-        /// Property to return whether or not to check the content for changes prior to closing.
+        /// Property to return the service that allows a content plug in to access other content plug ins.
         /// </summary>
-        public bool CheckChanges
+        IContentPlugInService ContentPlugInService
         {
             get;
         }
-        #endregion
-
-        #region Constructor.
-
-        /// <summary>Initializes a new instance of the <see cref="CloseContentArgs"/> class.</summary>
-        /// <param name="checkForChanges"><b>true</b> to check for changes prior to closing, <b>false</b> to skip the check and force a close.</param>
-        public CloseContentArgs(bool checkForChanges) => CheckChanges = checkForChanges;
-        #endregion
     }
 }

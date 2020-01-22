@@ -180,7 +180,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             IGorgonVideoAdapterInfo videoAdapter,
             IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> formatSupport,
             ImageEditorServices services)
-            : base(file, services.CommonServices ?? throw new ArgumentNullException(nameof(services)))
+            : base(file, services.HostContentServices ?? throw new ArgumentNullException(nameof(services)))
         {
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             WorkingFile = imageData.workingFile ?? throw new ArgumentNullException(nameof(imageData.workingFile));

@@ -52,40 +52,6 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function to retrieve the codec used by the image.
-        /// </summary>
-        /// <param name="file">The file containing the image content.</param>
-        /// <returns>The codec used to read the file.</returns>
-        private IGorgonImageCodec GetCodec(FileInfo file)
-        {
-            IGorgonImageCodec result = null;
-            Stream stream = null;
-
-            try
-            {
-                // Locate the file extension.
-                if (!string.IsNullOrWhiteSpace(file.Extension))
-                {
-                    var extension = new GorgonFileExtension(file.Extension);
-
-                    result = _codecs.CodecFileTypes.FirstOrDefault(item => item.extension == extension).codec;
-
-                    if (result != null)
-                    {
-                        return result;
-                    }
-                }
-            }
-            finally
-            {
-                stream?.Dispose();
-            }
-
-            return null;
-        }
-
-
         /// <summary>Function to retrieve the settings interface for this plug in.</summary>
         /// <param name="injector">Objects to inject into the view model.</param>
         /// <returns>The settings interface view model.</returns>
@@ -109,7 +75,7 @@ namespace Gorgon.Editor.ImageEditor
             ViewFactory.Register<ISettings>(() => new ImageCodecSettingsPanel());
 
             // Retrieve the shared settings.
-            (_codecs, _settings) = SharedDataFactory.GetSharedData(ContentPlugInService, CommonServices);
+            (_codecs, _settings) = SharedDataFactory.GetSharedData(HostContentServices);
         }
 
         /// <summary>Function to provide clean up for the plugin.</summary>
@@ -133,22 +99,54 @@ namespace Gorgon.Editor.ImageEditor
             catch (Exception ex)
             {
                 // We don't care if it crashes. The worst thing that'll happen is your settings won't persist.
-                CommonServices.Log.LogException(ex);
+                HostContentServices.Log.LogException(ex);
             }
         }
 
         /// <summary>Function to open a content object from this plugin.</summary>
-        /// <param name="sourceFile">The file being imported.</param>
-        /// <param name="fileSystem">The file system containing the file being imported.</param>
-        /// <param name="log">The logging interface to use.</param>
         /// <returns>A new <see cref="IEditorContentImporter"/> object.</returns>
-        protected override IEditorContentImporter OnCreateImporter(FileInfo sourceFile, IGorgonFileSystem fileSystem) => new DdsImageImporter(sourceFile, GetCodec(sourceFile), CommonServices.Log);
+        /// <remarks>This method creates an instance of the custom content importer. The application will use the object returned to perform the actual import process.</remarks>
+        protected override IEditorContentImporter OnCreateImporter() => new DdsImageImporter(TemporaryFileSystem, _codecs, HostContentServices.Log);
 
-        /// <summary>Function to determine if the content plugin can open the specified file.</summary>
-        /// <param name="file">The content file to evaluate.</param>
-        /// <returns>
-        ///   <b>true</b> if the plugin can open the file, or <b>false</b> if not.</returns>
-        protected override bool OnCanOpenContent(FileInfo file) => GetCodec(file) != null;
+        /// <summary>
+        /// Function to determine if the content plugin can open the specified file.
+        /// </summary>
+        /// <param name="filePath">The path to the file to evaluate.</param>
+        /// <returns><b>true</b> if the plugin can open the file, or <b>false</b> if not.</returns>
+        /// <remarks>
+        /// <para>
+        /// This method is used to determine if the file specified by the <paramref name="filePath"/> passed to the method can be opened by this plug in. If the method returns <b>true</b>, then the host 
+        /// application will convert the file using the importer produced by this plug in. Otherwise, if the method returns <b>false</b>, then the file is skipped.
+        /// </para>
+        /// <para>
+        /// The <paramref name="filePath"/> is a path to the file on the project virtual file system.
+        /// </para>
+        /// <para>
+        /// Implementors may use whatever method they desire to determine if the file can be opened (e.g. checking file extensions, examining file headers, etc...).
+        /// </para>
+        /// </remarks>
+        protected override bool OnCanOpenContent(string filePath) => GetCodec(filePath, _codecs) != null;
+
+        /// <summary>
+        /// Function to retrieve the codec used by the image.
+        /// </summary>
+        /// <param name="filePath">The path to the file to evaluate.</param>
+        /// <param name="codecs">The codecs to evaluate.</param>
+        /// <returns>The codec used to read the file.</returns>
+        public static IGorgonImageCodec GetCodec(string filePath, ICodecRegistry codecs)
+        {
+            IGorgonImageCodec result = null;
+            string fileExtension = Path.GetExtension(filePath);
+
+            // Locate the file extension.
+            if (string.IsNullOrWhiteSpace(fileExtension))
+            {
+                return null;
+            }
+            var extension = new GorgonFileExtension(fileExtension);
+
+            return codecs.CodecFileTypes.FirstOrDefault(item => item.extension == extension).codec;
+        }
         #endregion
 
         #region Constructor/Finalizer.

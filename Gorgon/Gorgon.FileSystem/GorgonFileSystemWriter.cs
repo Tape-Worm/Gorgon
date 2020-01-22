@@ -132,7 +132,15 @@ namespace Gorgon.IO
         /// </summary>
         public event EventHandler<VirtualDirectoryCopiedMovedEventArgs> VirtualDirectoryMoved;
         /// <summary>
-        /// Event triggered when directories, and files has been imported.
+        /// Event triggered before a phsyical file is imported into the file system.
+        /// </summary>
+        public event EventHandler<BeforeFileImportArgs> BeforeFileImport;
+        /// <summary>
+        /// Event triggered after a physical file is imported into the file system.
+        /// </summary>
+        public event EventHandler<AfterFileImportArgs> AfterFileImport;
+        /// <summary>
+        /// Event triggered when directories, and files have been imported.
         /// </summary>
         public event EventHandler<ImportedEventArgs> Imported;
         /// <summary>
@@ -2213,6 +2221,7 @@ namespace Gorgon.IO
                 }
 
                 DirectoryInfo importParent = dirsToCopy.Count == 0 ? filesToCopy[0].Directory : dirsToCopy[0].Parent;
+                var beforeArgs = new BeforeFileImportArgs();
 
                 // Copies the files from the import directory.
                 bool CopyFiles(DirectoryInfo parent, IReadOnlyList<FileInfo> files, IGorgonVirtualDirectory destDir)
@@ -2225,17 +2234,34 @@ namespace Gorgon.IO
                             return false;
                         }
 
-                        string fileName = file.Name;
+                        EventHandler<BeforeFileImportArgs> beforeHandler = BeforeFileImport;
+                        beforeArgs.PhysicalFilePath = file.FullName;
+
+                        if (beforeHandler != null)
+                        {
+                            beforeHandler(this, beforeArgs);
+                            if (string.IsNullOrWhiteSpace(beforeArgs.PhysicalFilePath))
+                            {
+                                continue;
+                            }
+
+                            if (cancelToken.IsCancellationRequested)
+                            {
+                                return false;
+                            }
+                        }
+
+                        string fileName = Path.GetFileName(beforeArgs.PhysicalFilePath);
                         string destFilePath = destDir.FullPath + fileName;
-                        bool fileExists = destDir.Files.Contains(file.Name);
-                        bool directoryExists = destDir.Directories.Contains(file.Name);
+                        bool fileExists = destDir.Files.Contains(fileName);
+                        bool directoryExists = destDir.Directories.Contains(fileName);
 
                         if ((conflictRes != FileConflictResolution.OverwriteAll) && (conflictCallback != null)
                             && ((fileExists) || (directoryExists)))
                         {
                             if ((directoryExists) || ((conflictRes != FileConflictResolution.RenameAll) && (conflictRes != FileConflictResolution.SkipAll)))
                             {
-                                conflictRes = conflictCallback(file.FullName, destFilePath);
+                                conflictRes = conflictCallback(beforeArgs.PhysicalFilePath, destFilePath);
                             }
 
                             switch (conflictRes)
@@ -2255,11 +2281,13 @@ namespace Gorgon.IO
                             }
                         }
 
-                        BlockCopyFileFromPhysical(file.FullName, destFilePath, progressCallback, cancelToken);
+                        BlockCopyFileFromPhysical(beforeArgs.PhysicalFilePath, destFilePath, progressCallback, cancelToken);
                         IGorgonVirtualFile destFile = FileSystem.GetFile(destFilePath);
 
                         if ((destFile != null) && (!cancelToken.IsCancellationRequested))
                         {
+                            EventHandler<AfterFileImportArgs> afterHandler = AfterFileImport;
+                            afterHandler?.Invoke(this, new AfterFileImportArgs(beforeArgs.PhysicalFilePath, destFile));
                             filesCopied.Add(destFile);
                         }
                     }
@@ -2285,7 +2313,7 @@ namespace Gorgon.IO
                 int dirCount = dirsToCopy.Count;
                 for (int i = 0; i < dirCount; ++i)
                 {
-                    dirsToCopy.AddRange(dirsToCopy[i].EnumerateDirectories("*", SearchOption.TopDirectoryOnly));
+                    dirsToCopy.AddRange(dirsToCopy[i].EnumerateDirectories("*", SearchOption.AllDirectories));
                 }
 
                 for (int i = 0; i < dirsToCopy.Count; ++i)

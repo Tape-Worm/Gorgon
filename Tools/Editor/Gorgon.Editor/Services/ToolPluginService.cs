@@ -49,7 +49,7 @@ namespace Gorgon.Editor.Services
     {
         #region Variables.
         // The plugin list.
-        private readonly Dictionary<string, ToolPlugIn> _plugins = new Dictionary<string, ToolPlugIn>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, OLDE_ToolPlugIn> _plugins = new Dictionary<string, OLDE_ToolPlugIn>(StringComparer.OrdinalIgnoreCase);
         // The list of disabled tool plug ins.
         private readonly Dictionary<string, IDisabledPlugIn> _disabled = new Dictionary<string, IDisabledPlugIn>(StringComparer.OrdinalIgnoreCase);
         // The list of ribbon buttons for all tools.
@@ -67,7 +67,7 @@ namespace Gorgon.Editor.Services
         #region Properties.
         /// <summary>Property to return the list of tool plugins loaded in to the application.</summary>
         /// <value>The plugins.</value>
-        public IReadOnlyDictionary<string, ToolPlugIn> PlugIns => _plugins;
+        public IReadOnlyDictionary<string, OLDE_ToolPlugIn> PlugIns => _plugins;
 
         /// <summary>Property to return the list of disabled plug ins.</summary>
         public IReadOnlyDictionary<string, IDisabledPlugIn> DisabledPlugIns => _disabled;
@@ -89,7 +89,7 @@ namespace Gorgon.Editor.Services
         /// <summary>Function to add a tool plugin to the service.</summary>
         /// <param name="plugin">The plugin to add.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> parameter is <b>null</b>.</exception>
-        public void AddToolPlugIn(ToolPlugIn plugin)
+        public void AddToolPlugIn(OLDE_ToolPlugIn plugin)
         {
             if (plugin == null)
             {
@@ -107,7 +107,7 @@ namespace Gorgon.Editor.Services
         /// <summary>Function to clear all of the tool plugins.</summary>
         public void Clear()
         {
-            foreach (KeyValuePair<string, ToolPlugIn> plugin in _plugins)
+            foreach (KeyValuePair<string, OLDE_ToolPlugIn> plugin in _plugins)
             {
                 plugin.Value.Shutdown();
             }
@@ -147,9 +147,9 @@ namespace Gorgon.Editor.Services
             }
 
             IGorgonPlugInService plugins = new GorgonMefPlugInService(pluginCache);
-            IReadOnlyList<ToolPlugIn> pluginList = plugins.GetPlugIns<ToolPlugIn>();
+            IReadOnlyList<OLDE_ToolPlugIn> pluginList = plugins.GetPlugIns<OLDE_ToolPlugIn>();
 
-            foreach (ToolPlugIn plugin in pluginList)
+            foreach (OLDE_ToolPlugIn plugin in pluginList)
             {
                 try
                 {
@@ -195,7 +195,7 @@ namespace Gorgon.Editor.Services
 
         /// <summary>Function to remove a tool plugin from the service.</summary>
         /// <param name="plugin">The plugin to remove.</param>
-        public void RemoveToolPlugIn(ToolPlugIn plugin)
+        public void RemoveToolPlugIn(OLDE_ToolPlugIn plugin)
         {
             if (plugin == null)
             {

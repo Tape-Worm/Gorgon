@@ -33,8 +33,14 @@ using Gorgon.PlugIns;
 namespace Gorgon.Editor.PlugIns
 {
     /// <summary>
-    /// The type of plug in.
+    /// The type of plug in supported by the editor.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This indicates the supported plug in types that the editor recognizes (with the exception of the <see cref="PlugInType.Unknown"/> value). Any plug in created for use with the application <b>must</b> 
+    /// be one of these types, otherwise it will not be loaded by the host application.
+    /// </para>
+    /// </remarks>
     public enum PlugInType
     {
         /// <summary>
@@ -76,9 +82,21 @@ namespace Gorgon.Editor.PlugIns
 
         #region Properties.
         /// <summary>
-        /// Property to return the common services for the application.
+        /// Property to return the common services from the host application.
         /// </summary>
-        protected IViewModelInjection CommonServices
+        /// <remarks>
+        /// <para>
+        /// Plug in developers that implement a common plug in type based on this base type, should assign this value to allow access to the common services supplied by the host application.
+        /// </para>
+        /// <para>
+        /// If the common services are not required, then this can be <b>null</b>.
+        /// </para>
+        /// <para>
+        /// Plug in developers are responsible providing a mechanism for passing in the common services to the property.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="IHostServices"/>
+        protected IHostServices HostServices
         {
             get;
             set;
@@ -87,6 +105,10 @@ namespace Gorgon.Editor.PlugIns
         /// <summary>
         /// Property to return the type of this plug in.
         /// </summary>
+        /// <remarks>
+        /// The <see cref="PlugIns.PlugInType"/> returned for this property indicates the general plug in functionality. 
+        /// </remarks>
+        /// <seealso cref="PlugIns.PlugInType"/>
         public abstract PlugInType PlugInType
         {
             get;
@@ -149,12 +171,6 @@ namespace Gorgon.Editor.PlugIns
         /// </para>
         /// </remarks>
         public IReadOnlyList<string> IsPlugInAvailable() => OnGetPlugInAvailability();
-
-        /// <summary>
-        /// Function to assign the application common services to the plug in.
-        /// </summary>
-        /// <param name="commonServices">The common services to pass to the plug in.</param>
-        public void AssignCommonServices(IViewModelInjection commonServices) => CommonServices = commonServices;
         #endregion
 
         #region Constructor/Finalizer.

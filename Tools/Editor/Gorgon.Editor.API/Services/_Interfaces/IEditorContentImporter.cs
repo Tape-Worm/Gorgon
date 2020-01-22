@@ -26,6 +26,7 @@
 
 using System.IO;
 using System.Threading;
+using Gorgon.IO;
 
 namespace Gorgon.Editor.Services
 {
@@ -35,33 +36,16 @@ namespace Gorgon.Editor.Services
     public interface IEditorContentImporter
     {
         /// <summary>
-        /// Property to return the file being imported.
-        /// </summary>
-        FileInfo SourceFile
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return whether or not the imported file needs to be cleaned up after processing.
-        /// </summary>
-        bool NeedsCleanup
-        {
-            get;
-        }
-
-        /// <summary>
         /// Function to import content.
         /// </summary>
-        /// <param name="temporaryDirectory">The temporary directory for writing any transitory data.</param>
+        /// <param name="physicalFilePath">The path to the physical file to import into the virtual file system.</param>
         /// <param name="cancelToken">The token used to cancel the operation.</param>
-        /// <returns>A new file information object pointing to the imported file data.</returns>
-        /// <remarks>
-        /// <para>
-        /// The <paramref name="temporaryDirectory"/> should be used to write any working/temporary data used by the import.  Note that all data written into this directory will be deleted when the 
-        /// project is unloaded from memory.
-        /// </para>
-        /// </remarks>
-        FileInfo ImportData(DirectoryInfo temporaryDirectory, CancellationToken cancelToken);
+        /// <returns>A new virtual file object pointing to the imported file data.</returns>
+        IGorgonVirtualFile ImportData(string physicalFilePath, CancellationToken cancelToken);
+
+        /// <summary>
+        /// Function to clean up any temporary working data.
+        /// </summary>
+        void CleanUp();
     }
 }

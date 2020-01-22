@@ -44,6 +44,6 @@ namespace Gorgon.Editor.Services
         /// <param name="deepScan"><b>true</b> to perform a more time consuming scan, or <b>false</b> to just scan by file name extension.</param>
         /// <param name="forceScan">[Optional] <b>true</b> to force the scan, even if content metadata is already available, or <b>false</b> to skip files with content metadata already.</param>
         /// <returns><b>true</b> if the content plugin metadata was updated, <b>false</b> if not.</returns>
-        bool Scan(IFileExplorerNodeVm node, IContentFileManager contentFileManager, Action<string, int, int> scanProgress, bool deepScan, bool forceScan = false);
+        bool Scan(IFileExplorerNodeVm node, OLDE_IContentFileManager contentFileManager, Action<string, int, int> scanProgress, bool deepScan, bool forceScan = false);
     }
 }

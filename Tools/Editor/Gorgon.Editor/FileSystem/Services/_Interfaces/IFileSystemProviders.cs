@@ -51,7 +51,7 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Property to return all loaded file system writer plug ins.
         /// </summary>
-        IReadOnlyDictionary<string, FileWriterPlugIn> Writers
+        IReadOnlyDictionary<string, OLDE_FileWriterPlugIn> Writers
         {
             get;
         }
@@ -68,7 +68,7 @@ namespace Gorgon.Editor.Services
         /// Function to retrieve the available file extensions for all writers.
         /// </summary>
         /// <returns>A list of all file extensions available for all writers.</returns>
-        IReadOnlyList<(string desc, FileWriterPlugIn plugin, IReadOnlyList<GorgonFileExtension> extensions)> GetWriterFileExtensions();
+        IReadOnlyList<(string desc, OLDE_FileWriterPlugIn plugin, IReadOnlyList<GorgonFileExtension> extensions)> GetWriterFileExtensions();
 
         /// <summary>
         /// Function to load the file system provider plug ins.
@@ -85,12 +85,12 @@ namespace Gorgon.Editor.Services
         IGorgonFileSystemProvider GetBestReader(FileInfo file);
 
         /// <summary>
-        /// Function to return the <see cref="FileWriterPlugIn"/> by its plugin name.
+        /// Function to return the <see cref="OLDE_FileWriterPlugIn"/> by its plugin name.
         /// </summary>
         /// <param name="writerName">The name of the writer plug in to locate.</param>
         /// <param name="useV2PlugInName">[Optional] Use the v2 compatible plugin name.</param>
-        /// <returns>The <see cref="FileWriterPlugIn"/>, or <b>null</b> if no writer could be found.</returns>
-        FileWriterPlugIn GetWriterByName(string writerName, bool useV2PlugInName = false);
+        /// <returns>The <see cref="OLDE_FileWriterPlugIn"/>, or <b>null</b> if no writer could be found.</returns>
+        OLDE_FileWriterPlugIn GetWriterByName(string writerName, bool useV2PlugInName = false);
         #endregion
     }
 }

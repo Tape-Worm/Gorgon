@@ -44,13 +44,13 @@ namespace Gorgon.Editor.TextureAtlasTool
     /// A plug in used to extract sprites from a texture atlas by using an adjustable grid.
     /// </summary>
     internal class TextureAtlasToolPlugIn
-        : ToolPlugIn
+        : OLDE_ToolPlugIn
     {
         #region Variables.
         // The cached button definition.
         private ToolPlugInRibbonButton _button;
         // The project file manager.
-        private IContentFileManager _fileManager;
+        private OLDE_IContentFileManager _fileManager;
         // The default image codec to use.
         private IGorgonImageCodec _defaultImageCodec;
         // The default sprite codec to use.
@@ -74,7 +74,7 @@ namespace Gorgon.Editor.TextureAtlasTool
             ContentFileExplorerDirectoryEntry dirEntry = null;
             var fileEntries = new List<ContentFileExplorerFileEntry>();
             IEnumerable<string> dirs = _fileManager.EnumerateDirectories("/", "*", true);
-            IEnumerable<IContentFile> spriteFiles = _fileManager.EnumerateContentFiles("/", "*")
+            IEnumerable<OLDE_IContentFile> spriteFiles = _fileManager.EnumerateContentFiles("/", "*")
                                                 .Where(item => (item.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string fileType))
                                                 && (string.Equals(fileType, CommonEditorContentTypes.SpriteType, StringComparison.OrdinalIgnoreCase)));
 
@@ -84,7 +84,7 @@ namespace Gorgon.Editor.TextureAtlasTool
                 fileSystemEntries.Add(dirEntry);
                 searchEntries.Add(dirEntry);
 
-                foreach (IContentFile file in spriteFiles)
+                foreach (OLDE_IContentFile file in spriteFiles)
                 {
                     var fileEntry = new ContentFileExplorerFileEntry(file, dirEntry);
                     fileEntries.Add(fileEntry);
@@ -108,7 +108,7 @@ namespace Gorgon.Editor.TextureAtlasTool
                 fileSystemEntries.Add(dirEntry);
                 searchEntries.Add(dirEntry);
 
-                foreach (IContentFile file in spriteFiles)
+                foreach (OLDE_IContentFile file in spriteFiles)
                 {
                     var fileEntry = new ContentFileExplorerFileEntry(file, dirEntry);
                     fileEntries.Add(fileEntry);
@@ -201,7 +201,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// written to this area will be deleted on application shut down. So do not rely on this data being there on the next start up.
         /// </para>
         /// </remarks>
-        protected override IToolPlugInRibbonButton OnGetToolButton(IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> scratchArea)
+        protected override IToolPlugInRibbonButton OnGetToolButton(OLDE_IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> scratchArea)
         {
             _fileManager = fileManager;
 

@@ -25,11 +25,35 @@
 #endregion
 
 using System.Collections.Generic;
+using System.IO;
+using Gorgon.Editor.Content;
+using Gorgon.Editor.Metadata;
 using Gorgon.Editor.PlugIns;
+using Gorgon.IO;
 using Newtonsoft.Json;
 
 namespace Gorgon.Editor.Services
 {
+    /// <summary>
+    /// The state for the plugin when associated with an included item.
+    /// </summary>
+    public enum MetadataPlugInState
+    {
+        /// <summary>
+        /// No plugin was ever assigned.
+        /// </summary>
+        Unassigned,
+        /// <summary>
+        /// The plugin was assigned.
+        /// </summary>
+        Assigned,
+        /// <summary>
+        /// The plugin was not found.
+        /// </summary>
+        NotFound
+    }
+
+
     /// <summary>
     /// Provides access to the various content specific plugins in the application.
     /// </summary>
@@ -52,9 +76,49 @@ namespace Gorgon.Editor.Services
         {
             get;
         }
+
+        /// <summary>
+        /// Property to set or return the currently active content file manager to pass to any plug ins.
+        /// </summary>
+        IContentFileManager ContentFileManager
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to retrieve the appropriate content importer for the file specified.
+        /// </summary>
+        /// <param name="filePath">The path to the file to evaluate.</param>
+        /// <returns>A <see cref="IEditorContentImporter"/>, or <b>null</b> if none was found.</returns>
+        /// <remarks>
+        /// <para>
+        /// Since the content importers are meant for importing into the project virtual file system, the <paramref name="filePath"/> must point to a file on the physical file system. 
+        /// </para>
+        /// </remarks>
+        IEditorContentImporter GetContentImporter(string filePath);
+
+        /// <summary>
+        /// Function 
+        /// </summary>
+        /// <param name="metadata"></param>
+        /// <returns></returns>
+        public (ContentPlugIn plugin, MetadataPlugInState state) GetContentPlugIn(ProjectItemMetadata metadata);
+
+        /// <summary>
+        /// Function called when a project is loaded/created.
+        /// </summary>
+        /// <param name="fileManager">The content file manager for the project.</param>
+        /// <param name="temporaryFileSystem">The file system used to hold temporary working data.</param>
+        void ProjectActivated(IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> temporaryFileSystem);
+
+        /// <summary>
+        /// Function called when a project is unloaded.
+        /// </summary>
+        void ProjectDeactivated();
+
         /// <summary>
         /// Funcion to read the settings for a content plug in from a JSON file.
         /// </summary>

@@ -25,13 +25,14 @@
 #endregion
 
 using System;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI.ViewModels;
 using Gorgon.Graphics.Core;
 
 namespace Gorgon.Editor.ImageEditor.ViewModels
 {
     /// <summary>
-    /// Parameters for the <see cref="IDimensionSettings"/> view model.
+    /// Parameters for the <see cref="OLDE_IDimensionSettings"/> view model.
     /// </summary>
     internal class DimensionSettingsParameters
         : ViewModelInjection
@@ -47,12 +48,11 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ImageEditor.ViewModels.DimensionSettingsParameters"/> class.</summary>
-        /// <param name="videoAdapter">The video adapter.</param>
-        /// <param name="commonServices">Common application services.</param>
+        /// <summary>Initializes a new instance of the <see cref="DimensionSettingsParameters"/> class.</summary>
+        /// <param name="hostServices">Services from the host application.</param>
         /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
-        public DimensionSettingsParameters(IGorgonVideoAdapterInfo videoAdapter, IViewModelInjection commonServices)
-            : base(commonServices) => VideoAdapter = videoAdapter ?? throw new ArgumentNullException(nameof(videoAdapter));
+        public DimensionSettingsParameters(IHostServices hostServices)
+            : base(hostServices) => VideoAdapter = hostServices.GraphicsContext.Graphics.VideoAdapter;
         #endregion
 
     }

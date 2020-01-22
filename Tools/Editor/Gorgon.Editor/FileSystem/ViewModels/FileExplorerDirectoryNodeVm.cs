@@ -186,7 +186,7 @@ namespace Gorgon.Editor.ViewModels
                 onDeleted?.Invoke(deletedNode);
             }
 
-            if (Children.Traverse(n => n.Children).Where(item => item.IsOpen).FirstOrDefault() is IContentFile openChild)
+            if (Children.Traverse(n => n.Children).Where(item => item.IsOpen).FirstOrDefault() is OLDE_IContentFile openChild)
             {
                 openChild.CloseContent();
             }

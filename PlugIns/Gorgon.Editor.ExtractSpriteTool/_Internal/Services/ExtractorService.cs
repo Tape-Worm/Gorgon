@@ -52,7 +52,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         // The graphics interface.
         private readonly GorgonGraphics _graphics;
         // The file manager used to write the content files.
-        private readonly IContentFileManager _fileManager;
+        private readonly OLDE_IContentFileManager _fileManager;
         // The default sprite codec.
         private readonly IGorgonSpriteCodec _defaultCodec;
         #endregion
@@ -260,7 +260,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <param name="sprites">The sprites to save.</param>
         /// <param name="textureFile">The texture file associated with the sprites.</param>
         /// <exception cref="IOException">Thrown when the file system is locked by another thread (after 10 seconds).</exception>
-        public void SaveSprites(string path, string baseFileName, IEnumerable<GorgonSprite> sprites, IContentFile textureFile)
+        public void SaveSprites(string path, string baseFileName, IEnumerable<GorgonSprite> sprites, OLDE_IContentFile textureFile)
         {
             int spriteIndex = 1;
             try
@@ -287,7 +287,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
                         filePath = $"{path}{fileName} ({spriteIndex++}){(string.IsNullOrWhiteSpace(extension) ? string.Empty : extension)}";
                     }
 
-                    IContentFile outputFile = _fileManager.WriteFile(filePath, stream =>
+                    OLDE_IContentFile outputFile = _fileManager.WriteFile(filePath, stream =>
                     {
                         _defaultCodec.Save(sprite, stream);
                     });
@@ -306,7 +306,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <param name="renderer">The application 2D renderer.</param>
         /// <param name="fileManager">The file manager for the project files.</param>
         /// <param name="defaultCodec">The default sprite codec.</param>
-        public ExtractorService(Gorgon2D renderer, IContentFileManager fileManager, IGorgonSpriteCodec defaultCodec)
+        public ExtractorService(Gorgon2D renderer, OLDE_IContentFileManager fileManager, IGorgonSpriteCodec defaultCodec)
         {
             _renderer = renderer;
             _graphics = renderer.Graphics;

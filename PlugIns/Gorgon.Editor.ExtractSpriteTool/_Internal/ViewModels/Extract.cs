@@ -76,7 +76,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         // The project file system folder browser.
         private IFileSystemFolderBrowseService _folderBrowser;
         // The file for the sprite texture.
-        private IContentFile _textureFile;
+        private OLDE_IContentFile _textureFile;
         // Flag to indicate that we are in sprite preview.
         private bool _inSpritePreview;
         // The current sprite index for the sprite preview.

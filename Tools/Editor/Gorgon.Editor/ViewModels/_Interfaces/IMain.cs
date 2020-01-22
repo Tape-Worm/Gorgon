@@ -48,7 +48,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return a list of content plugins that can create their own content.
         /// </summary>
-        ObservableCollection<IContentPlugInMetadata> ContentCreators
+        ObservableCollection<OLDE_IContentPlugInMetadata> ContentCreators
         {
             get;
         }

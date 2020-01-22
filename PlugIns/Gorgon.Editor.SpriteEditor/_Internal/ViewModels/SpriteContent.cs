@@ -50,7 +50,7 @@ namespace Gorgon.Editor.SpriteEditor
     /// Content view model for a sprite.
     /// </summary>
     internal class SpriteContent
-        : EditorContentCommon<SpriteContentParameters>, ISpriteContent
+        : OLDE_EditorContentCommon<SpriteContentParameters>, ISpriteContent
     {
         #region Classes.
         /// <summary>
@@ -65,7 +65,7 @@ namespace Gorgon.Editor.SpriteEditor
             /// <summary>
             /// The current texture file associated with the sprite.
             /// </summary>
-            public IContentFile CurrentTexture;
+            public OLDE_IContentFile CurrentTexture;
             /// <summary>
             /// The current texture array index.
             /// </summary>
@@ -123,15 +123,15 @@ namespace Gorgon.Editor.SpriteEditor
         // The undo service.
         private IUndoService _undoService;
         // The texture file associated with the sprite.
-        private IContentFile _textureFile;
+        private OLDE_IContentFile _textureFile;
         // The file manager used to access external content files.
-        private IContentFileManager _contentFiles;
+        private OLDE_IContentFileManager _contentFiles;
         // The sprite texture service.
         private ISpriteTextureService _textureService;
         // The codec used to read/write sprite data.
         private IGorgonSpriteCodec _spriteCodec;
         // The original texture.
-        private IContentFile _originalTexture;
+        private OLDE_IContentFile _originalTexture;
         // The currently active tool for editing the sprite.
         private SpriteEditTool _currentTool = SpriteEditTool.None;
         // The image data for the sprite texture.
@@ -586,7 +586,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to set up a texture file that is associated with the sprite.
         /// </summary>
         /// <param name="textureFile">The current texture file.</param>
-        private void SetupTextureFile(IContentFile textureFile)
+        private void SetupTextureFile(OLDE_IContentFile textureFile)
         {
             if (_textureFile != null)
             {
@@ -721,7 +721,7 @@ namespace Gorgon.Editor.SpriteEditor
                 newSprite.Texture = Texture;
 
                 // Link our current texture with the new file.
-                IContentFile newFile = _contentFiles.WriteFile(Path.Combine(_contentFiles.CurrentDirectory, newName), s => _spriteCodec.Save(newSprite, s));
+                OLDE_IContentFile newFile = _contentFiles.WriteFile(Path.Combine(_contentFiles.CurrentDirectory, newName), s => _spriteCodec.Save(newSprite, s));
                 _textureFile.LinkContent(newFile);
 
                 // We set to unmodified here because the new sprite was saved with the current texture.
@@ -1778,7 +1778,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             async Task<bool> AssignTextureAsync(SpriteUndoArgs args)
             {
-                IContentFile newTextureFile = args.CurrentTexture;
+                OLDE_IContentFile newTextureFile = args.CurrentTexture;
 
                 ShowWaitPanel(string.Format(Resources.GORSPR_TEXT_LOADING_IMAGE, newTextureFile.Path));
 

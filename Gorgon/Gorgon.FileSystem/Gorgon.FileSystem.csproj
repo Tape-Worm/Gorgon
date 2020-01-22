@@ -58,6 +58,8 @@
     <Compile Include="..\Gorgon.Core\SharedAssemblyInfo.cs">
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AfterFileImportArgs.cs" />
+    <Compile Include="BeforeFileImportArgs.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="GorgonCopyCallbackOptions.cs" />
     <Compile Include="GorgonFileSystem.cs" />

@@ -36,7 +36,7 @@ namespace Gorgon.Editor.Services
     /// A service used to manage content plug ins for the application.
     /// </summary>
     internal interface IContentPlugInManagerService
-        : IContentPlugInService
+        : OLDE_IContentPlugInService
     {
         /// <summary>
         /// Function to load all of the content plug ins into the service.
@@ -49,25 +49,25 @@ namespace Gorgon.Editor.Services
         /// Function to add a content plugin to the service.
         /// </summary>
         /// <param name="plugin">The plugin to add.</param>
-        void AddContentPlugIn(ContentPlugIn plugin);
+        void AddContentPlugIn(OLDE_ContentPlugIn plugin);
 
 
         /// <summary>Function to add a content import plugin to the service.</summary>
         /// <param name="plugin">The plugin to add.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> parameter is <b>null</b>.</exception>
-        void AddContentImportPlugIn(ContentImportPlugIn plugin);
+        void AddContentImportPlugIn(OLDE_ContentImportPlugIn plugin);
 
         /// <summary>
         /// Function to remove a content plugin from the service.
         /// </summary>
         /// <param name="plugin">The plugin to remove.</param>
-        void RemoveContentPlugIn(ContentPlugIn plugin);
+        void RemoveContentPlugIn(OLDE_ContentPlugIn plugin);
 
         /// <summary>
         /// Function to remove a content import plugin from the service.
         /// </summary>
         /// <param name="plugin">The plugin to remove.</param>
-        void RemoveContentImportPlugIn(ContentImportPlugIn plugin);
+        void RemoveContentImportPlugIn(OLDE_ContentImportPlugIn plugin);
 
         /// <summary>
         /// Function to set up the content plug in association for a content file.
@@ -76,7 +76,7 @@ namespace Gorgon.Editor.Services
         /// <param name="fileManager">The file manager used to manage content files.</param>
         /// <param name="metadataOnly"><b>true</b> to indicate that only metadata should be used to scan the content file, <b>false</b> to scan, in depth, per plugin (slow).</param>
         /// <returns><b>true</b> if a content plug in was associated, <b>false</b> if not.</returns>
-        bool AssignContentPlugIn(IContentFile contentFile, IContentFileManager fileManager, bool metadataOnly);
+        bool AssignContentPlugIn(OLDE_IContentFile contentFile, OLDE_IContentFileManager fileManager, bool metadataOnly);
 
         /// <summary>
         /// Function to assign a plugin to a content file.
@@ -84,7 +84,7 @@ namespace Gorgon.Editor.Services
         /// <param name="contentFile">The content file to update.</param>
         /// <param name="fileManager">The file manager used to manage content files.</param>
         /// <param name="plugin">The plugin to assign.</param>
-        void AssignContentPlugIn(IContentFile contentFile, IContentFileManager fileManager, IContentPlugInMetadata plugin);
+        void AssignContentPlugIn(OLDE_IContentFile contentFile, OLDE_IContentFileManager fileManager, OLDE_IContentPlugInMetadata plugin);
 
         /// <summary>
         /// Function to clear all of the content plugins.
@@ -97,8 +97,8 @@ namespace Gorgon.Editor.Services
         /// <param name="file">The content file to evaluate.</param>
         /// <param name="fileSystem">The file system containing the file to evaluate.</param>
         /// <param name="metadataOnly"><b>true</b> to indicate that only metadata should be used to scan the content file, <b>false</b> to scan, in depth, per plugin (slow).</param>
-        /// <returns>A <see cref="IEditorContentImporter"/>, or <b>null</b> if none was found.</returns>
+        /// <returns>A <see cref="OLDE_IEditorContentImporter"/>, or <b>null</b> if none was found.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="contentFile"/> parameter is <b>null</b>.</exception>
-        IEditorContentImporter GetContentImporter(FileInfo file, IGorgonFileSystem fileSystem);
+        OLDE_IEditorContentImporter GetContentImporter(FileInfo file, IGorgonFileSystem fileSystem);
     }
 }

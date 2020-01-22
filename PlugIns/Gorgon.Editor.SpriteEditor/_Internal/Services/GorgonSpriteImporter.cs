@@ -39,7 +39,7 @@ namespace Gorgon.Editor.SpriteEditor.Services
     /// A sprite importer that reads in a sprite file, and converts it into a Gorgon sprite (v3) format image prior to import into the application.
     /// </summary>
     internal class GorgonSpriteImporter
-        : IEditorContentImporter
+        : OLDE_IEditorContentImporter
     {
         #region Variables.
         // The log used for debug message logging.
@@ -50,20 +50,23 @@ namespace Gorgon.Editor.SpriteEditor.Services
         private readonly IGorgonImageCodec _ddsCodec = new GorgonCodecDds();
         // The renderer used to locate the image for the sprite.
         private readonly Gorgon2D _renderer;
-        // The file system containing the sprite being imported, used for texture look up.
-        private readonly IGorgonFileSystem _fileSystem;
         #endregion
 
         #region Properties.
         /// <summary>Property to return the file being imported.</summary>
         /// <value>The source file.</value>
-        public FileInfo SourceFile
+        public IGorgonVirtualFile SourceFile
         {
             get;
         }
 
         /// <summary>Property to return whether or not the imported file needs to be cleaned up after processing.</summary>
         public bool NeedsCleanup => true;
+
+        FileInfo OLDE_IEditorContentImporter.SourceFile
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
@@ -72,14 +75,15 @@ namespace Gorgon.Editor.SpriteEditor.Services
         /// Function to locate the associated texture file for a sprite.
         /// </summary>
         /// <param name="textureName">The name of the texture.</param>
+        /// <param name="fileSystem">The file system containing the file.</param>
         /// <returns>The texture file.</returns>
-        private IGorgonVirtualFile LocateTextureFile(string textureName)
+        private IGorgonVirtualFile LocateTextureFile(string textureName, IGorgonFileSystem fileSystem)
         {
             // Check to see if the name has path information for the texture in the name.
             // The GorgonEditor from v2 does this.
             if (textureName.Contains("/"))
             {
-                IGorgonVirtualFile textureFile = _fileSystem.GetFile(textureName);
+                IGorgonVirtualFile textureFile = fileSystem.GetFile(textureName);
 
                 if (textureFile == null)
                 {
@@ -105,7 +109,7 @@ namespace Gorgon.Editor.SpriteEditor.Services
         private GorgonTexture2DView GetTexture()
         {
             // We need to copy the sprite data into a memory stream since the underlying stream may not be seekable (BZip2 lies and says it is seekable, but it really isn't).
-            using (Stream fileStream = SourceFile.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (Stream fileStream = SourceFile.OpenStream())
             {
                 string textureName = _codec.GetAssociatedTextureName(fileStream);
                 GorgonTexture2DView textureForSprite = null;
@@ -114,14 +118,14 @@ namespace Gorgon.Editor.SpriteEditor.Services
                 // ReSharper disable once InvertIf
                 if (!string.IsNullOrWhiteSpace(textureName))
                 {
-                    IGorgonVirtualFile textureFile = LocateTextureFile(textureName);
+                    IGorgonVirtualFile textureFile = LocateTextureFile(textureName, SourceFile.FileSystem);
 
                     // We couldn't load the file, so, let's try again without a file extension since we strip those.
                     int extensionDot = textureName.LastIndexOf('.');
                     if ((textureFile == null) && (extensionDot > 1))
                     {
                         textureName = textureName.Substring(0, extensionDot);
-                        textureFile = LocateTextureFile(textureName);
+                        textureFile = LocateTextureFile(textureName, SourceFile.FileSystem);
                     }
 
                     // We have not loaded the texture yet.  Do so now.
@@ -158,26 +162,29 @@ namespace Gorgon.Editor.SpriteEditor.Services
         /// project is unloaded from memory.
         /// </para>
         /// </remarks>
-        public FileInfo ImportData(DirectoryInfo temporaryDirectory, CancellationToken cancelToken)
+        public FileInfo ImportData(IGorgonVirtualDirectory temporaryDirectory, CancellationToken cancelToken)
         {
             var spriteCodec = new GorgonV3SpriteBinaryCodec(_renderer);
 
             _log.Print("Importing associated texture for sprite...", LoggingLevel.Simple);
             GorgonTexture2DView texture = GetTexture();
+            Stream stream = null;
 
             try
             {
-                _log.Print($"Importing file '{SourceFile.FullName}' (Codec: {_codec.Name})...", LoggingLevel.Verbose);
-                GorgonSprite sprite = _codec.FromFile(SourceFile.FullName);
+                _log.Print($"Importing file '{SourceFile.FullPath}' (Codec: {_codec.Name})...", LoggingLevel.Verbose);
+                stream = SourceFile.OpenStream();
+                GorgonSprite sprite = _codec.FromStream(stream);
 
                 if (sprite.Texture == null)
                 {
                     sprite.Texture = texture;
                 }
 
-                var tempFile = new FileInfo(Path.Combine(temporaryDirectory.FullName, Path.GetFileNameWithoutExtension(SourceFile.Name)));
+#warning FIX THIS
+                var tempFile = new FileInfo(Path.Combine(temporaryDirectory.FullPath, Path.GetFileNameWithoutExtension(SourceFile.Name)));
 
-                _log.Print($"Converting '{SourceFile.FullName}' to Gorgon v3 Sprite file format.", LoggingLevel.Verbose);
+                _log.Print($"Converting '{SourceFile.FullPath}' to Gorgon v3 Sprite file format.", LoggingLevel.Verbose);
                 spriteCodec.Save(sprite, tempFile.FullName);
 
                 return tempFile;
@@ -185,24 +192,23 @@ namespace Gorgon.Editor.SpriteEditor.Services
             finally
             {
                 texture?.Dispose();
+                stream?.Dispose();
             }
         }
+
+        public FileInfo ImportData(DirectoryInfo temporaryDirectory, CancellationToken cancelToken) => throw new System.NotImplementedException();
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.SpriteEditor.Services.GorgonSpriteImporter"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="GorgonSpriteImporter"/> class.</summary>
         /// <param name="sourceFile">The file being imported.</param>
         /// <param name="codec">The original codec for the file.</param>
         /// <param name="renderer">The renderer used to locate the image linked to the sprite.</param>
-        /// <param name="fileSystem">The file system containing the file being imported.</param>
         /// <param name="log">The log used for logging debug messages.</param>
-        public GorgonSpriteImporter(FileInfo sourceFile, IGorgonSpriteCodec codec, Gorgon2D renderer, IGorgonFileSystem fileSystem, IGorgonLog log)
+        public GorgonSpriteImporter(Gorgon2D renderer, IGorgonLog log)
         {
             _log = log ?? GorgonLog.NullLog;
-            SourceFile = sourceFile;
-            _codec = codec;
             _renderer = renderer;
-            _fileSystem = fileSystem;
         }
         #endregion
     }

@@ -162,7 +162,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to set or return the command to execute when a content node is opened.
         /// </summary>
-        IEditorCommand<IContentFile> OpenContentFileCommand
+        IEditorCommand<OLDE_IContentFile> OpenContentFileCommand
         {
             get;
             set;

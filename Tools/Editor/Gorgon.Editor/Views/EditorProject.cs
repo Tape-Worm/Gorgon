@@ -113,9 +113,9 @@ namespace Gorgon.Editor.Views
         // The page used to host the preview window.
         private KryptonPage _previewPage;
         // The drag drop handler to use for handling content files dropped on to the project surface.
-        private Olde_IDragDropHandler<IContentFile> _dragDropHandler;
+        private Olde_IDragDropHandler<OLDE_IContentFile> _dragDropHandler;
         // The current content control.
-        private ContentBaseControl _contentControl;
+        private OLDE_ContentBaseControl _contentControl;
         // The graphics context for the application.
         private IGraphicsContext _graphicsContext;
         #endregion
@@ -158,7 +158,7 @@ namespace Gorgon.Editor.Views
         /// </summary>
         /// <param name="data">The drag/drop data.</param>
         /// <returns>The content file if dropping is allowed, or <b>null</b> if not.</returns>
-        private IContentFile GetContentFileDragData(IDataObject data)
+        private OLDE_IContentFile GetContentFileDragData(IDataObject data)
         {
             Type dataType = typeof(TreeNodeDragData);
 
@@ -180,7 +180,7 @@ namespace Gorgon.Editor.Views
 
             var dragData = (IFileExplorerNodeDragData)data.GetData(dataType);
 
-            return dragData?.Node == null ? null : dragData.Node as IContentFile;
+            return dragData?.Node == null ? null : dragData.Node as OLDE_IContentFile;
 
         }
 
@@ -194,7 +194,7 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            IContentFile contentFile = GetContentFileDragData(e.Data);
+            OLDE_IContentFile contentFile = GetContentFileDragData(e.Data);
 
             if (contentFile == null)
             {
@@ -215,7 +215,7 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            IContentFile contentFile = GetContentFileDragData(e.Data);
+            OLDE_IContentFile contentFile = GetContentFileDragData(e.Data);
 
             if (!_dragDropHandler.CanDrop(contentFile))
             {
@@ -313,7 +313,7 @@ namespace Gorgon.Editor.Views
             }
 
             // Get our view from the content.
-            _contentControl = ViewFactory.CreateView<ContentBaseControl>(dataContext.CurrentContent);
+            _contentControl = ViewFactory.CreateView<OLDE_ContentBaseControl>(dataContext.CurrentContent);
             ViewFactory.AssignViewModel(dataContext.CurrentContent, _contentControl);
             _contentControl.Dock = DockStyle.Fill;
             PanelContent.Controls.Add(_contentControl);
@@ -360,7 +360,7 @@ namespace Gorgon.Editor.Views
 
             FileExplorer.SetDataContext(dataContext.FileExplorer);
             Preview.SetDataContext(dataContext.ContentPreviewer);
-            _dragDropHandler = dataContext as Olde_IDragDropHandler<IContentFile>;
+            _dragDropHandler = dataContext as Olde_IDragDropHandler<OLDE_IContentFile>;
         }
 
         /// <summary>

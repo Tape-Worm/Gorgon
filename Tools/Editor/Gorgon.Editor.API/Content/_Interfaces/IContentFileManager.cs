@@ -55,49 +55,19 @@ namespace Gorgon.Editor.Content
 
         #region Methods.
         /// <summary>
-        /// Function to notify the file system that a batch operation is about to commence.
-        /// </summary>
-        /// <returns><b>true</b> if the batch was started, <b>false</b> if not.</returns>
-        /// <remarks>
-        /// <para>
-        /// Developers should use batch mode when writing multiple files to the file system in rapid succession. Otherwise, the file system may not synchronize properly.
-        /// </para>
-        /// <para>
-        /// Call <see cref="EndBatch"/> to end the batch operation and update the file system.
-        /// </para>
-        /// <para>
-        /// Calling this across multiple threads will force a synchronization. If a thread holds the batch open for longer than 10 seconds, then the other thread trying to start a batch will receive a 
-        /// notification via the return value (<b>false</b>) that it timed out.
-        /// </para>
-        /// </remarks>
-        bool BeginBatch();
-
-        /// <summary>
-        /// Function to end a batch operation.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// Developers should use batch mode when writing multiple files to the file system in rapid succession. Otherwise, the file system may not synchronize properly.
-        /// </para>
-        /// <para>
-        /// Call <see cref="BeginBatch"/> to start the batch operation.
-        /// </para>
-        /// </remarks>
-        void EndBatch();
-
-        /// <summary>
         /// Function to create a new directory
         /// </summary>
-        /// <param name="path">The path to the directory.</param>        
-        /// <returns><b>true</b> if the directory exists, <b>false</b> if not.</returns>
-        void CreateDirectory(string path);
+        /// <param name="parentDirectory">The parent of the new directory.</param>
+        /// <param name="name">The name for the new directory.</param>        
+        /// <returns><b>true</b> if the directory was created, <b>false</b> if it already existed.</returns>
+        bool CreateDirectory(string parentDirectory, string name);
 
         /// <summary>
         /// Function to delete a directory.
         /// </summary>
         /// <param name="path">The path to the directory.</param>
-        /// <param name="deleteChildren"><b>true</b> true to delete child directories and files, <b>false</b> to delete only this directory (must be empty).</param>
-        void DeleteDirectory(string path, bool deleteChildren);
+        /// <returns><b>true</b> if the directory was deleted, <b>false</b> if it wasn't found.</returns>
+        bool DeleteDirectory(string path);
 
         /// <summary>
         /// Function to determine if a directory exists or not.
@@ -107,6 +77,13 @@ namespace Gorgon.Editor.Content
         bool DirectoryExists(string path);
 
         /// <summary>
+        /// Function to determine if a file exists or not.
+        /// </summary>
+        /// <param name="path">The path to the file.</param>
+        /// <returns><b>true</b> if the file exists, <b>false</b> if not.</returns>
+        bool FileExists(string path);
+
+        /// <summary>
         /// Function to retrieve a file based on the path specified.
         /// </summary>
         /// <param name="path">The path to the file.</param>
@@ -114,12 +91,12 @@ namespace Gorgon.Editor.Content
         IContentFile GetFile(string path);
 
         /// <summary>
-        /// Function to create a new content file on the path specified.
+        /// Function to open a file stream for the specified virtual file.
         /// </summary>
-        /// <param name="path">The path to the file.</param>
-        /// <param name="dataStream">A callback method to write the file data.</param>
-        /// <returns>The content file.</returns>
-        IContentFile WriteFile(string path, Action<Stream> dataStream);
+        /// <param name="path">The path to the virtual file to open.</param>
+        /// <param name="mode">The operating mode for the file stream.</param>
+        /// <returns>A file stream for the virtual file.</returns>
+        Stream OpenStream(string path, FileMode mode);
 
         /// <summary>
         /// Function to retrieve the content files for a given directory path.

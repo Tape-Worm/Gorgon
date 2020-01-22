@@ -46,7 +46,7 @@ namespace Gorgon.Editor.ViewModels
     /// The view model for the project editor interface.
     /// </summary>
     internal class ProjectVm
-        : ViewModelBase<ProjectVmParameters>, IProjectVm, Olde_IDragDropHandler<IContentFile>
+        : ViewModelBase<ProjectVmParameters>, IProjectVm, Olde_IDragDropHandler<OLDE_IContentFile>
     {
         #region Constants.
         // The version of the window layout XML.
@@ -75,7 +75,7 @@ namespace Gorgon.Editor.ViewModels
         // The content plugin service.
         private IContentPlugInManagerService _contentPlugIns;
         // The currently active content.
-        private IEditorContent _currentContent;
+        private OLDE_IEditorContent _currentContent;
         // The window layout XML.
         private byte[] _layout;
         // The title for the project.
@@ -83,7 +83,7 @@ namespace Gorgon.Editor.ViewModels
         // The content previewer view model.
         private IContentPreviewVm _contentPreviewer;
         // The file manager used to manage content through content plug ins.
-        private IContentFileManager _contentFileManager;
+        private OLDE_IContentFileManager _contentFileManager;
         // The list of tools available to the application.
         private IToolPlugInService _toolPlugIns;
         // The list of tool buttons.
@@ -104,7 +104,7 @@ namespace Gorgon.Editor.ViewModels
 
             var result = new Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
 
-            foreach (KeyValuePair<string, ToolPlugIn> plugin in _toolPlugIns.PlugIns)
+            foreach (KeyValuePair<string, OLDE_ToolPlugIn> plugin in _toolPlugIns.PlugIns)
             {
                 IToolPlugInRibbonButton button = plugin.Value.GetToolButton(_projectData, _contentFileManager);
                 button.ValidateButton();
@@ -157,7 +157,7 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>Property to return the current content for the project.</summary>
-        public IEditorContent CurrentContent
+        public OLDE_IEditorContent CurrentContent
         {
             get => _currentContent;
             private set
@@ -244,7 +244,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to set or return the content file manager for managing content file systems through content plug ins.
         /// </summary>
-        public IContentFileManager ContentFileManager
+        public OLDE_IContentFileManager ContentFileManager
         {
             get => _contentFileManager;
             set
@@ -406,13 +406,13 @@ namespace Gorgon.Editor.ViewModels
         {
             switch (e.PropertyName)
             {
-                case nameof(IEditorContent.File):
+                case nameof(OLDE_IEditorContent.File):
                     if (CurrentContent.File != null)
                     {
                         CurrentContent.File.DependenciesUpdated -= ContentFile_DependenciesUpdated;
                     }
                     break;
-                case nameof(IEditorContent.CommandContext):
+                case nameof(OLDE_IEditorContent.CommandContext):
                     NotifyPropertyChanging(nameof(CommandContext));
                     break;
             }
@@ -425,7 +425,7 @@ namespace Gorgon.Editor.ViewModels
         {
             switch (e.PropertyName)
             {
-                case nameof(IEditorContent.ContentState):
+                case nameof(OLDE_IEditorContent.ContentState):
                     switch (CurrentContent.ContentState)
                     {
                         case ContentState.Modified:
@@ -438,13 +438,13 @@ namespace Gorgon.Editor.ViewModels
                             break;
                     }
                     break;
-                case nameof(IEditorContent.File):
+                case nameof(OLDE_IEditorContent.File):
                     if (CurrentContent.File != null)
                     {
                         CurrentContent.File.DependenciesUpdated += ContentFile_DependenciesUpdated;
                     }
                     break;
-                case nameof(IEditorContent.CommandContext):
+                case nameof(OLDE_IEditorContent.CommandContext):
                     NotifyPropertyChanged(nameof(CommandContext));
                     break;
             }
@@ -503,7 +503,7 @@ namespace Gorgon.Editor.ViewModels
         /// Function to force a refresh of the specified file preview.
         /// </summary>
         /// <param name="file">The file to refresh.</param>
-        private void RefreshFilePreview(IContentFile file)
+        private void RefreshFilePreview(OLDE_IContentFile file)
         {
             if ((ContentPreviewer.RefreshPreviewCommand != null) && (ContentPreviewer.RefreshPreviewCommand.CanExecute(file)))
             {
@@ -516,7 +516,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="file">The node being opened.</param>
         /// <returns><b>true</b> if the node can be opened, <b>false</b> if not.</returns>
-        private bool CanOpenContent(IContentFile file) => file?.Metadata?.ContentMetadata != null;
+        private bool CanOpenContent(OLDE_IContentFile file) => file?.Metadata?.OLDE_ContentMetadata != null;
 
         /// <summary>
         /// Function to persist the changed content (if any).
@@ -576,7 +576,7 @@ namespace Gorgon.Editor.ViewModels
         /// Function to open a file node as content.
         /// </summary>
         /// <param name="file">The file to open.</param>
-        private async void DoOpenContent(IContentFile file)
+        private async void DoOpenContent(OLDE_IContentFile file)
         {
             try
             {
@@ -608,7 +608,7 @@ namespace Gorgon.Editor.ViewModels
 
                 if (fileNode != file)
                 {
-                    file = (IContentFile)fileNode;
+                    file = (OLDE_IContentFile)fileNode;
                 }
 
                 // If we're on a dependency node, then go to the actual node that we're working on.
@@ -649,7 +649,7 @@ namespace Gorgon.Editor.ViewModels
                 ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_OPENING, file.Name));
 
                 // Create a content object.                
-                IEditorContent content = await file.ContentPlugIn.OpenContentAsync(file, _contentFileManager, _projectData, new UndoService(Log));
+                OLDE_IEditorContent content = await file.ContentPlugIn.OpenContentAsync(file, _contentFileManager, _projectData, new UndoService(Log));
 
                 if (content == null)
                 {
@@ -724,7 +724,7 @@ namespace Gorgon.Editor.ViewModels
                 _projectTitle = _projectData.ProjectWorkSpace.Name;
             }
 
-            FileExplorer.OpenContentFileCommand = new EditorCommand<IContentFile>(DoOpenContent, CanOpenContent);
+            FileExplorer.OpenContentFileCommand = new EditorCommand<OLDE_IContentFile>(DoOpenContent, CanOpenContent);
 
             if (string.IsNullOrWhiteSpace(_viewModelFactory.Settings.WindowLayout))
             {
@@ -751,7 +751,7 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="plugin">The plug in used to create the content.</param>
         /// <returns>A new content file containing the content data, or <b>null</b> if the content creation was cancelled.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="metadata"/>, or the <paramref name="plugin"/> parameter is <b>null</b>.</exception>
-        public async Task<IContentFile> CreateNewContentItemAsync(IContentPlugInMetadata metadata, ContentPlugIn plugin)
+        public async Task<OLDE_IContentFile> CreateNewContentItemAsync(OLDE_IContentPlugInMetadata metadata, OLDE_ContentPlugIn plugin)
         {
             if (metadata == null)
             {
@@ -910,9 +910,9 @@ namespace Gorgon.Editor.ViewModels
 
                 foreach (IFileExplorerNodeVm depNode in node.Value.Dependencies)
                 {
-                    if (!string.IsNullOrWhiteSpace(node.Value.Metadata.ContentMetadata?.ContentTypeID))
+                    if (!string.IsNullOrWhiteSpace(node.Value.Metadata.OLDE_ContentMetadata?.ContentTypeID))
                     {
-                        depNode.Metadata.DependsOn[node.Value.Metadata.ContentMetadata.ContentTypeID] = node.Key;
+                        depNode.Metadata.DependsOn[node.Value.Metadata.OLDE_ContentMetadata.ContentTypeID] = node.Key;
                     }
                 }
 
@@ -944,7 +944,7 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="cancelToken">The token used for cancellation of the operation.</param>        
         /// <returns>A task for asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/>, or the <paramref name="writer"/> parameter is <b>null</b>.</exception>
-        public Task SaveToPackFileAsync(FileInfo path, FileWriterPlugIn writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
+        public Task SaveToPackFileAsync(FileInfo path, OLDE_FileWriterPlugIn writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
         {
             if (path == null)
             {
@@ -1013,12 +1013,12 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="dragData">The drag/drop data.</param>
         /// <returns>
         ///   <c>true</c> if this instance can drop the specified drag data; otherwise, <c>false</c>.</returns>
-        bool Olde_IDragDropHandler<IContentFile>.CanDrop(IContentFile dragData) => (dragData != null) && (!dragData.IsOpen) && (CanOpenContent(dragData));
+        bool Olde_IDragDropHandler<OLDE_IContentFile>.CanDrop(OLDE_IContentFile dragData) => (dragData != null) && (!dragData.IsOpen) && (CanOpenContent(dragData));
 
         /// <summary>Function to drop the payload for a drag drop operation.</summary>
         /// <param name="dragData">The drag/drop data.</param>
         /// <param name="afterDrop">[Optional] The method to execute after the drop operation is completed.</param>
-        void Olde_IDragDropHandler<IContentFile>.Drop(IContentFile dragData, Action afterDrop) => DoOpenContent(dragData);
+        void Olde_IDragDropHandler<OLDE_IContentFile>.Drop(OLDE_IContentFile dragData, Action afterDrop) => DoOpenContent(dragData);
         #endregion
 
         #region Constructor.

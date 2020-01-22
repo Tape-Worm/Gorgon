@@ -1445,7 +1445,13 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
             if (stream.Length - stream.Position < headerSize)
             {
-                throw new EndOfStreamException();
+                // If this isn't a DX10 DDS file, then check for the older format.
+                headerSize = Unsafe.SizeOf<DdsHeader>() + sizeof(uint);
+
+                if (stream.Length - stream.Position < headerSize)
+                {
+                    throw new EndOfStreamException();
+                }
             }
 
             GorgonBinaryReader reader = null;

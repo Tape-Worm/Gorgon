@@ -151,7 +151,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             try
             {
-                _plugInService.WriteContentSettings(typeof(SpriteImporterPlugIn).FullName, _settings);
+                _plugInService.WriteContentSettings(typeof(OLDE_SpriteImporterPlugIn).FullName, _settings);
             }
             catch (Exception ex)
             {
@@ -345,7 +345,7 @@ namespace Gorgon.Editor.SpriteEditor
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.SpriteEditor.ImporterPlugInSettings"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="ImporterPlugInSettings"/> class.</summary>
         public ImporterPlugInSettings()
         {
             ID = Guid.NewGuid();

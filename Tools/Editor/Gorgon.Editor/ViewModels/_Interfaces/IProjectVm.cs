@@ -108,7 +108,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the content file manager for managing content file systems through content plug ins.
         /// </summary>
-        IContentFileManager ContentFileManager
+        OLDE_IContentFileManager ContentFileManager
         {
             get;
         }
@@ -140,7 +140,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the current content for the project.
         /// </summary>
-        IEditorContent CurrentContent
+        OLDE_IEditorContent CurrentContent
         {
             get;
         }
@@ -162,7 +162,7 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="plugin">The plug in used to create the content.</param>
         /// <returns>A new content file containing the content data, or <b>null</b> if the content creation was cancelled.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="metadata"/>, or the <paramref name="plugin"/> parameter is <b>null</b>.</exception>
-        Task<IContentFile> CreateNewContentItemAsync(IContentPlugInMetadata metadata, ContentPlugIn plugin);
+        Task<OLDE_IContentFile> CreateNewContentItemAsync(OLDE_IContentPlugInMetadata metadata, OLDE_ContentPlugIn plugin);
 
         /// <summary>
         /// Function to persist the project data to a file.
@@ -172,7 +172,7 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="progressCallback">The callback method that reports the saving progress to the UI.</param>
         /// <param name="cancelToken">The token used for cancellation of the operation.</param>
         /// <returns>A task for asynchronous operation.</returns>
-        Task SaveToPackFileAsync(FileInfo path, FileWriterPlugIn writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken);
+        Task SaveToPackFileAsync(FileInfo path, OLDE_FileWriterPlugIn writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken);
 
         /// <summary>
         /// Function to persist the project metadata to the disk.

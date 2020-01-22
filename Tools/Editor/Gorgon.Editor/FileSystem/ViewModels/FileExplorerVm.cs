@@ -51,7 +51,7 @@ namespace Gorgon.Editor.ViewModels
     /// The file explorer view model.
     /// </summary>
     internal class FileExplorerVm
-        : ViewModelBase<FileExplorerParameters>, IFileExplorerVm, Olde_IClipboardHandler, IContentFileManager
+        : ViewModelBase<FileExplorerParameters>, IFileExplorerVm, Olde_IClipboardHandler, OLDE_IContentFileManager
     {
         #region Events.
         // Event triggered when the clipboard is updated from the file explorer.
@@ -117,12 +117,12 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the currently selected file (if one is selected).
         /// </summary>
-        IContentFile IContentFileManager.SelectedFile => SelectedNode as IContentFile;
+        OLDE_IContentFile OLDE_IContentFileManager.SelectedFile => SelectedNode as OLDE_IContentFile;
 
         /// <summary>
         /// Property to return the current directory.
         /// </summary>
-        string IContentFileManager.CurrentDirectory
+        string OLDE_IContentFileManager.CurrentDirectory
         {
             get
             {
@@ -249,7 +249,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to set or return the command to execute when a content node is opened.
         /// </summary>
-        public IEditorCommand<IContentFile> OpenContentFileCommand
+        public IEditorCommand<OLDE_IContentFile> OpenContentFileCommand
         {
             get;
             set;
@@ -754,7 +754,7 @@ namespace Gorgon.Editor.ViewModels
             // Check for open content.            
             var changedFilePaths = new HashSet<string>();
             var searchNodes = new List<string>();
-            var depNodes = new List<IContentFile>();
+            var depNodes = new List<OLDE_IContentFile>();
             var openFiles = new List<IFileExplorerNodeVm>();
 
             // Reset the metadata list.  The enumeration method requires that we have this list up to date.
@@ -773,7 +773,7 @@ namespace Gorgon.Editor.ViewModels
 
                     foreach (IFileExplorerNodeVm fileNode in child.Dependencies)
                     {
-                        if (fileNode is IContentFile depNode)
+                        if (fileNode is OLDE_IContentFile depNode)
                         {
                             fileNode.OnUnload();
                             depNodes.Add(depNode);
@@ -821,7 +821,7 @@ namespace Gorgon.Editor.ViewModels
             }
 
             // Rebuild dependencies.
-            foreach (IContentFile dep in depNodes)
+            foreach (OLDE_IContentFile dep in depNodes)
             {
                 SetupDependencyNodes(dep);
             }
@@ -977,10 +977,10 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="fileSystem">The file system being imported.</param>
         /// <param name="cancelToken">The token used to cancel the operation.</param>
         /// <returns>The importer used to import, and the imported file.</returns>
-        private async Task<(IEditorContentImporter importer, FileInfo importedFile)> CustomImportFileAsync(FileInfo file, IGorgonFileSystem fileSystem, CancellationToken cancelToken)
+        private async Task<(OLDE_IEditorContentImporter importer, FileInfo importedFile)> CustomImportFileAsync(FileInfo file, IGorgonFileSystem fileSystem, CancellationToken cancelToken)
         {
             FileInfo result;
-            IEditorContentImporter importer = _factory.ContentPlugIns.GetContentImporter(file, fileSystem);
+            OLDE_IEditorContentImporter importer = _factory.ContentPlugIns.GetContentImporter(file, fileSystem);
 
             if (importer == null)
             {
@@ -1000,7 +1000,7 @@ namespace Gorgon.Editor.ViewModels
             catch (Exception ex)
             {
                 // If we failed to import for some reason, log the error and read the file as-is.
-                Program.Log.Print($"Error importing file '{file.FullName}'.", Diagnostics.LoggingLevel.Simple);
+                Program.Log.Print($"Error importing file '{file.FullName}'.", LoggingLevel.Simple);
                 Program.Log.LogException(ex);
 
                 result = file;
@@ -1024,7 +1024,7 @@ namespace Gorgon.Editor.ViewModels
             long totalBytesCopied = 0;
             var cancelSource = new CancellationTokenSource();
             IGorgonFileSystem importFileSystem = new GorgonFileSystem(Log);
-            (IEditorContentImporter importer, FileInfo updatedFile) importResult = default;
+            (OLDE_IEditorContentImporter importer, FileInfo updatedFile) importResult = default;
 
             void cancelAction() => cancelSource.Cancel();
 
@@ -1204,7 +1204,7 @@ namespace Gorgon.Editor.ViewModels
                         continue;
                     }
 
-                    contentNode.Metadata.Attributes[ContentImportPlugIn.ImportOriginalFileNameAttr] = sourcePath.Name;
+                    contentNode.Metadata.Attributes[OLDE_ContentImportPlugIn.ImportOriginalFileNameAttr] = sourcePath.Name;
                 }
 
                 node.IsExpanded = true;
@@ -1363,7 +1363,7 @@ namespace Gorgon.Editor.ViewModels
                     return;
                 }
 
-                if (openNode is IContentFile file)
+                if (openNode is OLDE_IContentFile file)
                 {
                     file.CloseContent();
                 }
@@ -1715,7 +1715,7 @@ namespace Gorgon.Editor.ViewModels
         /// Function to set up dependencies on the given node.
         /// </summary>
         /// <param name="node">The node to set up.</param>
-        private void SetupDependencyNodes(IContentFile node)
+        private void SetupDependencyNodes(OLDE_IContentFile node)
         {
             if (node == null)
             {
@@ -1731,7 +1731,7 @@ namespace Gorgon.Editor.ViewModels
 
             Log.Print("Scanning node dependencies... This may take a bit...", LoggingLevel.Intermediate);
 
-            if (!(node is IContentFile contentFile))
+            if (!(node is OLDE_IContentFile contentFile))
             {
                 return;
             }
@@ -1784,12 +1784,12 @@ namespace Gorgon.Editor.ViewModels
 
             // This is painful, but necessary as we need our node dictionary set up prior to using this.
             // The only other option is to traverse the tree while in the loop, and that's even worse than this.
-            foreach (IContentFile content in parent.Children.Traverse(n => n.Children).OfType<IContentFile>())
+            foreach (OLDE_IContentFile content in parent.Children.Traverse(n => n.Children).OfType<OLDE_IContentFile>())
             {
                 SetupDependencyNodes(content);
             }
 
-            SetupDependencyNodes(parent as IContentFile);
+            SetupDependencyNodes(parent as OLDE_IContentFile);
 
             parent.Children.CollectionChanged += Children_CollectionChanged;
             parent.PropertyChanged += Node_PropertyChanged;
@@ -1909,7 +1909,7 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 // Update the node display to ensure that we see the changes.
-                if (node is IContentFile contentFile)
+                if (node is OLDE_IContentFile contentFile)
                 {
                     contentFile.RefreshMetadata();
 
@@ -1917,7 +1917,7 @@ namespace Gorgon.Editor.ViewModels
                 }
                 else
                 {
-                    foreach (IContentFile file in node.Children.Traverse(n => n.Children).OfType<IContentFile>())
+                    foreach (OLDE_IContentFile file in node.Children.Traverse(n => n.Children).OfType<OLDE_IContentFile>())
                     {
                         file.RefreshMetadata();
 
@@ -2286,8 +2286,8 @@ namespace Gorgon.Editor.ViewModels
                     continue;
                 }
 
-                var content = node as IContentFile;
-                (IEditorContentImporter importer, FileInfo outputFile) importResult = default;
+                var content = node as OLDE_IContentFile;
+                (OLDE_IEditorContentImporter importer, FileInfo outputFile) importResult = default;
                 try
                 {
                     if (cancelToken.IsCancellationRequested)
@@ -2296,7 +2296,7 @@ namespace Gorgon.Editor.ViewModels
                     }
 
                     // This file is already imported, so there's no point in trying to import it again.
-                    if (node.Metadata.Attributes.ContainsKey(ContentImportPlugIn.ImportOriginalFileNameAttr))
+                    if (node.Metadata.Attributes.ContainsKey(OLDE_ContentImportPlugIn.ImportOriginalFileNameAttr))
                     {
                         continue;
                     }
@@ -2327,7 +2327,7 @@ namespace Gorgon.Editor.ViewModels
 
                     // Record the name of the source file.
                     var destFile = new FileInfo(srcPath);
-                    node.Metadata.Attributes[ContentImportPlugIn.ImportOriginalFileNameAttr] = destFile.Name;
+                    node.Metadata.Attributes[OLDE_ContentImportPlugIn.ImportOriginalFileNameAttr] = destFile.Name;
 
                     // Update the metadata information.
                     content?.RefreshMetadata();
@@ -2346,10 +2346,10 @@ namespace Gorgon.Editor.ViewModels
         /// Function to retrieve a file based on the path specified.
         /// </summary>
         /// <param name="path">The path to the file.</param>
-        /// <returns>A <see cref="IContentFile"/> if found, <b>null</b> if not.</returns>
+        /// <returns>A <see cref="OLDE_IContentFile"/> if found, <b>null</b> if not.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
-        IContentFile IContentFileManager.GetFile(string path)
+        OLDE_IContentFile OLDE_IContentFileManager.GetFile(string path)
         {
             if (path == null)
             {
@@ -2361,7 +2361,7 @@ namespace Gorgon.Editor.ViewModels
                 throw new ArgumentEmptyException(nameof(path));
             }
 
-            return !_nodePathLookup.TryGetValue(path, out IFileExplorerNodeVm node) ? null : node as IContentFile;
+            return !_nodePathLookup.TryGetValue(path, out IFileExplorerNodeVm node) ? null : node as OLDE_IContentFile;
         }
 
         /// <summary>
@@ -2371,7 +2371,7 @@ namespace Gorgon.Editor.ViewModels
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
         /// <exception cref="ArgumentException">Thrown if the <paramref name="path"/> does not contain a file name.</exception>
-        void IContentFileManager.DeleteFile(string path)
+        void OLDE_IContentFileManager.DeleteFile(string path)
         {
             if (path == null)
             {
@@ -2419,7 +2419,7 @@ namespace Gorgon.Editor.ViewModels
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
         /// <exception cref="ArgumentException">Thrown if the <paramref name="path"/> does not contain a file name.</exception>
         /// <exception cref="IOException">Thrown if the file in the <paramref name="path"/> has the same name as a directory.</exception>
-        IContentFile IContentFileManager.WriteFile(string path, Action<Stream> dataStream)
+        OLDE_IContentFile OLDE_IContentFileManager.WriteFile(string path, Action<Stream> dataStream)
         {
             if (path == null)
             {
@@ -2443,7 +2443,7 @@ namespace Gorgon.Editor.ViewModels
                     throw new IOException(string.Format(Resources.GOREDIT_ERR_FILE_LOCKED, path));
                 }
 
-                if (!(node is IContentFile))
+                if (!(node is OLDE_IContentFile))
                 {
                     throw new IOException(string.Format(Resources.GOREDIT_ERR_PATH_IS_DIRECTORY, path));
                 }
@@ -2501,7 +2501,7 @@ namespace Gorgon.Editor.ViewModels
             // Add the node to the tree.
             IFileExplorerNodeVm fileNode = _factory.CreateFileExplorerFileNodeVm(_project, _fileSystemService, dirNode, physicalFile);
 
-            var result = (IContentFile)fileNode;
+            var result = (OLDE_IContentFile)fileNode;
             _contentPlugIns.AssignContentPlugIn(result, this, false);
             result.RefreshMetadata();
 
@@ -2559,7 +2559,7 @@ namespace Gorgon.Editor.ViewModels
         /// notification via the return value (<b>false</b>) that it timed out.
         /// </para>
         /// </remarks>
-        bool IContentFileManager.BeginBatch()
+        bool OLDE_IContentFileManager.BeginBatch()
         {
             var timer = Stopwatch.StartNew();
             var spin = new SpinWait();
@@ -2593,7 +2593,7 @@ namespace Gorgon.Editor.ViewModels
         /// Call <see cref="BeginBatch"/> to start the batch operation.
         /// </para>
         /// </remarks>
-        void IContentFileManager.EndBatch()
+        void OLDE_IContentFileManager.EndBatch()
         {
             IFileExplorerNodeVm selected = Interlocked.Exchange(ref _batchSelected, null);
             Interlocked.Exchange(ref _batchMode, 0);
@@ -2611,7 +2611,7 @@ namespace Gorgon.Editor.ViewModels
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
         /// <exception cref="IOException">Thrown when the <paramref name="path"/> points to an existing file.</exception>
-        void IContentFileManager.CreateDirectory(string path)
+        void OLDE_IContentFileManager.CreateDirectory(string path)
         {
             if (path == null)
             {
@@ -2689,7 +2689,7 @@ namespace Gorgon.Editor.ViewModels
         /// <para>A file contained within the directory, or sub directories is open.</para>
         /// </exception>
         /// <exception cref="GorgonException">Thrown if the root directory is used for the <paramref name="path"/> parameter.</exception>
-        void IContentFileManager.DeleteDirectory(string path, bool deleteChildren)
+        void OLDE_IContentFileManager.DeleteDirectory(string path, bool deleteChildren)
         {
             if (path == null)
             {
@@ -2766,7 +2766,7 @@ namespace Gorgon.Editor.ViewModels
         /// all paths under the directory will be returned.
         /// </para>
         /// </remarks>
-        IEnumerable<string> IContentFileManager.EnumeratePaths(string directoryPath, string searchMask, bool recursive)
+        IEnumerable<string> OLDE_IContentFileManager.EnumeratePaths(string directoryPath, string searchMask, bool recursive)
         {
             if (directoryPath == null)
             {
@@ -2809,7 +2809,7 @@ namespace Gorgon.Editor.ViewModels
         /// all sub directories under the directory will be returned.
         /// </para>
         /// </remarks>
-        IEnumerable<string> IContentFileManager.EnumerateDirectories(string directoryPath, string searchMask, bool recursive)
+        IEnumerable<string> OLDE_IContentFileManager.EnumerateDirectories(string directoryPath, string searchMask, bool recursive)
         {
             if (directoryPath == null)
             {
@@ -2852,7 +2852,7 @@ namespace Gorgon.Editor.ViewModels
         /// all content files under the directory will be returned.
         /// </para>
         /// </remarks>
-        IEnumerable<IContentFile> IContentFileManager.EnumerateContentFiles(string directoryPath, string searchMask, bool recursive)
+        IEnumerable<OLDE_IContentFile> OLDE_IContentFileManager.EnumerateContentFiles(string directoryPath, string searchMask, bool recursive)
         {
             if (directoryPath == null)
             {
@@ -2874,7 +2874,7 @@ namespace Gorgon.Editor.ViewModels
                 throw new ArgumentEmptyException(nameof(searchMask));
             }
 
-            return EnumerateNodes(directoryPath, searchMask, recursive).OfType<IContentFile>();
+            return EnumerateNodes(directoryPath, searchMask, recursive).OfType<OLDE_IContentFile>();
         }
 
         /// <summary>

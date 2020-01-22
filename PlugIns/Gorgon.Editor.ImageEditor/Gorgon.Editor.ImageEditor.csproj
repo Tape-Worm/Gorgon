@@ -56,7 +56,48 @@
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="ImageImporterPlugin.cs" />
+    <Compile Include="ImageEditorPlugin.cs" />
+    <Compile Include="_Internal\Forms\_OLDE_\OLDE_FormRibbon.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="_Internal\Forms\_OLDE_\OLDE_FormRibbon.Designer.cs">
+      <DependentUpon>OLDE_FormRibbon.cs</DependentUpon>
+    </Compile>
+    <Compile Include="_Internal\Services\DdsImageImporter.cs" />
+    <Compile Include="_Internal\Services\ImageEditorServices.cs" />
+    <Compile Include="_Internal\Services\ExportImageDialogService.cs" />
+    <Compile Include="_Internal\Services\Texture2DViewer.cs" />
+    <Compile Include="_Internal\Services\Texture3DViewer.cs" />
+    <Compile Include="_Internal\Services\TextureCubeViewer.cs" />
+    <Compile Include="_Internal\Services\_Interfaces\IExportImageDialogService.cs" />
+    <Compile Include="_Internal\Services\_Interfaces\IImageIOService.cs" />
+    <Compile Include="_Internal\Services\_Interfaces\ITextureViewerService.cs" />
+    <Compile Include="_Internal\Services\__OLDE__\OLDE_ImageIOService.cs" />
+    <Compile Include="_Internal\Services\__OLDE__\OLDE_TextureViewerCommon.cs" />
     <Compile Include="_Internal\SharedDataFactory.cs" />
+    <Compile Include="_Internal\ViewModels\DimensionSettings.cs" />
+    <Compile Include="_Internal\ViewModels\DimensionSettingsParameters.cs" />
+    <Compile Include="_Internal\ViewModels\ImageContent.cs" />
+    <Compile Include="_Internal\ViewModels\Settings.cs" />
+    <Compile Include="_Internal\ViewModels\SettingsParameters.cs" />
+    <Compile Include="_Internal\ViewModels\_Interfaces\IDimensionSettings.cs" />
+    <Compile Include="_Internal\ViewModels\_Interfaces\IImageContent.cs" />
+    <Compile Include="_Internal\ViewModels\__OLDE__\OLDE_ImageContentParameters.cs" />
+    <Compile Include="_Internal\Views\ImageAnimationController.cs" />
+    <Compile Include="_Internal\Views\__OLDE__\OLDE_ImageEditorView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="_Internal\Views\__OLDE__\OLDE_ImageEditorView.Designer.cs">
+      <DependentUpon>OLDE_ImageEditorView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="_Internal\Views\__OLDE__\OLDE_ImageDimensionSettings.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="_Internal\Views\__OLDE__\OLDE_ImageDimensionSettings.Designer.cs">
+      <DependentUpon>OLDE_ImageDimensionSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="_Internal\__OLDE__\OLDE_SharedDataFactory.cs" />
     <Compile Include="_Internal\CodecRegistry.cs" />
     <Compile Include="_Internal\Forms\FormRibbon.cs">
       <SubType>Form</SubType>
@@ -73,40 +114,40 @@
       <DependentUpon>SetAlphaSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="_Internal\_Interfaces\ICodecRegistry.cs" />
-    <Compile Include="_Internal\ImageAnimationController.cs" />
-    <Compile Include="ImageImporterPlugin.cs" />
+    <Compile Include="__OLDE__\OLDE_ImageAnimationController.cs" />
+    <Compile Include="__OLDE__\OLDE_ImageImporterPlugin.cs" />
     <Compile Include="_Internal\Cube.cs" />
     <Compile Include="_Internal\Native\Win32API.cs" />
     <Compile Include="_Internal\Services\ImageExternalEditService.cs" />
     <Compile Include="_Internal\Services\ImportImageDialogService.cs" />
-    <Compile Include="_Internal\Services\ExportImageDialogService.cs" />
+    <Compile Include="_Internal\Services\__OLDE__\OLDE_ExportImageDialogService.cs" />
     <Compile Include="_Internal\CubeVertex.cs" />
-    <Compile Include="_Internal\Services\TextureCubeViewer.cs" />
+    <Compile Include="_Internal\Services\__OLDE__\OLDE_TextureCubeViewer.cs" />
     <Compile Include="_Internal\Services\_Interfaces\IImageExternalEditService.cs" />
     <Compile Include="_Internal\Services\_Interfaces\IImportImageDialogService.cs" />
     <Compile Include="_Internal\Services\_Interfaces\IImageUpdaterService.cs" />
-    <Compile Include="_Internal\Services\ImageEditorServices.cs" />
+    <Compile Include="_Internal\Services\__OLDE__\OLDE_ImageEditorServices.cs" />
     <Compile Include="_Internal\Services\ImageUpdaterService.cs" />
-    <Compile Include="_Internal\Services\Texture3DViewer.cs" />
+    <Compile Include="_Internal\Services\__OLDE__\OLDE_Texture3DViewer.cs" />
     <Compile Include="_Internal\Services\TextureViewerCommon.cs" />
-    <Compile Include="_Internal\Services\_Interfaces\ITextureViewerService.cs" />
-    <Compile Include="_Internal\Services\Texture2DViewer.cs" />
-    <Compile Include="_Internal\Services\_Interfaces\IExportImageDialogService.cs" />
-    <Compile Include="_Internal\Services\_Interfaces\IImageIOService.cs" />
+    <Compile Include="_Internal\Services\__OLDE__\OLDE_ITextureViewerService.cs" />
+    <Compile Include="_Internal\Services\__OLDE__\OLDE_Texture2DViewer.cs" />
+    <Compile Include="_Internal\Services\__OLDE__\OLDE_IExportImageDialogService.cs" />
+    <Compile Include="_Internal\Services\__OLDE__\OLDE_IImageIOService.cs" />
     <Compile Include="_Internal\Services\ImageIOService.cs" />
-    <Compile Include="_Internal\Services\DdsImageImporter.cs" />
+    <Compile Include="_Internal\Services\__OLDE__\OLDE_DdsImageImporter.cs" />
     <Compile Include="_Internal\Services\TexConvCompressor.cs" />
     <Compile Include="_Internal\ViewModels\CodecSetting.cs" />
     <Compile Include="_Internal\ViewModels\CropResizeSettings.cs" />
-    <Compile Include="_Internal\ViewModels\Settings.cs" />
-    <Compile Include="_Internal\ViewModels\SettingsParameters.cs" />
+    <Compile Include="_Internal\ViewModels\__OLDE__\OLDE_Settings.cs" />
+    <Compile Include="_Internal\ViewModels\__OLDE__\OLDE_SettingsParameters.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\ISettings.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\IMipMapSettings.cs" />
     <Compile Include="_Internal\ViewModels\MipMapSettings.cs" />
-    <Compile Include="_Internal\ViewModels\DimensionSettings.cs" />
-    <Compile Include="_Internal\ViewModels\DimensionSettingsParameters.cs" />
+    <Compile Include="_Internal\ViewModels\__OLDE__\OLDE_DimensionSettings.cs" />
+    <Compile Include="_Internal\ViewModels\__OLDE__\OLDE_DimensionSettingsParameters.cs" />
     <Compile Include="_Internal\ViewModels\ImageContentParameters.cs" />
-    <Compile Include="ImageEditorPlugin.cs" />
+    <Compile Include="__OLDE__\OLDE_ImageEditorPlugin.cs" />
     <Compile Include="_Internal\ImageEditorSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -114,8 +155,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="_Internal\ViewModels\ImageContent.cs" />
-    <Compile Include="_Internal\ViewModels\_Interfaces\IDimensionSettings.cs" />
+    <Compile Include="_Internal\ViewModels\__OLDE__\OLDE_ImageContent.cs" />
+    <Compile Include="_Internal\ViewModels\__OLDE__\OLDE_IDimensionSettings.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\ICropResizeSettings.cs" />
     <Compile Include="_Internal\Views\GenMipMapSettings.cs">
       <SubType>UserControl</SubType>
@@ -135,7 +176,7 @@
     <Compile Include="_Internal\Views\ImageEditorView.Designer.cs">
       <DependentUpon>ImageEditorView.cs</DependentUpon>
     </Compile>
-    <Compile Include="_Internal\ViewModels\_Interfaces\IImageContent.cs" />
+    <Compile Include="_Internal\ViewModels\__OLDE__\OLDE_IImageContent.cs" />
     <Compile Include="_Internal\Views\ImageDimensionSettings.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -216,6 +257,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="_Internal\Forms\_OLDE_\OLDE_FormRibbon.resx">
+      <DependentUpon>OLDE_FormRibbon.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="_Internal\Views\SetAlphaSettings.resx">
       <DependentUpon>SetAlphaSettings.cs</DependentUpon>
     </EmbeddedResource>
@@ -233,6 +277,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="_Internal\Views\ImageResizeSettings.resx">
       <DependentUpon>ImageResizeSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="_Internal\Views\__OLDE__\OLDE_ImageEditorView.resx">
+      <DependentUpon>OLDE_ImageEditorView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="_Internal\Views\__OLDE__\OLDE_ImageDimensionSettings.resx">
+      <DependentUpon>OLDE_ImageDimensionSettings.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

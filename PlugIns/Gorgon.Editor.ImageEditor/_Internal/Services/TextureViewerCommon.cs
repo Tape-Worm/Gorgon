@@ -772,7 +772,7 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ImageEditor._Internal.Services.Texture2DViewer"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="TextureViewerCommon"/> class.</summary>
         /// <param name="graphicsContext">The graphics context for the application.</param>
         /// <param name="swapChain">The swap chain for presenting the content.</param>
         /// <param name="hScroll">The horizontal scroll bar.</param>

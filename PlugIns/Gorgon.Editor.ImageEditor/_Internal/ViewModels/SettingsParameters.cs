@@ -25,6 +25,9 @@
 #endregion
 
 using System;
+using Gorgon.Diagnostics;
+using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI.ViewModels;
 using Gorgon.PlugIns;
@@ -35,8 +38,13 @@ namespace Gorgon.Editor.ImageEditor
     /// Parameters to pass to the <see cref="ISettings"/> view model.
     /// </summary>
     internal class SettingsParameters
-        : ViewModelInjection
+        : ViewModelInjection, IHostServices
     {
+        #region Variables.
+        // Services from the host/
+        private readonly IHostContentServices _hostServices;
+        #endregion
+
         #region Properties.
         /// <summary>
         /// Property to return the settings for the image editor plugin.
@@ -49,10 +57,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>
         /// Property to return the content plug in service.
         /// </summary>
-        public IContentPlugInService PlugInService
-        {
-            get;
-        }
+        public IContentPlugInService ContentPlugInService => _hostServices.ContentPlugInService;
 
         /// <summary>
         /// Property to return the codecs loaded into the system.
@@ -77,6 +82,18 @@ namespace Gorgon.Editor.ImageEditor
         {
             get;
         }
+
+        /// <summary>Property to return the service that allows a conetnt plug in to access tool content plug ins.</summary>
+        public IToolPlugInService ToolPlugInService => _hostServices.ToolPlugInService;
+
+        /// <summary>Property to return the service used to browse through directories on the file system.</summary>
+        public IFileSystemFolderBrowseService FolderBrowser => _hostServices.FolderBrowser;
+
+        /// <summary>Property to return the clipboard handler for the view model.</summary>
+        IClipboardService IHostServices.Clipboard => _hostServices.Clipboard;
+
+        /// <summary>Property to return the graphics and the 2D renderer used by the host application.</summary>
+        public IGraphicsContext GraphicsContext => _hostServices.GraphicsContext;
         #endregion
 
         #region Constructor/Finalizer.
@@ -84,18 +101,17 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="settings">The settings for the image editor.</param>
         /// <param name="codecs">The codecs loaded into the system.</param>
         /// <param name="codecDialog">The file dialog used to locate codec assemblies.</param>
-        /// <param name="pluginService">The service used to manage content and importer plug ins.</param>
         /// <param name="plugInCache">The cache for plug in assemblies.</param>
-        /// <param name="commonServices">Common application services.</param>
+        /// <param name="hostServices">Common application services.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public SettingsParameters(ImageEditorSettings settings, ICodecRegistry codecs, IFileDialogService codecDialog, IContentPlugInService pluginService, GorgonMefPlugInCache plugInCache, IViewModelInjection commonServices)
-            : base(commonServices)
+        public SettingsParameters(ImageEditorSettings settings, ICodecRegistry codecs, IFileDialogService codecDialog, GorgonMefPlugInCache plugInCache, IHostContentServices hostServices)            
+            : base(hostServices)
         {
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             Codecs = codecs ?? throw new ArgumentNullException(nameof(codecs));
             CodecFileDialog = codecDialog ?? throw new ArgumentNullException(nameof(codecDialog));
-            PlugInService = pluginService ?? throw new ArgumentNullException(nameof(pluginService));
-            PlugInCache = plugInCache ?? throw new ArgumentNullException(nameof(plugInCache));
+            _hostServices = hostServices ?? throw new ArgumentNullException(nameof(hostServices));
+            PlugInCache = plugInCache ?? throw new ArgumentNullException(nameof(plugInCache));            
         }
         #endregion
     }

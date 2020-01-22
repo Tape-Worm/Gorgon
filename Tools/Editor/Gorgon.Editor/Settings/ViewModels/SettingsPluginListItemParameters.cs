@@ -90,7 +90,7 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="plugin">The plugin to evaluate.</param>
         /// <param name="commonServices">Common application services.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> is parameter <b>null</b>.</exception>
-        public SettingsPlugInListItemParameters(EditorPlugIn plugin, IViewModelInjection commonServices)
+        public SettingsPlugInListItemParameters(OLDE_EditorPlugIn plugin, IViewModelInjection commonServices)
             : base(commonServices)
         {
             if (plugin == null)

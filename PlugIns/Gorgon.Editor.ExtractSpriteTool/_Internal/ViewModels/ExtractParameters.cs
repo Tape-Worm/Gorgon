@@ -56,7 +56,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <summary>
         /// Property to return the file containing the texture data.
         /// </summary>
-        public IContentFile TextureFile
+        public OLDE_IContentFile TextureFile
         {
             get;
         }
@@ -95,7 +95,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <param name="commonServices">The common services.</param>
         /// <exception cref="ArgumentNullException">Thrown when the any parameters are <b>null</b>.</exception>
         /// <exception cref="ArgumentMissingException">Thrown when the <see cref="SpriteExtractionData.Texture"/> property of the <paramref name="data"/> parameter is <b>null</b>.</exception>
-        public ExtractParameters(ExtractSpriteToolSettings settings, SpriteExtractionData data, IContentFile textureFile, IExtractorService extractor, IColorPickerService colorPicker, IFileSystemFolderBrowseService folderBrowser, IViewModelInjection commonServices)
+        public ExtractParameters(ExtractSpriteToolSettings settings, SpriteExtractionData data, OLDE_IContentFile textureFile, IExtractorService extractor, IColorPickerService colorPicker, IFileSystemFolderBrowseService folderBrowser, IViewModelInjection commonServices)
             : base(commonServices)
         {
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));

@@ -47,7 +47,7 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
     /// Gorgon packed file writer plug in interface.
     /// </summary>
     internal class GorPackWriterPlugIn
-        : FileWriterPlugIn
+        : OLDE_FileWriterPlugIn
     {
         #region Constants.
         // The header for the file.

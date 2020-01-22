@@ -64,7 +64,7 @@ namespace Gorgon.Editor.PlugIns
     {
         #region Variables.
         // Default compression amount.
-        private float _compressAmount = 0.5f;
+        private float _compressAmount = 0.5f;        
         #endregion
 
         #region Properties.
@@ -140,7 +140,7 @@ namespace Gorgon.Editor.PlugIns
         /// <summary>
         /// Function to write the file to the specified path.
         /// </summary>
-        /// <param name="file">The file to save the data into.</param>
+        /// <param name="filePath">The path to the file to save the data into.</param>
         /// <param name="workspace">The directory that represents the workspace for our file system data.</param> 
         /// <param name="progressCallback">The method used to report progress back to the application.</param>
         /// <param name="cancelToken">The token used for cancelling the operation.</param>
@@ -162,19 +162,19 @@ namespace Gorgon.Editor.PlugIns
         /// This progress method is optional, and if <b>null</b> is passed, then no progress is reported.
         /// </para>
         /// </remarks>
-        protected abstract Task OnWriteAsync(FileInfo file, DirectoryInfo workspace, Action<int, int, bool> progressCallback, CancellationToken cancelToken);
+        protected abstract Task OnWriteAsync(string filePath, DirectoryInfo workspace, Action<int, int, bool> progressCallback, CancellationToken cancelToken);
 
         /// <summary>
         /// Function to determine if the type of file specified can be written by this plug in.
         /// </summary>
-        /// <param name="file">The file to evaluate.</param>
+        /// <param name="filePath">The path to the file to evaluate.</param>
         /// <returns><b>true</b> if the writer can write the type of file, or <b>false</b> if it cannot.</returns>
         /// <remarks>
         /// <para>
-        /// The <paramref name="file"/> parameter is never <b>null</b>, and is guaranteed to exist when this method is called. If neither of these are true, then this method is not called.
+        /// The <paramref name="filePath"/> parameter is never <b>null</b>, and is guaranteed to exist when this method is called. If neither of these are true, then this method is not called.
         /// </para>
         /// </remarks>
-        protected abstract bool OnEvaluateCanWriteFile(FileInfo file);
+        protected abstract bool OnEvaluateCanWriteFile(string filePath);
 
         /// <summary>
         /// Function to determine if this writer can write the type of file specified in the path.
@@ -195,20 +195,20 @@ namespace Gorgon.Editor.PlugIns
                 throw new ArgumentEmptyException(nameof(path));
             }
 
-            var file = new FileInfo(path);
+            FileAttributes attribs = File.GetAttributes(path);
 
-            return (!file.Exists) || (((file.Attributes & FileAttributes.Directory) != FileAttributes.Directory) && (OnEvaluateCanWriteFile(file)));
+            return (!File.Exists(path)) || (((attribs & FileAttributes.Directory) != FileAttributes.Directory) && (OnEvaluateCanWriteFile(path)));
         }
 
         /// <summary>
         /// Function to write the application data into a stream.
         /// </summary>
-        /// <param name="file">The file to save the data into.</param>
+        /// <param name="filePath">The path to the file to save the data into.</param>
         /// <param name="workspace">The directory that represents the workspace for our file system data.</param>
         /// <param name="progressCallback">The method used to report progress back to the application.</param>
         /// <param name="cancelToken">The token used for cancelling the operation.</param>
         /// <returns>A task for asynchronous operation.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/>, or the <paramref name="workspace"/> parameter is empty.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/>, or the <paramref name="workspace"/> parameter is empty.</exception>
         /// <exception cref="DirectoryNotFoundException">Thrown if the <paramref name="workspace"/> directory does not exist.</exception>
         /// <exception cref="IOException">Thrown if the stream is read only.</exception>
         /// <remarks>
@@ -228,11 +228,11 @@ namespace Gorgon.Editor.PlugIns
         /// This progress method is optional, and if <b>null</b> is passed, then no progress is reported.
         /// </para>
         /// </remarks>
-        public Task WriteAsync(FileInfo file, DirectoryInfo workspace, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
+        public Task WriteAsync(string filePath, DirectoryInfo workspace, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
         {
-            if (file == null)
+            if (filePath == null)
             {
-                throw new ArgumentNullException(nameof(file));
+                throw new ArgumentNullException(nameof(filePath));
             }
 
             if (workspace == null)
@@ -245,13 +245,20 @@ namespace Gorgon.Editor.PlugIns
                 throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIR_NOT_FOUND, workspace.FullName));
             }
 
-            return OnWriteAsync(file, workspace, progressCallback, cancelToken);
+            return OnWriteAsync(filePath, workspace, progressCallback, cancelToken);
         }
+
+        /// <summary>
+        /// Function to initialize the plug in.
+        /// </summary>
+        /// <param name="hostServices">The services to pass from the host application to the plug in.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="hostServices"/> parameter is <b>null</b>.</exception>
+        public void Initialize(IHostServices hostServices) => HostServices = hostServices ?? throw new ArgumentNullException(nameof(hostServices));
         #endregion
 
         #region Constructor/Destructor.
         /// <summary>
-        /// Initializes a new instance of the <see cref="FileWriterPlugIn"/> class.
+        /// Initializes a new instance of the <see cref="OLDE_FileWriterPlugIn"/> class.
         /// </summary>
         /// <param name="description">Friendly description of the plug in.</param>
         /// <param name="fileExtensions">The file of common file name extensions supported by this writer.</param>

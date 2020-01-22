@@ -338,7 +338,7 @@ namespace Gorgon.Editor
         {
             IProjectVm project = DataContext?.CurrentProject;
             IFileExplorerVm fileExplorer = project?.FileExplorer;
-            var currentNode = fileExplorer?.SelectedNode as IContentFile;
+            var currentNode = fileExplorer?.SelectedNode as OLDE_IContentFile;
 
             if ((fileExplorer?.OpenContentFileCommand == null) || (!fileExplorer.OpenContentFileCommand.CanExecute(currentNode)))
             {
@@ -591,7 +591,7 @@ namespace Gorgon.Editor
             ButtonImport.Enabled = fileExplorer.ImportIntoNodeCommand?.CanExecute(fileExplorer.SelectedNode ?? fileExplorer.RootNode) ?? false;
             ButtonExport.Enabled = fileExplorer.ExportNodeToCommand?.CanExecute(fileExplorer.SelectedNode ?? fileExplorer.RootNode) ?? false;
 
-            ButtonOpenContent.Enabled = fileExplorer.OpenContentFileCommand?.CanExecute(fileExplorer.SelectedNode as IContentFile) ?? false;
+            ButtonOpenContent.Enabled = fileExplorer.OpenContentFileCommand?.CanExecute(fileExplorer.SelectedNode as OLDE_IContentFile) ?? false;
 
             ButtonFileSystemCopy.Enabled = _clipboardContext?.CanCopy() ?? false;
             ButtonFileSystemCut.Enabled = _clipboardContext?.CanCut() ?? false;
@@ -952,14 +952,14 @@ namespace Gorgon.Editor
         /// Function to update the icons used for the "new" buttons.
         /// </summary>
         /// <param name="metadata">The metadata for plug ins that can create content.</param>
-        private void AddNewIcons(IEnumerable<IContentPlugInMetadata> metadata)
+        private void AddNewIcons(IEnumerable<OLDE_IContentPlugInMetadata> metadata)
         {
             if (metadata == null)
             {
                 return;
             }
 
-            foreach (IContentPlugInMetadata item in metadata)
+            foreach (OLDE_IContentPlugInMetadata item in metadata)
             {
                 string id = item.NewIconID.ToString("N");
                 Image icon = item.GetNewIcon();
@@ -986,14 +986,14 @@ namespace Gorgon.Editor
         /// Function to update the icons used for the "new" buttons.
         /// </summary>
         /// <param name="metadata">The metadata for plug ins that can create content.</param>
-        private void RemoveNewIcons(IEnumerable<IContentPlugInMetadata> metadata)
+        private void RemoveNewIcons(IEnumerable<OLDE_IContentPlugInMetadata> metadata)
         {
             if (metadata == null)
             {
                 return;
             }
 
-            foreach (IContentPlugInMetadata item in metadata)
+            foreach (OLDE_IContentPlugInMetadata item in metadata)
             {
                 string id = item.NewIconID.ToString("N");
 
@@ -1080,10 +1080,10 @@ namespace Gorgon.Editor
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    AddNewIcons(e.NewItems.OfType<IContentPlugInMetadata>());
+                    AddNewIcons(e.NewItems.OfType<OLDE_IContentPlugInMetadata>());
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    RemoveNewIcons(e.OldItems.OfType<IContentPlugInMetadata>());
+                    RemoveNewIcons(e.OldItems.OfType<OLDE_IContentPlugInMetadata>());
                     break;
                 case NotifyCollectionChangedAction.Reset:
                     ClearNewIcons();

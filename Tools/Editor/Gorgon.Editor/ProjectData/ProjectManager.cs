@@ -545,7 +545,7 @@ namespace Gorgon.Editor.ProjectData
         /// <param name="cancelToken">The token used for cancellation of the operation.</param>
         /// <returns>A task for asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, <paramref name="path"/>, or the <paramref name="writer"/> parameter is <b>null</b>.</exception>        
-        public async Task SavePackedFileAsync(IProject project, FileInfo path, FileWriterPlugIn writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
+        public async Task SavePackedFileAsync(IProject project, FileInfo path, OLDE_FileWriterPlugIn writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
         {
             if (project == null)
             {

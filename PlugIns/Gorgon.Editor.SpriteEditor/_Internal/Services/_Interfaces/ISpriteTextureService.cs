@@ -41,7 +41,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         /// <param name="file">The file to evaluate.</param>
         /// <returns><b>true</b> if the file is an image, supported by this editor, or <b>false</b> if not.</returns>
-        bool IsContentImage(IContentFile file);
+        bool IsContentImage(OLDE_IContentFile file);
 
         /// <summary>
         /// Function to retrieve the image data for a sprite texture as a 32 bit RGBA pixel data.
@@ -55,20 +55,20 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         /// <param name="file">The content file for the texture.</param>
         /// <returns>The texture from the file system.</returns>
-        Task<GorgonTexture2DView> LoadTextureAsync(IContentFile file);
+        Task<GorgonTexture2DView> LoadTextureAsync(OLDE_IContentFile file);
 
         /// <summary>
         /// Function to load an associated sprite texture for sprite content.
         /// </summary>
         /// <param name="spriteContent">The sprite content file to use.</param>        
         /// <returns>The texture associated with the sprite, and the content file associated with that texture, or <b>null</b> if no sprite texture was found.</returns>
-        Task<(GorgonTexture2DView, IContentFile)> LoadFromSpriteContentAsync(IContentFile spriteContent);
+        Task<(GorgonTexture2DView, OLDE_IContentFile)> LoadFromSpriteContentAsync(OLDE_IContentFile spriteContent);
 
         /// <summary>
         /// Function to retrieve the image metadata for a content file.
         /// </summary>
         /// <param name="file">The file to retrieve metadata from.</param>
         /// <returns>The metadata for the file, or <b>null</b> if the file is not an image.</returns>
-        IGorgonImageInfo GetImageMetadata(IContentFile file);
+        IGorgonImageInfo GetImageMetadata(OLDE_IContentFile file);
     }
 }

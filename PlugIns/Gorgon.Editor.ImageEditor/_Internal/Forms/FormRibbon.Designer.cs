@@ -35,7 +35,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormRibbon));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OLDE_FormRibbon));
             this.RibbonImageContent = new ComponentFactory.Krypton.Ribbon.KryptonRibbon();
             this.TabImage = new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab();
             this.GroupImageFile = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();

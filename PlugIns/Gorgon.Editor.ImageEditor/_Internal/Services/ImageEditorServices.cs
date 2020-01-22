@@ -24,8 +24,8 @@
 // 
 #endregion
 
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
-using Gorgon.Editor.UI.ViewModels;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -37,7 +37,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>
         /// Property to return the application common services.
         /// </summary>
-        public IViewModelInjection CommonServices
+        public IHostContentServices HostContentServices
         {
             get;
             set;

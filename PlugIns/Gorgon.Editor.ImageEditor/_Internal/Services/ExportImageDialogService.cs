@@ -136,7 +136,7 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Constructor.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ImageEditor.ExportImageDialogService"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="ExportImageDialogService"/> class.</summary>
         /// <param name="settings">The settings.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settings" /> parameter is <strong>null</strong>.</exception>
         public ExportImageDialogService(ISettings settings) => _settings = settings ?? throw new ArgumentNullException(nameof(settings));

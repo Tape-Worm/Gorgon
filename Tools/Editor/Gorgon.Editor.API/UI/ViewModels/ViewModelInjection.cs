@@ -26,6 +26,7 @@
 
 using System;
 using Gorgon.Diagnostics;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.UI.ViewModels
@@ -67,6 +68,21 @@ namespace Gorgon.Editor.UI.ViewModels
         }
 
         /// <summary>Initializes a new instance of the <see cref="ViewModelInjection"/> class.</summary>
+        /// <param name="hostServices">The services from the host application.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="hostServices"/> parameter is <b>null</b>.</exception>
+        protected ViewModelInjection(IHostServices hostServices)
+        {
+            if (hostServices == null)
+            {
+                throw new ArgumentNullException(nameof(hostServices));
+            }
+
+            Log = hostServices.Log;
+            BusyService = hostServices.BusyService;
+            MessageDisplay = hostServices.MessageDisplay;
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="ViewModelInjection"/> class.</summary>
         /// <param name="copy">The objects to copy.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="copy"/> parameter is <b>null</b>.</exception>
         protected ViewModelInjection(IViewModelInjection copy)
@@ -79,6 +95,7 @@ namespace Gorgon.Editor.UI.ViewModels
             Log = copy.Log;
             BusyService = copy.BusyService;
             MessageDisplay = copy.MessageDisplay;
+            Clipboard = copy.Clipboard;
         }
 
         /// <summary>Initializes a new instance of the <see cref="ViewModelInjection"/> class.</summary>

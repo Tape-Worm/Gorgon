@@ -39,7 +39,7 @@ namespace Gorgon.Editor.SpriteEditor
     /// Parameters for the <see cref="ISpriteContent"/> view model.
     /// </summary>
     internal class SpriteContentParameters
-        : ContentViewModelInjectionCommon
+        : OLDE_ContentViewModelInjectionCommon
     {
         /// <summary>
         /// Property to return the sprite being edited.
@@ -52,7 +52,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Property to return the file manager used to access external content.
         /// </summary>
-        public IContentFileManager ContentFileManager
+        public OLDE_IContentFileManager ContentFileManager
         {
             get;
         }
@@ -60,7 +60,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Property to return the content file for the sprite texture.
         /// </summary>
-        public IContentFile SpriteTextureFile
+        public OLDE_IContentFile SpriteTextureFile
         {
             get;
         }
@@ -190,9 +190,9 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="commonServices">Common application services.</param>
         public SpriteContentParameters(
             ISpriteContentFactory factory,
-            IContentFile spriteFile,
-            IContentFile spriteTextureFile,
-            IContentFileManager fileManager,
+            OLDE_IContentFile spriteFile,
+            OLDE_IContentFile spriteTextureFile,
+            OLDE_IContentFileManager fileManager,
             ISpriteTextureService textureService,
             GorgonSprite sprite,
             IGorgonSpriteCodec codec,

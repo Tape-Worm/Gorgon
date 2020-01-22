@@ -865,7 +865,7 @@ namespace Gorgon.Editor.Views
             MenuItemCreateDirectory.Available = dataContext.CreateNodeCommand?.CanExecute(new CreateNodeArgs(dataContext.SelectedNode)) ?? false;
             MenuItemDelete.Available = dataContext.DeleteNodeCommand?.CanExecute(null) ?? false;
 
-            MenuSepContent.Available = MenuItemOpenContent.Available = dataContext.OpenContentFileCommand?.CanExecute(dataContext.SelectedNode as IContentFile) ?? false;
+            MenuSepContent.Available = MenuItemOpenContent.Available = dataContext.OpenContentFileCommand?.CanExecute(dataContext.SelectedNode as OLDE_IContentFile) ?? false;
 
             MenuSepNew.Visible = MenuItemCreateDirectory.Available;
         }
@@ -876,7 +876,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void MenuItemOpenContent_Click(object sender, EventArgs e)
         {
-            var selectedFile = DataContext?.SelectedNode as IContentFile;
+            var selectedFile = DataContext?.SelectedNode as OLDE_IContentFile;
 
             if ((DataContext?.OpenContentFileCommand == null) || (!DataContext.OpenContentFileCommand.CanExecute(selectedFile)))
             {
@@ -1221,7 +1221,7 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            var contentFile = info.Item.Tag as IContentFile;
+            var contentFile = info.Item.Tag as OLDE_IContentFile;
 
             if ((DataContext?.OpenContentFileCommand == null) || (!DataContext.OpenContentFileCommand.CanExecute(contentFile)))
             {
@@ -1303,7 +1303,7 @@ namespace Gorgon.Editor.Views
             {
                 _nodeLinks.TryGetValue((KryptonTreeNode)e.Node, out IFileExplorerNodeVm node);
 
-                var contentFile = node as IContentFile;
+                var contentFile = node as OLDE_IContentFile;
 
                 if ((DataContext?.OpenContentFileCommand == null) || (!DataContext.OpenContentFileCommand.CanExecute(contentFile)))
                 {
@@ -1962,9 +1962,9 @@ namespace Gorgon.Editor.Views
             }
 
             // Check for an icon.            
-            if (node.Metadata?.ContentMetadata != null)
+            if (node.Metadata?.OLDE_ContentMetadata != null)
             {
-                Image icon = node.Metadata.ContentMetadata.GetSmallIcon();
+                Image icon = node.Metadata.OLDE_ContentMetadata.GetSmallIcon();
 
                 // This ID has not been registered in the image list, do so now.
                 if ((!TreeImages.Images.ContainsKey(node.ImageName))
@@ -2029,10 +2029,10 @@ namespace Gorgon.Editor.Views
                 }
 
                 // Check for an icon.            
-                if (node.Metadata?.ContentMetadata != null)
+                if (node.Metadata?.OLDE_ContentMetadata != null)
                 {
                     string imageName = node.ImageName;
-                    Image icon = node.Metadata.ContentMetadata.GetSmallIcon();
+                    Image icon = node.Metadata.OLDE_ContentMetadata.GetSmallIcon();
 
                     // This ID has not been registered in the image list, do so now.
                     if ((!TreeImages.Images.ContainsKey(node.ImageName))

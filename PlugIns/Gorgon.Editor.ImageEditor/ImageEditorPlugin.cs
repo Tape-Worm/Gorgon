@@ -26,12 +26,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ImageEditor.Properties;
@@ -39,6 +41,7 @@ using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
+using Gorgon.Editor.UI.ViewModels;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
@@ -96,7 +99,7 @@ namespace Gorgon.Editor.ImageEditor
         public override string ContentTypeID => CommonEditorContentTypes.ImageType;
 
         /// <summary>Property to return the friendly (i.e shown on the UI) name for the type of content.</summary>
-        public string ContentType => Resources.GORSPR_CONTENT_TYPE;
+        public string ContentType => Resources.GORIMG_CONTENT_TYPE;
         #endregion
 
         #region Methods.
@@ -109,12 +112,12 @@ namespace Gorgon.Editor.ImageEditor
         {
             lock (_syncLock)
             {
-                using (GorgonTexture2D texture = image.ToTexture2D(GraphicsContext.Graphics, new GorgonTexture2DLoadOptions
+                using (GorgonTexture2D texture = image.ToTexture2D(HostContentServices.GraphicsContext.Graphics, new GorgonTexture2DLoadOptions
                 {
                     Usage = ResourceUsage.Immutable,
                     IsTextureCube = false
                 }))
-                using (var rtv = GorgonRenderTarget2DView.CreateRenderTarget(GraphicsContext.Graphics, new GorgonTexture2DInfo
+                using (var rtv = GorgonRenderTarget2DView.CreateRenderTarget(HostContentServices.GraphicsContext.Graphics, new GorgonTexture2DInfo
                 {
                     ArrayCount = 1,
                     Binding = TextureBinding.ShaderResource,
@@ -127,9 +130,9 @@ namespace Gorgon.Editor.ImageEditor
                 {
                     GorgonTexture2DView view = texture.GetShaderResourceView(mipCount: 1, arrayCount: 1);
                     rtv.Clear(GorgonColor.BlackTransparent);
-                    GraphicsContext.Graphics.SetRenderTarget(rtv);
-                    GraphicsContext.Graphics.DrawTexture(view, new DX.Rectangle(0, 0, rtv.Width, rtv.Height), blendState: GorgonBlendState.Default, samplerState: GorgonSamplerState.Default);
-                    GraphicsContext.Graphics.SetRenderTarget(null);
+                    HostContentServices.GraphicsContext.Graphics.SetRenderTarget(rtv);
+                    HostContentServices.GraphicsContext.Graphics.DrawTexture(view, new DX.Rectangle(0, 0, rtv.Width, rtv.Height), blendState: GorgonBlendState.Default, samplerState: GorgonSamplerState.Default);
+                    HostContentServices.GraphicsContext.Graphics.SetRenderTarget(null);
 
                     image?.Dispose();
                     image = rtv.Texture.ToImage();
@@ -146,17 +149,17 @@ namespace Gorgon.Editor.ImageEditor
             FileInfo result;
 
             // The availability of texconv.exe determines whether or not we can use block compressed formats or not.
-            CommonServices.Log.Print("Checking for texconv.exe...", LoggingLevel.Simple);
+            HostContentServices.Log.Print("Checking for texconv.exe...", LoggingLevel.Simple);
             var pluginDir = new DirectoryInfo(Path.GetDirectoryName(GetType().Assembly.Location));
             result = new FileInfo(Path.Combine(pluginDir.FullName, "texconv.exe"));
 
             if (!result.Exists)
             {
-                CommonServices.Log.Print($"WARNING: Texconv.exe was not found at {pluginDir.FullName}. Block compressed formats will be unavailable.", LoggingLevel.Simple);
+                HostContentServices.Log.Print($"WARNING: Texconv.exe was not found at {pluginDir.FullName}. Block compressed formats will be unavailable.", LoggingLevel.Simple);
             }
             else
             {
-                CommonServices.Log.Print($"Found texconv.exe at '{result.FullName}'.", LoggingLevel.Simple);
+                HostContentServices.Log.Print($"Found texconv.exe at '{result.FullName}'.", LoggingLevel.Simple);
             }
 
             return result;
@@ -186,15 +189,16 @@ namespace Gorgon.Editor.ImageEditor
                     return cancelToken.IsCancellationRequested ? (null, false) : (result, false);
                 }
 
-                inStream = content.OpenRead();
+#warning FIX ME
+                //inStream = content.OpenRead();
                 result = _ddsCodec.LoadFromStream(inStream);
 
                 return (result, true);
             }
             catch (Exception ex)
             {
-                CommonServices.Log.Print($"[ERROR] Cannot create thumbnail for '{content.Path}'", LoggingLevel.Intermediate);
-                CommonServices.Log.LogException(ex);
+                HostContentServices.Log.Print($"[ERROR] Cannot create thumbnail for '{content.Path}'", LoggingLevel.Intermediate);
+                HostContentServices.Log.LogException(ex);
                 return (null, false);
             }
             finally
@@ -212,10 +216,10 @@ namespace Gorgon.Editor.ImageEditor
         {
             bool needsRefresh = false;
 
-            if ((attributes.TryGetValue(ImageContent.CodecAttr, out string currentCodecType))
+            if ((attributes.TryGetValue(OLDE_ImageContent.CodecAttr, out string currentCodecType))
                 && (!string.IsNullOrWhiteSpace(currentCodecType)))
             {
-                attributes.Remove(ImageContent.CodecAttr);
+                attributes.Remove(OLDE_ImageContent.CodecAttr);
                 needsRefresh = true;
             }
 
@@ -227,10 +231,10 @@ namespace Gorgon.Editor.ImageEditor
             }
 
             string codecType = _ddsCodec.GetType().FullName;
-            if ((!attributes.TryGetValue(ImageContent.CodecAttr, out currentCodecType))
+            if ((!attributes.TryGetValue(OLDE_ImageContent.CodecAttr, out currentCodecType))
                 || (!string.Equals(currentCodecType, codecType, StringComparison.OrdinalIgnoreCase)))
             {
-                attributes[ImageContent.CodecAttr] = codecType;
+                attributes[OLDE_ImageContent.CodecAttr] = codecType;
                 needsRefresh = true;
             }
 
@@ -247,7 +251,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Function to register plug in specific search keywords with the system search.</summary>
         /// <typeparam name="T">The type of object being searched, must implement <see cref="T:Gorgon.Core.IGorgonNamedObject"/>.</typeparam>
         /// <param name="searchService">The search service to use for registration.</param>
-        protected override void OnRegisterSearchKeywords<T>(ISearchService<T> searchService) => searchService.MapKeywordToContentAttribute(Resources.GORIMG_SEARCH_KEYWORD_CODEC, ImageContent.CodecAttr);
+        protected override void OnRegisterSearchKeywords<T>(ISearchService<T> searchService) => searchService.MapKeywordToContentAttribute(Resources.GORIMG_SEARCH_KEYWORD_CODEC, OLDE_ImageContent.CodecAttr);
 
         /// <summary>Function to open a content object from this plugin.</summary>
         /// <param name="file">The file that contains the content.</param>
@@ -274,14 +278,14 @@ namespace Gorgon.Editor.ImageEditor
                 _codecs,
                 new ExportImageDialogService(_settings),
                 new ImportImageDialogService(_settings, _codecs),
-                CommonServices.BusyService,
+                HostContentServices.BusyService,
                 scratchArea,
                 compressor,
-                CommonServices.Log);
+                HostContentServices.Log);
 
             (IGorgonImage image, IGorgonVirtualFile workingFile, BufferFormat originalFormat) imageData = await Task.Run(() =>
-            {
-                using (Stream inStream = file.OpenRead())
+            {                
+                using (Stream inStream = ContentFileManager.OpenStream(file.Path, FileMode.Open))
                 {
                     return imageIO.LoadImageFile(inStream, file.Name);
                 }
@@ -289,11 +293,11 @@ namespace Gorgon.Editor.ImageEditor
 
             var services = new ImageEditorServices
             {
-                CommonServices = CommonServices,
+                HostContentServices = HostContentServices,
                 ImageIO = imageIO,
                 UndoService = undoService,
                 ImageUpdater = new ImageUpdaterService(),
-                ExternalEditorService = new ImageExternalEditService(CommonServices.Log)
+                ExternalEditorService = new ImageExternalEditService(HostContentServices.Log)
             };
 
             var cropResizeSettings = new CropResizeSettings();
@@ -305,9 +309,10 @@ namespace Gorgon.Editor.ImageEditor
                 UpdateRange = _settings.LastAlphaRange
             };
 
-            cropResizeSettings.Initialize(CommonServices);
-            dimensionSettings.Initialize(new DimensionSettingsParameters(GraphicsContext.Graphics.VideoAdapter, CommonServices));
-            mipSettings.Initialize(CommonServices);
+            IViewModelInjection injector = new ViewModelInjection(HostContentServices.Log, HostContentServices.BusyService, HostContentServices.MessageDisplay, null);
+            cropResizeSettings.Initialize(injector);
+            dimensionSettings.Initialize(new DimensionSettingsParameters(HostContentServices));
+            mipSettings.Initialize(injector);
 
 
             var content = new ImageContent();
@@ -318,8 +323,8 @@ namespace Gorgon.Editor.ImageEditor
                 mipSettings,
                 alphaSettings,
                 imageData,
-                GraphicsContext.Graphics.VideoAdapter,
-                GraphicsContext.Graphics.FormatSupport,
+                HostContentServices.GraphicsContext.Graphics.VideoAdapter,
+                HostContentServices.GraphicsContext.Graphics.FormatSupport,
                 services));
 
             return content;
@@ -328,7 +333,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Function to provide clean up for the plugin.</summary>
         protected override void OnShutdown()
         {
-            if ((_settings.WriteSettingsCommand != null) && (_settings.WriteSettingsCommand.CanExecute(null)))
+            if ((_settings?.WriteSettingsCommand != null) && (_settings.WriteSettingsCommand.CanExecute(null)))
             {
                 _settings.WriteSettingsCommand.Execute(null);
             }
@@ -342,29 +347,33 @@ namespace Gorgon.Editor.ImageEditor
         /// <remarks>This method is only called when the plugin is loaded at startup.</remarks>
         protected override void OnInitialize()
         {
-            ViewFactory.Register<IImageContent>(() => new ImageEditorView());
-            (_codecs, _settings) = SharedDataFactory.GetSharedData(ContentPlugInService, CommonServices);
+            ViewFactory.Register<IImageContent>(() => new OLDE_ImageEditorView());
+            (_codecs, _settings) = SharedDataFactory.GetSharedData(HostContentServices);
         }
 
         /// <summary>Function to determine if the content plugin can open the specified file.</summary>
-        /// <param name="file">The content file to evaluate.</param>
-        /// <param name="fileManager">The content file manager.</param>
+        /// <param name="filePath">The path to the file to evaluate.</param>
         /// <returns>
         ///   <b>true</b> if the plugin can open the file, or <b>false</b> if not.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file" />, or the <paramref name="fileManager"/> parameter is <b>null</b>.</exception>
-        public bool CanOpenContent(IContentFile file, IContentFileManager fileManager)
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath" /> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
+        public bool CanOpenContent(string filePath)
         {
-            if (file == null)
+            if (filePath == null)
             {
-                throw new ArgumentNullException(nameof(file));
+                throw new ArgumentNullException(nameof(filePath));
             }
 
-            if (fileManager == null)
+            if (string.IsNullOrWhiteSpace(filePath))
             {
-                throw new ArgumentNullException(nameof(fileManager));
+                throw new ArgumentEmptyException(nameof(filePath));
             }
 
-            using (Stream stream = file.OpenRead())
+            IContentFile file = ContentFileManager.GetFile(filePath);
+
+            Debug.Assert(file != null, $"File '{filePath}' doesn't exist, but it should!");
+
+            using (Stream stream = ContentFileManager.OpenStream(filePath, FileMode.Open))
             {
                 if (!_ddsCodec.IsReadable(stream))
                 {
@@ -397,16 +406,11 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="cancelToken">The token used to cancel the thumbnail generation.</param>
         /// <returns>A <see cref="T:Gorgon.Graphics.Imaging.IGorgonImage"/> containing the thumbnail image data.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="contentFile" />, <paramref name="fileManager" />, or the <paramref name="outputFile" /> parameter is <b>null</b>.</exception>
-        public async Task<IGorgonImage> GetThumbnailAsync(IContentFile contentFile, IContentFileManager fileManager, FileInfo outputFile, CancellationToken cancelToken)
+        public async Task<IGorgonImage> GetThumbnailAsync(IContentFile contentFile, FileInfo outputFile, CancellationToken cancelToken)
         {
             if (contentFile == null)
             {
                 throw new ArgumentNullException(nameof(contentFile));
-            }
-
-            if (fileManager == null)
-            {
-                throw new ArgumentNullException(nameof(fileManager));
             }
 
             if (outputFile == null)
@@ -415,7 +419,7 @@ namespace Gorgon.Editor.ImageEditor
             }
 
             // If the content is not a DDS image, then leave it.
-            if ((!contentFile.Metadata.Attributes.TryGetValue(ImageContent.CodecAttr, out string codecName))
+            if ((!contentFile.Metadata.Attributes.TryGetValue(OLDE_ImageContent.CodecAttr, out string codecName))
                 || (string.IsNullOrWhiteSpace(codecName))
                 || (!string.Equals(codecName, _ddsCodec.GetType().FullName, StringComparison.OrdinalIgnoreCase)))
             {
@@ -471,8 +475,8 @@ namespace Gorgon.Editor.ImageEditor
             }
             catch (Exception ex)
             {
-                CommonServices.Log.Print($"[ERROR] Cannot create thumbnail for '{contentFile.Path}'", LoggingLevel.Intermediate);
-                CommonServices.Log.LogException(ex);
+                HostContentServices.Log.Print($"[ERROR] Cannot create thumbnail for '{contentFile.Path}'", LoggingLevel.Intermediate);
+                HostContentServices.Log.LogException(ex);
                 return null;
             }
             finally

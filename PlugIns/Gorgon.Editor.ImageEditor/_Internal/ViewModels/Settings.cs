@@ -211,7 +211,7 @@ namespace Gorgon.Editor.ImageEditor
         {
             try
             {
-                _pluginService.WriteContentSettings(ImageEditorPlugIn.SettingsName, _settings);
+                _pluginService.WriteContentSettings(OLDE_ImageEditorPlugIn.SettingsName, _settings);
             }
             catch (Exception ex)
             {
@@ -362,7 +362,7 @@ namespace Gorgon.Editor.ImageEditor
         {
             _messageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(injectionParameters.MessageDisplay), nameof(injectionParameters));
             _settings = injectionParameters.Settings ?? throw new ArgumentMissingException(nameof(injectionParameters.Settings), nameof(injectionParameters));
-            _pluginService = injectionParameters.PlugInService ?? throw new ArgumentMissingException(nameof(injectionParameters.PlugInService), nameof(injectionParameters));
+            _pluginService = injectionParameters.ContentPlugInService ?? throw new ArgumentMissingException(nameof(injectionParameters.ContentPlugInService), nameof(injectionParameters));
             _codecs = injectionParameters.Codecs ?? throw new ArgumentMissingException(nameof(injectionParameters.Codecs), nameof(injectionParameters));
             _openCodecDialog = injectionParameters.CodecFileDialog ?? throw new ArgumentMissingException(nameof(injectionParameters.CodecFileDialog), nameof(injectionParameters));
             _busyService = injectionParameters.BusyService ?? throw new ArgumentMissingException(nameof(injectionParameters.BusyService), nameof(injectionParameters));
@@ -405,7 +405,7 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="ImageCodecSettings"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="Settings"/> class.</summary>
         public Settings()
         {
             ID = Guid.NewGuid();

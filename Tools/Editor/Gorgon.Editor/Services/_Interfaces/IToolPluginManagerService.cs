@@ -47,13 +47,13 @@ namespace Gorgon.Editor.Services
         /// Function to add a tool plugin to the service.
         /// </summary>
         /// <param name="plugin">The plugin to add.</param>
-        void AddToolPlugIn(ToolPlugIn plugin);
+        void AddToolPlugIn(OLDE_ToolPlugIn plugin);
 
         /// <summary>
         /// Function to remove a tool plugin from the service.
         /// </summary>
         /// <param name="plugin">The plugin to remove.</param>
-        void RemoveToolPlugIn(ToolPlugIn plugin);
+        void RemoveToolPlugIn(OLDE_ToolPlugIn plugin);
 
         /// <summary>
         /// Function to clear all of the tool plugins.

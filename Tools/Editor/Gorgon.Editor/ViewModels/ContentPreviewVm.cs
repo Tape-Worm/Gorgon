@@ -46,7 +46,7 @@ namespace Gorgon.Editor.ViewModels
         // The file explorer view model, used to track selection changes.
         private IFileExplorerVm _fileExplorer;
         // The file manager for content.
-        private IContentFileManager _contentFileManager;
+        private OLDE_IContentFileManager _contentFileManager;
         // The image to display.
         private IGorgonImage _image;
         // The task used to load the preview.
@@ -56,7 +56,7 @@ namespace Gorgon.Editor.ViewModels
         // The title for the previewed content.
         private string _title = string.Empty;
         // The currently selected content file.
-        private IContentFile _contentFile;
+        private OLDE_IContentFile _contentFile;
         #endregion
 
         #region Properties.
@@ -104,7 +104,7 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>Property to return the command used to refresh the preview image.</summary>
-        public IEditorAsyncCommand<IContentFile> RefreshPreviewCommand
+        public IEditorAsyncCommand<OLDE_IContentFile> RefreshPreviewCommand
         {
             get;
         }
@@ -116,7 +116,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="file">The file </param>
         /// <returns></returns>
-        private async Task LoadImagePreviewAsync(IContentFile file)
+        private async Task LoadImagePreviewAsync(OLDE_IContentFile file)
         {
             try
             {
@@ -131,7 +131,7 @@ namespace Gorgon.Editor.ViewModels
                     _loadPreviewTask = null;
                 }
 
-                if (file?.Metadata?.ContentMetadata == null)
+                if (file?.Metadata?.OLDE_ContentMetadata == null)
                 {
                     Title = string.Empty;
                     PreviewImage?.Dispose();
@@ -148,7 +148,7 @@ namespace Gorgon.Editor.ViewModels
                 var thumbNailFile = new FileInfo(Path.Combine(ThumbnailDirectory.FullName, thumbnailName));
 
                 _cancelSource = new CancellationTokenSource();
-                _loadPreviewTask = file.Metadata.ContentMetadata.GetThumbnailAsync(file, _contentFileManager, thumbNailFile, _cancelSource.Token);
+                _loadPreviewTask = file.Metadata.OLDE_ContentMetadata.GetThumbnailAsync(file, _contentFileManager, thumbNailFile, _cancelSource.Token);
 
                 IGorgonImage image = await _loadPreviewTask;
 
@@ -184,7 +184,7 @@ namespace Gorgon.Editor.ViewModels
             switch (e.PropertyName)
             {
                 case nameof(IFileExplorerVm.SelectedNode):
-                    var file = _fileExplorer.SelectedNode as IContentFile;
+                    var file = _fileExplorer.SelectedNode as OLDE_IContentFile;
                     await LoadImagePreviewAsync(file);
                     break;
             }
@@ -218,7 +218,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="file">The file to refresh the preview for.</param>
         /// <returns>A task for asynchronous operation.</returns>
-        private async Task DoRefreshPreview(IContentFile file)
+        private async Task DoRefreshPreview(OLDE_IContentFile file)
         {
             try
             {
@@ -286,7 +286,7 @@ namespace Gorgon.Editor.ViewModels
 
         #region Constructor.
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ViewModels.ContentPreviewVm"/> class.</summary>
-        public ContentPreviewVm() => RefreshPreviewCommand = new EditorAsyncCommand<IContentFile>(DoRefreshPreview);
+        public ContentPreviewVm() => RefreshPreviewCommand = new EditorAsyncCommand<OLDE_IContentFile>(DoRefreshPreview);
         #endregion
     }
 }

@@ -24,12 +24,16 @@
 // 
 #endregion
 
+using System;
 using System.IO;
 using System.Threading;
+using Gorgon.Core;
 using Gorgon.Diagnostics;
+using Gorgon.Editor.Content;
 using Gorgon.Editor.Services;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
+using Gorgon.IO;
 
 namespace Gorgon.Editor.ImageEditor.Services
 {
@@ -42,57 +46,98 @@ namespace Gorgon.Editor.ImageEditor.Services
         #region Variables.
         // The log used for debug message logging.
         private readonly IGorgonLog _log;
-        // The codec for the input file.
-        private readonly IGorgonImageCodec _codec;
-        #endregion
-
-        #region Properties.
-        /// <summary>Property to return the file being imported.</summary>
-        /// <value>The source file.</value>
-        public FileInfo SourceFile
-        {
-            get;
-        }
-
-        /// <summary>Property to return whether or not the imported file needs to be cleaned up after processing.</summary>
-        public bool NeedsCleanup => true;
+        // The file system writer used to write to the temporary area.
+        private readonly IGorgonFileSystemWriter<Stream> _tempWriter;
+        // The available image codecs.
+        private readonly ICodecRegistry _codecs;
+        // The path to the temporary directory.
+        private string _tempDirPath;
         #endregion
 
         #region Methods.
-        /// <summary>Imports the data.</summary>
-        /// <param name="temporaryDirectory">The temporary directory for writing any transitory data.</param>
-        /// <param name="cancelToken">The cancel token.</param>
-        /// <remarks>
-        /// <para>
-        /// The <paramref name="temporaryDirectory"/> should be used to write any working/temporary data used by the import.  Note that all data written into this directory will be deleted when the 
-        /// project is unloaded from memory.
-        /// </para>
-        /// </remarks>
-        public FileInfo ImportData(DirectoryInfo temporaryDirectory, CancellationToken cancelToken)
+        /// <summary>Function to clean up any temporary working data.</summary>
+        public void CleanUp()
         {
+            IGorgonVirtualDirectory directory = _tempWriter.FileSystem.GetDirectory(_tempDirPath);
+
+            if (directory == null)
+            {
+                return;
+            }
+
+            try
+            {
+                _tempWriter.DeleteDirectory(directory.FullPath);
+                _tempDirPath = null;
+            }
+            catch(Exception ex)
+            {
+                // We'll eat and log this exception, the worst case is we end up with a little more disk usage than we'd like.
+                _log.Print("Error cleaning up temporary directory.", LoggingLevel.Simple);
+                _log.LogException(ex);
+            }
+        }
+
+        /// <summary>Function to import content.</summary>
+        /// <param name="physicalFilePath">The path to the physical file to import into the virtual file system.</param>
+        /// <param name="cancelToken">The token used to cancel the operation.</param>
+        /// <returns>A new virtual file object pointing to the imported file data.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalFilePath"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalFilePath"/> parameter is empty.</exception>
+        public IGorgonVirtualFile ImportData(string physicalFilePath, CancellationToken cancelToken)
+        {
+            if (physicalFilePath == null)
+            {
+                throw new ArgumentNullException(nameof(physicalFilePath));
+            }
+
+            if (string.IsNullOrWhiteSpace(physicalFilePath))
+            {
+                throw new ArgumentEmptyException(nameof(physicalFilePath));
+            }
+
+            IGorgonImageCodec sourceCodec = ImageImporterPlugIn.GetCodec(physicalFilePath, _codecs);
+
+            // This source is the same as the destination codec. So there's nothing to do.
+            if (sourceCodec == null)
+            {
+                return null;
+            }
+
             var ddsCodec = new GorgonCodecDds();
 
-            _log.Print($"Importing file '{SourceFile.FullName}' (Codec: {_codec.Name})...", LoggingLevel.Verbose);
-            using (IGorgonImage image = _codec.LoadFromFile(SourceFile.FullName))
+            if (string.IsNullOrWhiteSpace(_tempDirPath))
             {
-                var tempFile = new FileInfo(Path.Combine(temporaryDirectory.FullName, Path.GetFileNameWithoutExtension(SourceFile.Name)));
-
-                _log.Print($"Converting '{SourceFile.FullName}' to DDS file format. Image format [{image.Format}].", LoggingLevel.Verbose);
-                ddsCodec.SaveToFile(image, tempFile.FullName);
-
-                return tempFile;
+                _tempDirPath = $"/Importer_{Guid.NewGuid():N}/";
             }
+            
+            IGorgonVirtualDirectory directory = _tempWriter.CreateDirectory(_tempDirPath);
+            _log.Print($"Importing file '{physicalFilePath}' (Codec: {sourceCodec.Name})...", LoggingLevel.Verbose);
+
+            string outputFilePath = directory.FullPath + Path.ChangeExtension(Path.GetFileNameWithoutExtension(physicalFilePath), ddsCodec.CodecCommonExtensions[0]);
+
+            using (Stream fileStream = File.Open(physicalFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (Stream outStream = _tempWriter.OpenStream(outputFilePath, FileMode.Create))
+            using (IGorgonImage image = sourceCodec.LoadFromStream(fileStream))
+            {
+                _log.Print($"Converting '{physicalFilePath}' to DDS file format. Image format [{image.Format}].", LoggingLevel.Verbose);
+                ddsCodec.SaveToStream(image, outStream);
+            }
+
+            return _tempWriter.FileSystem.GetFile(outputFilePath);
         }
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ImageEditor.Services.DdsImageImporter"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="DdsImageImporter"/> class.</summary>
+        /// <param name="tempFileSystemWriter">The file system writer used to write to the temporary area of the project.</param>
+        /// <param name="codecs">The available codecs for image import.</param>
         /// <param name="log">The log used for logging debug messages.</param>
-        public DdsImageImporter(FileInfo sourceFile, IGorgonImageCodec codec, IGorgonLog log)
+        public DdsImageImporter(IGorgonFileSystemWriter<Stream> tempFileSystemWriter, ICodecRegistry codecs, IGorgonLog log)
         {
-            _log = log ?? GorgonLog.NullLog;
-            SourceFile = sourceFile;
-            _codec = codec;
+            _codecs = codecs;
+            _tempWriter = tempFileSystemWriter;
+            _log = log ?? GorgonLog.NullLog;            
         }
         #endregion
     }

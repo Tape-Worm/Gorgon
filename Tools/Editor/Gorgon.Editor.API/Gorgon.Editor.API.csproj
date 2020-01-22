@@ -60,13 +60,23 @@
     <Compile Include="CommonEditorConstants.cs" />
     <Compile Include="CommonEditorContentTypes.cs" />
     <Compile Include="Content\ContentFileRenamedEventArgs.cs" />
+    <Compile Include="Content\_Interfaces\IContentFile.cs" />
     <Compile Include="Content\_Interfaces\IContentFileManager.cs" />
+    <Compile Include="Content\__OLDE__\OLDE_IContentFileManager.cs" />
     <Compile Include="Converters\JsonSharpDxRectConverter.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Plugins\EditorPlugin.cs" />
     <Compile Include="Plugins\ContentImportPlugin.cs" />
+    <Compile Include="Plugins\ContentPlugin.cs" />
+    <Compile Include="Plugins\ToolPlugin.cs" />
+    <Compile Include="Plugins\_Interfaces\IHostToolServices.cs" />
+    <Compile Include="Plugins\_Interfaces\IHostServices.cs" />
+    <Compile Include="Plugins\FileWriterPlugIn.cs" />
+    <Compile Include="Plugins\__OLDE__\OLDE_IContentPluginMetadata.cs" />
+    <Compile Include="Plugins\__OLDE__\OLDE_ContentImportPlugin.cs" />
     <Compile Include="Plugins\PlugInAssemblyState.cs" />
     <Compile Include="Plugins\_Interfaces\IToolPluginRibbonButton.cs" />
-    <Compile Include="Plugins\ToolPlugin.cs" />
+    <Compile Include="Plugins\__OLDE__\OLDE_ToolPlugin.cs" />
     <Compile Include="Plugins\ToolPluginRibbonButton.cs" />
     <Compile Include="ProjectData\RecentItem.cs" />
     <Compile Include="ProjectData\_Interfaces\IProjectMetadata.cs" />
@@ -76,12 +86,15 @@
     <Compile Include="Services\FileSaveDialogService.cs" />
     <Compile Include="Services\EditorContentSearchService.cs" />
     <Compile Include="Services\_Interfaces\IFileSystemFolderBrowseService.cs" />
+    <Compile Include="Plugins\_Interfaces\IHostContentServices.cs" />
     <Compile Include="Services\_Interfaces\IToolPluginService.cs" />
     <Compile Include="Services\RectClipperService.cs" />
     <Compile Include="Services\RectHandle.cs" />
     <Compile Include="Services\_Interfaces\IRectClipperService.cs" />
     <Compile Include="Services\_Interfaces\ISearchService.cs" />
     <Compile Include="Services\_Interfaces\IUndoService.cs" />
+    <Compile Include="Services\_Interfaces\IContentPluginService.cs" />
+    <Compile Include="Services\_Interfaces\IEditorContentImporter.cs" />
     <Compile Include="UI\Controls\ColorChangedEventArgs.cs" />
     <Compile Include="UI\Controls\ColorPicker.cs">
       <SubType>UserControl</SubType>
@@ -106,6 +119,16 @@
     </Compile>
     <Compile Include="UI\Controls\_Interfaces\IContentFileExplorerSearchEntry.cs" />
     <Compile Include="UI\DarkFormsRenderer.cs" />
+    <Compile Include="UI\ViewModels\ContentViewModelInjectionCommon.cs" />
+    <Compile Include="UI\ViewModels\EditorContentCommon.cs" />
+    <Compile Include="UI\ViewModels\_Interfaces\IContentViewModelInjection.cs" />
+    <Compile Include="UI\Views\ContentBaseControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Views\ContentBaseControl.Designer.cs">
+      <DependentUpon>ContentBaseControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\_Interfaces\IEditorContent.cs" />
     <Compile Include="UI\__OLDE__\Olde_ExplorerFilesDragData.cs" />
     <Compile Include="UI\Forms\FormName.cs">
       <SubType>Form</SubType>
@@ -140,21 +163,21 @@
     <Compile Include="Rendering\SelectionRectangle.cs" />
     <Compile Include="UI\ViewFactory.cs" />
     <Compile Include="UI\ViewModels\CloseContentArgs.cs" />
-    <Compile Include="UI\ViewModels\EditorContentCommon.cs" />
-    <Compile Include="Content\_Interfaces\IContentFile.cs" />
-    <Compile Include="UI\ViewModels\ContentViewModelInjectionCommon.cs" />
-    <Compile Include="UI\ViewModels\_Interfaces\IContentViewModelInjection.cs" />
+    <Compile Include="UI\ViewModels\__OLDE__\OLDE_EditorContentCommon.cs" />
+    <Compile Include="Content\__OLDE__\OLDE_IContentFile.cs" />
+    <Compile Include="UI\ViewModels\__OLDE__\OLDE_ContentViewModelInjectionCommon.cs" />
+    <Compile Include="UI\ViewModels\__OLDE__\OLDE_IContentViewModelInjection.cs" />
     <Compile Include="UI\ViewModels\_Interfaces\IHostedPanelViewModel.cs" />
     <Compile Include="UI\ZoomLevels.cs" />
     <Compile Include="UI\_Extensions\ZoomLevelExtensions.cs" />
     <Compile Include="UI\_Interfaces\IContentFileDragData.cs" />
     <Compile Include="UI\_Interfaces\IClipboardHandler.cs" />
     <Compile Include="UI\__OLDE__\Olde_IDragDropHandler.cs" />
-    <Compile Include="UI\_Interfaces\IEditorContent.cs" />
+    <Compile Include="UI\__OLDE__\OLDE_IEditorContent.cs" />
     <Compile Include="EditorCommonResources.cs" />
-    <Compile Include="Plugins\ContentPlugin.cs" />
-    <Compile Include="Plugins\EditorPlugin.cs" />
-    <Compile Include="Plugins\FileWriterPlugIn.cs" />
+    <Compile Include="Plugins\__OLDE__\OLDE_ContentPlugin.cs" />
+    <Compile Include="Plugins\__OLDE__\OLDE_EditorPlugin.cs" />
+    <Compile Include="Plugins\__OLDE__\OLDE_FileWriterPlugIn.cs" />
     <Compile Include="Plugins\_Interfaces\IDisabledPlugin.cs" />
     <Compile Include="Plugins\_Extensions\EditorPluginExtensions.cs" />
     <Compile Include="Plugins\_Interfaces\IContentPluginMetadata.cs" />
@@ -162,7 +185,7 @@
     <Compile Include="Services\DirectoryLocateService.cs" />
     <Compile Include="Services\FileOpenDialogService.cs" />
     <Compile Include="Services\_Interfaces\IClipboardService.cs" />
-    <Compile Include="Services\_Interfaces\IContentPluginService.cs" />
+    <Compile Include="Services\__OLDE__\OLDE_IContentPluginService.cs" />
     <Compile Include="Services\_Interfaces\IDirectoryLocateService.cs" />
     <Compile Include="Services\_Interfaces\IDisabledPluginService.cs" />
     <Compile Include="Services\_Interfaces\IFileDialogService.cs" />
@@ -185,11 +208,11 @@
     <Compile Include="UI\ViewModels\ProgressPanelUpdateArgs.cs" />
     <Compile Include="UI\ViewModels\WaitPanelActivateArgs.cs" />
     <Compile Include="UI\ViewModels\_Interfaces\IViewModelInjection.cs" />
-    <Compile Include="UI\Views\ContentBaseControl.cs">
+    <Compile Include="UI\Views\__OLDE__\OLDE_ContentBaseControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UI\Views\ContentBaseControl.Designer.cs">
-      <DependentUpon>ContentBaseControl.cs</DependentUpon>
+    <Compile Include="UI\Views\__OLDE__\OLDE_ContentBaseControl.Designer.cs">
+      <DependentUpon>OLDE_ContentBaseControl.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Views\EditorBaseControl.cs">
       <SubType>UserControl</SubType>
@@ -203,7 +226,7 @@
     <Compile Include="UI\ViewModels\ViewModelBase.cs" />
     <Compile Include="UI\ViewModels\_Interfaces\IViewModel.cs" />
     <Compile Include="UI\Views\_Interfaces\IDataContext.cs" />
-    <Compile Include="Services\_Interfaces\IEditorContentImporter.cs" />
+    <Compile Include="Services\__OLDE__\OLDE_IEditorContentImporter.cs" />
     <Compile Include="UI\__OLDE__\Olde_IExplorerFilesDragData.cs" />
     <Compile Include="UI\_Interfaces\IRibbonMerger.cs" />
     <Compile Include="UI\_Interfaces\ISettingsPanelViewModel.cs" />
@@ -276,6 +299,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Views\ContentBaseControl.resx">
       <DependentUpon>ContentBaseControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Views\__OLDE__\OLDE_ContentBaseControl.resx">
+      <DependentUpon>OLDE_ContentBaseControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Views\EditorBaseControl.resx">
       <DependentUpon>EditorBaseControl.cs</DependentUpon>

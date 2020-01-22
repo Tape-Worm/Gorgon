@@ -50,7 +50,7 @@ namespace Gorgon.Editor.SpriteEditor
     /// The primary view for the sprite editor.
     /// </summary>
     internal partial class SpriteEditorView
-        : ContentBaseControl, IDataContext<ISpriteContent>
+        : OLDE_ContentBaseControl, IDataContext<ISpriteContent>
     {
         #region Variables.
         // The form for the ribbon.
@@ -1056,7 +1056,7 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>Function called to shut down the view and perform any clean up required (including user defined graphics objects).</summary>
-        /// <remarks>Plug in developers do not need to clean up the <see cref="ContentBaseControl.SwapChain"/> as it will be returned to the swap chain pool automatically.</remarks>
+        /// <remarks>Plug in developers do not need to clean up the <see cref="OLDE_ContentBaseControl.SwapChain"/> as it will be returned to the swap chain pool automatically.</remarks>
         protected override void OnShutdown()
         {
             DataContext?.OnUnload();

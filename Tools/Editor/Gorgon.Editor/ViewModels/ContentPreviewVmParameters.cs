@@ -48,7 +48,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the file manager for content.
         /// </summary>
-        public IContentFileManager ContentFileManager
+        public OLDE_IContentFileManager ContentFileManager
         {
             get;
         }
@@ -69,7 +69,7 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="thumbDirectory">The thumbnail directory for the previewer.</param>
         /// <param name="viewModelFactory">The view model factory for creating view models.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public ContentPreviewVmParameters(IFileExplorerVm fileExplorer, IContentFileManager contentFileManager, DirectoryInfo thumbDirectory, ViewModelFactory viewModelFactory)
+        public ContentPreviewVmParameters(IFileExplorerVm fileExplorer, OLDE_IContentFileManager contentFileManager, DirectoryInfo thumbDirectory, ViewModelFactory viewModelFactory)
             : base(viewModelFactory)
         {
             FileExplorer = fileExplorer ?? throw new ArgumentNullException(nameof(fileExplorer));

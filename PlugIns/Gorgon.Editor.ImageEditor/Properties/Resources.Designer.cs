@@ -389,6 +389,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Image.
+        /// </summary>
+        internal static string GORIMG_CONTENT_TYPE {
+            get {
+                return ResourceManager.GetString("GORIMG_CONTENT_TYPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to At least one image dimension is smaller than the current image dimensions.  This will result in a loss of data in the image.
         ///
         ///Do you wish to continue?.
@@ -952,15 +961,6 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static string GORIMG_UNDO_DESC_SET_ALPHA {
             get {
                 return ResourceManager.GetString("GORIMG_UNDO_DESC_SET_ALPHA", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Image.
-        /// </summary>
-        internal static string GORSPR_CONTENT_TYPE {
-            get {
-                return ResourceManager.GetString("GORSPR_CONTENT_TYPE", resourceCulture);
             }
         }
         

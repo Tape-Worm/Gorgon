@@ -43,11 +43,11 @@ namespace Gorgon.Editor.ViewModels
     /// A node for a file system file.
     /// </summary>
     internal class DependencyNode
-        : ViewModelBase<FileExplorerNodeParameters>, IFileExplorerNodeVm, IContentFile
+        : ViewModelBase<FileExplorerNodeParameters>, IFileExplorerNodeVm, OLDE_IContentFile
     {
         #region Variables.
         // The content file dependent.
-        private readonly IContentFile _content;
+        private readonly OLDE_IContentFile _content;
         // The node represented by this dependency..
         private readonly IFileExplorerNodeVm _node;
         // The parent of this node.
@@ -67,7 +67,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>Event triggered if the dependencies list for this file is updated.</summary>
         public event EventHandler DependenciesUpdated;
 
-        /// <summary>Event triggered if the content was closed with the <see cref="IContentFile.CloseContent"/> method.</summary>
+        /// <summary>Event triggered if the content was closed with the <see cref="OLDE_IContentFile.CloseContent"/> method.</summary>
         public event EventHandler Closed;
         #endregion
 
@@ -117,7 +117,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the image name to use for the node type.
         /// </summary>
-        public string ImageName => Metadata.ContentMetadata.SmallIconID.ToString("N");
+        public string ImageName => Metadata.OLDE_ContentMetadata.SmallIconID.ToString("N");
 
         /// <summary>
         /// Property to return whether or not the allow this node to be deleted.
@@ -128,13 +128,13 @@ namespace Gorgon.Editor.ViewModels
         public bool IsContent => true;
 
         /// <summary>Property to return the path to the file.</summary>
-        string IContentFile.Path => FullPath;
+        string OLDE_IContentFile.Path => FullPath;
 
         /// <summary>Property to return the extension for the file.</summary>
-        string IContentFile.Extension => Path.GetExtension(_content.Name);
+        string OLDE_IContentFile.Extension => Path.GetExtension(_content.Name);
 
         /// <summary>Property to return the plugin associated with the file.</summary>
-        ContentPlugIn IContentFile.ContentPlugIn => Metadata?.ContentMetadata as ContentPlugIn;
+        OLDE_ContentPlugIn OLDE_IContentFile.ContentPlugIn => Metadata?.OLDE_ContentMetadata as OLDE_ContentPlugIn;
 
         /// <summary>Property to set or return the metadata for the node.</summary>
         public ProjectItemMetadata Metadata
@@ -200,7 +200,7 @@ namespace Gorgon.Editor.ViewModels
         public ObservableCollection<IFileExplorerNodeVm> Dependencies => _node.Dependencies;
 
         /// <summary>Property to return the list of items dependent upon this node</summary>        
-        IReadOnlyList<IContentFile> IContentFile.Dependencies => _content.Dependencies;
+        IReadOnlyList<OLDE_IContentFile> OLDE_IContentFile.Dependencies => _content.Dependencies;
         #endregion
 
         #region Methods.
@@ -360,20 +360,20 @@ namespace Gorgon.Editor.ViewModels
 
         /// <summary>Function to open the file for reading.</summary>
         /// <returns>A stream containing the file data.</returns>
-        Stream IContentFile.OpenRead() => _content.OpenRead();
+        Stream OLDE_IContentFile.OpenRead() => _content.OpenRead();
 
         /// <summary>
         /// Function to open the file for writing.
         /// </summary>
         /// <param name="append">[Optional] <b>true</b> to append data to the end of the file, or <b>false</b> to overwrite.</param>
         /// <returns>A stream to write the file data into.</returns>
-        Stream IContentFile.OpenWrite(bool append) => _content.OpenWrite(append);
+        Stream OLDE_IContentFile.OpenWrite(bool append) => _content.OpenWrite(append);
 
         /// <summary>Function to notify that the metadata should be refreshed.</summary>
-        void IContentFile.RefreshMetadata() => NotifyPropertyChanged(nameof(Metadata));
+        void OLDE_IContentFile.RefreshMetadata() => NotifyPropertyChanged(nameof(Metadata));
 
         /// <summary>Function called to refresh the underlying data for the node.</summary>
-        void IContentFile.Refresh()
+        void OLDE_IContentFile.Refresh()
         {
             Refresh();
             NotifyPropertyChanged(nameof(Metadata));
@@ -387,7 +387,7 @@ namespace Gorgon.Editor.ViewModels
         /// This method will close the content forcefully, that is, it will not prompt to save and any changes will be lost.
         /// </para>
         /// </remarks>
-        void IContentFile.CloseContent() => _content.CloseContent();
+        void OLDE_IContentFile.CloseContent() => _content.CloseContent();
 
         /// <summary>
         /// Function to retrieve the size of the data on the physical file system.
@@ -453,17 +453,17 @@ namespace Gorgon.Editor.ViewModels
 
         /// <summary>Function to link a content file to be dependent upon this content.</summary>
         /// <param name="child">The child content to link to this content.</param>
-        void IContentFile.LinkContent(IContentFile child) => _content.LinkContent(child);
+        void OLDE_IContentFile.LinkContent(OLDE_IContentFile child) => _content.LinkContent(child);
 
         /// <summary>Function to unlink a content file from being dependent upon this content.</summary>
         /// <param name="child">The child content to unlink from this content.</param>
-        void IContentFile.UnlinkContent(IContentFile child) => _content.UnlinkContent(child);
+        void OLDE_IContentFile.UnlinkContent(OLDE_IContentFile child) => _content.UnlinkContent(child);
 
         /// <summary>Function to remove all child dependency links from this content.</summary>
-        void IContentFile.ClearLinks() => _content.ClearLinks();
+        void OLDE_IContentFile.ClearLinks() => _content.ClearLinks();
 
         /// <summary>Function to persist the metadata for content.</summary>
-        void IContentFile.SaveMetadata() => _content.SaveMetadata();
+        void OLDE_IContentFile.SaveMetadata() => _content.SaveMetadata();
         #endregion
 
         #region Constructor.
@@ -472,7 +472,7 @@ namespace Gorgon.Editor.ViewModels
         public DependencyNode(IFileExplorerNodeVm parent, IFileExplorerNodeVm node)
         {
             _parent = parent;
-            _content = (IContentFile)node;
+            _content = (OLDE_IContentFile)node;
             _node = node;
             _node.PropertyChanged += Node_PropertyChanged;
             Children = new ObservableCollection<IFileExplorerNodeVm>();

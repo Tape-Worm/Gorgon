@@ -39,6 +39,9 @@ namespace Gorgon.Editor.Metadata
     public class ProjectItemMetadata
     {
         #region Variables.
+#warning FIX ME.
+        // The metadata for a content plugin.
+        private OLDE_IContentPlugInMetadata _oldGetRidOfMe;
         // The metadata for a content plugin.
         private IContentPlugInMetadata _contentMetadata;
         #endregion
@@ -86,6 +89,26 @@ namespace Gorgon.Editor.Metadata
             private set;
         } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
+#warning FIX ME
+        /// <summary>
+        /// Property to return the content plugin metadata associated with this project item.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Setting this value will set the value for <see cref="PlugInName"/>.
+        /// </para>
+        /// </remarks>
+        [JsonIgnore]
+        public OLDE_IContentPlugInMetadata OLDE_ContentMetadata
+        {
+            get => _oldGetRidOfMe;
+            set
+            {
+                PlugInName = value?.PlugInName;
+                _oldGetRidOfMe = value;
+            }
+        }
+
         /// <summary>
         /// Property to return the content plugin metadata associated with this project item.
         /// </summary>
@@ -118,7 +141,7 @@ namespace Gorgon.Editor.Metadata
                 throw new ArgumentNullException(nameof(metadata));
             }
 
-            _contentMetadata = metadata.ContentMetadata;
+            _oldGetRidOfMe = metadata.OLDE_ContentMetadata;
             PlugInName = metadata.PlugInName;
 
             foreach (KeyValuePair<string, string> attribute in metadata.Attributes)

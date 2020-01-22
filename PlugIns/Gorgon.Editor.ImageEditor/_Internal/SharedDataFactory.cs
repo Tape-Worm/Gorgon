@@ -28,6 +28,7 @@ using System;
 using System.Threading;
 using Gorgon.Core;
 using Gorgon.Editor.ImageEditor.Properties;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI.ViewModels;
 using Gorgon.PlugIns;
@@ -41,9 +42,7 @@ namespace Gorgon.Editor.ImageEditor
     {
         #region Variables.
         // A weak reference to the common services in the application.
-        private static WeakReference<IViewModelInjection> _commonServices;
-        // The service used to handling content plug ins.
-        private static WeakReference<IContentPlugInService> _plugInService;
+        private static WeakReference<IHostContentServices> _hostServices;
         // The service used to handling content plug ins.
         // We will keep this alive and undisposed since it's meant to live for the lifetime of the application.
         private static readonly Lazy<GorgonMefPlugInCache> _plugInCache;
@@ -62,7 +61,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <returns>The plug in cache.</returns>
         private static GorgonMefPlugInCache GetPlugInCache()
         {
-            if (!_commonServices.TryGetTarget(out IViewModelInjection commonServices))
+            if (!_hostServices.TryGetTarget(out IHostContentServices commonServices))
             {
                 throw new GorgonException(GorgonResult.CannotCreate);
             }
@@ -76,12 +75,12 @@ namespace Gorgon.Editor.ImageEditor
         /// <returns>The settings for both plug ins.</returns>
         private static ImageEditorSettings LoadSettings()
         {
-            if (!_plugInService.TryGetTarget(out IContentPlugInService plugInService))
+            if (!_hostServices.TryGetTarget(out IHostContentServices commonServices))
             {
                 throw new GorgonException(GorgonResult.CannotCreate);
             }
 
-            ImageEditorSettings settings = plugInService.ReadContentSettings<ImageEditorSettings>(ImageEditorPlugIn.SettingsName);
+            ImageEditorSettings settings = commonServices.ContentPlugInService.ReadContentSettings<ImageEditorSettings>(ImageEditorPlugIn.SettingsName);
 
             if (settings == null)
             {
@@ -97,7 +96,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <returns>The codec registry.</returns>
         private static ICodecRegistry GetCodecRegistry()
         {
-            if (!_commonServices.TryGetTarget(out IViewModelInjection commonServices))
+            if (!_hostServices.TryGetTarget(out IHostContentServices commonServices))
             {
                 throw new GorgonException(GorgonResult.CannotCreate);
             }
@@ -113,8 +112,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <returns>The settings view model.</returns>
         private static ISettings GetSettingsViewModel()
         {
-            if ((!_commonServices.TryGetTarget(out IViewModelInjection commonServices))
-                || (!_plugInService.TryGetTarget(out IContentPlugInService plugInService)))
+            if (!_hostServices.TryGetTarget(out IHostContentServices commonServices))
             {
                 throw new GorgonException(GorgonResult.CannotCreate);
             }
@@ -126,26 +124,24 @@ namespace Gorgon.Editor.ImageEditor
             };
 
             var result = new Settings();
-            result.Initialize(new SettingsParameters(_settingsFactory.Value, _codecRegistryFactory.Value, dialog, plugInService, _plugInCache.Value, commonServices));
+            result.Initialize(new SettingsParameters(_settingsFactory.Value, _codecRegistryFactory.Value, dialog, _plugInCache.Value, commonServices));
             return result;
         }
 
         /// <summary>
         /// Function to retrieve the shared data for the plug ins in this assembly.
         /// </summary>
-        /// <param name="plugInService">The application plug in service.</param>
-        /// <param name="commonServices">The common services for the application.</param>
+        /// <param name="hostServices">The services passed from the host application.</param>
         /// <returns>A tuple containing the shared codec registry and the settings view model.</returns>
-        public static (ICodecRegistry codecRegisry, ISettings settingsViewModel) GetSharedData(IContentPlugInService plugInService, IViewModelInjection commonServices)
+        public static (ICodecRegistry codecRegisry, ISettings settingsViewModel) GetSharedData(IHostContentServices hostServices)
         {
-            Interlocked.CompareExchange(ref _plugInService, new WeakReference<IContentPlugInService>(plugInService), null);
-            Interlocked.CompareExchange(ref _commonServices, new WeakReference<IViewModelInjection>(commonServices), null);
+            Interlocked.CompareExchange(ref _hostServices, new WeakReference<IHostContentServices>(hostServices), null);
             return (_codecRegistryFactory.Value, _settingsViewModelFactory.Value);
         }
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes static members of the <see cref="T:Gorgon.Editor.ImageEditor.SharedDataFactory"/> class.</summary>
+        /// <summary>Initializes static members of the <see cref="SharedDataFactory"/> class.</summary>
         static SharedDataFactory()
         {
             _plugInCache = new Lazy<GorgonMefPlugInCache>(GetPlugInCache, LazyThreadSafetyMode.ExecutionAndPublication);

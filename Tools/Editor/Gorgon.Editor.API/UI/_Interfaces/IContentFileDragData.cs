@@ -36,7 +36,7 @@ namespace Gorgon.Editor.UI
         /// <summary>
         /// Property to return the content file being dragged and dropped.
         /// </summary>
-        IContentFile File
+        OLDE_IContentFile File
         {
             get;
         }

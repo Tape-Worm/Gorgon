@@ -65,7 +65,7 @@ namespace Gorgon.Editor.Views
         }
 
         /// <summary>Property to return the content file being dragged and dropped.</summary>
-        IContentFile IContentFileDragData.File => Node as IContentFile;
+        OLDE_IContentFile IContentFileDragData.File => Node as OLDE_IContentFile;
 
         /// <summary>Property to set or return whether to cancel the drag/drop operation.</summary>
         bool IContentFileDragData.Cancel

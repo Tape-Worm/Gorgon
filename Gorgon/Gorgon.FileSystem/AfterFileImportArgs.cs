@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,35 +20,51 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: January 4, 2019 10:58:00 AM
+// Created: January 25, 2020 10:56:15 AM
 // 
 #endregion
 
-using System.ComponentModel;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.IO
 {
     /// <summary>
-    /// Arguments for the <see cref="OLDE_IEditorContent.CloseContentCommand"/>.
+    /// Event arguments for the <see cref="IGorgonFileSystemWriter{T}.AfterFileImport"/>.
     /// </summary>
-    public class CloseContentArgs
-        : CancelEventArgs
+    public class AfterFileImportArgs
+        : EventArgs
     {
         #region Properties.
         /// <summary>
-        /// Property to return whether or not to check the content for changes prior to closing.
+        /// Property to return the physical file path of the file being imported.
         /// </summary>
-        public bool CheckChanges
+        public string PhysicalFilePath
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the virtual file representing the imported physical file.
+        /// </summary>
+        public IGorgonVirtualFile VirtualFile
         {
             get;
         }
         #endregion
 
         #region Constructor.
-
-        /// <summary>Initializes a new instance of the <see cref="CloseContentArgs"/> class.</summary>
-        /// <param name="checkForChanges"><b>true</b> to check for changes prior to closing, <b>false</b> to skip the check and force a close.</param>
-        public CloseContentArgs(bool checkForChanges) => CheckChanges = checkForChanges;
+        /// <summary>Initializes a new instance of the <see cref="AfterFileImportArgs"/> class.</summary>
+        /// <param name="physicalFilePath">The physical file path to the file being imported.</param>
+        /// <param name="virtualFile">The virtual file representing the physical file that was imported into the file system.</param>
+        public AfterFileImportArgs(string physicalFilePath, IGorgonVirtualFile virtualFile)
+        {
+            PhysicalFilePath = physicalFilePath;
+            VirtualFile = virtualFile;
+        }
         #endregion
     }
 }

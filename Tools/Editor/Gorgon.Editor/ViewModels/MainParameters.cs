@@ -88,7 +88,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return a list of content plug ins that can create their own content.
         /// </summary>
-        public IReadOnlyList<IContentPlugInMetadata> ContentCreators
+        public IReadOnlyList<OLDE_IContentPlugInMetadata> ContentCreators
         {
             get;
         }
@@ -104,7 +104,7 @@ namespace Gorgon.Editor.ViewModels
         public MainParameters(IStageNewVm newProject,
             IRecentVm recent,
             IEditorSettingsVm editorSettings,
-            IReadOnlyList<IContentPlugInMetadata> contentCreators,
+            IReadOnlyList<OLDE_IContentPlugInMetadata> contentCreators,
             ViewModelFactory viewModelFactory,
             IEditorFileOpenDialogService openDialog,
             IEditorFileSaveAsDialogService saveDialog)

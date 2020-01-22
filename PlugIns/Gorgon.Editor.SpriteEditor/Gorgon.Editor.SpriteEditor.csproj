@@ -58,14 +58,17 @@
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="SpriteImporterPlugin.cs" />
+    <Compile Include="_Internal\Services\GorgonSpriteImporter.cs" />
+    <Compile Include="_Internal\ViewModels\ImporterPlugInSettings.cs" />
+    <Compile Include="_Internal\ViewModels\ImportPlugInSettingsParameters.cs" />
+    <Compile Include="__OLDE__\OLDE_SpriteImporterPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="SpriteEditorPlugin.cs" />
+    <Compile Include="__OLDE__\OLDE_SpriteEditorPlugin.cs" />
     <Compile Include="_Internal\CodecRegistry.cs" />
     <Compile Include="_Internal\CodecSetting.cs" />
     <Compile Include="_Internal\Forms\FormRibbon.cs">
@@ -93,15 +96,15 @@
     <Compile Include="_Internal\Services\_Interfaces\ISamplerBuildService.cs" />
     <Compile Include="_Internal\Services\_Interfaces\ISpriteVertexEditService.cs" />
     <Compile Include="_Internal\SpriteEditorSettings.cs" />
-    <Compile Include="_Internal\Services\GorgonSpriteImporter.cs" />
+    <Compile Include="_Internal\Services\__OLDE__\OLDE_GorgonSpriteImporter.cs" />
     <Compile Include="_Internal\Renderers\SpriteContentRenderer.cs" />
     <Compile Include="_Internal\Services\SpriteTextureService.cs" />
     <Compile Include="_Internal\Renderers\_Interfaces\ISpriteContentRenderer.cs" />
     <Compile Include="_Internal\Services\_Interfaces\ISpriteTextureService.cs" />
-    <Compile Include="_Internal\ViewModels\ImporterPlugInSettings.cs" />
+    <Compile Include="_Internal\ViewModels\__OLDE__\OLDE_ImporterPlugInSettings.cs" />
     <Compile Include="_Internal\ViewModels\ManualInputParameters.cs" />
     <Compile Include="_Internal\ViewModels\ManualVertexEditor.cs" />
-    <Compile Include="_Internal\ViewModels\ImportPlugInSettingsParameters.cs" />
+    <Compile Include="_Internal\ViewModels\__OLDE__\OLDE_ImportPlugInSettingsParameters.cs" />
     <Compile Include="_Internal\ViewModels\SpriteAnchorEdit.cs" />
     <Compile Include="_Internal\ViewModels\SpriteColorEdit.cs" />
     <Compile Include="_Internal\ViewModels\SpriteWrappingEditor.cs" />

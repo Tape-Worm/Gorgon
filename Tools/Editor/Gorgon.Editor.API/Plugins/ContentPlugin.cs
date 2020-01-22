@@ -37,6 +37,7 @@ using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
+using Gorgon.Editor.UI.ViewModels;
 using Gorgon.IO;
 using Gorgon.UI;
 
@@ -44,7 +45,18 @@ namespace Gorgon.Editor.PlugIns
 {
     /// <summary>
     /// Defines a plug in used to generate content in the editor.
-    /// </summary>
+    /// </summary>    
+    /// <remarks>
+    /// <para>
+    /// A content editor plug in is used to create editors that will be used create or update content within the host application. Custom content editors can be used to create/update any type of content 
+    /// that the user desires. For example, a tile map editor, shader editor, etc... 
+    /// </para>
+    /// <para>
+    /// The content editor plug in provides an editor object that the host application integrates into its UI. And that editor provided must implement the <see cref="IEditorContent"/> interface. The 
+    /// host application will pass along the required objects to manipulate the file system, access the graphics interface, and other sets of functionality.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="IEditorContent"/>
     public abstract class ContentPlugIn
         : EditorPlugIn
     {
@@ -55,42 +67,38 @@ namespace Gorgon.Editor.PlugIns
 
         #region Properties.
         /// <summary>
-        /// Property to return the plug in service used to manage content plug ins.
+        /// Property to return the services from the host application.
         /// </summary>
-        protected IContentPlugInService ContentPlugInService
+        /// <remarks>
+        /// <para>
+        /// Plug in developers that implement a common plug in type based on this base type, should assign this value to allow access to the common content services supplied by the host application.
+        /// </para>
+        /// <para>
+        /// This will be assigned during the initialization of the plug in.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="IHostServices"/>
+        protected IHostContentServices HostContentServices
         {
             get;
             private set;
         }
 
         /// <summary>
-        /// Property to return the file search service.
+        /// Property to return the manager used to manage files in the project file system.
         /// </summary>
-        protected ISearchService<IGorgonNamedObject> FileSearchService
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the graphics context for the application.
-        /// </summary>
-        protected IGraphicsContext GraphicsContext
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the folder browser used to browse the project file system folder structure.
-        /// </summary>
-        protected IFileSystemFolderBrowseService FolderBrowser
+        /// <remarks>
+        /// Plug ins can use this to create their own directories and files within the confines of project file system.
+        /// </remarks>
+        protected IContentFileManager ContentFileManager
         {
             get;
             private set;
         }
 
         /// <summary>Property to return the type of this plug in.</summary>
+        /// <remarks>The <see cref="PlugIns.PlugInType"/> returned for this property indicates the general plug in functionality.</remarks>
+        /// <seealso cref="PlugIns.PlugInType" />
         public sealed override PlugInType PlugInType => PlugInType.Content;
 
         /// <summary>
@@ -107,6 +115,15 @@ namespace Gorgon.Editor.PlugIns
         /// <summary>
         /// Property to return the ID for the type of content produced by this plug in.
         /// </summary>
+        /// <remarks>
+        /// <para>
+        /// The content type ID is defined by the plug in author and is used to match up content with the plug in. This value should be as unique as possible.
+        /// </para>
+        /// <para>
+        /// If the plug in creates an editor that is used to create some kind of common content type like an Image, or Sprite, the user can elect to use the <see cref="CommonEditorContentTypes"/>. 
+        /// If the plug in author uses this list of types to return the content type ID, then they should disable the content plug ins that come with Gorgon and have the same ID.
+        /// </para>
+        /// </remarks>
         public abstract string ContentTypeID
         {
             get;
@@ -128,7 +145,7 @@ namespace Gorgon.Editor.PlugIns
                 Directory.CreateDirectory(scratchPath);
             }
 
-            var scratchArea = new GorgonFileSystem(CommonServices.Log);
+            var scratchArea = new GorgonFileSystem(HostServices.Log);
             scratchArea.Mount(scratchPath);
             return new GorgonFileSystemWriter(scratchArea, scratchArea, scratchPath);
         }
@@ -175,6 +192,22 @@ namespace Gorgon.Editor.PlugIns
         /// <typeparam name="T">The type of object being searched, must implement <see cref="IGorgonNamedObject"/>.</typeparam>
         /// <param name="searchService">The search service to use for registration.</param>
         protected abstract void OnRegisterSearchKeywords<T>(ISearchService<T> searchService) where T : IGorgonNamedObject;
+
+        /// <summary>
+        /// Function to allow custom plug ins to implement custom actions when a project is created/opened.
+        /// </summary>
+        protected virtual void OnProjectOpened()
+        {
+        
+        }
+
+        /// <summary>
+        /// Function to allow custom plug ins to implement custom actions when a project is closed.
+        /// </summary>
+        protected virtual void OnProjectClosed()
+        {
+        
+        }
 
         /// <summary>Function to retrieve the default content name, and data.</summary>
         /// <param name="generatedName">A default name generated by the application.</param>
@@ -308,49 +341,64 @@ namespace Gorgon.Editor.PlugIns
         /// </summary>
         public void Shutdown()
         {
-            CommonServices = null;
+            HostServices = null;
+            
             int initalizedFlag = Interlocked.Exchange(ref _initialized, 0);
 
             if (initalizedFlag == 0)
             {
                 return;
             }
-
+                        
             OnShutdown();
+            ProjectClosed();
+        }
+
+        /// <summary>
+        /// Function called when a project is loaded/created.
+        /// </summary>
+        /// <param name="fileManager">The file manager for the project.</param>
+        public void ProjectOpened(IContentFileManager fileManager)
+        {
+            ContentFileManager = fileManager;
+            OnProjectOpened();
+        }
+
+        /// <summary>
+        /// Function called when a project is unloaded.
+        /// </summary>
+        public void ProjectClosed()
+        {
+            OnProjectClosed();
+            ContentFileManager = null;            
         }
 
         /// <summary>
         /// Function to perform any required initialization for the plugin.
         /// </summary>
-        /// <param name="pluginService">The plugin service used to access other plugins.</param>                
-        /// <param name="graphicsContext">The graphics context for the application.</param>
-        /// <param name="folderBrowser">The file system folder browser.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginService"/>, <paramref name="graphicsContext"/>, or the <paramref name="folderBrowser"/> parameter is <b>null</b>.</exception>
+        /// <param name="hostServices">The services passed from the host application to the content plug in.</param>                
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="hostServices"/> parameter is <b>null</b>.</exception>
         /// <remarks>
         /// <para>
         /// This method is only called when the plugin is loaded at startup.
         /// </para>
         /// </remarks>
-        public void Initialize(IContentPlugInService pluginService, IGraphicsContext graphicsContext, IFileSystemFolderBrowseService folderBrowser)
+        public void Initialize(IHostContentServices hostServices)
         {
             if (Interlocked.Exchange(ref _initialized, 1) == 1)
             {
                 return;
             }
 
-            ContentPlugInService = pluginService ?? throw new ArgumentNullException(nameof(pluginService));
-
-            CommonServices.Log.Print($"Initializing {Name}...", LoggingLevel.Simple);
-
-            GraphicsContext = graphicsContext ?? throw new ArgumentNullException(nameof(graphicsContext));
-            FolderBrowser = folderBrowser ?? throw new ArgumentNullException(nameof(folderBrowser));
+            HostServices = HostContentServices = hostServices ?? throw new ArgumentNullException(nameof(hostServices));
+            HostContentServices.Log.Print($"Initializing {Name}...", LoggingLevel.Simple);
 
             OnInitialize();
         }
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the ContentPlugIn class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="ContentPlugIn"/> class.</summary>
         /// <param name="description">Optional description of the plugin.</param>
         protected ContentPlugIn(string description)
             : base(description)

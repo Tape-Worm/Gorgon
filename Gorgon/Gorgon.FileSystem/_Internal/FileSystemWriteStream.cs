@@ -26,6 +26,7 @@
 
 using System;
 using System.IO;
+using System.Threading;
 
 namespace Gorgon.IO
 {
@@ -35,7 +36,17 @@ namespace Gorgon.IO
     internal class FileSystemWriteStream
         : FileStream
     {
+        #region Variables.
+        // The length of the stream, in bytes.
+        private long _length;
+        // Flag to indicate that the stream is disposed.
+        private int _disposed;
+        #endregion
+
         #region Properties.
+        /// <summary>Gets the length in bytes of the stream.</summary>
+        public override long Length => (_disposed == 0) ? base.Length : _length;
+
         /// <summary>
         /// Property to set or return the callback to execute once the stream is closed.
         /// </summary>
@@ -57,11 +68,21 @@ namespace Gorgon.IO
             {
                 if (disposing)
                 {
-                    Flush();
-                    OnCloseCallback?.Invoke(this);
+                    if (Interlocked.Exchange(ref _disposed, 1) == 1)
+                    {
+                        base.Dispose(disposing);
+                        return;
+                    }
+
+                    Interlocked.Exchange(ref _length, Length);
                 }
 
                 base.Dispose(disposing);
+
+                if (disposing)
+                {                    
+                    OnCloseCallback?.Invoke(this);
+                }
             }
             finally
             {

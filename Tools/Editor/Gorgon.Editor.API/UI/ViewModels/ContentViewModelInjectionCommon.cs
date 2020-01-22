@@ -26,6 +26,7 @@
 
 using System;
 using Gorgon.Editor.Content;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI.ViewModels;
 
 namespace Gorgon.Editor.UI
@@ -47,6 +48,13 @@ namespace Gorgon.Editor.UI
         /// <param name="commonServices">The common services for the application.</param>
         /// <exception cref="ArgumentNullException">Thrown any of the parameters are <b>null</b></exception>
         public ContentViewModelInjectionCommon(IContentFile file, IViewModelInjection commonServices)
+            : base(commonServices) => File = file ?? throw new ArgumentNullException(nameof(file));
+
+        /// <summary>Initializes a new instance of the ContentViewModelInjectionCommon class.</summary>
+        /// <param name="file">The file that contains the content.</param>        
+        /// <param name="commonServices">The common services for the application.</param>
+        /// <exception cref="ArgumentNullException">Thrown any of the parameters are <b>null</b></exception>
+        public ContentViewModelInjectionCommon(IContentFile file, IHostContentServices commonServices)
             : base(commonServices) => File = file ?? throw new ArgumentNullException(nameof(file));
     }
 }

@@ -46,7 +46,7 @@ namespace Gorgon.Editor.ViewModels
     /// A node for a file system file.
     /// </summary>
     internal class FileExplorerFileNodeVm
-        : FileExplorerNodeCommon, IContentFile
+        : FileExplorerNodeCommon, OLDE_IContentFile
     {
         #region Variables.
         // Flag to indicate whether the node is open for editing.
@@ -54,7 +54,7 @@ namespace Gorgon.Editor.ViewModels
         // The file system information object.
         private FileInfo _fileInfo;
         // The list of content file dependent upon this file.
-        private readonly ObservableCollection<IContentFile> _dependencies;
+        private readonly ObservableCollection<OLDE_IContentFile> _dependencies;
         #endregion
 
         #region Events.
@@ -94,7 +94,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the image name to use for the node type.
         /// </summary>
-        public override string ImageName => Metadata?.ContentMetadata == null ? "generic_file_20x20.png" : Metadata.ContentMetadata.SmallIconID.ToString("N");
+        public override string ImageName => Metadata?.OLDE_ContentMetadata == null ? "generic_file_20x20.png" : Metadata.OLDE_ContentMetadata.SmallIconID.ToString("N");
 
         /// <summary>
         /// Property to return whether or not the allow this node to be deleted.
@@ -105,13 +105,13 @@ namespace Gorgon.Editor.ViewModels
         public override bool IsContent => true;
 
         /// <summary>Property to return the path to the file.</summary>
-        string IContentFile.Path => FullPath;
+        string OLDE_IContentFile.Path => FullPath;
 
         /// <summary>Property to return the extension for the file.</summary>
-        string IContentFile.Extension => Path.GetExtension(Name);
+        string OLDE_IContentFile.Extension => Path.GetExtension(Name);
 
         /// <summary>Property to return the plugin associated with the file.</summary>
-        ContentPlugIn IContentFile.ContentPlugIn => Metadata?.ContentMetadata as ContentPlugIn;
+        OLDE_ContentPlugIn OLDE_IContentFile.ContentPlugIn => Metadata?.OLDE_ContentMetadata as OLDE_ContentPlugIn;
 
         /// <summary>Property to set or return the metadata for the node.</summary>
         public override ProjectItemMetadata Metadata
@@ -150,7 +150,7 @@ namespace Gorgon.Editor.ViewModels
         public override string PhysicalPath => Parent == null ? null : Path.Combine(Parent.PhysicalPath, Name);
 
         /// <summary>Property to return the list of items dependent upon this node</summary>
-        IReadOnlyList<IContentFile> IContentFile.Dependencies => _dependencies;
+        IReadOnlyList<OLDE_IContentFile> OLDE_IContentFile.Dependencies => _dependencies;
         #endregion
 
         #region Methods.
@@ -162,7 +162,7 @@ namespace Gorgon.Editor.ViewModels
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    foreach (IContentFile file in e.NewItems.OfType<IContentFile>())
+                    foreach (OLDE_IContentFile file in e.NewItems.OfType<OLDE_IContentFile>())
                     {
                         if (Dependencies.Any(item => string.Equals(item.FullPath, file.Path, StringComparison.OrdinalIgnoreCase)))
                         {
@@ -173,7 +173,7 @@ namespace Gorgon.Editor.ViewModels
                     }
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    foreach (IContentFile file in e.OldItems.OfType<IContentFile>())
+                    foreach (OLDE_IContentFile file in e.OldItems.OfType<OLDE_IContentFile>())
                     {
                         IFileExplorerNodeVm node = Dependencies.FirstOrDefault(item => string.Equals(item.FullPath, file.Path, StringComparison.OrdinalIgnoreCase));
 
@@ -204,7 +204,7 @@ namespace Gorgon.Editor.ViewModels
                 case NotifyCollectionChangedAction.Add:
                     foreach (IFileExplorerNodeVm node in e.NewItems.OfType<IFileExplorerNodeVm>())
                     {
-                        if ((!(node is IContentFile file))
+                        if ((!(node is OLDE_IContentFile file))
                             || (_dependencies.Any(item => string.Equals(node.FullPath, item.Path, StringComparison.OrdinalIgnoreCase))))
                         {
                             continue;
@@ -216,7 +216,7 @@ namespace Gorgon.Editor.ViewModels
                 case NotifyCollectionChangedAction.Remove:
                     foreach (IFileExplorerNodeVm node in e.OldItems.OfType<IFileExplorerNodeVm>())
                     {
-                        IContentFile file = _dependencies.FirstOrDefault(item => string.Equals(item.Path, node.FullPath, StringComparison.OrdinalIgnoreCase));
+                        OLDE_IContentFile file = _dependencies.FirstOrDefault(item => string.Equals(item.Path, node.FullPath, StringComparison.OrdinalIgnoreCase));
 
                         if (file == null)
                         {
@@ -351,7 +351,7 @@ namespace Gorgon.Editor.ViewModels
 
                 // If we have a source file, remove it.
                 if ((Metadata != null)
-                    && (Metadata.Attributes.TryGetValue(ContentImportPlugIn.ImportOriginalFileNameAttr, out string sourcePath)))
+                    && (Metadata.Attributes.TryGetValue(OLDE_ContentImportPlugIn.ImportOriginalFileNameAttr, out string sourcePath)))
                 {
                     var sourceFile = new FileInfo(Path.Combine(Project.SourceDirectory.FullName, sourcePath));
 
@@ -758,7 +758,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="child">The child content to link to this content.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="child"/> parameter is <b>null.</b></exception>
-        void IContentFile.LinkContent(IContentFile child)
+        void OLDE_IContentFile.LinkContent(OLDE_IContentFile child)
         {
             if (child == null)
             {
@@ -778,14 +778,14 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="child">The child content to unlink from this content.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="child"/> parameter is <b>null.</b></exception>
-        void IContentFile.UnlinkContent(IContentFile child)
+        void OLDE_IContentFile.UnlinkContent(OLDE_IContentFile child)
         {
             if (child == null)
             {
                 throw new ArgumentNullException(nameof(child));
             }
 
-            IContentFile actualItem = _dependencies.FirstOrDefault(item => string.Equals(child.Path, item.Path, StringComparison.OrdinalIgnoreCase));
+            OLDE_IContentFile actualItem = _dependencies.FirstOrDefault(item => string.Equals(child.Path, item.Path, StringComparison.OrdinalIgnoreCase));
             if (actualItem == null)
             {
                 return;
@@ -797,7 +797,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to remove all child dependency links from this content.
         /// </summary>
-        void IContentFile.ClearLinks()
+        void OLDE_IContentFile.ClearLinks()
         {
             if (_dependencies.Count == 0)
             {
@@ -810,7 +810,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function to persist the metadata for content.
         /// </summary>
-        void IContentFile.SaveMetadata()
+        void OLDE_IContentFile.SaveMetadata()
         {
             EventHandler handler = DependenciesUpdated;
             handler?.Invoke(this, EventArgs.Empty);
@@ -818,21 +818,21 @@ namespace Gorgon.Editor.ViewModels
 
         /// <summary>Function to open the file for reading.</summary>
         /// <returns>A stream containing the file data.</returns>
-        Stream IContentFile.OpenRead() => File.Open(PhysicalPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        Stream OLDE_IContentFile.OpenRead() => File.Open(PhysicalPath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
         /// <summary>
         /// Function to open the file for writing.
         /// </summary>
         /// <param name="append">[Optional] <b>true</b> to append data to the end of the file, or <b>false</b> to overwrite.</param>
         /// <returns>A stream to write the file data into.</returns>
-        Stream IContentFile.OpenWrite(bool append) => File.Open(PhysicalPath, append ? FileMode.Append : FileMode.Create, FileAccess.Write, FileShare.None);
+        Stream OLDE_IContentFile.OpenWrite(bool append) => File.Open(PhysicalPath, append ? FileMode.Append : FileMode.Create, FileAccess.Write, FileShare.None);
 
 
         /// <summary>Function to notify that the metadata should be refreshed.</summary>
-        void IContentFile.RefreshMetadata() => NotifyPropertyChanged(nameof(Metadata));
+        void OLDE_IContentFile.RefreshMetadata() => NotifyPropertyChanged(nameof(Metadata));
 
         /// <summary>Function called to refresh the underlying data for the node.</summary>
-        void IContentFile.Refresh()
+        void OLDE_IContentFile.Refresh()
         {
             Refresh();
             NotifyPropertyChanged(nameof(Metadata));
@@ -846,7 +846,7 @@ namespace Gorgon.Editor.ViewModels
         /// This method will close the content forcefully, that is, it will not prompt to save and any changes will be lost.
         /// </para>
         /// </remarks>
-        void IContentFile.CloseContent()
+        void OLDE_IContentFile.CloseContent()
         {
             IsOpen = false;
             EventHandler handler = Closed;
@@ -885,7 +885,7 @@ namespace Gorgon.Editor.ViewModels
         internal FileExplorerFileNodeVm(FileExplorerFileNodeVm copy)
             : base(copy)
         {
-            _dependencies = new ObservableCollection<IContentFile>();
+            _dependencies = new ObservableCollection<OLDE_IContentFile>();
             _dependencies.CollectionChanged += ContentDependencies_CollectionChanged;
             Dependencies.CollectionChanged += Dependencies_CollectionChanged;
         }
@@ -895,7 +895,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         public FileExplorerFileNodeVm()
         {
-            _dependencies = new ObservableCollection<IContentFile>();
+            _dependencies = new ObservableCollection<OLDE_IContentFile>();
             _dependencies.CollectionChanged += ContentDependencies_CollectionChanged;
             Dependencies.CollectionChanged += Dependencies_CollectionChanged;
         }

@@ -58,31 +58,48 @@ namespace Gorgon.Editor.PlugIns
         #region Variables.
         // Flag to indicate that the plugin is initialized.
         private int _initialized;
+        // Tool services passed in from the host application.
+        private IHostToolServices _hostToolServices;
         #endregion
 
         #region Properties.
         /// <summary>
-        /// Property to return the plug in service used to manage tool plug ins.
+        /// Property to return the services from the host application.
         /// </summary>
-        protected IToolPlugInService ToolPlugInService
+        /// <remarks>
+        /// <para>
+        /// Plug in developers that implement a common plug in type based on this base type, should assign this value to allow access to the common tool services supplied by the host application.
+        /// </para>
+        /// <para>
+        /// This will be assigned during the initialization of the plug in.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="IHostServices"/>
+        protected IHostToolServices HostToolServices
+        {
+            get => _hostToolServices;
+            private set => HostServices = _hostToolServices = value;
+        }
+
+        /// <summary>
+        /// Property to return the manager used to manage files in the project file system.
+        /// </summary>
+        /// <remarks>
+        /// Plug ins can use this to create their own directories and files within the confines of project file system.
+        /// </remarks>
+        protected IContentFileManager ContentFileManager
         {
             get;
             private set;
         }
 
         /// <summary>
-        /// Property to return the graphics context for the application.
+        /// Property to return the file system used to hold temporary file data.
         /// </summary>
-        protected IGraphicsContext GraphicsContext
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the folder browser used to browse the project file system folder structure.
-        /// </summary>
-        protected IFileSystemFolderBrowseService FolderBrowser
+        /// <remarks>
+        /// Importer plug ins can use this to write temporary working data, which is deleted after the project unloads, for use during the import process.
+        /// </remarks>
+        protected IGorgonFileSystemWriter<Stream> TemporaryFileSystem
         {
             get;
             private set;
@@ -107,9 +124,25 @@ namespace Gorgon.Editor.PlugIns
                 Directory.CreateDirectory(scratchPath);
             }
 
-            var scratchArea = new GorgonFileSystem(CommonServices.Log);
+            var scratchArea = new GorgonFileSystem(HostServices.Log);
             scratchArea.Mount(scratchPath);
             return new GorgonFileSystemWriter(scratchArea, scratchArea, scratchPath);
+        }
+
+        /// <summary>
+        /// Function to allow custom plug ins to implement custom actions when a project is created/opened.
+        /// </summary>
+        protected virtual void OnProjectOpened()
+        {
+
+        }
+
+        /// <summary>
+        /// Function to allow custom plug ins to implement custom actions when a project is closed.
+        /// </summary>
+        protected virtual void OnProjectClosed()
+        {
+
         }
 
         /// <summary>
@@ -157,6 +190,25 @@ namespace Gorgon.Editor.PlugIns
         protected abstract IToolPlugInRibbonButton OnGetToolButton(IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> scratchArea);
 
         /// <summary>
+        /// Function called when a project is loaded/created.
+        /// </summary>
+        /// <param name="tempFileSystem">The file system used to hold temporary working data.</param>
+        public void ProjectOpened(IGorgonFileSystemWriter<Stream> tempFileSystem)
+        {
+            TemporaryFileSystem = tempFileSystem;
+            OnProjectOpened();
+        }
+
+        /// <summary>
+        /// Function called when a project is unloaded.
+        /// </summary>
+        public void ProjectClosed()
+        {
+            OnProjectClosed();
+            TemporaryFileSystem = null;
+        }
+
+        /// <summary>
         /// Function to retrieve the ribbon button for the tool.
         /// </summary>
         /// <param name="project">The project data.</param>
@@ -190,43 +242,42 @@ namespace Gorgon.Editor.PlugIns
         /// </summary>
         public void Shutdown()
         {
-            CommonServices = null;
-            int initalizedFlag = Interlocked.Exchange(ref _initialized, 0);
-
-            if (initalizedFlag == 0)
+            if (Interlocked.Exchange(ref _initialized, 0) == 0)
             {
                 return;
             }
 
             OnShutdown();
+            ProjectClosed();
+
+            HostToolServices = null;
         }
 
 
         /// <summary>
         /// Function to perform any required initialization for the plugin.
         /// </summary>
-        /// <param name="pluginService">The plugin service used to access other plugins.</param>                
-        /// <param name="graphicsContext">The graphics context for the application.</param>
-        /// <param name="folderBrowser">The file system folder browser.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginService"/>, <paramref name="graphicsContext"/>, or the <paramref name="folderBrowser"/> parameter is <b>null</b>.</exception>
+        /// <param name="hostServices">The services from the host application.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="hostServices"/> parameter is <b>null</b>.</exception>
         /// <remarks>
         /// <para>
         /// This method is only called when the plugin is loaded at startup.
         /// </para>
         /// </remarks>
-        public void Initialize(IToolPlugInService pluginService, IGraphicsContext graphicsContext, IFileSystemFolderBrowseService folderBrowser)
+        public void Initialize(IHostToolServices hostServices)
         {
+            if (hostServices == null)
+            {
+                throw new ArgumentNullException(nameof(hostServices));
+            }
+
             if (Interlocked.Exchange(ref _initialized, 1) == 1)
             {
                 return;
             }
 
-            ToolPlugInService = pluginService ?? throw new ArgumentNullException(nameof(pluginService));
-
-            CommonServices.Log.Print($"Initializing {Name}...", LoggingLevel.Simple);
-
-            GraphicsContext = graphicsContext ?? throw new ArgumentNullException(nameof(graphicsContext));
-            FolderBrowser = folderBrowser ?? throw new ArgumentNullException(nameof(folderBrowser));
+            HostToolServices = hostServices;
+            HostServices.Log.Print($"Initializing {Name}...", LoggingLevel.Simple);
 
             OnInitialize();
         }

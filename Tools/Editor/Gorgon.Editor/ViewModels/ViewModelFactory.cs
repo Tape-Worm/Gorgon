@@ -161,7 +161,7 @@ namespace Gorgon.Editor.ViewModels
                 {
                     parent.Children.Add(openFile);
                     openFile.Refresh();
-                    (openFile as IContentFile)?.RefreshMetadata();
+                    (openFile as OLDE_IContentFile)?.RefreshMetadata();
                 }
                 return openFile;
             }
@@ -273,12 +273,12 @@ namespace Gorgon.Editor.ViewModels
         /// Function to enumerate the content plug ins that can create their own content.
         /// </summary>
         /// <returns>A list of plugins that can create their own content.</returns>
-        private IReadOnlyList<IContentPlugInMetadata> EnumerateContentCreators()
+        private IReadOnlyList<OLDE_IContentPlugInMetadata> EnumerateContentCreators()
         {
-            IEnumerable<IContentPlugInMetadata> filteredPlugIns = ContentPlugIns.PlugIns.Where(item => item.Value.CanCreateContent)
+            IEnumerable<OLDE_IContentPlugInMetadata> filteredPlugIns = ContentPlugIns.PlugIns.Where(item => item.Value.CanCreateContent)
                                                                                         .Select(item => item.Value)
-                                                                                        .OfType<IContentPlugInMetadata>();
-            return new List<IContentPlugInMetadata>(filteredPlugIns);
+                                                                                        .OfType<OLDE_IContentPlugInMetadata>();
+            return new List<OLDE_IContentPlugInMetadata>(filteredPlugIns);
         }
 
         /// <summary>
@@ -286,7 +286,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="plugin">The plug in to retrieve data from.</param>
         /// <returns>The view model.</returns>
-        private ISettingsPlugInListItem GetPlugInListItem(EditorPlugIn plugin)
+        private ISettingsPlugInListItem GetPlugInListItem(OLDE_EditorPlugIn plugin)
         {
             var result = new SettingsPlugInListItem();
             result.Initialize(new SettingsPlugInListItemParameters(plugin, _viewModelInjection));
@@ -346,12 +346,12 @@ namespace Gorgon.Editor.ViewModels
         {
             var result = new List<ISettingsCategoryViewModel>();
 
-            IEnumerable<EditorPlugIn> plugins = FileSystemProviders.Writers.Select(item => (EditorPlugIn)item.Value)
+            IEnumerable<OLDE_EditorPlugIn> plugins = FileSystemProviders.Writers.Select(item => (OLDE_EditorPlugIn)item.Value)
                 .Concat(ContentPlugIns.PlugIns.Select(item => item.Value))
                 .Concat(ContentPlugIns.Importers.Select(item => item.Value))
                 .Concat(ToolPlugIns.PlugIns.Select(item => item.Value));
 
-            foreach (EditorPlugIn plugin in plugins)
+            foreach (OLDE_EditorPlugIn plugin in plugins)
             {
                 ISettingsCategoryViewModel settings = plugin.GetPlugInSettings();
 
@@ -532,7 +532,7 @@ namespace Gorgon.Editor.ViewModels
                                                         this));
 
             // Walk through the content plug ins and register custom search keywords.
-            foreach (ContentPlugIn plugin in ContentPlugIns.PlugIns.Values)
+            foreach (OLDE_ContentPlugIn plugin in ContentPlugIns.PlugIns.Values)
             {
                 plugin.RegisterSearchKeywords(search);
             }
@@ -549,7 +549,7 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="content">The content object referenced by the dependency node.</param>
         /// <returns>A new dependency node.</returns>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public DependencyNode CreateDependencyNode(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parentNode, IContentFile content)
+        public DependencyNode CreateDependencyNode(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parentNode, OLDE_IContentFile content)
         {
             if (project == null)
             {

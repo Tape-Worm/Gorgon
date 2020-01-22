@@ -527,7 +527,7 @@ Please try again.</value>
   <data name="GORIMG_UNDO_DESC_SET_ALPHA" xml:space="preserve">
     <value>Set alpha value</value>
   </data>
-  <data name="GORSPR_CONTENT_TYPE" xml:space="preserve">
+  <data name="GORIMG_CONTENT_TYPE" xml:space="preserve">
     <value>Image</value>
   </data>
 </root>

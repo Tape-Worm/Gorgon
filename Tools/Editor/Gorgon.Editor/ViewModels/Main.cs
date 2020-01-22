@@ -83,7 +83,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return a list of content plugins that can create their own content.
         /// </summary>
-        public ObservableCollection<IContentPlugInMetadata> ContentCreators
+        public ObservableCollection<OLDE_IContentPlugInMetadata> ContentCreators
         {
             get;
             private set;
@@ -273,7 +273,7 @@ namespace Gorgon.Editor.ViewModels
 
             _directoryLocator = injectionParameters.ViewModelFactory.DirectoryLocator;
 
-            ContentCreators = new ObservableCollection<IContentPlugInMetadata>(injectionParameters.ContentCreators ?? throw new ArgumentMissingException(nameof(MainParameters.ContentCreators), nameof(injectionParameters)));
+            ContentCreators = new ObservableCollection<OLDE_IContentPlugInMetadata>(injectionParameters.ContentCreators ?? throw new ArgumentMissingException(nameof(MainParameters.ContentCreators), nameof(injectionParameters)));
             RecentFiles.OpenProjectCommand = new EditorCommand<RecentItem>(DoOpenRecentAsync, CanOpenRecent);
             NewProject.CreateProjectCommand = new EditorCommand<object>(DoCreateProjectAsync, CanCreateProject);
         }
@@ -641,7 +641,7 @@ namespace Gorgon.Editor.ViewModels
         {
             var cancelSource = new CancellationTokenSource();
             FileInfo projectFile = null;
-            FileWriterPlugIn writer = null;
+            OLDE_FileWriterPlugIn writer = null;
 
             try
             {
@@ -837,7 +837,7 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="contentID">The ID of the content type based on its new icon ID.</param>
         private async void DoCreateContentAsync(string contentID)
         {
-            IContentFile contentFile = null;
+            OLDE_IContentFile contentFile = null;
 
             try
             {
@@ -846,13 +846,13 @@ namespace Gorgon.Editor.ViewModels
                     throw new GorgonException(GorgonResult.CannotCreate, Resources.GOREDIT_ERR_INVALID_CONTENT_TYPE_ID);
                 }
 
-                IContentPlugInMetadata metaData = ContentCreators.FirstOrDefault(item => guid == item.NewIconID);
+                OLDE_IContentPlugInMetadata metaData = ContentCreators.FirstOrDefault(item => guid == item.NewIconID);
 
                 Debug.Assert(metaData != null, $"Could not locate the content plugin metadata for {contentID}.");
 
                 ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_CREATING_CONTENT, metaData.ContentType));
 
-                ContentPlugIn plugin = _viewModelFactory.ContentPlugIns.PlugIns.FirstOrDefault(item => item.Value == metaData).Value;
+                OLDE_ContentPlugIn plugin = _viewModelFactory.ContentPlugIns.PlugIns.FirstOrDefault(item => item.Value == metaData).Value;
 
                 Debug.Assert(plugin != null, $"Could not locate the content plug in for {contentID}.");
 

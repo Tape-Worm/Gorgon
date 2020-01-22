@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,51 +20,58 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: December 22, 2018 11:36:11 PM
+// Created: January 22, 2020 10:28:50 PM
 // 
 #endregion
 
-using System.IO;
-using Gorgon.Editor.Content;
+using Gorgon.Diagnostics;
+using Gorgon.Editor.Rendering;
+using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
-using Gorgon.Graphics.Imaging;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.PlugIns
 {
     /// <summary>
-    /// The view model for the content preview window.
+    /// A list of services passed from the host application to plug ins.
     /// </summary>
-    internal interface IContentPreviewVm
-        : IViewModel
+    public interface IHostServices        
     {
         /// <summary>
-        /// Property to return the thumbnail directory.
+        /// Property to return the log for debug messages.
         /// </summary>
-        DirectoryInfo ThumbnailDirectory
+        IGorgonLog Log
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the preview image to display.
+        /// Property to return the serivce used to show busy states.
         /// </summary>
-        IGorgonImage PreviewImage
+        IBusyStateService BusyService
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the title for the previewed content.
+        /// Property to return the service used to show message dialogs.
         /// </summary>
-        string Title
+        IMessageDisplayService MessageDisplay
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the command used to refresh the preview image.
+        /// Property to return the clipboard handler for the view model.
         /// </summary>
-        IEditorAsyncCommand<OLDE_IContentFile> RefreshPreviewCommand
+        IClipboardService Clipboard
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the graphics and the 2D renderer used by the host application.
+        /// </summary>
+        IGraphicsContext GraphicsContext
         {
             get;
         }

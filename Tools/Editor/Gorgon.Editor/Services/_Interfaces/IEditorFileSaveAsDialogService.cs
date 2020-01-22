@@ -53,7 +53,7 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Property to set or return the currently active file writer plugin.
         /// </summary>
-        FileWriterPlugIn CurrentWriter
+        OLDE_FileWriterPlugIn CurrentWriter
         {
             get;
             set;

@@ -44,13 +44,13 @@ namespace Gorgon.Editor.ExtractSpriteTool
     /// A plug in used to extract sprites from a texture atlas by using an adjustable grid.
     /// </summary>
     internal class ExtractSpriteToolPlugIn
-        : ToolPlugIn
+        : OLDE_ToolPlugIn
     {
         #region Variables.
         // The cached button definition.
         private ToolPlugInRibbonButton _button;
         // The project file manager.
-        private IContentFileManager _fileManager;
+        private OLDE_IContentFileManager _fileManager;
         // The default image codec to use.
         private IGorgonImageCodec _defaultImageCodec;
         // Data used for extracting sprites.
@@ -116,7 +116,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
             Stream fileStream = null;
             ExtractSpriteToolSettings settings;
             IGorgonImage image = null;
-            IContentFile textureFile;
+            OLDE_IContentFile textureFile;
 
             CommonServices.BusyService.SetBusy();
 
@@ -212,7 +212,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// written to this area will be deleted on application shut down. So do not rely on this data being there on the next start up.
         /// </para>
         /// </remarks>
-        protected override IToolPlugInRibbonButton OnGetToolButton(IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> scratchArea)
+        protected override IToolPlugInRibbonButton OnGetToolButton(OLDE_IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> scratchArea)
         {
             _fileManager = fileManager;
 

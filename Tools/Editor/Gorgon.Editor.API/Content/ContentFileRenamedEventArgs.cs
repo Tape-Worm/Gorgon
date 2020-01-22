@@ -29,7 +29,7 @@ using System;
 namespace Gorgon.Editor.Content
 {
     /// <summary>
-    /// Event parameters for the <see cref="IContentFile.Renamed"/> event.
+    /// Event parameters for the <see cref="OLDE_IContentFile.Renamed"/> event.
     /// </summary>
     public class ContentFileRenamedEventArgs
         : EventArgs

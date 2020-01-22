@@ -74,7 +74,7 @@ namespace Gorgon.Editor.Services
         /// <param name="forceScan">[Optional] <b>true</b> to force the scan, even if content metadata is already available, or <b>false</b> to skip files with content metadata already.</param>
         /// <returns><b>true</b> if the content plugin metadata was updated, <b>false</b> if not.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="node"/>, <paramref name="contentFileManager"/> or the <paramref name="scanProgress"/> parameter is <b>null</b>.</exception>        
-        public bool Scan(IFileExplorerNodeVm node, IContentFileManager contentFileManager, Action<string, int, int> scanProgress, bool deepScan, bool forceScan = false)
+        public bool Scan(IFileExplorerNodeVm node, OLDE_IContentFileManager contentFileManager, Action<string, int, int> scanProgress, bool deepScan, bool forceScan = false)
         {
             if (node == null)
             {
@@ -97,7 +97,7 @@ namespace Gorgon.Editor.Services
             if (node.Children.Count > 0)
             {
                 contentFiles = node.Children.Traverse(n => n.Children)
-                                             .Where(n => ((n.Metadata != null) && (n.IsContent) && ((forceScan) || (n.Metadata.ContentMetadata == null))));
+                                             .Where(n => ((n.Metadata != null) && (n.IsContent) && ((forceScan) || (n.Metadata.OLDE_ContentMetadata == null))));
                 fileCount = contentFiles.Count();
             }
             else
@@ -115,13 +115,13 @@ namespace Gorgon.Editor.Services
             int count = 0;
             var prevDeps = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-            foreach (IContentFile contentFile in contentFiles.OfType<IContentFile>())
+            foreach (OLDE_IContentFile contentFile in contentFiles.OfType<OLDE_IContentFile>())
             {
                 string pluginName = contentFile.Metadata.PlugInName;
 
                 if (forceScan)
                 {
-                    contentFile.Metadata.ContentMetadata = null;
+                    contentFile.Metadata.OLDE_ContentMetadata = null;
                     contentFile.Metadata.DependsOn.Clear();
                 }
 

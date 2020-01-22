@@ -64,7 +64,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the content file created.
         /// </summary>
-        public IContentFile ContentFile => Node as IContentFile;
+        public OLDE_IContentFile ContentFile => Node as OLDE_IContentFile;
 
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ViewModels.CreateContentFileArgs"/> class.</summary>
         /// <param name="parent">The parent of the content file.</param>
