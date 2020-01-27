@@ -192,9 +192,11 @@ namespace Gorgon.Editor.PlugIns
         /// <summary>
         /// Function called when a project is loaded/created.
         /// </summary>
+        /// <param name="fileManager">The file manager for the project file system.</param>
         /// <param name="tempFileSystem">The file system used to hold temporary working data.</param>
-        public void ProjectOpened(IGorgonFileSystemWriter<Stream> tempFileSystem)
+        public void ProjectOpened(IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> tempFileSystem)
         {
+            ContentFileManager = fileManager;
             TemporaryFileSystem = tempFileSystem;
             OnProjectOpened();
         }
@@ -206,6 +208,7 @@ namespace Gorgon.Editor.PlugIns
         {
             OnProjectClosed();
             TemporaryFileSystem = null;
+            ContentFileManager = null;
         }
 
         /// <summary>

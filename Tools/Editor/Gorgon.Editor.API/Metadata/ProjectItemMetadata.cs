@@ -36,12 +36,10 @@ namespace Gorgon.Editor.Metadata
     /// <summary>
     /// Metadata for a project item that is included in the project.
     /// </summary>
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public class ProjectItemMetadata
     {
         #region Variables.
-#warning FIX ME.
-        // The metadata for a content plugin.
-        private OLDE_IContentPlugInMetadata _oldGetRidOfMe;
         // The metadata for a content plugin.
         private IContentPlugInMetadata _contentMetadata;
         #endregion
@@ -49,8 +47,7 @@ namespace Gorgon.Editor.Metadata
         #region Properties.        
         /// <summary>
         /// Property to return the ID for the item.
-        /// </summary>
-        [JsonProperty]
+        /// </summary>        
         public string ID
         {
             get;
@@ -63,6 +60,7 @@ namespace Gorgon.Editor.Metadata
         /// <remarks>
         /// If this value is <b>null</b>, then the plugin hasn't been set.  If it's an empty string, then no plugin is associated with this metadata.
         /// </remarks>
+        [JsonProperty]
         public string PlugInName
         {
             get;
@@ -89,7 +87,6 @@ namespace Gorgon.Editor.Metadata
             private set;
         } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-#warning FIX ME
         /// <summary>
         /// Property to return the content plugin metadata associated with this project item.
         /// </summary>
@@ -97,27 +94,7 @@ namespace Gorgon.Editor.Metadata
         /// <para>
         /// Setting this value will set the value for <see cref="PlugInName"/>.
         /// </para>
-        /// </remarks>
-        [JsonIgnore]
-        public OLDE_IContentPlugInMetadata OLDE_ContentMetadata
-        {
-            get => _oldGetRidOfMe;
-            set
-            {
-                PlugInName = value?.PlugInName;
-                _oldGetRidOfMe = value;
-            }
-        }
-
-        /// <summary>
-        /// Property to return the content plugin metadata associated with this project item.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// Setting this value will set the value for <see cref="PlugInName"/>.
-        /// </para>
-        /// </remarks>
-        [JsonIgnore]
+        /// </remarks>        
         public IContentPlugInMetadata ContentMetadata
         {
             get => _contentMetadata;
@@ -141,7 +118,7 @@ namespace Gorgon.Editor.Metadata
                 throw new ArgumentNullException(nameof(metadata));
             }
 
-            _oldGetRidOfMe = metadata.OLDE_ContentMetadata;
+            _contentMetadata = metadata.ContentMetadata;
             PlugInName = metadata.PlugInName;
 
             foreach (KeyValuePair<string, string> attribute in metadata.Attributes)

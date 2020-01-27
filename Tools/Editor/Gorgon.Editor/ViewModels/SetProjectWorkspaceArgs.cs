@@ -27,7 +27,7 @@
 namespace Gorgon.Editor.ViewModels
 {
     /// <summary>
-    /// Arguments for the <see cref="IStageNewVm.SetProjectWorkspaceCommand"/>.
+    /// Arguments for the <see cref="INewProject.SetProjectWorkspaceCommand"/>.
     /// </summary>
     internal class SetProjectWorkspaceArgs
     {

@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.ViewModels
@@ -38,84 +39,91 @@ namespace Gorgon.Editor.ViewModels
         : ViewModelCommonParameters
     {
         /// <summary>
-        /// Property to return the new project view model.
+        /// Property to set or return the new project view model.
         /// </summary>
-        public IStageNewVm NewProject
+        public INewProject NewProject
         {
             get;
+            set;
         }
 
         /// <summary>
-        /// Property to return the recent files view model.
+        /// Property to set or return the recent files view model.
         /// </summary>
-        public IRecentVm RecentFiles
+        public IRecent RecentFiles
         {
             get;
+            set;
         }
 
         /// <summary>
-        /// Property to return the settings view model.
+        /// Property to set or return the settings view model.
         /// </summary>
-        public IEditorSettingsVm SettingsVm
+        public IEditorSettingsVm Settings
         {
             get;
+            set;
         }
 
         /// <summary>
-        /// Property to return the dialog for opening projects.
+        /// Property to set or return the dialog for opening projects.
         /// </summary>
-        public IEditorFileOpenDialogService OpenDialog
+        public EditorFileOpenDialogService OpenDialog
         {
             get;
+            set;
         }
 
         /// <summary>
-        /// Property to return the dialog for saving projects.
+        /// Property to set or return the dialog for saving projects.
         /// </summary>
-        public IEditorFileSaveAsDialogService SaveDialog
+        public EditorFileSaveDialogService SaveDialog
         {
             get;
+            set;
         }
 
         /// <summary>
-        /// Property to return the undo service for the application.
+        /// Property to set or return the undo service for the application.
         /// </summary>
         public IUndoService UndoService
         {
             get;
+            set;
         }
 
         /// <summary>
-        /// Property to return a list of content plug ins that can create their own content.
+        /// Property to set or return a list of content plug ins that can create their own content.
         /// </summary>
-        public IReadOnlyList<OLDE_IContentPlugInMetadata> ContentCreators
+        public IReadOnlyList<IContentPlugInMetadata> ContentCreators
         {
             get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the service used to browse directories on the physical file system.
+        /// </summary>
+        public IDirectoryLocateService DirectoryLocater
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the content plug in service used to manage content plug ins.
+        /// </summary>
+        public IContentPlugInService ContentPlugIns
+        {
+            get;
+            set;
         }
 
         /// <summary>Initializes a new instance of the MainParameters class.</summary>
-        /// <param name="newProject">The new project view model.</param>
-        /// <param name="recent">The recent files view model.</param>
-        /// <param name="contentCreators">A list of content plug ins that can create their own content.</param>
         /// <param name="viewModelFactory">The view model factory for creating view models.</param>
-        /// <param name="openDialog">A dialog service used for opening files.</param>
-        /// <param name="saveDialog">A dialog service used for saving files.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public MainParameters(IStageNewVm newProject,
-            IRecentVm recent,
-            IEditorSettingsVm editorSettings,
-            IReadOnlyList<OLDE_IContentPlugInMetadata> contentCreators,
-            ViewModelFactory viewModelFactory,
-            IEditorFileOpenDialogService openDialog,
-            IEditorFileSaveAsDialogService saveDialog)
+        public MainParameters(ViewModelFactory viewModelFactory)
             : base(viewModelFactory)
         {
-            OpenDialog = openDialog ?? throw new ArgumentNullException(nameof(openDialog));
-            SaveDialog = saveDialog ?? throw new ArgumentNullException(nameof(saveDialog));
-            NewProject = newProject ?? throw new ArgumentNullException(nameof(newProject));
-            RecentFiles = recent ?? throw new ArgumentNullException(nameof(recent));
-            SettingsVm = editorSettings ?? throw new ArgumentNullException(nameof(editorSettings));
-            ContentCreators = contentCreators ?? throw new ArgumentNullException(nameof(contentCreators));
         }
     }
 }

@@ -291,6 +291,16 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap generic_file_20x20 {
+            get {
+                object obj = ResourceManager.GetObject("generic_file_20x20", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Confirmation.
         /// </summary>
         internal static string GOREDIT_CAPTION_CONFIRM {
@@ -402,6 +412,19 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The path &apos;{0}&apos; is a directory and cannot be overwritten.
+        ///
+        ///Would you like to rename this file?
+        ///
+        ///Selecting No will skip the file..
+        /// </summary>
+        internal static string GOREDIT_CONFIRM_DEST_IS_DIRECTORY {
+            get {
+                return ResourceManager.GetString("GOREDIT_CONFIRM_DEST_IS_DIRECTORY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This directory already contains an editor project named &apos;{0}&apos;.
         ///
         ///Would you like to overwrite it?.
@@ -415,11 +438,26 @@ namespace Gorgon.Editor.Properties {
         /// <summary>
         ///   Looks up a localized string similar to The file &apos;{0}&apos; already exists in &apos;{1}&apos;.
         ///
-        ///Would you like to overrwrite it?.
+        ///Would you like to overwrite it?
+        ///
+        ///Selecting &apos;No&apos; will rename the file to a unique name..
         /// </summary>
         internal static string GOREDIT_CONFIRM_FILE_EXISTS {
             get {
                 return ResourceManager.GetString("GOREDIT_CONFIRM_FILE_EXISTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; already exists in &apos;{1}&apos;.
+        ///
+        ///Would you like to overwrite it?
+        ///
+        ///Selecting &apos;No&apos; will skip this file..
+        /// </summary>
+        internal static string GOREDIT_CONFIRM_FILE_EXISTS_MOVE {
+            get {
+                return ResourceManager.GetString("GOREDIT_CONFIRM_FILE_EXISTS_MOVE", resourceCulture);
             }
         }
         
@@ -431,6 +469,17 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_CONFIRM_FILE_OPEN_DELETE {
             get {
                 return ResourceManager.GetString("GOREDIT_CONFIRM_FILE_OPEN_DELETE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This will delete {0} files.
+        ///
+        ///Are you sure?.
+        /// </summary>
+        internal static string GOREDIT_CONFIRM_MULTIPLE_FILE_DELETE {
+            get {
+                return ResourceManager.GetString("GOREDIT_CONFIRM_MULTIPLE_FILE_DELETE", resourceCulture);
             }
         }
         
@@ -476,6 +525,17 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; is open in the editor and cannot be overwritten.
+        ///
+        ///Would you like to make a copy with a different name?.
+        /// </summary>
+        internal static string GOREDIT_CONFIRM_OPEN_CONTENT_CANT_OVERWRITE {
+            get {
+                return ResourceManager.GetString("GOREDIT_CONFIRM_OPEN_CONTENT_CANT_OVERWRITE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The file &apos;{0}&apos; is currently open in the editor and has unsaved changes.
         ///
         ///Would you like to save these changes now?.
@@ -483,6 +543,17 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_CONFIRM_SAVE_CONTENT {
             get {
                 return ResourceManager.GetString("GOREDIT_CONFIRM_SAVE_CONTENT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This will delete the file &apos;{0}&apos;.
+        ///
+        ///Are you sure?.
+        /// </summary>
+        internal static string GOREDIT_CONFIRM_SINGLE_FILE_DELETE {
+            get {
+                return ResourceManager.GetString("GOREDIT_CONFIRM_SINGLE_FILE_DELETE", resourceCulture);
             }
         }
         
@@ -747,7 +818,9 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A file in the directory &apos;{0}&apos; is open..
+        ///   Looks up a localized string similar to The file &apos;{1}&apos; in the directory &apos;{0}&apos; is open. 
+        ///
+        ///This directory cannot be deleted until the file is closed..
         /// </summary>
         internal static string GOREDIT_ERR_DIRECTORY_LOCKED {
             get {
@@ -804,7 +877,7 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The file &apos;{0}&apos; is already open..
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; is open and cannot be updated..
         /// </summary>
         internal static string GOREDIT_ERR_FILE_LOCKED {
             get {
@@ -818,6 +891,17 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_FILE_NOT_FOUND {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_FILE_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name &apos;{0}&apos; contains illegal characters.
+        ///
+        ///&apos;{1}&apos; are not allowed in node names..
+        /// </summary>
+        internal static string GOREDIT_ERR_FILENAME_ILLEGAL_CHARS {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_FILENAME_ILLEGAL_CHARS", resourceCulture);
             }
         }
         
@@ -989,17 +1073,6 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_NODE_EXISTS {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_NODE_EXISTS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The node contains illegal characters.
-        ///
-        ///&apos;{0}&apos; are not allowed in node names..
-        /// </summary>
-        internal static string GOREDIT_ERR_NODE_ILLEGAL_CHARS {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_NODE_ILLEGAL_CHARS", resourceCulture);
             }
         }
         
@@ -1283,13 +1356,24 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The path &apos;{0}&apos; is a directory and cannot be overwritten.
+        ///
+        ///This file will be skipped..
+        /// </summary>
+        internal static string GOREDIT_MSG_DEST_IS_DIRECTORY_SKIP {
+            get {
+                return ResourceManager.GetString("GOREDIT_MSG_DEST_IS_DIRECTORY_SKIP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The file &apos;{0}&apos; is open in the editor and cannot be overwritten.
         ///
-        ///Would you like to make a copy with a different name?.
+        ///This file will be skipped..
         /// </summary>
-        internal static string GOREDIT_MSG_OPEN_CONTENT_CANT_OVERWRITE {
+        internal static string GOREDIT_MSG_OPEN_CONTENT_CANT_OVERWRITE_SKIP {
             get {
-                return ResourceManager.GetString("GOREDIT_MSG_OPEN_CONTENT_CANT_OVERWRITE", resourceCulture);
+                return ResourceManager.GetString("GOREDIT_MSG_OPEN_CONTENT_CANT_OVERWRITE_SKIP", resourceCulture);
             }
         }
         
@@ -1524,6 +1608,15 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_TEXT_LOADING_TOOL_PLUGINS {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_LOADING_TOOL_PLUGINS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Moving....
+        /// </summary>
+        internal static string GOREDIT_TEXT_MOVING {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_MOVING", resourceCulture);
             }
         }
         
@@ -1890,6 +1983,16 @@ namespace Gorgon.Editor.Properties {
         internal static System.Drawing.Bitmap recent_48x48 {
             get {
                 object obj = ResourceManager.GetObject("recent_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap recent_item_badge_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("recent_item_badge_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

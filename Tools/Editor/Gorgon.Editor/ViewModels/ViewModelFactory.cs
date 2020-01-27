@@ -27,15 +27,17 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
-using Gorgon.Editor.FileSystem;
 using Gorgon.Editor.Metadata;
+using Gorgon.Editor.Native;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
@@ -53,243 +55,59 @@ namespace Gorgon.Editor.ViewModels
     internal class ViewModelFactory
     {
         #region Variables.
-        // The common services for the application and plug ins.
-        private readonly IViewModelInjection _viewModelInjection;
-        // The project manager for the application.
-        private readonly ProjectManager _projectManager;
-        // The clip board service to use.
-        private readonly ClipboardService _clipboard;
-        // The directory locator service.
-        private readonly DirectoryLocateService _dirLocator;
-        // The service used to scan content files for content plug in associations.
-        private readonly FileScanService _fileScanService;
         // A string builder used to construct path names.
         private readonly StringBuilder _pathBuilder = new StringBuilder(512);
-        // The file system folder browser.
-        private readonly IEditorFileSystemFolderBrowseService _folderBrowser;
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to return the settings for the application.
-        /// </summary>
-        public EditorSettings Settings
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the file scanning service used to scan content files for content plugin associations.
-        /// </summary>
-        public IFileScanService FileScanService => _fileScanService;
-
-        /// <summary>
-        /// Property to return the file system providers used to read/write project files.
-        /// </summary>
-        public IFileSystemProviders FileSystemProviders
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the content plugins for the application.
-        /// </summary>
-        public IContentPlugInManagerService ContentPlugIns
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property tor eturn the tool plug ins for the application.
-        /// </summary>
-        public IToolPlugInManagerService ToolPlugIns
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the service that displays messages on the UI.
-        /// </summary>
-        public IMessageDisplayService MessageDisplay => _viewModelInjection.MessageDisplay;
-
-        /// <summary>
-        /// Property to return the busy service used to indicate that the UI is locked down.
-        /// </summary>
-        public IBusyStateService BusyService => _viewModelInjection.BusyService;
-
-        /// <summary>
-        /// Property to return the project manager interface.
-        /// </summary>
-        public IProjectManager ProjectManager => _projectManager;
-
-        /// <summary>
-        /// Property to return the cilpboard access service.
-        /// </summary>
-        public IClipboardService Clipboard => _clipboard;
-
-        /// <summary>
-        /// Property to return the directory locator service used to select directories on the physical file system.
-        /// </summary>
-        public IDirectoryLocateService DirectoryLocator => _dirLocator;
+        // The buffer to hold directory paths.
+        private readonly Dictionary<string, IDirectory> _directoryBuffer = new Dictionary<string, IDirectory>(StringComparer.OrdinalIgnoreCase);
+        // The host content services.
+        private readonly HostContentServices _hostContentServices;
+        // The file system providers for reading/writing file systems.
+        private readonly FileSystemProviders _fileSystemProviders;
+        // The settings for the editor.
+        private readonly EditorSettings _settings;
+        // The project manager.
+        private readonly ProjectManager _projectManager;
         #endregion
 
         #region Methods.
         /// <summary>
-        /// Function to create a file explorer node view model for a file.
+        /// Function to send the item specified in the path to the recycle bin.
         /// </summary>
-        /// <param name="project">The project data.</param>
-        /// <param name="fileSystemService">The file system service used to manipulate the underlying physical file system.</param>
-        /// <param name="parent">The parent for the node.</param>
-        /// <param name="file">The file system file to wrap in the view model.</param>
-        /// <param name="metaData">[Optional] The metadata for the file.</param>
-        /// <returns>The new file explorer node view model.</returns>
-        private IFileExplorerNodeVm DoCreateFileExplorerFileNode(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parent, FileInfo file, ProjectItemMetadata metaData, IReadOnlyList<IFileExplorerNodeVm> openFiles)
+        /// <param name="path">The path to the item to recycle.</param>
+        /// <returns><b>true</b> if the item was recycled, <b>false</b> if not.</returns>
+        private static bool RecycleFileSystemItem(string path)
         {
-            var result = new FileExplorerFileNodeVm();
+            bool isDirectory = (System.IO.File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory;
 
-            // If this node already exists, then don't recreate it and just send it back.
-            // This way, we don't need to worry about running around trying to update changed nodes.
-            _pathBuilder.Length = 0;
-            _pathBuilder.Append(parent.FullPath);
-            _pathBuilder.Append(file.Name);
-            string newPath = _pathBuilder.ToString();
-
-            IFileExplorerNodeVm openFile = openFiles?.FirstOrDefault(item => string.Equals(item.FullPath, newPath, StringComparison.OrdinalIgnoreCase));
-            if (openFile != null)
+#pragma warning disable IDE0046 // Convert to conditional expression
+            if (!Shell32.SendToRecycleBin(path, Shell32.FileOperationFlags.FOF_SILENT | Shell32.FileOperationFlags.FOF_NOCONFIRMATION | Shell32.FileOperationFlags.FOF_WANTNUKEWARNING))
             {
-                if (parent.Children.All(item => !string.Equals(item.FullPath, newPath, StringComparison.OrdinalIgnoreCase)))
-                {
-                    parent.Children.Add(openFile);
-                    openFile.Refresh();
-                    (openFile as OLDE_IContentFile)?.RefreshMetadata();
-                }
-                return openFile;
+                return false;
             }
+#pragma warning restore IDE0046 // Convert to conditional expression
 
-            result.Initialize(new FileExplorerNodeParameters(file.FullName, project, this, fileSystemService)
-            {
-                Parent = parent,
-                Metadata = metaData
-            });
-
-            if (result.Metadata == null)
-            {
-                if (project.ProjectItems.TryGetValue(result.FullPath, out ProjectItemMetadata existingMetaData))
-                {
-                    result.Metadata = existingMetaData;
-                }
-                else
-                {
-                    result.Metadata = new ProjectItemMetadata();
-                }
-            }
-
-            parent.Children.Add(result);
-
-            return result;
-        }
-
-        /// <summary>
-        /// Function to enumerate the physical file system to build the node hierarchy.
-        /// </summary>
-        /// <param name="project">The project being evaluated.</param>
-        /// <param name="fileSystemService">The file system service used to retrieve file system data.</param>
-        /// <param name="parent">The parent of the nodes.</param>
-        /// <param name="openFiles">A list of files that are open in the editor.</param>
-        private void DoEnumerateFileSystemObjects(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parent, IReadOnlyList<IFileExplorerNodeVm> openFiles = null)
-        {
-            var directoryNodes = new Dictionary<string, IFileExplorerNodeVm>(StringComparer.OrdinalIgnoreCase);
-            string parentPhysicalPath;
-
-            if (parent.Parent == null)
-            {
-                parentPhysicalPath = project.FileSystemDirectory.FullName.FormatDirectory(Path.DirectorySeparatorChar);
-                directoryNodes[parentPhysicalPath] = parent;
-            }
-            else
-            {
-                parentPhysicalPath = parent.PhysicalPath.FormatDirectory(Path.DirectorySeparatorChar);
-                directoryNodes[parentPhysicalPath] = parent;
-            }
-
-            foreach (DirectoryInfo directory in fileSystemService.GetDirectories(parentPhysicalPath).OrderBy(item => item.FullName.Length))
-            {
-                string directoryParentPath = directory.Parent.FullName.FormatDirectory(Path.DirectorySeparatorChar);
-                string directoryPath = directory.FullName.FormatDirectory(Path.DirectorySeparatorChar);
-                if (!directoryNodes.TryGetValue(directoryParentPath, out IFileExplorerNodeVm parentNode))
-                {
-                    Program.Log.Print($"ERROR: Directory '{directoryParentPath}' is the parent of '{directory.Name}', but is not found in the index list.", LoggingLevel.Simple);
-                    continue;
-                }
-
-                IFileExplorerNodeVm node = CreateFileExplorerDirectoryNodeVm(project, fileSystemService, parentNode, directory, true);
-                directoryNodes[directoryPath] = node;
-
-                // Get files for this directory.
-                foreach (FileInfo file in fileSystemService.GetFiles(directory.FullName, false))
-                {
-                    DoCreateFileExplorerFileNode(project, fileSystemService, node, file, null, openFiles);
-                }
-            }
-
-            // Get files for this directory.
-            foreach (FileInfo file in fileSystemService.GetFiles(parentPhysicalPath, false))
-            {
-                DoCreateFileExplorerFileNode(project, fileSystemService, parent, file, null, openFiles);
-            }
-        }
-
-        /// <summary>
-        /// Function to enumerate the physical file system to build the node hierarchy.
-        /// </summary>
-        /// <param name="project">The project being evaluated.</param>
-        /// <param name="fileSystemService">The file system service used to retrieve file system data.</param>
-        /// <param name="parent">The parent of the nodes.</param>
-        /// <param name="openFiles">A list of files that are open in the editor.</param>
-        /// <returns>A hierarchy of nodes representing the physical file system.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
-        public void EnumerateFileSystemObjects(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parent, IReadOnlyList<IFileExplorerNodeVm> openFiles)
-        {
-            if (project == null)
-            {
-                throw new ArgumentNullException(nameof(project));
-            }
-
-            if (fileSystemService == null)
-            {
-                throw new ArgumentNullException(nameof(fileSystemService));
-            }
-
-            if (parent == null)
-            {
-                throw new ArgumentNullException(nameof(parent));
-            }
-
-            DoEnumerateFileSystemObjects(project, fileSystemService, parent, openFiles);
+            return !(isDirectory ? System.IO.Directory.Exists(path) : System.IO.File.Exists(path));
         }
 
         /// <summary>
         /// Function to enumerate the content plug ins that can create their own content.
         /// </summary>
         /// <returns>A list of plugins that can create their own content.</returns>
-        private IReadOnlyList<OLDE_IContentPlugInMetadata> EnumerateContentCreators()
-        {
-            IEnumerable<OLDE_IContentPlugInMetadata> filteredPlugIns = ContentPlugIns.PlugIns.Where(item => item.Value.CanCreateContent)
-                                                                                        .Select(item => item.Value)
-                                                                                        .OfType<OLDE_IContentPlugInMetadata>();
-            return new List<OLDE_IContentPlugInMetadata>(filteredPlugIns);
-        }
+        private IReadOnlyList<IContentPlugInMetadata> EnumerateContentCreators() => _hostContentServices.ContentPlugInService.PlugIns
+                                                                                                            .Where(item => item.Value.CanCreateContent)
+                                                                                                            .Select(item => item.Value)
+                                                                                                            .OfType<IContentPlugInMetadata>()
+                                                                                                            .ToArray();
 
         /// <summary>
         /// Function to retrieve a plug in list item view model based on the plug in passed in.
         /// </summary>
         /// <param name="plugin">The plug in to retrieve data from.</param>
         /// <returns>The view model.</returns>
-        private ISettingsPlugInListItem GetPlugInListItem(OLDE_EditorPlugIn plugin)
+        private ISettingsPlugInListItem CreatePlugInListItem(EditorPlugIn plugin)
         {
             var result = new SettingsPlugInListItem();
-            result.Initialize(new SettingsPlugInListItemParameters(plugin, _viewModelInjection));
+            result.Initialize(new SettingsPlugInListItemParameters(plugin, _hostContentServices));
             return result;
         }
 
@@ -298,10 +116,10 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="plugin">The plug in to retrieve data from.</param>
         /// <returns>The view model.</returns>
-        private ISettingsPlugInListItem GetPlugInListItem(IGorgonFileSystemProvider plugin)
+        private ISettingsPlugInListItem CreatePlugInListItem(IGorgonFileSystemProvider plugin)
         {
             var result = new SettingsPlugInListItem();
-            result.Initialize(new SettingsPlugInListItemParameters(plugin, _viewModelInjection));
+            result.Initialize(new SettingsPlugInListItemParameters(plugin, _hostContentServices));
             return result;
         }
 
@@ -310,10 +128,10 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="plugin">The plug in to retrieve data from.</param>
         /// <returns>The view model.</returns>
-        private ISettingsPlugInListItem GetPlugInListItem(IDisabledPlugIn plugin)
+        private ISettingsPlugInListItem CreatePlugInListItem(IDisabledPlugIn plugin)
         {
             var result = new SettingsPlugInListItem();
-            result.Initialize(new SettingsPlugInListItemParameters(plugin, _viewModelInjection));
+            result.Initialize(new SettingsPlugInListItemParameters(plugin, _hostContentServices));
             return result;
         }
 
@@ -321,20 +139,23 @@ namespace Gorgon.Editor.ViewModels
         /// Function to retrieve the list of plug ins view model.
         /// </summary>
         /// <returns>The plug ins list view model.</returns>
-        private ISettingsPlugInsList GetPlugInListViewModel()
+        private ISettingsPlugInsList CreatePlugInListViewModel()
         {
-            IEnumerable<ISettingsPlugInListItem> plugins = FileSystemProviders.Readers
-                .Select(item => GetPlugInListItem(item.Value))
-                .Concat(FileSystemProviders.Writers.Select(item => GetPlugInListItem(item.Value)))
-                .Concat(ContentPlugIns.PlugIns.Select(item => GetPlugInListItem(item.Value)))
-                .Concat(ContentPlugIns.Importers.Select(item => GetPlugInListItem(item.Value)))
-                .Concat(ToolPlugIns.PlugIns.Select(item => GetPlugInListItem(item.Value)))
-                .Concat(FileSystemProviders.DisabledPlugIns.Select(item => GetPlugInListItem(item.Value)))
-                .Concat(ContentPlugIns.DisabledPlugIns.Select(item => GetPlugInListItem(item.Value)))
-                .Concat(ToolPlugIns.DisabledPlugIns.Select(item => GetPlugInListItem(item.Value)));
+            IEnumerable<ISettingsPlugInListItem> plugins = _fileSystemProviders.Readers
+                .Select(item => CreatePlugInListItem(item.Value))
+                .Concat(_fileSystemProviders.Writers.Select(item => CreatePlugInListItem(item.Value)))
+                .Concat(_hostContentServices.ContentPlugInService.PlugIns.Select(item => CreatePlugInListItem(item.Value)))
+                .Concat(_hostContentServices.ContentPlugInService.Importers.Select(item => CreatePlugInListItem(item.Value)))
+                .Concat(_hostContentServices.ToolPlugInService.PlugIns.Select(item => CreatePlugInListItem(item.Value)))
+                .Concat(_fileSystemProviders.DisabledPlugIns.Select(item => CreatePlugInListItem(item.Value)))
+                .Concat(_hostContentServices.ContentPlugInService.DisabledPlugIns.Select(item => CreatePlugInListItem(item.Value)))
+                .Concat(_hostContentServices.ToolPlugInService.DisabledPlugIns.Select(item => CreatePlugInListItem(item.Value)));
 
             var result = new SettingsPlugInsList();
-            result.Initialize(new SettingsPlugInsListParameters(plugins, _viewModelInjection));
+            result.Initialize(new SettingsPlugInsListParameters(_hostContentServices)
+            {
+                PlugIns = plugins
+            });
             return result;
         }
 
@@ -346,12 +167,12 @@ namespace Gorgon.Editor.ViewModels
         {
             var result = new List<ISettingsCategoryViewModel>();
 
-            IEnumerable<OLDE_EditorPlugIn> plugins = FileSystemProviders.Writers.Select(item => (OLDE_EditorPlugIn)item.Value)
-                .Concat(ContentPlugIns.PlugIns.Select(item => item.Value))
-                .Concat(ContentPlugIns.Importers.Select(item => item.Value))
-                .Concat(ToolPlugIns.PlugIns.Select(item => item.Value));
+            IEnumerable<EditorPlugIn> plugins = _fileSystemProviders.Writers.Select(item => (EditorPlugIn)item.Value)
+                .Concat(_hostContentServices.ContentPlugInService.PlugIns.Select(item => item.Value))
+                .Concat(_hostContentServices.ContentPlugInService.Importers.Select(item => item.Value))
+                .Concat(_hostContentServices.ToolPlugInService.PlugIns.Select(item => item.Value));
 
-            foreach (OLDE_EditorPlugIn plugin in plugins)
+            foreach (EditorPlugIn plugin in plugins)
             {
                 ISettingsCategoryViewModel settings = plugin.GetPlugInSettings();
 
@@ -367,211 +188,350 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Function to create the file explorer view model.
+        /// </summary>
+        /// <param name="project">The current project.</param>
+        /// <param name="fileSystem">The file system for the project.</param>
+        /// <param name="tempWriter">The file system for temporary data.</param>
+        /// <returns>A new file explorer view model.</returns>
+        private FileExplorer CreateFileExplorer(IProject project, IGorgonFileSystemWriter<FileStream> fileSystem, IGorgonFileSystemWriter<Stream> tempWriter)
+        {
+            var root = new RootDirectory();
+            root.Initialize(new RootDirectoryParameters(this)
+            {
+                RootDirectory = fileSystem.FileSystem.RootDirectory,
+                Project = project,
+                Path = project.FileSystemDirectory.FullName.FormatDirectory(Path.DirectorySeparatorChar)
+            });
+
+            // Create view models for all directories/files.
+            EnumerateFileSystemObjects(fileSystem.FileSystem, root, project);
+
+            var result = new FileExplorer();
+            var clipboardHandler = new FileSystemClipboardHandler(result, _hostContentServices.Clipboard, _hostContentServices.Log);
+            result.Initialize(new FileExplorerParameters(this)
+            {
+                Root = root,
+                Project = project,
+                FileSystem = fileSystem,
+                Clipboard = clipboardHandler,
+                SearchService = new FileSystemSearchSystem(root),
+                DirectoryLocator = new DirectoryLocateService(),
+                BusyService = _hostContentServices.BusyService,
+                MessageDisplay = _hostContentServices.MessageDisplay,
+                Log = _hostContentServices.Log,
+                ContentPlugInService = _hostContentServices.ContentPlugInService,
+                EditorSettings = _settings
+            });
+
+            return result;
+        }
+
+        /// <summary>
+        /// Function to duplicate a file view model.
+        /// </summary>
+        /// <param name="sourceFile">The file view model to duplicate.</param>
+        /// <param name="destFile">The virtual file to wrap in new view model.</param>
+        /// <param name="parent">The initial parent directory for the files.</param>
+        /// <returns>The list of file view models.</returns>
+        public IFile DuplicateFile(IFile sourceFile, IGorgonVirtualFile destFile, IDirectory parent)
+        {
+            _directoryBuffer.Clear();
+            _directoryBuffer[parent.FullPath] = parent;
+
+            foreach (IDirectory dir in parent.Directories.Traverse(d => d.Directories))
+            {
+                _directoryBuffer[dir.FullPath] = dir;
+            }
+
+            if (!_directoryBuffer.TryGetValue(destFile.Directory.FullPath, out IDirectory parentDir))
+            {
+                throw new DirectoryNotFoundException();
+            }
+
+            var newFile = new File();
+            newFile.Initialize(new FileParameters(this)
+            {
+                VirtualFile = destFile,
+                Parent = parentDir,
+                Metadata = new ProjectItemMetadata(sourceFile.Metadata)
+            });
+            return newFile;
+        }
+
+        /// <summary>
+        /// Function to create a file view model based on a virtual file object.
+        /// </summary>
+        /// <param name="file">The virtual file to wrap.</param>
+        /// <param name="parent">The initial parent directory for the files.</param>
+        /// <param name="project">The current project containing the file system.</param>
+        /// <returns>The file view model.</returns>
+        public IFile CreateFile(IGorgonVirtualFile file, IDirectory parent)
+        {
+            var newFile = new File();
+            newFile.Initialize(new FileParameters(this)
+            {
+                VirtualFile = file,
+                Parent = parent,
+                Metadata = new ProjectItemMetadata()
+            });
+            return newFile;
+        }
+
+        /// <summary>
+        /// Function to create a list of file view models based on a list of virtual file objects.
+        /// </summary>
+        /// <param name="files">The virtual files to wrap.</param>
+        /// <param name="parent">The initial parent directory for the files.</param>
+        /// <param name="project">The current project containing the file system.</param>
+        /// <returns>The list of file view models.</returns>
+        public IReadOnlyList<IFile> CreateFiles(IEnumerable<IGorgonVirtualFile> files, IDirectory parent)
+        {
+            _directoryBuffer.Clear();
+            _directoryBuffer[parent.FullPath] = parent;
+
+            foreach (IDirectory dir in parent.Directories.Traverse(d => d.Directories))
+            {
+                _directoryBuffer[dir.FullPath] = dir;
+            }
+
+            var result = new List<IFile>();
+
+            foreach (IGorgonVirtualFile file in files)
+            {
+                if (!_directoryBuffer.TryGetValue(file.Directory.FullPath, out IDirectory parentDir))
+                {
+                    throw new DirectoryNotFoundException();
+                }
+
+                var newFile = new File();
+                newFile.Initialize(new FileParameters(this)
+                {
+                    VirtualFile = file,
+                    Parent = parentDir,
+                    Metadata = new ProjectItemMetadata()
+                });
+                result.Add(newFile);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Function to create a new directory view model.
+        /// </summary>
+        /// <param name="directory">The directory wrapped by the view model.</param>
+        /// <param name="parent">The parent directory containing this directory.</param>        
+        /// <returns>A new directory view model.</returns>
+        public IDirectory CreateDirectory(IGorgonVirtualDirectory directory, IDirectory parent)
+        {
+            var newDir = new Directory();
+            newDir.Initialize(new DirectoryParameters(this)
+            {
+                VirtualDirectory = directory,
+                Parent = parent,
+                PhysicalPath = Path.Combine(parent.PhysicalPath, directory.Name).FormatDirectory(Path.DirectorySeparatorChar)
+            });
+            parent.Directories.Add(newDir);
+            return newDir;
+        }
+
+        /// <summary>
+        /// Function to create a directory hierarchy from a list of virtual directory objects.
+        /// </summary>
+        /// <param name="directories">The list of virtual directories.</param>
+        /// <param name="parent">The parent directory for the new directories.</param>
+        /// <returns>The hierarchial list of virtual directory view models.</returns>
+        public IReadOnlyList<IDirectory> CreateDirectories(IEnumerable<IGorgonVirtualDirectory> directories, IDirectory parent)
+        {
+            _directoryBuffer.Clear();
+            _directoryBuffer[parent.FullPath] = parent;
+
+            // Ensure all children are present so we have the proper parent directory when creating the new directory.
+            // For example, if we create A/B/C and A/B already exists, then C's parent should return A/B as it should already exist.
+            foreach (IDirectory child in parent.Directories.Traverse(d => d.Directories))
+            {
+                _directoryBuffer[child.FullPath] = child;
+            }
+
+            var result = new List<IDirectory>();
+
+            foreach (IGorgonVirtualDirectory virtDir in directories.OrderBy(item => item.FullPath.Length))
+            {
+                if (!_directoryBuffer.TryGetValue(virtDir.Parent.FullPath, out IDirectory parentDirectory))
+                {
+                    continue;
+                }
+
+                var newDir = new Directory();
+                newDir.Initialize(new DirectoryParameters(this)
+                {
+                    VirtualDirectory = virtDir,
+                    Parent = parentDirectory,
+                    PhysicalPath = Path.Combine(parentDirectory.PhysicalPath, virtDir.Name).FormatDirectory(Path.DirectorySeparatorChar)
+                });
+
+                _directoryBuffer[newDir.FullPath] = newDir;
+                result.Add(newDir);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Function to enumerate the file system to retrieve the directories and files for the specified parent directory.
+        /// </summary>
+        /// <param name="fileSystem">The file system containing the directories to enumerate.</param>
+        /// <param name="parent">The parent directory to start evaluating.</param>
+        /// <param name="project">The project being evaluated.</param>
+        /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
+        public void EnumerateFileSystemObjects(IGorgonFileSystem fileSystem, IDirectory parent, IProject project)
+        {
+            if (fileSystem == null)
+            {
+                throw new ArgumentNullException(nameof(fileSystem));
+            }
+
+            if (parent == null)
+            {
+                throw new ArgumentNullException(nameof(parent));
+            }
+
+            if (project == null)
+            {
+                throw new ArgumentNullException(nameof(project));
+            }
+
+            var directories = new Dictionary<string, IDirectory>(StringComparer.OrdinalIgnoreCase)
+            {
+                [parent.FullPath] = parent
+            };
+
+            IGorgonVirtualDirectory parentVirtDir = fileSystem.GetDirectory(parent.FullPath);
+
+            if (parentVirtDir == null)
+            {
+                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, parent.FullPath));
+            }
+
+            var subDirs = new List<IGorgonVirtualDirectory>
+            {
+                parentVirtDir
+            };
+            subDirs.AddRange(parentVirtDir.Directories.Traverse(d => d.Directories));
+
+            for (int i = 0; i < subDirs.Count; ++i)
+            {
+                IGorgonVirtualDirectory subDir = subDirs[i];
+                IDirectory subDirParent = null;
+                IDirectory fileDir = null;
+
+                if (subDir.Parent != null)
+                {
+                    if (!directories.TryGetValue(subDir.Parent.FullPath, out subDirParent))
+                    {
+                        // For some reason, the parent isn't in here, so skip this guy.
+                        continue;
+                    }
+
+                    var newDir = new Directory();
+                    newDir.Initialize(new DirectoryParameters(this)
+                    {
+                        VirtualDirectory = subDir,
+                        Parent = subDirParent,
+                        Project = project,
+                        PhysicalPath = Path.Combine(subDirParent.PhysicalPath, subDir.Name).FormatDirectory(Path.DirectorySeparatorChar)
+                    });
+
+                    directories[subDir.FullPath] = newDir;
+                    subDirParent.Directories.Add(newDir);
+                    fileDir = newDir;
+                }
+                else
+                {
+                    subDir = parentVirtDir;
+                    fileDir = parent;
+                }
+
+                // Add file view models.
+                foreach (IGorgonVirtualFile file in subDir.Files.OrderBy(item => item.Name))
+                {
+                    project.ProjectItems.TryGetValue(file.FullPath, out ProjectItemMetadata metaData);
+
+                    var newFile = new File();
+                    newFile.Initialize(new FileParameters(this)
+                    {
+                        VirtualFile = file,
+                        Parent = fileDir,
+                        Metadata = metaData ?? new ProjectItemMetadata()
+                    });
+                    fileDir.Files.Add(newFile);
+                }
+            }
+        }
+
+        /// <summary>
         /// Function to create the main view model and any child view models.
         /// </summary>
         /// <param name="gpuName">The name of the GPU used by the application.</param>
         /// <returns>A new instance of the main view model.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="workspace"/> parameter is <b>null</b>.</exception>
         public IMain CreateMainViewModel(string gpuName)
         {
-            ISettingsPlugInsList pluginList = GetPlugInListViewModel();
+            IDirectoryLocateService dirLocator = new DirectoryLocateService();
+            ISettingsPlugInsList pluginList = CreatePlugInListViewModel();
             var settingsVm = new EditorSettingsVm();
             IEnumerable<ISettingsCategoryViewModel> categories = GetPlugInSettingsCategories();
-            settingsVm.Initialize(new EditorSettingsParameters(new[] { pluginList }.Concat(categories), pluginList, MessageDisplay, BusyService));
-
-            var newProjectVm = new StageNewVm
+            settingsVm.Initialize(new EditorSettingsParameters
             {
-                GPUName = gpuName
+                Categories = new[] { pluginList }.Concat(categories),
+                PlugInsList = pluginList,
+                BusyService = _hostContentServices.BusyService,
+                MessageDisplay = _hostContentServices.MessageDisplay,
+                Log = _hostContentServices.Log
+            });
+
+            var newProjectVm = new NewProject
+            {
+                GPUName = gpuName,                
             };
-            var recentFilesVm = new RecentVm();
+            var recentFilesVm = new Recent();
 
             var mainVm = new Main();
 
-            newProjectVm.Initialize(new StageNewVmParameters(this));
-            recentFilesVm.Initialize(new RecentVmParameters(this));
-
-            mainVm.Initialize(new MainParameters(newProjectVm,
-                                                recentFilesVm,
-                                                settingsVm,
-                                                EnumerateContentCreators(),
-                                                this,
-                                                new EditorFileOpenDialogService(Settings, FileSystemProviders),
-                                                new EditorFileSaveDialogService(Settings, FileSystemProviders)));
-
-            return mainVm;
-        }
-
-        /// <summary>
-        /// Function to create a file explorer node view model for a file.
-        /// </summary>
-        /// <param name="project">The project data.</param>
-        /// <param name="fileSystemService">The file system service used to manipulate the underlying physical file system.</param>
-        /// <param name="parent">The parent for the node.</param>
-        /// <param name="file">The file system file to wrap in the view model.</param>
-        /// <param name="metaData">[Optional] The metadata for the file.</param>
-        /// <returns>The new file explorer node view model.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, <paramref name="metadataManager"/>, <paramref name="fileSystemService"/> or the <paramref name="file"/> parameter is <b>null</b>.</exception>
-        public IFileExplorerNodeVm CreateFileExplorerFileNodeVm(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parent, FileInfo file, ProjectItemMetadata metaData = null)
-        {
-            if (project == null)
+            newProjectVm.Initialize(new NewProjectParameters(this)
             {
-                throw new ArgumentNullException(nameof(project));
-            }
-
-            if (fileSystemService == null)
+                EditorSettings = _settings,
+                DirectoryLocator = dirLocator,
+                ProjectManager = _projectManager,
+                MessageDisplay = _hostContentServices.MessageDisplay,
+                Log = _hostContentServices.Log
+            });
+            recentFilesVm.Initialize(new RecentParameters(this)
             {
-                throw new ArgumentNullException(nameof(fileSystemService));
-            }
-
-            if (file == null)
-            {
-                throw new ArgumentNullException(nameof(file));
-            }
-
-            return DoCreateFileExplorerFileNode(project, fileSystemService, parent, file, metaData, null);
-        }
-
-        /// <summary>
-        /// Function to create a file explorer node view model for a directory.
-        /// </summary>
-        /// <param name="project">The project data.</param>
-        /// <param name="fileSystemService">The file system service used to manipulate the underlying physical file system.</param>
-        /// <param name="parentNode">The parent for the node.</param>
-        /// <param name="newNodeName">The name of the new node.</param>
-        /// <returns>The new file explorer node view model.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, <paramref name="fileSystemService"/>, <paramref name="parentNode"/>, or the <paramref name="directory"/> parameter is <b>null</b>.</exception>
-        public IFileExplorerNodeVm CreateNewDirectoryNode(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parentNode, string newNodeName)
-        {
-            var parent = new DirectoryInfo(parentNode.PhysicalPath);
-            DirectoryInfo directory = string.IsNullOrWhiteSpace(newNodeName) ? fileSystemService.CreateDirectory(parent) : fileSystemService.CreateDirectory(parent, newNodeName);
-
-            return CreateFileExplorerDirectoryNodeVm(project, fileSystemService, parentNode, directory, true);
-        }
-
-        /// <summary>
-        /// Function to create a file explorer node view model for a directory.
-        /// </summary>
-        /// <param name="project">The project data.</param>
-        /// <param name="fileSystemService">The file system service used to manipulate the underlying physical file system.</param>
-        /// <param name="parentNode">The parent for the node.</param>
-        /// <param name="metadataManager">The metadata manager to use.</param>
-        /// <param name="directory">The file system directory to wrap in the view model.</param>
-        /// <param name="addToParent"><b>true</b> to automatically add the node to the parent, <b>false</b> to just return the node without adding to the parent.</param>
-        /// <returns>The new file explorer node view model.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, <paramref name="fileSystemService"/>, <paramref name="parentNode"/>, or the <paramref name="directory"/> parameter is <b>null</b>.</exception>
-        public IFileExplorerNodeVm CreateFileExplorerDirectoryNodeVm(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parentNode, DirectoryInfo directory, bool addToParent)
-        {
-            if (project == null)
-            {
-                throw new ArgumentNullException(nameof(project));
-            }
-
-            if (fileSystemService == null)
-            {
-                throw new ArgumentNullException(nameof(fileSystemService));
-            }
-
-            if (parentNode == null)
-            {
-                throw new ArgumentNullException(nameof(parentNode));
-            }
-
-            if (directory == null)
-            {
-                throw new ArgumentNullException(nameof(directory));
-            }
-
-            var result = new FileExplorerDirectoryNodeVm();
-
-            var children = new ObservableCollection<IFileExplorerNodeVm>();
-
-            result.Initialize(new FileExplorerNodeParameters(directory.FullName, project, this, fileSystemService)
-            {
-                Metadata = new ProjectItemMetadata(),
-                Parent = parentNode,
-                Children = children
+                EditorSettings = _settings,
+                MessageDisplay = _hostContentServices.MessageDisplay,
+                ProjectManager = _projectManager,
+                Log = _hostContentServices.Log
             });
 
-            if (addToParent)
+            mainVm.Initialize(new MainParameters(this)
             {
-                parentNode.Children.Add(result);
-            }
+                BusyService = _hostContentServices.BusyService,
+                ContentPlugIns = _hostContentServices.ContentPlugInService,
+                ContentCreators = EnumerateContentCreators(),
+                Log = _hostContentServices.Log,
+                MessageDisplay = _hostContentServices.MessageDisplay,
+                EditorSettings = _settings,
+                DirectoryLocater = dirLocator,
+                NewProject = newProjectVm,
+                Settings = settingsVm,
+                RecentFiles = recentFilesVm,
+                ProjectManager = _projectManager,                
+                OpenDialog = new EditorFileOpenDialogService(_settings, _fileSystemProviders),
+                SaveDialog = new EditorFileSaveDialogService(_settings, _fileSystemProviders)                
+            });
 
-            return result;
-        }
-
-        /// <summary>
-        /// Function to create a file explorer view model.
-        /// </summary>
-        /// <param name="project">The project data.</param>
-        /// <param name="fileSystemService">The file system service for the project.</param>
-        /// <returns>The file explorer view model.</returns>
-        private FileExplorerVm CreateFileExplorerViewModel(IProject project, IFileSystemService fileSystemService)
-        {
-            project.FileSystemDirectory.Refresh();
-            if (!project.FileSystemDirectory.Exists)
-            {
-                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, project.FileSystemDirectory.FullName));
-            }
-
-            var result = new FileExplorerVm();
-            _folderBrowser.FileSystem = result;
-            var root = new FileExplorerRootNode();
-
-            // This is a special node, used internally.
-            root.Initialize(new FileExplorerNodeParameters(project.FileSystemDirectory.FullName.FormatDirectory(Path.DirectorySeparatorChar), project, this, fileSystemService));
-
-            DoEnumerateFileSystemObjects(project, fileSystemService, root);
-
-            var search = new FileSystemSearchSystem(root);
-
-            result.Initialize(new FileExplorerParameters(fileSystemService,
-                                                        search,
-                                                        root,
-                                                        project,
-                                                        this));
-
-            // Walk through the content plug ins and register custom search keywords.
-            foreach (OLDE_ContentPlugIn plugin in ContentPlugIns.PlugIns.Values)
-            {
-                plugin.RegisterSearchKeywords(search);
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Function to create a new dependency node.
-        /// </summary>
-        /// <param name="project">The project that contains the file system.</param>
-        /// <param name="fileSystemService">The file system service for the project.</param>
-        /// <param name="parentNode">The node to use as a the parent of the node.</param>
-        /// <param name="content">The content object referenced by the dependency node.</param>
-        /// <returns>A new dependency node.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public DependencyNode CreateDependencyNode(IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm parentNode, OLDE_IContentFile content)
-        {
-            if (project == null)
-            {
-                throw new ArgumentNullException(nameof(project));
-            }
-
-            if (parentNode == null)
-            {
-                throw new ArgumentNullException(nameof(parentNode));
-            }
-
-            if (content == null)
-            {
-                throw new ArgumentNullException(nameof(content));
-            }
-
-            var fileNode = (IFileExplorerNodeVm)content;
-
-            var dependNode = new DependencyNode(parentNode, (IFileExplorerNodeVm)content);
-            dependNode.Initialize(new FileExplorerNodeParameters(fileNode.PhysicalPath, project, this, fileSystemService));
-
-            return dependNode;
+            return mainVm;
         }
 
         /// <summary>
@@ -580,34 +540,65 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="projectData">The project data to assign to the project view model.</param>
         /// <returns>The project view model.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="projectData"/> parameter is <b>null</b>.</exception>
-        public async Task<IProjectVm> CreateProjectViewModelAsync(IProject projectData)
+        public async Task<IProjectEditor> CreateProjectViewModelAsync(IProject projectData)
         {
             if (projectData == null)
             {
                 throw new ArgumentNullException(nameof(projectData));
             }
 
-            var result = new ProjectVm();
-            var fileSystemService = new FileSystemService(projectData.FileSystemDirectory);
+            _hostContentServices.ContentPlugInService.ProjectDeactivated();
+
+            FileExplorer fileExplorer = null;
+            var result = new ProjectEditor();
+            var tempFileSystem = new GorgonFileSystem(_hostContentServices.Log);
+            IGorgonFileSystemWriter<Stream> tempWriter = null;
 
             await Task.Run(() =>
             {
-                FileExplorerVm fileExplorer = CreateFileExplorerViewModel(projectData, fileSystemService);
-                result.ContentFileManager = fileExplorer;
-                result.FileExplorer = fileExplorer;
+                // Create the temporary file system.
+                string writeLocation = projectData.TempDirectory.FullName.FormatDirectory(Path.DirectorySeparatorChar);
+
+                tempWriter = new GorgonFileSystemWriter(tempFileSystem, tempFileSystem, writeLocation);
+                tempFileSystem.Mount(projectData.TempDirectory.FullName.FormatDirectory(Path.DirectorySeparatorChar), "/");
+                tempWriter.Mount();
+                var fileSystem = new GorgonFileSystem(_hostContentServices.Log);
+                IGorgonFileSystemWriter<FileStream> writer = new GorgonFileSystemWriter(fileSystem,
+                                                                                        fileSystem,
+                                                                                        projectData.FileSystemDirectory.FullName.FormatDirectory(Path.DirectorySeparatorChar),
+                                                                                        RecycleFileSystemItem);
+                fileSystem.Mount(projectData.FileSystemDirectory.FullName.FormatDirectory(Path.DirectorySeparatorChar));
+                writer.Mount();
+
+                fileExplorer = CreateFileExplorer(projectData, writer, tempWriter);
             });
 
             var previewer = new ContentPreviewVm();
-            var thumbDirectory = new DirectoryInfo(Path.Combine(projectData.TempDirectory.FullName, "thumbs"));
-            if (!thumbDirectory.Exists)
+            previewer.Initialize(new ContentPreviewVmParameters(this)
             {
-                thumbDirectory.Create();
-                thumbDirectory.Refresh();
-            }
-            previewer.Initialize(new ContentPreviewVmParameters(result.FileExplorer, result.ContentFileManager, thumbDirectory, this));
+                FileExplorer = fileExplorer,
+                Log = _hostContentServices.Log,
+                MessageDisplay = _hostContentServices.MessageDisplay,
+                ContentFileManager = fileExplorer,
+                TempFileSystem = tempWriter,
+                BusyService = _hostContentServices.BusyService
+            });
 
-            result.ContentPreviewer = previewer;
-            result.Initialize(new ProjectVmParameters(projectData, this));
+            result.Initialize(new ProjectEditorParameters(this)
+            {
+                FileExplorer = fileExplorer,
+                ContentPreviewer = previewer,                
+                BusyService = _hostContentServices.BusyService,
+                MessageDisplay = _hostContentServices.MessageDisplay,                
+                Log = _hostContentServices.Log,
+                ContentPlugIns = _hostContentServices.ContentPlugInService,
+                ToolPlugIns = _hostContentServices.ToolPlugInService,
+                EditorSettings = _settings,
+                Project = projectData,
+                ProjectManager = _projectManager
+            });
+
+            _hostContentServices.ContentPlugInService.ProjectActivated(fileExplorer, tempWriter);
 
             // Empty this list, it will be rebuilt when we save, and having it lying around is a waste.
             projectData.ProjectItems.Clear();
@@ -617,41 +608,17 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Constructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ViewModelFactory"/> class.
-        /// </summary>
-        /// <param name="settings">The settings for the application.</param>
-        /// <param name="providers">The providers used to open/save files.</param>
-        /// <param name="contentPlugIns">The plugins used for content.</param>
-        /// <param name="toolPlugIns">The plugins used for application tools.</param>
-        /// <param name="projectManager">The application project manager.</param>
-        /// <param name="viewModelInjection">The common services for the application.</param>        
-        /// <param name="clipboardService">The application clipboard service.</param>
-        /// <param name="dirLocatorService">The directory locator service.</param>
-        /// <param name="fileScanService">The file scanning service used to scan content files for content plugin associations.</param>
-        /// <param name="folderBrowser">The file system folder browser service.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
-        public ViewModelFactory(EditorSettings settings,
-                                FileSystemProviders providers,
-                                ContentPlugInService contentPlugIns,
-                                ToolPlugInService toolPlugIns,
-                                ProjectManager projectManager,
-                                IViewModelInjection viewModelInjection,
-                                ClipboardService clipboardService,
-                                DirectoryLocateService dirLocatorService,
-                                FileScanService fileScanService,
-                                IEditorFileSystemFolderBrowseService folderBrowser)
+        /// <summary>Initializes a new instance of the <see cref="ViewModelFactory"/> class.</summary>
+        /// <param name="settings">The settings for the editor.</param>
+        /// <param name="projectManager">The project manager for managing the project file.</param>
+        /// <param name="fileSystemProviders">The file system providers used to read/write file systems.</param>
+        /// <param name="contentServices">Common host services to pass into plug ins.</param>        
+        public ViewModelFactory(EditorSettings settings, ProjectManager projectManager, FileSystemProviders fileSystemProviders, HostContentServices contentServices)
         {
-            Settings = settings ?? throw new ArgumentNullException(nameof(settings));
-            FileSystemProviders = providers ?? throw new ArgumentNullException(nameof(providers));
-            ContentPlugIns = contentPlugIns ?? throw new ArgumentNullException(nameof(contentPlugIns));
-            ToolPlugIns = toolPlugIns ?? throw new ArgumentNullException(nameof(toolPlugIns));
-            _projectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
-            _viewModelInjection = viewModelInjection ?? throw new ArgumentNullException(nameof(viewModelInjection));
-            _clipboard = clipboardService ?? throw new ArgumentNullException(nameof(clipboardService));
-            _dirLocator = dirLocatorService ?? throw new ArgumentNullException(nameof(dirLocatorService));
-            _fileScanService = fileScanService ?? throw new ArgumentNullException(nameof(fileScanService));
-            _folderBrowser = folderBrowser ?? throw new ArgumentNullException(nameof(folderBrowser));
+            _settings = settings;
+            _projectManager = projectManager;
+            _fileSystemProviders = fileSystemProviders;
+            _hostContentServices = contentServices;
         }
         #endregion
     }

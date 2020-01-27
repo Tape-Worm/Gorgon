@@ -38,11 +38,11 @@ namespace Gorgon.Editor.Services
     /// A system used to search through the file system for files.
     /// </summary>
     internal class FileSystemSearchSystem
-        : ISearchService<IFileExplorerNodeVm>
+        : ISearchService<IFile>
     {
         #region Variables.
         // The root of the file system.
-        private readonly IFileExplorerNodeVm _rootNode;
+        private readonly IDirectory _rootDirectory;
         // The type of search keywords that can be used.
         private readonly Dictionary<string, string> _searchKeywords = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase)
         {
@@ -133,13 +133,14 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Function to check if the requested keyword value is within the attribute metadata for the file node content.
         /// </summary>
-        /// <param name="node">The file node to evaluate.</param>
+        /// <param name="file">The file to evaluate.</param>
         /// <param name="attributeName">The name of the attribute to look up.</param>
         /// <param name="attributeValue">The value to compare.</param>
         /// <returns></returns>
-        private bool CheckItemAttribute(IFileExplorerNodeVm node, string attributeName, string attributeValue)
+        private bool CheckItemAttribute(IFile file, string attributeName, string attributeValue)
         {
-            if ((!node.IsContent) || (node.Metadata == null))
+            //if ((!file.IsContent) || (file.Metadata == null))
+            if (file.Metadata == null)
             {
                 return false;
             }
@@ -150,7 +151,7 @@ namespace Gorgon.Editor.Services
                 return false;
             }
 #pragma warning restore IDE0046 // Convert to conditional expression
-            return !node.Metadata.Attributes.TryGetValue(attributeName, out string value)
+            return !file.Metadata.Attributes.TryGetValue(attributeName, out string value)
                 ? false
                 : string.Equals(value, attributeValue, StringComparison.CurrentCultureIgnoreCase);
         }
@@ -199,11 +200,11 @@ namespace Gorgon.Editor.Services
         /// </summary>
         /// <param name="searchText">The text to search for.</param>
         /// <returns>A list of items that match the search, or <b>null</b> search should be disabled, or an empty list if no matches were found.</returns>
-        public IEnumerable<IFileExplorerNodeVm> Search(string searchText)
+        public IEnumerable<IFile> Search(string searchText)
         {
             if (string.IsNullOrWhiteSpace(searchText))
             {
-                return Array.Empty<IFileExplorerNodeVm>();
+                return Array.Empty<IFile>();
             }
 
             // Extract any keyword that might be embedded in the start of the search text.
@@ -218,9 +219,9 @@ namespace Gorgon.Editor.Services
             (SearchMode mode, string modeSearchText) = ExtractSearchMode(searchText);
 
             // Test code for search:
-            var searchResults = new List<IFileExplorerNodeVm>();
+            var searchResults = new List<IFile>();
 
-            foreach (IFileExplorerNodeVm node in _rootNode.Children.Traverse(n => n.Children).Where(n => !n.AllowChildCreation))
+            foreach (IFile node in _rootDirectory.Directories.Traverse(d => d.Directories).SelectMany(f => f.Files).Concat(_rootDirectory.Files))
             {
                 if (searchResults.Contains(node))
                 {
@@ -249,10 +250,10 @@ namespace Gorgon.Editor.Services
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.Services.FileSystemSearchSystem"/> class.</summary>
-        /// <param name="rootNode">The root node for the file system.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="rootNode" /> parameter is <strong>null</strong>.</exception>
-        public FileSystemSearchSystem(IFileExplorerNodeVm rootNode) => _rootNode = rootNode ?? throw new ArgumentNullException(nameof(rootNode));
+        /// <summary>Initializes a new instance of the <see cref="FileSystemSearchSystem"/> class.</summary>
+        /// <param name="rootDirectory">The root directory for the file system.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="rootDirectory" /> parameter is <strong>null</strong>.</exception>
+        public FileSystemSearchSystem(IDirectory rootDirectory) => _rootDirectory = rootDirectory ?? throw new ArgumentNullException(nameof(rootDirectory));
         #endregion
     }
 }

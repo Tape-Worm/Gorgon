@@ -38,12 +38,12 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Function to perform the scan used to determine whether a content file has an associated plugin or not.
         /// </summary>
-        /// <param name="node">The node to scan.</param>
+        /// <param name="directory">The directory to scan.</param>
         /// <param name="contentFileManager">The file manager used to manage content file data.</param>
         /// <param name="scanProgress">The callback method used to report progress of the scan.</param>
         /// <param name="deepScan"><b>true</b> to perform a more time consuming scan, or <b>false</b> to just scan by file name extension.</param>
         /// <param name="forceScan">[Optional] <b>true</b> to force the scan, even if content metadata is already available, or <b>false</b> to skip files with content metadata already.</param>
         /// <returns><b>true</b> if the content plugin metadata was updated, <b>false</b> if not.</returns>
-        bool Scan(IFileExplorerNodeVm node, OLDE_IContentFileManager contentFileManager, Action<string, int, int> scanProgress, bool deepScan, bool forceScan = false);
+        bool Scan(IDirectory directory, OLDE_IContentFileManager contentFileManager, Action<string, int, int> scanProgress, bool deepScan, bool forceScan = false);
     }
 }

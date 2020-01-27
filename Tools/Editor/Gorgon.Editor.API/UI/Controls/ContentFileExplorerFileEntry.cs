@@ -111,7 +111,7 @@ namespace Gorgon.Editor.UI.Controls
         /// <summary>
         /// Property to return the icon for this image.
         /// </summary>
-        public Image FileIcon => File.Metadata?.OLDE_ContentMetadata?.GetSmallIcon();
+        public Image FileIcon => File.Metadata?.ContentMetadata?.GetSmallIcon();
 
         /// <summary>
         /// Property to return the file association type.

@@ -41,14 +41,14 @@ namespace Gorgon.Editor.Views
     /// The view for a new project.
     /// </summary>
     internal partial class StageNew
-        : EditorBaseControl, IDataContext<IStageNewVm>
+        : EditorBaseControl, IDataContext<INewProject>
     {
         #region Properties.
         /// <summary>
         /// Property to return the data context assigned to this view.
         /// </summary>
         [Browsable(false)]
-        public IStageNewVm DataContext
+        public INewProject DataContext
         {
             get;
             private set;
@@ -60,11 +60,11 @@ namespace Gorgon.Editor.Views
         /// Function to reset the path input textbox to its original color.
         /// </summary>
         /// <param name="dataContext">The current data context.</param>
-        private void ResetTextBoxColor(IStageNewVm dataContext)
+        private void ResetTextBoxColor(INewProject dataContext)
         {
             PanelLocateText.BackColor = BackColor;
-            TextProjectPath.BackColor = string.IsNullOrWhiteSpace(dataContext?.InvalidPathReason) ? TextProjectPath.Parent.BackColor : Color.DarkRed;
-            TextProjectPath.ForeColor = string.IsNullOrWhiteSpace(dataContext?.InvalidPathReason) ? TextProjectPath.Parent.ForeColor : Color.White;
+            TextProjectPath.BackColor = string.IsNullOrWhiteSpace(dataContext?.InvalidPathReason) ? DarkFormsRenderer.WindowBackground : Color.DarkRed;
+            TextProjectPath.ForeColor = DarkFormsRenderer.ForeColor;
         }
 
         /// <summary>Handles the Click event of the ButtonSelect control.</summary>
@@ -130,10 +130,10 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void TextName_Enter(object sender, EventArgs e)
         {
-            TextProjectPath.Parent.BackColor = TextProjectPath.BackColor = Drawing.Color.White;
-            TextProjectPath.ForeColor = Drawing.Color.FromArgb(64, 64, 64);
+            TextProjectPath.Parent.BackColor = TextProjectPath.BackColor = DarkFormsRenderer.BorderColor;
+            TextProjectPath.ForeColor = DarkFormsRenderer.ForeColor;
             TextProjectPath.SelectAll();
-            PanelLocateText.BackColor = Drawing.Color.Black;
+            PanelLocateText.BackColor = DarkFormsRenderer.WindowBackground;
         }
 
         /// <summary>Handles the Leave event of the TextName control.</summary>
@@ -194,16 +194,16 @@ namespace Gorgon.Editor.Views
         {
             switch (e.PropertyName)
             {
-                case nameof(IStageNewVm.AvailableDriveSpace):
+                case nameof(INewProject.AvailableDriveSpace):
                     LabelDriveSpace.Text = $"{DataContext.AvailableDriveSpace.FormatMemory()} ({DataContext.AvailableDriveSpace:###,##0} bytes)";
                     break;
-                case nameof(IStageNewVm.Title):
+                case nameof(INewProject.Title):
                     LabelProjectTitle.Text = DataContext.Title ?? string.Empty;
                     break;
-                case nameof(IStageNewVm.WorkspacePath):
+                case nameof(INewProject.WorkspacePath):
                     TextProjectPath.Text = DataContext.WorkspacePath?.FullName ?? string.Empty;
                     break;
-                case nameof(IStageNewVm.InvalidPathReason):
+                case nameof(INewProject.InvalidPathReason):
                     ResetTextBoxColor(DataContext);
                     TipError.Show(DataContext.InvalidPathReason, TextProjectPath, new Point(0, TextProjectPath.Bottom));
                     break;
@@ -221,9 +221,9 @@ namespace Gorgon.Editor.Views
         {
             switch (e.PropertyName)
             {
-                case nameof(IStageNewVm.Title):
-                case nameof(IStageNewVm.WorkspacePath):
-                case nameof(IStageNewVm.InvalidPathReason):
+                case nameof(INewProject.Title):
+                case nameof(INewProject.WorkspacePath):
+                case nameof(INewProject.InvalidPathReason):
                     TipError.Hide(TextProjectPath);
                     break;
             }
@@ -246,7 +246,7 @@ namespace Gorgon.Editor.Views
         /// Function to initialize the control from a data context.
         /// </summary>
         /// <param name="dataContext">The data context to assign.</param>
-        private void InitializeFromDataContext(IStageNewVm dataContext)
+        private void InitializeFromDataContext(INewProject dataContext)
         {
             if (dataContext == null)
             {
@@ -294,7 +294,7 @@ namespace Gorgon.Editor.Views
         /// Function to assign a data context to the view.
         /// </summary>
         /// <param name="dataContext">The data context to assign.</param>
-        public void SetDataContext(IStageNewVm dataContext)
+        public void SetDataContext(INewProject dataContext)
         {
             try
             {

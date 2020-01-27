@@ -37,7 +37,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the currently active project.
         /// </summary>
-        public IProjectVm CurrentProject
+        public IProjectEditor CurrentProject
         {
             get;
         }
@@ -46,6 +46,6 @@ namespace Gorgon.Editor.ViewModels
         /// Initializes a new instance of the <see cref="SavePackFileArgs"/> class.
         /// </summary>
         /// <param name="currentProject">The currently active project.</param>
-        public SavePackFileArgs(IProjectVm currentProject) => CurrentProject = currentProject;
+        public SavePackFileArgs(IProjectEditor currentProject) => CurrentProject = currentProject;
     }
 }

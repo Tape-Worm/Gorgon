@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using Gorgon.Diagnostics;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.ViewModels;
@@ -40,36 +41,42 @@ namespace Gorgon.Editor.ViewModels
         : IViewModelInjection
     {
         /// <summary>
-        /// Property to return the categories for the settings.
+        /// Property to set or return the categories for the settings.
         /// </summary>
         public IEnumerable<ISettingsCategoryViewModel> Categories
         {
             get;
+            set;
         }
 
         /// <summary>
-        /// Property to return the list of plug ins for the fixed plug in list category.
+        /// Property to set or return the list of plug ins for the fixed plug in list category.
         /// </summary>
         public ISettingsPlugInsList PlugInsList
         {
             get;
+            set;
         }
 
-        /// <summary>Property to return the logging interface for debug logging.</summary>
-        public IGorgonLog Log => Program.Log;
+        /// <summary>Property to set or return the logging interface for debug logging.</summary>
+        public IGorgonLog Log
+        {
+            get;
+            set;
+        }
 
-        /// <summary>Property to return the serivce used to show busy states.</summary>
+        /// <summary>Property to set or return the serivce used to show busy states.</summary>
         public IBusyStateService BusyService
         {
             get;
-            private set;
+            set;
         }
 
-        /// <summary>Property to return the service used to show message dialogs.</summary>
+        /// <summary>Property to set or return the service used to show message dialogs.</summary>
         public IMessageDisplayService MessageDisplay
         {
             get;
-            private set;
+            set;
         }
 
         /// <summary>Property to return the clipboard handler for the view model.</summary>
@@ -77,20 +84,5 @@ namespace Gorgon.Editor.ViewModels
         /// This property is not applicable for this type and will always be <b>null</b>.
         /// </remarks>
         public IClipboardHandler Clipboard => null;
-
-        /// <summary>Initializes a new instance of the <see cref="EditorSettingsParameters"/> class.</summary>
-        /// <param name="factory">The view model factory.</param>
-        /// <param name="categories">The list of settings categories.</param>
-        /// <param name="pluginsList">The list of plug ins for the fixed plugin list category.</param>
-        /// <param name="messageDisplay">The message display service.</param>
-        /// <param name="busyService">The busy state service.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
-        public EditorSettingsParameters(IEnumerable<ISettingsCategoryViewModel> categories, ISettingsPlugInsList pluginsList, IMessageDisplayService messageDisplay, IBusyStateService busyService)
-        {
-            MessageDisplay = messageDisplay ?? throw new ArgumentNullException(nameof(messageDisplay));
-            Categories = categories ?? throw new ArgumentNullException(nameof(categories));
-            PlugInsList = pluginsList ?? throw new ArgumentNullException(nameof(pluginsList));
-            BusyService = busyService ?? throw new ArgumentNullException(nameof(busyService));
-        }
     }
 }

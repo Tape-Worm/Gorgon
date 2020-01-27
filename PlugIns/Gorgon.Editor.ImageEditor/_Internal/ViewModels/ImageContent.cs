@@ -1004,7 +1004,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 // Persist the image to a new working file so that block compression won't be applied to our current working file.   
                 workFile = await Task.Run(() => _imageIO.SaveImageFile(Guid.NewGuid().ToString("N"), ImageData, CurrentPixelFormat));
 
-                inStream = workFile.OpenStream();
+                inStream = workFile.OpenStream();                
 #warning FIX ME
                 //outStream = File.OpenWrite();
 
@@ -2383,7 +2383,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             _videoAdapter = injectionParameters.VideoAdapterInfo ?? throw new ArgumentMissingException(nameof(injectionParameters.VideoAdapterInfo), nameof(injectionParameters));
             _externalEditor = injectionParameters.ExternalEditorService ?? throw new ArgumentMissingException(nameof(injectionParameters.ExternalEditorService), nameof(injectionParameters));
             _format = injectionParameters.OriginalFormat;
-
+            
             _cropResizeSettings.OkCommand = new EditorCommand<object>(DoCropResize, CanCropResize);
             _dimensionSettings.OkCommand = new EditorCommand<object>(DoUpdateImageDimensions, CanUpdateDimensions);
             _mipMapSettings.OkCommand = new EditorCommand<object>(DoGenMips, CanGenMips);
@@ -2391,7 +2391,10 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
             if (injectionParameters.File.Metadata.Attributes.TryGetValue(PremultipliedAttr, out string premultiplied))
             {
-                _isPremultiplied = bool.TryParse(premultiplied, out _isPremultiplied);
+                if (!bool.TryParse(premultiplied, out _isPremultiplied))
+                {
+                    _isPremultiplied = false;
+                }
             }
 
             BuildCodecList(ImageData);

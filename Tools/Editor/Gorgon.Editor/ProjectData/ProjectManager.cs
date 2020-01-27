@@ -50,7 +50,6 @@ namespace Gorgon.Editor.ProjectData
     /// A project manager used to create, destroy, load and save a project.
     /// </summary>
     internal class ProjectManager
-        : IProjectManager
     {
         #region Constants
         // The temporary directory name.
@@ -64,16 +63,10 @@ namespace Gorgon.Editor.ProjectData
         #region Variables.
         // The stream used for the lock file.
         private Stream _lockStream;
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to return the provider service for handling reading and writing project files.
-        /// </summary>
-        public IFileSystemProviders Providers
-        {
-            get;
-        }
+        // The log interface for debug messages.
+        private readonly IGorgonLog _log;
+        // The provider service for handling reading and writing project files.
+        public FileSystemProviders _providers;
         #endregion
 
         #region Methods.
@@ -193,19 +186,19 @@ namespace Gorgon.Editor.ProjectData
 
                     if (recycle)
                     {
-                        Program.Log.Print($"Moving '{deleteDir.FullName}' to the recycle bin...", LoggingLevel.Intermediate);
+                        _log.Print($"Moving '{deleteDir.FullName}' to the recycle bin...", LoggingLevel.Intermediate);
                         Shell32.SendToRecycleBin(deleteDir.FullName, Shell32.FileOperationFlags.FOF_SILENT | Shell32.FileOperationFlags.FOF_NOCONFIRMATION | Shell32.FileOperationFlags.FOF_WANTNUKEWARNING);
                     }
                     else
                     {
-                        Program.Log.Print($"Deleting '{deleteDir.FullName}'...", LoggingLevel.Intermediate);
+                        _log.Print($"Deleting '{deleteDir.FullName}'...", LoggingLevel.Intermediate);
                         deleteDir.Delete(true);
                     }
                     break;
                 }
                 catch (Exception ex)
                 {
-                    Program.Log.LogException(ex);
+                    _log.LogException(ex);
                     ++count;
 
                     // Give the system some time. Sometimes explorer will release its lock.
@@ -225,7 +218,7 @@ namespace Gorgon.Editor.ProjectData
         /// <returns>The path to the metadata file.</returns>
         private async Task<FileInfo> CopyFileSystemAsync(FileInfo fileSystemFile, IGorgonFileSystemProvider provider, DirectoryInfo fileSystemDir)
         {
-            IGorgonFileSystem fileSystem = new GorgonFileSystem(provider, Program.Log);
+            IGorgonFileSystem fileSystem = new GorgonFileSystem(provider, _log);
 
             fileSystem.Mount(fileSystemFile.FullName);
 
@@ -262,7 +255,7 @@ namespace Gorgon.Editor.ProjectData
                 filesPerJob = files.Count;
             }
 
-            Program.Log.Print($"Copying file system. {filesPerJob} files will be copied in a single job.", LoggingLevel.Verbose);
+            _log.Print($"Copying file system. {filesPerJob} files will be copied in a single job.", LoggingLevel.Verbose);
 
             void CopyFile(FileCopyJob job)
             {
@@ -294,7 +287,7 @@ namespace Gorgon.Editor.ProjectData
                 jobs.Add(Task.Run(() => CopyFile(jobData)));
             }
 
-            Program.Log.Print($"{jobs.Count} jobs running for file copy from '{fileSystemFile.FullName}'.", LoggingLevel.Verbose);
+            _log.Print($"{jobs.Count} jobs running for file copy from '{fileSystemFile.FullName}'.", LoggingLevel.Verbose);
 
             // Wait for the file copy to finish.
             await Task.WhenAll(jobs);
@@ -303,11 +296,11 @@ namespace Gorgon.Editor.ProjectData
 
             if (metaData == null)
             {
-                Program.Log.Print($"'{fileSystemFile.FullName}' has no metadata. A new metadata index will be generated.", LoggingLevel.Verbose);
+                _log.Print($"'{fileSystemFile.FullName}' has no metadata. A new metadata index will be generated.", LoggingLevel.Verbose);
                 return metaDataOutput;
             }
 
-            Program.Log.Print($"'{fileSystemFile.FullName}' has metadata. Copying to the .", LoggingLevel.Verbose);
+            _log.Print($"'{fileSystemFile.FullName}' has metadata. Copying to the .", LoggingLevel.Verbose);
             byte[] writeBuffer = new byte[81920];
             using (Stream readStream = metaData.OpenStream())
             using (Stream writeStream = metaDataOutput.OpenWrite())
@@ -330,7 +323,7 @@ namespace Gorgon.Editor.ProjectData
         {
             Project result = null;
 
-            Program.Log.Print("Loading project metadata.", LoggingLevel.Verbose);
+            _log.Print("Loading project metadata.", LoggingLevel.Verbose);
 
             using (var reader = new StreamReader(metaDataFile.FullName, Encoding.UTF8))
             {
@@ -344,14 +337,14 @@ namespace Gorgon.Editor.ProjectData
 
                 if (!result.FileSystemDirectory.Exists)
                 {
-                    Program.Log.Print("[WARNING] The file system directory was not found.", LoggingLevel.Verbose);
+                    _log.Print("[WARNING] The file system directory was not found.", LoggingLevel.Verbose);
                     result.FileSystemDirectory.Create();
                     result.FileSystemDirectory.Refresh();
                 }
 
                 if (!result.TempDirectory.Exists)
                 {
-                    Program.Log.Print("[WARNING] The temporary directory was not found.", LoggingLevel.Verbose);
+                    _log.Print("[WARNING] The temporary directory was not found.", LoggingLevel.Verbose);
                     result.TempDirectory.Create();
                     result.TempDirectory.Refresh();
                 }
@@ -385,8 +378,7 @@ namespace Gorgon.Editor.ProjectData
                     return false;
                 }
 
-                var metadata = new FileInfo(Path.Combine(directory.FullName, CommonEditorConstants.EditorMetadataFileName));
-                return metadata.Exists;
+                return File.Exists(Path.Combine(directory.FullName, CommonEditorConstants.EditorMetadataFileName));
             }
             catch
             {
@@ -484,7 +476,7 @@ namespace Gorgon.Editor.ProjectData
                 }
                 catch (Exception ex)
                 {
-                    Program.Log.LogException(ex);
+                    _log.LogException(ex);
                     ++count;
 
                     Thread.Sleep(250);
@@ -545,7 +537,7 @@ namespace Gorgon.Editor.ProjectData
         /// <param name="cancelToken">The token used for cancellation of the operation.</param>
         /// <returns>A task for asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, <paramref name="path"/>, or the <paramref name="writer"/> parameter is <b>null</b>.</exception>        
-        public async Task SavePackedFileAsync(IProject project, FileInfo path, OLDE_FileWriterPlugIn writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
+        public async Task SavePackedFileAsync(IProject project, FileInfo path, FileWriterPlugIn writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
         {
             if (project == null)
             {
@@ -568,7 +560,7 @@ namespace Gorgon.Editor.ProjectData
 
             try
             {
-                await writer.WriteAsync(path, project.FileSystemDirectory, progressCallback, cancelToken);
+                await writer.WriteAsync(path.FullName, project.FileSystemDirectory, progressCallback, cancelToken);
                 path.Refresh();
             }
             finally
@@ -660,7 +652,7 @@ namespace Gorgon.Editor.ProjectData
                 throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_PROJECT_NOT_FOUND, path.FullName));
             }
 
-            IGorgonFileSystemProvider provider = Providers.GetBestReader(path);
+            IGorgonFileSystemProvider provider = _providers.GetBestReader(path);
 
             if (provider == null)
             {
@@ -694,7 +686,7 @@ namespace Gorgon.Editor.ProjectData
                     return;
                 }
 
-                Program.Log.Print("No metadata file exists. A new one will be created.", LoggingLevel.Verbose);
+                _log.Print("No metadata file exists. A new one will be created.", LoggingLevel.Verbose);
 
                 // Create a dummy project, so we have something to serialize.
                 var dummyProject = new Project(workspace, tempDir, fsDir, srcDir);
@@ -708,7 +700,7 @@ namespace Gorgon.Editor.ProjectData
                     return;
                 }
 
-                var importer = new V2MetadataImporter(v2Metadata);
+                var importer = new V2MetadataImporter(v2Metadata, _log);
                 importer.Import(dummyProject);
                 PersistMetadata(dummyProject, CancellationToken.None);
             }
@@ -737,7 +729,7 @@ namespace Gorgon.Editor.ProjectData
             var tempPath = new FileInfo(Path.Combine(project.ProjectWorkSpace.FullName, Guid.NewGuid().ToString("N")));
             StreamWriter jsonWriter = null;
 
-            Program.Log.Print("Writing metadata.", LoggingLevel.Verbose);
+            _log.Print("Writing metadata.", LoggingLevel.Verbose);
             try
             {
                 // Write to a transactional file first so we don't corrupt the original.
@@ -794,6 +786,36 @@ namespace Gorgon.Editor.ProjectData
 
             Lock(project.ProjectWorkSpace);
         }
+
+        /// <summary>
+        /// Function to delete a project.
+        /// </summary>
+        /// <param name="projectPath">The path to the project directory.</param>
+        /// <returns><b>true</b> if the directory was found, or <b>false</b> if not.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="projectPath"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="projectPath"/> parameter is empty.</exception>
+        public bool DeleteProject(string projectPath)
+        {
+            if (projectPath == null)
+            {
+                throw new ArgumentNullException(nameof(projectPath));
+            }
+
+            if (string.IsNullOrWhiteSpace(projectPath))
+            {
+                throw new ArgumentEmptyException(nameof(projectPath));
+            }
+
+            if ((!Directory.Exists(projectPath))
+                || ((File.GetAttributes(projectPath) & FileAttributes.Directory) != FileAttributes.Directory))
+            {
+                return false;
+            }
+
+            // Send the project to the recycle bin so we can recover it if need be.
+            Shell32.SendToRecycleBin(projectPath, Shell32.FileOperationFlags.FOF_SILENT | Shell32.FileOperationFlags.FOF_NOCONFIRMATION | Shell32.FileOperationFlags.FOF_WANTNUKEWARNING);
+            return true;
+        }
         #endregion
 
         #region Constructor/Finalizer.
@@ -801,8 +823,13 @@ namespace Gorgon.Editor.ProjectData
         /// Initializes a new instance of the <see cref="ProjectManager"/> class.
         /// </summary>
         /// <param name="providers">The file system providers used to read and write project files.</param>
+        /// <param name="log">The log interface for debug messages.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="providers"/> parameter is <b>null</b>.</exception>
-        public ProjectManager(IFileSystemProviders providers) => Providers = providers ?? throw new ArgumentNullException(nameof(providers));
+        public ProjectManager(FileSystemProviders providers, IGorgonLog log)
+        {
+            _log = log ?? GorgonLog.NullLog;
+            _providers = providers ?? throw new ArgumentNullException(nameof(providers));            
+        }
         #endregion
     }
 }

@@ -85,6 +85,18 @@ namespace Gorgon.Editor.PlugIns
         }
 
         /// <summary>
+        /// Property to return the file system used to hold temporary file data.
+        /// </summary>
+        /// <remarks>
+        /// Importer plug ins can use this to write temporary working data, which is deleted after the project unloads, for use during the import process.
+        /// </remarks>
+        protected IGorgonFileSystemWriter<Stream> TemporaryFileSystem
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// Property to return the manager used to manage files in the project file system.
         /// </summary>
         /// <remarks>
@@ -358,8 +370,10 @@ namespace Gorgon.Editor.PlugIns
         /// Function called when a project is loaded/created.
         /// </summary>
         /// <param name="fileManager">The file manager for the project.</param>
-        public void ProjectOpened(IContentFileManager fileManager)
+        /// <param name="tempFileSystem">The file system used to hold temporary working data.</param>
+        public void ProjectOpened(IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> tempFileSystem)
         {
+            TemporaryFileSystem = tempFileSystem;
             ContentFileManager = fileManager;
             OnProjectOpened();
         }
@@ -370,7 +384,8 @@ namespace Gorgon.Editor.PlugIns
         public void ProjectClosed()
         {
             OnProjectClosed();
-            ContentFileManager = null;            
+            ContentFileManager = null;
+            TemporaryFileSystem = null;
         }
 
         /// <summary>

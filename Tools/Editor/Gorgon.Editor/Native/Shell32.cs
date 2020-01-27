@@ -43,7 +43,7 @@ namespace Gorgon.Editor.Native
         /// Possible flags for the SHFileOperation method.
         /// </summary>
         [Flags]
-        public enum FileOperationFlags : ushort
+        internal enum FileOperationFlags : ushort
         {
             /// <summary>
             /// Do not show a dialog during the process
@@ -71,7 +71,7 @@ namespace Gorgon.Editor.Native
         /// <summary>
         /// File Operation Function Type for SHFileOperation
         /// </summary>
-        public enum FileOperationType : uint
+        internal enum FileOperationType : uint
         {
             /// <summary>
             /// Move the objects
@@ -136,5 +136,8 @@ namespace Gorgon.Editor.Native
                 return false;
             }
         }
+
+        /// <summary>Initializes static members of the <see cref="Shell32"/> class.</summary>
+        static Shell32() => Marshal.PrelinkAll(typeof(Shell32));
     }
 }

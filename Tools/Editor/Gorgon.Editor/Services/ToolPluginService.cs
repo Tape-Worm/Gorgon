@@ -31,6 +31,7 @@ using System.Linq;
 using System.Text;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
+using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
@@ -45,29 +46,25 @@ namespace Gorgon.Editor.Services
     /// The service used for managing the tool plugins.
     /// </summary>
     internal class ToolPlugInService
-        : IToolPlugInManagerService, IDisposable
+        : IToolPlugInService, IDisposable
     {
         #region Variables.
         // The plugin list.
-        private readonly Dictionary<string, OLDE_ToolPlugIn> _plugins = new Dictionary<string, OLDE_ToolPlugIn>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, ToolPlugIn> _plugins = new Dictionary<string, ToolPlugIn>(StringComparer.OrdinalIgnoreCase);
         // The list of disabled tool plug ins.
         private readonly Dictionary<string, IDisabledPlugIn> _disabled = new Dictionary<string, IDisabledPlugIn>(StringComparer.OrdinalIgnoreCase);
         // The list of ribbon buttons for all tools.
-        //private Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> _ribbonButtons = new Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
-        // The application graphics context for passing to tool plug ins.
-        private readonly IGraphicsContext _graphicsContext;
-        // Common application services.
-        private readonly IViewModelInjection _commonServices;
+        private Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> _ribbonButtons = new Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
         // The directory that contains the settings for the plug ins.
-        private readonly DirectoryInfo _settingsDir;
-        // The file system folder browser.
-        private readonly IFileSystemFolderBrowseService _folderBrowser;
+        private readonly string _settingsDir;
+        // The host application services to pass to the plug ins.
+        private readonly IHostToolServices _hostServices;
         #endregion
 
         #region Properties.
         /// <summary>Property to return the list of tool plugins loaded in to the application.</summary>
         /// <value>The plugins.</value>
-        public IReadOnlyDictionary<string, OLDE_ToolPlugIn> PlugIns => _plugins;
+        public IReadOnlyDictionary<string, ToolPlugIn> PlugIns => _plugins;
 
         /// <summary>Property to return the list of disabled plug ins.</summary>
         public IReadOnlyDictionary<string, IDisabledPlugIn> DisabledPlugIns => _disabled;
@@ -81,15 +78,15 @@ namespace Gorgon.Editor.Services
         /// <returns>The file containing the plug in settings.</returns>
         private FileInfo GetContentPlugInSettingsPath(string name) =>
 #if DEBUG
-            new FileInfo(Path.Combine(_settingsDir.FullName, name.FormatFileName()) + ".DEBUG.json");
+            new FileInfo(Path.Combine(_settingsDir, name.FormatFileName()) + ".DEBUG.json");
 #else
-            new FileInfo(Path.Combine(_settingsDir.FullName, Path.ChangeExtension(name.FormatFileName(), "json")));
+            new FileInfo(Path.Combine(_settingsDir, Path.ChangeExtension(name.FormatFileName(), "json")));
 #endif
 
         /// <summary>Function to add a tool plugin to the service.</summary>
         /// <param name="plugin">The plugin to add.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> parameter is <b>null</b>.</exception>
-        public void AddToolPlugIn(OLDE_ToolPlugIn plugin)
+        public void AddToolPlugIn(ToolPlugIn plugin)
         {
             if (plugin == null)
             {
@@ -107,7 +104,7 @@ namespace Gorgon.Editor.Services
         /// <summary>Function to clear all of the tool plugins.</summary>
         public void Clear()
         {
-            foreach (KeyValuePair<string, OLDE_ToolPlugIn> plugin in _plugins)
+            foreach (KeyValuePair<string, ToolPlugIn> plugin in _plugins)
             {
                 plugin.Value.Shutdown();
             }
@@ -124,7 +121,7 @@ namespace Gorgon.Editor.Services
         /// <param name="pluginCache">The plug in assembly cache.</param>
         /// <param name="pluginDir">The directory that contains the plug ins.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginCache"/>, or the <paramref name="pluginDir"/> parameter is <b>null</b>.</exception>
-        public void LoadToolPlugIns(GorgonMefPlugInCache pluginCache, DirectoryInfo pluginDir)
+        public void LoadToolPlugIns(GorgonMefPlugInCache pluginCache, string pluginDir)
         {
             if (pluginCache == null)
             {
@@ -136,7 +133,7 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentNullException(nameof(pluginDir));
             }
 
-            IReadOnlyList<PlugInAssemblyState> assemblies = pluginCache.ValidateAndLoadAssemblies(pluginDir.GetFiles("*.dll").Select(item => item.FullName), Program.Log);
+            IReadOnlyList<PlugInAssemblyState> assemblies = pluginCache.ValidateAndLoadAssemblies(Directory.EnumerateFiles(pluginDir, "*.dll", SearchOption.TopDirectoryOnly), Program.Log);
 
             if (assemblies.Count > 0)
             {
@@ -147,15 +144,14 @@ namespace Gorgon.Editor.Services
             }
 
             IGorgonPlugInService plugins = new GorgonMefPlugInService(pluginCache);
-            IReadOnlyList<OLDE_ToolPlugIn> pluginList = plugins.GetPlugIns<OLDE_ToolPlugIn>();
+            IReadOnlyList<ToolPlugIn> pluginList = plugins.GetPlugIns<ToolPlugIn>();
 
-            foreach (OLDE_ToolPlugIn plugin in pluginList)
+            foreach (ToolPlugIn plugin in pluginList)
             {
                 try
                 {
                     Program.Log.Print($"Creating tool plug in '{plugin.Name}'...", LoggingLevel.Simple);
-                    plugin.AssignCommonServices(_commonServices);
-                    plugin.Initialize(this, _graphicsContext, _folderBrowser);
+                    plugin.Initialize(_hostServices);
 
                     // Check to see if this plug in can continue.
                     IReadOnlyList<string> validation = plugin.IsPlugInAvailable();
@@ -195,7 +191,7 @@ namespace Gorgon.Editor.Services
 
         /// <summary>Function to remove a tool plugin from the service.</summary>
         /// <param name="plugin">The plugin to remove.</param>
-        public void RemoveToolPlugIn(OLDE_ToolPlugIn plugin)
+        public void RemoveToolPlugIn(ToolPlugIn plugin)
         {
             if (plugin == null)
             {
@@ -283,21 +279,40 @@ namespace Gorgon.Editor.Services
                 }
             }
         }
+
+        /// <summary>
+        /// Function called when a project is loaded/created.
+        /// </summary>
+        /// <param name="fileManager">The content file manager for the project.</param>
+        /// <param name="temporaryFileSystem">The file system used to hold temporary working data.</param>
+        public void ProjectActivated(IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> temporaryFileSystem)
+        {
+            foreach (ToolPlugIn plugIn in _plugins.Values)
+            {
+                plugIn.ProjectOpened(fileManager, temporaryFileSystem);
+            }
+        }
+
+        /// <summary>
+        /// Function called when a project is unloaded.
+        /// </summary>        
+        public void ProjectDeactivated()
+        {
+            foreach (ToolPlugIn plugIn in _plugins.Values)
+            {
+                plugIn.ProjectClosed();
+            }
+        }
         #endregion
 
         #region Constructor.
         /// <summary>Initializes a new instance of the ToolPlugInService class.</summary>
         /// <param name="settingsDirectory">The directory that will contain settings for the content plug ins.</param>
-        /// <param name="graphicsContext">The graphics context used to pass the application graphics context to plug ins.</param>
-        /// <param name="folderBrowser">The folder browser used to browse the file system directory structure.</param>
-        /// <param name="commonServices">Common application services.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
-        public ToolPlugInService(DirectoryInfo settingsDirectory, IGraphicsContext graphicsContext, IFileSystemFolderBrowseService folderBrowser, IViewModelInjection commonServices)
+        /// <param name="hostServices">The host appplication services to pass to the plug ins.</param>
+        public ToolPlugInService(string settingsDirectory, IHostToolServices hostServices)
         {
-            _settingsDir = settingsDirectory ?? throw new ArgumentNullException(nameof(settingsDirectory));
-            _graphicsContext = graphicsContext ?? throw new ArgumentNullException(nameof(graphicsContext));
-            _commonServices = commonServices ?? throw new ArgumentNullException(nameof(commonServices));
-            _folderBrowser = folderBrowser ?? throw new ArgumentNullException(nameof(folderBrowser));
+            _settingsDir = settingsDirectory;
+            _hostServices = hostServices;
         }
         #endregion
     }

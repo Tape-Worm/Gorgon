@@ -162,8 +162,8 @@ namespace Gorgon.Editor.Views
             handler?.Invoke(this, EventArgs.Empty);
         }
 
-        /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
-        /// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
+        /// <summary>Raises the <see cref="System.Windows.Forms.UserControl.Load"/> event.</summary>
+        /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);

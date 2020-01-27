@@ -139,9 +139,6 @@
   <data name="GOREDIT_ERR_PANEL_NOT_REGISTERED" xml:space="preserve">
     <value>The panel '{0}' is not registered on this view.</value>
   </data>
-  <data name="recent_item_badge_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\recent_item_badge_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="GOREDIT_PLUGIN_TYPE_CONTENT" xml:space="preserve">
     <value>Editor content</value>
   </data>

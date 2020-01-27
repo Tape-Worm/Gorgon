@@ -35,8 +35,6 @@ using Gorgon.Editor.Content;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
-using Gorgon.Editor.Rendering;
-using Gorgon.Editor.UI.ViewModels;
 using Gorgon.IO;
 using Gorgon.PlugIns;
 using Newtonsoft.Json;
@@ -46,39 +44,43 @@ namespace Gorgon.Editor.Services
     /// <summary>
     /// The service used for managing the content plugins.
     /// </summary>
-#warning GET RID OF THIS
     internal class ContentPlugInService
-        : IContentPlugInManagerService, IDisposable
+        : IContentPlugInService, IDisposable
     {
         #region Variables.
         // The plugin list.
-        private readonly Dictionary<string, OLDE_ContentPlugIn> _plugins = new Dictionary<string, OLDE_ContentPlugIn>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, ContentPlugIn> _plugins = new Dictionary<string, ContentPlugIn>(StringComparer.OrdinalIgnoreCase);
         // The plugin list.
-        private readonly Dictionary<string, OLDE_ContentImportPlugIn> _importers = new Dictionary<string, OLDE_ContentImportPlugIn>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, ContentImportPlugIn> _importers = new Dictionary<string, ContentImportPlugIn>(StringComparer.OrdinalIgnoreCase);
         // The list of disabled content plug ins.
         private readonly Dictionary<string, IDisabledPlugIn> _disabled = new Dictionary<string, IDisabledPlugIn>(StringComparer.OrdinalIgnoreCase);
         // The directory that contains the settings for the plug ins.
-        private readonly DirectoryInfo _settingsDir;
-        // The application graphics context for passing to content plug ins.
-        private readonly IGraphicsContext _graphicsContext;
-        // The message display service.
-        private readonly IViewModelInjection _commonServices;
-        // The file system folder browser.
-        private readonly IFileSystemFolderBrowseService _folderBrowser;
+        private readonly string _settingsDir;
+        // The services passed from the host to the content plug ins.
+        private readonly IHostContentServices _hostServices;
         #endregion
 
         #region Properties.
         /// <summary>Property to return the list of content plugins loaded in to the application.</summary>
         /// <value>The plugins.</value>
-        public IReadOnlyDictionary<string, OLDE_ContentPlugIn> PlugIns => _plugins;
+        public IReadOnlyDictionary<string, ContentPlugIn> PlugIns => _plugins;
 
         /// <summary>
         /// Property to return the list of content importer plug ins loaded into the application.
         /// </summary>
-        public IReadOnlyDictionary<string, OLDE_ContentImportPlugIn> Importers => _importers;
+        public IReadOnlyDictionary<string, ContentImportPlugIn> Importers => _importers;
 
         /// <summary>Property to return the list of disabled plug ins.</summary>
         public IReadOnlyDictionary<string, IDisabledPlugIn> DisabledPlugIns => _disabled;
+
+        /// <summary>
+        /// Property to set or return the currently active content file manager to pass to any plug ins.
+        /// </summary>
+        public IContentFileManager ContentFileManager
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Methods.
@@ -87,28 +89,29 @@ namespace Gorgon.Editor.Services
         /// </summary>
         /// <param name="metadata">The metadata item to evaluate.</param>
         /// <returns>The plug in, and the <see cref="MetadataPlugInState"/> used to evaluate whether a deep inspection is required.</returns>
-        private (OLDE_ContentPlugIn plugin, MetadataPlugInState state) GetContentPlugIn(ProjectItemMetadata metadata)
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="metadata"/> parameter is <b>null</b>.</exception>
+        public (ContentPlugIn plugin, MetadataPlugInState state) GetContentPlugIn(ProjectItemMetadata metadata)
         {
+            if (metadata == null)
+            {
+                throw new ArgumentNullException(nameof(metadata));
+            }
+
             // If the name is null, then we've never assigned the content plugin.  So look it up.
             if (metadata.PlugInName == null)
             {
                 return (null, MetadataPlugInState.Unassigned);
             }
 
-            // If we have an empty string
-            if (string.IsNullOrWhiteSpace(metadata.PlugInName))
-            {
-                return (null, MetadataPlugInState.NotFound);
-            }
-
 #pragma warning disable IDE0046 // Convert to conditional expression
-            if (!PlugIns.TryGetValue(metadata.PlugInName, out OLDE_ContentPlugIn plugin))
+            if ((string.IsNullOrWhiteSpace(metadata.PlugInName))
+                || (!PlugIns.TryGetValue(metadata.PlugInName, out ContentPlugIn plugin)))
             {
                 return (null, MetadataPlugInState.NotFound);
             }
+#pragma warning restore IDE0046 // Convert to conditional expression
 
             return (plugin, MetadataPlugInState.Assigned);
-#pragma warning restore IDE0046 // Convert to conditional expression
         }
 
         /// <summary>
@@ -116,12 +119,116 @@ namespace Gorgon.Editor.Services
         /// </summary>
         /// <param name="name">The name of the file.</param>
         /// <returns>The file containing the plug in settings.</returns>
-        private FileInfo GetContentPlugInSettingsPath(string name) =>
+        private string GetContentPlugInSettingsPath(string name) =>
 #if DEBUG
-            new FileInfo(Path.Combine(_settingsDir.FullName, name.FormatFileName()) + ".DEBUG.json");
+            Path.Combine(_settingsDir, name.FormatFileName()) + ".DEBUG.json";
 #else
-            new FileInfo(Path.Combine(_settingsDir.FullName, Path.ChangeExtension(name.FormatFileName(), "json")));
+            Path.Combine(_settingsDir, Path.ChangeExtension(name.FormatFileName(), "json"));
 #endif
+
+
+        /// <summary>
+        /// Function to load plugins for content editors.
+        /// </summary>
+        /// <param name="plugins">The plug in service to use when loading the plugins.</param>
+        private void LoadContentEditors(IGorgonPlugInService plugins)
+        {
+            IReadOnlyList<ContentPlugIn> pluginList = plugins.GetPlugIns<ContentPlugIn>();
+
+            foreach (ContentPlugIn plugin in pluginList)
+            {
+                try
+                {
+                    _hostServices.Log.Print($"Creating content plug in '{plugin.Name}'...", LoggingLevel.Simple);                    
+                    plugin.Initialize(_hostServices);
+
+                    // Check to see if this plug in can continue.
+                    IReadOnlyList<string> validation = plugin.IsPlugInAvailable();
+
+                    if (validation.Count > 0)
+                    {
+                        // Shut the plug in down.
+                        plugin.Shutdown();
+
+                        _hostServices.Log.Print($"WARNING: The content plug in '{plugin.Name}' is disabled:", LoggingLevel.Simple);
+                        foreach (string reason in validation)
+                        {
+                            _hostServices.Log.Print($"WARNING: {reason}", LoggingLevel.Verbose);
+                        }
+
+                        _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.ValidationError, plugin.Name, string.Join("\n", validation), plugin.PlugInPath);
+
+                        // Remove this plug in.
+                        plugins.Unload(plugin.Name);
+                        continue;
+                    }
+
+                    AddContentPlugIn(plugin);
+                }
+                catch (Exception ex)
+                {
+                    // Attempt to gracefully shut the plug in down if we error out.
+                    plugin.Shutdown();
+
+                    _hostServices.Log.Print($"ERROR: Cannot create content plug in '{plugin.Name}'.", LoggingLevel.Simple);
+                    _hostServices.Log.LogException(ex);
+
+                    _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.Error, plugin.Name, string.Format(Resources.GOREDIT_DISABLE_CONTENT_PLUGIN_EXCEPTION, ex.Message), plugin.PlugInPath);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Function to load plugins for content importers.
+        /// </summary>
+        /// <param name="plugins">The plug in service to use when loading the plugins.</param>
+        private void LoadImporters(IGorgonPlugInService plugins)
+        {
+            // Before we load, pull in any importers so they'll be initialized and ready for content plug ins (if they're needed).
+            IReadOnlyList<ContentImportPlugIn> importers = plugins.GetPlugIns<ContentImportPlugIn>();
+
+            foreach (ContentImportPlugIn plugin in importers)
+            {
+                try
+                {
+                    _hostServices.Log.Print($"Creating content importer plug in '{plugin.Name}'...", LoggingLevel.Simple);
+                    plugin.Initialize(_hostServices);
+
+                    // Check to see if this plug in can continue.
+                    IReadOnlyList<string> validation = plugin.IsPlugInAvailable();
+
+                    if (validation.Count > 0)
+                    {
+                        // Shut the plug in down.
+                        plugin.Shutdown();
+
+                        _hostServices.Log.Print($"WARNING: The importer plug in '{plugin.Name}' is disabled:", LoggingLevel.Simple);
+                        foreach (string reason in validation)
+                        {
+                            _hostServices.Log.Print($"WARNING: {reason}", LoggingLevel.Verbose);
+                        }
+
+                        _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.ValidationError, plugin.Name, string.Join("\n", validation), plugin.PlugInPath);
+
+                        // Remove this plug in.
+                        plugins.Unload(plugin.Name);
+                        continue;
+                    }
+
+                    AddContentImportPlugIn(plugin);
+                }
+                catch (Exception ex)
+                {
+                    // Attempt to gracefully shut the plug in down if we error out.
+                    plugin.Shutdown();
+
+                    _hostServices.Log.Print($"ERROR: Cannot create importer plug in '{plugin.Name}'.", LoggingLevel.Simple);
+                    _hostServices.Log.LogException(ex);
+
+                    _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.Error, plugin.Name, string.Format(Resources.GOREDIT_DISABLE_CONTENT_PLUGIN_EXCEPTION, ex.Message), plugin.PlugInPath);
+                }
+            }
+        }
 
         /// <summary>Funcion to read the settings for a content plug in from a JSON file.</summary>
         /// <typeparam name="T">The type of settings to read. Must be a reference type.</typeparam>
@@ -144,14 +251,14 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentEmptyException(nameof(name));
             }
 
-            FileInfo settingsFile = GetContentPlugInSettingsPath(name);
+            string settingsFile = GetContentPlugInSettingsPath(name);
 
-            if (!settingsFile.Exists)
+            if (!System.IO.File.Exists(settingsFile))
             {
                 return null;
             }
 
-            using (Stream stream = settingsFile.OpenRead())
+            using (Stream stream = System.IO.File.Open(settingsFile, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 using (var reader = new StreamReader(stream, Encoding.UTF8))
                 {
@@ -186,8 +293,8 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentNullException(nameof(contentSettings));
             }
 
-            FileInfo settingsFile = GetContentPlugInSettingsPath(name);
-            using (Stream stream = settingsFile.Open(FileMode.Create, FileAccess.Write, FileShare.None))
+            string settingsFile = GetContentPlugInSettingsPath(name);
+            using (Stream stream = System.IO.File.Open(settingsFile, FileMode.Create, FileAccess.Write, FileShare.None))
             {
                 using (var writer = new StreamWriter(stream, Encoding.UTF8, 80000, false))
                 {
@@ -199,7 +306,7 @@ namespace Gorgon.Editor.Services
         /// <summary>Function to add a content import plugin to the service.</summary>
         /// <param name="plugin">The plugin to add.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> parameter is <b>null</b>.</exception>
-        public void AddContentImportPlugIn(OLDE_ContentImportPlugIn plugin)
+        public void AddContentImportPlugIn(ContentImportPlugIn plugin)
         {
             if (plugin == null)
             {
@@ -217,7 +324,7 @@ namespace Gorgon.Editor.Services
         /// <summary>Function to add a content plugin to the service.</summary>
         /// <param name="plugin">The plugin to add.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> parameter is <b>null</b>.</exception>
-        public void AddContentPlugIn(OLDE_ContentPlugIn plugin)
+        public void AddContentPlugIn(ContentPlugIn plugin)
         {
             if (plugin == null)
             {
@@ -232,106 +339,18 @@ namespace Gorgon.Editor.Services
             _plugins[plugin.Name] = plugin;
         }
 
-        /// <summary>
-        /// Function to assign a plugin to a content file.
-        /// </summary>
-        /// <param name="contentFile">The content file to update.</param>
-        /// <param name="fileManager">The file manager used to manage content files.</param>
-        /// <param name="plugin">The plugin to assign.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="contentFile"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="GorgonException">Thrown if the <paramref name="plugin"/> is unable to read the contents of <paramref name="contentFile"/>.</exception>
-        public void AssignContentPlugIn(OLDE_IContentFile contentFile, OLDE_IContentFileManager fileManager, OLDE_IContentPlugInMetadata plugin)
-        {
-            if (contentFile == null)
-            {
-                throw new ArgumentNullException(nameof(contentFile));
-            }
-
-            if ((!plugin.CanOpenContent(contentFile, fileManager)) || (contentFile.Metadata == null))
-            {
-                throw new GorgonException(GorgonResult.CannotRead);
-            }
-
-            contentFile.Metadata.OLDE_ContentMetadata = plugin;
-            contentFile.RefreshMetadata();
-        }
-
-        /// <summary>
-        /// Function to set up the content plug in association for a content file.
-        /// </summary>
-        /// <param name="contentFile">The content file to evaluate.</param>
-        /// <param name="fileManager">The file manager used to manage content files.</param>
-        /// <param name="metadataOnly"><b>true</b> to indicate that only metadata should be used to scan the content file, <b>false</b> to scan, in depth, per plugin (slow).</param>
-        /// <returns><b>true</b> if a content plug in was associated, <b>false</b> if not.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="contentFile"/> parameter is <b>null</b>.</exception>
-        public bool AssignContentPlugIn(OLDE_IContentFile contentFile, OLDE_IContentFileManager fileManager, bool metadataOnly)
-        {
-            if (contentFile == null)
-            {
-                throw new ArgumentNullException(nameof(contentFile));
-            }
-
-            // Do not query association data for excluded file paths.
-            if (contentFile.Metadata == null)
-            {
-                return false;
-            }
-
-            // This node is already associated.
-            if (contentFile.Metadata.OLDE_ContentMetadata != null)
-            {
-                return false;
-            }
-
-            // Check the metadata for the plugin type associated with the node.            
-            (OLDE_ContentPlugIn plugin, MetadataPlugInState state) = GetContentPlugIn(contentFile.Metadata);
-
-            switch (state)
-            {
-                case MetadataPlugInState.NotFound:
-                    contentFile.Metadata.OLDE_ContentMetadata = null;
-                    contentFile.Metadata.PlugInName = string.Empty;
-                    return true;
-                case MetadataPlugInState.Assigned:
-                    contentFile.Metadata.OLDE_ContentMetadata = plugin as OLDE_IContentPlugInMetadata;
-                    return true;
-            }
-
-            if (metadataOnly)
-            {
-                return true;
-            }
-
-            // Assume that no plugin is available for the node.
-            contentFile.Metadata.PlugInName = string.Empty;
-
-            // Attempt to associate a content plug in with the node.            
-            foreach (KeyValuePair<string, OLDE_ContentPlugIn> servicePlugIn in PlugIns)
-            {
-                if ((!(servicePlugIn.Value is OLDE_IContentPlugInMetadata pluginMetadata))
-                    || (!pluginMetadata.CanOpenContent(contentFile, fileManager)))
-                {
-                    continue;
-                }
-
-                contentFile.Metadata.OLDE_ContentMetadata = pluginMetadata;
-                break;
-            }
-
-            return true;
-        }
-
         /// <summary>Function to clear all of the content plugins.</summary>
         public void Clear()
         {
-            foreach (KeyValuePair<string, OLDE_ContentPlugIn> plugin in _plugins)
+
+            foreach (KeyValuePair<string, ContentPlugIn> plugin in _plugins)
             {
                 plugin.Value.Shutdown();
             }
 
             _plugins.Clear();
 
-            foreach (KeyValuePair<string, OLDE_ContentImportPlugIn> plugin in _importers)
+            foreach (KeyValuePair<string, ContentImportPlugIn> plugin in _importers)
             {
                 plugin.Value.Shutdown();
             }
@@ -348,7 +367,8 @@ namespace Gorgon.Editor.Services
         /// <param name="pluginCache">The plug in assembly cache.</param>
         /// <param name="pluginDir">The directory that contains the plug ins.</param>        
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginCache"/>, or the <paramref name="pluginDir"/> parameter is <b>null</b>.</exception>
-        public void LoadContentPlugIns(GorgonMefPlugInCache pluginCache, DirectoryInfo pluginDir)
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="pluginDir"/> parameter is empty.</exception>
+        public void LoadContentPlugIns(GorgonMefPlugInCache pluginCache, string pluginDir)
         {
             if (pluginCache == null)
             {
@@ -360,7 +380,13 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentNullException(nameof(pluginDir));
             }
 
-            IReadOnlyList<PlugInAssemblyState> assemblies = pluginCache.ValidateAndLoadAssemblies(pluginDir.GetFiles("*.dll").Select(item => item.FullName), Program.Log);
+            if (string.IsNullOrWhiteSpace(pluginDir))
+            {
+                throw new ArgumentEmptyException(nameof(pluginDir));
+            }
+
+            IReadOnlyList<string> files = System.IO.Directory.GetFiles(pluginDir, "*.dll");
+            IReadOnlyList<PlugInAssemblyState> assemblies = pluginCache.ValidateAndLoadAssemblies(files, _hostServices.Log);
 
             if (assemblies.Count > 0)
             {
@@ -372,103 +398,15 @@ namespace Gorgon.Editor.Services
 
             IGorgonPlugInService plugins = new GorgonMefPlugInService(pluginCache);
 
-            // Before we load, pull in any importers so they'll be initialized and ready for content plug ins (if they're needed).
-            IReadOnlyList<OLDE_ContentImportPlugIn> importers = plugins.GetPlugIns<OLDE_ContentImportPlugIn>();
-
-            foreach (OLDE_ContentImportPlugIn plugin in importers)
-            {
-                try
-                {
-                    Program.Log.Print($"Creating content importer plug in '{plugin.Name}'...", LoggingLevel.Simple);
-                    plugin.AssignCommonServices(_commonServices);
-                    plugin.Initialize(this, _graphicsContext);
-
-                    // Check to see if this plug in can continue.
-                    IReadOnlyList<string> validation = plugin.IsPlugInAvailable();
-
-                    if (validation.Count > 0)
-                    {
-                        // Shut the plug in down.
-                        plugin.Shutdown();
-
-                        Program.Log.Print($"WARNING: The content plug in '{plugin.Name}' is disabled:", LoggingLevel.Simple);
-                        foreach (string reason in validation)
-                        {
-                            Program.Log.Print($"WARNING: {reason}", LoggingLevel.Verbose);
-                        }
-
-                        _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.ValidationError, plugin.Name, string.Join("\n", validation), plugin.PlugInPath);
-
-                        // Remove this plug in.
-                        plugins.Unload(plugin.Name);
-                        continue;
-                    }
-
-                    AddContentImportPlugIn(plugin);
-                }
-                catch (Exception ex)
-                {
-                    // Attempt to gracefully shut the plug in down if we error out.
-                    plugin.Shutdown();
-
-                    Program.Log.Print($"ERROR: Cannot create content plug in '{plugin.Name}'.", LoggingLevel.Simple);
-                    Program.Log.LogException(ex);
-
-                    _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.Error, plugin.Name, string.Format(Resources.GOREDIT_DISABLE_CONTENT_PLUGIN_EXCEPTION, ex.Message), plugin.PlugInPath);
-                }
-            }
-
-            IReadOnlyList<OLDE_ContentPlugIn> pluginList = plugins.GetPlugIns<OLDE_ContentPlugIn>();
-
-            foreach (OLDE_ContentPlugIn plugin in pluginList)
-            {
-                try
-                {
-                    Program.Log.Print($"Creating content plug in '{plugin.Name}'...", LoggingLevel.Simple);
-                    plugin.AssignCommonServices(_commonServices);
-                    plugin.Initialize(this, _graphicsContext, _folderBrowser);
-
-                    // Check to see if this plug in can continue.
-                    IReadOnlyList<string> validation = plugin.IsPlugInAvailable();
-
-                    if (validation.Count > 0)
-                    {
-                        // Shut the plug in down.
-                        plugin.Shutdown();
-
-                        Program.Log.Print($"WARNING: The content plug in '{plugin.Name}' is disabled:", LoggingLevel.Simple);
-                        foreach (string reason in validation)
-                        {
-                            Program.Log.Print($"WARNING: {reason}", LoggingLevel.Verbose);
-                        }
-
-                        _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.ValidationError, plugin.Name, string.Join("\n", validation), plugin.PlugInPath);
-
-                        // Remove this plug in.
-                        plugins.Unload(plugin.Name);
-                        continue;
-                    }
-
-                    AddContentPlugIn(plugin);
-                }
-                catch (Exception ex)
-                {
-                    // Attempt to gracefully shut the plug in down if we error out.
-                    plugin.Shutdown();
-
-                    Program.Log.Print($"ERROR: Cannot create content plug in '{plugin.Name}'.", LoggingLevel.Simple);
-                    Program.Log.LogException(ex);
-
-                    _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.Error, plugin.Name, string.Format(Resources.GOREDIT_DISABLE_CONTENT_PLUGIN_EXCEPTION, ex.Message), plugin.PlugInPath);
-                }
-            }
+            LoadImporters(plugins);
+            LoadContentEditors(plugins);
         }
 
         /// <summary>
         /// Function to remove a content import plugin from the service.
         /// </summary>
         /// <param name="plugin">The plugin to remove.</param>
-        public void RemoveContentImportPlugIn(OLDE_ContentImportPlugIn plugin)
+        public void RemoveContentImportPlugIn(ContentImportPlugIn plugin)
         {
             if (plugin == null)
             {
@@ -486,7 +424,7 @@ namespace Gorgon.Editor.Services
 
         /// <summary>Function to remove a content plugin from the service.</summary>
         /// <param name="plugin">The plugin to remove.</param>
-        public void RemoveContentPlugIn(OLDE_ContentPlugIn plugin)
+        public void RemoveContentPlugIn(ContentPlugIn plugin)
         {
             if (plugin == null)
             {
@@ -505,23 +443,32 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Function to retrieve the appropriate content importer for the file specified.
         /// </summary>
-        /// <param name="file">The content file to evaluate.</param>
-        /// <param name="fileSystem">The file system containing the file to evaluate.</param>
-        /// <param name="metadataOnly"><b>true</b> to indicate that only metadata should be used to scan the content file, <b>false</b> to scan, in depth, per plugin (slow).</param>
-        /// <returns>A <see cref="OLDE_IEditorContentImporter"/>, or <b>null</b> if none was found.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="contentFile"/> parameter is <b>null</b>.</exception>
-        public OLDE_IEditorContentImporter GetContentImporter(FileInfo file, IGorgonFileSystem fileSystem)
+        /// <param name="filePath">The path to the file to evaluate.</param>
+        /// <returns>A <see cref="IEditorContentImporter"/>, or <b>null</b> if none was found.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
+        /// <remarks>
+        /// <para>
+        /// Since the content importers are meant for importing into the project virtual file system, the <paramref name="filePath"/> must point to a file on the physical file system. 
+        /// </para>
+        /// </remarks>
+        public IEditorContentImporter GetContentImporter(string filePath)
         {
-            if (file == null)
+            if (filePath == null)
             {
-                throw new ArgumentNullException(nameof(file));
+                throw new ArgumentNullException(nameof(filePath));
             }
 
-            OLDE_ContentImportPlugIn importPlugIn = null;
-
-            foreach (KeyValuePair<string, OLDE_ContentImportPlugIn> plugin in _importers)
+            if (string.IsNullOrWhiteSpace(filePath))
             {
-                if (plugin.Value.CanOpenContent(file))
+                throw new ArgumentEmptyException(nameof(filePath));
+            }
+
+            ContentImportPlugIn importPlugIn = null;
+
+            foreach (KeyValuePair<string, ContentImportPlugIn> plugin in _importers)
+            {
+                if (plugin.Value.CanOpenContent(filePath))
                 {
                     importPlugIn = plugin.Value;
                     break;
@@ -530,23 +477,61 @@ namespace Gorgon.Editor.Services
                 continue;
             }
 
-            return importPlugIn?.CreateImporter(file, fileSystem);
+            return importPlugIn?.GetImporter();
+        }
+
+        /// <summary>
+        /// Function called when a project is loaded/created.
+        /// </summary>
+        /// <param name="fileManager">The content file manager for the project.</param>
+        /// <param name="temporaryFileSystem">The file system used to hold temporary working data.</param>
+        public void ProjectActivated(IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> temporaryFileSystem)
+        {
+            foreach (ContentPlugIn plugIn in _plugins.Values)
+            {
+                plugIn.ProjectOpened(fileManager, temporaryFileSystem);
+            }
+
+            foreach (ContentImportPlugIn plugIn in _importers.Values)
+            {
+                plugIn.ProjectOpened(temporaryFileSystem);
+            }
+        }
+
+        /// <summary>
+        /// Function called when a project is unloaded.
+        /// </summary>        
+        public void ProjectDeactivated()
+        {
+            foreach (ContentImportPlugIn plugIn in _importers.Values)
+            {
+                plugIn.ProjectClosed();
+            }
+
+            foreach (ContentPlugIn plugIn in _plugins.Values)
+            {
+                plugIn.ProjectClosed();
+            }
         }
         #endregion
 
         #region Constructor.
         /// <summary>Initializes a new instance of the ContentPlugInService class.</summary>
         /// <param name="settingsDirectory">The directory that will contain settings for the content plug ins.</param>
-        /// <param name="graphicsContext">The graphics context used to pass the application graphics context to plug ins.</param>
-        /// <param name="folderBrowser">The folder browser used to browse the file system directory structure.</param>
-        /// <param name="commonServices">Common services for the application.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settingsDirectory"/>, <paramref name="graphicsContext"/>, or the <paramref name="messageDisplay"/> parameter is <b>null</b>.</exception>
-        public ContentPlugInService(DirectoryInfo settingsDirectory, IGraphicsContext graphicsContext, IFileSystemFolderBrowseService folderBrowser, IViewModelInjection commonServices)
+        /// <param name="hostServices">The services to pass from the host application to the content plug ins.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settingsDirectory"/>, or the <paramref name="hostServices"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="settingsDirectory"/> parameter is empty.</exception>
+        /// <example
+        public ContentPlugInService(string settingsDirectory, IHostContentServices hostServices)
         {
             _settingsDir = settingsDirectory ?? throw new ArgumentNullException(nameof(settingsDirectory));
-            _graphicsContext = graphicsContext ?? throw new ArgumentNullException(nameof(graphicsContext));
-            _commonServices = commonServices ?? throw new ArgumentNullException(nameof(commonServices));
-            _folderBrowser = folderBrowser ?? throw new ArgumentNullException(nameof(folderBrowser));
+
+            if (string.IsNullOrWhiteSpace(settingsDirectory))
+            {
+                throw new ArgumentEmptyException(nameof(settingsDirectory));
+            }
+
+            _hostServices = hostServices ?? throw new ArgumentNullException(nameof(hostServices));
         }
         #endregion
     }

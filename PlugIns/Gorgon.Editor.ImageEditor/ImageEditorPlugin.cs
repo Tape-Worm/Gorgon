@@ -173,24 +173,25 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="content">The content being thumbnailed.</param>
         /// <param name="cancelToken">The token used to cancel the operation.</param>
         /// <returns>The thumbnail image, and a flag to indicate whether the thumbnail needs conversion.</returns>
-        private (IGorgonImage thumbnailImage, bool needsConversion) LoadThumbNailImage(IGorgonImageCodec thumbnailCodec, FileInfo thumbnailFile, IContentFile content, CancellationToken cancelToken)
+        private (IGorgonImage thumbnailImage, bool needsConversion) LoadThumbNailImage(IGorgonImageCodec thumbnailCodec, string thumbnailFile, IContentFile content, CancellationToken cancelToken)
         {
             IGorgonImage result;
             Stream inStream = null;
 
             try
             {
+                IGorgonVirtualFile file = TemporaryFileSystem.FileSystem.GetFile(thumbnailFile);
+
                 // If we've already got the file, then leave.
-                if (thumbnailFile.Exists)
+                if (file != null)
                 {
-                    inStream = thumbnailFile.Open(FileMode.Open, FileAccess.Read, FileShare.Read);
+                    inStream = file.OpenStream();
                     result = thumbnailCodec.LoadFromStream(inStream);
 
                     return cancelToken.IsCancellationRequested ? (null, false) : (result, false);
                 }
 
-#warning FIX ME
-                //inStream = content.OpenRead();
+                inStream = ContentFileManager.OpenStream(content.Path, FileMode.Open);
                 result = _ddsCodec.LoadFromStream(inStream);
 
                 return (result, true);
@@ -292,7 +293,7 @@ namespace Gorgon.Editor.ImageEditor
             });
 
             var services = new ImageEditorServices
-            {
+            {                
                 HostContentServices = HostContentServices,
                 ImageIO = imageIO,
                 UndoService = undoService,
@@ -348,7 +349,7 @@ namespace Gorgon.Editor.ImageEditor
         protected override void OnInitialize()
         {
             ViewFactory.Register<IImageContent>(() => new OLDE_ImageEditorView());
-            (_codecs, _settings) = SharedDataFactory.GetSharedData(HostContentServices);
+            (_codecs, _settings) = SharedDataFactory.GetSharedData(HostContentServices);            
         }
 
         /// <summary>Function to determine if the content plugin can open the specified file.</summary>
@@ -397,44 +398,50 @@ namespace Gorgon.Editor.ImageEditor
         /// Function to retrieve the small icon for the content plug in.
         /// </summary>
         /// <returns>An image for the small icon.</returns>
-        public Image GetSmallIcon() => Resources.image_16x16;
+        public Image GetSmallIcon() => Resources.image_20x20;
 
         /// <summary>Function to retrieve a thumbnail for the content.</summary>
         /// <param name="contentFile">The content file used to retrieve the data to build the thumbnail with.</param>
-        /// <param name="fileManager">The content file manager.</param>
-        /// <param name="outputFile">The output file for the thumbnail data.</param>
+        /// <param name="filePath">The path to the thumbnail file to write.</param>
         /// <param name="cancelToken">The token used to cancel the thumbnail generation.</param>
-        /// <returns>A <see cref="T:Gorgon.Graphics.Imaging.IGorgonImage"/> containing the thumbnail image data.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="contentFile" />, <paramref name="fileManager" />, or the <paramref name="outputFile" /> parameter is <b>null</b>.</exception>
-        public async Task<IGorgonImage> GetThumbnailAsync(IContentFile contentFile, FileInfo outputFile, CancellationToken cancelToken)
+        /// <returns>A <see cref="IGorgonImage"/> containing the thumbnail image data.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="contentFile" />, or the <paramref name="filePath" /> parameter is <b>null</b>.</exception>
+        public async Task<IGorgonImage> GetThumbnailAsync(IContentFile contentFile, string filePath, CancellationToken cancelToken)
         {
             if (contentFile == null)
             {
                 throw new ArgumentNullException(nameof(contentFile));
             }
 
-            if (outputFile == null)
+            if (filePath == null)
             {
-                throw new ArgumentNullException(nameof(outputFile));
+                throw new ArgumentNullException(nameof(filePath));
+            }
+
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                return null;
             }
 
             // If the content is not a DDS image, then leave it.
-            if ((!contentFile.Metadata.Attributes.TryGetValue(OLDE_ImageContent.CodecAttr, out string codecName))
+            if ((!contentFile.Metadata.Attributes.TryGetValue(ImageContent.CodecAttr, out string codecName))
                 || (string.IsNullOrWhiteSpace(codecName))
                 || (!string.Equals(codecName, _ddsCodec.GetType().FullName, StringComparison.OrdinalIgnoreCase)))
             {
                 return null;
             }
 
-            if (!outputFile.Directory.Exists)
+            string fileDirectoryPath = Path.GetDirectoryName(filePath).FormatDirectory('/');
+            IGorgonVirtualDirectory directory = TemporaryFileSystem.FileSystem.GetDirectory(fileDirectoryPath);
+
+            if (directory == null)
             {
-                outputFile.Directory.Create();
-                outputFile.Directory.Refresh();
+                directory = TemporaryFileSystem.CreateDirectory(fileDirectoryPath);
             }
 
             IGorgonImageCodec pngCodec = new GorgonCodecPng();
 
-            (IGorgonImage thumbImage, bool needsConversion) = await Task.Run(() => LoadThumbNailImage(pngCodec, outputFile, contentFile, cancelToken));
+            (IGorgonImage thumbImage, bool needsConversion) = await Task.Run(() => LoadThumbNailImage(pngCodec, filePath, contentFile, cancelToken));
 
             if ((thumbImage == null) || (cancelToken.IsCancellationRequested))
             {
@@ -463,14 +470,17 @@ namespace Gorgon.Editor.ImageEditor
                 // We're done on the main thread, we can switch to another thread to write the image.
                 Cursor.Current = Cursors.Default;
 
-                await Task.Run(() => pngCodec.SaveToFile(thumbImage, outputFile.FullName), cancelToken);
+                await Task.Run(() => {
+                    using Stream stream = TemporaryFileSystem.OpenStream(filePath, FileMode.Create);
+                    pngCodec.SaveToStream(thumbImage, stream);
+                }, cancelToken);
 
                 if (cancelToken.IsCancellationRequested)
                 {
                     return null;
                 }
 
-                contentFile.Metadata.Attributes[CommonEditorConstants.ThumbnailAttr] = outputFile.Name;
+                contentFile.Metadata.Attributes[CommonEditorConstants.ThumbnailAttr] = Path.GetFileName(filePath);
                 return thumbImage;
             }
             catch (Exception ex)

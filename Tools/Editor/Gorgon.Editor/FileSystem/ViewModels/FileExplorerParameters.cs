@@ -25,8 +25,11 @@
 #endregion
 
 using System;
+using System.IO;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Services;
+using Gorgon.Editor.UI;
+using Gorgon.IO;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -37,55 +40,58 @@ namespace Gorgon.Editor.ViewModels
         : ViewModelCommonParameters
     {
         /// <summary>
-        /// Property to return the content plugins for the file explorer.
+        /// Property to set or return the root directory for the file system.
         /// </summary>
-        public IContentPlugInManagerService ContentPlugIns => ViewModelFactory.ContentPlugIns;
-
-        /// <summary>
-        /// Property to return the directory locator service used to select a directory.
-        /// </summary>
-        public IDirectoryLocateService DirectoryLocator => ViewModelFactory.DirectoryLocator;
-
-        /// <summary>
-        /// Property to set or return the file system service.
-        /// </summary>
-        public IFileSystemService FileSystemService
+        public IDirectory Root
         {
             get;
+            set;
         }
 
         /// <summary>
-        /// Property to return the root node for the file system.
+        /// Property to set or return the project file system.
         /// </summary>
-        public IFileExplorerNodeVm RootNode
+        public IGorgonFileSystemWriter<FileStream> FileSystem
         {
             get;
+            set;
         }
 
         /// <summary>
-        /// Property to return the service used to search through the file system.
+        /// Property to set or return the service used to search the file system.
         /// </summary>
-        public ISearchService<IFileExplorerNodeVm> FileSearch
+        public ISearchService<IFile> SearchService
         {
             get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the directory locator service.
+        /// </summary>
+        public IDirectoryLocateService DirectoryLocator
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the content plug in service for the application.
+        /// </summary>
+        public IContentPlugInService ContentPlugInService
+        {
+            get;
+            set;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileExplorerParameters" /> class.
         /// </summary>
-        /// <param name="fileSystemService">The file system service to use for manipulating the virtual file system.</param>
-        /// <param name="fileSearch">The service used to search for files in the file explorer.</param>
-        /// <param name="rootNode">The root node for the file system tree.</param>
         /// <param name="viewModelFactory">The view model factory.</param>
-        /// <param name="project">The project data.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public FileExplorerParameters(IFileSystemService fileSystemService, ISearchService<IFileExplorerNodeVm> fileSearch, IFileExplorerNodeVm rootNode, IProject project, ViewModelFactory viewModelFactory)
+        public FileExplorerParameters(ViewModelFactory viewModelFactory)
             : base(viewModelFactory)
         {
-            Project = project ?? throw new ArgumentNullException(nameof(project));
-            FileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
-            RootNode = rootNode ?? throw new ArgumentNullException(nameof(rootNode));
-            FileSearch = fileSearch ?? throw new ArgumentNullException(nameof(fileSearch));
         }
     }
 }

@@ -114,7 +114,18 @@ namespace Gorgon.Editor.ImageEditor.Services
             IGorgonVirtualDirectory directory = _tempWriter.CreateDirectory(_tempDirPath);
             _log.Print($"Importing file '{physicalFilePath}' (Codec: {sourceCodec.Name})...", LoggingLevel.Verbose);
 
-            string outputFilePath = directory.FullPath + Path.ChangeExtension(Path.GetFileNameWithoutExtension(physicalFilePath), ddsCodec.CodecCommonExtensions[0]);
+            string outputFilePath = directory.FullPath + Path.GetFileName(physicalFilePath);
+
+            int lastExt = outputFilePath.LastIndexOf('.');
+
+            if (lastExt == -1)
+            {
+                outputFilePath += ddsCodec.CodecCommonExtensions[0];
+            }
+            else
+            {
+                outputFilePath = outputFilePath.Substring(0, lastExt) + "." + ddsCodec.CodecCommonExtensions[0];
+            }
 
             using (Stream fileStream = File.Open(physicalFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
             using (Stream outStream = _tempWriter.OpenStream(outputFilePath, FileMode.Create))

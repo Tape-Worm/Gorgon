@@ -132,7 +132,7 @@
     <value>0, 0, 0, 0</value>
   </data>
   <data name="panel1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>620, 120</value>
+    <value>464, 97</value>
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="panel1.TabIndex" type="System.Int32, mscorlib">
@@ -157,19 +157,19 @@
     <value>True</value>
   </data>
   <data name="labelVersion.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 0</value>
+    <value>3, 0</value>
   </data>
   <data name="labelVersion.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 0, 0, 0</value>
+    <value>3, 0, 0, 0</value>
   </data>
   <data name="labelVersion.MaximumSize" type="System.Drawing.Size, System.Drawing">
-    <value>167, 49</value>
+    <value>125, 40</value>
   </data>
   <data name="labelVersion.MinimumSize" type="System.Drawing.Size, System.Drawing">
-    <value>0, 28</value>
+    <value>0, 23</value>
   </data>
   <data name="labelVersion.Size" type="System.Drawing.Size, System.Drawing">
-    <value>60, 28</value>
+    <value>45, 23</value>
   </data>
   <data name="labelVersion.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -196,19 +196,19 @@
     <value>True</value>
   </data>
   <data name="labelVersionNumber.Location" type="System.Drawing.Point, System.Drawing">
-    <value>64, 0</value>
+    <value>48, 0</value>
   </data>
   <data name="labelVersionNumber.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>0, 0, 0, 0</value>
   </data>
   <data name="labelVersionNumber.MaximumSize" type="System.Drawing.Size, System.Drawing">
-    <value>170, 49</value>
+    <value>128, 40</value>
   </data>
   <data name="labelVersionNumber.MinimumSize" type="System.Drawing.Size, System.Drawing">
-    <value>53, 28</value>
+    <value>40, 23</value>
   </data>
   <data name="labelVersionNumber.Size" type="System.Drawing.Size, System.Drawing">
-    <value>53, 28</value>
+    <value>40, 23</value>
   </data>
   <data name="labelVersionNumber.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -238,19 +238,16 @@
     <value>Fill</value>
   </data>
   <data name="labelInfo.Location" type="System.Drawing.Point, System.Drawing">
-    <value>121, 0</value>
-  </data>
-  <data name="labelInfo.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 0, 4, 0</value>
+    <value>91, 0</value>
   </data>
   <data name="labelInfo.MaximumSize" type="System.Drawing.Size, System.Drawing">
-    <value>0, 49</value>
+    <value>0, 40</value>
   </data>
   <data name="labelInfo.MinimumSize" type="System.Drawing.Size, System.Drawing">
-    <value>0, 28</value>
+    <value>0, 23</value>
   </data>
   <data name="labelInfo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>20, 28</value>
+    <value>16, 23</value>
   </data>
   <data name="labelInfo.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
@@ -277,19 +274,19 @@
     <value>Bottom</value>
   </data>
   <data name="flowLayoutPanel1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 120</value>
+    <value>0, 97</value>
   </data>
   <data name="flowLayoutPanel1.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>0, 0, 0, 0</value>
   </data>
   <data name="flowLayoutPanel1.MaximumSize" type="System.Drawing.Size, System.Drawing">
-    <value>827, 49</value>
+    <value>620, 40</value>
   </data>
   <data name="flowLayoutPanel1.MinimumSize" type="System.Drawing.Size, System.Drawing">
-    <value>2, 28</value>
+    <value>2, 23</value>
   </data>
   <data name="flowLayoutPanel1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>620, 28</value>
+    <value>464, 23</value>
   </data>
   <data name="flowLayoutPanel1.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
@@ -315,8 +312,11 @@
   <data name="panel2.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
   </data>
+  <data name="panel2.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>2, 2, 2, 2</value>
+  </data>
   <data name="panel2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>622, 150</value>
+    <value>466, 122</value>
   </data>
   <data name="panel2.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -337,13 +337,13 @@
     <value>True</value>
   </metadata>
   <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
-    <value>8, 16</value>
+    <value>6, 13</value>
   </data>
   <data name="$this.BackgroundImageLayout" type="System.Windows.Forms.ImageLayout, System.Windows.Forms">
     <value>Center</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>622, 150</value>
+    <value>466, 122</value>
   </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -2425,9 +2425,6 @@
         AAAAAAAAgAAAAAAAAACAAAAAAAAAAIAAAAAAAAAAwAAAAAAAAADAAAAAAAAAAMAAAAAAAAAAwAAAAAAA
         AADgAAAAAAAAAf4AAAAAAAAf//////////8=
 </value>
-  </data>
-  <data name="$this.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 4, 4, 4</value>
   </data>
   <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
     <value>CenterScreen</value>

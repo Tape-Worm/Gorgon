@@ -40,7 +40,7 @@ namespace Gorgon.Editor.Services
     /// A service used to show a dialog for opening an editor file.
     /// </summary>
     internal class EditorFileOpenDialogService
-        : IEditorFileOpenDialogService
+        : IFileDialogService
     {
         #region Variables.
         // The previously selected file extension filter index.
@@ -88,7 +88,7 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Property to return the available file system providers.
         /// </summary>        
-        public IFileSystemProviders Providers
+        public FileSystemProviders Providers
         {
             get;
         }
@@ -256,7 +256,7 @@ namespace Gorgon.Editor.Services
         /// </summary>
         /// <param name="settings">The application settings.</param>
         /// <param name="providers">The providers used for opening/saving files.</param>
-        public EditorFileOpenDialogService(EditorSettings settings, IFileSystemProviders providers)
+        public EditorFileOpenDialogService(EditorSettings settings, FileSystemProviders providers)
         {
             Settings = settings;
             Providers = providers;

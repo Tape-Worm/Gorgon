@@ -25,26 +25,28 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using ComponentFactory.Krypton.Toolkit;
+using System.Windows.Forms;
 using Gorgon.Collections;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.ViewModels;
 using Gorgon.UI;
 
-namespace Gorgon.Editor.Views
+namespace Gorgon.Editor
 {
     /// <summary>
     /// A folder browser for the project file system.
     /// </summary>
     internal partial class FormFileSystemFolderBrowser
-        : KryptonForm, IDataContext<IFileExplorerVm>
+        : Form, IDataContext<IFileExplorer>
     {
         #region Variables.
-
+        // A cache of file system directories.
+        private readonly Dictionary<string, IDirectory> _directories = new Dictionary<string, IDirectory>(StringComparer.OrdinalIgnoreCase);
         #endregion
 
         #region Properties.
@@ -60,7 +62,7 @@ namespace Gorgon.Editor.Views
 
         /// <summary>Property to return the data context assigned to this view.</summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public IFileExplorerVm DataContext
+        public IFileExplorer DataContext
         {
             get;
             private set;
@@ -86,35 +88,32 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            IFileExplorerNodeVm node = DataContext.FindNode(e.DirectoryPath);
+            IDirectory dir = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, e.DirectoryPath, StringComparison.OrdinalIgnoreCase));
 
-            if (node == null)
+            if (dir == null)
             {
                 e.Cancel = true;
                 return;
             }
 
-            if ((node.IsOpen) || (node.Children.Traverse(n => n.Children).Any(item => item.IsOpen)))
-            {
-                GorgonDialogs.ErrorBox(this, string.Format(Resources.GOREDIT_ERR_DIRECTORY_LOCKED, e.DirectoryPath));
-                e.Cancel = true;
-                return;
-            }
+            var args = new DeleteArgs(dir.ID);
 
-            var args = new DeleteNodeArgs(node);
-
-            if ((DataContext.DeleteNodeCommand == null) || (!DataContext.DeleteNodeCommand.CanExecute(args)))
+            if ((DataContext.DeleteDirectoryCommand == null) || (!DataContext.DeleteDirectoryCommand.CanExecute(args)))
             {
                 return;
             }
 
-            e.DeleteTask = DataContext.DeleteNodeCommand.ExecuteAsync(args);
+            await DataContext.DeleteDirectoryCommand.ExecuteAsync(args);
 
-            await e.DeleteTask;
+            e.Cancel = !args.ItemsDeleted;
+
+            if (!e.Cancel)
+            {
+                _directories.Remove(dir.ID);
+            }
 
             e.SuppressPrompt = true;
             e.DeletionHandled = true;
-            e.Cancel = args.Cancel;
         }
 
         /// <summary>Function called when adding a folder.</summary>
@@ -128,23 +127,34 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            IFileExplorerNodeVm parentNode = DataContext.FindNode(e.ParentPath);
+            IDirectory parentDir = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, e.ParentPath, StringComparison.OrdinalIgnoreCase));
 
-            if (parentNode == null)
+            if (parentDir == null)
             {
-                parentNode = DataContext.RootNode;
+                parentDir = DataContext.Root;
             }
 
-            var args = new CreateNodeArgs(parentNode, e.DirectoryName);
+            var args = new CreateDirectoryArgs
+            {
+                Name = e.DirectoryPath,
+                ParentDirectory = parentDir
+            };
 
-            if ((DataContext.CreateNodeCommand == null) || (!DataContext.CreateNodeCommand.CanExecute(args)))
+            if ((DataContext.CreateDirectoryCommand == null) || (!DataContext.CreateDirectoryCommand.CanExecute(args)))
             {
                 return;
             }
 
-            DataContext.CreateNodeCommand.Execute(args);
+            DataContext.CreateDirectoryCommand.Execute(args);
 
-            e.Cancel = args.Cancel;
+            if (args.Directory == null)
+            {
+                e.Cancel = true;
+                e.CreationHandled = true;
+                return;
+            }
+
+            _directories[args.Directory.ID] = args.Directory;
             e.CreationHandled = true;
         }
 
@@ -153,27 +163,32 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The event parameters.</param>
         private void FolderBrowser_FolderRenaming(object sender, FolderRenameArgs e)
         {
-            if (DataContext == null)
+            if (DataContext?.RenameDirectoryCommand == null)
             {
                 e.Cancel = true;
                 return;
             }
 
-            IFileExplorerNodeVm oldNode = DataContext.FindNode(e.OldDirectoryPath);
+            IDirectory prevDir = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, e.OldDirectoryPath, StringComparison.OrdinalIgnoreCase));
 
-            if (oldNode == null)
+            if (prevDir == null)
             {
+                e.Cancel = true;
                 return;
             }
 
-            var args = new FileExplorerNodeRenameArgs(oldNode, e.OldName, e.NewName);
-
-            if ((DataContext?.RenameNodeCommand == null) || (!DataContext.RenameNodeCommand.CanExecute(args)))
+            var args = new RenameArgs(e.OldName, e.NewName)
             {
+                ID = prevDir.ID
+            };
+
+            if (!DataContext.RenameDirectoryCommand.CanExecute(args))
+            {
+                e.Cancel = true;
                 return;
             }
-
-            DataContext.RenameNodeCommand.Execute(args);
+            
+            DataContext.RenameDirectoryCommand.Execute(args);
 
             e.Cancel = args.Cancel;
             e.RenameHandled = true;
@@ -182,7 +197,23 @@ namespace Gorgon.Editor.Views
         /// <summary>Function called when a directory is selected or entered.</summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The e.</param>
-        private void FolderBrowser_FolderEntered(object sender, FolderSelectedArgs e) => ButtonOk.Enabled = !string.IsNullOrWhiteSpace(FolderBrowser.CurrentDirectory);
+        private void FolderBrowser_FolderEntered(object sender, FolderSelectedArgs e)
+        {
+            ButtonOk.Enabled = !string.IsNullOrWhiteSpace(FolderBrowser.CurrentDirectory);
+
+            IDirectory dir = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, FolderBrowser.CurrentDirectory, StringComparison.OrdinalIgnoreCase));
+            _directories.Clear();
+
+            if (dir == null)
+            {
+                return;
+            }
+
+            foreach (IDirectory subdir in dir.Directories)
+            {
+                _directories[subdir.ID] = subdir;
+            }
+        }
 
         /// <summary>
         /// Function to unassign events from the data context.
@@ -193,8 +224,6 @@ namespace Gorgon.Editor.Views
             {
                 return;
             }
-
-
         }
 
         /// <summary>
@@ -202,6 +231,7 @@ namespace Gorgon.Editor.Views
         /// </summary>
         private void ResetDataContext()
         {
+            _directories.Clear();
             FolderBrowser.DirectorySeparator = Path.DirectorySeparatorChar;
             FolderBrowser.RootFolder = null;
             FolderBrowser.AssignInitialDirectory(null);
@@ -211,7 +241,7 @@ namespace Gorgon.Editor.Views
         /// Function to initialize the control from its data context.
         /// </summary>
         /// <param name="dataContext">The current data context.</param>
-        private void InitializeFromDataContext(IFileExplorerVm dataContext)
+        private void InitializeFromDataContext(IFileExplorer dataContext)
         {
             if (dataContext == null)
             {
@@ -220,7 +250,13 @@ namespace Gorgon.Editor.Views
             }
 
             FolderBrowser.DirectorySeparator = '/';
-            FolderBrowser.RootFolder = new DirectoryInfo(dataContext.RootNode.PhysicalPath);
+            FolderBrowser.RootFolder = new DirectoryInfo(dataContext.Root.PhysicalPath);
+
+            _directories.Clear();
+            foreach (IDirectory dir in dataContext.Root.Directories)
+            {
+                _directories[dir.ID] = dir;
+            }
         }
 
         /// <summary>Raises the Load event.</summary>
@@ -235,26 +271,28 @@ namespace Gorgon.Editor.Views
         /// <summary>
         /// Function to set the initial path for the folder selector.
         /// </summary>
-        /// <param name="node">The node to use as the initial path.</param>
-        public void SetInitialPath(IFileExplorerNodeVm node)
+        /// <param name="directory">The node to use as the initial path.</param>
+        public void SetInitialPath(IDirectory directory)
         {
-            while ((node != null) && (!node.AllowChildCreation))
-            {
-                node = node.Parent;
-            }
+            _directories.Clear();
 
-            if (node == null)
+            if (directory == null)
             {
                 return;
             }
 
-            FolderBrowser.AssignInitialDirectory(new DirectoryInfo(node.PhysicalPath));
+            FolderBrowser.AssignInitialDirectory(new DirectoryInfo(directory.PhysicalPath));
+            
+            foreach (IDirectory dir in directory.Directories)
+            {
+                _directories[dir.ID] = dir;
+            }                
         }
 
         /// <summary>Function to assign a data context to the view as a view model.</summary>
         /// <param name="dataContext">The data context to assign.</param>
         /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
-        public void SetDataContext(IFileExplorerVm dataContext)
+        public void SetDataContext(IFileExplorer dataContext)
         {
             UnassignEvents();
 

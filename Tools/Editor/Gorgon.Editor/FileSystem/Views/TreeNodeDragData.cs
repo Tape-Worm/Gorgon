@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using ComponentFactory.Krypton.Toolkit;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.ViewModels;
@@ -33,32 +32,25 @@ using Gorgon.Editor.ViewModels;
 namespace Gorgon.Editor.Views
 {
     /// <summary>
-    /// Defines which tree node and file system node that is currently being dragged.
+    /// Defines which tree node that is currently being dragged.
     /// </summary>
     internal class TreeNodeDragData
-        : IFileExplorerNodeDragData, IContentFileDragData
+        : IDirectoryCopyMoveData
     {
         #region Properties.
         /// <summary>
-        /// Property to return the file system node being dragged.
-        /// </summary>
-        public IFileExplorerNodeVm Node
-        {
-            get;
-        }
-
-        /// <summary>
         /// Property to return the tree node being dragged.
-        /// </summary>
-        public KryptonTreeNode TreeNode
+        /// </summary>        
+        public DirectoryTreeNode TreeNode
         {
             get;
+            private set;
         }
 
         /// <summary>
         /// Property to return the type of operation to be performed when the drag is finished.
         /// </summary>
-        public DragOperation DragOperation
+        public CopyMoveOperation Operation
         {
             get;
             set;
@@ -67,26 +59,22 @@ namespace Gorgon.Editor.Views
         /// <summary>
         /// Property to set or return the node that is the target for the drop operation.
         /// </summary>
-        public IFileExplorerNodeVm TargetNode
+        public DirectoryTreeNode TargetNode
         {
             get;
             set;
         }
+
+        /// <summary>Property to return the path of the directory being dragged.</summary>
+        public string SourceDirectory => TreeNode.Name;
+
+        /// <summary>Property to return the path of the directory that is the target for the drop operation.</summary>
+        public string DestinationDirectory => TargetNode?.Name ?? string.Empty;
 
         /// <summary>
-        /// Property to set or return the tree node that is the target for the drop operation.
+        /// Property to set to return whether any directories or files were copied.
         /// </summary>
-        public KryptonTreeNode TargetTreeNode
-        {
-            get;
-            set;
-        }
-
-        /// <summary>Property to return the content file being dragged and dropped.</summary>
-        OLDE_IContentFile IContentFileDragData.File => Node as OLDE_IContentFile;
-
-        /// <summary>Property to set or return whether to cancel the drag/drop operation.</summary>
-        bool IContentFileDragData.Cancel
+        public bool DirectoriesCopied
         {
             get;
             set;
@@ -97,15 +85,13 @@ namespace Gorgon.Editor.Views
         /// <summary>
         /// Initializes a new instance of the <see cref="TreeNodeDragData"/> class.
         /// </summary>
-        /// <param name="treeNode">The tree node being dragged.</param>
-        /// <param name="node">The file system node being dragged.</param>
+        /// <param name="sourceNode">The tree node being dragged.</param>
         /// <param name="dragOperation">The desired drag operation.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="treeNode"/>, or the <paramref name="node"/> parameter is <b>null</b>.</exception>
-        public TreeNodeDragData(KryptonTreeNode treeNode, IFileExplorerNodeVm node, DragOperation dragOperation)
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceNode"/> parameter is <b>null</b>.</exception>
+        public TreeNodeDragData(DirectoryTreeNode sourceNode, CopyMoveOperation dragOperation)
         {
-            TreeNode = treeNode ?? throw new ArgumentNullException(nameof(treeNode));
-            Node = node ?? throw new ArgumentNullException(nameof(node));
-            DragOperation = dragOperation;
+            TreeNode = sourceNode ?? throw new ArgumentNullException(nameof(sourceNode));
+            Operation = dragOperation;
         }
         #endregion
     }

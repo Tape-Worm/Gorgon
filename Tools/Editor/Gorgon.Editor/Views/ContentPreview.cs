@@ -355,11 +355,6 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            if (IsHandleCreated)
-            {
-                DataContext.OnLoad();
-            }
-
             DataContext.PropertyChanging += DataContext_PropertyChanging;
             DataContext.PropertyChanged += DataContext_PropertyChanged;
         }

@@ -195,6 +195,7 @@
     <Content Include="Gorgon2.ico" />
     <Content Include="Resources\alpha_16x16.png" />
     <Content Include="Resources\alpha_48x48.png" />
+    <None Include="Resources\image_20x20.png" />
     <None Include="Resources\Transparency_Pattern.png" />
     <None Include="Resources\opactiy_16x16.png" />
     <None Include="Resources\opacity_48x48.png" />
@@ -247,7 +248,6 @@
     <None Include="Resources\save_16x16.png" />
     <None Include="Resources\save_48x48.png" />
     <None Include="Resources\center_16x16.png" />
-    <None Include="Resources\image_16x16.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="_Internal\Forms\FormRibbon.resx">
@@ -287,7 +287,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="KryptonToolkitSuite5472">
-      <Version>5.472.1251</Version>
+      <Version>5.472.2098</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
       <Version>2.9.8</Version>

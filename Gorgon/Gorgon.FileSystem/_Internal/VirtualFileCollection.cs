@@ -76,6 +76,18 @@ namespace Gorgon.IO
 
                 return _files[fileName];
             }
+            set
+            {
+                fileName = fileName.FormatFileName();
+
+                if (value == null)
+                {
+                    _files.Remove(fileName);
+                    return;
+                }
+                
+                _files[fileName] = value;
+            }
         }
 
         /// <summary>

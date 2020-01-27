@@ -42,7 +42,7 @@
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationManifest>..\..\..\Examples\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>Gorgon.Editor.Program</StartupObject>
@@ -67,15 +67,56 @@
     <Compile Include="Boot.cs" />
     <Compile Include="CommonCommands.cs" />
     <Compile Include="ContentRibbonEventArgs.cs" />
-    <Compile Include="Data\FileSystemClipboardData.cs" />
     <Compile Include="FileSystem\Services\FileSystemFolderBrowseService.cs" />
-    <Compile Include="FileSystem\Services\_Interfaces\IEditorFileSystemFolderBrowseService.cs" />
+    <Compile Include="FileSystem\Services\FileSystemSearchSystem.cs" />
+    <Compile Include="FileSystem\ViewModels\CreateDirectoryArgs.cs" />
+    <Compile Include="FileSystem\ViewModels\DeleteArgs.cs" />
+    <Compile Include="FileSystem\ViewModels\Directory.cs" />
+    <Compile Include="FileSystem\ViewModels\DirectoryCopyMoveData.cs" />
+    <Compile Include="FileSystem\ViewModels\DirectoryParameters.cs" />
+    <Compile Include="FileSystem\ViewModels\File.cs" />
+    <Compile Include="FileSystem\ViewModels\FileCopyMoveData.cs" />
+    <Compile Include="FileSystem\ViewModels\FileExplorer.cs" />
+    <Compile Include="FileSystem\ViewModels\FileExplorerParameters.cs" />
+    <Compile Include="FileSystem\ViewModels\FileParameters.cs" />
+    <Compile Include="FileSystem\ViewModels\FileSystemClipboardHandler.cs" />
+    <Compile Include="FileSystem\ViewModels\GetSizeInBytesCommandArgs.cs" />
+    <Compile Include="FileSystem\ViewModels\RenameArgs.cs" />
+    <Compile Include="FileSystem\ViewModels\RootDirectory.cs" />
+    <Compile Include="FileSystem\ViewModels\RootDirectoryParameters.cs" />
+    <Compile Include="FileSystem\ViewModels\Services\FileSystemProviders.cs" />
+    <Compile Include="FileSystem\ViewModels\_Extensions\FileSystemExtensions.cs" />
+    <Compile Include="FileSystem\ViewModels\_Interfaces\IDirectory.cs" />
+    <Compile Include="FileSystem\ViewModels\_Interfaces\IDirectoryCopyMoveData.cs" />
+    <Compile Include="FileSystem\ViewModels\_Interfaces\IImportData.cs" />
+    <Compile Include="FileSystem\ViewModels\_Interfaces\IFile.cs" />
+    <Compile Include="FileSystem\ViewModels\_Interfaces\IFileCopyMoveData.cs" />
+    <Compile Include="FileSystem\ViewModels\_Interfaces\IFileExplorer.cs" />
+    <Compile Include="FileSystem\Views\DataGridViewEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FileSystem\Views\DirectoryTreeNode.cs" />
+    <Compile Include="FileSystem\Views\ExplorerFilesDragData.cs" />
+    <Compile Include="FileSystem\Views\FileExploder.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FileSystem\Views\FileExploder.Designer.cs">
+      <DependentUpon>FileExploder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FileSystem\Views\FileSystemNodeComparer.cs" />
     <Compile Include="FileSystem\Views\FormFileSystemFolderBrowser.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FileSystem\Views\FormFileSystemFolderBrowser.Designer.cs">
       <DependentUpon>FormFileSystemFolderBrowser.cs</DependentUpon>
     </Compile>
+    <Compile Include="FileSystem\Views\GridRowsDragData.cs" />
+    <Compile Include="FileSystem\Views\ImportData.cs" />
+    <Compile Include="FileSystem\Views\RowsDragEventArgs.cs" />
+    <Compile Include="FileSystem\Views\TreeEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FileSystem\Views\TreeNodeDragData.cs" />
     <Compile Include="FormMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -91,6 +132,7 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Native\Shell32.cs" />
     <Compile Include="Plugins\DisabledPlugin.cs" />
+    <Compile Include="Plugins\HostContentServices.cs" />
     <Compile Include="ProjectData\FileCopyJob.cs" />
     <Compile Include="ProjectData\V2MetadataImporter.cs" />
     <Compile Include="RibbonMerger.cs" />
@@ -98,85 +140,55 @@
     <Compile Include="Services\ContentPluginService.cs" />
     <Compile Include="Services\EditorFileSaveDialogService.cs" />
     <Compile Include="Services\EditorFileOpenDialogService.cs" />
-    <Compile Include="Services\FileScanService.cs" />
-    <Compile Include="FileSystem\Services\FileSystemProviders.cs" />
-    <Compile Include="FileSystem\Services\FileSystemSearchSystem.cs" />
-    <Compile Include="FileSystem\Services\FileSystemService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProjectData\Project.cs" />
     <Compile Include="ProjectData\ProjectManager.cs" />
-    <Compile Include="ProjectData\_Interfaces\IProjectManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\GraphicsContext.cs" />
     <Compile Include="EditorSettings.cs" />
-    <Compile Include="Services\_Interfaces\IToolPluginManagerService.cs" />
     <Compile Include="Services\_Interfaces\IFileScanService.cs" />
     <Compile Include="Services\UndoService.cs" />
-    <Compile Include="Services\_Interfaces\IContentPluginManagerService.cs" />
-    <Compile Include="Services\_Interfaces\IEditorFileSaveAsDialogService.cs" />
-    <Compile Include="Services\_Interfaces\IEditorFileOpenDialogService.cs" />
-    <Compile Include="FileSystem\Services\_Interfaces\IFileSystemProviders.cs" />
-    <Compile Include="FileSystem\Services\_Interfaces\IFileSystemService.cs" />
     <Compile Include="Settings\ViewModels\SettingsPluginsList.cs" />
     <Compile Include="ViewModels\AppCloseArgs.cs" />
     <Compile Include="ViewModels\ContentPreviewVm.cs" />
     <Compile Include="ViewModels\ContentPreviewVmParameters.cs" />
-    <Compile Include="FileSystem\ViewModels\CopyNodeArgs.cs" />
-    <Compile Include="FileSystem\ViewModels\CreateContentFileArgs.cs" />
     <Compile Include="Settings\ViewModels\EditorSettings.cs" />
     <Compile Include="Settings\ViewModels\EditorSettingsParameters.cs" />
-    <Compile Include="FileSystem\ViewModels\ExportNodeData.cs" />
-    <Compile Include="FileSystem\ViewModels\CopyNodeData.cs" />
-    <Compile Include="FileSystem\ViewModels\CreateNodeArgs.cs" />
-    <Compile Include="FileSystem\ViewModels\DeleteNodeArgs.cs" />
-    <Compile Include="FileSystem\ViewModels\DependencyNode.cs" />
-    <Compile Include="FileSystem\ViewModels\FileExplorerRootNode.cs" />
     <Compile Include="Settings\ViewModels\SettingsPluginListItem.cs" />
     <Compile Include="ViewModels\SetProjectWorkspaceArgs.cs" />
     <Compile Include="Settings\ViewModels\SettingsPluginListItemParameters.cs" />
     <Compile Include="Settings\ViewModels\SettingsPluginsListParameters.cs" />
     <Compile Include="ViewModels\UndoCommand.cs" />
-    <Compile Include="FileSystem\ViewModels\FileExplorerFileNodeVm.cs" />
-    <Compile Include="FileSystem\ViewModels\FileExplorerDirectoryNodeVm.cs" />
-    <Compile Include="FileSystem\ViewModels\FileExplorerNodeCommon.cs" />
-    <Compile Include="FileSystem\ViewModels\FileExplorerNodeParameters.cs" />
-    <Compile Include="FileSystem\ViewModels\FileExplorerNodeRenameArgs.cs" />
-    <Compile Include="FileSystem\ViewModels\FileExplorerParameters.cs" />
-    <Compile Include="FileSystem\ViewModels\FileExplorerVm.cs" />
     <Compile Include="ViewModels\Main.cs" />
     <Compile Include="ViewModels\MainParameters.cs" />
-    <Compile Include="ViewModels\RecentVm.cs" />
-    <Compile Include="ViewModels\RecentVmParameters.cs" />
+    <Compile Include="ViewModels\Recent.cs" />
+    <Compile Include="ViewModels\RecentParameters.cs" />
     <Compile Include="ViewModels\SavePackFileArgs.cs" />
-    <Compile Include="ViewModels\StageNewVm.cs" />
-    <Compile Include="ViewModels\StageNewVmParameters.cs" />
-    <Compile Include="ViewModels\ProjectVm.cs" />
-    <Compile Include="ViewModels\ProjectVmParameters.cs" />
+    <Compile Include="ViewModels\NewProject.cs" />
+    <Compile Include="ViewModels\NewProjectParameters.cs" />
+    <Compile Include="ViewModels\ProjectEditor.cs" />
+    <Compile Include="ViewModels\ProjectEditorParameters.cs" />
     <Compile Include="ViewModels\ViewModelCommonParameters.cs" />
     <Compile Include="ViewModels\ViewModelFactory.cs" />
     <Compile Include="Settings\ViewModels\_Interfaces\IEditorSettings.cs" />
-    <Compile Include="FileSystem\ViewModels\_Interfaces\IExplorerFilesDragData.cs" />
-    <Compile Include="FileSystem\ViewModels\_Interfaces\IFileExplorerNodeDragData.cs" />
-    <Compile Include="FileSystem\ViewModels\_Interfaces\IFileExplorerNodeVm.cs" />
-    <Compile Include="FileSystem\ViewModels\_Interfaces\IFileExplorerVm.cs" />
     <Compile Include="ViewModels\_Interfaces\IMain.cs" />
     <Compile Include="ViewModels\_Interfaces\IContentPreviewVm.cs" />
-    <Compile Include="ViewModels\_Interfaces\IRecentVm.cs" />
+    <Compile Include="ViewModels\_Interfaces\IRecent.cs" />
     <Compile Include="Settings\ViewModels\_Interfaces\ISettingsPluginListItem.cs" />
     <Compile Include="Settings\ViewModels\_Interfaces\ISettingsPluginsList.cs" />
-    <Compile Include="ViewModels\_Interfaces\IStageNewVm.cs" />
-    <Compile Include="ViewModels\_Interfaces\IProjectVm.cs" />
+    <Compile Include="ViewModels\_Interfaces\INewProject.cs" />
+    <Compile Include="ViewModels\_Interfaces\IProjectEditor.cs" />
     <Compile Include="Views\ContentPreview.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Views\ContentPreview.Designer.cs">
       <DependentUpon>ContentPreview.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\EditorProject.cs">
+    <Compile Include="Views\ProjectContainer.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\EditorProject.Designer.cs">
-      <DependentUpon>EditorProject.cs</DependentUpon>
+    <Compile Include="Views\ProjectContainer.Designer.cs">
+      <DependentUpon>ProjectContainer.cs</DependentUpon>
     </Compile>
     <Compile Include="Settings\Views\EditorSettingsPanel.cs">
       <SubType>UserControl</SubType>
@@ -184,18 +196,17 @@
     <Compile Include="Settings\Views\EditorSettingsPanel.Designer.cs">
       <DependentUpon>EditorSettingsPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="FileSystem\Views\FileExploder.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="FileSystem\Views\FileExploder.Designer.cs">
-      <DependentUpon>FileExploder.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FileSystem\Views\FileSystemNodeComparer.cs" />
     <Compile Include="Settings\Views\PluginListPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Settings\Views\PluginListPanel.Designer.cs">
       <DependentUpon>PluginListPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RecentItemButton.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\RecentItemButton.Designer.cs">
+      <DependentUpon>RecentItemButton.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\SaveEventArgs.cs" />
     <Compile Include="Views\Stage.cs">
@@ -216,9 +227,12 @@
     <Compile Include="Views\StageRecent.Designer.cs">
       <DependentUpon>StageRecent.cs</DependentUpon>
     </Compile>
-    <Compile Include="FileSystem\Views\ExplorerFilesDragData.cs" />
-    <Compile Include="FileSystem\Views\ListViewItemDragData.cs" />
-    <Compile Include="FileSystem\Views\TreeNodeDragData.cs" />
+    <EmbeddedResource Include="FileSystem\Views\DataGridViewEx.resx">
+      <DependentUpon>DataGridViewEx.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FileSystem\Views\FileExploder.resx">
+      <DependentUpon>FileExploder.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FileSystem\Views\FormFileSystemFolderBrowser.resx">
       <DependentUpon>FormFileSystemFolderBrowser.cs</DependentUpon>
     </EmbeddedResource>
@@ -241,17 +255,17 @@
     <EmbeddedResource Include="Views\ContentPreview.resx">
       <DependentUpon>ContentPreview.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\EditorProject.resx">
-      <DependentUpon>EditorProject.cs</DependentUpon>
+    <EmbeddedResource Include="Views\ProjectContainer.resx">
+      <DependentUpon>ProjectContainer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Settings\Views\EditorSettingsPanel.resx">
       <DependentUpon>EditorSettingsPanel.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FileSystem\Views\FileExploder.resx">
-      <DependentUpon>FileExploder.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Settings\Views\PluginListPanel.resx">
       <DependentUpon>PluginListPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\RecentItemButton.resx">
+      <DependentUpon>RecentItemButton.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Stage.resx">
       <DependentUpon>Stage.cs</DependentUpon>
@@ -283,6 +297,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\recent_item_badge_48x48.png" />
+    <None Include="Resources\generic_file_20x20.png" />
     <None Include="Resources\settings_48x48.png" />
     <None Include="Resources\new_content_48x48.png" />
     <None Include="Resources\new_content_16x16.png" />
@@ -405,7 +421,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="KryptonToolkitSuite5472">
-      <Version>5.472.1251</Version>
+      <Version>5.472.2098</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
       <Version>2.9.8</Version>
@@ -431,7 +447,9 @@
       <Version>4.7.0</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Data\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(SolutionDir)Tools\texconv\texconv.exe" "$(TargetDir)Plugins\content"</PostBuildEvent>

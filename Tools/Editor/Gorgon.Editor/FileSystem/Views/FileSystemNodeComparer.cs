@@ -27,8 +27,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using ComponentFactory.Krypton.Toolkit;
-using Gorgon.Editor.ViewModels;
 
 namespace Gorgon.Editor.Views
 {
@@ -36,13 +34,8 @@ namespace Gorgon.Editor.Views
     /// A comparer used to sort the nodes.
     /// </summary>
     internal class FileSystemNodeComparer
-        : IComparer<KryptonTreeNode>, IComparer
+        : IComparer<DirectoryTreeNode>, IComparer
     {
-        #region Variables.
-        // The lookup used to relate tree nodes to file explorer nodes.
-        private readonly IReadOnlyDictionary<KryptonTreeNode, IFileExplorerNodeVm> _nodeLookup;
-        #endregion
-
         #region IComparer<EditorTreeNode> Members
         /// <summary>
         /// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
@@ -53,27 +46,14 @@ namespace Gorgon.Editor.Views
         /// A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />, as shown in the following table.Value Meaning Less than zero<paramref name="x" /> is less than <paramref name="y" />.Zero<paramref name="x" /> equals <paramref name="y" />.Greater than zero<paramref name="x" /> is greater than <paramref name="y" />.
         /// </returns>
         /// <exception cref="NotImplementedException"></exception>
-        public int Compare(KryptonTreeNode x, KryptonTreeNode y)
+        public int Compare(DirectoryTreeNode x, DirectoryTreeNode y)
         {
             if (x == y)
             {
                 return 0;
             }
 
-            if ((!_nodeLookup.TryGetValue(x, out IFileExplorerNodeVm leftNode))
-                || (!_nodeLookup.TryGetValue(y, out IFileExplorerNodeVm rightNode)))
-            {
-                return 0;
-            }
-
-#pragma warning disable IDE0046 // Convert to conditional expression
-            if ((leftNode.NodeType == NodeType.Directory) && (rightNode.NodeType != NodeType.Directory))
-            {
-                return -1;
-            }
-#pragma warning restore IDE0046 // Convert to conditional expression
-
-            return ((leftNode.NodeType != NodeType.Directory) && (rightNode.NodeType == NodeType.Directory)) ? 1 : string.Compare(x.Text, y.Text, StringComparison.OrdinalIgnoreCase);
+            return string.Compare(x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase);
         }
         #endregion
 
@@ -89,19 +69,12 @@ namespace Gorgon.Editor.Views
         public int Compare(object x, object y)
         {
 #pragma warning disable IDE0019 // Use pattern matching
-            var xNode = x as KryptonTreeNode;
-            var yNode = y as KryptonTreeNode;
+            var xNode = x as DirectoryTreeNode;
+            var yNode = y as DirectoryTreeNode;
 #pragma warning restore IDE0019 // Use pattern matching
 
             return ((xNode == null) || (yNode == null)) ? 0 : Compare(xNode, yNode);
         }
-        #endregion
-
-        #region Constructor.
-        /// <summary>Initializes a new instance of the FileSystemNodeComparer class.</summary>
-        /// <param name="nodeLookup">The node lookup.</param>
-        /// <param name="recycleNode">The recycle bin node.</param>
-        public FileSystemNodeComparer(IReadOnlyDictionary<KryptonTreeNode, IFileExplorerNodeVm> nodeLookup) => _nodeLookup = nodeLookup;
         #endregion
     }
 }

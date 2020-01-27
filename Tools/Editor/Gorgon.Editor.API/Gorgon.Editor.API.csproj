@@ -88,6 +88,7 @@
     <Compile Include="Services\_Interfaces\IFileSystemFolderBrowseService.cs" />
     <Compile Include="Plugins\_Interfaces\IHostContentServices.cs" />
     <Compile Include="Services\_Interfaces\IToolPluginService.cs" />
+    <Compile Include="Services\__OLDE__\OLDE_IToolPluginService.cs" />
     <Compile Include="Services\RectClipperService.cs" />
     <Compile Include="Services\RectHandle.cs" />
     <Compile Include="Services\_Interfaces\IRectClipperService.cs" />
@@ -151,14 +152,6 @@
       <DependentUpon>SettingsBaseControl.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\ZoomEventArgs.cs" />
-    <Compile Include="UI\Controls\RecentFilesControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\RecentFilesControl.Designer.cs">
-      <DependentUpon>RecentFilesControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\RecentItemDeleteEventArgs.cs" />
-    <Compile Include="UI\RecentItemClickEventArgs.cs" />
     <Compile Include="Rendering\_Interfaces\ISelectionRectangle.cs" />
     <Compile Include="Rendering\SelectionRectangle.cs" />
     <Compile Include="UI\ViewFactory.cs" />
@@ -238,12 +231,6 @@
     <Compile Include="UI\_Internal\FormDirectoryLocator.Designer.cs">
       <DependentUpon>FormDirectoryLocator.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\_Internal\RecentItemButton.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\_Internal\RecentItemButton.Designer.cs">
-      <DependentUpon>RecentItemButton.cs</DependentUpon>
-    </Compile>
     <Compile Include="_Extensions\Gorgon2DEditorExtensions.cs" />
     <Compile Include="_Extensions\IOExtensions.cs" />
     <Compile Include="_Extensions\Support\EditorProjectMetadata30.cs" />
@@ -294,9 +281,6 @@
     <EmbeddedResource Include="UI\Forms\FormName.resx">
       <DependentUpon>FormName.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI\Controls\RecentFilesControl.resx">
-      <DependentUpon>RecentFilesControl.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="UI\Views\ContentBaseControl.resx">
       <DependentUpon>ContentBaseControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -315,13 +299,10 @@
     <EmbeddedResource Include="UI\_Internal\FormDirectoryLocator.resx">
       <DependentUpon>FormDirectoryLocator.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI\_Internal\RecentItemButton.resx">
-      <DependentUpon>RecentItemButton.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="KryptonToolkitSuite5472">
-      <Version>5.472.1251</Version>
+      <Version>5.472.2098</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
       <Version>2.9.8</Version>

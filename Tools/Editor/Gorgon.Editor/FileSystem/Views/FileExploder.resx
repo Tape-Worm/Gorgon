@@ -117,18 +117,15 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="MenuOptions.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>131, 17</value>
-  </metadata>
-  <metadata name="TreeImages.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+  <metadata name="TreeNodeIcons.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
-  <data name="TreeImages.ImageStream" mimetype="application/x-microsoft.net.object.binary.base64">
+  <data name="TreeNodeIcons.ImageStream" mimetype="application/x-microsoft.net.object.binary.base64">
     <value>
         AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj00LjAuMC4w
         LCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUwODkFAQAAACZTeXN0
         ZW0uV2luZG93cy5Gb3Jtcy5JbWFnZUxpc3RTdHJlYW1lcgEAAAAERGF0YQcCAgAAAAkDAAAADwMAAAA6
-        BQAAAk1TRnQBSQFMAgEBAgEAAVABAwFQAQMBFAEAARQBAAT/ASEBAAj/AUIBTQE2BwABNgMAASgDAAFQ
+        BQAAAk1TRnQBSQFMAgEBAgEAAdwBAgHcAQIBFAEAARQBAAT/ASEBAAj/AUIBTQE2BwABNgMAASgDAAFQ
         AwABFAMAAQEBAAEgBgABGf8ArwADBgEIAxgBIgMYASIDGAEiAxgBIgMYASIDGAEiAxgBIgMYASIDGAEi
         AxgBIgMYASIDGAEiAwYBCP8ACQADKAE8MP8DKAE8tAADOgFhA1IBpwNTAaoDUwGqA1MBqgNTAaoDUwGq
         A1MBqgNTAaoDUwGqA1MBqgNTAaoDUwGqA1MBqgNSAacDOQFfFAADKAE8BP8DGAEiAxgBIgMYASIDGAQi
@@ -142,7 +139,7 @@
         AboIAAT/AygBPLAAAzcBWgT/AzcBWjAAAzcBWgT/AzcBWhAAAygBPAT/CAADHgErCAADSAGFBP8DUQGg
         CAAE/wMoATywAAM3AVoE/wNbAcgDUwGqA1MBqgNTAaoDUwGqA1MBqgNTAaoDUwGqA1MBqgNTAaoDUwGq
         A1MBqgNTAaoDWwHIBP8DMAFLEAADKAE8BP8EAAMTARoU/wNhAeQDXgHdA14B3QT/AygBPLAAAzcBWjj/
-        AzIB/ANVAbUDBQEHEAADKAE8BP8IAANCAXUDVgGzA10BygNSAacDXAHPA1cBtwNKAYkDfwH+A1gBuwMH
+        A0MB/ANVAbUDBQEHEAADKAE8BP8IAANCAXUDVgGzA10BygNSAacDXAHPA1cBtwNKAYkDfwH+A1gBuwMH
         AQqwAAMkATUc/wNGAX80AAMoATwE/xgAA1sBwwNTAaoDYQHiA1gBuwMHAQq4AAM6AWEDUgGnA1MBqgNT
         AaoDUwGqA1MBqgNAAXA4AAMoATwE/wMYASIDGAEiAxgBIgMYASIDGAEiAxgBIgNbAcsE/wNYAbsDBwEK
         /wARAAMoATwg/wNYAbsDBwEK/wAVAAMGAQgDGAEiAxgBIgMYASIDGAEiAxgBIgMYASIDGAEiAxgBIgMF
@@ -153,7 +150,19 @@
         Af4BAAE/BwAC/wH+AQABfwcABf8HAAs=
 </value>
   </data>
+  <metadata name="MenuDirectory.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>151, 17</value>
+  </metadata>
+  <metadata name="ColumnFile.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="ColumnPath.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="MenuFiles.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>284, 17</value>
+  </metadata>
   <metadata name="MenuCopyMove.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>286, 17</value>
+    <value>391, 17</value>
   </metadata>
 </root>

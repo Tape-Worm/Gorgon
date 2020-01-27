@@ -40,7 +40,7 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Property to return the list of tool plugins loaded in to the application.
         /// </summary>
-        IReadOnlyDictionary<string, OLDE_ToolPlugIn> PlugIns
+        IReadOnlyDictionary<string, ToolPlugIn> PlugIns
         {
             get;
         }

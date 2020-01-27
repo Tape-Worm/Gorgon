@@ -27,6 +27,7 @@
 using System;
 using System.IO;
 using Gorgon.Editor.Content;
+using Gorgon.IO;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -38,43 +39,40 @@ namespace Gorgon.Editor.ViewModels
     {
         #region Properties.
         /// <summary>
-        /// Property to return the file explorer view model.
+        /// Property to set or return the file explorer view model.
         /// </summary>
-        public IFileExplorerVm FileExplorer
+        public IFileExplorer FileExplorer
         {
             get;
+            set;
         }
 
         /// <summary>
-        /// Property to return the file manager for content.
+        /// Property to set or return the file manager for content.
         /// </summary>
-        public OLDE_IContentFileManager ContentFileManager
+        public IContentFileManager ContentFileManager
         {
             get;
+            set;
         }
 
         /// <summary>
-        /// Property to return the thumbnail directory for the previewer.
+        /// Property to set or return the file system to the temporary area in the project.
         /// </summary>
-        public DirectoryInfo ThumbDirectory
+        public IGorgonFileSystemWriter<Stream> TempFileSystem
         {
             get;
+            set;
         }
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ViewModels.ContentPreviewVmParameters"/> class.</summary>
-        /// <param name="fileExplorer">The file explorer view model.</param>
-        /// <param name="contentFileManager">The file manager used for content files.</param>
-        /// <param name="thumbDirectory">The thumbnail directory for the previewer.</param>
+        /// <summary>Initializes a new instance of the <see cref="ContentPreviewVmParameters"/> class.</summary>
         /// <param name="viewModelFactory">The view model factory for creating view models.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public ContentPreviewVmParameters(IFileExplorerVm fileExplorer, OLDE_IContentFileManager contentFileManager, DirectoryInfo thumbDirectory, ViewModelFactory viewModelFactory)
+        public ContentPreviewVmParameters(ViewModelFactory viewModelFactory)
             : base(viewModelFactory)
         {
-            FileExplorer = fileExplorer ?? throw new ArgumentNullException(nameof(fileExplorer));
-            ContentFileManager = contentFileManager ?? throw new ArgumentNullException(nameof(contentFileManager));
-            ThumbDirectory = thumbDirectory ?? throw new ArgumentNullException(nameof(thumbDirectory));
         }
         #endregion
     }

@@ -38,14 +38,6 @@ namespace Gorgon.Editor.ViewModels
         : IViewModel
     {
         /// <summary>
-        /// Property to return the thumbnail directory.
-        /// </summary>
-        DirectoryInfo ThumbnailDirectory
-        {
-            get;
-        }
-
-        /// <summary>
         /// Property to return the preview image to display.
         /// </summary>
         IGorgonImage PreviewImage
@@ -64,7 +56,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the command used to refresh the preview image.
         /// </summary>
-        IEditorAsyncCommand<OLDE_IContentFile> RefreshPreviewCommand
+        IEditorAsyncCommand<IContentFile> RefreshPreviewCommand
         {
             get;
         }

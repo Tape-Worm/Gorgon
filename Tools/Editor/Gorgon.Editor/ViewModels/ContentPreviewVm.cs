@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Threading;
@@ -33,6 +34,7 @@ using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Imaging;
+using Gorgon.IO;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -43,10 +45,12 @@ namespace Gorgon.Editor.ViewModels
         : ViewModelBase<ContentPreviewVmParameters>, IContentPreviewVm
     {
         #region Variables.
+        // The directory path for thumbnails this session.
+        private readonly static string _thumbnailPath = $"/Thumbnails_{Guid.NewGuid():N}/";
         // The file explorer view model, used to track selection changes.
-        private IFileExplorerVm _fileExplorer;
+        private IFileExplorer _fileExplorer;
         // The file manager for content.
-        private OLDE_IContentFileManager _contentFileManager;
+        private IContentFileManager _contentFileManager;
         // The image to display.
         private IGorgonImage _image;
         // The task used to load the preview.
@@ -56,19 +60,14 @@ namespace Gorgon.Editor.ViewModels
         // The title for the previewed content.
         private string _title = string.Empty;
         // The currently selected content file.
-        private OLDE_IContentFile _contentFile;
+        private IContentFile _contentFile;
+        // The file system for handling temporary file data.
+        private IGorgonFileSystemWriter<Stream> _tempFileSystem;
+        // Flag to indicate that file events have been assigned.
+        private int _fileEventsHooked;
         #endregion
 
         #region Properties.
-        /// <summary>
-        /// Property to return the thumbnail directory.
-        /// </summary>
-        public DirectoryInfo ThumbnailDirectory
-        {
-            get;
-            private set;
-        }
-
         /// <summary>Property to return the title for the previewed content.</summary>        
         public string Title
         {
@@ -104,7 +103,7 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>Property to return the command used to refresh the preview image.</summary>
-        public IEditorAsyncCommand<OLDE_IContentFile> RefreshPreviewCommand
+        public IEditorAsyncCommand<IContentFile> RefreshPreviewCommand
         {
             get;
         }
@@ -116,12 +115,22 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="file">The file </param>
         /// <returns></returns>
-        private async Task LoadImagePreviewAsync(OLDE_IContentFile file)
+        private async Task LoadImagePreviewAsync(IContentFile file)
         {
             try
             {
                 if (_loadPreviewTask != null)
                 {
+                    if (_loadPreviewTask.Status == TaskStatus.Faulted)
+                    {
+                        _loadPreviewTask = null;
+                        Title = string.Empty;
+                        PreviewImage?.Dispose();
+                        PreviewImage = null;
+                        _contentFile = file;
+                        return;
+                    }
+
                     // Cancel the previous loading job.
                     _cancelSource.Cancel();
 
@@ -131,7 +140,7 @@ namespace Gorgon.Editor.ViewModels
                     _loadPreviewTask = null;
                 }
 
-                if (file?.Metadata?.OLDE_ContentMetadata == null)
+                if (file?.Metadata?.ContentMetadata == null)
                 {
                     Title = string.Empty;
                     PreviewImage?.Dispose();
@@ -145,10 +154,10 @@ namespace Gorgon.Editor.ViewModels
                     thumbnailName = Guid.NewGuid().ToString("N");
                 }
 
-                var thumbNailFile = new FileInfo(Path.Combine(ThumbnailDirectory.FullName, thumbnailName));
+                string path = _thumbnailPath + thumbnailName;
 
                 _cancelSource = new CancellationTokenSource();
-                _loadPreviewTask = file.Metadata.OLDE_ContentMetadata.GetThumbnailAsync(file, _contentFileManager, thumbNailFile, _cancelSource.Token);
+                _loadPreviewTask = file.Metadata.ContentMetadata.GetThumbnailAsync(file, path, _cancelSource.Token);
 
                 IGorgonImage image = await _loadPreviewTask;
 
@@ -167,12 +176,26 @@ namespace Gorgon.Editor.ViewModels
                 Title = file.Name;
 
                 _contentFile = file;
-                _contentFile.Renamed += File_Renamed;
             }
             catch (Exception ex)
             {
                 Program.Log.Print($"[ERROR] Error loading thumbnail for '{file.Path}'.", LoggingLevel.Simple);
                 Program.Log.LogException(ex);
+            }
+        }
+
+        /// <summary>Handles the PropertyChanged event of the File control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+        private void File_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var file = (IFile)sender;
+
+            switch (e.PropertyName)
+            {
+                case nameof(IFile.Name):
+                    Title = file.Name;
+                    break;
             }
         }
 
@@ -183,9 +206,19 @@ namespace Gorgon.Editor.ViewModels
         {
             switch (e.PropertyName)
             {
-                case nameof(IFileExplorerVm.SelectedNode):
-                    var file = _fileExplorer.SelectedNode as OLDE_IContentFile;
-                    await LoadImagePreviewAsync(file);
+                case nameof(IFileExplorer.SelectedFiles):
+                    IContentFile file = null;
+                    
+                    if (_fileExplorer.SelectedFiles.Count > 0)
+                    {
+                        file = _contentFileManager.GetFile(_fileExplorer.SelectedFiles[_fileExplorer.SelectedFiles.Count - 1].FullPath);                        
+                    }
+
+                    _fileExplorer.SelectedFiles.CollectionChanged += SelectedFiles_CollectionChanged;
+                    await LoadImagePreviewAsync(file);                    
+                    break;
+                case nameof(IFileExplorer.SelectedDirectory):
+                    HookFileEvents();
                     break;
             }
         }
@@ -197,40 +230,69 @@ namespace Gorgon.Editor.ViewModels
         {
             switch (e.PropertyName)
             {
-                case nameof(IFileExplorerVm.SelectedNode):
-                    if (_contentFile != null)
-                    {
-                        _contentFile.Renamed -= File_Renamed;
-                    }
+                case nameof(IFileExplorer.SelectedFiles):
+                    _fileExplorer.SelectedFiles.CollectionChanged -= SelectedFiles_CollectionChanged;
+                    break;
+                case nameof(IFileExplorer.SelectedDirectory):
+                    UnhookFileEvents();
                     break;
             }
         }
 
-        /// <summary>
-        /// Function called when a file is renamed.
-        /// </summary>
-        /// <param name="sender">The sender of the event.</param>
-        /// <param name="e">The event parameters.</param>
-        private void File_Renamed(object sender, ContentFileRenamedEventArgs e) => Title = e.NewName;
+        /// <summary>Handles the CollectionChanged event of the SelectedFiles control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
+        private async void SelectedFiles_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            IContentFile contentFile = null;
+
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    contentFile = (IContentFile)e.NewItems[0];
+
+                    if (contentFile == _contentFile)
+                    {
+                        return;
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    if (e.OldItems[0] != _contentFile)
+                    {
+                        return;
+                    }
+
+                    contentFile = null;
+                    break;
+            }
+
+            await LoadImagePreviewAsync(contentFile);
+        }
 
         /// <summary>
         /// Function to refresh the preview image for the content file.
         /// </summary>
         /// <param name="file">The file to refresh the preview for.</param>
         /// <returns>A task for asynchronous operation.</returns>
-        private async Task DoRefreshPreview(OLDE_IContentFile file)
+        private async Task DoRefreshPreview(IContentFile file)
         {
             try
             {
+                IGorgonVirtualDirectory thumbDirectory = _tempFileSystem.FileSystem.GetDirectory(_thumbnailPath);
+
+                if (thumbDirectory == null)
+                {
+                    thumbDirectory = _tempFileSystem.CreateDirectory(_thumbnailPath);
+                }
+
                 // If the file already has a link to a thumbnail, remove it.
-                FileInfo thumbnailFile = null;
                 if (file.Metadata.Attributes.TryGetValue(CommonEditorConstants.ThumbnailAttr, out string thumbnailName))
                 {
-                    thumbnailFile = new FileInfo(Path.Combine(ThumbnailDirectory.FullName, thumbnailName));
+                    IGorgonVirtualFile thumbnailFile = _tempFileSystem.FileSystem.GetFile(thumbDirectory.FullPath + thumbnailName);
 
-                    if (thumbnailFile.Exists)
+                    if (thumbnailFile != null)
                     {
-                        thumbnailFile.Delete();
+                        _tempFileSystem.DeleteFile(thumbnailFile.FullPath);
                     }
 
                     file.Metadata.Attributes.Remove(thumbnailName);
@@ -252,6 +314,49 @@ namespace Gorgon.Editor.ViewModels
             }
         }
 
+        /// <summary>
+        /// Function to unhook file events when a new file list is shown.
+        /// </summary>
+        private void UnhookFileEvents()
+        {
+            IDirectory directory = _fileExplorer.SelectedDirectory;
+
+            if (directory == null)
+            {
+                return;
+            }
+
+            foreach (IFile file in directory.Files)
+            {
+                file.PropertyChanged -= File_PropertyChanged;
+            }
+
+            Interlocked.Exchange(ref _fileEventsHooked, 0);
+        }
+
+        /// <summary>
+        /// Function to hook file events when a new file list is shown.
+        /// </summary>
+        private void HookFileEvents()
+        {
+            if (Interlocked.Exchange(ref _fileEventsHooked, 1) == 1)
+            {
+                return;
+            }
+
+            IDirectory directory = _fileExplorer.SelectedDirectory;
+
+            if (directory == null)
+            {
+                return;
+            }
+
+            foreach (IFile file in directory.Files)
+            {
+                file.PropertyChanged += File_PropertyChanged;
+            }            
+        }
+
         /// <summary>Function to inject dependencies for the view model.</summary>
         /// <param name="injectionParameters">The parameters to inject.</param>
         /// <remarks>
@@ -259,25 +364,39 @@ namespace Gorgon.Editor.ViewModels
         /// </remarks>
         protected override void OnInitialize(ContentPreviewVmParameters injectionParameters)
         {
-            _fileExplorer = injectionParameters.FileExplorer ?? throw new ArgumentMissingException(nameof(ContentPreviewVmParameters.FileExplorer), nameof(injectionParameters));
-            _contentFileManager = injectionParameters.ContentFileManager ?? throw new ArgumentMissingException(nameof(ContentPreviewVmParameters.ContentFileManager), nameof(injectionParameters));
-            ThumbnailDirectory = injectionParameters.ThumbDirectory ?? throw new ArgumentMissingException(nameof(ContentPreviewVmParameters.ThumbDirectory), nameof(injectionParameters));
+            _fileExplorer = injectionParameters.FileExplorer;
+            _contentFileManager = injectionParameters.ContentFileManager;
+            _tempFileSystem = injectionParameters.TempFileSystem;
         }
 
         /// <summary>Function called when the associated view is loaded.</summary>
-        public override void OnLoad()
+        public async override void OnLoad()
         {
             _fileExplorer.PropertyChanged += FileExplorer_PropertyChanged;
             _fileExplorer.PropertyChanging += FileExplorer_PropertyChanging;
+            _fileExplorer.SelectedFiles.CollectionChanged += SelectedFiles_CollectionChanged;
+            HookFileEvents();
+
+            if (_fileExplorer.SelectedFiles.Count == 0)
+            {
+                return;
+            }
+            
+            string path = _fileExplorer.SelectedFiles[0].FullPath;
+
+            if (!_contentFileManager.FileExists(path))
+            {
+                return;
+            }
+
+            await LoadImagePreviewAsync(_contentFileManager.GetFile(path));
         }
 
         /// <summary>Function called when the associated view is unloaded.</summary>
         public override void OnUnload()
         {
-            if (_contentFile != null)
-            {
-                _contentFile.Renamed -= File_Renamed;
-            }
+            UnhookFileEvents();            
+            _fileExplorer.SelectedFiles.CollectionChanged -= SelectedFiles_CollectionChanged;
             _fileExplorer.PropertyChanged -= FileExplorer_PropertyChanged;
             _fileExplorer.PropertyChanging -= FileExplorer_PropertyChanging;
             _cancelSource?.Dispose();
@@ -285,8 +404,8 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Constructor.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ViewModels.ContentPreviewVm"/> class.</summary>
-        public ContentPreviewVm() => RefreshPreviewCommand = new EditorAsyncCommand<OLDE_IContentFile>(DoRefreshPreview);
+        /// <summary>Initializes a new instance of the <see cref="ContentPreviewVm"/> class.</summary>
+        public ContentPreviewVm() => RefreshPreviewCommand = new EditorAsyncCommand<IContentFile>(DoRefreshPreview);
         #endregion
     }
 }

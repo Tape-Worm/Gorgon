@@ -49,14 +49,22 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the project manager for the application.
+        /// Property to set or return the project manager.
         /// </summary>
-        public IProjectManager ProjectManager => ViewModelFactory.ProjectManager;
+        public ProjectManager ProjectManager
+        {
+            get;
+            set;
+        }
 
         /// <summary>
-        /// Property to return the settings for the application.
+        /// Property to set or return the settings for the application.
         /// </summary>
-        public EditorSettings Settings => ViewModelFactory.Settings;
+        public EditorSettings EditorSettings
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Property to return the view model factory.
@@ -66,19 +74,26 @@ namespace Gorgon.Editor.ViewModels
             get;
         }
 
-        /// <summary>
-        /// Property to return the application clipboard service to use.
-        /// </summary>
-        public IClipboardService ClipboardService => ViewModelFactory.Clipboard;
+        /// <summary>Property to set or return the logging interface for debug logging.</summary>
+        public IGorgonLog Log
+        {
+            get;
+            set;
+        }
 
-        /// <summary>Property to return the logging interface for debug logging.</summary>
-        public IGorgonLog Log => Program.Log;
+        /// <summary>Property to set or return the serivce used to show busy states.</summary>
+        public IBusyStateService BusyService
+        {
+            get;
+            set;
+        }
 
-        /// <summary>Property to return the serivce used to show busy states.</summary>
-        public IBusyStateService BusyService => ViewModelFactory.BusyService;
-
-        /// <summary>Property to return the service used to show message dialogs.</summary>
-        public IMessageDisplayService MessageDisplay => ViewModelFactory.MessageDisplay;
+        /// <summary>Property to set or return the service used to show message dialogs.</summary>
+        public IMessageDisplayService MessageDisplay
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Property to set or return the clipboard handler for the view model.

@@ -26,48 +26,39 @@
 
 using System;
 using System.Collections.Generic;
-using ComponentFactory.Krypton.Toolkit;
 using Gorgon.Editor.ViewModels;
 
 namespace Gorgon.Editor.Views
 {
     /// <summary>
-    /// Defines which items are being dragged.
+    /// Import data for importing files and directories from Windows Explorer.
     /// </summary>
-    internal class ExplorerFileDragData
-        : IExplorerFilesDragData
+    internal class ExplorerImportData
+        : IImportData
     {
         #region Properties.
-        /// <summary>
-        /// Property to return the file system node being dragged.
-        /// </summary>
-        public IReadOnlyList<string> ExplorerPaths
+        /// <summary>Property to return the list of files/directories from Windows Explorer.</summary>
+        public List<string> PhysicalPaths
         {
             get;
-        }
-
-        /// <summary>
-        /// Property to return the type of operation to be performed when the drag is finished.
-        /// </summary>
-        public DragOperation DragOperation
-        {
-            get;
-            set;
         }
 
         /// <summary>
         /// Property to set or return the node that is the target for the drop operation.
         /// </summary>
-        public IFileExplorerNodeVm TargetNode
+        public DirectoryTreeNode TargetNode
         {
             get;
             set;
         }
 
+        /// <summary>Property to return the ID to the virtual directory that will receive the imported files.</summary>
+        public string DestinationDirectory => TargetNode?.Name ?? string.Empty;
+        
         /// <summary>
-        /// Property to set or return the tree node that is the target for the drop operation.
+        /// Property to set or return whether any files or directories were successfully imported.
         /// </summary>
-        public KryptonTreeNode TargetTreeNode
+        public bool ItemsImported
         {
             get;
             set;
@@ -76,16 +67,12 @@ namespace Gorgon.Editor.Views
 
         #region Constructor/Finalizer.
         /// <summary>
-        /// Initializes a new instance of the <see cref="ExplorerFileDragData"/> class.
+        /// Initializes a new instance of the <see cref="ExplorerImportData"/> class.
         /// </summary>
         /// <param name="explorerPaths">The paths to the explorer files.</param>
         /// <param name="dragOperation">The desired drag operation.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="explorerPaths"/> parameter is <b>null</b>.</exception>
-        public ExplorerFileDragData(IReadOnlyList<string> explorerPaths, DragOperation dragOperation)
-        {
-            ExplorerPaths = explorerPaths ?? throw new ArgumentNullException(nameof(explorerPaths));
-            DragOperation = dragOperation;
-        }
+        public ExplorerImportData(IReadOnlyList<string> explorerPaths) => PhysicalPaths = new List<string>(explorerPaths ?? throw new ArgumentNullException(nameof(explorerPaths)));
         #endregion
     }
 }

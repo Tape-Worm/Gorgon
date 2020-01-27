@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI.ViewModels;
 
 namespace Gorgon.Editor.ViewModels
@@ -37,18 +38,19 @@ namespace Gorgon.Editor.ViewModels
         : ViewModelInjection
     {
         /// <summary>
-        /// Property to return the list of plugins.
+        /// Property to set or return the list of plugins.
         /// </summary>
         public IEnumerable<ISettingsPlugInListItem> PlugIns
         {
             get;
+            set;
         }
 
         /// <summary>Initializes a new instance of the <see cref="SettingsPlugInsListParameters"/> class.</summary>
-        /// <param name="plugins">The plugins to display.</param>
-        /// <param name="commonServices">Common application services.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public SettingsPlugInsListParameters(IEnumerable<ISettingsPlugInListItem> plugins, IViewModelInjection commonServices)
-            : base(commonServices) => PlugIns = plugins ?? throw new ArgumentNullException(nameof(plugins));
+        /// <param name="hostServices">The host application services.</param>
+        public SettingsPlugInsListParameters(IHostServices hostServices)
+            : base(hostServices)
+        {        
+        }
     }
 }

@@ -733,12 +733,15 @@ namespace Gorgon.IO
         {
             VirtualFile file = GetVirtualFile(oldPath);
 
+            file.Directory.Files.Remove(file);
+
             if (file.MountPoint != mountPoint)
             {
                 file.MountPoint = mountPoint;
             }
 
             file.PhysicalFile = fileInfo;
+            file.Directory.Files[file.Name] = file;
         }
 
         /// <summary>

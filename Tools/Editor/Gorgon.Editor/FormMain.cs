@@ -82,7 +82,7 @@ namespace Gorgon.Editor
         // The current synchronization context.
         private readonly SynchronizationContext _syncContext;
         // The context for a clipboard handler object.
-        private Olde_IClipboardHandler _clipboardContext;
+        private IClipboardHandler _clipboardContext;
         // The flag to indicate that the application is already closing.
         private CloseStates _closeFlag;
         // The ribbon merger for the main ribbon.
@@ -100,6 +100,11 @@ namespace Gorgon.Editor
         private readonly Dictionary<string, KryptonRibbonGroupButton> _toolButtons = new Dictionary<string, KryptonRibbonGroupButton>(StringComparer.OrdinalIgnoreCase);
         // The list of separators for the tools tab.
         private readonly List<KryptonRibbonGroupSeparator> _toolSeparators = new List<KryptonRibbonGroupSeparator>();
+        // Default event arguments for button validation.
+        private readonly CreateDirectoryArgs _createDirArgs = new CreateDirectoryArgs();
+        private readonly DeleteArgs _deleteValidationArgs = new DeleteArgs(null);
+        private DeleteArgs _deleteAllValidationArgs;
+        private readonly ImportData _defaultImportData = new ImportData();
         #endregion
 
         #region Properties.
@@ -336,16 +341,16 @@ namespace Gorgon.Editor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonOpenContent_Click(object sender, EventArgs e)
         {
-            IProjectVm project = DataContext?.CurrentProject;
-            IFileExplorerVm fileExplorer = project?.FileExplorer;
-            var currentNode = fileExplorer?.SelectedNode as OLDE_IContentFile;
-
-            if ((fileExplorer?.OpenContentFileCommand == null) || (!fileExplorer.OpenContentFileCommand.CanExecute(currentNode)))
+            IProjectEditor project = DataContext?.CurrentProject;
+            IFileExplorer fileExplorer = project?.FileExplorer;
+            var currentFile = fileExplorer?.SelectedFiles[0] as IContentFile;
+#warning FIX THIS - Use string path instead of casting type.
+            if ((fileExplorer?.OpenContentFileCommand == null) || (!fileExplorer.OpenContentFileCommand.CanExecute(currentFile)))
             {
                 return;
             }
 
-            fileExplorer.OpenContentFileCommand.Execute(currentNode);
+            fileExplorer.OpenContentFileCommand.Execute(currentFile);
         }
 
         /// <summary>Handles the RibbonAdded event of the PanelProject control.</summary>
@@ -383,19 +388,19 @@ namespace Gorgon.Editor
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonExport_Click(object sender, EventArgs e)
+        private async void ButtonExport_Click(object sender, EventArgs e)
         {
             try
             {
-                IFileExplorerVm fileExplorer = DataContext?.CurrentProject?.FileExplorer;
-
-                if ((fileExplorer?.ExportNodeToCommand == null)
-                    || (!fileExplorer.ExportNodeToCommand.CanExecute(fileExplorer.SelectedNode ?? fileExplorer.RootNode)))
+                switch (PanelProject.FileExplorer.ControlContext)
                 {
-                    return;
+                    case FileExplorerContext.DirectoryTree:
+                        await PanelProject.FileExplorer.ExportDirectoryAsync();
+                        break;
+                    case FileExplorerContext.FileList:
+                        await PanelProject.FileExplorer.ExportFilesAsync();
+                        break;
                 }
-
-                fileExplorer.ExportNodeToCommand.Execute(fileExplorer.SelectedNode ?? fileExplorer.RootNode);
             }
             finally
             {
@@ -412,7 +417,7 @@ namespace Gorgon.Editor
         {
             try
             {
-                await PanelProject.FileExplorer.ImportFilesAsync();
+                await PanelProject.FileExplorer.ImportAsync();
             }
             finally
             {
@@ -427,16 +432,17 @@ namespace Gorgon.Editor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonFileSystemDeleteAll_Click(object sender, EventArgs e)
         {
-            IFileExplorerVm fileExplorer = DataContext?.CurrentProject?.FileExplorer;
+            IFileExplorer fileExplorer = DataContext?.CurrentProject?.FileExplorer;
 
             try
             {
-                if ((fileExplorer?.DeleteFileSystemCommand == null) || (!fileExplorer.DeleteFileSystemCommand.CanExecute(null)))
+                var args = new DeleteArgs(fileExplorer.Root.ID);
+                if ((fileExplorer?.DeleteDirectoryCommand == null) || (!fileExplorer.DeleteDirectoryCommand.CanExecute(args)))
                 {
                     return;
                 }
 
-                fileExplorer.DeleteFileSystemCommand.Execute(null);
+                fileExplorer.DeleteDirectoryCommand.Execute(args);
             }
             finally
             {
@@ -499,19 +505,15 @@ namespace Gorgon.Editor
             StageLive_Save(this, args);
         }
 
-        /// <summary>
-        /// Handles the RenameBegin event of the PanelProject control.
-        /// </summary>
+        /// <summary>Handles the FileExplorerIsRenaming event of the PanelProject control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void PanelProject_RenameBegin(object sender, EventArgs e) => ButtonFileSystemRename.Enabled = false;
+        private void PanelProject_FileExplorerIsRenaming(object sender, EventArgs e) => ValidateRibbonButtons();
 
-        /// <summary>
-        /// Handles the RenameEnd event of the PanelProject control.
-        /// </summary>
+        /// <summary>Handles the FileExplorerContextChanged event of the PanelProject control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void PanelProject_RenameEnd(object sender, EventArgs e) => ValidateRibbonButtons();
+        private void PanelProject_FileExplorerContextChanged(object sender, EventArgs e) => ValidateRibbonButtons();
 
         /// <summary>
         /// Handles the BackClicked event of the StageLive control.
@@ -561,8 +563,8 @@ namespace Gorgon.Editor
         /// </summary>
         private void ValidateRibbonButtons()
         {
-            IProjectVm project = DataContext?.CurrentProject;
-            IFileExplorerVm fileExplorer = project?.FileExplorer;
+            IProjectEditor project = DataContext?.CurrentProject;
+            IFileExplorer fileExplorer = project?.FileExplorer;
 
             if ((project == null) || (fileExplorer == null))
             {
@@ -572,12 +574,71 @@ namespace Gorgon.Editor
             }
 
             TabFileSystem.Visible = true;
+            _defaultImportData.Destination = fileExplorer.SelectedDirectory;
 
-            ButtonFileSystemNewDirectory.Enabled = (fileExplorer.CreateNodeCommand != null)
-                                                && (fileExplorer.CreateNodeCommand.CanExecute(new CreateNodeArgs(fileExplorer.SelectedNode)));
+            ButtonFileSystemNewDirectory.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.CreateDirectoryCommand?.CanExecute(_createDirArgs) ?? false);            
+            ButtonImport.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.ImportCommand?.CanExecute(_defaultImportData) ?? false);
+            ButtonFileSystemDeleteAll.Visible = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.SelectedDirectory == null) || (fileExplorer.SelectedDirectory == fileExplorer.Root);
+            ButtonFileSystemDelete.Visible = !ButtonFileSystemDeleteAll.Visible;
+            ButtonFileSystemDeleteAll.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.DeleteDirectoryCommand?.CanExecute(_deleteAllValidationArgs) ?? false);            
 
-            ButtonFileSystemRename.Enabled = (fileExplorer.RenameNodeCommand != null)
-                                            && (fileExplorer.SelectedNode != null);
+            switch (PanelProject.FileExplorer.ControlContext)
+            {
+                case FileExplorerContext.None:
+                    ButtonExport.Enabled = 
+                    ButtonFileSystemDelete.Enabled = 
+                    ButtonFileSystemRename.Enabled = 
+                    ButtonFileSystemPaste.Enabled =
+                    ButtonFileSystemCopy.Enabled = 
+                    ButtonFileSystemCut.Enabled = false;
+                    break;
+                case FileExplorerContext.DirectoryTree:
+                    ButtonExport.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.ExportDirectoryCommand?.CanExecute(null) ?? false);
+                    ButtonFileSystemCopy.Enabled = (!PanelProject.FileExplorer.IsRenaming)
+                                                && ((_clipboardContext?.CopyDataCommand?.CanExecute(new DirectoryCopyMoveData
+                                                {
+                                                    Operation = CopyMoveOperation.Copy,
+                                                    SourceDirectory = fileExplorer.SelectedDirectory?.ID ?? string.Empty
+                                                }) ?? false));
+                    ButtonFileSystemCut.Enabled = (!PanelProject.FileExplorer.IsRenaming)
+                                                && ((_clipboardContext?.CopyDataCommand?.CanExecute(new DirectoryCopyMoveData
+                                                {
+                                                    Operation = CopyMoveOperation.Copy,
+                                                    SourceDirectory = fileExplorer.SelectedDirectory?.ID ?? string.Empty
+                                                }) ?? false));
+                    ButtonFileSystemPaste.Enabled = (!PanelProject.FileExplorer.IsRenaming)
+                                                && (_clipboardContext?.PasteDataCommand?.CanExecute(null) ?? false);
+                    ButtonFileSystemDelete.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.DeleteDirectoryCommand?.CanExecute(_deleteValidationArgs) ?? false);
+                    ButtonFileSystemRename.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.RenameDirectoryCommand?.CanExecute(null) ?? false);
+                    break;
+                case FileExplorerContext.FileList:
+                    string[] validationFiles = fileExplorer.SelectedFiles.Select(item => item.ID).ToArray();
+                    ButtonExport.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.ExportFilesCommand?.CanExecute(null) ?? false);
+                    ButtonFileSystemCopy.Enabled = (!PanelProject.FileExplorer.IsRenaming)
+                                                && ((_clipboardContext?.CopyDataCommand?.CanExecute(new FileCopyMoveData
+                                                {
+                                                    Operation = CopyMoveOperation.Copy,
+                                                    SourceFiles = validationFiles
+                                                }) ?? false))
+                    ;
+                    ButtonFileSystemCut.Enabled = (!PanelProject.FileExplorer.IsRenaming)
+                                                && ((_clipboardContext?.CopyDataCommand?.CanExecute(new FileCopyMoveData
+                                                {
+                                                    Operation = CopyMoveOperation.Copy,
+                                                    SourceFiles = validationFiles
+                                                }) ?? false));
+                    ButtonFileSystemPaste.Enabled = (!PanelProject.FileExplorer.IsRenaming)
+                                                && (_clipboardContext?.PasteDataCommand?.CanExecute(null) ?? false);
+                    ButtonFileSystemDelete.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.DeleteFileCommand?.CanExecute(_deleteValidationArgs) ?? false);
+                    ButtonFileSystemRename.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.RenameFileCommand?.CanExecute(null) ?? false);
+                    break;
+            }
+
+#warning FIX THIS
+            /*
+            
+
+
 
             ButtonExpand.Enabled = (fileExplorer.SelectedNode != null) && (fileExplorer.SelectedNode.Children.Count > 0);
             ButtonCollapse.Enabled = (fileExplorer.SelectedNode != null) && (fileExplorer.SelectedNode.Children.Count > 0);
@@ -585,13 +646,11 @@ namespace Gorgon.Editor
             ButtonFileSystemDelete.Visible = fileExplorer.SelectedNode != null;
             ButtonFileSystemDelete.Enabled = (fileExplorer.DeleteNodeCommand != null)
                                             && (fileExplorer.DeleteNodeCommand.CanExecute(null));
-            ButtonFileSystemDeleteAll.Visible = fileExplorer.SelectedNode == null;
-            ButtonFileSystemDeleteAll.Enabled = fileExplorer.DeleteFileSystemCommand?.CanExecute(null) ?? false;
 
             ButtonImport.Enabled = fileExplorer.ImportIntoNodeCommand?.CanExecute(fileExplorer.SelectedNode ?? fileExplorer.RootNode) ?? false;
             ButtonExport.Enabled = fileExplorer.ExportNodeToCommand?.CanExecute(fileExplorer.SelectedNode ?? fileExplorer.RootNode) ?? false;
 
-            ButtonOpenContent.Enabled = fileExplorer.OpenContentFileCommand?.CanExecute(fileExplorer.SelectedNode as OLDE_IContentFile) ?? false;
+            ButtonOpenContent.Enabled = fileExplorer.OpenContentFileCommand?.CanExecute(fileExplorer.SelectedNode as IContentFile) ?? false;
 
             ButtonFileSystemCopy.Enabled = _clipboardContext?.CanCopy() ?? false;
             ButtonFileSystemCut.Enabled = _clipboardContext?.CanCut() ?? false;
@@ -615,7 +674,7 @@ namespace Gorgon.Editor
                 {
                     ribButton.Enabled = true;
                 }
-            }
+            }*/
         }
 
         /// <summary>
@@ -807,6 +866,7 @@ namespace Gorgon.Editor
                 case nameof(IMain.CurrentProject):
                     ReleaseToolRibbonItems();
 
+                    _deleteAllValidationArgs = null;
                     RibbonMain.SelectedContext = string.Empty;
 
                     if (DataContext.CurrentProject != null)
@@ -815,7 +875,9 @@ namespace Gorgon.Editor
                         DataContext.CurrentProject.PropertyChanged -= CurrentProject_PropertyChanged;
                         if (DataContext.CurrentProject.FileExplorer != null)
                         {
+                            DataContext.CurrentProject.FileExplorer.FileSystemUpdated -= FileExplorer_FileSystemUpdated;
                             DataContext.CurrentProject.FileExplorer.PropertyChanged -= FileExplorer_PropertyChanged;
+                            DataContext.CurrentProject.FileExplorer.SelectedFiles.CollectionChanged -= SelectedFiles_CollectionChanged;
                         }
                     }
 
@@ -834,7 +896,7 @@ namespace Gorgon.Editor
         {
             switch (e.PropertyName)
             {
-                case nameof(IProjectVm.CommandContext):
+                case nameof(IProjectEditor.CommandContext):
                     if (string.IsNullOrWhiteSpace(DataContext.CurrentProject.CommandContext))
                     {
                         _prevTabBeforeContext = RibbonMain.SelectedTab;
@@ -850,7 +912,7 @@ namespace Gorgon.Editor
         {
             switch (e.PropertyName)
             {
-                case nameof(IProjectVm.CommandContext):
+                case nameof(IProjectEditor.CommandContext):
                     RibbonMain.SelectedContext = DataContext.CurrentProject.CommandContext;
 
                     if (string.IsNullOrWhiteSpace(DataContext.CurrentProject.CommandContext))
@@ -874,6 +936,18 @@ namespace Gorgon.Editor
         }
 
         /// <summary>
+        /// Function to notify when the selected files are changed.
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The event parameters.</param>
+        private void SelectedFiles_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) => ValidateRibbonButtons();
+
+        /// <summary>Handles the FileSystemUpdated event of the FileExplorer control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void FileExplorer_FileSystemUpdated(object sender, EventArgs e) => ValidateRibbonButtons();
+
+        /// <summary>
         /// Handles the PropertyChanged event of the FileExplorer control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -882,10 +956,11 @@ namespace Gorgon.Editor
         {
             switch (e.PropertyName)
             {
-                case nameof(IFileExplorerVm.SearchResults):
+                case nameof(IFileExplorer.SearchResults):
                 case nameof(IUndoHandler.UndoCommand):
                 case nameof(IUndoHandler.RedoCommand):
-                case nameof(IFileExplorerVm.SelectedNode):
+                case nameof(IFileExplorer.SelectedFiles):
+                case nameof(IFileExplorer.SelectedDirectory):
                     ValidateRibbonButtons();
                     break;
             }
@@ -912,17 +987,7 @@ namespace Gorgon.Editor
                     ValidateRibbonButtons();
                     break;
                 case nameof(IMain.ClipboardContext):
-                    if (_clipboardContext != null)
-                    {
-                        _clipboardContext.DataUpdated -= ClipboardContext_DataUpdated;
-                    }
-
                     _clipboardContext = DataContext.ClipboardContext;
-
-                    if (_clipboardContext != null)
-                    {
-                        _clipboardContext.DataUpdated += ClipboardContext_DataUpdated;
-                    }
                     break;
                 case nameof(IMain.CurrentProject):
                     NavigateToProjectView(DataContext);
@@ -934,13 +999,17 @@ namespace Gorgon.Editor
 
                         if (DataContext.CurrentProject.FileExplorer != null)
                         {
+                            DataContext.CurrentProject.FileExplorer.FileSystemUpdated += FileExplorer_FileSystemUpdated;
                             DataContext.CurrentProject.FileExplorer.PropertyChanged += FileExplorer_PropertyChanged;
+                            DataContext.CurrentProject.FileExplorer.SelectedFiles.CollectionChanged += SelectedFiles_CollectionChanged;
                         }
 
                         RibbonMain.SelectedContext = DataContext.CurrentProject.CommandContext;
 
                         TabFileSystem.Visible = true;
                         UpdateToolsTab(DataContext.CurrentProject.ToolButtons);
+
+                        _deleteAllValidationArgs = new DeleteArgs(DataContext.CurrentProject.FileExplorer.Root.ID);
                     }
                     break;
             }
@@ -952,14 +1021,14 @@ namespace Gorgon.Editor
         /// Function to update the icons used for the "new" buttons.
         /// </summary>
         /// <param name="metadata">The metadata for plug ins that can create content.</param>
-        private void AddNewIcons(IEnumerable<OLDE_IContentPlugInMetadata> metadata)
+        private void AddNewIcons(IEnumerable<IContentPlugInMetadata> metadata)
         {
             if (metadata == null)
             {
                 return;
             }
 
-            foreach (OLDE_IContentPlugInMetadata item in metadata)
+            foreach (IContentPlugInMetadata item in metadata)
             {
                 string id = item.NewIconID.ToString("N");
                 Image icon = item.GetNewIcon();
@@ -986,14 +1055,14 @@ namespace Gorgon.Editor
         /// Function to update the icons used for the "new" buttons.
         /// </summary>
         /// <param name="metadata">The metadata for plug ins that can create content.</param>
-        private void RemoveNewIcons(IEnumerable<OLDE_IContentPlugInMetadata> metadata)
+        private void RemoveNewIcons(IEnumerable<IContentPlugInMetadata> metadata)
         {
             if (metadata == null)
             {
                 return;
             }
 
-            foreach (OLDE_IContentPlugInMetadata item in metadata)
+            foreach (IContentPlugInMetadata item in metadata)
             {
                 string id = item.NewIconID.ToString("N");
 
@@ -1050,6 +1119,7 @@ namespace Gorgon.Editor
         {
             if (dataContext == null)
             {
+                _deleteAllValidationArgs = null;
                 _clipboardContext = null;
                 Text = Resources.GOREDIT_CAPTION_NO_FILE;
                 ReleaseToolRibbonItems();
@@ -1058,11 +1128,6 @@ namespace Gorgon.Editor
 
             Text = string.Empty;
             _clipboardContext = dataContext.CurrentProject?.ClipboardContext;
-
-            if (_clipboardContext != null)
-            {
-                _clipboardContext.DataUpdated += ClipboardContext_DataUpdated;
-            }
 
             if (dataContext.CurrentProject != null)
             {
@@ -1080,10 +1145,10 @@ namespace Gorgon.Editor
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    AddNewIcons(e.NewItems.OfType<OLDE_IContentPlugInMetadata>());
+                    AddNewIcons(e.NewItems.OfType<IContentPlugInMetadata>());
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    RemoveNewIcons(e.OldItems.OfType<OLDE_IContentPlugInMetadata>());
+                    RemoveNewIcons(e.OldItems.OfType<IContentPlugInMetadata>());
                     break;
                 case NotifyCollectionChangedAction.Reset:
                     ClearNewIcons();
@@ -1109,11 +1174,6 @@ namespace Gorgon.Editor
                 DataContext.ContentCreators.CollectionChanged -= ContentCreators_CollectionChanged;
             }
 
-            if (_clipboardContext != null)
-            {
-                _clipboardContext.DataUpdated -= ClipboardContext_DataUpdated;
-            }
-
             if (DataContext.CurrentProject != null)
             {
                 DataContext.CurrentProject.PropertyChanging -= CurrentProject_PropertyChanging;
@@ -1121,7 +1181,9 @@ namespace Gorgon.Editor
 
                 if (DataContext.CurrentProject.FileExplorer != null)
                 {
+                    DataContext.CurrentProject.FileExplorer.FileSystemUpdated -= FileExplorer_FileSystemUpdated;
                     DataContext.CurrentProject.FileExplorer.PropertyChanged -= FileExplorer_PropertyChanged;
+                    DataContext.CurrentProject.FileExplorer.SelectedFiles.CollectionChanged -= SelectedFiles_CollectionChanged;
                 }
             }
 
@@ -1159,7 +1221,15 @@ namespace Gorgon.Editor
         {
             try
             {
-                PanelProject.FileExplorer.RenameNode();
+                switch(PanelProject.FileExplorer.ControlContext)
+                {
+                    case FileExplorerContext.DirectoryTree:
+                        PanelProject.FileExplorer.RenameDirectory();
+                        break;
+                    case FileExplorerContext.FileList:
+                        PanelProject.FileExplorer.RenameFile();
+                        break;
+                }
             }
             finally
             {
@@ -1176,41 +1246,15 @@ namespace Gorgon.Editor
         {
             try
             {
-                PanelProject.FileExplorer.Delete();
-            }
-            finally
-            {
-                ValidateRibbonButtons();
-            }
-        }
-
-        /// <summary>
-        /// Handles the Click event of the ButtonExpand control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonExpand_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                PanelProject.FileExplorer.Expand();
-            }
-            finally
-            {
-                ValidateRibbonButtons();
-            }
-        }
-
-        /// <summary>
-        /// Handles the Click event of the ButtonCollapse control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonCollapse_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                PanelProject.FileExplorer.Collapse();
+                switch (PanelProject.FileExplorer.ControlContext)
+                {
+                    case FileExplorerContext.DirectoryTree:
+                        PanelProject.FileExplorer.DeleteDirectory();
+                        break;
+                    case FileExplorerContext.FileList:
+                        PanelProject.FileExplorer.DeleteFiles();
+                        break;
+                }
             }
             finally
             {
@@ -1225,12 +1269,22 @@ namespace Gorgon.Editor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonFileSystemCut_Click(object sender, EventArgs e)
         {
-            if (_clipboardContext == null)
+            if (_clipboardContext?.CopyDataCommand == null)
             {
                 return;
             }
 
-            _clipboardContext.Cut();
+            switch (PanelProject.FileExplorer.ControlContext)
+            {
+                case FileExplorerContext.DirectoryTree:
+                    PanelProject.FileExplorer.CopyDirectoryToClipboard(CopyMoveOperation.Move);
+                    break;
+                case FileExplorerContext.FileList:
+                    PanelProject.FileExplorer.CopyFileToClipboard(CopyMoveOperation.Move);
+                    break;
+            }
+
+            ValidateRibbonButtons();
         }
 
 
@@ -1239,14 +1293,16 @@ namespace Gorgon.Editor
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonFileSystemPaste_Click(object sender, EventArgs e)
+        private async void ButtonFileSystemPaste_Click(object sender, EventArgs e)
         {
-            if (_clipboardContext == null)
+            if ((_clipboardContext?.PasteDataCommand == null)
+                || (!_clipboardContext.PasteDataCommand.CanExecute(null)))
             {
                 return;
             }
 
-            _clipboardContext.Paste();
+            await _clipboardContext.PasteDataCommand.ExecuteAsync(null);
+            ValidateRibbonButtons();
         }
 
         /// <summary>
@@ -1254,14 +1310,24 @@ namespace Gorgon.Editor
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonFileSystemCopy_Click(object sender, EventArgs e)
+        private void ButtonFileSystemCopy_Click(object sender, EventArgs e) 
         {
-            if (_clipboardContext == null)
+            if (_clipboardContext?.CopyDataCommand == null)
             {
                 return;
             }
 
-            _clipboardContext.Copy();
+            switch (PanelProject.FileExplorer.ControlContext)
+            {
+                case FileExplorerContext.DirectoryTree:
+                    PanelProject.FileExplorer.CopyDirectoryToClipboard(CopyMoveOperation.Copy);
+                    break;
+                case FileExplorerContext.FileList:
+                    PanelProject.FileExplorer.CopyFileToClipboard(CopyMoveOperation.Copy);
+                    break;
+            }
+
+            ValidateRibbonButtons();
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.ResizeEnd"/> event.</summary>
@@ -1390,7 +1456,11 @@ namespace Gorgon.Editor
                     if (DataContext.CurrentProject.FileExplorer != null)
                     {
                         DataContext.CurrentProject.FileExplorer.PropertyChanged += FileExplorer_PropertyChanged;
+                        DataContext.CurrentProject.FileExplorer.SelectedFiles.CollectionChanged += SelectedFiles_CollectionChanged;
+                        DataContext.CurrentProject.FileExplorer.FileSystemUpdated += FileExplorer_FileSystemUpdated;
                     }
+
+                    _deleteAllValidationArgs = new DeleteArgs(DataContext.CurrentProject.FileExplorer.Root.ID);
                 }
 
                 DataContext.ContentCreators.CollectionChanged += ContentCreators_CollectionChanged;

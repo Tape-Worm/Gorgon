@@ -967,9 +967,9 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap image_16x16 {
+        internal static System.Drawing.Bitmap image_20x20 {
             get {
-                object obj = ResourceManager.GetObject("image_16x16", resourceCulture);
+                object obj = ResourceManager.GetObject("image_20x20", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

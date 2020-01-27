@@ -32,1727 +32,868 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using ComponentFactory.Krypton.Toolkit;
 using Gorgon.Collections;
-using Gorgon.Editor.Content;
+using Gorgon.Core;
+using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Editor.ViewModels;
+using Gorgon.Math;
 using Gorgon.UI;
 
 namespace Gorgon.Editor.Views
 {
     /// <summary>
+    /// The context for the file explorer.
+    /// </summary>
+    internal enum FileExplorerContext
+    {
+        /// <summary>
+        /// No item is focused.
+        /// </summary>
+        None = 0,
+        /// <summary>
+        /// The directory tree is focused.
+        /// </summary>
+        DirectoryTree = 1,
+        /// <summary>
+        /// The file list is focused.
+        /// </summary>
+        FileList = 2
+    }
+
+    /// <summary>
     /// The file explorer used to manipulate files for the project.
     /// </summary>
     internal partial class FileExploder
-        : EditorBaseControl, IDataContext<IFileExplorerVm>
+        : EditorBaseControl, IDataContext<IFileExplorer>
     {
+        #region Constants
+        // The name for a dummy node.
+        private const string DummyNodeName = "*$__DUMMY__$*";
+        #endregion
+
         #region Events.
+        // The event fired when the control context is changed.
+        private event EventHandler _controlContextChanged;
+
+        // The event fired when the rename state is changed.
+        private event EventHandler _isRenamingChanged;
+
         /// <summary>
-        /// Event triggered when a rename operation is completed.
+        /// The event fired when the <see cref="ControlContext"/> property is changed.
         /// </summary>
-        public event EventHandler RenameEnd;
+        [Description("Event fired when the ControlContext property is changed."), Category("Property Changed")]
+        public event EventHandler ControlContextChanged
+        {
+            add
+            {
+                lock (_eventLock)
+                {
+                    if (value == null)
+                    {
+                        _controlContextChanged = null;
+                        return;
+                    }
+
+                    _controlContextChanged += value;
+                }                
+            }
+            remove
+            {
+                lock (_eventLock)
+                {
+                    if (value == null)
+                    {
+                        return;
+                    }
+
+                    _controlContextChanged -= value;
+                }
+            }
+        }
+
         /// <summary>
-        /// Event triggered when a rename operation is started.
+        /// The event fired when the <see cref="IsRenaming"/> property is changed.
         /// </summary>
-        public event EventHandler RenameBegin;
+        [Description("Event fired when the IsRenaming property is changed."), Category("Property Changed")]
+        public event EventHandler IsRenamingChanged
+        {
+            add
+            {
+                lock (_eventLock)
+                {
+                    if (value == null)
+                    {
+                        _isRenamingChanged = null;
+                        return;
+                    }
+
+                    _isRenamingChanged += value;
+                }
+            }
+            remove
+            {
+                lock (_eventLock)
+                {
+                    if (value == null)
+                    {
+                        return;
+                    }
+
+                    _isRenamingChanged -= value;
+                }
+            }
+        }
         #endregion
 
         #region Variables.
-        // A list of file system nodes linked to our actual tree nodes.
-        private readonly Dictionary<KryptonTreeNode, IFileExplorerNodeVm> _nodeLinks = new Dictionary<KryptonTreeNode, IFileExplorerNodeVm>();
-        // The reverse of the above.
-        private readonly Dictionary<IFileExplorerNodeVm, KryptonTreeNode> _revNodeLinks = new Dictionary<IFileExplorerNodeVm, KryptonTreeNode>();
-        // The node being renamed.
-        private IFileExplorerNodeVm _renameNode;
-        // Font used for excluded items.
-        private Font _excludedFont;
-        // Font used for open items.
-        private Font _openFont;
-        // The context handler for clipboard operations.
-        private Olde_IClipboardHandler _clipboardContext;
-        // A drag and drop handler interface.
-        private Olde_IDragDropHandler<IFileExplorerNodeDragData> _nodeDragDropHandler;
-        // A drag and drop handler interface.
-        private Olde_IDragDropHandler<ViewModels.IExplorerFilesDragData> _explorerDragDropHandler;
-        // The drag hilight background color.
-        private Color _dragBackColor;
-        // The drag hilight foreground color.
-        private Color _dragForeColor;
-        // The drag data for dropping files from explorer.
-        private ExplorerFileDragData _explorerDragData;
-        // The nodes returned from a search.
-        private IReadOnlyList<IFileExplorerNodeVm> _searchNodes;
-        // The background color for the list view header.
-        private readonly SolidBrush _listViewHeaderBackColor;
-        // The background color for the list view header.
-        private readonly SolidBrush _listViewHeaderForeColor;
-        // Flag to indicate that a node is being opened, this is used to get around an issue with double clicking on a node, and having the mouse up event fire immediately after.
-        private int _nodeOpening;
+        // The synchronization lock for the control context changed event.
+        private readonly object _eventLock = new object();
+        // Flag to indicate that the events for the tree are hooked up.
+        private int _treeEventsHooked = 0;
+        // Flag to indicate that the events for the grid are hooked up.
+        private int _gridEventsHooked = 0;
+        // The nodes for a directory.
+        private Dictionary<string, DirectoryTreeNode> _directoryNodes = new Dictionary<string, DirectoryTreeNode>(StringComparer.OrdinalIgnoreCase);
+        // The root node for the directory tree.
+        private DirectoryTreeNode _rootNode;
+        // The font used for open files.
+        private Font _openFileFont;
+        // Arguments used when validating clipboard menu items.
+        private readonly GetClipboardDataTypeArgs _clipboardValidationArgs = new GetClipboardDataTypeArgs();
+        private readonly DeleteArgs _deleteValidationArgs = new DeleteArgs(null);
+        private readonly CreateDirectoryArgs _createDirectoryValidationArgs = new CreateDirectoryArgs();
+        private readonly string[] _validationFiles = { "Dummy " };
+        // The styles for file states.
+        private readonly DataGridViewCellStyle _cutCellStyle;
+        private readonly DataGridViewCellStyle _openFileStyle;
+        private readonly DataGridViewCellStyle _unknownFileStyle;
+        // The drag data for importing Windows Explorer files/directories.
+        private ExplorerImportData _explorerImportData;
+        // The control context.
+        private FileExplorerContext _controlContext = FileExplorerContext.None;
+        // Flag to indicate if a rename operation is active.
+        private bool _isRenaming;
         #endregion
 
         #region Properties.
         /// <summary>
-        /// Property to return whether or not the control is in the middle of a renaming operation.
-        /// </summary>
-        [Browsable(false)]
-        public bool IsRenaming => _renameNode != null;
-
-        /// <summary>
         /// Property to return the data context assigned to this view.
         /// </summary>
         [Browsable(false)]
-        public IFileExplorerVm DataContext
+        public IFileExplorer DataContext
         {
             get;
             private set;
+        }
+
+        /// <summary>
+        /// Property to return the current control context.
+        /// </summary>
+        [Browsable(false)]
+        public FileExplorerContext ControlContext
+        {
+            get => _controlContext;
+            private set
+            {
+                if (value == _controlContext)
+                {
+                    return;
+                }
+
+                _controlContext = value;
+                OnControlContextChanged();
+            }
+        }
+
+        /// <summary>
+        /// Property to return if a directory or file is in the middle of a rename operation.
+        /// </summary>
+        [Browsable(false)]
+        public bool IsRenaming
+        {
+            get => _isRenaming;
+            private set
+            {
+                if (value == _isRenaming)
+                {
+                    return;
+                }
+
+                _isRenaming = value;
+                OnIsRenamingChanged();
+            }
         }
         #endregion
 
         #region Methods.
         /// <summary>
-        /// Function to locate an image index for a node based on the node image name.
+        /// Function to fire the <see cref="ControlContextChanged"/> event.
         /// </summary>
-        /// <param name="node">The node to evaluate.</param>
-        /// <returns>The image index of the node, or -1 if not found.</returns>
-        private int FindImageIndexFromNode(IFileExplorerNodeVm node)
+        private void OnControlContextChanged()
         {
-            const string defaultDirKey = "folder_20x20.png";
-            const string defaultFileKey = "generic_file_20x20.png";
+            EventHandler handler = null;
 
-            int imageIndex = TreeImages.Images.IndexOfKey(node.ImageName);
-
-            if (imageIndex == -1)
+            lock (_eventLock)
             {
-                imageIndex = node.NodeType == NodeType.Directory
-                                    ? TreeImages.Images.IndexOfKey(defaultDirKey)
-                                    : TreeImages.Images.IndexOfKey(defaultFileKey);
+                handler = _controlContextChanged;
             }
 
-            return imageIndex;
+            handler?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
-        /// Function to unassign the linkages for a node.
+        /// Function to fire the <see cref="IsRenamingChanged"/> event.
         /// </summary>
-        /// <param name="node"></param>
-        private void RemoveNodeLinks(IFileExplorerNodeVm node)
+        private void OnIsRenamingChanged()
         {
-            if (node == null)
+            EventHandler handler = null;
+
+            lock (_eventLock)
             {
-                return;
+                handler = _isRenamingChanged;
             }
 
-            UnassignNodeEvents(node.Dependencies);
-            UnassignNodeEvents(node.Children);
-            node.PropertyChanged -= Node_PropertyChanged;
-            _revNodeLinks.Remove(node);
-        }
-
-        /// <summary>
-        /// Function to delete a node from the tree.
-        /// </summary>
-        /// <param name="deleteNode">The node to delete.</param>
-        private void RemoveNode(IFileExplorerNodeVm deleteNode)
-        {
-            if (_searchNodes != null)
-            {
-                // If the search pane is active, and the node being deleted, or any of its children are in the list, then we should remove it.
-                ListViewItem searchItem = ListSearchResults.Items.OfType<ListViewItem>().FirstOrDefault(item => item.Tag == deleteNode);
-
-                if (searchItem != null)
-                {
-                    ListSearchResults.Items.Remove(searchItem);
-                }
-
-                foreach (IFileExplorerNodeVm childNode in deleteNode.Children.Traverse(n => n.Children))
-                {
-                    searchItem = ListSearchResults.Items.OfType<ListViewItem>().FirstOrDefault(item => item.Tag == deleteNode);
-                    if (searchItem != null)
-                    {
-                        ListSearchResults.Items.Remove(searchItem);
-                    }
-                }
-            }
-
-            // This node is not on the tree, so just leave.  There's nothing we can do here.
-            if (!_revNodeLinks.TryGetValue(deleteNode, out KryptonTreeNode deleteTreeNode))
-            {
-                // If we have a collapsed parent node, we won't have a link for the item in our tree node links.
-                // So, in that case, get the parent node and remove any dummy nodes (if the parent is collapsed) and we're the only child.
-                if ((_revNodeLinks.TryGetValue(deleteNode.Parent, out KryptonTreeNode parentTreeNode))
-                    && (!parentTreeNode.IsExpanded)
-                    && (deleteNode.Parent.Children.Count == 0))
-                {
-                    parentTreeNode.Nodes.Clear();
-                }
-
-                return;
-            }
-
-            // Let us control next/prev node selection.
-            TreeFileSystem.AfterSelect -= TreeFileSystem_AfterSelect;
-
-            try
-            {
-                // Immediately turn off events for this node.  We don't need some phantom event ruining everything.
-                RemoveNodeLinks(deleteNode);
-
-                var parentTreeNode = deleteTreeNode.Parent as KryptonTreeNode;
-                var nextSibling = deleteTreeNode.NextNode as KryptonTreeNode;
-#pragma warning disable IDE0019 // Use pattern matching  Seriously, this breaks so very fucking badly.  Did no one test these idiotic suggestions??
-                var prevSibling = deleteTreeNode.PrevNode as KryptonTreeNode;
-#pragma warning restore IDE0019 // Use pattern matching
-
-                TreeNodeCollection nodes = parentTreeNode?.Nodes ?? TreeFileSystem.Nodes;
-                nodes.Remove(deleteTreeNode);
-
-                // Remove from linkage.
-                _nodeLinks.Remove(deleteTreeNode);
-
-                // Figure out who gets selected next.
-                if ((parentTreeNode != null) && (parentTreeNode.Nodes.Count == 0))
-                {
-                    SelectNode(parentTreeNode);
-                    parentTreeNode.EnsureVisible();
-                    parentTreeNode.Collapse();
-                    return;
-                }
-
-                if (prevSibling != null)
-                {
-                    SelectNode(prevSibling);
-                    prevSibling.EnsureVisible();
-                    return;
-                }
-
-                SelectNode(nextSibling);
-                nextSibling?.EnsureVisible();
-            }
-            finally
-            {
-                TreeFileSystem.AfterSelect += TreeFileSystem_AfterSelect;
-            }
-        }
-
-        /// <summary>
-        /// Function to add a new node to the tree.
-        /// </summary>
-        /// <param name="newNode">The new node to add.</param>
-        private void AddNode(IFileExplorerNodeVm newNode)
-        {
-            if (!newNode.Visible)
-            {
-                return;
-            }
-
-            // Always add the new node to the search list (when it's active), even if it doesn't meet the criteria.
-            // Otherwise, it'd be confusing to not see the new node after creation.  This is how Visual Studio's 
-            // solution explorer tree works as well.
-            if (_searchNodes != null)
-            {
-                ListViewItem item = null;
-
-                if (ListSearchResults.Items.ContainsKey(newNode.FullPath))
-                {
-                    item = ListSearchResults.Items[newNode.FullPath];
-                    item.Tag = newNode;
-                    UpdateSearchItemVisualState(item, newNode);
-                }
-                else
-                {
-                    item = new ListViewItem
-                    {
-                        Name = newNode.FullPath,
-                        Text = newNode.Name,
-                        Tag = newNode
-                    };
-
-                    UpdateSearchItemVisualState(item, newNode);
-
-                    item.SubItems.Add(new ListViewItem.ListViewSubItem
-                    {
-                        Text = newNode.FullPath,
-                        ForeColor = Color.Silver
-                    });
-
-                    ListSearchResults.Items.Add(item);
-                }
-            }
-
-            // Locate the tree node that has our parent node.
-            KryptonTreeNode parentTreeNode = null;
-            IFileExplorerNodeVm parent = newNode.Parent ?? DataContext.RootNode;
-
-            if (parent != DataContext.RootNode)
-            {
-                // The node does not exist yet, so do nothing.
-                if (!_revNodeLinks.TryGetValue(parent, out parentTreeNode))
-                {
-                    return;
-                }
-            }
-
-            TreeNodeCollection nodes = parentTreeNode?.Nodes ?? TreeFileSystem.Nodes;
-
-            KryptonTreeNode newTreeNode = null;
-
-            if (((parentTreeNode == null) && (parent == DataContext.RootNode)) || (parentTreeNode?.IsExpanded ?? false))
-            {
-                newNode.PropertyChanged += Node_PropertyChanged;
-                newNode.Children.CollectionChanged += Nodes_CollectionChanged;
-                newNode.Dependencies.CollectionChanged += Nodes_CollectionChanged;
-
-                int imageIndex = FindImageIndexFromNode(newNode);
-                newTreeNode = new KryptonTreeNode(newNode.Name, imageIndex, imageIndex);
-
-                UpdateNodeVisualState(newTreeNode, newNode);
-
-                _nodeLinks[newTreeNode] = newNode;
-                _revNodeLinks[newNode] = newTreeNode;
-                nodes.Add(newTreeNode);
-                SelectNode(newTreeNode);
-                newTreeNode.EnsureVisible();
-                return;
-            }
-
-            if (parentTreeNode.Nodes.Count == 0)
-            {
-                parentTreeNode.Nodes.Add(new KryptonTreeNode("DUMMY_NODE_SHOULD_NOT_SEE_ME"));
-            }
-
-            if (!parentTreeNode.IsExpanded)
-            {
-                return;
-            }
-
-            if (!_revNodeLinks.TryGetValue(newNode, out newTreeNode))
-            {
-                return;
-            }
-
-            SelectNode(newTreeNode);
-            newTreeNode.EnsureVisible();
-        }
-
-        /// <summary>
-        /// Function to remove the nodes from the tree.
-        /// </summary>
-        /// <param name="nodes">The node collection being cleared.</param>
-        private void ClearNodeBranch(ObservableCollection<IFileExplorerNodeVm> nodes)
-        {
-            // Find the owner of the collection.
-            IFileExplorerNodeVm node = _revNodeLinks.FirstOrDefault(item => (item.Key.Children == nodes) || (item.Key.Dependencies == nodes)).Key;
-
-            if ((node == null) && (nodes != DataContext.RootNode.Children))
-            {
-                return;
-            }
-
-            nodes.CollectionChanged -= Nodes_CollectionChanged;
-
-            if ((node != null) && (_revNodeLinks.TryGetValue(node, out KryptonTreeNode treeNode)))
-            {
-                SelectNode(treeNode);
-
-                if (treeNode.IsExpanded)
-                {
-                    // When the node is collapsed, all cached child nodes will be removed, and all events unassigned.
-                    // Thus, there is no need for us to manually clean up here.
-                    treeNode.Collapse();
-                }
-                else
-                {
-                    // Otherwise, if the node is collapsed, then just reassign the event.
-                    nodes.CollectionChanged += Nodes_CollectionChanged;
-                }
-
-                treeNode.Nodes.Clear();
-            }
-            else
-            {
-                // Ensure all nodes are unassigned from event handlers.
-                // We do this because the node list is cleared at this point, and the only copy of remaining visible nodes 
-                // is stored in the cache.  If we do not do this, we end up with phantom events until the objects are 
-                // garbage collected.
-                foreach (IFileExplorerNodeVm cachedNode in _revNodeLinks.Keys)
-                {
-                    UnassignNodeEvents(cachedNode.Children);
-                    UnassignNodeEvents(cachedNode.Dependencies);
-
-                    if (cachedNode != DataContext.RootNode)
-                    {
-                        cachedNode.PropertyChanged -= Node_PropertyChanged;
-                    }
-                }
-
-                _revNodeLinks.Clear();
-                _nodeLinks.Clear();
-                TreeFileSystem.Nodes.Clear();
-
-                AssignNodeEvents(DataContext.RootNode.Children);
-            }
-
-            ValidateMenuItems(DataContext);
-        }
-
-        /// <summary>
-        /// Handles the CollectionChanged event of the Nodes control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
-        private void Nodes_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            switch (e.Action)
-            {
-                case NotifyCollectionChangedAction.Add:
-                    AddNode(e.NewItems.OfType<IFileExplorerNodeVm>().First());
-                    break;
-                case NotifyCollectionChangedAction.Remove:
-                    RemoveNode(e.OldItems.OfType<IFileExplorerNodeVm>().First());
-                    break;
-                case NotifyCollectionChangedAction.Reset:
-                    ClearNodeBranch((ObservableCollection<IFileExplorerNodeVm>)sender);
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Handles the PropertyChanged event of the Node control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
-        private void Node_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            var node = (IFileExplorerNodeVm)sender;
-
-            Debug.Assert(node != null, "Node property changed, but no actual node was present.");
-
-            _revNodeLinks.TryGetValue(node, out KryptonTreeNode treeNode);
-            ListViewItem searchItem = ListSearchResults.Items.OfType<ListViewItem>().FirstOrDefault(item => item.Tag == node);
-
-            switch (e.PropertyName)
-            {
-                case nameof(IFileExplorerNodeVm.Name):
-                    if (treeNode != null)
-                    {
-                        treeNode.Text = node.Name;
-                    }
-
-                    if (searchItem != null)
-                    {
-                        searchItem.Text = node.Name;
-                    }
-                    break;
-                case nameof(IFileExplorerNodeVm.IsExpanded):
-                    if (treeNode != null)
-                    {
-                        if (node.IsExpanded)
-                        {
-                            treeNode.Expand();
-                        }
-                        else
-                        {
-                            treeNode.Collapse();
-                        }
-                    }
-                    break;
-                case nameof(IFileExplorerNodeVm.Visible):
-                    UpdateNodeVisibility(DataContext, node, treeNode);
-                    break;
-                case nameof(IFileExplorerNodeVm.Metadata):
-                case nameof(IFileExplorerNodeVm.IsChanged):
-                case nameof(IFileExplorerNodeVm.IsOpen):
-                case nameof(IFileExplorerNodeVm.ImageName):
-                case nameof(IFileExplorerNodeVm.IsCut):
-                    if (treeNode != null)
-                    {
-                        UpdateNodeVisualState(treeNode, node);
-                    }
-
-                    if (searchItem != null)
-                    {
-                        UpdateSearchItemVisualState(searchItem, node);
-                    }
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Function to show or hide a node (and its children) based on node visibility.
-        /// </summary>
-        /// <param name="dataContext">The current data context.</param>
-        /// <param name="node">The node that has had its visibility state changed.</param>
-        /// <param name="treeNode">The tree node affected by the update.</param>
-        private void UpdateNodeVisibility(IFileExplorerVm dataContext, IFileExplorerNodeVm node, KryptonTreeNode treeNode)
-        {
-            // Our job is already done.
-            if (((!node.Visible) && (treeNode == null))
-                || ((node.Visible) && (treeNode != null))
-                || (node.Metadata == null)
-                || (dataContext == null))
-            {
-                return;
-            }
-
-            TreeFileSystem.BeginUpdate();
-
-            try
-            {
-                if (!node.Visible)
-                {
-                    treeNode?.Remove();
-                    return;
-                }
-
-                var treeNodes = new List<KryptonTreeNode>();
-                for (IFileExplorerNodeVm parentNode = node; (parentNode.Visible) && (parentNode != DataContext.RootNode); parentNode = parentNode.Parent)
-                {
-                    // If the node isn't populated yet, then do so now.
-                    if (!_revNodeLinks.TryGetValue(parentNode, out KryptonTreeNode parentTreeNode))
-                    {
-                        int imageIndex = FindImageIndexFromNode(parentNode);
-
-                        parentTreeNode = new KryptonTreeNode(parentNode.Name)
-                        {
-                            ImageIndex = imageIndex,
-                            SelectedImageIndex = imageIndex
-                        };
-
-                        UpdateNodeVisualState(parentTreeNode, parentNode);
-                        parentTreeNode.Nodes.Clear();
-                        _revNodeLinks[parentNode] = parentTreeNode;
-                        _nodeLinks[parentTreeNode] = parentNode;
-                    }
-                    treeNodes.Add(parentTreeNode);
-                }
-
-                if (treeNodes.Count == 0)
-                {
-                    return;
-                }
-
-                TreeNodeCollection parentNodes = TreeFileSystem.Nodes;
-
-                for (int i = treeNodes.Count - 1; i >= 0; --i)
-                {
-                    KryptonTreeNode theNode = treeNodes[i];
-
-                    if (!parentNodes.Contains(theNode))
-                    {
-                        parentNodes.Add(theNode);
-                    }
-
-                    theNode.Nodes.Clear();
-                    parentNodes = theNode.Nodes;
-                    theNode.Expand();
-                }
-            }
-            finally
-            {
-                TreeFileSystem.EndUpdate();
-            }
-        }
-
-        /// <summary>
-        /// Handles the Click event of the MenuItemExportTo control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void MenuItemExportTo_Click(object sender, EventArgs e)
-        {
-            if (DataContext == null)
-            {
-                return;
-            }
-
-            IFileExplorerNodeVm selectedNode;
-
-            if (_searchNodes == null)
-            {
-                if (TreeFileSystem.SelectedNode is KryptonTreeNode treeNode)
-                {
-                    if (!_nodeLinks.TryGetValue(treeNode, out selectedNode))
-                    {
-                        return;
-                    }
-                }
-                else
-                {
-                    selectedNode = DataContext.RootNode;
-                }
-            }
-            else
-            {
-                if (ListSearchResults.SelectedItems.Count == 0)
-                {
-                    selectedNode = DataContext.RootNode;
-                }
-                else
-                {
-                    selectedNode = ListSearchResults.SelectedItems[0].Tag as IFileExplorerNodeVm;
-                }
-            }
-
-            if ((DataContext?.ExportNodeToCommand == null)
-                || (!DataContext.ExportNodeToCommand.CanExecute(selectedNode)))
-            {
-                return;
-            }
-
-            DataContext.ExportNodeToCommand.Execute(selectedNode);
-        }
-
-        /// <summary>
-        /// Handles the Click event of the ItemRename control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ItemRename_Click(object sender, EventArgs e)
-        {
-            if (_searchNodes == null)
-            {
-                TreeFileSystem.SelectedNode?.BeginEdit();
-                return;
-            }
-
-            if (ListSearchResults.SelectedItems.Count != 1)
-            {
-                return;
-            }
-
-            ListSearchResults.SelectedItems[0].BeginEdit();
-        }
-
-        /// <summary>
-        /// Handles the Click event of the ItemDelete control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private async void ItemDelete_Click(object sender, EventArgs e)
-        {
-            IFileExplorerNodeVm node;
-
-            // If we're renaming, then ignore our delete.
-            if (_searchNodes == null)
-            {
-                if ((TreeFileSystem.SelectedNode != null) && (TreeFileSystem.SelectedNode.IsEditing))
-                {
-                    return;
-                }
-
-                if (!_nodeLinks.TryGetValue((KryptonTreeNode)TreeFileSystem.SelectedNode, out node))
-                {
-                    return;
-                }
-            }
-            else
-            {
-                if (ListSearchResults.SelectedItems.Count == 0)
-                {
-                    return;
-                }
-
-                node = (IFileExplorerNodeVm)ListSearchResults.SelectedItems[0].Tag;
-            }
-
-
-            var args = new DeleteNodeArgs(node);
-
-            if ((DataContext?.DeleteNodeCommand == null)
-                || (!DataContext.DeleteNodeCommand.CanExecute(args)))
-            {
-                return;
-            }
-
-            await DataContext.DeleteNodeCommand.ExecuteAsync(args);
-        }
-
-        /// <summary>
-        /// Handles the Click event of the MenuItemCut control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void MenuItemCut_Click(object sender, EventArgs e)
-        {
-            if (_clipboardContext == null)
-            {
-                return;
-            }
-
-            _clipboardContext.Cut();
-        }
-
-        /// <summary>
-        /// Handles the Click event of the MenuItemCopy control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void MenuItemCopy_Click(object sender, EventArgs e)
-        {
-            if (_clipboardContext == null)
-            {
-                return;
-            }
-
-            _clipboardContext.Copy();
-        }
-
-        /// <summary>
-        /// Handles the Click event of the MenuItemPaste control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void MenuItemPaste_Click(object sender, EventArgs e)
-        {
-            if (_clipboardContext == null)
-            {
-                return;
-            }
-
-            _clipboardContext.Paste();
-        }
-
-        /// <summary>
-        /// Handles the Click event of the MenuItemMoveTo control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void MenuItemMoveTo_Click(object sender, EventArgs e)
-        {
-            if (DataContext == null)
-            {
-                return;
-            }
-
-            if (!(MenuCopyMove.Tag is IFileExplorerNodeDragData data))
-            {
-                MenuCopyMove.Tag = null;
-                return;
-            }
-
-            var args = new CopyNodeArgs(data.Node, data.TargetNode);
-
-            if (!DataContext.MoveNodeCommand.CanExecute(args))
-            {
-                return;
-            }
-            DataContext.MoveNodeCommand.Execute(args);
-
-            MenuCopyMove.Tag = null;
-        }
-
-        /// <summary>
-        /// Handles the Click event of the MenuItemCopyTo control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void MenuItemCopyTo_Click(object sender, EventArgs e)
-        {
-            if (DataContext == null)
-            {
-                return;
-            }
-
-            if (!(MenuCopyMove.Tag is IFileExplorerNodeDragData data))
-            {
-                MenuCopyMove.Tag = null;
-                return;
-            }
-
-            var args = new CopyNodeArgs(data.Node, data.TargetNode);
-
-            if (!DataContext.CopyNodeCommand.CanExecute(args))
-            {
-                return;
-            }
-            DataContext.CopyNodeCommand.Execute(args);
-
-            MenuCopyMove.Tag = null;
-        }
-
-        /// <summary>
-        /// Handles the Click event of the ItemCreateDirectory control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ItemCreateDirectory_Click(object sender, EventArgs e)
-        {
-            if (DataContext?.CreateNodeCommand == null)
-            {
-                return;
-            }
-
-            IFileExplorerNodeVm parentNode = null;
-
-            if (TreeFileSystem.SelectedNode != null)
-            {
-                _nodeLinks.TryGetValue((KryptonTreeNode)TreeFileSystem.SelectedNode, out parentNode);
-            }
-
-            var args = new CreateNodeArgs(parentNode);
-
-            if (!DataContext.CreateNodeCommand.CanExecute(args))
-            {
-                return;
-            }
-
-            DataContext.CreateNodeCommand.Execute(args);
-
-            if (args.Cancel)
-            {
-                return;
-            }
-
-            Debug.Assert(TreeFileSystem.SelectedNode != null, "The node needs to be selected after adding.");
-
-            // Default to renaming once the node is added if we didn't supply a name.
-            if (string.IsNullOrWhiteSpace(args.NewNodeName))
-            {
-                TreeFileSystem.SelectedNode.BeginEdit();
-            }
+            handler?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
         /// Function to validate the menu items for the tree context menu.
         /// </summary>
         /// <param name="dataContext">The current data context.</param>
-        private void ValidateMenuItems(IFileExplorerVm dataContext)
+        private void ValidateMenuItems(IFileExplorer dataContext)
         {
-            if (dataContext == null)
+            // Disables all directory menu items.
+            void DisableAllDirectoryItems()
             {
-                foreach (ToolStripMenuItem item in MenuOptions.Items.OfType<ToolStripMenuItem>())
+                foreach (ToolStripItem item in MenuDirectory.Items.OfType<ToolStripItem>())
                 {
                     item.Available = false;
                 }
-
-                return;
             }
 
-            MenuItemExportTo.Enabled = dataContext.RootNode.Children.Count > 0;
-
-            if (dataContext.SelectedNode == null)
+            // Disables all file menu items.
+            void DisableAllFileItems()
             {
-                MenuSepContent.Available = MenuItemOpenContent.Available = false;
-                MenuItemExportTo.Available = dataContext.SearchResults == null;
-                MenuItemCopy.Available = false;
-                MenuItemCut.Available = false;
-                MenuSepEdit.Available = MenuItemPaste.Available = _clipboardContext?.CanPaste() ?? false;
-                MenuItemPaste.Enabled = _clipboardContext?.CanPaste() ?? false;
-                MenuSepOrganize.Available = false;
-                MenuSepNew.Available = MenuItemCreateDirectory.Available = dataContext?.CreateNodeCommand?.CanExecute(new CreateNodeArgs(dataContext.RootNode)) ?? false;
-                MenuItemDelete.Available = false;
-                MenuItemRename.Available = false;
-
-                return;
+                foreach (ToolStripItem item in MenuFiles.Items.OfType<ToolStripItem>())
+                {
+                    item.Available = false;
+                }
             }
 
-            MenuSepEdit.Available = (_clipboardContext != null) && ((_clipboardContext.CanPaste()) || (_clipboardContext.CanCut()) || (_clipboardContext.CanCopy()));
-            MenuSepOrganize.Available = true;
-            MenuItemRename.Available = true;
-            MenuItemExportTo.Available = true;
-
-            MenuItemCopy.Available = _clipboardContext?.CanCopy() ?? false;
-            MenuItemCut.Available = _clipboardContext?.CanCut() ?? false;
-            MenuItemPaste.Available = _clipboardContext != null;
-            MenuItemPaste.Enabled = _clipboardContext?.CanPaste() ?? false;
-
-            MenuItemCreateDirectory.Available = dataContext.CreateNodeCommand?.CanExecute(new CreateNodeArgs(dataContext.SelectedNode)) ?? false;
-            MenuItemDelete.Available = dataContext.DeleteNodeCommand?.CanExecute(null) ?? false;
-
-            MenuSepContent.Available = MenuItemOpenContent.Available = dataContext.OpenContentFileCommand?.CanExecute(dataContext.SelectedNode as OLDE_IContentFile) ?? false;
-
-            MenuSepNew.Visible = MenuItemCreateDirectory.Available;
-        }
-
-
-        /// <summary>Handles the Click event of the MenuItemOpenContent control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void MenuItemOpenContent_Click(object sender, EventArgs e)
-        {
-            var selectedFile = DataContext?.SelectedNode as OLDE_IContentFile;
-
-            if ((DataContext?.OpenContentFileCommand == null) || (!DataContext.OpenContentFileCommand.CanExecute(selectedFile)))
+            if (dataContext == null) 
             {
+                DisableAllDirectoryItems();
+                DisableAllFileItems();
                 return;
             }
 
-            DataContext.OpenContentFileCommand.Execute(selectedFile);
+            if (dataContext.SelectedDirectory == null)
+            {
+                DisableAllDirectoryItems();
+            }
+
+
+            if ((dataContext.Clipboard?.GetClipboardDataTypeCommand != null) && (dataContext.Clipboard.GetClipboardDataTypeCommand.CanExecute(_clipboardValidationArgs)))
+            {
+                dataContext.Clipboard.GetClipboardDataTypeCommand.Execute(_clipboardValidationArgs);
+            }
+
+            void ValidateDirectoryItems()
+            {
+                MenuItemExportDirectoryTo.Available = dataContext.ExportDirectoryCommand?.CanExecute(null) ?? false;
+                MenuItemCutDirectory.Available =
+                MenuItemCopyDirectory.Available =
+                MenuItemPasteDirectory.Available = (dataContext.Clipboard != null) &&  (TreeDirectories.SelectedNode != null) && (TreeDirectories.ContainsFocus);
+                MenuItemDeleteDirectory.Available = dataContext.DeleteDirectoryCommand?.CanExecute(_deleteValidationArgs) ?? false;
+                MenuItemRenameDirectory.Available = dataContext.RenameDirectoryCommand?.CanExecute(null) ?? false;
+                MenuItemCreateDirectory.Available = dataContext.CreateDirectoryCommand?.CanExecute(_createDirectoryValidationArgs) ?? false;
+
+                MenuItemCutDirectory.Enabled = (MenuItemCutDirectory.Available)
+                                            && ((dataContext.Clipboard?.CopyDataCommand?.CanExecute(new DirectoryCopyMoveData
+                                            {
+                                                Operation = CopyMoveOperation.Move,
+                                                SourceDirectory = dataContext.SelectedDirectory?.ID ?? string.Empty
+                                            }) ?? false));
+                MenuItemCopyDirectory.Enabled = (MenuItemCopyDirectory.Available)
+                                            && ((dataContext.Clipboard?.CopyDataCommand?.CanExecute(new DirectoryCopyMoveData
+                                            {
+                                                Operation = CopyMoveOperation.Copy,
+                                                SourceDirectory = dataContext.SelectedDirectory?.ID ?? string.Empty
+                                            }) ?? false));
+                MenuItemPasteDirectory.Enabled = (MenuItemPasteDirectory.Available) 
+                                            && (dataContext.Clipboard?.PasteDataCommand?.CanExecute(null) ?? false);
+
+                MenuSepDirEdit.Available = MenuItemExportDirectoryTo.Available;
+                MenuSepDirOrganize.Available = (MenuItemCutDirectory.Available) || (MenuItemCopyDirectory.Available) || (MenuItemPasteDirectory.Available);
+                MenuSepDirNew.Available = (MenuItemCreateDirectory.Available) && ((MenuItemRenameDirectory.Available) || (MenuItemDeleteDirectory.Available));
+            }
+
+            void ValidateFileItems()
+            {
+                MenuItemOpen.Available = dataContext.SelectedFiles.Count == 1;
+                MenuItemExportFiles.Available = dataContext.ExportFilesCommand?.CanExecute(null) ?? false;
+                MenuItemCutFiles.Available = 
+                MenuItemCopyFiles.Available = (dataContext.SelectedFiles.Count > 0) && (dataContext.Clipboard != null) && (dataContext.SearchResults == null) && (GridFiles.ContainsFocus);
+                MenuItemPasteFiles.Available = (dataContext.Clipboard != null) && (dataContext.SearchResults == null) && (GridFiles.ContainsFocus);
+                MenuItemDeleteFiles.Available = dataContext.DeleteFileCommand?.CanExecute(_deleteValidationArgs) ?? false;
+                MenuItemRenameFile.Available = dataContext.RenameFileCommand?.CanExecute(null) ?? false;
+
+                MenuItemOpen.Enabled = (MenuItemOpen.Available) && (dataContext.SelectedFiles[0].Metadata?.ContentMetadata != null);
+                MenuItemExportFiles.Enabled = (dataContext.SelectedFiles.Count > 0);
+                MenuItemCutFiles.Enabled = (MenuItemCutFiles.Available)
+                                            && ((dataContext.Clipboard?.CopyDataCommand?.CanExecute(new FileCopyMoveData
+                                            {
+                                                Operation = CopyMoveOperation.Move,
+                                                SourceFiles = _validationFiles
+                                            }) ?? false));
+                MenuItemCopyFiles.Enabled = (MenuItemCopyFiles.Available)
+                                            && ((dataContext.Clipboard?.CopyDataCommand?.CanExecute(new FileCopyMoveData
+                                            {
+                                                Operation = CopyMoveOperation.Copy,
+                                                SourceFiles = _validationFiles
+                                            }) ?? false));
+                MenuItemPasteFiles.Enabled = (MenuItemPasteFiles.Available)
+                                            && (dataContext.Clipboard?.PasteDataCommand?.CanExecute(null) ?? false);
+                MenuSepFileExport.Available = MenuItemOpen.Available;                
+                MenuSepFileEdit.Available = MenuItemExportFiles.Available;
+                MenuSepFileOrganize.Available = ((MenuItemRenameFile.Available) || (MenuItemDeleteFiles.Available))
+                                            &&  ((MenuItemCutFiles.Available) || (MenuItemCopyFiles.Available) || (MenuItemPasteFiles.Available));
+            }
+
+            if (dataContext.SelectedDirectory != null)
+            {
+                ValidateDirectoryItems();
+            }
+
+            ValidateFileItems();
         }
 
         /// <summary>
-        /// Handles the Opening event of the MenuOperations control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="CancelEventArgs"/> instance containing the event data.</param>
-        private void MenuOperations_Opening(object sender, CancelEventArgs e) => ValidateMenuItems(DataContext);
-
-        /// <summary>
-        /// Function to perform a node selection operation.
-        /// </summary>
-        /// <param name="treeNode">The node that is selected.</param>
-        private void SelectNode(KryptonTreeNode treeNode)
-        {
-            IFileExplorerNodeVm node = null;
-            TreeFileSystem.SelectedNode = treeNode;
-
-            if (DataContext?.SelectNodeCommand == null)
-            {
-                return;
-            }
-
-            if (treeNode != null)
-            {
-                _nodeLinks.TryGetValue(treeNode, out node);
-            }
-
-            if (!DataContext.SelectNodeCommand.CanExecute(node))
-            {
-                return;
-            }
-
-            DataContext.SelectNodeCommand.Execute(node);
-
-            ValidateMenuItems(DataContext);
-        }
-
-        /// <summary>
-        /// Function to import files into the file explorer from an external source.
+        /// Function to delete any selected files.
         /// </summary>
         /// <returns>A task for asynchronous operation.</returns>
-        public async Task ImportFilesAsync()
+        private async Task DeleteSelectedFilesAsync()
         {
-            if ((DataContext?.ImportIntoNodeCommand == null)
-                || (!DataContext.ImportIntoNodeCommand.CanExecute(DataContext.SelectedNode ?? DataContext.RootNode)))
+            DisableGridEvents();
+
+            try
             {
-                return;
+                var args = new DeleteArgs(null);
+                if ((DataContext?.DeleteFileCommand == null) || (!DataContext.DeleteFileCommand.CanExecute(args)))
+                {
+                    return;
+                }
+
+                await DataContext.DeleteFileCommand.ExecuteAsync(args);
             }
-
-            IFileExplorerNodeVm currentNode = DataContext.SelectedNode ?? DataContext.RootNode;
-
-            await DataContext.ImportIntoNodeCommand.ExecuteAsync(currentNode);
+            finally
+            {
+                EnableGridEvents();
+                ValidateMenuItems(DataContext);
+            }
         }
 
-        /// <summary>
-        /// Function to handle explorer file data.
-        /// </summary>
-        /// <param name="e">The event parameters to use.</param>
-        private void ExplorerFiles_DragDrop(DragEventArgs e)
-        {
-            if ((_explorerDragDropHandler == null) || (_explorerDragData == null))
-            {
-                return;
-            }
-
-            if (_explorerDragData.TargetTreeNode != null)
-            {
-                UpdateNodeVisualState(_explorerDragData.TargetTreeNode, _explorerDragData.TargetNode);
-                _explorerDragData.TargetTreeNode.BackColor = Color.Empty;
-            }
-
-            // We're not allowed here, so just cancel the operation.
-            if (e.Effect == DragDropEffects.None)
-            {
-                return;
-            }
-
-            SelectNode(_explorerDragData.TargetTreeNode);
-
-            _explorerDragDropHandler.Drop(_explorerDragData);
-        }
-
-        /// <summary>
-        /// Handles the DragDrop event of the TreeFileSystem control.
-        /// </summary>
+        /// <summary>Handles the Click event of the MenuItemCreateDirectory control.</summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
-        private void TreeFileSystem_DragDrop(object sender, DragEventArgs e)
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void MenuItemCreateDirectory_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var args = new CreateDirectoryArgs();
+                if ((DataContext?.CreateDirectoryCommand == null) || (!DataContext.CreateDirectoryCommand.CanExecute(args)))
+                {
+                    return;
+                }
+
+                DataContext.CreateDirectoryCommand.Execute(args);                
+
+                // Since we created a new directory, we need to ensure it's visible on the tree so we can give it a new name.
+                IDirectory directory = args.Directory;
+                DirectoryTreeNode node = null;
+
+                while (node == null)
+                {
+                    // Walk up the parents and keep expanding.
+                    // This should never be more than 1 level as it's physically impossible to create a directory from the UI
+                    // within a subdirectory of a collapsed parent.
+                    if (_directoryNodes.TryGetValue(directory.ID, out node))
+                    {
+                        if (!node.IsExpanded)
+                        {
+                            node.Expand();
+                        }
+                        break;
+                    }
+
+                    directory = directory.Parent;
+                }
+
+                if (!_directoryNodes.TryGetValue(args.Directory.ID, out node))
+                {
+                    return;
+                }
+
+                // Select our new node.
+                SelectNode(node);
+
+                // Force a rename operation.
+                MenuItemRenameDirectory.PerformClick();
+            }
+            finally
+            {
+                ValidateMenuItems(DataContext);
+            }
+        }
+
+        /// <summary>Handles the Click event of the MenuItemDeleteDirectory control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void MenuItemDeleteDirectory_Click(object sender, EventArgs e) => await DeleteDirectoryAsync();
+
+        /// <summary>Handles the Click event of the MenuItemDeleteFiles control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void MenuItemDeleteFiles_Click(object sender, EventArgs e) => await DeleteSelectedFilesAsync();
+
+        /// <summary>Handles the Click event of the MenuItemRenameDirectory control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void MenuItemRenameDirectory_Click(object sender, EventArgs e)
+        {
+            if ((DataContext?.RenameDirectoryCommand == null) || (!DataContext.RenameDirectoryCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            TreeDirectories.BeginEdit();
+            IsRenaming = true;
+        }
+
+        /// <summary>Handles the Click event of the MenuItemRenameFile control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void MenuItemRenameFile_Click(object sender, EventArgs e)
+        {
+            if ((DataContext?.RenameFileCommand == null) || (!DataContext.RenameFileCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            GridFiles.BeginEdit(true);
+            IsRenaming = true;
+        }
+
+        /// <summary>Handles the Click event of the MenuItemPasteFiles control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void MenuItemPasteFiles_Click(object sender, EventArgs e) => MenuItemPasteDirectory_Click(sender, e);
+
+        /// <summary>Handles the Click event of the MenuItemExportDirectoryTo control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void MenuItemExportDirectoryTo_Click(object sender, EventArgs e)
+        {
+            if ((DataContext?.ExportDirectoryCommand == null) || (!DataContext.ExportDirectoryCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            await DataContext.ExportDirectoryCommand.ExecuteAsync(null);
+        }
+
+        /// <summary>Handles the Click event of the MenuItemExportFiles control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void MenuItemExportFiles_Click(object sender, EventArgs e)
+        {
+            if ((DataContext?.ExportFilesCommand == null) || (!DataContext.ExportFilesCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            await DataContext.ExportFilesCommand.ExecuteAsync(null);
+        }
+
+        /// <summary>Handles the Click event of the MenuItemCopyFiles control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void MenuItemCopyFiles_Click(object sender, EventArgs e) => CopyFileToClipboard(CopyMoveOperation.Copy);
+
+        /// <summary>Handles the Click event of the MenuItemCutFiles control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void MenuItemCutFiles_Click(object sender, EventArgs e) => CopyFileToClipboard(CopyMoveOperation.Move);
+
+        /// <summary>Handles the Click event of the MenuItemCutDirectory control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void MenuItemCutDirectory_Click(object sender, EventArgs e) => CopyDirectoryToClipboard(CopyMoveOperation.Move);
+
+        /// <summary>Handles the Click event of the MenuItemCopyDirectory control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void MenuItemCopyDirectory_Click(object sender, EventArgs e) => CopyDirectoryToClipboard(CopyMoveOperation.Copy);
+
+        /// <summary>Handles the Click event of the MenuItemPasteDirectory control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void MenuItemPasteDirectory_Click(object sender, EventArgs e)
+        {
+            if (DataContext?.Clipboard == null)
+            {
+                return;
+            }
+
+            try
+            {
+                IClipboardHandler handler = DataContext.Clipboard;
+                if ((handler.PasteDataCommand == null) || (!handler.PasteDataCommand.CanExecute(null)))
+                {
+                    return;
+                }
+
+                await handler.PasteDataCommand.ExecuteAsync(null);
+            }
+            finally
+            {
+                ValidateMenuItems(DataContext);
+            }
+        }
+
+        /// <summary>Handles the Click event of the MenuItemCopyTo control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void MenuItemCopyTo_Click(object sender, EventArgs e)
         {
             if (DataContext == null)
             {
                 return;
             }
 
-#pragma warning disable IDE0019 // Use pattern matching (it breaks the code)
-            var data = e.Data.GetData(typeof(TreeNodeDragData)) as TreeNodeDragData;
-#pragma warning restore IDE0019 // Use pattern matching
-
-            if ((data == null)
-                && (!e.Data.GetDataPresent(DataFormats.FileDrop)))
-            {
-                return;
-            }
-
-            if (data == null)
-            {
-                ExplorerFiles_DragDrop(e);
-                return;
-            }
-
-            if (data.TargetTreeNode != null)
-            {
-                UpdateNodeVisualState(data.TargetTreeNode, data.TargetNode);
-                data.TargetTreeNode.BackColor = Color.Empty;
-            }
-
-            // We're not allowed here, so just cancel the operation.
-            if (e.Effect == DragDropEffects.None)
-            {
-                return;
-            }
-
-            SelectNode(data.TargetTreeNode);
-
-            if (data.DragOperation == (DragOperation.Copy | DragOperation.Move))
-            {
-                MenuCopyMove.Tag = data;
-                MenuCopyMove.Show(this, PointToClient(Cursor.Position));
-                return;
-            }
-
-            _nodeDragDropHandler?.Drop(data);
-        }
-
-        /// <summary>
-        /// Handles the DragLeave event of the TreeFileSystem control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void TreeFileSystem_DragLeave(object sender, EventArgs e)
-        {
-            if (_explorerDragData == null)
-            {
-                return;
-            }
-
-            if (_explorerDragData.TargetTreeNode != null)
-            {
-                UpdateNodeVisualState(_explorerDragData.TargetTreeNode, _explorerDragData.TargetNode);
-                _explorerDragData.TargetTreeNode.BackColor = Color.Empty;
-            }
-
-            _explorerDragData = null;
-        }
-
-        /// <summary>
-        /// Handles the DragEnter event of the TreeFileSystem control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
-        private void TreeFileSystem_DragEnter(object sender, DragEventArgs e)
-        {
-            if ((!e.Data.GetDataPresent(DataFormats.FileDrop, false))
-                || (_explorerDragDropHandler == null))
-            {
-                return;
-            }
-
-            _explorerDragData = new ExplorerFileDragData(e.Data.GetData(DataFormats.FileDrop, false) as string[], DragOperation.Copy);
-
-            TreeViewHitTestInfo hitResult = TreeFileSystem.HitTest(TreeFileSystem.PointToClient(new Point(e.X, e.Y)));
-
-            var targetTreeNode = hitResult.Node as KryptonTreeNode;
-            IFileExplorerNodeVm targetNode;
-
-            if (targetTreeNode == null)
-            {
-                targetNode = DataContext.RootNode;
-            }
-            else
-            {
-                if (!_nodeLinks.TryGetValue((KryptonTreeNode)hitResult.Node, out targetNode))
-                {
-                    return;
-                }
-
-                targetTreeNode.BackColor = _dragBackColor;
-                targetTreeNode.ForeColor = _dragForeColor;
-            }
-
-            _explorerDragData.TargetNode = targetNode;
-            _explorerDragData.TargetTreeNode = targetTreeNode;
-
-            e.Effect = DragDropEffects.Copy;
-        }
-
-        /// <summary>
-        /// Function to handle explorer file data.
-        /// </summary>
-        /// <param name="e">The event parameters to use.</param>
-        private void ExplorerFiles_DragOver(DragEventArgs e)
-        {
-            if ((_explorerDragDropHandler == null) || (_explorerDragData == null))
-            {
-                e.Effect = DragDropEffects.None;
-                return;
-            }
-
-            if (_explorerDragData.TargetTreeNode != null)
-            {
-                UpdateNodeVisualState(_explorerDragData.TargetTreeNode, _explorerDragData.TargetNode);
-                _explorerDragData.TargetTreeNode.BackColor = Color.Empty;
-            }
-
-            TreeViewHitTestInfo hitResult = TreeFileSystem.HitTest(TreeFileSystem.PointToClient(new Point(e.X, e.Y)));
-
-            var targetTreeNode = hitResult.Node as KryptonTreeNode;
-            IFileExplorerNodeVm targetNode;
-
-            if (targetTreeNode == null)
-            {
-                targetNode = DataContext.RootNode;
-            }
-            else
-            {
-                if (!_nodeLinks.TryGetValue((KryptonTreeNode)hitResult.Node, out targetNode))
-                {
-                    return;
-                }
-
-                targetTreeNode.BackColor = _dragBackColor;
-                targetTreeNode.ForeColor = _dragForeColor;
-            }
-
-            _explorerDragData.TargetTreeNode = targetTreeNode;
-            _explorerDragData.TargetNode = targetNode;
-
-            if (!_explorerDragDropHandler.CanDrop(_explorerDragData))
-            {
-                e.Effect = DragDropEffects.None;
-                return;
-            }
-
-            e.Effect = DragDropEffects.Copy;
-        }
-
-        /// <summary>Handles the KeyUp event of the ListSearchResults control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
-        private void ListSearchResults_KeyUp(object sender, KeyEventArgs e)
-        {
-            switch (e.KeyCode)
-            {
-                case Keys.F2:
-                    if ((ListSearchResults.SelectedItems.Count == 1) && (_renameNode == null))
-                    {
-                        ListSearchResults.SelectedItems[0].BeginEdit();
-                    }
-                    break;
-                case Keys.Delete:
-                    if ((ListSearchResults.SelectedItems.Count == 1) && (_renameNode == null))
-                    {
-                        MenuItemDelete.PerformClick();
-                    }
-                    break;
-            }
-        }
-
-        /// <summary>Handles the BeforeLabelEdit event of the ListSearchResults control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="LabelEditEventArgs"/> instance containing the event data.</param>
-        private void ListSearchResults_BeforeLabelEdit(object sender, LabelEditEventArgs e)
-        {
-            // Is this even possible?
-            ListViewItem item = ListSearchResults.Items[e.Item];
-            _renameNode = (IFileExplorerNodeVm)item.Tag;
-
-            EventHandler handler = RenameBegin;
-            handler?.Invoke(this, EventArgs.Empty);
-        }
-
-        /// <summary>Handles the AfterLabelEdit event of the ListSearchResults control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="LabelEditEventArgs"/> instance containing the event data.</param>
-        private void ListSearchResults_AfterLabelEdit(object sender, LabelEditEventArgs e)
-        {
-            ListSearchResults.BeforeLabelEdit -= ListSearchResults_BeforeLabelEdit;
-            ListSearchResults.AfterLabelEdit -= ListSearchResults_AfterLabelEdit;
-
             try
             {
-                // If we didn't change the name, or there's no node being renamed, then leave.
-                if ((DataContext?.RenameNodeCommand == null) || (_renameNode == null))
+                if ((MenuCopyMove.Tag is GridRowsDragData rowData) && (DataContext.CopyFileCommand != null) && (DataContext.CopyFileCommand.CanExecute(rowData)))
                 {
-                    e.CancelEdit = true;
+                    await DataContext.CopyFileCommand.ExecuteAsync(rowData);
+                }
+
+                if (!(MenuCopyMove.Tag is TreeNodeDragData nodeData))
+                {
+                    MenuCopyMove.Tag = null;
                     return;
                 }
 
-                string oldName = _renameNode.Name;
-                var args = new FileExplorerNodeRenameArgs(_renameNode, oldName, e.Label);
-
-                if (!DataContext.RenameNodeCommand.CanExecute(args))
+                if ((DataContext.CopyDirectoryCommand != null) && (DataContext.CopyDirectoryCommand.CanExecute(nodeData)))
                 {
-                    e.CancelEdit = true;
-                    return;
+                    await DataContext.CopyDirectoryCommand.ExecuteAsync(nodeData);
                 }
 
-                DataContext.RenameNodeCommand.Execute(args);
-
-                e.CancelEdit = args.Cancel;
+                MenuCopyMove.Tag = null;
             }
             finally
             {
-                // We're no longer renaming anything.
-                _renameNode = null;
-
-                EventHandler handler = RenameEnd;
-                handler?.Invoke(this, EventArgs.Empty);
-
-                ListSearchResults.BeforeLabelEdit += ListSearchResults_BeforeLabelEdit;
-                ListSearchResults.AfterLabelEdit += ListSearchResults_AfterLabelEdit;
+                ValidateMenuItems(DataContext);
             }
         }
 
-        /// <summary>Handles the DoubleClick event of the ListSearchResults control.</summary>
+        /// <summary>Handles the Click event of the MenuItemMoveTo control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ListSearchResults_DoubleClick(object sender, EventArgs e)
+        private async void MenuItemMoveTo_Click(object sender, EventArgs e)
         {
-            ListViewHitTestInfo info = ListSearchResults.HitTest(ListSearchResults.PointToClient(Cursor.Position));
-
-            if (info?.Item == null)
+            if (DataContext == null)
             {
                 return;
             }
 
-            var contentFile = info.Item.Tag as OLDE_IContentFile;
-
-            if ((DataContext?.OpenContentFileCommand == null) || (!DataContext.OpenContentFileCommand.CanExecute(contentFile)))
+            try
             {
-                return;
-            }
+                if ((MenuCopyMove.Tag is GridRowsDragData rowData) && (DataContext.MoveFileCommand != null) && (DataContext.MoveFileCommand.CanExecute(rowData)))
+                {
+                    await DataContext.MoveFileCommand.ExecuteAsync(rowData);
+                }
 
-            DataContext.OpenContentFileCommand.Execute(contentFile);
+                if (!(MenuCopyMove.Tag is TreeNodeDragData data))
+                {
+                    MenuCopyMove.Tag = null;
+                    return;
+                }
+
+                if ((DataContext.MoveDirectoryCommand != null) && (DataContext.MoveDirectoryCommand.CanExecute(data)))
+                {
+                    await DataContext.MoveDirectoryCommand.ExecuteAsync(data);
+                }
+
+                MenuCopyMove.Tag = null;
+            }
+            finally
+            {
+                ValidateMenuItems(DataContext);
+            }
         }
 
-        /// <summary>Handles the SelectedIndexChanged event of the ListSearchResults control.</summary>
+        /// <summary>Handles the Opening event of the MenuFiles control.</summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ListSearchResults_SelectedIndexChanged(object sender, EventArgs e)
+        /// <param name="e">The <see cref="CancelEventArgs"/> instance containing the event data.</param>
+        private void MenuFiles_Opening(object sender, CancelEventArgs e) => ValidateMenuItems(DataContext);
+
+        /// <summary>Handles the Opening event of the MenuDirectory control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="CancelEventArgs"/> instance containing the event data.</param>
+        private void MenuDirectory_Opening(object sender, CancelEventArgs e) => ValidateMenuItems(DataContext);
+
+        /// <summary>Handles the CollectionChanged event of the SelectedFiles control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
+        private void SelectedFiles_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            IFileExplorerNodeVm node = null;
+            string id;
 
-            if (DataContext?.SelectNodeCommand == null)
+            DisableGridEvents();
+
+            try
             {
-                return;
+                switch (e.Action)
+                {
+                    case NotifyCollectionChangedAction.Add:
+                        id = ((IFile)e.NewItems[0]).ID;
+
+                        // Select the row that contains the file path.
+                        for (int rowIndex = 0; rowIndex < GridFiles.Rows.Count; ++rowIndex)
+                        {
+                            string rowPath = GridFiles.Rows[rowIndex].Cells[ColumnID.Index].Value.IfNull(string.Empty);
+
+                            if (string.Equals(id, rowPath, StringComparison.OrdinalIgnoreCase))
+                            {
+                                GridFiles.Rows[rowIndex].Selected = true;                                
+                                break;
+                            }
+                        }
+                        break;
+                    case NotifyCollectionChangedAction.Remove:
+                        id = ((IFile)e.OldItems[0]).ID;
+
+                        // Select the row that contains the file path.
+                        for (int rowIndex = 0; rowIndex < GridFiles.Rows.Count; ++rowIndex)
+                        {
+                            string rowPath = GridFiles.Rows[rowIndex].Cells[ColumnID.Index].Value.IfNull(string.Empty);
+
+                            if (string.Equals(id, rowPath, StringComparison.OrdinalIgnoreCase))
+                            {
+                                GridFiles.Rows[rowIndex].Selected = false;
+                                break;
+                            }
+                        }
+                        break;
+                    case NotifyCollectionChangedAction.Reset:
+                        GridFiles.ClearSelection();
+                        break;
+                }
             }
-
-            ListViewItem item = null;
-
-            if (ListSearchResults.SelectedItems.Count > 0)
+            finally
             {
-                item = ListSearchResults.SelectedItems[0];
+                EnableGridEvents();
+                ValidateMenuItems(DataContext);
             }
+        }
 
-            if (item != null)
+        /// <summary>Handles the CollectionChanged event of the Files control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
+        private void Files_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            IFile file;
+
+            DisableGridEvents();
+
+            try
             {
-                node = (IFileExplorerNodeVm)item.Tag;
-            }
+                switch (e.Action)
+                {
+                    case NotifyCollectionChangedAction.Add:
+                        file = e.NewItems.OfType<IFile>().FirstOrDefault();
 
-            if (!DataContext.SelectNodeCommand.CanExecute(node))
+                        if ((file == null) || (file.Parent != DataContext.SelectedDirectory))
+                        {
+                            break;
+                        }
+
+                        Image fileIcon = TreeNodeIcons.Images[1];
+
+                        if (TreeNodeIcons.Images.ContainsKey(file.ImageName))
+                        {
+                            fileIcon = TreeNodeIcons.Images[file.ImageName];
+                        }
+
+                        var row = new DataGridViewRow();
+                        row.CreateCells(GridFiles, file.ID, file, fileIcon, file.Name, file.Type, file.SizeInBytes);
+                        GridFiles.Rows.Add(row);
+
+                        file.PropertyChanged += File_PropertyChanged;
+                        break;
+                    case NotifyCollectionChangedAction.Remove:
+                        file = e.OldItems.OfType<IFile>().FirstOrDefault();
+
+                        if ((file == null) || (file.Parent != DataContext.SelectedDirectory))
+                        {
+                            break;
+                        }
+
+                        DataGridViewRow fileRow = FindFileRow(file);
+                        if (fileRow != null)
+                        {
+                            GridFiles.Rows.Remove(fileRow);
+                        }
+                        file.PropertyChanged -= File_PropertyChanged;
+                        break;
+                    case NotifyCollectionChangedAction.Reset:
+                        if (DataContext.SelectedDirectory.Files != sender)
+                        {
+                            break;
+                        }
+
+                        for (int i = 0; i < GridFiles.Rows.Count; ++i)
+                        {
+                            var removedFile = (IFile)GridFiles.Rows[i].Cells[ColumnFile.Index].Value;
+                            removedFile.PropertyChanged -= File_PropertyChanged;
+                        }
+
+                        GridFiles.Rows.Clear();
+                        break;
+                }
+            }
+            finally
             {
-                return;
+                EnableGridEvents();
+                ValidateMenuItems(DataContext);
             }
+        }
 
-            DataContext.SelectNodeCommand.Execute(node);
+        /// <summary>Handles the CollectionChanged event of the Directories control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
+        private void Directories_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            DirectoryTreeNode directoryNode = null;
+            IDirectory directory = null;
+            DirectoryTreeNode[] childNodes = null;
+
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    directory = (IDirectory)e.NewItems[0];
+
+                    if ((_directoryNodes.ContainsKey(directory.ID)) || (!_directoryNodes.TryGetValue(directory.Parent.ID, out directoryNode)))
+                    {
+                        break;
+                    }
+
+                    // If we're adding to a collapsed directory with no children, add a dummy node to indicate that there are children for the parent node.
+                    if (!directoryNode.IsExpanded)
+                    {
+                        if (directoryNode.Nodes.Count == 0)
+                        {
+                            AddDummyNode(directoryNode.Nodes);
+                        }
+                        break;
+                    }
+
+                    var newNode = new DirectoryTreeNode
+                    {
+                        Text = directory.Name,
+                        Name = directory.ID,
+                        ImageKey = directory.ImageName,
+                        Tag = directory
+                    };
+
+                    if (directory.Directories.Count > 0)
+                    {
+                        AddDummyNode(newNode.Nodes);
+                    }
+
+                    directoryNode.Nodes.Add(newNode);
+                    _directoryNodes[directory.ID] = newNode;
+                    newNode.SetDataContext(directory);
+                    newNode.DataContext.OnLoad();
+
+                    directory.Directories.CollectionChanged += Directories_CollectionChanged;
+                    directory.PropertyChanged += Directory_PropertyChanged;
+                    
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    directory = (IDirectory)e.OldItems[0];
+
+                    if ((directory == DataContext.Root) || (!_directoryNodes.TryGetValue(directory.ID, out directoryNode)))
+                    {
+                        break;
+                    }
+
+                    directory.PropertyChanged -= Directory_PropertyChanged;
+                    directory.Directories.CollectionChanged -= Directories_CollectionChanged;
+                    directory.Files.CollectionChanged -= Files_CollectionChanged;                    
+
+                    childNodes = _directoryNodes.Where(item => (item.Key.StartsWith(directoryNode.Name, StringComparison.OrdinalIgnoreCase)) && (item.Value.DataContext != null))
+                                                .Select(item => item.Value)
+                                                .ToArray();
+
+                    foreach (DirectoryTreeNode node in childNodes)
+                    {
+                        node.DataContext.PropertyChanged -= Directory_PropertyChanged;
+                        node.DataContext.Files.CollectionChanged -= Files_CollectionChanged;
+                        node.DataContext.Directories.CollectionChanged -= Directories_CollectionChanged;
+                        _directoryNodes.Remove(node.Name);
+                    }
+
+                    directoryNode.Remove();
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    directoryNode = _directoryNodes.Values.FirstOrDefault(d => d.DataContext.Directories == sender);
+
+                    if (directoryNode == null)
+                    {
+                        break;
+                    }
+
+                    childNodes = _directoryNodes.Where(item => (item.Value != directoryNode)  && (item.Value.DataContext != null)
+                                                            && (item.Key.StartsWith(directoryNode.Name, StringComparison.OrdinalIgnoreCase)))
+                                                .Select(item => item.Value)
+                                                .ToArray();
+
+                    foreach (DirectoryTreeNode node in childNodes)
+                    {
+                        node.DataContext.PropertyChanged -= Directory_PropertyChanged;
+                        node.DataContext.Directories.CollectionChanged -= Directories_CollectionChanged;
+                        node.DataContext.Files.CollectionChanged -= Files_CollectionChanged;
+
+                        _directoryNodes.Remove(node.Name);
+                    }
+
+                    directoryNode.Nodes.Clear();
+                    break;
+            }
 
             ValidateMenuItems(DataContext);
         }
 
-        /// <summary>Handles the DrawColumnHeader event of the ListSearchResults control.</summary>
+        /// <summary>Handles the PropertyChanged event of the Clipboard control.</summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="DrawListViewColumnHeaderEventArgs"/> instance containing the event data.</param>
-        private void ListSearchResults_DrawColumnHeader(object sender, DrawListViewColumnHeaderEventArgs e)
-        {
-            e.PaintNcHeader(_listViewHeaderBackColor);
-
-            if (_listViewHeaderForeColor != null)
-            {
-                TextRenderer.DrawText(e.Graphics,
-                    e.Header.Text,
-                    ListSearchResults.Font,
-                    e.Bounds,
-                    Color.FromArgb(ListSearchResults.ForeColor.R / 2, ListSearchResults.ForeColor.G / 2, ListSearchResults.ForeColor.B / 2),
-                    TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.EndEllipsis | TextFormatFlags.SingleLine);
-            }
-        }
-
-        /// <summary>Handles the DrawItem event of the ListSearchResults control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="DrawListViewItemEventArgs"/> instance containing the event data.</param>
-        private void ListSearchResults_DrawItem(object sender, DrawListViewItemEventArgs e) => e.DrawDefault = false;
-
-        /// <summary>Handles the DrawSubItem event of the ListSearchResults control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="DrawListViewSubItemEventArgs"/> instance containing the event data.</param>
-        private void ListSearchResults_DrawSubItem(object sender, DrawListViewSubItemEventArgs e) => e.DrawDefault = true;
-
-        /// <summary>Handles the NodeMouseDoubleClick event of the TreeFileSystem control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The [TreeNodeMouseClickEventArgs] instance containing the event data.</param>
-        private void TreeFileSystem_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
-        {
-            TreeFileSystem.MouseUp -= TreeFileSystem_MouseUp;
-            try
-            {
-                _nodeLinks.TryGetValue((KryptonTreeNode)e.Node, out IFileExplorerNodeVm node);
-
-                var contentFile = node as OLDE_IContentFile;
-
-                if ((DataContext?.OpenContentFileCommand == null) || (!DataContext.OpenContentFileCommand.CanExecute(contentFile)))
-                {
-                    return;
-                }
-
-                DataContext.OpenContentFileCommand.Execute(contentFile);
-
-                Interlocked.Exchange(ref _nodeOpening, 1);
-            }
-            finally
-            {
-                TreeFileSystem.MouseUp += TreeFileSystem_MouseUp;
-            }
-        }
-
-        /// <summary>
-        /// Handles the DragOver event of the TreeFileSystem control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
-        private void TreeFileSystem_DragOver(object sender, DragEventArgs e)
+        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+        private void Clipboard_PropertyChanged(object sender, PropertyChangedEventArgs e) 
         {
             if (DataContext == null)
             {
                 return;
             }
 
-#pragma warning disable IDE0019 // Use pattern matching (it breaks the code)
-            var data = e.Data.GetData(typeof(TreeNodeDragData)) as TreeNodeDragData;
-#pragma warning restore IDE0019 // Use pattern matching
-
-            if ((data == null)
-                && (!e.Data.GetDataPresent(DataFormats.FileDrop)))
-            {
-                return;
-            }
-
-            if (data == null)
-            {
-                ExplorerFiles_DragOver(e);
-                return;
-            }
-
-            if (data.TargetTreeNode != null)
-            {
-                // Reset the background color.
-                UpdateNodeVisualState(data.TargetTreeNode, data.TargetNode);
-                data.TargetTreeNode.BackColor = Color.Empty;
-            }
-
-            // We won't allow links to be dragged into other nodes.
-            if (data.Node.NodeType == NodeType.Link)
-            {
-                e.Effect = DragDropEffects.None;
-                return;
-            }
-
-            TreeViewHitTestInfo hitResult = TreeFileSystem.HitTest(TreeFileSystem.PointToClient(new Point(e.X, e.Y)));
-            IFileExplorerNodeVm targetNode;
-
-            data.TargetTreeNode = hitResult.Node as KryptonTreeNode;
-
-            if (hitResult.Node == null)
-            {
-                targetNode = DataContext.RootNode;
-            }
-            else
-            {
-                if (!_nodeLinks.TryGetValue((KryptonTreeNode)hitResult.Node, out targetNode))
-                {
-                    return;
-                }
-
-                data.TargetTreeNode.BackColor = _dragBackColor;
-                data.TargetTreeNode.ForeColor = _dragForeColor;
-            }
-
-            data.TargetNode = targetNode;
-
-            if (((e.KeyState & 8) == 8) && (data.DragOperation == DragOperation.Move))
-            {
-                data.DragOperation = DragOperation.Copy;
-            }
-            else if (((e.KeyState & 8) != 8) && (data.DragOperation == DragOperation.Copy))
-            {
-                data.DragOperation = DragOperation.Move;
-            }
-
-            if (!(_nodeDragDropHandler?.CanDrop(data) ?? false))
-            {
-                if (data.DragOperation != (DragOperation.Copy | DragOperation.Move))
-                {
-                    e.Effect = DragDropEffects.None;
-                    return;
-                }
-
-                MenuItemMoveTo.Available = false;
-            }
-            else
-            {
-                MenuItemMoveTo.Available = true;
-            }
-
-            DragDropEffects effects = DragDropEffects.None;
-
-            if ((data.DragOperation & DragOperation.Copy) == DragOperation.Copy)
-            {
-                effects |= DragDropEffects.Copy;
-            }
-
-            if ((data.DragOperation & DragOperation.Move) == DragOperation.Move)
-            {
-                effects |= DragDropEffects.Move;
-            }
-
-            e.Effect = effects;
-        }
-
-        /// <summary>Handles the ItemDrag event of the ListSearchResults control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="ItemDragEventArgs"/> instance containing the event data.</param>
-        private void ListSearchResults_ItemDrag(object sender, ItemDragEventArgs e)
-        {
-            if (DataContext == null)
-            {
-                return;
-            }
-
-            if (!(e.Item is ListViewItem item))
-            {
-                return;
-            }
-
-            var dragData = new ListViewItemDragData(item, (IFileExplorerNodeVm)item.Tag, DragOperation.Copy);
-            item.Selected = true;
-
-            var data = new DataObject();
-            data.SetData(dragData);
-
-            if (dragData is IContentFileDragData contentFileData)
-            {
-                contentFileData.Cancel = false;
-                data.SetData(typeof(IContentFileDragData).FullName, true, contentFileData);
-            }
-
-            ListSearchResults.DoDragDrop(data, DragDropEffects.Move | DragDropEffects.Copy);
-        }
-
-        /// <summary>
-        /// Handles the ItemDrag event of the TreeFileSystem control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="ItemDragEventArgs"/> instance containing the event data.</param>
-        private void TreeFileSystem_ItemDrag(object sender, ItemDragEventArgs e)
-        {
-            if (DataContext == null)
-            {
-                return;
-            }
-
-            if (!(e.Item is KryptonTreeNode treeNode))
-            {
-                return;
-            }
-
-            // Find the actual file system node.
-            if (!_nodeLinks.TryGetValue(treeNode, out IFileExplorerNodeVm node))
-            {
-                return;
-            }
-
-            var dragData = new TreeNodeDragData(treeNode, node, e.Button == MouseButtons.Right ? (DragOperation.Copy | DragOperation.Move) : DragOperation.Move);
-            SelectNode(treeNode);
-            var data = new DataObject();
-            data.SetData(dragData);
-
-            if (dragData is IContentFileDragData contentFileData)
-            {
-                contentFileData.Cancel = false;
-                data.SetData(typeof(IContentFileDragData).FullName, true, contentFileData);
-            }
-
-            TreeFileSystem.DoDragDrop(data, DragDropEffects.Move | DragDropEffects.Copy);
-
-            if (dragData.TargetTreeNode == null)
-            {
-                return;
-            }
-
-            if (dragData.TargetNode == null)
-            {
-                dragData.TargetTreeNode.ForeColor = Color.Empty;
-                dragData.TargetTreeNode.BackColor = Color.Empty;
-                return;
-            }
-
-            UpdateNodeVisualState(dragData.TargetTreeNode, dragData.TargetNode);
-            dragData.TargetTreeNode.BackColor = Color.Empty;
-        }
-
-        /// <summary>Handles the BeforeSelect event of the TreeFileSystem control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="TreeViewCancelEventArgs"/> instance containing the event data.</param>
-        private void TreeFileSystem_BeforeSelect(object sender, TreeViewCancelEventArgs e)
-        {
-            if (!(e.Node is KryptonTreeNode treeNode))
-            {
-                return;
-            }
-
-            UpdateSelectedColor(treeNode);
-        }
-
-        /// <summary>
-        /// Handles the AfterSelect event of the TreeFileSystem control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="TreeViewEventArgs"/> instance containing the event data.</param>
-        private void TreeFileSystem_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-            TreeFileSystem.AfterSelect -= TreeFileSystem_AfterSelect;
-            try
-            {
-                SelectNode(e.Node as KryptonTreeNode);
-            }
-            finally
-            {
-                TreeFileSystem.AfterSelect += TreeFileSystem_AfterSelect;
-            }
-        }
-
-        /// <summary>
-        /// Handles the MouseUp event of the TreeFileSystem control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-        private void TreeFileSystem_MouseUp(object sender, MouseEventArgs e)
-        {
-            TreeViewHitTestInfo hitResult = TreeFileSystem.HitTest(e.Location);
-            TreeFileSystem.AfterSelect -= TreeFileSystem_AfterSelect;
-            try
-            {
-                // Ignore this message if we're opening a file.
-                if (Interlocked.Exchange(ref _nodeOpening, 0) != 0)
-                {
-                    return;
-                }
-
-                SelectNode(hitResult?.Node as KryptonTreeNode);
-
-                if (e.Button == MouseButtons.Right)
-                {
-                    MenuOptions.Show(this, PointToClient(Cursor.Position));
-                }
-            }
-            finally
-            {
-                TreeFileSystem.AfterSelect += TreeFileSystem_AfterSelect;
-            }
-        }
-
-        /// <summary>
-        /// Handles the KeyUp event of the TreeFileSystem control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
-        private async void TreeFileSystem_KeyUp(object sender, KeyEventArgs e)
-        {
-            switch (e.KeyCode)
-            {
-                case Keys.F2:
-                    if ((TreeFileSystem.SelectedNode != null) && (!TreeFileSystem.SelectedNode.IsEditing))
-                    {
-                        TreeFileSystem.SelectedNode?.BeginEdit();
-                    }
-                    break;
-                case Keys.Delete:
-                    if ((TreeFileSystem.SelectedNode != null) && (!TreeFileSystem.SelectedNode.IsEditing))
-                    {
-                        MenuItemDelete.PerformClick();
-                    }
-                    break;
-                case Keys.F5:
-                    await RefreshTreeBranchAsync(true);
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Handles the BeforeLabelEdit event of the TreeFileSystem control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="NodeLabelEditEventArgs"/> instance containing the event data.</param>
-        private void TreeFileSystem_BeforeLabelEdit(object sender, NodeLabelEditEventArgs e)
-        {
-            // Is this even possible?
-            if (e.Node == null)
-            {
-                e.CancelEdit = true;
-                return;
-            }
-
-            if (!_nodeLinks.TryGetValue((KryptonTreeNode)e.Node, out _renameNode))
-            {
-                e.CancelEdit = true;
-                return;
-            }
-
-            EventHandler handler = RenameBegin;
-            handler?.Invoke(this, EventArgs.Empty);
-        }
-
-        /// <summary>
-        /// Handles the AfterLabelEdit event of the TreeFileSystem control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="NodeLabelEditEventArgs"/> instance containing the event data.</param>
-        private void TreeFileSystem_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
-        {
-            TreeFileSystem.BeforeLabelEdit -= TreeFileSystem_BeforeLabelEdit;
-            TreeFileSystem.AfterLabelEdit -= TreeFileSystem_AfterLabelEdit;
-
-            try
-            {
-                // If we didn't change the name, or there's no node being renamed, then leave.
-                if ((DataContext?.RenameNodeCommand == null) || (e.Node == null))
-                {
-                    e.CancelEdit = true;
-                    return;
-                }
-
-                string oldName = _renameNode.Name;
-                var args = new FileExplorerNodeRenameArgs(_renameNode, oldName, e.Label);
-
-                if (!DataContext.RenameNodeCommand.CanExecute(args))
-                {
-                    e.CancelEdit = true;
-                    return;
-                }
-
-                DataContext.RenameNodeCommand.Execute(args);
-
-                e.CancelEdit = args.Cancel;
-            }
-            finally
-            {
-                // We're no longer renaming anything.
-                _renameNode = null;
-
-                EventHandler handler = RenameEnd;
-                handler?.Invoke(this, EventArgs.Empty);
-
-                TreeFileSystem.AfterLabelEdit += TreeFileSystem_AfterLabelEdit;
-                TreeFileSystem.BeforeLabelEdit += TreeFileSystem_BeforeLabelEdit;
-            }
-        }
-
-        /// <summary>
-        /// Handles the AfterExpand event of the TreeFileSystem control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="TreeViewEventArgs"/> instance containing the event data.</param>
-        private void TreeFileSystem_AfterExpand(object sender, TreeViewEventArgs e)
-        {
-            if (DataContext == null)
-            {
-                return;
-            }
-
-            // Turn off notification so we don't get a doubling up effect.
-            if (!_nodeLinks.TryGetValue((KryptonTreeNode)e.Node, out IFileExplorerNodeVm node))
-            {
-                return;
-            }
-
-            node.PropertyChanged -= Node_PropertyChanged;
-            try
-            {
-                node.IsExpanded = true;
-            }
-            finally
-            {
-                node.PropertyChanged += Node_PropertyChanged;
-            }
-        }
-
-        /// <summary>
-        /// Handles the BeforeCollapse event of the TreeFileSystem control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="TreeViewCancelEventArgs"/> instance containing the event data.</param>
-        private void TreeFileSystem_BeforeCollapse(object sender, TreeViewCancelEventArgs e)
-        {
-            if (DataContext == null)
-            {
-                return;
-            }
-
-            // Turn off notification so we don't get a doubling up effect.
-            if (!_nodeLinks.TryGetValue((KryptonTreeNode)e.Node, out IFileExplorerNodeVm node))
-            {
-                return;
-            }
-
-            node.PropertyChanged -= Node_PropertyChanged;
-            try
-            {
-                node.IsExpanded = false;
-            }
-            finally
-            {
-                node.PropertyChanged += Node_PropertyChanged;
-            }
-        }
-
-        /// <summary>
-        /// Handles the AfterCollapse event of the TreeFileSystem control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="TreeViewEventArgs"/> instance containing the event data.</param>
-        private void TreeFileSystem_AfterCollapse(object sender, TreeViewEventArgs e)
-        {
-            if (e.Node == null)
-            {
-                return;
-            }
-
-            // Do not hang on to tree nodes that don't need to be kept.
-            foreach (KryptonTreeNode treeNode in e.Node.Nodes.OfType<KryptonTreeNode>().Traverse(n => n.Nodes.OfType<KryptonTreeNode>()))
-            {
-                if (_nodeLinks.TryGetValue(treeNode, out IFileExplorerNodeVm fsNode))
-                {
-                    // Remove from our tree node linkage so we don't keep old nodes alive.                                                        
-                    RemoveNodeLinks(fsNode);
-                }
-
-                _nodeLinks.Remove(treeNode);
-            }
-
-            e.Node.Nodes.Clear();
-
-            if ((!_nodeLinks.TryGetValue((KryptonTreeNode)e.Node, out IFileExplorerNodeVm node))
-                || ((node.Children.Count == 0) && (node.Dependencies.Count == 0)))
-            {
-                return;
-            }
-
-            e.Node.Nodes.Add(new KryptonTreeNode("DUMMY_NODE_SHOULD_NOT_SEE_ME"));
+            ValidateMenuItems(DataContext);
         }
 
         /// <summary>
@@ -1764,11 +905,75 @@ namespace Gorgon.Editor.Views
         {
             switch (e.PropertyName)
             {
-                case nameof(IFileExplorerVm.SearchResults):
-                    _searchNodes = null;
+                case nameof(IFileExplorer.SelectedFiles):
+                    DataContext.SelectedFiles.CollectionChanged -= SelectedFiles_CollectionChanged;
+                    break;
+                case nameof(IFileExplorer.Clipboard):
+                    if (DataContext.Clipboard != null)
+                    {
+                        DataContext.Clipboard.PropertyChanged -= Clipboard_PropertyChanged;
+                    }
+                    break;
+                case nameof(IFileExplorer.SearchResults):
+                    if (DataContext.SearchResults != null)
+                    {
+                        RemoveFileEvents(DataContext.SearchResults);
+                    }
+                    break;
+                case nameof(IFileExplorer.SelectedDirectory):
+                    if (DataContext.SelectedDirectory == null)
+                    {
+                        return;
+                    }
+
+                    RemoveFileEvents(DataContext.SelectedDirectory.Files);
+                    DataContext.SelectedDirectory.Files.CollectionChanged -= Files_CollectionChanged;
                     break;
             }
         }
+
+        /// <summary>
+        /// Function to select rows in the file grid based on selected files in the data context.
+        /// </summary>
+        /// <param name="dataContext">The current data context.</param>
+        private void SelectRows(IFileExplorer dataContext)
+        {
+            DisableGridEvents();
+            
+            try
+            {
+                GridFiles.ClearSelection();
+
+                if (dataContext == null)
+                {
+                    return;
+                }
+
+                if (dataContext.SelectedFiles.Count == 0)
+                {
+                    return;
+                }
+
+                foreach (string id in dataContext.SelectedFiles.Select(item => item.ID))
+                {
+                    // Select the row that contains the file path.
+                    for (int rowIndex = 0; rowIndex < GridFiles.Rows.Count; ++rowIndex)
+                    {
+                        string rowPath = GridFiles.Rows[rowIndex].Cells[ColumnID.Index].Value.IfNull(string.Empty);
+
+                        if (string.Equals(id, rowPath, StringComparison.OrdinalIgnoreCase))
+                        {
+                            GridFiles.Rows[rowIndex].Selected = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                EnableGridEvents();
+            }
+        }        
 
         /// <summary>
         /// Handles the PropertyChanged event of the DataContext control.
@@ -1777,101 +982,1380 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
         private void DataContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            KryptonTreeNode node = null;
-            ListViewItem searchItem = null;
-
             switch (e.PropertyName)
             {
-                case nameof(IFileExplorerVm.SearchResults):
-                    _searchNodes = DataContext.SearchResults;
-
-                    if (_searchNodes == null)
+                case nameof(IFileExplorer.Clipboard):
+                    if (DataContext.Clipboard != null)
                     {
-                        TextSearch.Text = string.Empty;
+                        DataContext.Clipboard.PropertyChanged += Clipboard_PropertyChanged;
                     }
-
-                    FillSearchResults();
-
-                    if (_searchNodes == null)
+                    break;
+                case nameof(IFileExplorer.SearchResults):
+                    if (DataContext.SearchResults != null)
                     {
-                        ListSearchResults.SendToBack();
+                        SplitFileSystem.Panel1Collapsed = true;
+                        TreeDirectories.Visible = false;
+                        FillFiles(DataContext, DataContext.SelectedDirectory, DataContext.SearchResults);
                     }
                     else
                     {
-                        ListSearchResults.BringToFront();
+                        SplitFileSystem.Panel1Collapsed = false;
+                        TreeDirectories.Visible = true;
+                        FillFiles(DataContext, DataContext.SelectedDirectory, DataContext.SelectedDirectory?.Files);
+                    }                    
+                    break;
+                case nameof(IFileExplorer.SelectedFiles):
+                    SelectRows(DataContext);
+                    DataContext.SelectedFiles.CollectionChanged += SelectedFiles_CollectionChanged;
+                    break;
+                case nameof(IFileExplorer.SelectedDirectory):
+
+                    if (DataContext.SelectedDirectory != null)                             
+                    {
+                        if (_directoryNodes.TryGetValue(DataContext.SelectedDirectory.ID, out DirectoryTreeNode node))
+                        {
+                            if (TreeDirectories.SelectedNode != node)
+                            {
+                                TreeDirectories.SelectedNode = node;
+                            }
+                        }
+
+                        DataContext.SelectedDirectory.Files.CollectionChanged += Files_CollectionChanged;
+                    }
+
+                    FillFiles(DataContext, DataContext.SelectedDirectory, DataContext.SelectedDirectory?.Files);
+                    break;
+            }
+            ValidateMenuItems(DataContext);
+        }
+
+        /// <summary>Handles the PropertyChanged event of the Directory control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+        private void Directory_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var directory = sender as IDirectory;
+
+            if ((directory == null) || (!_directoryNodes.TryGetValue(directory.ID, out DirectoryTreeNode treeNode)))
+            {
+                return;
+            }
+
+            switch (e.PropertyName)
+            {
+                case nameof(IDirectory.IsCut):
+                    if (directory.IsCut)
+                    {
+                        treeNode.ForeColor = DarkFormsRenderer.CutForeground;
+                    }
+                    else
+                    {
+                        treeNode.ForeColor = TreeDirectories.ForeColor;
                     }
                     break;
-                case nameof(IFileExplorerVm.SelectedNode):
-                    if (DataContext.SelectedNode != null)
-                    {
-                        _revNodeLinks.TryGetValue(DataContext.SelectedNode, out node);
+            }
 
-                        if (_searchNodes != null)
-                        {
-                            searchItem = ListSearchResults.Items.OfType<ListViewItem>().FirstOrDefault(item => item.Tag == DataContext.SelectedNode);
-                        }
-                    }
-                    else if (_searchNodes != null)
+            ValidateMenuItems(DataContext);
+        }
+
+        /// <summary>Handles the PropertyChanged event of the File control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+        private void File_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var file = (IFile)sender;
+
+            // If we've no directory selected, or the currently selected directory is not the same as the directory for the file, then we have nothing to look up and refresh.
+            if ((!(TreeDirectories.SelectedNode is DirectoryTreeNode selectedDir)) || (file.Parent != selectedDir.DataContext))
+            {
+                return;
+            }
+
+            // We'll need to locate the row on the grid containing the file.
+            DataGridViewRow row = FindFileRow(file);
+
+            // The file isn't here.
+            if (row == null)
+            {
+                return;
+            }
+
+            Image fileIcon;
+
+            switch (e.PropertyName)
+            {
+                case nameof(IFile.Metadata):
+                    fileIcon = TreeNodeIcons.Images[1];
+
+                    if (TreeNodeIcons.Images.ContainsKey(file.ImageName))
                     {
-                        ListSearchResults.SelectedItems.Clear();
+                        fileIcon = TreeNodeIcons.Images[file.ImageName];
                     }
 
-                    if ((searchItem != null) && (!searchItem.Selected))
+                    row.Cells[ColumnIcon.Index].Value = fileIcon;
+                    row.Cells[ColumnType.Index].Value = file.Type;
+                    row.Cells[ColumnSize.Index].Value = file.SizeInBytes;
+                    break;
+                case nameof(IFile.Type):
+                    row.Cells[ColumnType.Index].Value = file.Type;
+                    break;
+                case nameof(IFile.IsCut):
+                    GridFiles.InvalidateRow(row.Index);
+                    break;
+                case nameof(IFile.Name):
+                    row.Cells[ColumnFilename.Index].Value = file.Name;
+                    break;
+                case nameof(IFile.Extension):
+                    row.Cells[ColumnFilename.Index].Value = file.Extension;
+                    break;
+                case nameof(IFile.SizeInBytes):
+                    row.Cells[ColumnSize.Index].Value = file.SizeInBytes;
+                    break;
+                case nameof(IFile.ImageName):
+                    fileIcon = TreeNodeIcons.Images[1];
+
+                    if (TreeNodeIcons.Images.ContainsKey(file.ImageName))
                     {
-                        searchItem.Selected = true;
+                        fileIcon = TreeNodeIcons.Images[file.ImageName];
                     }
 
-                    if (TreeFileSystem.SelectedNode == node)
-                    {
-                        ValidateMenuItems(DataContext);
-                        return;
-                    }
-
-                    SelectNode(node);
+                    row.Cells[ColumnIcon.Index].Value = fileIcon;
                     break;
             }
             ValidateMenuItems(DataContext);
         }
 
         /// <summary>
-        /// Handles the BeforeExpand event of the TreeFileSystem control.
+        /// Function to locate the specified file in the grid.
         /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="TreeViewCancelEventArgs"/> instance containing the event data.</param>
-        private void TreeFileSystem_BeforeExpand(object sender, TreeViewCancelEventArgs e)
+        /// <param name="file">The file to locate.</param>
+        /// <returns>The cells for the row.</returns>
+        private DataGridViewRow FindFileRow(IFile file)
         {
-            if (e.Node == null)
+            if (file == null)
+            {
+                return null;
+            }
+
+            for (int i = 0; i < GridFiles.Rows.Count; ++i)
+            {
+                DataGridViewRow row = GridFiles.Rows[i];
+                var gridFile = row.Cells[ColumnFile.Index].Value as IFile;
+
+                if (gridFile == file)
+                {
+                    return row;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Function to select a node on the tree.
+        /// </summary>
+        /// <param name="node">The node to select.</param>
+        private void SelectNode(DirectoryTreeNode node)
+        {
+            if ((DataContext?.SelectDirectoryCommand == null) || (!DataContext.SelectDirectoryCommand.CanExecute(node?.Name ?? string.Empty)))
             {
                 return;
             }
 
+            if ((TreeDirectories.SelectedNode != null) && (TreeDirectories.SelectedNode != node))
+            {
+                var currentNode = (DirectoryTreeNode)TreeDirectories.SelectedNode;
+                RemoveFileEvents(currentNode.DataContext.Files);
+            }
+
+            if (node == null)
+            {
+                TreeDirectories.SelectedNode = null;
+            }
+            else if (TreeDirectories.SelectedNode != node)
+            {
+                TreeDirectories.SelectedNode = node;
+            }
+
+            DataContext.SelectDirectoryCommand.Execute(node?.Name ?? string.Empty);
+
+            FillFiles(DataContext, node?.DataContext, node?.DataContext.Files);
+
+            ValidateMenuItems(DataContext);
+        }
+
+        /// <summary>
+        /// Function to remove the file property change events from the files in the specified directory.
+        /// </summary>
+        /// <param name="files">The list of files to update.</param>
+        private void RemoveFileEvents(IReadOnlyList<IFile> files)
+        {
+            if (files == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < files.Count; ++i)
+            {
+                files[i].PropertyChanged -= File_PropertyChanged;
+            }
+        }
+
+        /// <summary>
+        /// Function to reset the view back to its original state when the data context is reset.
+        /// </summary>
+        private void ResetDataContext()
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            SelectRows(DataContext);
+
+            if (TreeNodeIcons.Images.Count > 2)
+            {
+                while (TreeNodeIcons.Images.Count > 2)
+                {
+                    TreeNodeIcons.Images.RemoveAt(2);
+                }
+            }
+
+            _directoryNodes.Clear();
+            DataContext.OnUnload();
+
+            foreach (DirectoryTreeNode node in TreeDirectories.Nodes.OfType<DirectoryTreeNode>().Traverse(n => n.Nodes.OfType<DirectoryTreeNode>()))
+            {
+                node.DataContext.PropertyChanged += Directory_PropertyChanged;
+                node.DataContext.Directories.CollectionChanged -= Directories_CollectionChanged;
+                node.DataContext.Files.CollectionChanged -= Files_CollectionChanged;
+
+                RemoveFileEvents(node.DataContext.Files);
+
+                node.SetDataContext(null);
+            }
+
+            GridFiles.Rows.Clear();
+            TreeDirectories.Nodes.Clear();            
+        }
+
+        /// <summary>
+        /// Function unassign events after the data context is unassigned.
+        /// </summary>
+        private void UnassignEvents()
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            if (DataContext.Clipboard != null)
+            {
+                DataContext.Clipboard.PropertyChanged -= Clipboard_PropertyChanged;
+            }
+
+            DataContext.SelectedFiles.CollectionChanged -= SelectedFiles_CollectionChanged;
+
+            if (DataContext.SelectedDirectory != null)
+            {
+                DataContext.SelectedDirectory.PropertyChanged -= Directory_PropertyChanged;
+                DataContext.SelectedDirectory.Directories.CollectionChanged -= Directories_CollectionChanged;
+                DataContext.SelectedDirectory.Files.CollectionChanged -= Files_CollectionChanged;
+                RemoveFileEvents(DataContext.SelectedDirectory.Files);
+            }
+                        
+            DataContext.PropertyChanging -= DataContext_PropertyChanging;
+            DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        }
+        
+
+        /// <summary>
+        /// Function to remove a node, and it's child nodes from the node cache.
+        /// </summary>
+        /// <param name="nodeID">The ID for the node to look up.</param>
+        /// <param name="includeSelf"><b>true</b> to remove the path refrerenced by the ID, <b>false</b> to leave it in the cache.</param>
+        private void RemoveNodeFromCache(string nodeID, bool includeSelf)
+        {
+            if (!_directoryNodes.TryGetValue(nodeID, out DirectoryTreeNode dirNode))
+            {
+                return;
+            }
+
+            DirectoryTreeNode[] childNodes = dirNode.Nodes.OfType<DirectoryTreeNode>()
+                                                          .Traverse(n => n.Nodes.OfType<DirectoryTreeNode>())
+                                                          .ToArray();
+
+            foreach (DirectoryTreeNode treeNode in childNodes)
+            {
+                if (treeNode.DataContext != null)
+                {
+                    treeNode.DataContext.PropertyChanged -= Directory_PropertyChanged;
+                    treeNode.DataContext.Directories.CollectionChanged -= Directories_CollectionChanged;
+                    if (TreeDirectories.SelectedNode == treeNode)
+                    {
+                        treeNode.DataContext.Files.CollectionChanged -= Files_CollectionChanged;
+                    }
+                }
+
+                _directoryNodes.Remove(treeNode.Name);
+            }
+
+            if ((!includeSelf) || (!_directoryNodes.ContainsKey(nodeID)))
+            {
+                return;
+            }
+
+            if (dirNode.DataContext != null)
+            {
+                dirNode.DataContext.PropertyChanged -= Directory_PropertyChanged;
+                dirNode.DataContext.Directories.CollectionChanged -= Directories_CollectionChanged;
+                if (TreeDirectories.SelectedNode == dirNode)
+                {
+                    dirNode.DataContext.Files.CollectionChanged -= Files_CollectionChanged;
+                }
+            }
+
+            _directoryNodes.Remove(nodeID);
+        }
+
+        /// <summary>
+        /// Function to disable any events on the grid prior to updating.
+        /// </summary>
+        private void DisableGridEvents()
+        {
+            GridFiles.MouseDown -= GridFiles_MouseDown;
+            GridFiles.CellValidating -= GridFiles_CellValidating;
+            GridFiles.KeyUp -= GridFiles_KeyUp;
+            GridFiles.KeyDown -= GridFiles_KeyDown;
+            GridFiles.SelectionChanged -= GridFiles_SelectionChanged;
+            Interlocked.Exchange(ref _gridEventsHooked, 0);
+        }
+
+        /// <summary>
+        /// Function to enable any events on the grid prior to updating.
+        /// </summary>
+        private void EnableGridEvents()
+        {
+            if (Interlocked.Exchange(ref _gridEventsHooked, 1) == 1)
+            {
+                return;
+            }
+
+            GridFiles.SelectionChanged += GridFiles_SelectionChanged;
+            GridFiles.KeyDown += GridFiles_KeyDown;
+            GridFiles.KeyUp += GridFiles_KeyUp;
+            GridFiles.CellValidating += GridFiles_CellValidating;
+            GridFiles.MouseDown += GridFiles_MouseDown;
+        }        
+
+        /// <summary>
+        /// Function to disable any events on the tree before updating.
+        /// </summary>
+        private void DisableTreeEvents()
+        {
+            TreeDirectories.AfterLabelEdit -= TreeDirectories_AfterLabelEdit;
+            TreeDirectories.BeforeLabelEdit -= TreeDirectories_BeforeLabelEdit;
+            TreeDirectories.AfterExpand -= TreeDirectories_AfterExpand;
+            TreeDirectories.AfterCollapse -= TreeDirectories_AfterCollapse;
+            TreeDirectories.BeforeExpand -= TreeDirectories_BeforeExpand;
+            TreeDirectories.AfterSelect -= TreeDirectories_AfterSelect;
+
+            Interlocked.Exchange(ref _treeEventsHooked, 0);
+        }
+
+        /// <summary>
+        /// Function to enable events on the tree after updating.
+        /// </summary>
+        private void EnableTreeEvents()
+        {
+            // Do this to prevent over-subscription.
+            if (Interlocked.Exchange(ref _treeEventsHooked, 1) == 1)
+            {
+                return;
+            }
+
+            TreeDirectories.AfterSelect += TreeDirectories_AfterSelect;
+            TreeDirectories.BeforeExpand += TreeDirectories_BeforeExpand;
+            TreeDirectories.AfterCollapse += TreeDirectories_AfterCollapse;
+            TreeDirectories.AfterExpand += TreeDirectories_AfterExpand;
+            TreeDirectories.BeforeLabelEdit += TreeDirectories_BeforeLabelEdit;
+            TreeDirectories.AfterLabelEdit += TreeDirectories_AfterLabelEdit;
+        }
+
+        /// <summary>Handles the MouseDown event of the GridFiles control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+        private void GridFiles_MouseDown(object sender, MouseEventArgs e)
+        {
+            if ((DataContext == null) || (GridFiles.IsCurrentCellInEditMode))
+            {
+                return;
+            }
+
+            try
+            {
+                GridFiles.Focus();
+
+                DataGridView.HitTestInfo hit = GridFiles.HitTest(e.X, e.Y);
+
+                if ((hit.RowIndex < 0) || (hit.RowIndex >= GridFiles.Rows.Count) || (hit.ColumnIndex < 0) || (hit.ColumnIndex >= GridFiles.ColumnCount))
+                {
+                    GridFiles.CurrentCell = null;
+                    GridFiles.ClearSelection();
+                    return;
+                }
+
+                if (e.Button != MouseButtons.Right)
+                {
+                    return;
+                }
+
+                DataGridViewRow row = GridFiles.Rows[hit.RowIndex];
+                if (row.Selected)
+                {
+                    if (GridFiles.CurrentCell != row.Cells[ColumnFilename.Index])
+                    {
+                        GridFiles.CurrentCell = row.Cells[ColumnFilename.Index];
+                    }
+                    return;
+                }
+
+                GridFiles.ClearSelection();
+                row.Selected = true;
+                GridFiles.CurrentCell = row.Cells[ColumnFilename.Index];
+            }
+            finally
+            {
+                ValidateMenuItems(DataContext);
+            }
+        }
+
+        /// <summary>Handles the KeyDown event of the GridFiles control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
+        private void GridFiles_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.Enter:
+                case Keys.F2:
+                case Keys.Delete:
+                    e.Handled = true;
+                    e.SuppressKeyPress = true;
+                    break;
+            }
+        }
+
+        /// <summary>Handles the KeyUp event of the GridFiles control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
+        private async void GridFiles_KeyUp(object sender, KeyEventArgs e)
+        {
+            DisableGridEvents();
+
+            try
+            {
+                switch (e.KeyCode)
+                {
+                    case Keys.Enter:
+                        e.Handled = true;
+                        e.SuppressKeyPress = true;
+                        break;
+                    case Keys.F2:
+                        if ((DataContext?.RenameFileCommand == null) || (!DataContext.RenameFileCommand.CanExecute(null)))
+                        {
+                            return;
+                        }
+
+                        if (GridFiles.CurrentRow != null)
+                        {
+                            DataGridViewCell currentCell = GridFiles.Rows[GridFiles.CurrentRow.Index].Cells[ColumnFilename.Index];
+                            if (GridFiles.CurrentCell != currentCell)
+                            {
+                                GridFiles.CurrentCell = currentCell;
+                            }
+                        }
+
+                        e.Handled = true;
+                        e.SuppressKeyPress = true;
+
+                        GridFiles.BeginEdit(true);
+                        IsRenaming = true;
+                        break;
+                    case Keys.Delete:
+                        e.Handled = true;
+                        e.SuppressKeyPress = true;
+                        await DeleteSelectedFilesAsync();
+                        break;
+                }
+            }
+            finally
+            {
+                EnableGridEvents();
+                ValidateMenuItems(DataContext);
+            }
+        }
+
+        /// <summary>Handles the CellEndEdit event of the GridFiles control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DataGridViewCellEventArgs"/> instance containing the event data.</param>
+        private void GridFiles_CellEndEdit(object sender, DataGridViewCellEventArgs e) => IsRenaming = false;
+
+        /// <summary>Handles the CellValidating event of the GridFiles control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DataGridViewCellValidatingEventArgs"/> instance containing the event data.</param>
+        private void GridFiles_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
+        {
+            try
+            {
+                if ((DataContext?.RenameFileCommand == null) || (e.ColumnIndex != ColumnFilename.Index))
+                {
+                    return;
+                }
+
+                string newName = e.FormattedValue?.ToString() ?? string.Empty;
+                var file = (IFile)GridFiles.Rows[e.RowIndex].Cells[ColumnFile.Index].Value;
+                var args = new RenameArgs(file.Name, newName);
+
+                if (!DataContext.RenameFileCommand.CanExecute(args))
+                {
+                    GridFiles.CancelEdit();
+                    return;
+                }
+
+                DataContext.RenameFileCommand.Execute(args);
+
+                if (args.Cancel)
+                {
+                    GridFiles.CancelEdit();
+                }
+            }
+            finally
+            {
+                IsRenaming = false;
+            }
+        }
+
+        /// <summary>Handles the SelectionChanged event of the GridFiles control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void GridFiles_SelectionChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                string[] ids = GridFiles.SelectedRows.OfType<DataGridViewRow>()
+                                                     .Where(item => !item.Cells[ColumnID.Index].Value.IsNull())
+                                                     .Select(item => item.Cells[ColumnID.Index].Value.ToString())
+                                                     .ToArray();
+
+                if ((DataContext?.SelectFileCommand == null) || (!DataContext.SelectFileCommand.CanExecute(ids)))
+                {
+                    return;
+                }
+
+                DataContext.SelectFileCommand.Execute(ids);
+            }
+            finally
+            {
+                ValidateMenuItems(DataContext);
+            }
+        }
+
+        /// <summary>Handles the CellFormatting event of the GridFiles control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DataGridViewCellFormattingEventArgs"/> instance containing the event data.</param>
+        private void GridFiles_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.RowIndex < 0)
+            {
+                return;
+            }
+
+            DataGridViewRow row = GridFiles.Rows[e.RowIndex];
+
+            if (!(row.Cells[ColumnFile.Index].Value is IFile file))
+            {
+                return;
+            }
+
+            if (file.IsCut)
+            {
+                e.CellStyle = _cutCellStyle;
+            }
+
+            // For the size column, format as standard memory/file sizes.
+            if (e.ColumnIndex == ColumnSize.Index)
+            {
+                e.Value = ((long)e.Value).FormatMemory();
+                return;
+            }
+
+            if ((e.ColumnIndex != ColumnFilename.Index) || (file.IsCut))
+            {
+                return;
+            }
+
+            row.Cells[0].ToolTipText = row.Cells[1].ToolTipText = file.FullPath;                    
+            e.CellStyle = GridFiles.DefaultCellStyle;
+           
+            if (!file.IsOpen)
+            {
+                if (file.Metadata?.ContentMetadata == null)
+                {
+                    e.CellStyle = _unknownFileStyle;
+                }
+            }
+            else
+            {
+                e.CellStyle = _openFileStyle;
+            }
+        }
+
+        /// <summary>Handles the RowsDrag event of the GridFiles control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RowsDragEventArgs"/> instance containing the event data.</param>
+        private void GridFiles_RowsDrag(object sender, RowsDragEventArgs e)
+        {
             if (DataContext?.SearchResults != null)
             {
                 return;
             }
 
-            e.Node.Nodes.Clear();
+            var dragData = new GridRowsDragData(e.DraggedRows, ColumnFile.Index, e.MouseButtons == MouseButtons.Right ? (CopyMoveOperation.Copy | CopyMoveOperation.Move) : CopyMoveOperation.Move);            
+            var data = new DataObject();
+            data.SetData(dragData);
 
-            if (!_nodeLinks.TryGetValue((KryptonTreeNode)e.Node, out IFileExplorerNodeVm parentNode))
+            GridFiles.DoDragDrop(data, DragDropEffects.Move | DragDropEffects.Copy);
+
+            if (dragData.TargetNode != null)
+            {
+                dragData.TargetNode.ForeColor = Color.Empty;
+                dragData.TargetNode.BackColor = Color.Empty;
+            }
+        }
+
+        /// <summary>Handles the DragEnter event of the GridFiles control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+        private void GridFiles_DragEnter(object sender, DragEventArgs e)
+        {
+            if ((DataContext?.SelectedDirectory == null) || (!e.Data.GetDataPresent(DataFormats.FileDrop, false)))
             {
                 return;
             }
 
-            // Turn off events for this nodes children since they'll be destroyed anyway, and we really don't want to trigger the events during a refresh.
-            UnassignNodeEvents(parentNode.Dependencies);
-            UnassignNodeEvents(parentNode.Children);
-
-            if (parentNode.Children.Count > 0)
+            if (!_directoryNodes.TryGetValue(DataContext.SelectedDirectory.ID, out DirectoryTreeNode node))
             {
-                FillTree(e.Node.Nodes, parentNode.Children, false);
-            }
-            else
-            {
-                FillTree(e.Node.Nodes, parentNode.Dependencies, false);
+                return;
             }
 
-            AssignNodeEvents(parentNode.Children);
-            AssignNodeEvents(parentNode.Dependencies);
+            _explorerImportData = new ExplorerImportData(e.Data.GetData(DataFormats.FileDrop, false) as string[])
+            {
+                TargetNode = node
+            };
+
+            e.Effect = DragDropEffects.Copy;
+        }
+
+        /// <summary>Handles the DragDrop event of the GridFiles control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+        private void GridFiles_DragDrop(object sender, DragEventArgs e)
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            if ((_explorerImportData == null) || (!e.Data.GetDataPresent(DataFormats.FileDrop, false)))
+            {
+                return;
+            }
+
+            Explorer_DragDropDirectory(e);
+        }
+
+        /// <summary>Handles the DragOver event of the GridFiles control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+        private void GridFiles_DragOver(object sender, DragEventArgs e)
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            if (e.Data.GetDataPresent(DataFormats.FileDrop, false))
+            {
+                return;
+            }
+
+            e.Effect = DragDropEffects.None;
+        }
+
+        /// <summary>Handles the Enter event of the GridFiles control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void GridFiles_Enter(object sender, EventArgs e)
+        {
+            ControlContext = FileExplorerContext.FileList;
+            ValidateMenuItems(DataContext);
+        }
+
+        /// <summary>Handles the Leave event of the GridFiles control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void GridFiles_Leave(object sender, EventArgs e) => ValidateMenuItems(DataContext);
+
+        /// <summary>Handles the EditCanceled event of the TreeDirectories control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void TreeDirectories_EditCanceled(object sender, EventArgs e) => IsRenaming = false;
+
+        /// <summary>Handles the AfterLabelEdit event of the TreeDirectories control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="NodeLabelEditEventArgs"/> instance containing the event data.</param>
+        private void TreeDirectories_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
+        {
+            DisableTreeEvents();
+
+            try
+            {
+                var node = e.Node as DirectoryTreeNode;
+
+                string nodeID = node.Name;
+                var args = new RenameArgs(node.Text, e.Label);
+                DataContext?.RenameDirectoryCommand.Execute(args);
+
+                if (args.Cancel)
+                {
+                    e.CancelEdit = true;
+                }                
+            }
+            finally
+            {
+                IsRenaming = false;
+                EnableTreeEvents();
+                ValidateMenuItems(DataContext);
+            }
+        }
+
+        /// <summary>Handles the BeforeLabelEdit event of the TreeDirectories control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="NodeLabelEditEventArgs"/> instance containing the event data.</param>
+        private void TreeDirectories_BeforeLabelEdit(object sender, NodeLabelEditEventArgs e)
+        {
+            DisableTreeEvents();
+
+            try
+            {
+                var node = e.Node as DirectoryTreeNode;
+
+                var args = new RenameArgs(e.Label, node.Text);
+                if ((DataContext?.RenameDirectoryCommand == null) || (!DataContext.RenameDirectoryCommand.CanExecute(args)))
+                {
+                    e.CancelEdit = true;
+                    IsRenaming = false;
+                }
+                else
+                {
+                    IsRenaming = true;
+                }
+            }
+            finally
+            {
+                EnableTreeEvents();
+            }
+        }
+
+        /// <summary>Handles the AfterSelect event of the TreeDirectories control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="TreeViewEventArgs"/> instance containing the event data.</param>
+        private void TreeDirectories_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            string id = e.Node?.Name ?? string.Empty;
+
+            try
+            {
+                if ((DataContext?.SelectDirectoryCommand == null) || (!DataContext.SelectDirectoryCommand.CanExecute(id)))
+                {
+                    return;
+                }
+
+                DataContext.SelectDirectoryCommand.Execute(id);
+            }
+            finally
+            {
+                ValidateMenuItems(DataContext);
+            }
+        }
+
+        /// <summary>Handles the AfterCollapse event of the TreeDirectories control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="TreeViewEventArgs"/> instance containing the event data.</param>
+        private void TreeDirectories_AfterCollapse(object sender, TreeViewEventArgs e)
+        {
+            if (!(e.Node is DirectoryTreeNode node))
+            {
+                return;
+            }
+
+            DisableTreeEvents();
+
+            try
+            {
+                IDirectory directory = node.DataContext;
+
+                if (directory == null)
+                {
+                    return;
+                }
+
+                RemoveNodeFromCache(node.Name, false);
+                node.Nodes.Clear();
+
+                if (directory.Directories.Count > 0)
+                {
+                    AddDummyNode(node.Nodes);
+                }
+            }
+            finally
+            {
+                EnableTreeEvents();
+                ValidateMenuItems(DataContext);
+            }
+        }
+
+        /// <summary>Handles the AfterExpand event of the TreeDirectories control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="TreeViewEventArgs"/> instance containing the event data.</param>
+        private void TreeDirectories_AfterExpand(object sender, TreeViewEventArgs e)
+        {
+            if (!(e.Node is DirectoryTreeNode node))
+            {
+                return;
+            }
+
+            // Our refresh method clears the selection, so force it to select the expanded node.
+            SelectNode(node);
+        }
+
+        /// <summary>Handles the BeforeExpand event of the TreeDirectories control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="TreeViewCancelEventArgs"/> instance containing the event data.</param>
+        private void TreeDirectories_BeforeExpand(object sender, TreeViewCancelEventArgs e)
+        {
+            if (!(e.Node is DirectoryTreeNode node))
+            {
+                return;
+            }
+
+            DisableTreeEvents();
+
+            try
+            {
+                IDirectory directory = node.DataContext;
+
+                if (directory == null)
+                {
+                    return;
+                }                
+                
+                RefreshNodes(directory);
+            }
+            finally
+            {
+                ValidateMenuItems(DataContext);
+                EnableTreeEvents();
+            }
+        }
+
+        /// <summary>Handles the KeyUp event of the TreeDirectories control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
+        private async void TreeDirectories_KeyUp(object sender, KeyEventArgs e)
+        {
+            if ((DataContext == null) || (TreeDirectories.SelectedNode == null))
+            {
+                return;
+            }
+
+            DisableTreeEvents();
+
+            try
+            {
+                switch (e.KeyCode)
+                {
+                    case Keys.Delete:
+                        await DeleteDirectoryAsync();
+                        break;
+                }
+            }
+            finally
+            {
+                EnableTreeEvents();
+                ValidateMenuItems(DataContext);
+            }
+        }
+
+        /// <summary>Handles the ItemDrag event of the TreeDirectories control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="ItemDragEventArgs"/> instance containing the event data.</param>
+        private void TreeDirectories_ItemDrag(object sender, ItemDragEventArgs e)
+        {
+            if (!(e.Item is DirectoryTreeNode node))
+            {
+                return;
+            }
+
+            var dragData = new TreeNodeDragData(node, e.Button == MouseButtons.Right ? (CopyMoveOperation.Copy | CopyMoveOperation.Move) : CopyMoveOperation.Move);
+            SelectNode(node);
+            var data = new DataObject();
+            data.SetData(dragData);
+
+            TreeDirectories.DoDragDrop(data, DragDropEffects.Move | DragDropEffects.Copy);
+
+            if (dragData.TargetNode != null)
+            {
+                dragData.TargetNode.ForeColor = Color.Empty;
+                dragData.TargetNode.BackColor = Color.Empty;
+            }
+        }
+
+        /// <summary>Handles the DragLeave event of the TreeDirectories control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void TreeDirectories_DragLeave(object sender, EventArgs e)
+        {
+            if (_explorerImportData?.TargetNode == null)
+            {
+                return;
+            }
+
+            _explorerImportData.TargetNode.ForeColor = Color.Empty;
+            _explorerImportData.TargetNode.BackColor = Color.Empty;
+        }
+
+        /// <summary>
+        /// Function to handle dropping a dragged directory node.
+        /// </summary>
+        /// <param name="data">The data being dragged.</param>
+        /// <param name="e">The event arguments.</param>
+        private async void DirectoryNodes_DragDrop(TreeNodeDragData data, DragEventArgs e)
+        {
+            if ((data == null) 
+                || (e.Effect == DragDropEffects.None)
+                || (DataContext == null))
+            {
+                return;
+            }
+
+            try
+            {
+                DirectoryTreeNode destNode = data.TargetNode;
+
+                destNode.ForeColor = Color.Empty;
+                destNode.BackColor = Color.Empty;
+
+                SelectNode(destNode);
+
+                switch (data.Operation)
+                {
+                    case CopyMoveOperation.Copy:
+                        if ((DataContext.CopyDirectoryCommand != null) && (DataContext.CopyDirectoryCommand.CanExecute(data)))
+                        {
+                            await DataContext.CopyDirectoryCommand.ExecuteAsync(data);
+                        }
+                        break;
+                    case CopyMoveOperation.Move:
+                        if ((DataContext.MoveDirectoryCommand != null) && (DataContext.MoveDirectoryCommand.CanExecute(data)))
+                        {
+                            await DataContext.MoveDirectoryCommand.ExecuteAsync(data);
+                        }
+                        break;
+                    default:
+                        // If both operations are defined, then bring up a menu.
+                        if (data.Operation == (CopyMoveOperation.Copy | CopyMoveOperation.Move))
+                        {
+                            MenuCopyMove.Tag = data;
+                            MenuCopyMove.Show(this, PointToClient(Cursor.Position));
+                            break;
+                        }
+                        break;
+                }
+            }
+            finally
+            {
+                ValidateMenuItems(DataContext);
+            }
+        }
+
+        /// <summary>
+        /// Function to handle dragging a directory node over other directory nodes.
+        /// </summary>
+        /// <param name="data">The data being dragged.</param>
+        /// <param name="e">The event arguments.</param>
+        private void DirectoryNodes_DragOver(TreeNodeDragData data, DragEventArgs e)
+        {
+            if ((data == null) || (DataContext?.CopyDirectoryCommand == null) || (DataContext?.MoveDirectoryCommand == null))
+            {
+                e.Effect = DragDropEffects.None;
+                return;
+            }
+
+            DirectoryTreeNode prevTargetNode = data.TargetNode;
+            TreeViewHitTestInfo hitResult = TreeDirectories.HitTest(TreeDirectories.PointToClient(new Point(e.X, e.Y)));
+            data.TargetNode = (DirectoryTreeNode)hitResult.Node;
+
+            if (hitResult.Node == null)
+            {
+                data.TargetNode = _rootNode;
+            }
+
+            if (data.TargetNode != prevTargetNode)
+            {
+                if (prevTargetNode != null)
+                {
+                    prevTargetNode.ForeColor = Color.Empty;
+                    prevTargetNode.BackColor = Color.Empty;
+                }
+
+                data.TargetNode.ForeColor = DarkFormsRenderer.FocusedForeground;
+                data.TargetNode.BackColor = DarkFormsRenderer.FocusedBackground;                
+            }
+
+            if (((e.KeyState & 8) == 8) && (data.Operation == CopyMoveOperation.Move))
+            {
+                data.Operation = CopyMoveOperation.Copy;
+            }
+            else if (((e.KeyState & 8) != 8) && (data.Operation == CopyMoveOperation.Copy))
+            {
+                data.Operation = CopyMoveOperation.Move;
+            }
+
+            if ((data.Operation & CopyMoveOperation.Copy) == CopyMoveOperation.Copy)
+            {
+                if (!DataContext.CopyDirectoryCommand.CanExecute(data))
+                {
+                    e.Effect = DragDropEffects.None;
+                    MenuItemCopyTo.Available = false;
+                }
+                else
+                {
+                    e.Effect = DragDropEffects.Copy;
+                    MenuItemCopyTo.Available = true;
+                }
+            }
+
+            if ((data.Operation & CopyMoveOperation.Move) == CopyMoveOperation.Move)
+            {
+                if (!DataContext.MoveDirectoryCommand.CanExecute(data))
+                {
+                    e.Effect = DragDropEffects.None;
+                    MenuItemMoveTo.Available = false;
+                }
+                else
+                {
+                    e.Effect = DragDropEffects.Move;
+                    MenuItemMoveTo.Available = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Function to handle dropping of explorer files/directories on a virtual directory.
+        /// </summary>
+        /// <param name="e">The event parameters.</param>
+        private async void Explorer_DragDropDirectory(DragEventArgs e)
+        {
+            try
+            {
+                if ((_explorerImportData == null) || (DataContext?.ImportCommand == null))
+                {
+                    e.Effect = DragDropEffects.None;
+                    return;
+                }
+
+                _explorerImportData.TargetNode.ForeColor = Color.Empty;
+                _explorerImportData.TargetNode.BackColor = Color.Empty;
+
+                SelectNode(_explorerImportData.TargetNode);
+
+                await DataContext.ImportCommand.ExecuteAsync(_explorerImportData);
+            }
+            finally
+            {
+                ValidateMenuItems(DataContext);
+            }
+        }
+
+        /// <summary>
+        /// Function to handle dragging explorer file/directory paths over a directory node.
+        /// </summary>
+        /// <param name="e">The event parameters.</param>
+        private void Explorer_DragOverDirectory(DragEventArgs e)
+        {
+            if ((_explorerImportData == null) || (DataContext?.ImportCommand == null))
+            {
+                e.Effect = DragDropEffects.None;
+                return;
+            }
+
+            DirectoryTreeNode prevTargetNode = _explorerImportData.TargetNode;
+            TreeViewHitTestInfo hitResult = TreeDirectories.HitTest(TreeDirectories.PointToClient(new Point(e.X, e.Y)));
+
+            _explorerImportData.TargetNode = (hitResult.Node as DirectoryTreeNode) ?? _rootNode;
+
+            if (_explorerImportData.TargetNode != prevTargetNode)
+            {
+                if (prevTargetNode != null)
+                {
+                    prevTargetNode.ForeColor = Color.Empty;
+                    prevTargetNode.BackColor = Color.Empty;
+                }
+
+                _explorerImportData.TargetNode.ForeColor = DarkFormsRenderer.FocusedForeground;
+                _explorerImportData.TargetNode.BackColor = DarkFormsRenderer.FocusedBackground;
+            }
+
+            if (!DataContext.ImportCommand.CanExecute(_explorerImportData))
+            {
+                e.Effect = DragDropEffects.None;
+                return;
+            }
+
+            e.Effect = DragDropEffects.Copy;
+        }
+
+        /// <summary>Handles the Enter event of the TreeDirectories control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void TreeDirectories_Enter(object sender, EventArgs e)
+        {
+            ControlContext = FileExplorerContext.DirectoryTree;
+            ValidateMenuItems(DataContext);
+        }
+
+        /// <summary>Handles the Leave event of the TreeDirectories control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void TreeDirectories_Leave(object sender, EventArgs e) => ValidateMenuItems(DataContext);
+
+        /// <summary>
+        /// Function to handle dropping dragged file rows.
+        /// </summary>
+        /// <param name="data">The data being dragged.</param>
+        /// <param name="e">The event arguments.</param>
+        private async void FileRows_DragDrop(GridRowsDragData data, DragEventArgs e)
+        {
+            if ((data == null)
+                || (e.Effect == DragDropEffects.None)
+                || (DataContext == null))
+            {
+                return;
+            }
+
+            try
+            {
+                DirectoryTreeNode destNode = data.TargetNode;
+
+                destNode.ForeColor = Color.Empty;
+                destNode.BackColor = Color.Empty;
+
+                SelectNode(destNode);
+
+                switch (data.Operation)
+                {
+                    case CopyMoveOperation.Copy:
+                        if ((DataContext.CopyFileCommand != null) && (DataContext.CopyFileCommand.CanExecute(data)))
+                        {
+                            await DataContext.CopyFileCommand.ExecuteAsync(data);
+                        }
+                        break;
+                    case CopyMoveOperation.Move:
+                        if ((DataContext.MoveFileCommand != null) && (DataContext.MoveFileCommand.CanExecute(data)))
+                        {
+                            await DataContext.MoveFileCommand.ExecuteAsync(data);
+                        }
+                        break;
+                    default:
+                        // If both operations are defined, then bring up a menu.
+                        if (data.Operation == (CopyMoveOperation.Copy | CopyMoveOperation.Move))
+                        {
+                            MenuCopyMove.Tag = data;
+                            MenuCopyMove.Show(this, PointToClient(Cursor.Position));
+                            return;
+                        }
+                        break;
+                }
+            }
+            finally
+            {
+                ValidateMenuItems(DataContext);
+            }
+        }
+
+        /// <summary>
+        /// Function to handle dragging file grid rows over directory nodes.
+        /// </summary>
+        /// <param name="rowData">The grid rows being dragged.</param>
+        /// <param name="e">The event arguments.</param>
+        private void FileRows_DragOver(GridRowsDragData rowData, DragEventArgs e)
+        {
+            if ((rowData == null) || (DataContext?.CopyFileCommand == null) || (DataContext?.MoveFileCommand == null))
+            {
+                e.Effect = DragDropEffects.None;
+                return;
+            }
+
+            DirectoryTreeNode prevTargetNode = rowData.TargetNode;
+            TreeViewHitTestInfo hitResult = TreeDirectories.HitTest(TreeDirectories.PointToClient(new Point(e.X, e.Y)));
+            rowData.TargetNode = (DirectoryTreeNode)hitResult.Node;
+
+            if (hitResult.Node == null)
+            {
+                rowData.TargetNode = _rootNode;
+            }
+
+            if (rowData.TargetNode != prevTargetNode)
+            {
+                if (prevTargetNode != null)
+                {
+                    prevTargetNode.ForeColor = Color.Empty;
+                    prevTargetNode.BackColor = Color.Empty;
+                }
+
+                rowData.TargetNode.ForeColor = DarkFormsRenderer.FocusedForeground;
+                rowData.TargetNode.BackColor = DarkFormsRenderer.FocusedBackground;
+            }
+
+            if (((e.KeyState & 8) == 8) && (rowData.Operation == CopyMoveOperation.Move))
+            {
+                rowData.Operation = CopyMoveOperation.Copy;
+            }
+            else if (((e.KeyState & 8) != 8) && (rowData.Operation == CopyMoveOperation.Copy))
+            {
+                rowData.Operation = CopyMoveOperation.Move;
+            }
+
+            if ((rowData.Operation & CopyMoveOperation.Copy) == CopyMoveOperation.Copy)
+            {
+                e.Effect = DragDropEffects.Copy;
+                
+                if (!DataContext.CopyFileCommand.CanExecute(rowData))
+                {
+                    e.Effect = DragDropEffects.None;
+                    MenuItemCopyTo.Available = false;
+                }
+                else
+                {
+                    e.Effect = DragDropEffects.Copy;
+                    MenuItemCopyTo.Available = true;
+                }                
+            }
+
+            if ((rowData.Operation & CopyMoveOperation.Move) == CopyMoveOperation.Move)
+            {
+                e.Effect = DragDropEffects.Move;
+
+                if (!DataContext.MoveFileCommand.CanExecute(rowData))
+                {
+                    e.Effect = DragDropEffects.None;
+                    MenuItemMoveTo.Available = false;
+                }
+                else
+                {
+                    e.Effect = DragDropEffects.Move;
+                    MenuItemMoveTo.Available = true;
+                }
+            }
+        }
+
+        /// <summary>Handles the DragOver event of the TreeDirectories control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+        private void TreeDirectories_DragOver(object sender, DragEventArgs e)
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            if (e.Data.GetDataPresent(typeof(TreeNodeDragData)))
+            {
+                DirectoryNodes_DragOver(e.Data.GetData(typeof(TreeNodeDragData)) as TreeNodeDragData, e);
+                return;
+            }
+
+            if (e.Data.GetDataPresent(typeof(GridRowsDragData)))
+            {
+                FileRows_DragOver(e.Data.GetData(typeof(GridRowsDragData)) as GridRowsDragData, e);
+                return;
+            }
+
+            if (e.Data.GetDataPresent(DataFormats.FileDrop, false))
+            {
+                Explorer_DragOverDirectory(e);
+                return;
+            }
+
+            e.Effect = DragDropEffects.None;
+        }
+
+        /// <summary>Handles the DragEnter event of the TreeDirectories control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+        private void TreeDirectories_DragEnter(object sender, DragEventArgs e)
+        {
+            if ((DataContext == null) || (!e.Data.GetDataPresent(DataFormats.FileDrop, false)))
+            {
+                return;
+            }
+
+            _explorerImportData = new ExplorerImportData(e.Data.GetData(DataFormats.FileDrop, false) as string[]);
+
+            TreeViewHitTestInfo hitResult = TreeDirectories.HitTest(TreeDirectories.PointToClient(new Point(e.X, e.Y)));
+            DirectoryTreeNode targetTreeNode = (hitResult.Node as DirectoryTreeNode) ?? _rootNode;
+
+            if (targetTreeNode != null)
+            {
+                targetTreeNode.ForeColor = DarkFormsRenderer.FocusedForeground;
+                targetTreeNode.BackColor = DarkFormsRenderer.FocusedBackground;
+            }
+
+            _explorerImportData.TargetNode = targetTreeNode;
+
+            e.Effect = DragDropEffects.Copy;
+        }
+
+        /// <summary>Handles the DragDrop event of the TreeDirectories control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+        private void TreeDirectories_DragDrop(object sender, DragEventArgs e)
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            if (e.Data.GetDataPresent(typeof(TreeNodeDragData)))
+            {
+                DirectoryNodes_DragDrop(e.Data.GetData(typeof(TreeNodeDragData)) as TreeNodeDragData, e);
+                return;
+            }
+
+            if (e.Data.GetDataPresent(typeof(GridRowsDragData)))
+            {
+                FileRows_DragDrop(e.Data.GetData(typeof(GridRowsDragData)) as GridRowsDragData, e);
+                return;
+            }
+
+            if ((_explorerImportData == null) || (!e.Data.GetDataPresent(DataFormats.FileDrop, false)))
+            {
+                return;
+            }
+
+            Explorer_DragDropDirectory(e);
         }
 
         /// <summary>
@@ -1890,12 +2374,20 @@ namespace Gorgon.Editor.Views
             ValidateMenuItems(DataContext);
         }
 
+        /// <summary>Handles the Enter event of the TextSearch control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void TextSearch_Enter(object sender, EventArgs e)
+        {
+            ControlContext = FileExplorerContext.None;
+            ValidateMenuItems(DataContext);
+        }
+
         /// <summary>Handles the KeyUp event of the TextSearch control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
         private void TextSearch_KeyUp(object sender, KeyEventArgs e)
         {
-
             switch (e.KeyCode)
             {
                 case Keys.Enter:
@@ -1911,496 +2403,276 @@ namespace Gorgon.Editor.Views
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="T:Gorgon.UI.GorgonSearchEventArgs"/> instance containing the event data.</param>
         private void TextSearch_Search(object sender, GorgonSearchEventArgs e) => SendSearchCommand(e.SearchText);
-
-        /// <summary>Handles the Click event of the ButtonClearSearch control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonClearSearch_Click(object sender, EventArgs e)
-        {
-            TextSearch.Text = string.Empty;
-            SendSearchCommand(null);
-            SelectNextControl(this, true, true, true, true);
-        }
-
+        
         /// <summary>
-        /// Function to update the visual state of the node based on the node data.
+        /// Function to delete the directory specified by the path.
         /// </summary>
-        /// <param name="searchItem">The item to update.</param>
-        /// <param name="node">The file system node to evaluate.</param>
-        private void UpdateSearchItemVisualState(ListViewItem searchItem, IFileExplorerNodeVm node)
-        {
-            if (node == null)
-            {
-                searchItem.Font = _excludedFont;
-                searchItem.ForeColor = Color.DimGray;
-                return;
-            }
-
-            if (node.Metadata == null)
-            {
-                searchItem.Font = _excludedFont;
-                searchItem.ForeColor = Color.DimGray;
-            }
-            else
-            {
-                searchItem.ForeColor = node.IsChanged ? Color.LightGreen : Color.Empty;
-
-                if (node.IsOpen)
-                {
-                    searchItem.Font = _openFont;
-                }
-                else
-                {
-                    searchItem.Font = null;
-                }
-            }
-
-            if (node.IsCut)
-            {
-                // Make the text translucent if we're in cut mode.
-                searchItem.ForeColor = Color.FromArgb(128, searchItem.ForeColor);
-            }
-
-            // Check for an icon.            
-            if (node.Metadata?.OLDE_ContentMetadata != null)
-            {
-                Image icon = node.Metadata.OLDE_ContentMetadata.GetSmallIcon();
-
-                // This ID has not been registered in the image list, do so now.
-                if ((!TreeImages.Images.ContainsKey(node.ImageName))
-                    && (icon != null))
-                {
-                    TreeImages.Images.Add(node.ImageName, icon);
-                }
-            }
-            else if (node.IsContent)
-            {
-                searchItem.Font = _excludedFont;
-                searchItem.ForeColor = Color.DimGray;
-            }
-
-            int imageIndex = FindImageIndexFromNode(node);
-            if (imageIndex != -1)
-            {
-                searchItem.ImageIndex = imageIndex;
-            }
-        }
-
-        /// <summary>
-        /// Function to update the visual state of the node based on the node data.
-        /// </summary>
-        /// <param name="treeNode">The tree node to update.</param>
-        /// <param name="node">The file system node to evaluate.</param>
-        private void UpdateNodeVisualState(KryptonTreeNode treeNode, IFileExplorerNodeVm node)
-        {
-            TreeFileSystem.BeforeExpand -= TreeFileSystem_BeforeExpand;
-            try
-            {
-                if (node == null)
-                {
-                    treeNode.NodeFont = _excludedFont;
-                    treeNode.ForeColor = Color.DimGray;
-                    return;
-                }
-
-                if (node.Metadata == null)
-                {
-                    treeNode.NodeFont = _excludedFont;
-                    treeNode.ForeColor = Color.DimGray;
-                }
-                else
-                {
-                    treeNode.ForeColor = node.IsChanged ? Color.LightGreen : Color.Empty;
-
-                    if (node.IsOpen)
-                    {
-                        treeNode.NodeFont = _openFont;
-                    }
-                    else
-                    {
-                        treeNode.NodeFont = null;
-                    }
-                }
-
-                if (node.IsCut)
-                {
-                    // Make the text translucent if we're in cut mode.
-                    treeNode.ForeColor = Color.FromArgb(128, treeNode.ForeColor);
-                }
-
-                // Check for an icon.            
-                if (node.Metadata?.OLDE_ContentMetadata != null)
-                {
-                    string imageName = node.ImageName;
-                    Image icon = node.Metadata.OLDE_ContentMetadata.GetSmallIcon();
-
-                    // This ID has not been registered in the image list, do so now.
-                    if ((!TreeImages.Images.ContainsKey(node.ImageName))
-                        && (icon != null))
-                    {
-                        TreeImages.Images.Add(node.ImageName, icon);
-                    }
-                }
-                else if (node.IsContent)
-                {
-                    treeNode.NodeFont = _excludedFont;
-                    treeNode.ForeColor = Color.DimGray;
-                }
-
-                int imageIndex = FindImageIndexFromNode(node);
-                if (imageIndex != -1)
-                {
-                    treeNode.ImageIndex = treeNode.SelectedImageIndex = imageIndex;
-                }
-
-                if (((node.Children.Count > 0) || (node.Dependencies.Count > 0)) && (!treeNode.IsExpanded))
-                {
-                    treeNode.Nodes.Add(new KryptonTreeNode("DUMMY_NODE_SHOULD_NOT_SEE_ME"));
-                }
-
-                if (treeNode.IsSelected)
-                {
-                    UpdateSelectedColor(treeNode);
-                }
-            }
-            finally
-            {
-                TreeFileSystem.BeforeExpand += TreeFileSystem_BeforeExpand;
-            }
-        }
-
-        /// <summary>
-        /// Function to update the selected color for a node based on state information.
-        /// </summary>
-        /// <param name="node">The node to evaluate.</param>
-        private void UpdateSelectedColor(KryptonTreeNode node)
-        {
-            if (node.NodeFont == _excludedFont)
-            {
-                TreeFileSystem.StateCheckedNormal.Node.Back.Color1 = Color.FromArgb(_dragBackColor.R / 2, _dragBackColor.G / 2, _dragBackColor.B / 2);
-            }
-            else
-            {
-                TreeFileSystem.StateCheckedNormal.Node.Back.Color1 = _dragBackColor;
-            }
-
-            TreeFileSystem.StateCheckedNormal.Node.Content.ShortText.Color1 = node.ForeColor;
-            TreeFileSystem.StateCheckedNormal.Node.Content.ShortText.Font = node.NodeFont;
-        }
-
-        /// <summary>
-        /// Function to refresh the tree, or a branch on the tree.
-        /// </summary>
-        /// <param name="rebuildFileSystemNodes"><b>true</b> to rebuild the underlying file system hierarchy before populating the branch, or <b>false</b> to just repopulate the branch.</param>
-        private async Task RefreshTreeBranchAsync(bool rebuildFileSystemNodes)
+        private async Task DeleteDirectoryAsync()
         {
             if (DataContext == null)
             {
                 return;
             }
 
-            if (TreeFileSystem.SelectedNode == null)
-            {
-                _nodeLinks.Clear();
-                _revNodeLinks.Clear();
-
-                UnassignNodeEvents(DataContext.RootNode.Children);
-
-                if ((rebuildFileSystemNodes) && (DataContext.RefreshNodeCommand != null) && (DataContext.RefreshNodeCommand.CanExecute(DataContext.RootNode)))
-                {
-                    await DataContext.RefreshNodeCommand.ExecuteAsync(DataContext.RootNode);
-                }
-
-                FillTree(TreeFileSystem.Nodes, DataContext.RootNode.Children, true);
-
-                AssignNodeEvents(DataContext.RootNode.Children);
-                return;
-            }
-
-            bool isExpanded = TreeFileSystem.SelectedNode.IsExpanded;
-            TreeFileSystem.SelectedNode.Collapse();
-
-            if ((TreeFileSystem.SelectedNode.Nodes.Count == 0) || (!isExpanded))
-            {
-                return;
-            }
-
-            if (!_nodeLinks.TryGetValue((KryptonTreeNode)TreeFileSystem.SelectedNode, out IFileExplorerNodeVm node))
-            {
-                return;
-            }
-
-            TreeFileSystem.AfterSelect -= TreeFileSystem_AfterSelect;
-            TreeFileSystem.BeforeExpand -= TreeFileSystem_BeforeExpand;
-            node.Children.CollectionChanged -= Nodes_CollectionChanged;
-            node.PropertyChanged -= Node_PropertyChanged;
-
             try
             {
-                if ((rebuildFileSystemNodes) && (DataContext.RefreshNodeCommand != null) && (DataContext.RefreshNodeCommand.CanExecute(node)))
+                var args = new DeleteArgs(null);
+                if (DataContext?.DeleteDirectoryCommand != null)
                 {
-                    await DataContext.RefreshNodeCommand.ExecuteAsync(node);
+                    if (!DataContext.DeleteDirectoryCommand.CanExecute(args))
+                    {
+                        return;
+                    }
+
+                    await DataContext.DeleteDirectoryCommand.ExecuteAsync(args);
                 }
-            }
-            finally
-            {
-                node.PropertyChanged += Node_PropertyChanged;
-                node.Children.CollectionChanged += Nodes_CollectionChanged;
-                TreeFileSystem.BeforeExpand += TreeFileSystem_BeforeExpand;
-                TreeFileSystem.AfterSelect += TreeFileSystem_AfterSelect;
-            }
 
-            TreeFileSystem.SelectedNode.Expand();
-        }
-
-        /// <summary>
-        /// Function to fill the search result list view.
-        /// </summary>
-        private void FillSearchResults()
-        {
-            if (DataContext == null)
-            {
-                return;
-            }
-
-            ListSearchResults.BeginUpdate();
-
-            try
-            {
-                ListSearchResults.Items.Clear();
-
-                if ((_searchNodes == null) || (_searchNodes.Count == 0))
+                if (!args.ItemsDeleted)
                 {
                     return;
                 }
 
-                foreach (IFileExplorerNodeVm node in _searchNodes)
+                if (TreeDirectories.SelectedNode is DirectoryTreeNode selectedNode)
                 {
-                    var item = new ListViewItem
+                    FillFiles(DataContext, selectedNode.DataContext, selectedNode.DataContext.Files);
+                }
+            }
+            finally
+            {
+                ValidateMenuItems(DataContext);
+            }
+        }
+
+        /// <summary>
+        /// Function to add a dummy node for a parent node.
+        /// </summary>
+        /// <param name="parentNodes">The node collection that will contain the the dummy node.</param>
+        private void AddDummyNode(TreeNodeCollection parentNodes)
+        {
+            parentNodes.Clear();
+            parentNodes.Add(new TreeNode(DummyNodeName)
+            {
+                Name = DummyNodeName
+            });
+        }
+
+        /// <summary>
+        /// Function to fill the file list using the current directory.
+        /// </summary>
+        /// <param name="dataContext">The current data context.</param>
+        /// <param name="directory">The directory to fill.</param>
+        /// <param name="files">The files to populate to the grid.</param>
+        private void FillFiles(IFileExplorer dataContext, IDirectory directory, IReadOnlyList<IFile> files)
+        {
+            var selectedRows = new List<DataGridViewRow>();
+            DisableGridEvents();
+            try
+            {
+                DataGridViewColumn sortColumn = GridFiles.SortedColumn;
+                SortOrder sortOrder = GridFiles.SortOrder;
+
+                GridFiles.Rows.Clear();
+
+                if ((directory == null) || (files == null) || (files.Count == 0))
+                {
+                    return;
+                }
+
+                var rows = new DataGridViewRow[files.Count];
+
+                RemoveFileEvents(files);
+                                
+                for (int i = 0; i < files.Count; ++i)
+                {
+                    IFile file = files[i];
+
+                    Image fileIcon = TreeNodeIcons.Images[1];
+
+                    if (TreeNodeIcons.Images.ContainsKey(file.ImageName))
                     {
-                        Name = node.FullPath,
-                        Text = node.Name,
-                        Tag = node
+                        fileIcon = TreeNodeIcons.Images[file.ImageName];
+                    }                    
+                    
+                    var row = new DataGridViewRow();
+                    row.CreateCells(GridFiles, file.ID, file, fileIcon, file.Name, file.Type, file.SizeInBytes, file.Parent.FullPath);
+                    rows[i] = row;
+                    
+                    if (dataContext.SelectedFiles.Any(item => string.Equals(item.FullPath, file.FullPath, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        selectedRows.Add(row);
+                    }
+
+                    file.PropertyChanged += File_PropertyChanged;
+                }
+
+                GridFiles.Rows.AddRange(rows);
+
+                GridFiles.ClearSelection();
+                foreach (DataGridViewRow selected in selectedRows)
+                {
+                    selected.Selected = true;
+                }
+
+                if (sortColumn != null)
+                {
+                    GridFiles.Sort(sortColumn, sortOrder == SortOrder.Descending ? ListSortDirection.Descending : ListSortDirection.Ascending);
+                }
+
+                ColumnPath.Visible = dataContext?.SearchResults != null;
+                GridFiles.MultiSelect = dataContext?.SearchResults == null;
+            }
+            finally
+            {
+                EnableGridEvents();
+                ValidateMenuItems(dataContext);
+            }
+        }
+
+        /// <summary>
+        /// Function to refresh all the tree nodes under the specified directory, and the specified directory itself.
+        /// </summary>
+        /// <param name="parentDirectory"></param>
+        private void RefreshNodes(IDirectory parentDirectory)
+        {
+            // If we cannot find the parent node, then there's nothing to refresh.
+            if (!_directoryNodes.TryGetValue(parentDirectory.ID, out DirectoryTreeNode parentNode))
+            {
+                return;
+            }
+
+            DisableTreeEvents();            
+
+            TreeDirectories.BeginUpdate();
+
+            try
+            {
+                SelectNode(null);
+
+                parentDirectory.PropertyChanged -= Directory_PropertyChanged;
+                parentDirectory.Directories.CollectionChanged -= Directories_CollectionChanged;
+
+                // First, remove all nodes under the current node from the cache.
+                if (_directoryNodes.Count > 0)
+                {
+                    RemoveNodeFromCache(parentDirectory.ID, false);
+                }
+
+                // Second, remove the view models from the existing nodes.
+                foreach (DirectoryTreeNode subDirNode in parentNode.Nodes.OfType<DirectoryTreeNode>().Traverse(n => n.Nodes.OfType<DirectoryTreeNode>()))
+                {
+                    RemoveFileEvents(subDirNode.DataContext.Files);
+
+                    subDirNode.DataContext.Directories.CollectionChanged -= Directories_CollectionChanged;
+                    subDirNode.DataContext.PropertyChanged -= Directory_PropertyChanged;
+                    subDirNode.SetDataContext(null);                    
+                }                
+
+                // Third, clear the nodes from the tree.
+                parentNode.Nodes.Clear();
+
+                // Finally, add directory nodes.
+                foreach (IDirectory subDir in parentDirectory.Directories)
+                {
+                    var node = new DirectoryTreeNode
+                    {
+                        Text = subDir.Name,
+                        Name = subDir.ID,
+                        ImageKey = subDir.ImageName,
+                        Tag = subDir
                     };
-
-                    if (node == DataContext.SelectedNode)
+                    
+                    if (subDir.Directories.Count > 0)
                     {
-                        item.Selected = true;
+                        AddDummyNode(node.Nodes);
                     }
 
-                    UpdateSearchItemVisualState(item, node);
+                    parentNode.Nodes.Add(node);
+                    _directoryNodes[subDir.ID] = node;
+                    node.SetDataContext(subDir);
+                    node.DataContext.OnLoad();
 
-                    item.SubItems.Add(new ListViewItem.ListViewSubItem
-                    {
-                        Text = node.FullPath,
-                        ForeColor = Color.Silver
-                    });
-
-                    ListSearchResults.Items.Add(item);
+                    subDir.Directories.CollectionChanged += Directories_CollectionChanged;
+                    subDir.PropertyChanged += Directory_PropertyChanged;
                 }
+
+                // If this is a root node, then ensure it gets tacked on the tree if it's not already in there.
+                if ((parentDirectory.Parent == null) && (!TreeDirectories.Nodes.ContainsKey(parentDirectory.ID)))
+                {
+                    // Root nodes should stay expanded.
+                    parentNode.Expand();
+                    TreeDirectories.Nodes.Add(parentNode);
+                }                
             }
             finally
             {
-                ListSearchResults.EndUpdate();
-
-                ListSearchResults.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+                parentDirectory.Directories.CollectionChanged += Directories_CollectionChanged;
+                parentDirectory.PropertyChanged += Directory_PropertyChanged;
+                TreeDirectories.EndUpdate();
+                EnableTreeEvents();                
             }
         }
 
         /// <summary>
-        /// Function to populate the tree with file system nodes.
+        /// Function to load the icons used in the tree.
         /// </summary>
-        /// <param name="treeNodes">The node collection on the tree to update.</param>
-        /// <param name="nodes">The nodes used to populate.</param>
-        /// <param name="doNotExpand"><b>true</b> to keep nodes from expanding if their node state is set to expanded, <b>false</b> to automatically expand.</param>
-        private void FillTree(TreeNodeCollection treeNodes, IReadOnlyList<IFileExplorerNodeVm> nodes, bool doNotExpand)
+        /// <param name="images">The list of images to load.</param>
+        private void LoadTreeNodeIcons(IReadOnlyDictionary<Guid, Image> images)
         {
-            TreeFileSystem.BeginUpdate();
-
-            try
+            foreach (KeyValuePair<Guid, Image> image in images)
             {
-                treeNodes.Clear();
+                string key = image.Key.ToString("N");
 
-                if (nodes.Count == 0)
-                {
-                    return;
-                }
-
-                IEnumerable<IFileExplorerNodeVm> nodeList = nodes.OrderBy(item => item.NodeType)
-                                                                 .ThenBy(item => item.Name, StringComparer.OrdinalIgnoreCase);
-
-                // Sort the nodes by type and then by name (I knew that NodeType enum would come in handy one day).
-                foreach (IFileExplorerNodeVm node in nodeList)
-                {
-                    if (!node.Visible)
-                    {
-                        continue;
-                    }
-
-                    if ((!_revNodeLinks.TryGetValue(node, out KryptonTreeNode treeNode))
-                        || (!_nodeLinks.ContainsKey(treeNode)))
-                    {
-                        int imageIndex = FindImageIndexFromNode(node);
-
-                        treeNode = new KryptonTreeNode(node.Name)
-                        {
-                            ImageIndex = imageIndex,
-                            SelectedImageIndex = imageIndex
-                        };
-
-                        UpdateNodeVisualState(treeNode, node);
-
-                        _nodeLinks[treeNode] = node;
-                        _revNodeLinks[node] = treeNode;
-                    }
-
-                    if (!treeNodes.Contains(treeNode))
-                    {
-                        // Remove the parent event, it will be re-added after.
-                        treeNodes.Add(treeNode);
-                    }
-
-                    if (node.IsExpanded)
-                    {
-                        if (doNotExpand)
-                        {
-                            node.IsExpanded = false;
-                        }
-                        else
-                        {
-                            treeNode.Expand();
-                        }
-                    }
-                }
-            }
-            finally
-            {
-                TreeFileSystem.EndUpdate();
-            }
-        }
-
-        /// <summary>
-        /// Function to reset the view back to its original state when the data context is reset.
-        /// </summary>
-        private void ResetDataContext()
-        {
-            DataContext?.OnUnload();
-
-            _searchNodes = null;
-            _clipboardContext = null;
-            _nodeDragDropHandler = null;
-            _explorerDragDropHandler = null;
-
-            _nodeLinks.Clear();
-            _revNodeLinks.Clear();
-            TreeFileSystem.Nodes.Clear();
-        }
-
-        /// <summary>
-        /// Function to unassign events assigned to the various tree nodes.
-        /// </summary>
-        /// <param name="nodes">The nodes to evaluate.</param>
-        private void AssignNodeEvents(ObservableCollection<IFileExplorerNodeVm> nodes)
-        {
-            if (nodes == null)
-            {
-                return;
-            }
-
-            foreach (IFileExplorerNodeVm node in nodes.Traverse(n => n.Children))
-            {
-                if (!_revNodeLinks.ContainsKey(node))
+                if (TreeNodeIcons.Images.ContainsKey(key))
                 {
                     continue;
                 }
 
-                node.PropertyChanged += Node_PropertyChanged;
-                node.Children.CollectionChanged += Nodes_CollectionChanged;
-                node.Dependencies.CollectionChanged += Nodes_CollectionChanged;
+                TreeNodeIcons.Images.Add(key, image.Value);
             }
-
-            nodes.CollectionChanged += Nodes_CollectionChanged;
-        }
-
-        /// <summary>
-        /// Function to unassign events assigned to the various tree nodes.
-        /// </summary>
-        /// <param name="nodes">The nodes to evaluate.</param>
-        private void UnassignNodeEvents(ObservableCollection<IFileExplorerNodeVm> nodes)
-        {
-            if (nodes == null)
-            {
-                return;
-            }
-
-            nodes.CollectionChanged -= Nodes_CollectionChanged;
-
-            foreach (IFileExplorerNodeVm node in nodes.Traverse(n => n.Children))
-            {
-                if (!_revNodeLinks.ContainsKey(node))
-                {
-                    continue;
-                }
-
-                node.Dependencies.CollectionChanged -= Nodes_CollectionChanged;
-                node.Children.CollectionChanged -= Nodes_CollectionChanged;
-                node.PropertyChanged -= Node_PropertyChanged;
-            }
-        }
-
-        /// <summary>
-        /// Function unassign events after the data context is unassigned.
-        /// </summary>
-        private void UnassignEvents()
-        {
-            if (DataContext == null)
-            {
-                return;
-            }
-
-            if (DataContext.RootNode != null)
-            {
-                DataContext.RootNode.Children.CollectionChanged -= Nodes_CollectionChanged;
-                UnassignNodeEvents(DataContext.RootNode.Children);
-            }
-
-            DataContext.PropertyChanging += DataContext_PropertyChanging;
-            DataContext.PropertyChanged += DataContext_PropertyChanged;
         }
 
         /// <summary>
         /// Function to initialize the view with the data context.
         /// </summary>
         /// <param name="dataContext">The data context to initialize with.</param>
-        private void InitializeFromDataContext(IFileExplorerVm dataContext)
+        private void InitializeFromDataContext(IFileExplorer dataContext)
         {
             try
             {
+                ResetDataContext();
+
                 if (dataContext == null)
-                {
-                    ResetDataContext();
+                {                    
                     return;
                 }
 
-                DataContext?.OnUnload();
-
-                _clipboardContext = dataContext as Olde_IClipboardHandler;
-                _nodeDragDropHandler = dataContext;
-                _explorerDragDropHandler = dataContext;
-
                 // Always remove any dummy nodes.
-                TreeFileSystem.Nodes.Clear();
+                TreeDirectories.Nodes.Clear();
 
-                // We do not add the root node (really no point).
-                _searchNodes = dataContext.SearchResults;
-                FillTree(TreeFileSystem.Nodes, dataContext.RootNode.Children, false);
-
-                if (_searchNodes != null)
+                // Refresh all nodes including, and under the parent.
+                _rootNode = new DirectoryTreeNode
                 {
-                    FillSearchResults();
-                }
+                    Text = dataContext.Root.Name,
+                    Name = dataContext.Root.ID,
+                    ImageKey = dataContext.Root.ImageName,
+                    Tag = dataContext.Root
+                };
+                _rootNode.SetDataContext(dataContext.Root);
+                _rootNode.DataContext.OnLoad();
+                _directoryNodes[dataContext.Root.ID] = _rootNode;
 
-                AssignNodeEvents(dataContext.RootNode.Children);
+                LoadTreeNodeIcons(dataContext.PlugInMetadata.ToDictionary(k => k.SmallIconID, v => v.GetSmallIcon()));
+                RefreshNodes(dataContext.Root);
+                FillFiles(dataContext, dataContext.Root, dataContext.Root.Files);
+
+                DirectoryTreeNode selectedNode = null;
+                if (dataContext.SelectedDirectory != null)
+                {
+                    dataContext.SelectedDirectory.Files.CollectionChanged += Files_CollectionChanged;
+                    _directoryNodes.TryGetValue(dataContext.SelectedDirectory.ID, out selectedNode);
+                }
+                TreeDirectories.SelectedNode = selectedNode;
+                SelectRows(dataContext);
             }
             finally
             {
@@ -2408,8 +2680,8 @@ namespace Gorgon.Editor.Views
             }
         }
 
-        /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load" /> event.</summary>
-        /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data. </param>
+        /// <summary>Raises the <see cref="UserControl.Load" /> event.</summary>
+        /// <param name="e">An <see cref="EventArgs" /> that contains the event data. </param>
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
@@ -2419,86 +2691,26 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            _excludedFont = new Font(KryptonManager.CurrentGlobalPalette
-                                                   .GetContentShortTextFont((PaletteContentStyle)TreeFileSystem.ItemStyle, PaletteState.Normal),
-                                     FontStyle.Italic);
-            _openFont = new Font(KryptonManager.CurrentGlobalPalette
-                                                   .GetContentShortTextFont((PaletteContentStyle)TreeFileSystem.ItemStyle, PaletteState.Normal),
-                                                   FontStyle.Bold);
-
-            _dragBackColor = KryptonManager.CurrentGlobalPalette.GetBackColor1(PaletteBackStyle.ButtonListItem, PaletteState.Tracking);
-            _dragForeColor = KryptonManager.CurrentGlobalPalette.GetContentShortTextColor1(PaletteContentStyle.ButtonListItem, PaletteState.Tracking);
-
             DataContext?.OnLoad();
+
+            ControlContext = FileExplorerContext.FileList;
+            GridFiles.Select();
         }
 
-        /// <summary>
-        /// Function to expand the currently selected file system node.
-        /// </summary>
-        public void Expand()
+        /// <summary>Raises the <see cref="Enter"/> event.</summary>
+        /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
+        protected override void OnEnter(EventArgs e) 
         {
-            if (DataContext?.SelectedNode == null)
-            {
-                return;
-            }
-
-            if (!_revNodeLinks.TryGetValue(DataContext.SelectedNode, out KryptonTreeNode treeNode))
-            {
-                return;
-            }
-
-            treeNode.Expand();
+            ValidateMenuItems(DataContext);
+            base.OnEnter(e);
         }
 
-        /// <summary>
-        /// Function to collapse the currently selected file system node.
-        /// </summary>
-        public void Collapse()
+        /// <summary>Raises the <see cref="VisibleChanged"/> event.</summary>
+        /// <param name="e">An <see cref="EventArgs"/> object that contains the event data.</param>
+        protected override void OnVisibleChanged(EventArgs e) 
         {
-            if (DataContext?.SelectedNode == null)
-            {
-                return;
-            }
-
-            if (!_revNodeLinks.TryGetValue(DataContext.SelectedNode, out KryptonTreeNode treeNode))
-            {
-                return;
-            }
-
-            treeNode.Collapse();
-        }
-
-        /// <summary>
-        /// Function to delete a file or directory.
-        /// </summary>
-        public void Delete()
-        {
-            if ((MenuItemDelete.Available) && (MenuItemDelete.Enabled))
-            {
-                MenuItemDelete.PerformClick();
-            }
-        }
-
-        /// <summary>
-        /// Function to create a new directory.
-        /// </summary>
-        public void CreateDirectory()
-        {
-            if ((MenuItemCreateDirectory.Available) && (MenuItemCreateDirectory.Enabled))
-            {
-                MenuItemCreateDirectory.PerformClick();
-            }
-        }
-
-        /// <summary>
-        /// Function to rename a node.
-        /// </summary>
-        public void RenameNode()
-        {
-            if ((MenuItemRename.Available) && (MenuItemRename.Enabled))
-            {
-                MenuItemRename.PerformClick();
-            }
+            ValidateMenuItems(DataContext);
+            base.OnVisibleChanged(e);
         }
 
         /// <summary>
@@ -2510,7 +2722,7 @@ namespace Gorgon.Editor.Views
         /// Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.
         /// </para>
         /// </remarks>
-        public void SetDataContext(IFileExplorerVm dataContext)
+        public void SetDataContext(IFileExplorer dataContext)
         {
             UnassignEvents();
 
@@ -2524,6 +2736,187 @@ namespace Gorgon.Editor.Views
 
             DataContext.PropertyChanging += DataContext_PropertyChanging;
             DataContext.PropertyChanged += DataContext_PropertyChanged;
+            DataContext.SelectedFiles.CollectionChanged += SelectedFiles_CollectionChanged;
+            if (DataContext.Clipboard != null)
+            {
+                DataContext.Clipboard.PropertyChanged += Clipboard_PropertyChanged;
+            }
+        }
+
+        /// <summary>
+        /// Function to create a directory on the file system.
+        /// </summary>
+        public void CreateDirectory() => MenuItemCreateDirectory.PerformClick();
+
+        /// <summary>
+        /// Function to rename the selected directory.
+        /// </summary>
+        public void RenameDirectory() => MenuItemRenameDirectory.PerformClick();
+
+        /// <summary>
+        /// Function to rename the selected file.
+        /// </summary>
+        public void RenameFile() => MenuItemRenameFile.PerformClick();
+
+        /// <summary>
+        /// Function to delete the selected directory.
+        /// </summary>
+        public void DeleteDirectory() => MenuItemDeleteDirectory.PerformClick();
+
+        /// <summary>
+        /// Function to delete the selected files.
+        /// </summary>
+        public void DeleteFiles() => MenuItemDeleteFiles.PerformClick();
+
+        /// <summary>
+        /// Function to export the selected directory to the physical file system.
+        /// </summary>
+        /// <returns>A task for asynchronous operation.</returns>
+        public async Task ExportDirectoryAsync()
+        {
+            if ((DataContext?.ExportDirectoryCommand == null)
+                || (!DataContext.ExportDirectoryCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            await DataContext.ExportDirectoryCommand.ExecuteAsync(null);
+        }
+
+        /// <summary>
+        /// Function to export the selected file(s) to the physical file system.
+        /// </summary>
+        /// <returns>A task for asynchronous operation.</returns>
+        public async Task ExportFilesAsync()
+        {
+            if ((DataContext?.ExportFilesCommand == null)
+                || (!DataContext.ExportFilesCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            await DataContext.ExportFilesCommand.ExecuteAsync(null);
+        }
+
+        /// <summary>
+        /// Function to copy data to the clipboard.
+        /// </summary>
+        /// <param name="operation">The clipboard copy operation type.</param>
+        public void CopyDirectoryToClipboard(CopyMoveOperation operation)
+        {
+            IDirectory selectedDirectory = DataContext.SelectedDirectory;
+
+            if ((DataContext?.Clipboard == null) || (selectedDirectory == null))
+            {
+                return;
+            }
+
+            try
+            {
+                IClipboardHandler handler = DataContext.Clipboard;
+
+                var directoryCopyData = new DirectoryCopyMoveData
+                {
+                    Operation = operation,
+                    SourceDirectory = selectedDirectory.ID
+                };
+
+                if ((handler.CopyDataCommand == null) || (!handler.CopyDataCommand.CanExecute(directoryCopyData)))
+                {
+                    return;
+                }
+
+                handler.CopyDataCommand.Execute(directoryCopyData);
+                selectedDirectory.IsCut = operation == CopyMoveOperation.Move;
+            }
+            finally
+            {
+                ValidateMenuItems(DataContext);
+            }
+        }
+
+        /// <summary>
+        /// Function to copy data to the clipboard.
+        /// </summary>
+        /// <param name="operation">The clipboard copy operation type.</param>
+        public void CopyFileToClipboard(CopyMoveOperation operation)
+        {
+            IReadOnlyList<IFile> selectedFiles = DataContext.SelectedFiles;
+
+            if ((DataContext?.Clipboard == null) || (selectedFiles.Count == 0))
+            {
+                return;
+            }
+
+            try
+            {
+                IClipboardHandler handler = DataContext.Clipboard;
+
+                var fileCopyData = new FileCopyMoveData
+                {
+                    Operation = operation,
+                    SourceFiles = selectedFiles.Select(item => item.ID).ToArray()
+                };
+
+                if ((handler.CopyDataCommand == null) || (!handler.CopyDataCommand.CanExecute(fileCopyData)))
+                {
+                    return;
+                }
+
+                handler.CopyDataCommand.Execute(fileCopyData);
+
+                if (operation != CopyMoveOperation.Move)
+                {
+                    return;
+                }
+
+                foreach (IFile file in selectedFiles)
+                {
+                    file.IsCut = true;
+                }
+            }
+            finally
+            {
+                ValidateMenuItems(DataContext);
+            }
+        }
+
+        /// <summary>
+        /// Function to import files into the file system.
+        /// </summary>
+        /// <returns>A task for asynchronous operation.</returns>
+        public async Task ImportAsync()
+        {
+            if (DataContext?.ImportCommand == null)
+            {
+                return;
+            }
+
+            IImportData importData = new ImportData
+            {
+                Destination = DataContext.SelectedDirectory
+            };
+
+            if ((DataContext?.ImportCommand == null) || (!DataContext.ImportCommand.CanExecute(importData)))
+            {
+                return;
+            }
+
+            await DataContext.ImportCommand.ExecuteAsync(importData);
+
+            if ((!importData.ItemsImported)
+                || (!_directoryNodes.TryGetValue(DataContext.SelectedDirectory.ID, out DirectoryTreeNode node))
+                || ((DataContext?.SelectDirectoryCommand != null) && (DataContext.SelectDirectoryCommand.CanExecute(node.Name))))
+            {                
+                return;
+            }
+
+            if ((DataContext.SelectedDirectory.Directories.Count > 0) && (!node.IsExpanded))
+            {
+                node.Expand();
+            }
+
+            DataContext.SelectDirectoryCommand.Execute(node.Name);            
         }
         #endregion
 
@@ -2540,12 +2933,32 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            _listViewHeaderBackColor = new SolidBrush(ListSearchResults.BackColor);
-            _listViewHeaderForeColor = new SolidBrush(Color.FromArgb(ListSearchResults.ForeColor.R / 2, ListSearchResults.ForeColor.G / 2, ListSearchResults.ForeColor.B / 2));
+            _openFileFont = new Font(Font, FontStyle.Bold);
+            TreeDirectories.TreeViewNodeSorter = new FileSystemNodeComparer();
+            _cutCellStyle = new DataGridViewCellStyle(GridFiles.DefaultCellStyle)
+            {
+                SelectionBackColor = DarkFormsRenderer.MenuHilightBackground,
+                SelectionForeColor = DarkFormsRenderer.FocusedForeground,
+                BackColor = GridFiles.BackgroundColor,
+                ForeColor = DarkFormsRenderer.CutForeground
+            };            
 
-            // Bug in krypton treeview:
-            TreeFileSystem.TreeView.MouseUp += TreeFileSystem_MouseUp;
-            TreeFileSystem.TreeViewNodeSorter = new FileSystemNodeComparer(_nodeLinks);
+            _openFileStyle = new DataGridViewCellStyle(GridFiles.DefaultCellStyle)
+            {
+                SelectionBackColor = DarkFormsRenderer.MenuHilightBackground,
+                SelectionForeColor = DarkFormsRenderer.ForeColor,
+                BackColor = GridFiles.BackgroundColor,
+                ForeColor = DarkFormsRenderer.OpenFileForeground,
+                Font = _openFileFont
+            };
+
+            _unknownFileStyle = new DataGridViewCellStyle(GridFiles.DefaultCellStyle)
+            {
+                SelectionBackColor = DarkFormsRenderer.MenuHilightBackground,
+                SelectionForeColor = DarkFormsRenderer.DisabledColor,
+                BackColor = GridFiles.BackgroundColor,
+                ForeColor = DarkFormsRenderer.DisabledColor,
+            };
         }
         #endregion
     }

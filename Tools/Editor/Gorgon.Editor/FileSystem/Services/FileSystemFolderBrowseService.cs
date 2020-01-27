@@ -26,25 +26,26 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
+using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.ViewModels;
-using Gorgon.Editor.Views;
 using Gorgon.IO;
 using Gorgon.UI;
 
-namespace Gorgon.Editor.FileSystem
+namespace Gorgon.Editor.Services
 {
     /// <summary>
     /// An interface used to browse the file system folder structure.
     /// </summary>
     internal class FileSystemFolderBrowseService
-        : IEditorFileSystemFolderBrowseService
+        : IFileSystemFolderBrowseService
     {
         #region Properties.
         /// <summary>Property to set or return the file system root for the currently loaded project.</summary>
-        public IFileExplorerVm FileSystem
+        public IFileExplorer FileSystem
         {
             get;
             set;
@@ -83,11 +84,13 @@ namespace Gorgon.Editor.FileSystem
                 throw new IOException(Resources.GOREDIT_ERR_NO_ROOT);
             }
 
-            IFileExplorerNodeVm initialPathNode = FileSystem.FindNode(initialPath);
+            IDirectory initialDirectory = initialPath == "/" ? FileSystem.Root 
+                                                             : FileSystem.Root.Directories.Traverse(d => d.Directories)
+                                                                    .FirstOrDefault(d => string.Equals(d.FullPath, initialPath, StringComparison.OrdinalIgnoreCase));
 
-            if (initialPathNode == null)
+            if (initialDirectory == null)
             {
-                initialPathNode = FileSystem.RootNode;
+                initialDirectory = FileSystem.Root;
             }
 
             using (var browser = new FormFileSystemFolderBrowser()
@@ -98,7 +101,7 @@ namespace Gorgon.Editor.FileSystem
             {
 
                 browser.SetDataContext(FileSystem);
-                browser.SetInitialPath(initialPathNode);
+                browser.SetInitialPath(initialDirectory);
                 return browser.ShowDialog(GetParentForm()) != DialogResult.OK ? null : browser.CurrentDirectory.FormatDirectory('/');
             }
         }

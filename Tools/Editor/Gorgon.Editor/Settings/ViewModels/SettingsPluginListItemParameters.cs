@@ -88,10 +88,10 @@ namespace Gorgon.Editor.ViewModels
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the <see cref="SettingsPlugInListItemParameters"/> class.</summary>
         /// <param name="plugin">The plugin to evaluate.</param>
-        /// <param name="commonServices">Common application services.</param>
+        /// <param name="hostServices">The host application services.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> is parameter <b>null</b>.</exception>
-        public SettingsPlugInListItemParameters(OLDE_EditorPlugIn plugin, IViewModelInjection commonServices)
-            : base(commonServices)
+        public SettingsPlugInListItemParameters(EditorPlugIn plugin, IHostServices hostServices)
+            : base(hostServices)
         {
             if (plugin == null)
             {
@@ -107,10 +107,10 @@ namespace Gorgon.Editor.ViewModels
 
         /// <summary>Initializes a new instance of the <see cref="SettingsPlugInListItemParameters"/> class.</summary>
         /// <param name="plugin">The plugin to evaluate.</param>
-        /// <param name="commonServices">Common application services.</param>
+        /// <param name="hostServices">The host application services.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> is parameter <b>null</b>.</exception>
-        public SettingsPlugInListItemParameters(IDisabledPlugIn plugin, IViewModelInjection commonServices)
-            : base(commonServices)
+        public SettingsPlugInListItemParameters(IDisabledPlugIn plugin, IHostServices hostServices)
+            : base(hostServices)
         {
             if (plugin == null)
             {
@@ -126,10 +126,10 @@ namespace Gorgon.Editor.ViewModels
 
         /// <summary>Initializes a new instance of the <see cref="SettingsPlugInListItemParameters"/> class.</summary>
         /// <param name="plugin">The plugin to evaluate.</param>
-        /// <param name="commonServices">Common application services.</param>
+        /// <param name="hostServices">The host application services.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> is parameter <b>null</b>.</exception>
-        public SettingsPlugInListItemParameters(IGorgonFileSystemProvider plugin, IViewModelInjection commonServices)
-            : base(commonServices)
+        public SettingsPlugInListItemParameters(IGorgonFileSystemProvider plugin, IHostServices hostServices)
+            : base(hostServices)
         {
             if (plugin == null)
             {

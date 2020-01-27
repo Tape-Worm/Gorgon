@@ -35,11 +35,12 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Converters;
-using Gorgon.Editor.FileSystem;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
+using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.ViewModels;
 using Gorgon.Editor.ViewModels;
 using Gorgon.IO;
@@ -65,22 +66,12 @@ namespace Gorgon.Editor
         private FormMain _mainForm;
         // Our context for rendering with Gorgon.
         private GraphicsContext _graphicsContext;
-        // The application settings.
-        private EditorSettings _settings;
-        // The project manager for the application.
-        private ProjectManager _projectManager;
         // The cache for plugin assemblies.
         private GorgonMefPlugInCache _pluginCache;
-        // The plugin service used to manage content plugins.
-        private ContentPlugInService _contentPlugIns;
-        // The plugin service used to manage tool plugin.
+        // The service for managing tool plug ins.
         private ToolPlugInService _toolPlugIns;
-        // The services that are common to the entire application.
-        private IViewModelInjection _commonServices;
-        // The folder browser for a file system.
-        private IEditorFileSystemFolderBrowseService _folderBrowser;
-        // The path to the plug in folder.
-        private DirectoryInfo _plugInLocation;
+        // The service for managing content plug ins.
+        private ContentPlugInService _contentPlugIns;
         #endregion
 
         #region Methods.
@@ -147,7 +138,7 @@ namespace Gorgon.Editor
         protected override void Dispose(bool disposing)
         {
             AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
-
+                        
             ToolPlugInService toolPlugIns = Interlocked.Exchange(ref _toolPlugIns, null);
             ContentPlugInService contentPlugIns = Interlocked.Exchange(ref _contentPlugIns, null);
             GraphicsContext context = Interlocked.Exchange(ref _graphicsContext, null);
@@ -168,24 +159,23 @@ namespace Gorgon.Editor
         /// <summary>
         /// Function to show the splash screen for our application boot up procedure.
         /// </summary>
-        private async Task ShowSplashAsync()
+        private void ShowSplash()
         {
             _splash = new FormSplash();
             _splash.Show();
-            await _splash.FadeAsync(true, 16);
+
+            Application.DoEvents();
         }
 
         /// <summary>
         /// Function to hide the splash screen.
         /// </summary>
-        private async Task HideSplashAsync()
+        private void HideSplash()
         {
             if (_splash == null)
             {
                 return;
             }
-
-            await _splash.FadeAsync(false, 16);
 
             _splash.Dispose();
             _splash = null;
@@ -268,7 +258,7 @@ namespace Gorgon.Editor
                 result.LastOpenSavePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).FormatDirectory(Path.DirectorySeparatorChar);
             }
 
-            if ((string.IsNullOrWhiteSpace(result.LastProjectWorkingDirectory)) || (!Directory.Exists(result.LastProjectWorkingDirectory)))
+            if ((string.IsNullOrWhiteSpace(result.LastProjectWorkingDirectory)) || (!System.IO.Directory.Exists(result.LastProjectWorkingDirectory)))
             {
                 result.LastProjectWorkingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).FormatDirectory(Path.DirectorySeparatorChar);
             }
@@ -308,98 +298,84 @@ namespace Gorgon.Editor
         /// <summary>
         /// Function to load any tool plugins.
         /// </summary>
-        /// <returns>The tool plugin manager service used to manipulate the loaded tool plugins.</returns>
-        private ToolPlugInService LoadToolPlugIns()
+        /// <param name="plugInDir">The directory containing the plug ins.</param>
+        /// <param name="hostServices">The services to pass to the tool plug ins.</param>
+        private void LoadToolPlugIns(DirectoryInfo plugInDir, HostContentServices hostServices)
         {
-            var toolPlugInsDir = new DirectoryInfo(Path.Combine(_plugInLocation.FullName, "Tools"));
-            var toolPlugInSettingsDir = new DirectoryInfo(Path.Combine(Program.ApplicationUserDirectory.FullName, "ToolPlugIns"));
-            var toolPlugIns = new ToolPlugInService(toolPlugInSettingsDir, _graphicsContext, _folderBrowser, _commonServices);
+            string toolPlugInsDir = Path.Combine(plugInDir.FullName, "Tools");
+            string toolPlugInSettingsDir = Path.Combine(Program.ApplicationUserDirectory.FullName, "ToolPlugIns");
+            _toolPlugIns = new ToolPlugInService(toolPlugInSettingsDir, hostServices);
+            
+            hostServices.ToolPlugInService = _toolPlugIns;
 
-            if (!toolPlugInSettingsDir.Exists)
+            if (!System.IO.Directory.Exists(toolPlugInsDir))
             {
-                toolPlugInSettingsDir.Create();
-                toolPlugInSettingsDir.Refresh();
+                return;
             }
 
-            if (!toolPlugInsDir.Exists)
+            if (!System.IO.Directory.Exists(toolPlugInSettingsDir))
             {
-                return toolPlugIns;
+                System.IO.Directory.CreateDirectory(toolPlugInSettingsDir);
             }
 
             try
             {
                 _splash.InfoText = Resources.GOREDIT_TEXT_LOADING_TOOL_PLUGINS;
-
-                if (!toolPlugInsDir.Exists)
-                {
-                    toolPlugInsDir.Create();
-                    return toolPlugIns;
-                }
-
-                toolPlugIns.LoadToolPlugIns(_pluginCache, toolPlugInsDir);
+                _toolPlugIns.LoadToolPlugIns(_pluginCache, toolPlugInsDir);
             }
             catch (Exception ex)
             {
                 Program.Log.LogException(ex);
                 GorgonDialogs.ErrorBox(_splash, Resources.GOREDIT_ERR_LOADING_PLUGINS, Resources.GOREDIT_ERR_ERROR, ex);
-            }
-
-            return toolPlugIns;
+            }            
         }
 
         /// <summary>
         /// Function to load any content plugins used to create/edit content.
         /// </summary>
-        /// <returns>The content plugin manager service used to manipulate the loaded content plugins.</returns>
-        private ContentPlugInService LoadContentPlugIns()
+        /// <param name="plugInDir">The directory containing the plug ins.</param>
+        /// <param name="hostServices">The services to pass to the content plug ins.</param>
+        private void LoadContentPlugIns(DirectoryInfo plugInDir, HostContentServices hostServices)
         {
-            var contentPlugInsDir = new DirectoryInfo(Path.Combine(_plugInLocation.FullName, "Content"));
-            var contentPlugInSettingsDir = new DirectoryInfo(Path.Combine(Program.ApplicationUserDirectory.FullName, "ContentPlugIns"));
+            string contentPlugInsDir = Path.Combine(plugInDir.FullName, "Content");
+            string contentPlugInSettingsDir = Path.Combine(Program.ApplicationUserDirectory.FullName, "ContentPlugIns");
+            _contentPlugIns = new ContentPlugInService(contentPlugInSettingsDir, hostServices);
 
-            if (!contentPlugInSettingsDir.Exists)
+            hostServices.ContentPlugInService = _contentPlugIns;
+
+            if (!System.IO.Directory.Exists(contentPlugInsDir))
             {
-                contentPlugInSettingsDir.Create();
-                contentPlugInSettingsDir.Refresh();
+                return;
             }
 
-            var contentPlugIns = new ContentPlugInService(contentPlugInSettingsDir, _graphicsContext, _folderBrowser, _commonServices);
-
-            if (!contentPlugInsDir.Exists)
+            if (!System.IO.Directory.Exists(contentPlugInSettingsDir))
             {
-                return contentPlugIns;
+                System.IO.Directory.CreateDirectory(contentPlugInSettingsDir);
             }
 
             try
-            {
+            {                
                 _splash.InfoText = Resources.GOREDIT_TEXT_LOADING_CONTENT_PLUGINS;
-
-                if (!contentPlugInsDir.Exists)
-                {
-                    contentPlugInsDir.Create();
-                    return contentPlugIns;
-                }
-
-                contentPlugIns.LoadContentPlugIns(_pluginCache, contentPlugInsDir);
+                _contentPlugIns.LoadContentPlugIns(_pluginCache, contentPlugInsDir);
             }
             catch (Exception ex)
             {
                 Program.Log.LogException(ex);
                 GorgonDialogs.ErrorBox(_splash, Resources.GOREDIT_ERR_LOADING_PLUGINS, Resources.GOREDIT_ERR_ERROR, ex);
             }
-
-            return contentPlugIns;
         }
 
         /// <summary>
         /// Function to load any plugins used to import or export files.
         /// </summary>
-        /// <returns>A file system provider management interface.</returns>
-        private FileSystemProviders LoadFileSystemPlugIns()
+        /// <param name="plugInDir">The directory containing the plug ins.</param>
+        /// <param name="hostServices">The services to pass to the file system plug ins.</param>
+        private FileSystemProviders LoadFileSystemPlugIns(DirectoryInfo plugInDir, IHostServices hostServices)
         {
-            var fileSystemPlugInsDir = new DirectoryInfo(Path.Combine(_plugInLocation.FullName, "Filesystem"));
-            var result = new FileSystemProviders(_commonServices);
+            string fileSystemPlugInsDir = Path.Combine(plugInDir.FullName, "Filesystem");
+            var result = new FileSystemProviders(hostServices);
 
-            if (!fileSystemPlugInsDir.Exists)
+            if (!System.IO.Directory.Exists(fileSystemPlugInsDir))
             {
                 return result;
             }
@@ -407,14 +383,6 @@ namespace Gorgon.Editor
             try
             {
                 _splash.InfoText = Resources.GOREDIT_TEXT_LOADING_FILESYSTEM_PLUGINS;
-
-                // If the directory does not exist, then we have no plugins to load.
-                if (!fileSystemPlugInsDir.Exists)
-                {
-                    fileSystemPlugInsDir.Create();
-                    return result;
-                }
-
                 result.LoadProviders(_pluginCache, fileSystemPlugInsDir);
 
                 return result;
@@ -432,89 +400,89 @@ namespace Gorgon.Editor
         /// Function to perform the boot strapping operation.
         /// </summary>
         /// <returns>The main application window.</returns>
-        public async void BootStrap()
+        public void BootStrap()
         {
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 
             try
             {
-                // Get our initial context.
-#pragma warning disable CA2000 // Dispose objects before losing scope
-                SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
-#pragma warning restore CA2000 // Dispose objects before losing scope
-
                 Program.Log.Print("Booting application...", LoggingLevel.All);
 
+                ShowSplash();
                 Cursor.Current = Cursors.WaitCursor;
-
-                await ShowSplashAsync();
 
                 // Initalize the common resources.
                 EditorCommonResources.LoadResources();
 
-                _folderBrowser = new FileSystemFolderBrowseService();
-                _commonServices = new ViewModelInjection(Program.Log, new WaitCursorBusyState(), new MessageBoxService(), null);
+                var hostServices = new HostContentServices
+                {
+                    Log = Program.Log
+                };
+                
                 _pluginCache = new GorgonMefPlugInCache(Program.Log);
                 _graphicsContext = GraphicsContext.Create(Program.Log);
 
-                _plugInLocation = new DirectoryInfo(Path.Combine(GorgonApplication.StartupPath.FullName, "PlugIns"));
+                // Get any application settings we might have.
+                EditorSettings settings = LoadSettings();
 
-                if (!_plugInLocation.Exists)
+                // Set up the host services that we will pass to our plug ins.
+                hostServices.FolderBrowser = new FileSystemFolderBrowseService();
+                hostServices.BusyService = new WaitCursorBusyState();
+                hostServices.MessageDisplay = new MessageBoxService();
+                hostServices.Clipboard = new ClipboardService();
+                hostServices.GraphicsContext = _graphicsContext;
+
+                var plugInLocation = new DirectoryInfo(Path.Combine(GorgonApplication.StartupPath.FullName, "PlugIns"));
+
+                if (!plugInLocation.Exists)
                 {
-                    Program.Log.Print($"[ERROR] Plug in path '{_plugInLocation.FullName}' was not found.  No plug ins will be loaded.", LoggingLevel.Simple);
+                    Program.Log.Print($"[ERROR] Plug in path '{plugInLocation.FullName}' was not found.  No plug ins will be loaded.", LoggingLevel.Simple);
                     GorgonDialogs.ErrorBox(null, Resources.GOREDIT_ERR_LOADING_PLUGINS);
                 }
 
-                // Get any application settings we might have.
-                _settings = LoadSettings();
-
                 // Load our file system import/export plugins.
-                FileSystemProviders fileSystemProviders = LoadFileSystemPlugIns();
-
+                FileSystemProviders fileSystemProviders = LoadFileSystemPlugIns(plugInLocation, hostServices);
+                
                 // Load our tool plug ins.
-                _toolPlugIns = LoadToolPlugIns();
+                LoadToolPlugIns(plugInLocation, hostServices);
 
                 // Load our content service plugins.
-                _contentPlugIns = LoadContentPlugIns();
+                LoadContentPlugIns(plugInLocation, hostServices);
 
                 // Create the project manager for the application
-                _projectManager = new ProjectManager(fileSystemProviders);
+                var projectManager = new ProjectManager(fileSystemProviders, Program.Log);
 
+                // Setup the factory used to build view models for the application.
+                var factory = new ViewModelFactory(settings, projectManager, fileSystemProviders, hostServices);
+                
+                // Show our main interface.
                 _mainForm = new FormMain
                 {
-                    Location = new Point(_settings.WindowBounds.Value.X, _settings.WindowBounds.Value.Y),
-                    Size = new Size(_settings.WindowBounds.Value.Width, _settings.WindowBounds.Value.Height),
-                    WindowState = FormWindowState.Normal
+                    Location = new Point(settings.WindowBounds.Value.X, settings.WindowBounds.Value.Y),
+                    Size = new Size(settings.WindowBounds.Value.Width, settings.WindowBounds.Value.Height),
+                    WindowState = FormWindowState.Normal,
+                    GraphicsContext = _graphicsContext
                 };
-
-                await HideSplashAsync();
 
                 MainForm = _mainForm;
 
-                var factory = new ViewModelFactory(_settings,
-                                                   fileSystemProviders,
-                                                   _contentPlugIns,
-                                                   _toolPlugIns,
-                                                   _projectManager,
-                                                   _commonServices,
-                                                   new ClipboardService(),
-                                                   new DirectoryLocateService(),
-                                                   new FileScanService(_contentPlugIns),
-                                                   _folderBrowser);
-
                 FormWindowState windowState;
                 // Ensure the window state values fall into an acceptable range.
-                if (!Enum.IsDefined(typeof(FormWindowState), _settings.WindowState))
+                if (!Enum.IsDefined(typeof(FormWindowState), settings.WindowState))
                 {
                     windowState = FormWindowState.Maximized;
                 }
                 else
                 {
-                    windowState = (FormWindowState)_settings.WindowState;
+                    windowState = (FormWindowState)settings.WindowState;
                 }
 
-                _mainForm.GraphicsContext = _graphicsContext;
                 _mainForm.SetDataContext(factory.CreateMainViewModel(_graphicsContext.Graphics.VideoAdapter.Name));
+
+                HideSplash();
+
+                ToolStripManager.Renderer = new DarkFormsRenderer();
+
                 _mainForm.Show();
                 _mainForm.WindowState = windowState;
             }

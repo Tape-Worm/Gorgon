@@ -103,10 +103,10 @@ namespace Gorgon.Editor.PlugIns
         /// Function to retrieve a thumbnail for the content.
         /// </summary>
         /// <param name="contentFile">The content file used to retrieve the data to build the thumbnail with.</param>
-        /// <param name="outputFile">The output file for the thumbnail data.</param>
+        /// <param name="filePath">The path to the thumbnail file to write.</param>
         /// <param name="cancelToken">The token used to cancel the thumbnail generation.</param>
         /// <returns>A <see cref="IGorgonImage"/> containing the thumbnail image data.</returns>
-        Task<IGorgonImage> GetThumbnailAsync(IContentFile contentFile, FileInfo outputFile, CancellationToken cancelToken);
+        Task<IGorgonImage> GetThumbnailAsync(IContentFile contentFile, string filePath, CancellationToken cancelToken);
 
         /// <summary>
         /// Function to determine if the content plugin can open the specified file.

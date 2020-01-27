@@ -48,7 +48,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return a list of content plugins that can create their own content.
         /// </summary>
-        ObservableCollection<OLDE_IContentPlugInMetadata> ContentCreators
+        ObservableCollection<IContentPlugInMetadata> ContentCreators
         {
             get;
         }
@@ -56,7 +56,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the current clipboard context.
         /// </summary>
-        Olde_IClipboardHandler ClipboardContext
+        IClipboardHandler ClipboardContext
         {
             get;
         }
@@ -64,7 +64,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the view model for the new project child view.
         /// </summary>
-        IStageNewVm NewProject
+        INewProject NewProject
         {
             get;
         }
@@ -72,7 +72,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the recent files view model for the recent files child view.
         /// </summary>
-        IRecentVm RecentFiles
+        IRecent RecentFiles
         {
             get;
         }
@@ -88,7 +88,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the view model for the current project.
         /// </summary>
-        IProjectVm CurrentProject
+        IProjectEditor CurrentProject
         {
             get;
         }

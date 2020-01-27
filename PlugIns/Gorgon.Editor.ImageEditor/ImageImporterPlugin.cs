@@ -135,7 +135,6 @@ namespace Gorgon.Editor.ImageEditor
         /// <returns>The codec used to read the file.</returns>
         public static IGorgonImageCodec GetCodec(string filePath, ICodecRegistry codecs)
         {
-            IGorgonImageCodec result = null;
             string fileExtension = Path.GetExtension(filePath);
 
             // Locate the file extension.

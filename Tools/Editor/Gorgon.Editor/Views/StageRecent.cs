@@ -25,7 +25,11 @@
 #endregion
 
 using System;
+using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
+using System.Windows.Forms;
+using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Editor.ViewModels;
@@ -36,12 +40,12 @@ namespace Gorgon.Editor.Views
     /// The control to display recent documents.
     /// </summary>
     internal partial class StageRecent
-        : EditorBaseControl, IDataContext<IRecentVm>
+        : EditorBaseControl, IDataContext<IRecent>
     {
         #region Properties.
         /// <summary>Property to return the data context assigned to this view.</summary>        
         [Browsable(false)]
-        public IRecentVm DataContext
+        public IRecent DataContext
         {
             get;
             private set;
@@ -55,51 +59,179 @@ namespace Gorgon.Editor.Views
         #endregion
 
         #region Methods.
-        /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
+        /// <summary>Handles the CollectionChanged event of the Files control.</summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The [PropertyChangedEventArgs] instance containing the event data.</param>
-        private void DataContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
+        private void Files_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            RecentItem item;
 
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    item = (RecentItem)e.NewItems[0];
+                    AddRecentItem(item);
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    item = (RecentItem)e.OldItems[0];                    
+                    RemoveRecentItem(item);
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    FillList();
+                    break;
+            }
         }
 
-        /// <summary>Handles the PropertyChanging event of the DataContext control.</summary>
+        /// <summary>Handles the Layout event of the PanelRecentItems control.</summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The [PropertyChangingEventArgs] instance containing the event data.</param>
-        private void DataContext_PropertyChanging(object sender, PropertyChangingEventArgs e)
+        /// <param name="e">The <see cref="LayoutEventArgs"/> instance containing the event data.</param>
+        private void PanelRecentItems_Layout(object sender, LayoutEventArgs e)
         {
-
-        }
-
-        /// <summary>Handles the DeleteItem event of the RecentFiles control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RecentItemDeleteEventArgs"/> instance containing the event data.</param>
-        private void RecentFiles_DeleteItem(object sender, RecentItemDeleteEventArgs e)
-        {
-            if ((DataContext?.DeleteItemCommand == null) || (!DataContext.DeleteItemCommand.CanExecute(e)))
+            if (PanelRecentItems.Controls.Count == 0)
             {
                 return;
             }
 
-            DataContext.DeleteItemCommand.Execute(e);
+            PanelRecentItems.Controls[0].Dock = DockStyle.None;
+            PanelRecentItems.Controls[0].Width = PanelRecentItems.ClientSize.Width - SystemInformation.VerticalScrollBarWidth - PanelRecentItems.Controls[0].Margin.Horizontal;
+
+            for (int i = 1; i < PanelRecentItems.Controls.Count; ++i)
+            {
+                PanelRecentItems.Controls[i].Dock = DockStyle.Top;
+            }
+        }
+        
+        /// <summary>Handles the DeleteItem event of the Button control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void Button_DeleteItem(object sender, EventArgs e)
+        {
+            var button = (RecentItemButton)sender;
+
+            if ((DataContext?.DeleteItemCommand == null) || (!DataContext.DeleteItemCommand.CanExecute(button.RecentItem)))
+            {
+                return;
+            }
+
+            DataContext.DeleteItemCommand.Execute(button.RecentItem);
         }
 
-        /// <summary>Handles the RecentItemClick event of the RecentFiles control.</summary>
+        /// <summary>Handles the Click event of the Button control.</summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RecentItemClickEventArgs"/> instance containing the event data.</param>
-        private void RecentFiles_RecentItemClick(object sender, RecentItemClickEventArgs e)
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void Button_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.OpenProjectCommand == null) || (e.Item == null))
+            var button = (RecentItemButton)sender;
+
+            if ((DataContext?.OpenProjectCommand == null) || (button.RecentItem == null))
             {
                 return;
             }
 
-            if (!DataContext.OpenProjectCommand.CanExecute(e.Item))
+            if (!DataContext.OpenProjectCommand.CanExecute(button.RecentItem))
             {
                 return;
             }
 
-            DataContext.OpenProjectCommand.Execute(e.Item);
+            DataContext.OpenProjectCommand.Execute(button.RecentItem);
+        }
+
+        /// <summary>
+        /// Function to remove a recent item from the list.
+        /// </summary>
+        /// <param name="item">The item to remove.</param>
+        private void RemoveRecentItem(RecentItem item)
+        {
+            RecentItemButton theButton = PanelRecentItems.Controls.OfType<RecentItemButton>().FirstOrDefault(buttonItem => buttonItem.RecentItem == item);
+
+            if (theButton == null)
+            {
+                return;
+            }
+
+            theButton.DeleteItem -= Button_DeleteItem;
+            theButton.Click -= Button_Click;
+            theButton.Dispose();
+        }
+
+        /// <summary>
+        /// Function to add a recent item button to the list.
+        /// </summary>
+        /// <param name="item">The recent item to add.</param>
+        private void AddRecentItem(RecentItem item)
+        {
+            if ((!IsHandleCreated) || (IsDesignTime))
+            {
+                return;
+            }
+
+            var button = new RecentItemButton
+            {
+                Name = item.FilePath
+            };
+
+            button.SuspendLayout();
+
+            button.AutoSize = false;
+            button.RecentItem = item;
+            button.Click += Button_Click;
+            button.DeleteItem += Button_DeleteItem;
+
+            int index = 0;
+
+            foreach (RecentItemButton otherButton in PanelRecentItems.Controls.OfType<RecentItemButton>())
+            {
+                if (otherButton.RecentItem.LastUsedDate > item.LastUsedDate)
+                {
+                    index++;
+                }
+            }
+
+            PanelRecentItems.Controls.Add(button);
+            PanelRecentItems.Controls.SetChildIndex(button, index);
+
+            button.ResumeLayout(true);
+        }
+
+        /// <summary>
+        /// Function to clear all the items in the list.
+        /// </summary>
+        private void ClearItems()
+        {
+            while (PanelRecentItems.Controls.Count > 0)
+            {
+                var button = (RecentItemButton)PanelRecentItems.Controls[0];
+                button.Click -= Button_Click;
+                button.DeleteItem -= Button_DeleteItem;
+                button.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Function to fill the list of recent items.
+        /// </summary>
+        private void FillList()
+        {
+            try
+            {
+                if ((!IsHandleCreated) || (IsDesignTime))
+                {
+                    return;
+                }
+
+                PanelRecentItems.SuspendLayout();
+
+                ClearItems();
+
+                foreach (RecentItem item in DataContext.Files.OrderBy(item => item.LastUsedDate))
+                {
+                    AddRecentItem(item);
+                }
+            }
+            finally
+            {
+                PanelRecentItems.ResumeLayout();
+            }
         }
 
         /// <summary>
@@ -112,25 +244,10 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            DataContext.PropertyChanging -= DataContext_PropertyChanging;
-            DataContext.PropertyChanged -= DataContext_PropertyChanged;
+            DataContext.Files.CollectionChanged -= Files_CollectionChanged;
 
             DataContext.OnUnload();
             DataContext = null;
-        }
-
-        /// <summary>
-        /// Function to initialize the control from a data context.
-        /// </summary>
-        /// <param name="dataContext">The data context to assign.</param>
-        private void InitializeFromDataContext(IRecentVm dataContext)
-        {
-            if (dataContext == null)
-            {
-                return;
-            }
-
-            RecentFiles.RecentItems = dataContext.Files;
         }
 
         /// <summary>Raises the <a href="http://msdn.microsoft.com/en-us/library/system.windows.forms.usercontrol.load.aspx" target="_blank">Load</a> event.</summary>
@@ -140,16 +257,17 @@ namespace Gorgon.Editor.Views
             base.OnLoad(e);
 
             DataContext?.OnLoad();
+
+            FillList();
         }
 
         /// <summary>Function to assign a data context to the view as a view model.</summary>
         /// <param name="dataContext">The data context to assign.</param>
         /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
-        public void SetDataContext(IRecentVm dataContext)
+        public void SetDataContext(IRecent dataContext)
         {
             UnassignEvents();
 
-            InitializeFromDataContext(dataContext);
             DataContext = dataContext;
 
             if ((IsDesignTime) || (DataContext == null))
@@ -157,9 +275,8 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            DataContext.PropertyChanging += DataContext_PropertyChanging;
-            DataContext.PropertyChanged += DataContext_PropertyChanged;
-        }
+            DataContext.Files.CollectionChanged += Files_CollectionChanged;
+        }        
         #endregion
 
         #region Constructor/Finalizer.

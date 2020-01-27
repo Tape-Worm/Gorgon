@@ -56,6 +56,8 @@ namespace Gorgon.Editor.ProjectData
         #region Variables.
         // The file containing the metadata.
         private readonly FileInfo _file;
+        // The log interface for debug messages.
+        private readonly IGorgonLog _log;
         #endregion
 
         #region Properties.
@@ -70,7 +72,7 @@ namespace Gorgon.Editor.ProjectData
         /// <param name="rootNode">The root node of the metadata.</param>
         private void GetFiles(IDictionary<string, ProjectItemMetadata> files, XElement rootNode)
         {
-            Program.Log.Print("Importing file list.", LoggingLevel.Verbose);
+            _log.Print("Importing file list.", LoggingLevel.Verbose);
 
             IEnumerable<XElement> fileNodes = rootNode.Descendants(FileNodeName);
 
@@ -114,7 +116,7 @@ namespace Gorgon.Editor.ProjectData
                 return;
             }
 
-            Program.Log.Print("Importing v2 Gorgon Editor file metadata...", LoggingLevel.Simple);
+            _log.Print("Importing v2 Gorgon Editor file metadata...", LoggingLevel.Simple);
 
             var document = XDocument.Load(_file.FullName);
 
@@ -122,7 +124,7 @@ namespace Gorgon.Editor.ProjectData
 
             if (rootNode == null)
             {
-                Program.Log.Print("No root node found.  Not a v2 Gorgon Editor metadata file.", LoggingLevel.Verbose);
+                _log.Print("No root node found.  Not a v2 Gorgon Editor metadata file.", LoggingLevel.Verbose);
                 return;
             }
 
@@ -137,15 +139,20 @@ namespace Gorgon.Editor.ProjectData
             {
                 // Do nothing if we can't delete the metadata file.
             }
-            Program.Log.Print("Imported v2 Gorgon Editor metadata.", LoggingLevel.Simple);
+            _log.Print("Imported v2 Gorgon Editor metadata.", LoggingLevel.Simple);
         }
         #endregion
 
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the V2MetadataImporter class.</summary>
         /// <param name="metadataFile">The file containing the v2 metadata.</param>
+        /// <param name="log">The log interface for debug messages.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="metadataFile"/> parameter is <b>null</b>.</exception>
-        public V2MetadataImporter(FileInfo metadataFile) => _file = metadataFile ?? throw new ArgumentNullException(nameof(metadataFile));
+        public V2MetadataImporter(FileInfo metadataFile, IGorgonLog log)
+        {
+            _log = log ?? GorgonLog.NullLog;
+            _file = metadataFile ?? throw new ArgumentNullException(nameof(metadataFile));            
+        }
         #endregion
     }
 }

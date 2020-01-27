@@ -55,19 +55,21 @@ namespace Gorgon.Editor.ViewModels
     {
         #region Variables.
         // The project manager used to handle project data.
-        private IProjectManager _projectManager;
+        private ProjectManager _projectManager;
         // The factory used to create view models.
         private ViewModelFactory _viewModelFactory;
         // The message display service.
         private IMessageDisplayService _messageService;
         // The currently active project.
-        private IProjectVm _currentProject;
+        private IProjectEditor _currentProject;
         // The project open dialog service.
-        private IEditorFileOpenDialogService _openDialog;
+        private EditorFileOpenDialogService _openDialog;
         // The project save dialog service.
-        private IEditorFileSaveAsDialogService _saveDialog;
+        private EditorFileSaveDialogService _saveDialog;
         // The directory locator service.
         private IDirectoryLocateService _directoryLocator;
+        // The service used to manage content plug ins.
+        private IContentPlugInService _contentPlugIns;
         #endregion
 
         #region Properties.
@@ -83,7 +85,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return a list of content plugins that can create their own content.
         /// </summary>
-        public ObservableCollection<OLDE_IContentPlugInMetadata> ContentCreators
+        public ObservableCollection<IContentPlugInMetadata> ContentCreators
         {
             get;
             private set;
@@ -101,7 +103,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the view model for the new project child view.
         /// </summary>
-        public IStageNewVm NewProject
+        public INewProject NewProject
         {
             get;
             private set;
@@ -110,7 +112,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the recent files view model for the recent files child view.
         /// </summary>
-        public IRecentVm RecentFiles
+        public IRecent RecentFiles
         {
             get;
             private set;
@@ -119,7 +121,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to set or return the view model for the current project.
         /// </summary>
-        public IProjectVm CurrentProject
+        public IProjectEditor CurrentProject
         {
             get => _currentProject;
             private set
@@ -161,16 +163,12 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the text for the caption.
         /// </summary>
-        public string Text => _currentProject == null
-                    ? Resources.GOREDIT_CAPTION_NO_FILE
-                    : _currentProject.ProjectState == ProjectState.Unmodified
-                           ? string.Format(Resources.GOREDIT_CAPTION_FILE, _currentProject.ProjectTitle)
-                           : string.Format(Resources.GOREDIT_CAPTION_FILE, _currentProject.ProjectTitle) + "*";
+        public string Text => _currentProject == null ? Resources.GOREDIT_CAPTION_NO_FILE : string.Format(Resources.GOREDIT_CAPTION_FILE, _currentProject.ProjectTitle);
 
         /// <summary>
         /// Property to return the current clipboard context.
         /// </summary>
-        public Olde_IClipboardHandler ClipboardContext => CurrentProject?.ClipboardContext;
+        public IClipboardHandler ClipboardContext => CurrentProject?.ClipboardContext;
 
         /// <summary>
         /// Property to return the command used to open a project.
@@ -214,6 +212,21 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to save the project metadata.
+        /// </summary>
+        /// <param name="project">The project containing the metadata to save.</param>
+        private void SaveProjectMetaData(IProjectEditor project)
+        {
+            // Ensure that our metadata is up to date in the current project.
+            if ((project?.SaveProjectMetadataCommand == null) || (!project.SaveProjectMetadataCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            project.SaveProjectMetadataCommand.Execute(null);
+        }
+        
         /// <summary>
         /// Function to persist the settings back to the file system.
         /// </summary>
@@ -261,19 +274,19 @@ namespace Gorgon.Editor.ViewModels
         /// <remarks>Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.</remarks>
         protected override void OnInitialize(MainParameters injectionParameters)
         {
-            Settings = injectionParameters.Settings ?? throw new ArgumentNullException(nameof(MainParameters.Settings), nameof(injectionParameters));
-            _projectManager = injectionParameters.ProjectManager ?? throw new ArgumentMissingException(nameof(MainParameters.ProjectManager), nameof(injectionParameters));
-            _viewModelFactory = injectionParameters.ViewModelFactory ?? throw new ArgumentMissingException(nameof(MainParameters.ViewModelFactory), nameof(injectionParameters));
-            _openDialog = injectionParameters.OpenDialog ?? throw new ArgumentMissingException(nameof(MainParameters.OpenDialog), nameof(injectionParameters));
-            _saveDialog = injectionParameters.SaveDialog ?? throw new ArgumentMissingException(nameof(MainParameters.SaveDialog), nameof(injectionParameters));
-            _messageService = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(MainParameters.MessageDisplay), nameof(injectionParameters));
-            NewProject = injectionParameters.NewProject ?? throw new ArgumentMissingException(nameof(MainParameters.NewProject), nameof(injectionParameters));
-            RecentFiles = injectionParameters.RecentFiles ?? throw new ArgumentMissingException(nameof(MainParameters.RecentFiles), nameof(injectionParameters));
-            SettingsViewModel = injectionParameters.SettingsVm ?? throw new ArgumentMissingException(nameof(MainParameters.SettingsVm), nameof(injectionParameters));
+            Settings = injectionParameters.EditorSettings;
+            _projectManager = injectionParameters.ProjectManager;
+            _viewModelFactory = injectionParameters.ViewModelFactory;
+            _openDialog = injectionParameters.OpenDialog;
+            _saveDialog = injectionParameters.SaveDialog;
+            _messageService = injectionParameters.MessageDisplay;
+            NewProject = injectionParameters.NewProject;
+            RecentFiles = injectionParameters.RecentFiles;
+            SettingsViewModel = injectionParameters.Settings;
+            _directoryLocator = injectionParameters.DirectoryLocater;
+            _contentPlugIns = injectionParameters.ContentPlugIns;
 
-            _directoryLocator = injectionParameters.ViewModelFactory.DirectoryLocator;
-
-            ContentCreators = new ObservableCollection<OLDE_IContentPlugInMetadata>(injectionParameters.ContentCreators ?? throw new ArgumentMissingException(nameof(MainParameters.ContentCreators), nameof(injectionParameters)));
+            ContentCreators = new ObservableCollection<IContentPlugInMetadata>(injectionParameters.ContentCreators);
             RecentFiles.OpenProjectCommand = new EditorCommand<RecentItem>(DoOpenRecentAsync, CanOpenRecent);
             NewProject.CreateProjectCommand = new EditorCommand<object>(DoCreateProjectAsync, CanCreateProject);
         }
@@ -287,11 +300,10 @@ namespace Gorgon.Editor.ViewModels
         {
             switch (e.PropertyName)
             {
-                case nameof(IProjectVm.ClipboardContext):
+                case nameof(IProjectEditor.ClipboardContext):
                     NotifyPropertyChanged(nameof(ClipboardContext));
                     break;
-                case nameof(IProjectVm.ProjectTitle):
-                case nameof(IProjectVm.ProjectState):
+                case nameof(IProjectEditor.ProjectTitle):
                     NotifyPropertyChanged(nameof(Text));
                     break;
             }
@@ -380,24 +392,16 @@ namespace Gorgon.Editor.ViewModels
                 }
             }
 
-            // Ensure that our metadata is up to date in the current project.
-            if (CurrentProject != null)
-            {
-                await CurrentProject.SaveProjectMetadataAsync();
-            }
-
             project = await Task.Run(() => _projectManager.OpenProject(path));
 
             if (project == null)
             {
-                Program.Log.Print("ERROR: No project was returned from the project manager.", LoggingLevel.Simple);
+                Log.Print("ERROR: No project was returned from the project manager.", LoggingLevel.Simple);
                 return;
             }
 
-            IProjectVm projectVm = await _viewModelFactory.CreateProjectViewModelAsync(project);
-
-            // The project should not be in a modified state.
-            projectVm.ProjectState = ProjectState.Unmodified;
+            // Detach plug ins from current project.
+            IProjectEditor projectEditor = await _viewModelFactory.CreateProjectViewModelAsync(project);
 
             // Close the current project.
             CurrentProject = null;
@@ -405,43 +409,15 @@ namespace Gorgon.Editor.ViewModels
             // Begin file scanning.
             HideWaitPanel();
 
-            UpdateProgress(new ProgressPanelUpdateArgs
-            {
-                CancelAction = null,
-                IsMarquee = false,
-                Title = Resources.GOREDIT_TEXT_SCANNING
-            });
-
-            // Re-import any files needed.
-            if (forceImport)
-            {
-                await projectVm.FileExplorer.RunImportersAsync(CancellationToken.None);
-            }
-
-            void UpdateScanProgress(string node, int fileNumber, int totalFileCount)
-            {
-                float percentComplete = (float)fileNumber / totalFileCount;
-                UpdateProgress(new ProgressPanelUpdateArgs
-                {
-                    PercentageComplete = percentComplete,
-                    CancelAction = null,
-                    IsMarquee = false,
-                    Title = Resources.GOREDIT_TEXT_SCANNING,
-                    Message = node.Ellipses(65, true)
-                });
-            }
-
-            await Task.Run(() => _viewModelFactory.FileScanService.Scan(projectVm.FileExplorer.RootNode, projectVm.ContentFileManager, UpdateScanProgress, true, true));
-
             // Update the metadata for the most up-to-date info.
-            await projectVm.SaveProjectMetadataAsync();
-            CurrentProject = projectVm;
+            SaveProjectMetaData(projectEditor);
+            CurrentProject = projectEditor;
 
             Settings.LastProjectWorkingDirectory = project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
 
             RecentItem dupe = RecentFiles.Files.FirstOrDefault(item => string.Equals(Settings.LastProjectWorkingDirectory,
-                item.FilePath.FormatDirectory(Path.DirectorySeparatorChar),
-                StringComparison.OrdinalIgnoreCase));
+                                                                        item.FilePath.FormatDirectory(Path.DirectorySeparatorChar),
+                                                                        StringComparison.OrdinalIgnoreCase));
 
             if (dupe != null)
             {
@@ -454,7 +430,7 @@ namespace Gorgon.Editor.ViewModels
                 LastUsedDate = DateTime.Now
             });
 
-            Program.Log.Print($"Project '{projectVm.ProjectTitle}' was loaded from '{path}'.", LoggingLevel.Simple);
+            Log.Print($"Project '{projectEditor.ProjectTitle}' was loaded from '{path}'.", LoggingLevel.Simple);
         }
 
         /// <summary>
@@ -473,13 +449,10 @@ namespace Gorgon.Editor.ViewModels
             try
             {
                 // Always save the metadata.
-                if (CurrentProject != null)
-                {
-                    await CurrentProject.SaveProjectMetadataAsync();
-                }
+                SaveProjectMetaData(CurrentProject);
 
                 var projectDir = new DirectoryInfo(recentItem.FilePath);
-                Program.Log.Print($"Opening '{projectDir.FullName}'...", LoggingLevel.Simple);
+                Log.Print($"Opening '{projectDir.FullName}'...", LoggingLevel.Simple);
 
                 ShowWaitPanel(new WaitPanelActivateArgs(string.Format(Resources.GOREDIT_TEXT_OPENING, projectDir.FullName.Ellipses(65, true)), null));
 
@@ -547,13 +520,10 @@ namespace Gorgon.Editor.ViewModels
 
                 ShowWaitPanel(new WaitPanelActivateArgs(string.Format(Resources.GOREDIT_TEXT_OPENING, path.Ellipses(65, true)), null));
 
-                Program.Log.Print($"Opening '{path}'...", LoggingLevel.Simple);
+                Log.Print($"Opening '{path}'...", LoggingLevel.Simple);
 
                 // Ensure that our metadata is up to date in the current project.
-                if (CurrentProject != null)
-                {
-                    await CurrentProject.SaveProjectMetadataAsync();
-                }
+                SaveProjectMetaData(CurrentProject);
 
                 // Create the project by copying data into the folder structure.
                 await _projectManager.OpenPackFileProjectAsync(new FileInfo(path), target);
@@ -561,7 +531,7 @@ namespace Gorgon.Editor.ViewModels
 
                 if (!target.Exists)
                 {
-                    Program.Log.Print("ERROR: No project was returned from the project manager.", LoggingLevel.Simple);
+                    Log.Print("ERROR: No project was returned from the project manager.", LoggingLevel.Simple);
                     return;
                 }
 
@@ -610,7 +580,7 @@ namespace Gorgon.Editor.ViewModels
                     return;
                 }
 
-                Program.Log.Print($"Opening '{path.FullName}'...", LoggingLevel.Simple);
+                Log.Print($"Opening '{path.FullName}'...", LoggingLevel.Simple);
 
                 ShowWaitPanel(new WaitPanelActivateArgs(string.Format(Resources.GOREDIT_TEXT_OPENING, path.FullName.Ellipses(65, true)), null));
 
@@ -641,7 +611,7 @@ namespace Gorgon.Editor.ViewModels
         {
             var cancelSource = new CancellationTokenSource();
             FileInfo projectFile = null;
-            OLDE_FileWriterPlugIn writer = null;
+            FileWriterPlugIn writer = null;
 
             try
             {
@@ -671,8 +641,8 @@ namespace Gorgon.Editor.ViewModels
 
                 Debug.Assert(writer != null, "Must have a writer plug in.");
 
-                Program.Log.Print($"File writer plug in is: {writer.Name}.", LoggingLevel.Verbose);
-                Program.Log.Print($"Saving to '{projectFile.FullName}'...", LoggingLevel.Simple);
+                Log.Print($"File writer plug in is: {writer.Name}.", LoggingLevel.Verbose);
+                Log.Print($"Saving to '{projectFile.FullName}'...", LoggingLevel.Simple);
 
                 var panelUpdateArgs = new ProgressPanelUpdateArgs
                 {
@@ -690,7 +660,8 @@ namespace Gorgon.Editor.ViewModels
                     UpdateProgress(panelUpdateArgs);
                 }
 
-                await CurrentProject.SaveProjectMetadataAsync();
+                SaveProjectMetaData(CurrentProject);
+#warning FIX ME - Should be a command!
                 await CurrentProject.SaveToPackFileAsync(projectFile, writer, SaveProgress, cancelSource.Token);
 
                 if (cancelSource.Token.IsCancellationRequested)
@@ -709,7 +680,7 @@ namespace Gorgon.Editor.ViewModels
 
                 Settings.LastOpenSavePath = projectFile.DirectoryName.FormatDirectory(Path.DirectorySeparatorChar);
 
-                Program.Log.Print($"Saved project '{CurrentProject.ProjectTitle}' to '{projectFile.FullName}'.", LoggingLevel.Simple);
+                Log.Print($"Saved project '{CurrentProject.ProjectTitle}' to '{projectFile.FullName}'.", LoggingLevel.Simple);
                 return true;
             }
             finally
@@ -755,10 +726,7 @@ namespace Gorgon.Editor.ViewModels
             try
             {
                 // Ensure that our metadata is up to date in the current project.
-                if (CurrentProject != null)
-                {
-                    await CurrentProject.SaveProjectMetadataAsync();
-                }
+                SaveProjectMetaData(CurrentProject);
 
                 IProject project = await Task.Run(() => _projectManager.CreateProject(directory));
 
@@ -837,7 +805,7 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="contentID">The ID of the content type based on its new icon ID.</param>
         private async void DoCreateContentAsync(string contentID)
         {
-            OLDE_IContentFile contentFile = null;
+            IContentFile contentFile = null;
 
             try
             {
@@ -846,13 +814,13 @@ namespace Gorgon.Editor.ViewModels
                     throw new GorgonException(GorgonResult.CannotCreate, Resources.GOREDIT_ERR_INVALID_CONTENT_TYPE_ID);
                 }
 
-                OLDE_IContentPlugInMetadata metaData = ContentCreators.FirstOrDefault(item => guid == item.NewIconID);
+                IContentPlugInMetadata metaData = ContentCreators.FirstOrDefault(item => guid == item.NewIconID);
 
                 Debug.Assert(metaData != null, $"Could not locate the content plugin metadata for {contentID}.");
 
                 ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_CREATING_CONTENT, metaData.ContentType));
 
-                OLDE_ContentPlugIn plugin = _viewModelFactory.ContentPlugIns.PlugIns.FirstOrDefault(item => item.Value == metaData).Value;
+                ContentPlugIn plugin = _contentPlugIns.PlugIns.FirstOrDefault(item => item.Value == metaData).Value;
 
                 Debug.Assert(plugin != null, $"Could not locate the content plug in for {contentID}.");
 
@@ -904,8 +872,8 @@ namespace Gorgon.Editor.ViewModels
                     catch (Exception ex)
                     {
                         // If we can't save, then don't stop the close operation.
-                        Program.Log.Print("Error saving application settings.", LoggingLevel.Simple);
-                        Program.Log.LogException(ex);
+                        Log.Print("Error saving application settings.", LoggingLevel.Simple);
+                        Log.LogException(ex);
                     }
                 }
 

@@ -98,32 +98,6 @@ namespace Gorgon.Editor
 
             InfoText = Resources.GOREDIT_TEXT_INITIALIZING;
         }
-
-        /// <summary>
-        /// Function to fade the splash screen in or out.
-        /// </summary>
-        /// <param name="fadeIn"><b>true</b> to fade in, <b>false</b> to fade out.</param>
-        /// <param name="time">Time, in milliseconds, for the fade.</param>
-        public async Task FadeAsync(bool fadeIn, int time)
-        {
-            Refresh();
-
-            // Fade the splash screen in.
-            while (((fadeIn) && (Opacity < 1))
-                || ((!fadeIn) && (Opacity > 0)))
-            {
-                await Task.Delay(time);
-
-                if (fadeIn)
-                {
-                    Opacity += 0.05;
-                }
-                else
-                {
-                    Opacity -= 0.05f;
-                }
-            }
-        }
         #endregion
 
         #region Constructor.
