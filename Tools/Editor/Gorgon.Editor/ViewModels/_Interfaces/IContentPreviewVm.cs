@@ -60,5 +60,22 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the command used to reset the preview back to its inital state.
+        /// </summary>
+        IEditorAsyncCommand<object> ResetPreviewCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to set or return whether the preview is enabled.
+        /// </summary>
+        bool IsEnabled
+        {
+            get;
+            set;
+        }
     }
 }

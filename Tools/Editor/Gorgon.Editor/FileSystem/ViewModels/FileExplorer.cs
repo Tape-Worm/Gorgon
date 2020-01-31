@@ -2267,6 +2267,11 @@ namespace Gorgon.Editor.ViewModels
 
                 DirectoryInfo destDirectory = _directoryLocator.GetDirectory(new DirectoryInfo(initialPathTemp), Resources.GOREDIT_TEXT_EXPORT_TO);
 
+                if (destDirectory == null)
+                {
+                    return;
+                }
+
                 UpdateProgress(SelectedFiles[0].FullPath, 0, Resources.GOREDIT_TEXT_COPYING, cancelSource.Cancel);
 
                 await Task.Run(() => _fileSystemWriter.ExportFiles(SelectedFiles.Select(item => item.FullPath), destDirectory.FullName,

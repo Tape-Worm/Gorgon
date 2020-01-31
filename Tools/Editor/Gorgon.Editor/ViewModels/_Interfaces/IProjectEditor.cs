@@ -123,6 +123,42 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
         }
+
+        /// <summary>
+        /// Property to set or return whether the file explorer is shown or not.
+        /// </summary>
+        bool ShowFileExplorer
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return whether the content preview is shown or not.
+        /// </summary>
+        bool ShowContentPreview
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return distance for the file explorer and main area.
+        /// </summary>
+        double FileExplorerDistance
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the distance for the preview and the file explorer.
+        /// </summary>
+        double PreviewDistance
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Methods.

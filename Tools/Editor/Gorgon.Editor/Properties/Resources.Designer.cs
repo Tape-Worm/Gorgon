@@ -143,6 +143,26 @@ namespace Gorgon.Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap content_preview_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("content_preview_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap content_preview_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("content_preview_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap copy_16x16 {
             get {
                 object obj = ResourceManager.GetObject("copy_16x16", resourceCulture);
@@ -276,6 +296,26 @@ namespace Gorgon.Editor.Properties {
         internal static System.Drawing.Bitmap file_48x48 {
             get {
                 object obj = ResourceManager.GetObject("file_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap file_explorer_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("file_explorer_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap file_explorer_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("file_explorer_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

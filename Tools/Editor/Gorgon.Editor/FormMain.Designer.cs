@@ -67,6 +67,10 @@ namespace Gorgon.Editor
             this.kryptonRibbonGroupSeparator1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
             this.kryptonRibbonGroupTriple4 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
             this.ButtonFileSystemRename = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.kryptonRibbonGroupSeparator3 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
+            this.kryptonRibbonGroupLines1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
+            this.ButtonFileSystemPanel = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonFileSystemPreview = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.RibbonTabEditorTools = new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab();
             this.Stage = new Gorgon.Editor.Views.Stage();
             this.PanelProject = new Gorgon.Editor.Views.ProjectContainer();
@@ -197,13 +201,23 @@ namespace Gorgon.Editor
             this.MainPalette.ButtonStyles.ButtonButtonSpec.OverrideDefault.Border.DrawBorders = ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.None;
             this.MainPalette.ButtonStyles.ButtonButtonSpec.OverrideFocus.Border.Draw = ComponentFactory.Krypton.Toolkit.InheritBool.False;
             this.MainPalette.ButtonStyles.ButtonButtonSpec.OverrideFocus.Border.DrawBorders = ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.None;
-            this.MainPalette.ButtonStyles.ButtonButtonSpec.StateCheckedNormal.Back.Color1 = System.Drawing.Color.SteelBlue;
-            this.MainPalette.ButtonStyles.ButtonButtonSpec.StateCheckedNormal.Border.Draw = ComponentFactory.Krypton.Toolkit.InheritBool.False;
-            this.MainPalette.ButtonStyles.ButtonButtonSpec.StateCheckedNormal.Border.DrawBorders = ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.None;
-            this.MainPalette.ButtonStyles.ButtonButtonSpec.StateCheckedPressed.Back.Color1 = System.Drawing.Color.Orange;
+            this.MainPalette.ButtonStyles.ButtonButtonSpec.StateCheckedNormal.Back.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(113)))), ((int)(((byte)(127)))));
+            this.MainPalette.ButtonStyles.ButtonButtonSpec.StateCheckedNormal.Back.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(113)))), ((int)(((byte)(127)))));
+            this.MainPalette.ButtonStyles.ButtonButtonSpec.StateCheckedNormal.Border.Color1 = System.Drawing.Color.SteelBlue;
+            this.MainPalette.ButtonStyles.ButtonButtonSpec.StateCheckedNormal.Border.Color2 = System.Drawing.Color.SteelBlue;
+            this.MainPalette.ButtonStyles.ButtonButtonSpec.StateCheckedNormal.Border.Draw = ComponentFactory.Krypton.Toolkit.InheritBool.True;
+            this.MainPalette.ButtonStyles.ButtonButtonSpec.StateCheckedNormal.Border.DrawBorders = ((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders)((((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Top | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Bottom) 
+            | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Left) 
+            | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Right)));
+            this.MainPalette.ButtonStyles.ButtonButtonSpec.StateCheckedNormal.Border.GraphicsHint = ComponentFactory.Krypton.Toolkit.PaletteGraphicsHint.None;
+            this.MainPalette.ButtonStyles.ButtonButtonSpec.StateCheckedNormal.Border.Rounding = 0;
+            this.MainPalette.ButtonStyles.ButtonButtonSpec.StateCheckedNormal.Border.Width = 2;
+            this.MainPalette.ButtonStyles.ButtonButtonSpec.StateCheckedPressed.Back.Color1 = System.Drawing.Color.DarkOrange;
+            this.MainPalette.ButtonStyles.ButtonButtonSpec.StateCheckedPressed.Back.Color2 = System.Drawing.Color.DarkOrange;
             this.MainPalette.ButtonStyles.ButtonButtonSpec.StateCheckedPressed.Border.Draw = ComponentFactory.Krypton.Toolkit.InheritBool.False;
             this.MainPalette.ButtonStyles.ButtonButtonSpec.StateCheckedPressed.Border.DrawBorders = ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.None;
             this.MainPalette.ButtonStyles.ButtonButtonSpec.StateCheckedTracking.Back.Color1 = System.Drawing.Color.SteelBlue;
+            this.MainPalette.ButtonStyles.ButtonButtonSpec.StateCheckedTracking.Back.Color2 = System.Drawing.Color.SteelBlue;
             this.MainPalette.ButtonStyles.ButtonButtonSpec.StateCheckedTracking.Border.Draw = ComponentFactory.Krypton.Toolkit.InheritBool.False;
             this.MainPalette.ButtonStyles.ButtonButtonSpec.StateCheckedTracking.Border.DrawBorders = ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.None;
             this.MainPalette.ButtonStyles.ButtonButtonSpec.StateCommon.Back.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
@@ -390,7 +404,9 @@ namespace Gorgon.Editor
             this.RibbonGroupFileSystemOrganize.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupContainer[] {
             this.kryptonRibbonGroupTriple2,
             this.kryptonRibbonGroupSeparator1,
-            this.kryptonRibbonGroupTriple4});
+            this.kryptonRibbonGroupTriple4,
+            this.kryptonRibbonGroupSeparator3,
+            this.kryptonRibbonGroupLines1});
             this.RibbonGroupFileSystemOrganize.KeyTipGroup = "O";
             this.RibbonGroupFileSystemOrganize.TextLine1 = "Organize";
             // 
@@ -436,6 +452,34 @@ namespace Gorgon.Editor
             this.ButtonFileSystemRename.TextLine1 = "Rename";
             this.ButtonFileSystemRename.ToolTipBody = "Rename the selected file or directory.";
             this.ButtonFileSystemRename.Click += new System.EventHandler(this.ButtonFileSystemRename_Click);
+            // 
+            // kryptonRibbonGroupLines1
+            // 
+            this.kryptonRibbonGroupLines1.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.ButtonFileSystemPanel,
+            this.ButtonFileSystemPreview});
+            // 
+            // ButtonFileSystemPanel
+            // 
+            this.ButtonFileSystemPanel.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.Check;
+            this.ButtonFileSystemPanel.Checked = true;
+            this.ButtonFileSystemPanel.ImageLarge = global::Gorgon.Editor.Properties.Resources.file_explorer_48x48;
+            this.ButtonFileSystemPanel.ImageSmall = global::Gorgon.Editor.Properties.Resources.file_explorer_16x16;
+            this.ButtonFileSystemPanel.KeyTip = "F";
+            this.ButtonFileSystemPanel.TextLine1 = "File Explorer";
+            this.ButtonFileSystemPanel.ToolTipBody = "Show/hide the file explorer panel.";
+            this.ButtonFileSystemPanel.Click += new System.EventHandler(this.ButtonFileSystemPanel_Click);
+            // 
+            // ButtonFileSystemPreview
+            // 
+            this.ButtonFileSystemPreview.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.Check;
+            this.ButtonFileSystemPreview.Checked = true;
+            this.ButtonFileSystemPreview.ImageLarge = global::Gorgon.Editor.Properties.Resources.content_preview_48x48;
+            this.ButtonFileSystemPreview.ImageSmall = global::Gorgon.Editor.Properties.Resources.content_preview_16x16;
+            this.ButtonFileSystemPreview.KeyTip = "P";
+            this.ButtonFileSystemPreview.TextLine1 = "Content Preview";
+            this.ButtonFileSystemPreview.ToolTipBody = "Show/hide the content preview panel.";
+            this.ButtonFileSystemPreview.Click += new System.EventHandler(this.ButtonFileSystemPreview_Click);
             // 
             // RibbonTabEditorTools
             // 
@@ -575,6 +619,10 @@ namespace Gorgon.Editor
         private System.Windows.Forms.ContextMenuStrip MenuCreate;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonTab RibbonTabEditorTools;
         private ComponentFactory.Krypton.Toolkit.KryptonPalette MainPalette;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator3;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines1;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemPanel;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemPreview;
     }
 }
 

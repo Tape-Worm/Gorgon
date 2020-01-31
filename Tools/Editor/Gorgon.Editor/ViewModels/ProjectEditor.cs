@@ -41,6 +41,7 @@ using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
+using Gorgon.Math;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -263,6 +264,113 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
         }
+
+        /// <summary>
+        /// Property to set or return whether the file explorer is shown or not.
+        /// </summary>
+        public bool ShowFileExplorer
+        {
+            get => _settings.ShowFileExplorer;
+            set
+            {
+                if (_settings.ShowFileExplorer == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _settings.ShowFileExplorer = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return whether the content preview is shown or not.
+        /// </summary>
+        public bool ShowContentPreview
+        {
+            get => _settings.ShowContentPreview;
+            set
+            {
+                if (_settings.ShowContentPreview == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _settings.ShowContentPreview = value;
+
+                if (ContentPreviewer != null)
+                {
+                    ContentPreviewer.IsEnabled = _settings.ShowContentPreview;
+                }
+                OnPropertyChanged();
+
+                if (ContentPreviewer == null)
+                {
+                    return;
+                }
+
+                try
+                {
+                    if (value)
+                    {
+                        RefreshFilePreview(FileExplorer?.SelectedFiles[0] as IContentFile);
+                    }
+                    else
+                    {
+                        if ((ContentPreviewer.ResetPreviewCommand != null) && (ContentPreviewer.ResetPreviewCommand.CanExecute(null)))
+                        {
+                            ContentPreviewer.ResetPreviewCommand.Execute(null);
+                        }
+                    }
+                }
+                catch(Exception ex)
+                {
+                    Log.Print("Error loading preview", LoggingLevel.Simple);
+                    Log.LogException(ex);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return distance for the file explorer and main area.
+        /// </summary>
+        public double FileExplorerDistance
+        {
+            get => _settings.SplitMainDistance.Min(0.90).Max(0.05);
+            set
+            {
+                if (_settings.SplitMainDistance.EqualsEpsilon(value))
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _settings.SplitMainDistance = value.Min(0.90).Max(0.05);
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the distance for the preview and the file explorer.
+        /// </summary>
+        public double PreviewDistance
+        {
+            get => _settings.SplitPreviewDistance.Min(0.90).Max(0.05);
+            set
+            {
+                if (_settings.SplitPreviewDistance.EqualsEpsilon(value))
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _settings.SplitPreviewDistance = value.Min(0.90).Max(0.05);
+                OnPropertyChanged();
+            }
+        }
+
         #endregion
 
         #region Methods.
@@ -500,6 +608,11 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="file">The file to refresh.</param>
         private void RefreshFilePreview(IContentFile file)
         {
+            if (!ShowContentPreview)
+            {
+                return;
+            }
+
             if ((ContentPreviewer.RefreshPreviewCommand != null) && (ContentPreviewer.RefreshPreviewCommand.CanExecute(file)))
             {
                 ContentPreviewer.RefreshPreviewCommand.Execute(file);
@@ -906,7 +1019,11 @@ namespace Gorgon.Editor.ViewModels
                     FileExplorer.FileSystemUpdated += FileExplorer_FileSystemUpdated;
                 }
                 
-                ContentPreviewer?.OnLoad();
+                if (ContentPreviewer != null)
+                {
+                    ContentPreviewer.OnLoad();
+                    ContentPreviewer.IsEnabled = _settings.ShowContentPreview;
+                }
 
                 AssignEvents();                
             }

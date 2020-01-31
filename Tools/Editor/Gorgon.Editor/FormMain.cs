@@ -505,6 +505,34 @@ namespace Gorgon.Editor
             StageLive_Save(this, args);
         }
 
+        /// <summary>Handles the Click event of the ButtonFileSystemPanel control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonFileSystemPanel_Click(object sender, EventArgs e)
+        {
+            if (DataContext?.CurrentProject == null)
+            {
+                return;
+            }
+            
+            DataContext.CurrentProject.ShowFileExplorer = ButtonFileSystemPanel.Checked;
+            ValidateRibbonButtons();
+        }
+
+        /// <summary>Handles the Click event of the ButtonFileSystemPreview control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonFileSystemPreview_Click(object sender, EventArgs e)
+        {
+            if (DataContext?.CurrentProject == null)
+            {
+                return;
+            }
+
+            DataContext.CurrentProject.ShowContentPreview = ButtonFileSystemPreview.Checked;
+            ValidateRibbonButtons();
+        }
+
         /// <summary>Handles the FileExplorerIsRenaming event of the PanelProject control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -576,6 +604,8 @@ namespace Gorgon.Editor
             TabFileSystem.Visible = true;
             _defaultImportData.Destination = fileExplorer.SelectedDirectory;
 
+            ButtonFileSystemPanel.Enabled = project != null;
+            ButtonFileSystemPreview.Enabled = (ButtonFileSystemPanel.Enabled) && (project.ShowFileExplorer);
             ButtonFileSystemNewDirectory.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.CreateDirectoryCommand?.CanExecute(_createDirArgs) ?? false);            
             ButtonImport.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.ImportCommand?.CanExecute(_defaultImportData) ?? false);
             ButtonFileSystemDeleteAll.Visible = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.SelectedDirectory == null) || (fileExplorer.SelectedDirectory == fileExplorer.Root);
@@ -992,26 +1022,30 @@ namespace Gorgon.Editor
                 case nameof(IMain.CurrentProject):
                     NavigateToProjectView(DataContext);
 
-                    if (DataContext.CurrentProject != null)
+                    if (DataContext.CurrentProject == null)
                     {
-                        DataContext.CurrentProject.PropertyChanging += CurrentProject_PropertyChanging;
-                        DataContext.CurrentProject.PropertyChanged += CurrentProject_PropertyChanged;
-
-                        if (DataContext.CurrentProject.FileExplorer != null)
-                        {
-                            DataContext.CurrentProject.FileExplorer.FileSystemUpdated += FileExplorer_FileSystemUpdated;
-                            DataContext.CurrentProject.FileExplorer.PropertyChanged += FileExplorer_PropertyChanged;
-                            DataContext.CurrentProject.FileExplorer.SelectedFiles.CollectionChanged += SelectedFiles_CollectionChanged;
-                        }
-
-                        RibbonMain.SelectedContext = DataContext.CurrentProject.CommandContext;
-
-                        TabFileSystem.Visible = true;
-                        UpdateToolsTab(DataContext.CurrentProject.ToolButtons);
-
-                        _deleteAllValidationArgs = new DeleteArgs(DataContext.CurrentProject.FileExplorer.Root.ID);
+                        break;
                     }
-                    break;
+
+                    DataContext.CurrentProject.PropertyChanging += CurrentProject_PropertyChanging;
+                    DataContext.CurrentProject.PropertyChanged += CurrentProject_PropertyChanged;
+
+                    if (DataContext.CurrentProject.FileExplorer != null)
+                    {
+                        DataContext.CurrentProject.FileExplorer.FileSystemUpdated += FileExplorer_FileSystemUpdated;
+                        DataContext.CurrentProject.FileExplorer.PropertyChanged += FileExplorer_PropertyChanged;
+                        DataContext.CurrentProject.FileExplorer.SelectedFiles.CollectionChanged += SelectedFiles_CollectionChanged;
+                    }
+
+                    RibbonMain.SelectedContext = DataContext.CurrentProject.CommandContext;
+
+                    TabFileSystem.Visible = true;
+                    UpdateToolsTab(DataContext.CurrentProject.ToolButtons);
+
+                    _deleteAllValidationArgs = new DeleteArgs(DataContext.CurrentProject.FileExplorer.Root.ID);
+                    ButtonFileSystemPanel.Checked = DataContext.CurrentProject.ShowFileExplorer;
+                    ButtonFileSystemPreview.Checked = DataContext.CurrentProject.ShowContentPreview;
+                    break;                
             }
 
             ValidateRibbonButtons();
@@ -1132,6 +1166,13 @@ namespace Gorgon.Editor
             if (dataContext.CurrentProject != null)
             {
                 RibbonMain.SelectedContext = dataContext.CurrentProject.CommandContext;
+                ButtonFileSystemPanel.Checked = dataContext.CurrentProject.ShowFileExplorer;
+                ButtonFileSystemPreview.Checked = dataContext.CurrentProject.ShowContentPreview;
+            }
+            else
+            {
+                ButtonFileSystemPreview.Checked = false;
+                ButtonFileSystemPanel.Checked = false;
             }
 
             AddNewIcons(dataContext.ContentCreators);

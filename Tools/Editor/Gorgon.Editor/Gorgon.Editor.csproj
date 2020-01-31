@@ -297,6 +297,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\file_explorer_48x48.png" />
+    <None Include="Resources\file_explorer_16x16.png" />
+    <None Include="Resources\content_preview_48x48.png" />
+    <None Include="Resources\content_preview_16x16.png" />
     <None Include="Resources\recent_item_badge_48x48.png" />
     <None Include="Resources\generic_file_20x20.png" />
     <None Include="Resources\settings_48x48.png" />

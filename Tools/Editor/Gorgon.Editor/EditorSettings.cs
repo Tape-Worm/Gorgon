@@ -89,5 +89,41 @@ namespace Gorgon.Editor
             get;
             private set;
         } = new List<RecentItem>();
+
+        /// <summary>
+        /// Property to set or return the flag to indicate that the file explorer is visible.
+        /// </summary>
+        public bool ShowFileExplorer
+        {
+            get;
+            set;
+        } = true;
+
+        /// <summary>
+        /// Property to set or return the flag to indicate that the content preview is visible.
+        /// </summary>
+        public bool ShowContentPreview
+        {
+            get;
+            set;
+        } = true;
+
+        /// <summary>
+        /// Property to set or return the distance between the main content panel, and the file explorer.
+        /// </summary>
+        public double SplitMainDistance
+        {
+            get;
+            set;
+        } = 0.815;
+
+        /// <summary>
+        /// Property to set or return the distance between the file explorer and the preview panel.
+        /// </summary>
+        public double SplitPreviewDistance
+        {
+            get;
+            set;
+        } = 0.678;
     }
 }

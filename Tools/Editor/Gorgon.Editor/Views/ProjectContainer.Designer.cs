@@ -78,6 +78,7 @@
             // 
             this.SplitMain.Panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
             this.SplitMain.Panel1.Controls.Add(this.PanelContent);
+            this.SplitMain.Panel1MinSize = 320;
             // 
             // SplitMain.Panel2
             // 
@@ -85,6 +86,7 @@
             this.SplitMain.Size = new System.Drawing.Size(1033, 658);
             this.SplitMain.SplitterDistance = 524;
             this.SplitMain.TabIndex = 2;
+            this.SplitMain.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.SplitMain_SplitterMoved);
             // 
             // SplitFileSystem
             // 
@@ -104,6 +106,7 @@
             this.SplitFileSystem.Size = new System.Drawing.Size(505, 658);
             this.SplitFileSystem.SplitterDistance = 618;
             this.SplitFileSystem.TabIndex = 1;
+            this.SplitFileSystem.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.SplitFileSystem_SplitterMoved);
             // 
             // FileExplorer
             // 

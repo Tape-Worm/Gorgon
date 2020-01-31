@@ -65,6 +65,10 @@ namespace Gorgon.Editor.ViewModels
         private IGorgonFileSystemWriter<Stream> _tempFileSystem;
         // Flag to indicate that file events have been assigned.
         private int _fileEventsHooked;
+        // Flag to enable or disable the preview.
+        private bool _isEnabled = true;
+        // Flag to force a refresh.
+        private bool _forceRefresh;
         #endregion
 
         #region Properties.
@@ -107,6 +111,33 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the command used to reset the preview back to its inital state.
+        /// </summary>
+        public IEditorAsyncCommand<object> ResetPreviewCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to set or return whether the preview is enabled.
+        /// </summary>
+        public bool IsEnabled
+        {
+            get => _isEnabled;
+            set
+            {
+                if (_isEnabled == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _isEnabled = value;
+                OnPropertyChanged();
+            }
+        }
         #endregion
 
         #region Methods.
@@ -119,6 +150,14 @@ namespace Gorgon.Editor.ViewModels
         {
             try
             {
+                if (!_isEnabled)
+                {
+                    PreviewImage?.Dispose();
+                    PreviewImage = null;
+                    _contentFile = null;
+                    return;
+                }
+
                 if (_loadPreviewTask != null)
                 {
                     if (_loadPreviewTask.Status == TaskStatus.Faulted)
@@ -299,17 +338,37 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 // If our currently selected file is not the one being dispayed at this moment, then do not update the render window.
-                if (file != _contentFile)
+                if ((file != _contentFile) && (!_forceRefresh))
                 {
                     return;
                 }
 
                 // Reload.
                 await LoadImagePreviewAsync(file);
+
+                _forceRefresh = false;
             }
             catch (Exception ex)
             {
                 Log.Print($"Error refreshing the preview image for '{file.Path}'.", LoggingLevel.Simple);
+                Log.LogException(ex);
+            }
+        }
+
+        /// <summary>
+        /// Function to reset the preview image back to its initial state.
+        /// </summary>
+        /// <returns>A task for asynchronous operation.</returns>
+        private async Task DoResetPreview()
+        {
+            try
+            {
+                await LoadImagePreviewAsync(null);
+                _forceRefresh = true;
+            }
+            catch (Exception ex)
+            {
+                Log.Print($"Error resetting the preview image.", LoggingLevel.Simple);
                 Log.LogException(ex);
             }
         }
@@ -405,7 +464,11 @@ namespace Gorgon.Editor.ViewModels
 
         #region Constructor.
         /// <summary>Initializes a new instance of the <see cref="ContentPreviewVm"/> class.</summary>
-        public ContentPreviewVm() => RefreshPreviewCommand = new EditorAsyncCommand<IContentFile>(DoRefreshPreview);
+        public ContentPreviewVm()
+        {
+            RefreshPreviewCommand = new EditorAsyncCommand<IContentFile>(DoRefreshPreview);
+            ResetPreviewCommand = new EditorAsyncCommand<object>(DoResetPreview);
+        }
         #endregion
     }
 }

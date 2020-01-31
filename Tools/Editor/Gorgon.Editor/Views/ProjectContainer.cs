@@ -285,11 +285,23 @@ namespace Gorgon.Editor.Views
         {
             switch (e.PropertyName)
             {
+                case nameof(IProjectEditor.ShowFileExplorer):
+                    SplitMain.Panel2Collapsed = !DataContext.ShowFileExplorer;
+                    break;
+                case nameof(IProjectEditor.ShowContentPreview):
+                    SplitFileSystem.Panel2Collapsed = !DataContext.ShowContentPreview;
+                    break;
                 case nameof(IProjectEditor.FileExplorer):
                     FileExplorer.SetDataContext(DataContext.FileExplorer);
                     break;
                 case nameof(IProjectEditor.CurrentContent):
                     SetupContent(DataContext);
+                    break;
+                case nameof(IProjectEditor.FileExplorerDistance):
+                    SplitMain.SplitterDistance = (int)(DataContext.FileExplorerDistance * SplitMain.ClientSize.Width);
+                    break;
+                case nameof(IProjectEditor.PreviewDistance):
+                    SplitFileSystem.SplitterDistance = (int)(DataContext.PreviewDistance * SplitFileSystem.ClientSize.Height);
                     break;
             }
         }
@@ -376,6 +388,32 @@ namespace Gorgon.Editor.Views
             _contentControl.BubbleDragDrop += ContentControl_BubbleDragDrop;
         }
 
+        /// <summary>Handles the SplitterMoved event of the SplitMain control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="SplitterEventArgs"/> instance containing the event data.</param>
+        private void SplitMain_SplitterMoved(object sender, SplitterEventArgs e)
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            DataContext.FileExplorerDistance = (double)SplitMain.SplitterDistance / SplitMain.ClientSize.Width;
+        }
+
+        /// <summary>Handles the SplitterMoved event of the SplitFileSystem control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="SplitterEventArgs"/> instance containing the event data.</param>
+        private void SplitFileSystem_SplitterMoved(object sender, SplitterEventArgs e)
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            DataContext.PreviewDistance = (double)SplitFileSystem.SplitterDistance / SplitMain.ClientSize.Height;
+        }
+
         /// <summary>Handles the BubbleDragDrop event of the ContentControl control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
@@ -399,7 +437,13 @@ namespace Gorgon.Editor.Views
             }
 
             FileExplorer.SetDataContext(dataContext.FileExplorer);
-            Preview.SetDataContext(dataContext.ContentPreviewer);            
+            Preview.SetDataContext(dataContext.ContentPreviewer);
+
+            SplitMain.Panel2Collapsed = !dataContext.ShowFileExplorer;
+            SplitFileSystem.Panel2Collapsed = !dataContext.ShowContentPreview;
+
+            SplitMain.SplitterDistance = (int)(dataContext.FileExplorerDistance * SplitMain.ClientSize.Width);
+            SplitFileSystem.SplitterDistance = (int)(dataContext.PreviewDistance * SplitFileSystem.ClientSize.Height);
         }
 
         /// <summary>

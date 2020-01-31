@@ -105,14 +105,6 @@ namespace Gorgon.Editor.Views
             }
         }
 
-        /// <summary>Handles the PropertyChanging event of the DataContext control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="PropertyChangingEventArgs"/> instance containing the event data.</param>
-        private void DataContext_PropertyChanging(object sender, PropertyChangingEventArgs e)
-        {
-
-        }
-
         /// <summary>
         /// Function to update the preview texture using the new image supplied.
         /// </summary>
@@ -198,7 +190,6 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            DataContext.PropertyChanging -= DataContext_PropertyChanging;
             DataContext.PropertyChanged -= DataContext_PropertyChanged;
         }
 
@@ -355,7 +346,6 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            DataContext.PropertyChanging += DataContext_PropertyChanging;
             DataContext.PropertyChanged += DataContext_PropertyChanged;
         }
         #endregion

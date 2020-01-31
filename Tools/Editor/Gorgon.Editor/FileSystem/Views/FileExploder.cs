@@ -2672,7 +2672,7 @@ namespace Gorgon.Editor.Views
                     _directoryNodes.TryGetValue(dataContext.SelectedDirectory.ID, out selectedNode);
                 }
                 TreeDirectories.SelectedNode = selectedNode;
-                SelectRows(dataContext);
+                SelectRows(dataContext);                
             }
             finally
             {
